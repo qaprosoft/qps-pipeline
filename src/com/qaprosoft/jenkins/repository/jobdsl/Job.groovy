@@ -105,7 +105,7 @@ class Job {
             /** Git Stuff **/
             definition {
                 cps {
-                    script("@Library('LC-Jenkins')\nimport com.qaprosoft.jenkins.repository.pipeline.RunJob;\nnew RunJob().runJob()")
+                    script("@Library('QPS-Jenkins')\nimport com.qaprosoft.jenkins.repository.pipeline.RunJob;\nnew RunJob().runJob()")
                     sandbox()
                 }
             }
@@ -178,7 +178,7 @@ class Job {
             }
             definition {
                 cps {
-                    script("@Library('LC-Jenkins')\nimport com.qaprosoft.jenkins.repository.pipeline.RunCron;\nnew RunCron().runCron()")
+                    script("@Library('QPS-Jenkins')\nimport com.qaprosoft.jenkins.repository.pipeline.RunCron;\nnew RunCron().runCron()")
                     sandbox()
                 }
             }

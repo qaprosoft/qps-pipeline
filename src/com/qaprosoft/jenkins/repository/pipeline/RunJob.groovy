@@ -214,7 +214,7 @@ def runTests(Map jobParameters) {
 //        def goalMap = [:]
 	def goalMap = jobParameters
 
-	//TODO: investigate how user timezone can be declared on lc-infra level
+	//TODO: investigate how user timezone can be declared on qps-infra level
 	def pomFile = getSubProjectFolder() + "/pom.xml"
 	def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f $pomFile \
 			-Dci_run_id=$ci_run_id -Dcore_log_level=$CORE_LOG_LEVEL -Demail_list=$email_list \
