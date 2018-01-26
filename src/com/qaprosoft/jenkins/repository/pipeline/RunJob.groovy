@@ -25,7 +25,7 @@ def runJob() {
 
             this.reportingResults()
 
-            this.cleanWorkSpace()
+//            this.cleanWorkSpace()
           }
         } catch (Exception ex) {
             currentBuild.result = 'FAILURE'

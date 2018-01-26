@@ -13,7 +13,7 @@ def scanRepository() {
         timestamps {
             this.clone()
             this.scan()
-            this.clean()
+//            this.clean()
         }
     }
 }
