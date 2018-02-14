@@ -99,11 +99,12 @@ def scan() {
 
 
 		// find all tetsng suite xml files and launch job creator dsl job
-	        println "find Files patter: " + sub_project + "/**/${testModule}/src/test/resources/${testngFolder}/**/*.xml"
+
 		def suiteFilter = sub_project + "/src/test/resources/${testngFolder}/**/*.xml"
 		if (multi_maven) {
 			suiteFilter = sub_project + "/**/${testModule}/src/test/resources/${testngFolder}/**/*.xml"
 		}
+	        println "suiteFilter: " suiteFilter
 		def suites = findFiles(glob: suiteFilter)
 
 		for (File suite : suites) {
