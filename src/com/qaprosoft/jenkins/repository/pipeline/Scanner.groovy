@@ -104,7 +104,7 @@ def scan() {
 		if (multi_maven) {
 			suiteFilter = sub_project + "/**/${testModule}/src/test/resources/${testngFolder}/**/*.xml"
 		}
-	        println "suiteFilter: " suiteFilter
+	        println "suiteFilter: " + suiteFilter
 		def suites = findFiles(glob: suiteFilter)
 
 		for (File suite : suites) {
