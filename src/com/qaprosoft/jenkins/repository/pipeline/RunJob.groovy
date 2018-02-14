@@ -161,6 +161,13 @@ def setupGoalsForAndroid(Map<String, String> goalMap) {
 
     echo "ENV: " +  params["env"]
 
+    if ("DefaultPool".equalsIgnoreCase(params["device"])) {
+       //reuse list of devices from hidden parameter DefaultPool
+        goalMap.put("capabilities.deviceName", params["DefaultPool"])
+    } else {
+        goalMap.put("capabilities.deviceName", params["device"])
+    }
+
     goalMap.put("mobile_app_clear_cache", "true")
 
     goalMap.put("capabilities.platform", "ANDROID")
