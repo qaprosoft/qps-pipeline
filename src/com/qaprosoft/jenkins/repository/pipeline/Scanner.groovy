@@ -60,7 +60,7 @@ def scan() {
 		def testngFolder = it.suites_folder
 
 		def zafira_project = 'unknown'
-		def zafiraFilter = workspace + "/" + sub_project + "/src/main/resources/zafira.properties"
+		def zafiraFilter = "src/main/resources/zafira.properties"
 		if (multi_maven) {
 			zafiraFilter = sub_project + "/**/${testModule}/src/main/resources/zafira.properties"
 		}
@@ -100,7 +100,7 @@ def scan() {
 
 		// find all tetsng suite xml files and launch job creator dsl job
 
-		def suiteFilter =  workspace + "/" + sub_project + "/src/test/resources/${testngFolder}/**/*.xml"
+		def suiteFilter =  "src/test/resources/${testngFolder}/**/*.xml"
 		if (multi_maven) {
 			suiteFilter = sub_project + "/**/${testModule}/src/test/resources/${testngFolder}/**/*.xml"
 		}
