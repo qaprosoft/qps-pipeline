@@ -46,19 +46,25 @@ def scan() {
 	Object subProjects = parseJSON(jenkinsFile).sub_projects
 	subProjects.each {
 		println "sub_project: " + it
+		println "multi_maven: " + it.multi_maven
 		println "pr_checker: " + it.pr_checker
 		println "deployable: " + it.deployable
 		println "tests_module: " + it.tests_module
 		println "suites_folder: " + it.suites_folder
 
 		def sub_project = it.name
+		def multi_maven = it.multi_maven
 		def prChecker = it.pr_checker
 		def pr_merger = it.deployable
 		def testModule = it.tests_module
 		def testngFolder = it.suites_folder
 
 		def zafira_project = 'unknown'
-		def zafiraProperties = findFiles(glob: sub_project + "/**/${testModule}/src/main/resources/zafira.properties")
+		def zafiraFilter = sub_project + "/src/main/resources/zafira.properties"
+		if (multi_maven) {
+			zafiraFilter = sub_project + "/**/${testModule}/src/main/resources/zafira.properties"
+		}
+		def zafiraProperties = findFiles(glob: zafiraFilter)
 		for (File file : zafiraProperties) {
 			def props = readProperties file: file.path
 			if (props['zafira_project'] != null) {
@@ -93,7 +99,13 @@ def scan() {
 
 
 		// find all tetsng suite xml files and launch job creator dsl job
-		def suites = findFiles(glob: sub_project + "/**/${testModule}/src/test/resources/${testngFolder}/**/*.xml")
+	        println "find Files patter: " + sub_project + "/**/${testModule}/src/test/resources/${testngFolder}/**/*.xml"
+		def suiteFilter = sub_project + "/src/test/resources/${testngFolder}/**/*.xml"
+		if (multi_maven) {
+			suiteFilter = sub_project + "/**/${testModule}/src/test/resources/${testngFolder}/**/*.xml"
+		}
+		def suites = findFiles(glob: suiteFilter)
+
 		for (File suite : suites) {
         		println suite.path
 			def suiteOwner = "anonymous"
