@@ -18,7 +18,7 @@ def runJob() {
 
 	    if (params["device"] != null && !params["device"].isEmpty() && !params["device"].equals("NULL")) {
 		//TODO: test mobile goals appending as this risky change can't be tested now!
-                jobParameters += this.setupForMobile("${device}", jobParameters)
+                jobParameters += this.setupForMobile(jobParameters)
             }
 
             this.runTests(jobParameters)
@@ -124,7 +124,7 @@ def getResources() {
     }
 }
 
-def setupForMobile(String devicePattern, Map jobParameters) {
+def setupForMobile(Map jobParameters) {
 
     def goalMap = [:]
 
@@ -134,15 +134,14 @@ def setupForMobile(String devicePattern, Map jobParameters) {
         } else {
             goalMap = setupGoalsForiOS(goalMap)
         }
-       	echo "DEVICE: " +  devicePattern
 
+        if ("DefaultPool".equalsIgnoreCase(params["device"])) {
+            //reuse list of devices from hidden parameter DefaultPool
+            goalMap.put("capabilities.deviceName", params["DefaultPool"])
+        } else {
+            goalMap.put("capabilities.deviceName", params["device"])
+        }
 
-        if (!devicePattern.equalsIgnoreCase("all")) {
-            goalMap.put("capabilities.deviceName", devicePattern)
-	}
-
-	//TODO: remove after resolving issues with old mobile capabilities generator
-	goalMap.put("capabilities.platformName", jobParameters.get("platform").toString().toUpperCase())
 
         goalMap.put("capabilities.newCommandTimeout", "180")
 
@@ -153,29 +152,17 @@ def setupForMobile(String devicePattern, Map jobParameters) {
         goalMap.put("explicit_timeout", "60")
         goalMap.put("java.awt.headless", "true")
 
+        goalMap.put("recovery_mode", "${recoveryMode}")
+
     }
     return goalMap
 }
 
 def setupGoalsForAndroid(Map<String, String> goalMap) {
 
-    echo "ENV: " +  params["env"]
-
-    if ("DefaultPool".equalsIgnoreCase(params["device"])) {
-       //reuse list of devices from hidden parameter DefaultPool
-        goalMap.put("capabilities.deviceName", params["DefaultPool"])
-    } else {
-        goalMap.put("capabilities.deviceName", params["device"])
-    }
-
     goalMap.put("mobile_app_clear_cache", "true")
 
-    goalMap.put("capabilities.platform", "ANDROID")
     goalMap.put("capabilities.platformName", "ANDROID")
-    goalMap.put("capabilities.deviceName", "*")
-
-    goalMap.put("capabilities.appPackage", "")
-    goalMap.put("capabilities.appActivity", "")
 
     goalMap.put("capabilities.autoGrantPermissions", "true")
     goalMap.put("capabilities.noSign", "true")
