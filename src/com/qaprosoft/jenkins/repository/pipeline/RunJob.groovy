@@ -269,11 +269,11 @@ def runTests(Map jobParameters) {
         if (isUnix()) {
             suiteNameForUnix = "${suite}".replace("\\", "/")
             echo "Suite for Unix: ${suiteNameForUnix}"
-            sh "'mvn' -B ${mvnBaseGoals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=../../reports/qa -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAF_Report"
+            sh "'mvn' -B ${mvnBaseGoals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=./reports/qa -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAF_Report"
         } else {
             suiteNameForWindows = "${suite}".replace("/", "\\")
             echo "Suite for Windows: ${suiteNameForWindows}"
-            bat(/"mvn" -B ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=..\..\reports\qa -Dreport_url=$JOB_URL$BUILD_NUMBER\eTAF_Report/)
+            bat(/"mvn" -B ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=.\reports\qa -Dreport_url=$JOB_URL$BUILD_NUMBER\\/eTAF_Report/)
         }
 
 	this.publishJacocoReport();
