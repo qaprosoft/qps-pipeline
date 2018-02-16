@@ -42,7 +42,7 @@ class Job {
                         configure addExtensibleChoice('browser', 'gc_BROWSER', 'Select a browser to run tests against.', 'chrome')
                         booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
                         booleanParam('keep_all_screenshots', true, 'Keep screenshots even if the tests pass')
-                        booleanParam('capabilities.enableVNC', true, 'Selenoid only to enable VNC sessions')
+                        booleanParam('enableVNC', true, 'Selenoid only to enable VNC sessions')
                         configure addHiddenParameter('platform', '', '*')
                         break;
                     case ~/^.*android.*$/:

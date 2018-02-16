@@ -247,6 +247,11 @@ def runTests(Map jobParameters) {
             goalMap.put("keep_all_screenshots", params["keep_all_screenshots"])
 	}
 
+	if (params["enableVNC"] != null) {
+            goalMap.put("capabilities.enableVNC", params["enableVNC"])
+	}
+
+
 	goalMap.put("zafira_enabled", "${zafiraEnabled}")
 	goalMap.put("zafira_project", "${zafira_project}")
         goalMap.put("ci_run_id", "${uuid}")
