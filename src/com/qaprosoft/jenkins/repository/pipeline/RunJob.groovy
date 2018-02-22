@@ -306,8 +306,8 @@ def reportingResults() {
 	if (!publishReport('**/reports/qa/zafira-report.html', 'eTAF_Report')) {
 		publishReport('**/reports/qa/emailable-report.html', 'eTAF_Report')
 	}
-	publishReport('**/tests/target/surefire-reports/index.html', 'Full TestNG HTML Report')
-	publishReport('**/tests/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
+	publishReport('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
+	publishReport('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
 
     }
 }
