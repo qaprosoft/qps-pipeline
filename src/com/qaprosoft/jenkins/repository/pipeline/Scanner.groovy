@@ -48,13 +48,17 @@ def scan() {
 		println "sub_project: " + it
 
 		def sub_project = it.name
+		def subProjectFilter = it.name
+		if (sub_project.equals(".")) {
+			subProjectFilter = "**"
+		}
 		def prChecker = it.pr_checker
 		def prMerger = it.deployable
 		def zafiraFilter = it.zafira_filter
 		def suiteFilter = it.suite_filter
 
 		def zafira_project = 'unknown'
-		def zafiraProperties = findFiles(glob: sub_project + "/" + zafiraFilter)
+		def zafiraProperties = findFiles(glob: subProjectFilter + "/" + zafiraFilter)
 		for (File file : zafiraProperties) {
 			def props = readProperties file: file.path
 			if (props['zafira_project'] != null) {
@@ -100,7 +104,7 @@ def scan() {
 
 
 		// find all tetsng suite xml files and launch job creator dsl job
-		def suites = findFiles(glob: sub_project + "/" + suiteFilter + "/**")
+		def suites = findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
 		for (File suite : suites) {
 			if (!suite.path.endsWith(".xml")) {
 				continue;
