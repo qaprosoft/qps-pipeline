@@ -9,34 +9,23 @@ def runCron() {
 
         def listPipelines = []
 
-	def testModule = "tests"
-	def testngFolder = "testng-suites"
-	def multi_maven = false
-
 	def jenkinsFile = ".jenkinsfile.json"
 	if (!fileExists("${WORKSPACE}/${jenkinsFile}")) {
 		println "Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}"
 	}
 
+	def suiteFilter = "src/test/resources/**"
 	Object subProjects = parseJSON(jenkinsFile).sub_projects
 	subProjects.each {
-		if ( it.name.equals(sub_project)) {
-			multi_maven = it.multi_maven
-			testModule = it.tests_module
-			testngFolder = it.suites_folder
+		if (it.name.equals(sub_project)) {
+			suiteFilter = it.suite_filter
 		}
 	}
 
 	//TODO: try to avoid hardcoding fodler name
         def folderName = "Automation"
 
-	def suiteFilter =  "src/test/resources/${testngFolder}/**/*.xml"
-	if (multi_maven) {
-		suiteFilter = sub_project + "/**/${testModule}/src/test/resources/${testngFolder}/**/*.xml"
-	}
-
-
-	def files = findFiles(glob: suiteFilter)
+	def files = findFiles(glob: sub_project + "/" + suiteFilter + "/**")
         if(files.length > 0) {
             println "Number of Test Suites to Scan Through: " + files.length
             for (int i = 0; i < files.length; i++) {

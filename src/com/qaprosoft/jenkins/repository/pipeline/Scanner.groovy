@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.repository.pipeline
 
-@Grab('org.testng:testng:6.3.1')
+@Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import groovy.json.JsonSlurper;
@@ -46,23 +46,15 @@ def scan() {
 	Object subProjects = parseJSON(jenkinsFile).sub_projects
 	subProjects.each {
 		println "sub_project: " + it
-		println "pr_checker: " + it.pr_checker
-		println "deployable: " + it.deployable
-		println "suites_folder: " + it.suites_folder
 
 		def sub_project = it.name
-		def multi_maven = it.multi_maven
 		def prChecker = it.pr_checker
-		def pr_merger = it.deployable
-		def testModule = it.tests_module
-		def testngFolder = it.suites_folder
+		def prMerger = it.deployable
+		def zafiraFilter = it.zafira_filter
+		def suiteFilter = it.suite_filter
 
 		def zafira_project = 'unknown'
-		def zafiraFilter = "src/main/resources/zafira.properties"
-		if (multi_maven) {
-			zafiraFilter = sub_project + "/**/${testModule}/src/main/resources/zafira.properties"
-		}
-		def zafiraProperties = findFiles(glob: zafiraFilter)
+		def zafiraProperties = findFiles(glob: sub_project + "/" + zafiraFilter)
 		for (File file : zafiraProperties) {
 			def props = readProperties file: file.path
 			if (props['zafira_project'] != null) {
@@ -78,6 +70,9 @@ def scan() {
 		                parameters: [string(name: 'project', value: project), \
 				string(name: 'sub_project', value: sub_project)], \
 		                wait: false
+		}
+		if (prMerger) {
+			//TODO: implement auto-deploy artifact job
 		}
 
 		//TODO: [OPTIONAL] try to read existing views and compare with suggested settings. Maybe we can skip execution better
@@ -96,17 +91,21 @@ def scan() {
 	                ]
 
 
-		// find all tetsng suite xml files and launch job creator dsl job
-
-		def suiteFilter =  "src/test/resources/${testngFolder}/**/*.xml"
-		if (multi_maven) {
-			suiteFilter = sub_project + "/**/${testModule}/src/test/resources/${testngFolder}/**/*.xml"
+		if (suiteFilter.endsWith("/")) {
+			//remove last character if it is slash
+			suiteFilter = suiteFilter[0..-2]
 		}
-	        println "suiteFilter: " + suiteFilter
-		def suites = findFiles(glob: suiteFilter)
+		testngFolder = suiteFilter.substring(suiteFilter.lastIndexOf("/"), suiteFilter.length()) + "/"
+		println "testngFolder: " + testngFolder
 
+
+		// find all tetsng suite xml files and launch job creator dsl job
+		def suites = findFiles(glob: sub_project + "/" + suiteFilter + "/**")
 		for (File suite : suites) {
-        		println suite.path
+			if (!suite.path.endsWith(".xml")) {
+				continue;
+			}
+			println "suite: " + suite.path
 			def suiteOwner = "anonymous"
 
 			XmlSuite currentSuite = parseSuite(suite.path)
