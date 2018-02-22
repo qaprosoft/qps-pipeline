@@ -25,7 +25,13 @@ def runCron() {
 	//TODO: try to avoid hardcoding fodler name
         def folderName = "Automation"
 
-	def files = findFiles(glob: sub_project + "/" + suiteFilter + "/**")
+	def subProjectFilter = sub_project
+	if (sub_project.equals(".")) {
+		subProjectFilter = "**"
+	}
+
+
+	def files = findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
         if(files.length > 0) {
             println "Number of Test Suites to Scan Through: " + files.length
             for (int i = 0; i < files.length; i++) {
