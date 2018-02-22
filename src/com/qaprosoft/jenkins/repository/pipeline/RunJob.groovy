@@ -4,6 +4,7 @@ import static java.util.UUID.randomUUID
 
 
 def runJob() {
+  timeout(time: ${env.gv_JOB_MAX_RUN_TIME}.toInteger(), unit: 'MINUTES') {
     def jobParameters = setJobType("${platform}", "${browser}")
     def mobileGoals = ""
     node(jobParameters.get("node")) {
@@ -35,6 +36,7 @@ def runJob() {
         }
       }
     }
+  }
 }
 
 def setJobType(String platform, String browser) {
