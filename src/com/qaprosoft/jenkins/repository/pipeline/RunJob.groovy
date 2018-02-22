@@ -4,8 +4,6 @@ import static java.util.UUID.randomUUID
 
 
 def runJob() {
-  def timeoutValue = "${env.gv_JOB_MAX_RUN_TIME}"
-  timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
     def jobParameters = setJobType("${platform}", "${browser}")
     def mobileGoals = ""
     node(jobParameters.get("node")) {
@@ -23,7 +21,10 @@ def runJob() {
                 jobParameters += this.setupForMobile(jobParameters)
             }
 
-            this.runTests(jobParameters)
+	    def timeoutValue = "${env.gv_JOB_MAX_RUN_TIME}"
+	    timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
+                this.runTests(jobParameters)
+	    }
 
             this.reportingResults()
 
@@ -37,7 +38,6 @@ def runJob() {
         }
       }
     }
-  }
 }
 
 def setJobType(String platform, String browser) {
