@@ -278,7 +278,7 @@ def runTests(Map jobParameters) {
         } else {
             suiteNameForWindows = "${suite}".replace("/", "\\")
             echo "Suite for Windows: ${suiteNameForWindows}"
-            bat(/"mvn" -B ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=.\reports\qa -Dreport_url=$JOB_URL$BUILD_NUMBER\\/eTAF_Report/)
+            bat "mvn ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=./reports/qa -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAF_Report"
         }
 
 	this.publishJacocoReport();

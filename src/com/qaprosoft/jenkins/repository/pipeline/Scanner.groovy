@@ -46,10 +46,8 @@ def scan() {
 	Object subProjects = parseJSON(jenkinsFile).sub_projects
 	subProjects.each {
 		println "sub_project: " + it
-		println "multi_maven: " + it.multi_maven
 		println "pr_checker: " + it.pr_checker
 		println "deployable: " + it.deployable
-		println "tests_module: " + it.tests_module
 		println "suites_folder: " + it.suites_folder
 
 		def sub_project = it.name
