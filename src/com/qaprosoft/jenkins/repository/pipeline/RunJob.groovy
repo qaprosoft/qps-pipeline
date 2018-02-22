@@ -309,6 +309,7 @@ def reportingResults() {
 	publishReport('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
 	publishReport('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
 
+	publishReport('**/artifacts/**', 'artifacts')
     }
 }
 
