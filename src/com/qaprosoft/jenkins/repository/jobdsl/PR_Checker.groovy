@@ -41,7 +41,6 @@ void createPRCheckerJob() {
                             branch('${sha1}')
 		            extensions {
 		                cloneOptions {
-					depth(1)
 					shallow(true)
 				}
 		            }
