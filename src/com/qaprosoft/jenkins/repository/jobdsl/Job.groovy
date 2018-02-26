@@ -107,8 +107,30 @@ class Job {
 		paramsMap = currentSuite.getAllParameters()
 		println "paramsMap: " + paramsMap
 		for (param in paramsMap) {
-		    println("name: " + param.key + "; value: " + param.value)
-	            configure addHiddenParameter(param.key, '', param.value)
+		    // read each param and parse for generating custom project fields
+		    //	<parameter name="stringParam::name::desc" value="value" />
+		    //	<parameter name="stringParam::name" value="value" />
+		    def delimitor = "::"
+		    if (param.value.contains(delimitor)) {
+			def (type, name, desc) = param.value.split(delimitor)
+		        switch(type.toLowerCase()) {
+		            case "hiddenparam":
+			        configure addHiddenParameter(name, desc, value)
+		                break;
+		            case "stringparam":
+			        stringParam(name, value, desc)
+		                break;
+		            case "choiceparam":
+			        choiceParam(name, value, desc)
+		                break;
+		            case "booleanparam":
+			        booleanParam(name, value, desc)
+		                break;
+		            default:
+				break;
+	    		}
+		    }
+		    echo "name: " + param.key + "; value: " + param.value
 		}
             }
 
