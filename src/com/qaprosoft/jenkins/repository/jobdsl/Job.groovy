@@ -46,7 +46,7 @@ class Job {
                         break;
                     case ~/^.*android.*$/:
                         choiceParam('device', getAndroidDeviceList(), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
-                        stringParam('build', 'latest', "latest - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
+                        stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
                         booleanParam('recoveryMode', false, 'Restart application between retries')
                         booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
                         booleanParam('keep_all_screenshots', true, 'Keep screenshots even if the tests pass')
@@ -57,7 +57,7 @@ class Job {
                     case ~/^.*ios.*$/:
                         //TODO:  Need to adjust this for virtual as well.
                         choiceParam('device', getiOSDeviceList(), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
-                        stringParam('build', 'latest', "latest - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
+                        stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
                         booleanParam('recoveryMode', false, 'Restart application between retries')
                         booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
                         booleanParam('keep_all_screenshots', true, 'Keep screenshots even if the tests pass')
