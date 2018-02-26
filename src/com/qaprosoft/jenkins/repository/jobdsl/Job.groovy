@@ -192,8 +192,8 @@ class Job {
     static String addCustomParams(currentSuite) {
         def paramsMap = [:]
 	paramsMap = currentSuite.getAllParameters()
-	for (Map param : paramsMap) {
-	    println("name: " + param.getKey() + "; value: " + param.getValue())
+	for (param in paramsMap) {
+	    println("name: " + param.key + "; value: " + param.value)
 	}
     }
 
