@@ -39,6 +39,7 @@ void createPRCheckerJob() {
                                 refspec('+refs/pull/*:refs/remotes/origin/pr/*')
                               	//credentials('jenkins_svc')
                             }
+                            shallowClone()
                             branch('${sha1}')
                 }
             }
