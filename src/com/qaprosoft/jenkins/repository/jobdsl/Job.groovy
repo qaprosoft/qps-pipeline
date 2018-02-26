@@ -16,7 +16,6 @@ class Job {
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
                 booleanParam('fork', false, "Reuse forked repository for ${project} project.")
-                def customFields = getCustomFields(currentSuite)
 
                 def defaultMobilePool = currentSuite.getParameter("jenkinsMobileDefaultPool")
                 if (defaultMobilePool == null) {
@@ -98,10 +97,13 @@ class Job {
                     configure addHiddenParameter('failure_email_list', '', '')
                 }
 
-                choiceParam('retry_count', [1, 2, 3, 0], 'Number of Times to Retry a Failed Test')
+                choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
                 booleanParam('develop', false, 'Check to execute test without registration to Zafira')
                 booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
+                def customFields = getCustomFields(currentSuite)
                 configure addHiddenParameter('overrideFields', '' , customFields)
+
+		addCustomParams(currentSuite)
             }
 
             /** Git Stuff **/
@@ -186,6 +188,15 @@ class Job {
             }
         }
     }
+
+    static String addCustomParams(currentSuite) {
+        def paramsMap = [:]
+	paramsMap = currentSuite.getAllParameters()
+	for (Map<String, String> param : paramsMap) {
+	    println("name: " + param.getKey() + "; value: " + param.getValue())
+	}
+    }
+
 
     static List<String> getEnvironments(currentSuite) {
         def envList = getGenericSplit(currentSuite, "jenkinsEnvironments")
