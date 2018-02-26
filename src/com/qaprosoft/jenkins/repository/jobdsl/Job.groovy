@@ -122,7 +122,7 @@ class Job {
 			        stringParam(name, param.value, desc)
 		                break;
 		            case "choiceparam":
-			        choiceParam(name, param.value, desc)
+			        choiceParam(name, param.value.split(','), desc)
 		                break;
 		            case "booleanparam":
 			        booleanParam(name, param.value, desc)
