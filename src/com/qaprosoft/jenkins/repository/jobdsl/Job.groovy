@@ -121,9 +121,9 @@ class Job {
 		            case "stringparam":
 			        stringParam(name, param.value, desc)
 		                break;
-//		            case "choiceparam":
-//			        choiceParam(name, param.value.split(','), desc)
-//		                break;
+		            case "choiceparam":
+			        choiceParam(name, Arrays.asList(param.value.split(',')), desc)
+		                break;
 		            case "booleanparam":
 			        booleanParam(name, param.value.toBoolean(), desc)
 		                break;
