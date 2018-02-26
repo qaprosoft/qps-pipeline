@@ -113,7 +113,7 @@ class Job {
                     println("param: " + param)
 		    def delimitor = "::"
 		    if (param.name.contains(delimitor)) {
-			def (type, name, desc) = param.name.split(delimitor)
+			def (type, name, desc) = param.key.split(delimitor)
 		        switch(type.toLowerCase()) {
 		            case "hiddenparam":
 			        configure addHiddenParameter(name, desc, value)
