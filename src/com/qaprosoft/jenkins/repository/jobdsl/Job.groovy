@@ -116,16 +116,16 @@ class Job {
 			def (type, name, desc) = param.key.split(delimitor)
 		        switch(type.toLowerCase()) {
 		            case "hiddenparam":
-			        configure addHiddenParameter(name, desc, value)
+			        configure addHiddenParameter(name, desc, key.value)
 		                break;
 		            case "stringparam":
-			        stringParam(name, value, desc)
+			        stringParam(name, key.value, desc)
 		                break;
 		            case "choiceparam":
-			        choiceParam(name, value, desc)
+			        choiceParam(name, key.value, desc)
 		                break;
 		            case "booleanparam":
-			        booleanParam(name, value, desc)
+			        booleanParam(name, key.value, desc)
 		                break;
 		            default:
 				break;
