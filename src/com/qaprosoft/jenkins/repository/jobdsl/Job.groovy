@@ -103,7 +103,13 @@ class Job {
                 def customFields = getCustomFields(currentSuite)
                 configure addHiddenParameter('overrideFields', '' , customFields)
 
-		addCustomParams(currentSuite)
+	        def paramsMap = [:]
+		paramsMap = currentSuite.getAllParameters()
+		println "paramsMap: " + paramsMap
+		for (param in paramsMap) {
+		    println("name: " + param.key + "; value: " + param.value)
+	            configure addHiddenParameter(param.key, '', param.value)
+		}
             }
 
             /** Git Stuff **/
@@ -188,17 +194,6 @@ class Job {
             }
         }
     }
-
-    static String addCustomParams(currentSuite) {
-        def paramsMap = [:]
-	paramsMap = currentSuite.getAllParameters()
-	println "paramsMap: " + paramsMap
-	for (param in paramsMap) {
-	    println("name: " + param.key + "; value: " + param.value)
-            configure addHiddenParameter(param.key, '', param.value)
-	}
-    }
-
 
     static List<String> getEnvironments(currentSuite) {
         def envList = getGenericSplit(currentSuite, "jenkinsEnvironments")
