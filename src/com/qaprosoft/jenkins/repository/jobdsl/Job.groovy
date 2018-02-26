@@ -110,10 +110,10 @@ class Job {
 		    // read each param and parse for generating custom project fields
 		    //	<parameter name="stringParam::name::desc" value="value" />
 		    //	<parameter name="stringParam::name" value="value" />
+                    println("param: " + param)
 		    def delimitor = "::"
-		    if (param.value.contains(delimitor)) {
-			def (type, name, desc) = param.value.split(delimitor)
-		        configure addHiddenParameter(name, desc, value)
+		    if (param.name.contains(delimitor)) {
+			def (type, name, desc) = param.name.split(delimitor)
 		        switch(type.toLowerCase()) {
 		            case "hiddenparam":
 			        configure addHiddenParameter(name, desc, value)
