@@ -125,7 +125,7 @@ class Job {
 //			        choiceParam(name, param.value.split(','), desc)
 //		                break;
 		            case "booleanparam":
-			        booleanParam(name, param.value, desc)
+			        booleanParam(name, param.value.toBoolean(), desc)
 		                break;
 		            default:
 				break;
