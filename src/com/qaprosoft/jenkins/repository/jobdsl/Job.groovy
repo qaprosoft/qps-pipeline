@@ -16,7 +16,6 @@ class Job {
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
                 booleanParam('fork', false, "Reuse forked repository for ${project} project.")
-                def customFields = getCustomFields(currentSuite)
 
                 def defaultMobilePool = currentSuite.getParameter("jenkinsMobileDefaultPool")
                 if (defaultMobilePool == null) {
@@ -98,10 +97,41 @@ class Job {
                     configure addHiddenParameter('failure_email_list', '', '')
                 }
 
-                choiceParam('retry_count', [1, 2, 3, 0], 'Number of Times to Retry a Failed Test')
+                choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
                 booleanParam('develop', false, 'Check to execute test without registration to Zafira')
                 booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
+                def customFields = getCustomFields(currentSuite)
                 configure addHiddenParameter('overrideFields', '' , customFields)
+
+                def paramsMap = [:]
+                paramsMap = currentSuite.getAllParameters()
+                println "paramsMap: " + paramsMap
+                for (param in paramsMap) {
+                    // read each param and parse for generating custom project fields
+                    //	<parameter name="stringParam::name::desc" value="value" />
+                    //	<parameter name="stringParam::name" value="value" />
+                    println("param: " + param)
+                    def delimitor = "::"
+                    if (param.key.contains(delimitor)) {
+                    def (type, name, desc) = param.key.split(delimitor)
+                        switch(type.toLowerCase()) {
+                            case "hiddenparam":
+                                configure addHiddenParameter(name, desc, param.value)
+                                break;
+                            case "stringparam":
+                                stringParam(name, param.value, desc)
+                                break;
+                            case "choiceparam":
+                                choiceParam(name, Arrays.asList(param.value.split(',')), desc)
+                                break;
+                            case "booleanparam":
+                                booleanParam(name, param.value.toBoolean(), desc)
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
             }
 
             /** Git Stuff **/

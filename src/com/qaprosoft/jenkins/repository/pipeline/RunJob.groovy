@@ -149,7 +149,6 @@ def setupForMobile(Map jobParameters) {
         goalMap.put("capabilities.newCommandTimeout", "180")
 
         goalMap.put("retry_count", "${retry_count}")
-        goalMap.put("thread_count", "${thread_count}")
         goalMap.put("retry_interval", "1000")
         goalMap.put("implicit_timeout", "30")
         goalMap.put("explicit_timeout", "60")
@@ -198,14 +197,6 @@ def setupGoalsForiOS(Map<String, String> goalMap) {
 }
 
 
-def buildOutGoals(Map<String, String> goalMap) {
-    def goals = ""
-
-    goalMap.each { k, v -> goals = goals + " -D${k}=${v}"}
-
-    return goals
-}
-
 def runTests(Map jobParameters) {
     stage('Run Test Suite') {
 //        def goalMap = [:]
@@ -214,8 +205,7 @@ def runTests(Map jobParameters) {
 	//TODO: investigate how user timezone can be declared on qps-infra level
 	def pomFile = getSubProjectFolder() + "/pom.xml"
 	def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f $pomFile \
-			-Dci_run_id=$ci_run_id -Dcore_log_level=$CORE_LOG_LEVEL -Demail_list=$email_list \
-			-Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_HOST -Dmax_screen_history=1 \
+			-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_HOST -Dmax_screen_history=1 \
 			-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG -Duser.timezone=PST clean test"
 
 
@@ -256,13 +246,11 @@ def runTests(Map jobParameters) {
 
 
 	goalMap.put("zafira_enabled", "${zafiraEnabled}")
-	goalMap.put("zafira_project", "${zafira_project}")
-        goalMap.put("ci_run_id", "${uuid}")
         goalMap.put("ci_url", "$JOB_URL")
         goalMap.put("ci_build", "$BUILD_NUMBER")
 //        goalMap.put("platform", jobParameters.get("platform"))
 
-        def mvnBaseGoals = DEFAULT_BASE_MAVEN_GOALS + buildOutGoals(goalMap)
+        def mvnBaseGoals = DEFAULT_BASE_MAVEN_GOALS + buildOutGoals(goalMap, currentBuild)
         if ("${JACOCO_ENABLE}".equalsIgnoreCase("true")) {
             echo "Enabling jacoco report generation goals."
             mvnBaseGoals += " jacoco:instrument"
@@ -288,6 +276,21 @@ def runTests(Map jobParameters) {
         this.setTestResults()
     }
 }
+
+@NonCPS
+def buildOutGoals(Map<String, String> goalMap, currentBuild) {
+    def goals = ""
+
+    goalMap.each { k, v -> goals = goals + " -D${k}=${v}"}
+
+    def myparams = currentBuild.rawBuild.getAction(ParametersAction)
+    for( p in myparams ) {
+        goals = goals + " -D${p.name.toString()}=\"${p.value.toString()}\""
+    }
+
+    return goals
+}
+
 
 def setTestResults() {
     //Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
