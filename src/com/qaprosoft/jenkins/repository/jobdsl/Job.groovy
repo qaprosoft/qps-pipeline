@@ -130,7 +130,6 @@ class Job {
 				break;
 	    		}
 		    }
-		    echo "name: " + param.key + "; value: " + param.value
 		}
             }
 
