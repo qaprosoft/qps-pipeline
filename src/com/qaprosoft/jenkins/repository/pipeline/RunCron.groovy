@@ -56,14 +56,12 @@ def parsePipeline(String file, List listPipelines) {
     def priorityNum = retrieveRawValues(file, "jenkinsJobExecutionOrder")
     def executionMode = retrieveRawValues(file, "jenkinsJobExecutionMode")
 
-    def browsers = "NULL"
-    def jobType = retrieveRawValues(file, "jenkinsJobType")	
-    if (jobType.contains("web")) {
-        browsers = retrieveRawValues(file, "jenkinsPipelineBrowsers")
-    }
-    println "browsers: ${browsers}"    
     def envs = retrieveRawValues(file, "jenkinsPipelineEnvironments")
-    println "supported envs: ${envs}"
+//    println "supported envs: ${envs}"
+
+    def browsers = retrieveRawValues(file, "jenkinsPipelineBrowsers")
+    println "browsers: " + browsers
+
 
     def envName = params["env"]
     println "current env: ${envName}"
@@ -83,15 +81,17 @@ def parsePipeline(String file, List listPipelines) {
                                 emailList = "${email_list}"
                             }
                             println "emailList: " + emailList
+                            println "browser: " + browser
 
                             def pipelineMap = [:]
+
+                            pipelineMap.put("browser", browser)
                             pipelineMap.put("name", pipeName)
                             pipelineMap.put("branch", "${branch}")
                             pipelineMap.put("retry_count", "${retry_count}")
                             pipelineMap.put("thread_count", "${thread_count}")
                             pipelineMap.put("jobName", getInfo(jobName))
                             pipelineMap.put("environment", envName)
-                            pipelineMap.put("browser", browser)
                             pipelineMap.put("priority", getInfo(priorityNum))
                             pipelineMap.put("executionMode", getInfo(executionMode))
                             pipelineMap.put("emailList", emailList.replace(", ", ","))
@@ -139,17 +139,30 @@ def buildOutStage(String folderName, Map entry) {
         println "Dynamic Stage Created For: " + entry.get("jobName")
         println "Checking EmailList: " + entry.get("emailList")
 
-        build job: folderName + "/" + entry.get("jobName"),
-            propagate: true,
-                parameters: [
+	if (!entry.get("browser").isEmpty()) {
+       	    build job: folderName + "/" + entry.get("jobName"),
+                propagate: true,
+                    parameters: [
                         string(name: 'branch', value: entry.get("branch")),
                         string(name: 'env', value: entry.get("environment")),
                         string(name: 'browser', value: entry.get("browser")),
                         string(name: 'email_list', value: entry.get("emailList")),
                         string(name: 'thread_count', value: entry.get("thread_count")),
                         string(name: 'retry_count', value: entry.get("retry_count")),
-                ], 
+                    ], 
                 wait: false
+	} else {
+       	    build job: folderName + "/" + entry.get("jobName"),
+                propagate: true,
+                    parameters: [
+                        string(name: 'branch', value: entry.get("branch")),
+                        string(name: 'env', value: entry.get("environment")),
+                        string(name: 'email_list', value: entry.get("emailList")),
+                        string(name: 'thread_count', value: entry.get("thread_count")),
+                        string(name: 'retry_count', value: entry.get("retry_count")),
+                    ], 
+                wait: false
+	}
     }
 }
 
