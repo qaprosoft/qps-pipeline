@@ -62,6 +62,11 @@ def parsePipeline(String file, List listPipelines) {
     def browsers = retrieveRawValues(file, "jenkinsPipelineBrowsers")
     println "browsers: " + browsers
 
+    def desiredBrowser = params["browser"]
+    if (desiredBrowser != null) {
+        println "desiredBrowser: " + desiredBrowser
+    }
+
 
     def envName = params["env"]
     println "current env: ${envName}"
@@ -81,7 +86,14 @@ def parsePipeline(String file, List listPipelines) {
                                 emailList = "${email_list}"
                             }
                             println "emailList: " + emailList
+
                             println "browser: " + browser
+                            if (desiredBrowser != null) {
+                                if (!desiredBrowser.equals(browser)) {
+                                    println "Skip launch for non desiredBrowser! browser: ${browser}; desiredBrowser: ${desiredBrowser}"
+                                    continue;
+                                }
+                            }
 
                             def pipelineMap = [:]
 
