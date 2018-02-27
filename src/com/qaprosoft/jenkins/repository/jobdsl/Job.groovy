@@ -207,6 +207,8 @@ class Job {
                 configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", "master")
 
                 stringParam('email_list', '', 'List of Users to be emailed after the test. If empty then populate from jenkinsEmail suite property')
+                stringParam('thread_count', '1', 'number of threads, number')
+                choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
             }
             definition {
                 cps {
