@@ -170,6 +170,54 @@ def setupGoalsForAndroid(Map<String, String> goalMap) {
     goalMap.put("capabilities.noSign", "true")
     goalMap.put("capabilities.STF_ENABLED", "true")
 
+    if (params["zafira_project"].equals("SING")) {
+    echo "ENV: " +  params["env"]
+    switch(params["env"]) {
+	  case "BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_SingAndroidQaReleaseBeta/sing_android-playstore-release-beta-.*${build}.*.apk")
+	    break
+	  case "MASTER_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_SingAndroidQaMasterBeta/sing_android-playstore-master-beta-.*${build}.*.apk")
+	    break
+	  case "MASTER_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/bt81/sing_android-playstore-master-int-.*.apk")
+	    break
+	  case "MASTER_PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/bt83/sing_android-playstore-master-prod-.*.apk")
+	    break
+	  case "MASTER_STG":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/bt82/sing_android-playstore-master-stg-.*.apk")
+	    break
+	  case "INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/bt84/sing_android-playstore-release-int-.*.apk")
+	    break
+	  case "PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/bt85/sing_android-playstore-release-prod-.*.apk")
+	    break
+	  case "STG":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/bt86/sing_android-playstore-release-stg-.*.apk")
+	    break
+	  case "QA_PROFILE_NO_SHRINK_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_ProfileNoShrinkBuilds_SingAndroidQaProfileNoShrinkBeta/sing_android-playstore-profile_no_shrink-beta-.*.apk")
+	    break
+	  case "QA_LITERAL_PARTICLES_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_LiteralParticlesBuilds_SingAndroidQaLiteralParticlesBeta/sing_android-playstore-literal_particles-beta-.*.apk")
+	    break
+	  case "QA_LITERAL_PARTICLES_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_LiteralParticlesBuilds_SingAndroidQaLiteralParticlesInt/sing_android-playstore-literal_particles-int-.*.apk")
+	    break
+	  case "QA_DEV_DSHARE_CONTROL_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_DevDshareControlBuilds_SingAndroidQaDevDshareControlInt/sing_android-playstore-dev_dshare_control-int-.*.apk")
+	    break
+	  case "QA_HTTPS_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_HttpsBuilds_SingAndroidQaHttpsInt/sing_android-playstore-https-int-.*.apk")
+	    break
+	  default:
+	    throw new RuntimeException("Unknown env: " + params["env"]);
+	    break
+    }
+    }
+
     return goalMap
 }
 
@@ -193,6 +241,46 @@ def setupGoalsForiOS(Map<String, String> goalMap) {
     // remove after fixing
     goalMap.put("capabilities.automationName", "XCUITest")
 
+    if (params["zafira_project"].equals("SING")) {
+    echo "ENV: " +  params["env"]
+    switch(params["env"]) {
+	  case "DEV_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_QaAutomationBuilds_SingEnterpriseDistQaAutomationBeta/sing-enterprise_dev-qa_automation-beta-.*${build}.*.ipa")
+	    break
+	  case "DEV_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_QaAutomationBuilds_SingEnterpriseDistQaAutomationInt/sing-enterprise_dev-qa_automation-int-.*${build}.*.ipa")
+	    break
+	  case "DEV_PROD":
+	    goalMap.put("capabilities.app", "s3://SingIos_QaAutomationBuilds_SingEnterpriseDistQaAutomationProd/sing-enterprise_dev-qa_automation-prod-.*${build}.*.ipa")
+	    break
+	  case "DEV_STG":
+	    goalMap.put("capabilities.app", "s3://SingIos_QaAutomationBuilds_SingEnterpriseDistQaAutomationStg/sing-enterprise_dev-qa_automation-stg-.*${build}.*.ipa")
+	    break
+	  case "UI_AUTOMATION_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_QaAutomationBuilds_SingUiAutomationQaAutomationBeta/sing-ui_automation-qa_automation-beta-.*${build}.*.ipa")
+	    break
+	  case "IOS_MASTER_DEV_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_MasterBuilds_SingEnterpriseDevMasterInt/sing-enterprise_dev-master-int-.*${build}.*.ipa")
+	    break
+	  case "IOS_MASTER_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_EnterpriseDist_SingEnterpriseDistMasterBeta/sing-enterprise_dist-master-beta-.*${build}.*.ipa")
+	    break
+	  case "IOS_MASTER_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_EnterpriseDist_SingEnterpriseDistMasterInt/sing-enterprise_dist-master-int-.*${build}.*.ipa")
+	    break
+	  case "IOS_MASTER_PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_EnterpriseDist_SingEnterpriseDistMasterProd/sing-enterprise_dist-master-prod-.*${build}.*.ipa")
+	    break
+	  case "IOS_MASTER_STG":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_EnterpriseDist_SingEnterpriseDistMasterStg/sing-enterprise_dist-master-stg-.*${build}.*.ipa")
+	    break
+	  default:
+	    throw new RuntimeException("Unknown env: " + params["env"]);
+	    break
+    }
+    }
+
+
     return goalMap
 }
 
@@ -206,7 +294,7 @@ def runTests(Map jobParameters) {
 	def pomFile = getSubProjectFolder() + "/pom.xml"
 	def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f $pomFile \
 			-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_HOST -Dmax_screen_history=1 \
-			-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG -Duser.timezone=PST clean test"
+			-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG -Duser.timezone=PST -Ds3_local_storage=/opt/apk clean test"
 
 
 	uuid = "${ci_run_id}"

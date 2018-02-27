@@ -37,9 +37,13 @@ void createPRCheckerJob() {
                             remote {
                                 url("${sshUrl}")
                                 refspec('+refs/pull/*:refs/remotes/origin/pr/*')
-                              	//credentials('jenkins_svc')
                             }
                             branch('${sha1}')
+		            extensions {
+		                cloneOptions {
+					shallow(true)
+				}
+		            }
                 }
             }
             triggers {

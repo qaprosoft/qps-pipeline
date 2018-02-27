@@ -87,6 +87,8 @@ def parsePipeline(String file, List listPipelines) {
                             def pipelineMap = [:]
                             pipelineMap.put("name", pipeName)
                             pipelineMap.put("branch", "${branch}")
+                            pipelineMap.put("retry_count", "${retry_count}")
+                            pipelineMap.put("thread_count", "${thread_count}")
                             pipelineMap.put("jobName", getInfo(jobName))
                             pipelineMap.put("environment", envName)
                             pipelineMap.put("browser", browser)
@@ -144,6 +146,8 @@ def buildOutStage(String folderName, Map entry) {
                         string(name: 'env', value: entry.get("environment")),
                         string(name: 'browser', value: entry.get("browser")),
                         string(name: 'email_list', value: entry.get("emailList")),
+                        string(name: 'thread_count', value: entry.get("thread_count")),
+                        string(name: 'retry_count', value: entry.get("retry_count")),
                 ], 
                 wait: false
     }
