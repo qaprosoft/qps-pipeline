@@ -21,7 +21,7 @@ def runJob() {
                 jobParameters += this.setupForMobile(jobParameters)
             }
 
-	    def timeoutValue = "${env.gv_JOB_MAX_RUN_TIME}"
+	    def timeoutValue = "${env.JOB_MAX_RUN_TIME}"
 	    timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
                 this.runTests(jobParameters)
 	    }
