@@ -197,21 +197,36 @@ def setupGoalsForAndroid(Map<String, String> goalMap) {
 	  case "STG":
 	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/bt86/sing_android-playstore-release-stg-.*.apk")
 	    break
-	  case "QA_PROFILE_NO_SHRINK_BETA":
-	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_ProfileNoShrinkBuilds_SingAndroidQaProfileNoShrinkBeta/sing_android-playstore-profile_no_shrink-beta-.*.apk")
+	  case "QA_SUPERPOWERED_PROD_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_SuperpoweredProdBuilds_SingAndroidQaSuperpoweredProdInt/sing_android-playstore-superpowered_prod-int-.*.apk")
 	    break
-	  case "QA_LITERAL_PARTICLES_BETA":
-	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_LiteralParticlesBuilds_SingAndroidQaLiteralParticlesBeta/sing_android-playstore-literal_particles-beta-.*.apk")
-	    break
-	  case "QA_LITERAL_PARTICLES_INT":
-	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_LiteralParticlesBuilds_SingAndroidQaLiteralParticlesInt/sing_android-playstore-literal_particles-int-.*.apk")
+	  case "QA_SUPERPOWERED_REC_TYPE_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_SuperpoweredRecTypeBuilds_SingAndroidQaSuperpoweredRecTypeBeta/sing_android-playstore-superpowered_rec_type-beta-.*.apk")
 	    break
 	  case "QA_DEV_DSHARE_CONTROL_INT":
 	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_DevDshareControlBuilds_SingAndroidQaDevDshareControlInt/sing_android-playstore-dev_dshare_control-int-.*.apk")
 	    break
-	  case "QA_HTTPS_INT":
-	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_HttpsBuilds_SingAndroidQaHttpsInt/sing_android-playstore-https-int-.*.apk")
+	  case "QA_PERFORMANCE_UPLOAD_MANAGER_V2_PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_PerformanceUploadManagerV2builds_SingAndroidQaPerformanceUploadManag/sing_android-playstore-performance_upload_manager_v2-prod-.*.apk")
 	    break
+	  case "QA_FIND_FRIENDS_PHASE1_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_FindFriendsPhase1builds_SingAndroidQaFindFriendsPhase1beta/sing_android-playstore-find_friends_phase_1-beta-.*.apk")
+	    break
+	  case "QA_FIND_FRIENDS_PHASE1_PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_FindFriendsPhase1builds_SingAndroidQaFindFriendsPhase1prod/sing_android-playstore-find_friends_phase_1-prod-.*.apk")
+	    break
+	  case "QA_ARMSTRONG_AUTO_LOGIN_PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_ArmstrongAutoLoginBuilds_SingAndroidQaArmstrongAutoLoginProd/sing_android-playstore-armstrong_auto_login-prod-.*.apk")
+	    break
+	  case "QA_CONTINUOUS_PLAY_PHASE3_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_ContinuousPlayPhase3builds_SingAndroidQaContinuousPlayPhase3beta/sing_android-playstore-continuous_play_phase_3-beta-.*.apk")
+	    break
+	  case "QA_SINGLE_EGL_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_SingleEGLBuilds_SingAndroidQaSingleEGLInt/sing_android-playstore-singleEGL-int-.*.apk")
+	    break
+	  case "QA_FRAUDJUST_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_FraudjustBuilds_SingAndroidQaFraudjustInt/sing_android-playstore-fraudjust-int-.*.apk")
+	    break	
 	  default:
 	    throw new RuntimeException("Unknown env: " + params["env"]);
 	    break
@@ -258,6 +273,12 @@ def setupGoalsForiOS(Map<String, String> goalMap) {
 	    break
 	  case "UI_AUTOMATION_BETA":
 	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_QaAutomationBuilds_SingUiAutomationQaAutomationBeta/sing-ui_automation-qa_automation-beta-.*${build}.*.ipa")
+	    break
+	  case "UI_AUTOMATION_RELEASE_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_QaAutomationBuilds_SingUiAutomationQaReleaseBeta/sing-ui_automation-qa_release-beta-.*${build}.*.ipa")
+	    break
+	  case "UI_AUTOMATION_FASTDESIGN_PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_QaAutomationBuilds_SingUiAutomationQaFastDesignBeta/sing-ui_automation-qa_fast_design-prod-.*${build}.*.ipa")
 	    break
 	  case "IOS_MASTER_DEV_INT":
 	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingIos_MasterBuilds_SingEnterpriseDevMasterInt/sing-enterprise_dev-master-int-.*${build}.*.ipa")
