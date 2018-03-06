@@ -226,7 +226,10 @@ def setupGoalsForAndroid(Map<String, String> goalMap) {
 	    break
 	  case "QA_FRAUDJUST_INT":
 	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_FraudjustBuilds_SingAndroidQaFraudjustInt/sing_android-playstore-fraudjust-int-.*.apk")
-	    break	
+	    break
+	  case "QA_JOINERS_CHOICE_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_JoinersChoiceBuilds_SingAndroidQaJoinersChoiceInt/sing_android-playstore-joiners_choice-int-.*.apk")
+	    break
 	  default:
 	    throw new RuntimeException("Unknown env: " + params["env"]);
 	    break
