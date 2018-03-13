@@ -193,15 +193,17 @@ def executeStages(String folderName, List sortedPipeline) {
         if (!entry.get("priority").toString().contains("null") && entry.get("priority").toString().length() > 0 && parallelMode) {
             parallelMode = false
         }
-        if (parallelMode) {
-            mappedStages[String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))] = buildOutStages(folderName, entry)
-        } else {
-            executeSingleStage(folderName, entry)
-        }
+	echo "parallelMode: " + parallelMode
+//        if (parallelMode) {
+//            mappedStages[String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))] = buildOutStages(folderName, entry)
+//        } else {
+//            executeSingleStage(folderName, entry)
+//        }
+//
     }
-    if (parallelMode) {
-        parallel mappedStages
-    }
+//    if (parallelMode) {
+//        parallel mappedStages
+//    }
 }
 
 def executeSingleStage(folderName, entry) {
