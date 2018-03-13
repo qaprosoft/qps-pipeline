@@ -12,6 +12,13 @@ class Job {
 
             authenticationToken('ciStart')
 
+	    def scheduling = currentSuite.getParameter("scheduling")
+            if (scheduling != null) {
+                triggers {
+                    cron(scheduling)
+                }
+            }
+
             /** Properties & Parameters Area **/
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
@@ -196,6 +203,13 @@ class Job {
             }
 
             authenticationToken('ciStart')
+
+	    def scheduling = currentSuite.getParameter("scheduling")
+            if (scheduling != null) {
+                triggers {
+                    cron(scheduling)
+                }
+            }
 
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
