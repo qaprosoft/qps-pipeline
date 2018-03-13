@@ -191,28 +191,32 @@ def executeStages(String folderName, List sortedPipeline) {
 
     for (Map entry : sortedPipeline) {
 	echo "entry.get(priority): " + entry.get("priority")
-        if (!entry.get("priority").toString().contains("null") && entry.get("priority").toString().length() > 0 && parallelMode) {
+        if (entry.get("priority") != null) {
+	    // disable parallel mode if any of the job has priority
             parallelMode = false
         }
+
 	echo "parallelMode: " + parallelMode
-//        if (parallelMode) {
-//            mappedStages[String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))] = buildOutStages(folderName, entry)
-//        } else {
-//            executeSingleStage(folderName, entry)
-//        }
-//
+        if (parallelMode) {
+            mappedStages[String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))] = buildOutStages(folderName, entry)
+        } else {
+            executeSingleStage(folderName, entry)
+        }
+
     }
-//    if (parallelMode) {
-//        parallel mappedStages
-//    }
+    if (parallelMode) {
+        parallel mappedStages
+    }
 }
 
 def executeSingleStage(folderName, entry) {
     if (!entry.get("executionMode").toString().contains("continue")) {
-        buildOutStage(folderName, entry)
+        echo "building until test suite failure..."
+        //buildOutStage(folderName, entry)
     } else {
         catchError {
-            buildOutStage(folderName, entry)
+            echo "building in spite of any tests suite failure..."
+//            buildOutStage(folderName, entry)
         }
     }
 }
