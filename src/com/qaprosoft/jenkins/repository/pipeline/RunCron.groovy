@@ -190,6 +190,7 @@ def executeStages(String folderName, List sortedPipeline) {
     boolean parallelMode = true
 
     for (Map entry : sortedPipeline) {
+	echo "entry.get(priority": " + entry.get("priority")
         if (!entry.get("priority").toString().contains("null") && entry.get("priority").toString().length() > 0 && parallelMode) {
             parallelMode = false
         }
