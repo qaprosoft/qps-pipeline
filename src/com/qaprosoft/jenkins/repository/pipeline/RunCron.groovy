@@ -49,12 +49,57 @@ def runCron() {
     }
 }
 
+
+def executeStages(String folderName, List sortedPipeline) {
+    for (Map entry : sortedPipeline) {
+	buildOutStage(folderName, entry)
+    }
+}
+
+def buildOutStage(String folderName, Map entry) {
+    stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))) {
+        println "Dynamic Stage Created For: " + entry.get("jobName")
+        println "Checking EmailList: " + entry.get("emailList")
+
+	def priority = "3" //default priority for cron jobs among existin 1-5
+	if (entry.get("priority") != null) {
+	    priority = entry.get("priority").toString()
+	}
+
+	if (!entry.get("browser").isEmpty()) {
+       	    build job: folderName + "/" + entry.get("jobName"),
+                propagate: true,
+                    parameters: [
+                        string(name: 'branch', value: entry.get("branch")),
+                        string(name: 'env', value: entry.get("environment")),
+                        string(name: 'browser', value: entry.get("browser")),
+                        string(name: 'email_list', value: entry.get("emailList")),
+                        string(name: 'thread_count', value: entry.get("thread_count")),
+                        string(name: 'retry_count', value: entry.get("retry_count")),
+                        string(name: 'BuildPriority', value: entry.get("priority")),
+                    ], 
+                wait: false
+	} else {
+       	    build job: folderName + "/" + entry.get("jobName"),
+                propagate: true,
+                    parameters: [
+                        string(name: 'branch', value: entry.get("branch")),
+                        string(name: 'env', value: entry.get("environment")),
+                        string(name: 'email_list', value: entry.get("emailList")),
+                        string(name: 'thread_count', value: entry.get("thread_count")),
+                        string(name: 'retry_count', value: entry.get("retry_count")),
+                        string(name: 'BuildPriority', value: entry.get("priority")),
+                    ], 
+                wait: false
+	}
+    }
+}
+
 def parsePipeline(String file, List listPipelines) {
     def jobName = retrieveRawValues(file, "jenkinsJobName")
     println "jobName: ${jobName}"
     def pipelineInfo = retrieveRawValues(file, "jenkinsRegressionPipeline")
     def priorityNum = retrieveRawValues(file, "jenkinsJobExecutionOrder")
-    def executionMode = retrieveRawValues(file, "jenkinsJobExecutionMode")
 
     def envs = retrieveRawValues(file, "jenkinsPipelineEnvironments")
 //    println "supported envs: ${envs}"
@@ -105,7 +150,6 @@ def parsePipeline(String file, List listPipelines) {
                             pipelineMap.put("jobName", getInfo(jobName))
                             pipelineMap.put("environment", envName)
                             pipelineMap.put("priority", getInfo(priorityNum))
-                            pipelineMap.put("executionMode", getInfo(executionMode))
                             pipelineMap.put("emailList", emailList.replace(", ", ","))
 
                             listPipelines.add(pipelineMap)
@@ -144,81 +188,6 @@ def getInfo(String line) {
     }
 
     return ""
-}
-
-def buildOutStage(String folderName, Map entry) {
-    stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))) {
-        println "Dynamic Stage Created For: " + entry.get("jobName")
-        println "Checking EmailList: " + entry.get("emailList")
-
-	if (!entry.get("browser").isEmpty()) {
-       	    build job: folderName + "/" + entry.get("jobName"),
-                propagate: true,
-                    parameters: [
-                        string(name: 'branch', value: entry.get("branch")),
-                        string(name: 'env', value: entry.get("environment")),
-                        string(name: 'browser', value: entry.get("browser")),
-                        string(name: 'email_list', value: entry.get("emailList")),
-                        string(name: 'thread_count', value: entry.get("thread_count")),
-                        string(name: 'retry_count', value: entry.get("retry_count")),
-                    ], 
-                wait: false
-	} else {
-       	    build job: folderName + "/" + entry.get("jobName"),
-                propagate: true,
-                    parameters: [
-                        string(name: 'branch', value: entry.get("branch")),
-                        string(name: 'env', value: entry.get("environment")),
-                        string(name: 'email_list', value: entry.get("emailList")),
-                        string(name: 'thread_count', value: entry.get("thread_count")),
-                        string(name: 'retry_count', value: entry.get("retry_count")),
-                    ], 
-                wait: false
-	}
-    }
-}
-
-def buildOutStages(String folderName, Map entry) {
-    return {
-        buildOutStage(folderName, entry)
-    }
-}
-
-def executeStages(String folderName, List sortedPipeline) {
-    def mappedStages = [:]
-
-    boolean parallelMode = true
-
-    for (Map entry : sortedPipeline) {
-	echo "entry.get(priority): " + entry.get("priority")
-        if (entry.get("priority") != null) {
-	    // disable parallel mode if any of the job has priority
-            parallelMode = false
-        }
-
-	echo "parallelMode: " + parallelMode
-        if (parallelMode) {
-            mappedStages[String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))] = buildOutStages(folderName, entry)
-        } else {
-            executeSingleStage(folderName, entry)
-        }
-
-    }
-    if (parallelMode) {
-        parallel mappedStages
-    }
-}
-
-def executeSingleStage(folderName, entry) {
-    if (!entry.get("executionMode").toString().contains("continue")) {
-        echo "building until test suite failure..."
-        //buildOutStage(folderName, entry)
-    } else {
-        catchError {
-            echo "building in spite of any tests suite failure..."
-//            buildOutStage(folderName, entry)
-        }
-    }
 }
 
 @NonCPS
