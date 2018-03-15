@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.repository.jobdsl
 
+import groovy.json.JsonSlurper;
+
 class Job {
 
     static void createPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project, String suite, String suiteOwner, String zafira_project) {
@@ -273,6 +275,10 @@ class Job {
 
     static List<String> getAndroidDeviceList(String suite) {
         def deviceList = ["DefaultPool", "ANY", "Google_Nexus_7", "Google_Pixel", "Google_Pixel_XL", "One_M8"]
+	def json = new JsonSlurper().parse("https://smule.qaprosoft.com/grid/admin/ProxyInfo".toURL())
+	json.each {
+		println "platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName
+	}
         return deviceList
     }
 
