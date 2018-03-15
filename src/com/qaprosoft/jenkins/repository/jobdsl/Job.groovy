@@ -274,6 +274,7 @@ class Job {
         return genericFields
     }
 
+    @NonCPS
     static List<String> getAndroidDeviceList(String suite) {
         def deviceList = ["DefaultPool", "ANY", "Google_Nexus_7", "Google_Pixel", "Google_Pixel_XL", "One_M8"]
 	println "test message for sync2"
