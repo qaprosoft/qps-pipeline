@@ -274,9 +274,9 @@ class Job {
         return genericFields
     }
 
-    @NonCPS
     static List<String> getAndroidDeviceList(String suite) {
         def deviceList = ["DefaultPool", "ANY", "Google_Nexus_7", "Google_Pixel", "Google_Pixel_XL", "One_M8"]
+	println(deviceList)
 	println "test message for sync2"
 	def json = new JsonSlurper().parse("https://smule.qaprosoft.com/grid/admin/ProxyInfo".toURL())
 	println json
