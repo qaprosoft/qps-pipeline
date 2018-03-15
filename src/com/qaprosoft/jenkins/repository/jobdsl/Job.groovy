@@ -21,6 +21,7 @@ class Job {
                 }
             }
 
+	    echo "test message for sync1"
             /** Properties & Parameters Area **/
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
@@ -275,7 +276,9 @@ class Job {
 
     static List<String> getAndroidDeviceList(String suite) {
         def deviceList = ["DefaultPool", "ANY", "Google_Nexus_7", "Google_Pixel", "Google_Pixel_XL", "One_M8"]
+	echo "test message for sync2"
 	def json = new JsonSlurper().parse("https://smule.qaprosoft.com/grid/admin/ProxyInfo".toURL())
+	println json
 	json.each {
 		println "platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName
 	}
