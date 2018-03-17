@@ -31,7 +31,7 @@ def runJob() {
 //            this.cleanWorkSpace()
           }
         } catch (Exception ex) {
-            currentBuild.result = 'FAILURE'
+            scanConsoleLogs()
             throw ex
         } finally {
 	  //do nothing for now
@@ -415,6 +415,29 @@ def setTestResults() {
         currentBuild.result = 'UNSTABLE'
     }
 }
+
+def scanConsoleLogs() {
+        currentBuild.result = 'FAILURE'
+
+	def body = "Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}"
+	def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+
+	if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
+	    echo "found compilation failure error in log!"	    
+	    body = "Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}"
+	    subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+	}
+
+	if (currentBuild.rawBuild.log.contains("Aborted by ") || currentBuild.rawBuild.log.contains("Sending interrupt signal to process")) {
+	    currentBuild.result = 'ABORTED'
+	    echo "found Aborted by message in log!"	    
+	    body = "Unable to continue tests due to the abort action. It could be aborted due to the default ${env.JOB_MAX_RUN_TIME} minutes timeout! ${JOB_URL}${BUILD_NUMBER}"
+	    subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+	}
+
+	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list}"
+}
+
 
 def reportingResults() {
     stage('Results') {
