@@ -275,7 +275,7 @@ class Job {
     }
 
     static List<String> getAndroidDeviceList(String suite) {
-        def deviceList = ["DefaultPool", "ANY", "Google_Nexus_7", "Google_Pixel", "Google_Pixel_XL", "One_M8"]
+        def deviceList = ["DefaultPool", "ANY", "Google_Nexus_7", "Google_Pixel", "Google_Pixel_XL", "One_M8", "Samsung_Grand_Prime", "Samsung_Galaxy_S7", "Samsung_Galaxy_S6", "Samsung_Galaxy_Note_4", "Motorola_Nexus_6", "Samsung_Galaxy_J3", "Samsung_Galaxy_J5", "Samsung_Galaxy_J7", "Xiaomi_Redmi_Note4", "LG_K7", "Nexus_7", "Samsung_Galaxy_S5", "Moto_G4_Plus", "Samsung_Galaxy_S7_Ed", "LG_Nexus_5", "Xiaomi_MI_MAX", "Lenovo_Tab4", "Samsung_Galaxy_Tab_A8", "Honor_6X", "OnePlus_3", "Nokia_3", "Xiaomi_Redmi_4X", "Sony_Xperia_XA1", "Xiaomi_Redmi_4A", "Samsung_Galaxy_A5", "Samsung_Galaxy_Tab_A10", "LG_Nexus_4"]
 	println(deviceList)
 	println "test message for sync2"
 	def json = new JsonSlurper().parse("https://smule.qaprosoft.com/grid/admin/ProxyInfo".toURL())
@@ -288,7 +288,7 @@ class Job {
 
 
     static List<String> getiOSDeviceList() {
-        def deviceList = ["DefaultPool", "ANY", "iPhone_7_Plus", "iPhone_7", "iPhone_6S", "iPad_Air_2"]
+        def deviceList = ["DefaultPool", "ANY", "iPhone_7_Plus", "iPhone_7", "iPhone_6S", "iPad_Air_2", "iPhone_7Plus", "iPhone_8", "iPhone_8Plus", "iPhone_5s", "iPad_Air2", "iPhone_7_Black", "iPhone_8_Black"]
         return deviceList
     }
 
