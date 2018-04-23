@@ -76,7 +76,7 @@ def executeStages(String folderName, List sortedPipeline) {
 }
 
 def executeSingleStage(folderName, entry) {
-    if (!entry.get("executionMode").toString().contains("continue")) {
+    if (!entry.get("jenkinsJobExecutionMode").toString().contains("continue")) {
         buildOutStage(folderName, entry, true)
     } else {
         catchError {
