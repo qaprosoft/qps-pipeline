@@ -51,12 +51,42 @@ def runCron() {
 
 
 def executeStages(String folderName, List sortedPipeline) {
+//    for (Map entry : sortedPipeline) {
+//	buildOutStage(folderName, entry, false)
+//    }
+
+    def mappedStages = [:]
+
+    boolean parallelMode = true
+
     for (Map entry : sortedPipeline) {
-	buildOutStage(folderName, entry)
+        if (!entry.get("priority").toString().contains("null") && entry.get("priority").toString().length() > 0 && parallelMode) {
+            parallelMode = false
+        }
+        if (parallelMode) {
+            mappedStages[String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))] = buildOutStages(folderName, entry, false)
+        } else {
+            executeSingleStage(folderName, entry)
+        }
+    }
+    if (parallelMode) {
+        parallel mappedStages
+    }
+
+}
+
+def executeSingleStage(folderName, entry) {
+    if (!entry.get("executionMode").toString().contains("continue")) {
+        buildOutStage(folderName, entry, true)
+    } else {
+        catchError {
+            buildOutStage(folderName, entry, true)
+        }
     }
 }
 
-def buildOutStage(String folderName, Map entry) {
+
+def buildOutStage(String folderName, Map entry, boolean waitJob) {
     stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))) {
         println "Dynamic Stage Created For: " + entry.get("jobName")
         println "Checking EmailList: " + entry.get("emailList")
@@ -73,24 +103,28 @@ def buildOutStage(String folderName, Map entry) {
                         string(name: 'branch', value: entry.get("branch")),
                         string(name: 'env', value: entry.get("environment")),
                         string(name: 'browser', value: entry.get("browser")),
+                        string(name: 'ci_parent_url', value: entry.get("ci_parent_url")),
+                        string(name: 'ci_parent_build', value: entry.get("ci_parent_build")),
                         string(name: 'email_list', value: entry.get("emailList")),
                         string(name: 'thread_count', value: entry.get("thread_count")),
                         string(name: 'retry_count', value: entry.get("retry_count")),
                         string(name: 'BuildPriority', value: entry.get("priority")),
                     ], 
-                wait: false
+                wait: waitJob
 	} else {
        	    build job: folderName + "/" + entry.get("jobName"),
                 propagate: true,
                     parameters: [
                         string(name: 'branch', value: entry.get("branch")),
                         string(name: 'env', value: entry.get("environment")),
+                        string(name: 'ci_parent_url', value: entry.get("ci_parent_url")),
+                        string(name: 'ci_parent_build', value: entry.get("ci_parent_build")),
                         string(name: 'email_list', value: entry.get("emailList")),
                         string(name: 'thread_count', value: entry.get("thread_count")),
                         string(name: 'retry_count', value: entry.get("retry_count")),
                         string(name: 'BuildPriority', value: entry.get("priority")),
                     ], 
-                wait: false
+                wait: waitJob
 	}
     }
 }
@@ -145,6 +179,8 @@ def parsePipeline(String file, List listPipelines) {
                             pipelineMap.put("browser", browser)
                             pipelineMap.put("name", pipeName)
                             pipelineMap.put("branch", "${branch}")
+                            pipelineMap.put("ci_parent_url", "${ci_parent_url}")
+                            pipelineMap.put("ci_parent_build", "${ci_parent_build}")
                             pipelineMap.put("retry_count", "${retry_count}")
                             pipelineMap.put("thread_count", "${thread_count}")
                             pipelineMap.put("jobName", getInfo(jobName))
