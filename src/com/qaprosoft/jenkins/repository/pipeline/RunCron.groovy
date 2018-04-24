@@ -66,7 +66,11 @@ def executeStages(String folderName, List sortedPipeline) {
         if (parallelMode) {
             mappedStages[String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))] = buildOutStages(folderName, entry, false, false)
         } else {
-            executeSingleStage(folderName, entry)
+            boolean propagateJob = true
+            if (entry.get("jenkinsJobExecutionMode").toString().contains("continue")) {
+                propagateJob = false
+            }
+            buildOutStage(folderName, entry, true, propagateJob)
         }
     }
     if (parallelMode) {
@@ -74,15 +78,6 @@ def executeStages(String folderName, List sortedPipeline) {
     }
 
 }
-
-def executeSingleStage(folderName, entry) {
-    boolean propagateJob = true
-    if (entry.get("jenkinsJobExecutionMode").toString().contains("continue")) {
-        propagateJob = false
-    } 
-    buildOutStage(folderName, entry, true, propagateJob)
-}
-
 
 def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propagateJob) {
     stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))) {
