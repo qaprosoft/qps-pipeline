@@ -64,7 +64,7 @@ def executeStages(String folderName, List sortedPipeline) {
             parallelMode = false
         }
         if (parallelMode) {
-            mappedStages[String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))] = buildOutStages(folderName, entry, false)
+            mappedStages[String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))] = buildOutStages(folderName, entry, false, false)
         } else {
             executeSingleStage(folderName, entry)
         }
@@ -76,17 +76,15 @@ def executeStages(String folderName, List sortedPipeline) {
 }
 
 def executeSingleStage(folderName, entry) {
-    if (!entry.get("jenkinsJobExecutionMode").toString().contains("continue")) {
-        buildOutStage(folderName, entry, true)
-    } else {
-        catchError {
-            buildOutStage(folderName, entry, true)
-        }
-    }
+    boolean propagateJob = true
+    if (entry.get("jenkinsJobExecutionMode").toString().contains("continue")) {
+        propagateJob = false
+    } 
+    buildOutStage(folderName, entry, true, propagateJob)
 }
 
 
-def buildOutStage(String folderName, Map entry, boolean waitJob) {
+def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propagateJob) {
     stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))) {
         println "Dynamic Stage Created For: " + entry.get("jobName")
         println "Checking EmailList: " + entry.get("emailList")
@@ -98,7 +96,7 @@ def buildOutStage(String folderName, Map entry, boolean waitJob) {
 
 	if (!entry.get("browser").isEmpty()) {
        	    build job: folderName + "/" + entry.get("jobName"),
-                propagate: true,
+                propagate: propagateJob,
                     parameters: [
                         string(name: 'branch', value: entry.get("branch")),
                         string(name: 'env', value: entry.get("environment")),
@@ -113,7 +111,7 @@ def buildOutStage(String folderName, Map entry, boolean waitJob) {
                 wait: waitJob
 	} else {
        	    build job: folderName + "/" + entry.get("jobName"),
-                propagate: true,
+                propagate: propagateJob,
                     parameters: [
                         string(name: 'branch', value: entry.get("branch")),
                         string(name: 'env', value: entry.get("environment")),
