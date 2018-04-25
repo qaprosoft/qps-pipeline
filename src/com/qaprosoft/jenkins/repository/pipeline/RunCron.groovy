@@ -67,7 +67,7 @@ def executeStages(String folderName, List sortedPipeline) {
             mappedStages[String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))] = buildOutStages(folderName, entry, false, false)
         } else {
             boolean propagateJob = true
-            if (entry.get("jenkinsJobExecutionMode").toString().contains("continue")) {
+            if (entry.get("executionMode").toString().contains("continue")) {
                 propagateJob = false
             }
             buildOutStage(folderName, entry, true, propagateJob)
@@ -90,7 +90,6 @@ def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propaga
 	}
 
         echo "propagate: " + propagateJob
-	return
 	if (!entry.get("browser").isEmpty()) {
        	    build job: folderName + "/" + entry.get("jobName"),
                 propagate: propagateJob,
@@ -168,6 +167,8 @@ def parsePipeline(String file, List listPipelines) {
                                     continue;
                                 }
                             }
+                            def executionMode = getInfo(retrieveRawValues(file, "jenkinsJobExecutionMode"))
+
 
                             def pipelineMap = [:]
 
@@ -182,6 +183,7 @@ def parsePipeline(String file, List listPipelines) {
                             pipelineMap.put("environment", envName)
                             pipelineMap.put("priority", getInfo(priorityNum))
                             pipelineMap.put("emailList", emailList.replace(", ", ","))
+                            pipelineMap.put("executionMode", executionMode.replace(", ", ","))
 
                             listPipelines.add(pipelineMap)
                         }
