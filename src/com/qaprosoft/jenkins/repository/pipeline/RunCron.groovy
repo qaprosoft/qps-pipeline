@@ -89,6 +89,8 @@ def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propaga
 	    priority = entry.get("priority").toString()
 	}
 
+        echo "propagate: " + propagateJob
+	return
 	if (!entry.get("browser").isEmpty()) {
        	    build job: folderName + "/" + entry.get("jobName"),
                 propagate: propagateJob,
