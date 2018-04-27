@@ -79,6 +79,12 @@ def executeStages(String folderName, List sortedPipeline) {
 
 }
 
+def buildOutStages(String folderName, Map entry) {
+    return {
+        buildOutStage(folderName, entry)
+    }
+}
+
 def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propagateJob) {
     stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))) {
         println "Dynamic Stage Created For: " + entry.get("jobName")
