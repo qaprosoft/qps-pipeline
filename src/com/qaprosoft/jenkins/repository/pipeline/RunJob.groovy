@@ -265,6 +265,15 @@ def setupGoalsForAndroid(Map<String, String> goalMap) {
 	  case "QA_NO_SKIP_TOPIC_PROD":
 	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_NoSkipTopicBuilds_SingAndroidQaNoSkipTopicProd/sing_android-playstore-no_skip_topic-prod-.*.apk")
 	    break
+	  case "QA_SOFT_TRIALS_CLIENT_DEV_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_SoftTrialsClientDevBuilds_SingAndroidQaSoftTrialsClientDevInt/sing_android-playstore-soft_trials_client_dev-int-.*.apk")
+	    break
+	  case "QA_SA_14894_HOT_INVITES_BY_SONG_PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_Sa14894HotInvitesBySongBuilds_SingAndroidQaSa14894HotInvitesBySongPr/sing_android-playstore-SA_14894_Hot_Invites_By_Song-prod-.*.apk")
+	    break
+	  case "QA_HTTPS_V2_PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_HttpsV2builds_SingAndroidQaHttpsV2prod/sing_android-playstore-https_v2-prod-.*.apk")
+	    break	    
 	  default:
 	    throw new RuntimeException("Unknown env: " + params["env"]);
 	    break
