@@ -4,8 +4,28 @@ import static java.util.UUID.randomUUID
 
 
 def runJob() {
-    def jobParameters = setJobType("${platform}", "${browser}")
+    //assign initial node detection logic onto the ec2-fleet to
+    // a) minimize calls on master node
+    // b) keep job in queue if everything is busy without starting job timer
+    def jobParameters = null
     def mobileGoals = ""
+
+    def uuid = "${ci_run_id}"
+    echo "uuid: " + uuid
+    if (uuid.isEmpty()) {
+            uuid = randomUUID() as String
+    }
+    echo "uuid: " + uuid
+
+
+    echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
+
+//    def response = httpRequest customHeaders: [[name: 'Authorization', \
+//            value: "Basic ${token}"]], \
+//            url: "${githubApiUrl}orgs/${organization}/repos?per_page=250"
+
+    jobParameters = setJobType("${platform}", "${browser}")
+
     node(jobParameters.get("node")) {
       wrap([$class: 'BuildUser']) {
         try {
@@ -335,13 +355,6 @@ def runTests(Map jobParameters) {
 			-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_HOST -Dmax_screen_history=1 \
 			-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG -Duser.timezone=PST -Ds3_local_storage=/opt/apk clean test"
 
-
-	uuid = "${ci_run_id}"
-	echo "uuid: " + uuid
-        if (uuid.isEmpty()) {
-            uuid = randomUUID() as String
-        }
-	echo "uuid: " + uuid
 
         def zafiraEnabled = "false"
         if ("${DEFAULT_BASE_MAVEN_GOALS}".contains("zafira_enabled=true")) {
