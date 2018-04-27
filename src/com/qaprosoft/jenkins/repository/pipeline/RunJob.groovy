@@ -22,7 +22,7 @@ def runJob() {
 
     try {
       def response = httpRequest customHeaders: [[name: 'Authorization', \
-            value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
+            value: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwidXNlcm5hbWUiOiJhZG1pbiIsImdyb3VwSWRzIjpbM10sImV4cCI6MTUyNDg1NzQzN30.ag2PObS1B4O5uwR84uvkfACwvXPsWnkaFJd35V27nbCrutOOqo8z7h-Z6mDxOwYqFZ-r7zomlls1u5yr-ZhaDw"]], \
 	    acceptType: 'APPLICATION_JSON', \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
