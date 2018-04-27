@@ -18,7 +18,7 @@ def runJob() {
     echo "uuid: " + uuid
 
 
-    echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
+/*    echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
     try {
       def response = httpRequest customHeaders: [[name: 'Authorization', \
@@ -42,7 +42,7 @@ def runJob() {
     } catch (Exception e) {
       e.printStackTrace()
     }
-
+*/
     jobParameters = setJobType("${platform}", "${browser}")
 
     node(jobParameters.get("node")) {
