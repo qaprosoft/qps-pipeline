@@ -25,8 +25,9 @@ def runJob() {
             value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
 	    acceptType: 'APPLICATION_JSON', \
 	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'GET', \
+	    httpMode: 'POST', \
             url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh?refreshToken=${ZAFIRA_ACCESS_TOKEN}"
+
       def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
       //echo response.getContent()
       properties.each {
