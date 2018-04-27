@@ -25,9 +25,13 @@ def runJob() {
             value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
 	    acceptType: 'APPLICATION_JSON', \
 	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'GEt', \
+	    httpMode: 'GET', \
             url: "${ZAFIRA_SERVICE_URL}/api/auth/access"
-      echo "response: ${response}"
+      def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
+      //echo response.getContent()
+      properties.each {
+        echo "it: ${it}"
+      }
 
       response = httpRequest customHeaders: [[name: 'Authorization', \
             value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
