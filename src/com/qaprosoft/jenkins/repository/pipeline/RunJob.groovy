@@ -18,7 +18,7 @@ def runJob() {
     echo "uuid: " + uuid
 
 
-    echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
+    echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
 //    def response = httpRequest customHeaders: [[name: 'Authorization', \
 //            value: "Basic ${token}"]], \
