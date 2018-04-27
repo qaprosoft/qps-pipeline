@@ -19,6 +19,7 @@ def runJob() {
 
 
     echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
+    echo "zafira_token: ${ZAFIRA_ACCESS_TOKEN}"
 
     try {
       def response = httpRequest customHeaders: [[name: 'Authorization', \
