@@ -25,6 +25,14 @@ def runJob() {
             value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
 	    acceptType: 'APPLICATION_JSON', \
 	    contentType: 'APPLICATION_JSON', \
+	    httpMode: 'GEt', \
+            url: "${ZAFIRA_SERVICE_URL}/api/auth/access"
+      echo "response: ${response}"
+
+      response = httpRequest customHeaders: [[name: 'Authorization', \
+            value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
+	    acceptType: 'APPLICATION_JSON', \
+	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
     } catch (Exception e) {
