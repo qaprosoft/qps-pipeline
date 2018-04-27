@@ -20,9 +20,13 @@ def runJob() {
 
     echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
-//    def response = httpRequest customHeaders: [[name: 'Authorization', \
-//            value: "Basic ${token}"]], \
-//            url: "${githubApiUrl}orgs/${organization}/repos?per_page=250"
+    try {
+      def response = httpRequest customHeaders: [[name: 'Authorization', \
+            value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
+            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
+    } catch (Exception e) {
+      e.printStackTrace()
+    }
 
     jobParameters = setJobType("${platform}", "${browser}")
 
