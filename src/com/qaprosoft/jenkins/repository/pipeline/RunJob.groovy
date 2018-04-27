@@ -18,7 +18,7 @@ def runJob() {
     echo "uuid: " + uuid
 
 
-/*    echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
+    echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
     try {
       def response = httpRequest customHeaders: [[name: 'Authorization', \
@@ -26,23 +26,24 @@ def runJob() {
 	    acceptType: 'APPLICATION_JSON', \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'GET', \
-            url: "${ZAFIRA_SERVICE_URL}/api/auth/access"
+            url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh?refreshToken=${ZAFIRA_ACCESS_TOKEN}"
       def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
       //echo response.getContent()
       properties.each {
         echo "it: ${it}"
       }
 
-      response = httpRequest customHeaders: [[name: 'Authorization', \
+/*      response = httpRequest customHeaders: [[name: 'Authorization', \
             value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
 	    acceptType: 'APPLICATION_JSON', \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
+*/
     } catch (Exception e) {
       e.printStackTrace()
     }
-*/
+
     jobParameters = setJobType("${platform}", "${browser}")
 
     node(jobParameters.get("node")) {
