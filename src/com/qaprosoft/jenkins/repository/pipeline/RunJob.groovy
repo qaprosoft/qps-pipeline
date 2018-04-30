@@ -19,8 +19,6 @@ def runJob() {
 
 
     def body = "{\"refreshToken\": \"${ZAFIRA_ACCESS_TOKEN}\"}"
-    echo "body: ${body}"
-    echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
     try {
       def response = httpRequest \
@@ -34,6 +32,7 @@ def runJob() {
       def token = ""
       properties.each {
         token = it.refreshToken
+        echo "it: ${it}"
         echo "token: ${token}"
       }
       response = httpRequest customHeaders: [[name: 'Authorization', \
