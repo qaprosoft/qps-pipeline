@@ -35,7 +35,6 @@ def runJob() {
 
       response = httpRequest customHeaders: [[name: 'Authorization', \
             value: "${type} ${token}"]], \
-	    acceptType: 'APPLICATION_JSON', \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
