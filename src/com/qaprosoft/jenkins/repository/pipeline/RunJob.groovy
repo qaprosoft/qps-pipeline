@@ -18,21 +18,23 @@ def runJob() {
     echo "uuid: " + uuid
 
 
-/*    echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
+    def body = "{refreshToken: '" + "${ZAFIRA_ACCESS_TOKEN} " + "'}"
+    echo "body: ${body}"
+    echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
     try {
       def response = httpRequest \
-	    acceptType: 'APPLICATION_JSON', \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
-            url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh?refreshToken=${ZAFIRA_ACCESS_TOKEN}"
+	    requestBody: body, \
+            url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh"
 
       def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
       //echo response.getContent()
       properties.each {
         echo "it: ${it}"
       }
-
+/*
       response = httpRequest customHeaders: [[name: 'Authorization', \
             value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
 	    acceptType: 'APPLICATION_JSON', \
