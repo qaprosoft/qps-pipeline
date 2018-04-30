@@ -29,13 +29,9 @@ def runJob() {
 
       // move new token schedule request
       def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
-      def token = ""
-      def type = ""
-      properties.each {
-        token = it.accessToken
-        type = it.type
-        echo "it: ${it}"
-      }
+      
+      def token = properties.get("accessToken")
+      def type = properties.get("type")
 
       echo "token: ${token}"
       echo "type: ${type}"
