@@ -21,7 +21,7 @@ def runJob() {
       def authToken = getZafiraAuthToken()
       //echo "authToken: ${authToken}"
 
-      queueZafiraTestRun()
+      queueZafiraTestRun(authToken, uuid)
     } catch (Exception ex) {
       echo "exception: " + ex.getMessage();
       echo "exception class: " + ex.getClass().getName();
@@ -463,7 +463,7 @@ def getZafiraAuthToken() {
       return "${type} ${token}"
 }
 
-def queueZafiraTestRun(String authToken) {
+def queueZafiraTestRun(String authToken, String uuid) {
       //echo "body: " + "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}"
       httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
