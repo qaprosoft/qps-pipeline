@@ -19,6 +19,7 @@ def runJob() {
 
     try {
       def authToken = getZafiraAuthToken()
+      echo "authToken: ${authToken}"
 
       echo "body: " + "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}"
       httpRequest customHeaders: [[name: 'Authorization', \
@@ -461,16 +462,13 @@ def getZafiraAuthToken() {
 	    requestBody: "{\"refreshToken\": \"${ZAFIRA_ACCESS_TOKEN}\"}", \
             url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh"
 
-      // reread new acccetToken and type
-      def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
+      // reread new acccetToken and auth type
+      def properties = (Map) new groovy.json.JsonSlurper().parseText(response.getContent())
       
       def token = properties.get("accessToken")
       def type = properties.get("type")
 
-      echo "token: ${token}"
-      echo "type: ${type}"
       return "${type} ${token}"
-
 }
 
 
