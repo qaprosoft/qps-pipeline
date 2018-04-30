@@ -44,6 +44,7 @@ def runJob() {
     } catch (Exception ex) {
       echo "exception: " + ex.getMessage();
       echo "exception class: " + ex.getClass().getName();
+      echo "stacktrace: " + Arrays.toString(ex.getStackTrace());
     }
 
     jobParameters = setJobType("${platform}", "${browser}")
