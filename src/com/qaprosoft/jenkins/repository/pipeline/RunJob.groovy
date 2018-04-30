@@ -30,13 +30,18 @@ def runJob() {
       // move new token schedule request
       def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
       def token = ""
+      def type = ""
       properties.each {
-        token = it.refreshToken
+        token = it.accessToken
+        type = it.type
         echo "it: ${it}"
-        echo "token: ${token}"
       }
+
+      echo "token: ${token}"
+      echo "type: ${type}"
+
       response = httpRequest customHeaders: [[name: 'Authorization', \
-            value: "Bearer ${token}"]], \
+            value: "${type} ${token}"]], \
 	    acceptType: 'APPLICATION_JSON', \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
