@@ -454,7 +454,6 @@ def buildOutGoals(Map<String, String> goalMap, currentBuild) {
     return goals
 }
 
-@NonCPS
 def getZafiraAuthToken() {
       def response = httpRequest \
 	    contentType: 'APPLICATION_JSON', \
