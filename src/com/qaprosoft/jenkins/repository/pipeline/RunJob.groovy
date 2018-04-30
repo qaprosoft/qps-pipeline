@@ -18,7 +18,7 @@ def runJob() {
     echo "uuid: " + uuid
 
 
-    def body = "{refreshToken: '" + "${ZAFIRA_ACCESS_TOKEN} " + "'}"
+    def body = "{refreshToken: '" + "${ZAFIRA_ACCESS_TOKEN}" + "'}"
     echo "body: ${body}"
     echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
@@ -34,7 +34,6 @@ def runJob() {
       properties.each {
         echo "it: ${it}"
       }
-/*
       response = httpRequest customHeaders: [[name: 'Authorization', \
             value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
 	    acceptType: 'APPLICATION_JSON', \
@@ -45,7 +44,7 @@ def runJob() {
     } catch (Exception e) {
       e.printStackTrace()
     }
-*/
+
     jobParameters = setJobType("${platform}", "${browser}")
 
     node(jobParameters.get("node")) {
