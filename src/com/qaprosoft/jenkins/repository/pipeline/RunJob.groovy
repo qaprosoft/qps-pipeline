@@ -37,7 +37,8 @@ def runJob() {
             value: "${type} ${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
-            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
+	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"autoMilestones\": \"true\"}", \
+            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule"
 
     } catch (Throwable thr) {
       echo "Throwable: " + thr.getMessage()
