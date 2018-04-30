@@ -19,16 +19,9 @@ def runJob() {
 
     try {
       def authToken = getZafiraAuthToken()
-      echo "authToken: ${authToken}"
+      //echo "authToken: ${authToken}"
 
-      echo "body: " + "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}"
-      httpRequest customHeaders: [[name: 'Authorization', \
-            value: "${authToken}"]], \
-	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'POST', \
-	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}", \
-            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue"
-
+      queueZafiraTestRun()
     } catch (Exception ex) {
       echo "exception: " + ex.getMessage();
       echo "exception class: " + ex.getClass().getName();
@@ -470,6 +463,15 @@ def getZafiraAuthToken() {
       return "${type} ${token}"
 }
 
+def queueZafiraTestRun(String authToken) {
+      //echo "body: " + "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}"
+      httpRequest customHeaders: [[name: 'Authorization', \
+            value: "${authToken}"]], \
+	    contentType: 'APPLICATION_JSON', \
+	    httpMode: 'POST', \
+	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}", \
+            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue"
+}
 
 def setTestResults() {
     //Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
