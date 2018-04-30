@@ -41,8 +41,9 @@ def runJob() {
 	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}", \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue"
 
-    } catch (Throwable thr) {
-      echo "Throwable: " + thr.getMessage();
+    } catch (Exception ex) {
+      echo "exception: " + ex.getMessage();
+      echo "exception class: " + ex.getClass.getName();
     }
 
     jobParameters = setJobType("${platform}", "${browser}")
