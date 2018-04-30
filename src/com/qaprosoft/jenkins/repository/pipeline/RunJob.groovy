@@ -32,8 +32,8 @@ def runJob() {
       def token = ""
       def type = ""
       properties.each {
-        token = it.accessToken
-        type = it.type
+//        token = it.accessToken
+//        type = it.type
         echo "it: ${it}"
       }
 
@@ -48,6 +48,7 @@ def runJob() {
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
     } catch (Exception e) {
+      echo e.getMessage()
       e.printStackTrace()
     }
 
