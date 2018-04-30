@@ -25,7 +25,7 @@ def runJob() {
             url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh"
 
       // reread new acccetToken and type
-      def properties = (Map) new groovy.json.JsonSlurper().parseText(response.getContent())
+      def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
       
       def token = properties.get("accessToken")
       def type = properties.get("type")
