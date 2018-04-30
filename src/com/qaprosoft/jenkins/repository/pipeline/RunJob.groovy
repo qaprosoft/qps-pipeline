@@ -37,12 +37,11 @@ def runJob() {
             value: "${type} ${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
-	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"autoMilestones\": \"true\"}", \
-            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule"
+	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\"}", \
+            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue"
 
     } catch (Throwable thr) {
       echo "Throwable: " + thr.getMessage()
-      org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(thr)
     }
 
     jobParameters = setJobType("${platform}", "${browser}")
