@@ -25,7 +25,7 @@ def runJob() {
             url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh"
 
       // reread new acccetToken and type
-      def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
+      def properties = (Map) new groovy.json.JsonSlurper().parseText(response.getContent())
       
       def token = properties.get("accessToken")
       def type = properties.get("type")
@@ -41,7 +41,7 @@ def runJob() {
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
     } catch (Throwable thr) {
-      echo thr.getMessage()
+      echo "Throwable: " + thr.getMessage()
     }
 
     jobParameters = setJobType("${platform}", "${browser}")
