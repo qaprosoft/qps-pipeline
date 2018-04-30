@@ -10,6 +10,7 @@ def runJob() {
     def jobParameters = null
     def mobileGoals = ""
 
+    def authToken = ""
     def uuid = "${ci_run_id}"
     echo "uuid: " + uuid
     if (uuid.isEmpty()) {
@@ -18,9 +19,7 @@ def runJob() {
     echo "uuid: " + uuid
 
     try {
-      def authToken = getZafiraAuthToken()
-      //echo "authToken: ${authToken}"
-
+      authToken = getZafiraAuthToken()
       queueZafiraTestRun(authToken, uuid)
     } catch (Exception ex) {
       echo "exception: " + ex.getMessage();
@@ -58,7 +57,8 @@ def runJob() {
             scanConsoleLogs()
             throw ex
         } finally {
-	  //do nothing for now
+	  //explicitly execute abort to resolve anomalies with in_progress tests...
+          abortZafiraTestRun(authToken, uuid)
         }
       }
     }
@@ -471,6 +471,14 @@ def queueZafiraTestRun(String authToken, String uuid) {
 	    httpMode: 'POST', \
 	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}", \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue"
+}
+
+def abortZafiraTestRun(String authToken, String uuid) {
+      httpRequest customHeaders: [[name: 'Authorization', \
+            value: "${authToken}"]], \
+	    contentType: 'APPLICATION_JSON', \
+	    httpMode: 'GET', \
+            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue?ciRunId=${udid}"
 }
 
 def setTestResults() {
