@@ -18,7 +18,7 @@ def runJob() {
     echo "uuid: " + uuid
 
 
-    def body = "{refreshToken: '" + "${ZAFIRA_ACCESS_TOKEN}" + "'}"
+    def body = "{""refreshToken"": ""${ZAFIRA_ACCESS_TOKEN}""}"
     echo "body: ${body}"
     echo "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
