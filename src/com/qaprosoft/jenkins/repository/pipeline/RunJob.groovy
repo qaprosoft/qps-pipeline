@@ -41,7 +41,11 @@ def runJob() {
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue"
 
     } catch (Throwable thr) {
-      echo "Throwable: " + thr.getMessage()
+      echo "Throwable: " + thr.getMessage();
+      StringWriter sw = new StringWriter();
+      ерк.printStackTrace(new PrintWriter(sw));
+      String exceptionAsString = sw.toString();
+      echo "Stacktrace: " + exceptionAsString;
     }
 
     jobParameters = setJobType("${platform}", "${browser}")
