@@ -37,7 +37,7 @@ def runJob() {
             value: "${type} ${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
-	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": \"0\"}", \
+	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}", \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue"
 
     } catch (Throwable thr) {
