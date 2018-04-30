@@ -18,24 +18,11 @@ def runJob() {
     echo "uuid: " + uuid
 
     try {
-      def response = httpRequest \
-	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'POST', \
-	    requestBody: "{\"refreshToken\": \"${ZAFIRA_ACCESS_TOKEN}\"}", \
-            url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh"
-
-      // reread new acccetToken and type
-      def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
-      
-      def token = properties.get("accessToken")
-      def type = properties.get("type")
-
-      echo "token: ${token}"
-      echo "type: ${type}"
+      def authToken = getZafiraAuthToken()
 
       echo "body: " + "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}"
       httpRequest customHeaders: [[name: 'Authorization', \
-            value: "${type} ${token}"]], \
+            value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
 	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}", \
@@ -464,6 +451,26 @@ def buildOutGoals(Map<String, String> goalMap, currentBuild) {
     }
 
     return goals
+}
+
+@NonCPS
+def getZafiraAuthToken() {
+      def response = httpRequest \
+	    contentType: 'APPLICATION_JSON', \
+	    httpMode: 'POST', \
+	    requestBody: "{\"refreshToken\": \"${ZAFIRA_ACCESS_TOKEN}\"}", \
+            url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh"
+
+      // reread new acccetToken and type
+      def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
+      
+      def token = properties.get("accessToken")
+      def type = properties.get("type")
+
+      echo "token: ${token}"
+      echo "type: ${type}"
+      return "${type} ${token}"
+
 }
 
 
