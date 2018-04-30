@@ -33,6 +33,7 @@ def runJob() {
       echo "token: ${token}"
       echo "type: ${type}"
 
+      echo "body: " + "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}"
       httpRequest customHeaders: [[name: 'Authorization', \
             value: "${type} ${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
@@ -42,10 +43,6 @@ def runJob() {
 
     } catch (Throwable thr) {
       echo "Throwable: " + thr.getMessage();
-      StringWriter sw = new StringWriter();
-      thr.printStackTrace(new PrintWriter(sw));
-      String exceptionAsString = sw.toString();
-      echo "Stacktrace: " + exceptionAsString;
     }
 
     jobParameters = setJobType("${platform}", "${browser}")
