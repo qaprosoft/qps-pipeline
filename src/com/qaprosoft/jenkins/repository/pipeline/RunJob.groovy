@@ -18,7 +18,7 @@ def runJob() {
     echo "uuid: " + uuid
 
 
-    def body = "{\"refreshToken\": \"${ZAFIRA_ACCESS_TOKEN}\"}"
+/*    def body = "{\"refreshToken\": \"${ZAFIRA_ACCESS_TOKEN}\"}"
 
     try {
       def response = httpRequest \
@@ -45,9 +45,8 @@ def runJob() {
 
     } catch (Exception e) {
       echo e.getMessage()
-      e.printStackTrace()
     }
-
+*/
     jobParameters = setJobType("${platform}", "${browser}")
 
     node(jobParameters.get("node")) {
