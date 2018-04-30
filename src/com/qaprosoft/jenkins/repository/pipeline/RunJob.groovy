@@ -29,13 +29,15 @@ def runJob() {
 	    requestBody: body, \
             url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh"
 
+      // move new token schedule request
       def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
-      //echo response.getContent()
+      def token = ""
       properties.each {
-        echo "it: ${it}"
+        token = it.refreshToken
+        echo "token: ${token}"
       }
       response = httpRequest customHeaders: [[name: 'Authorization', \
-            value: "Bearer ${ZAFIRA_ACCESS_TOKEN}"]], \
+            value: "Bearer ${token}"]], \
 	    acceptType: 'APPLICATION_JSON', \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
