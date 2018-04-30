@@ -478,7 +478,7 @@ def abortZafiraTestRun(String authToken, String uuid) {
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'GET', \
-            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue?ciRunId=${uuid}"
+            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/abort?ciRunId=${uuid}"
 }
 
 def setTestResults() {
