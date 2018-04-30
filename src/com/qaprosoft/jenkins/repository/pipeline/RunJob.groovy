@@ -42,6 +42,7 @@ def runJob() {
 
     } catch (Throwable thr) {
       echo "Throwable: " + thr.getMessage()
+      org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(thr)
     }
 
     jobParameters = setJobType("${platform}", "${browser}")
