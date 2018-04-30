@@ -32,8 +32,8 @@ def runJob() {
       def token = ""
       def type = ""
       properties.each {
-//        token = it.accessToken
-//        type = it.type
+        token = it.accessToken
+        type = it.type
         echo "it: ${it}"
       }
 
