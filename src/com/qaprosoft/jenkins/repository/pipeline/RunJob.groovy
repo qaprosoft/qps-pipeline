@@ -33,7 +33,7 @@ def runJob() {
       echo "token: ${token}"
       echo "type: ${type}"
 
-      response = httpRequest customHeaders: [[name: 'Authorization', \
+      httpRequest customHeaders: [[name: 'Authorization', \
             value: "${type} ${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
