@@ -17,17 +17,14 @@ def runJob() {
     }
     echo "uuid: " + uuid
 
-
-/*    def body = "{\"refreshToken\": \"${ZAFIRA_ACCESS_TOKEN}\"}"
-
     try {
       def response = httpRequest \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
-	    requestBody: body, \
+	    requestBody: "{\"refreshToken\": \"${ZAFIRA_ACCESS_TOKEN}\"}", \
             url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh"
 
-      // move new token schedule request
+      // reread new acccetToken and type
       def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
       
       def token = properties.get("accessToken")
@@ -43,10 +40,10 @@ def runJob() {
 	    httpMode: 'POST', \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
 
-    } catch (Exception e) {
-      echo e.getMessage()
+    } catch (Throwable thr) {
+      echo thr.getMessage()
     }
-*/
+
     jobParameters = setJobType("${platform}", "${browser}")
 
     node(jobParameters.get("node")) {
