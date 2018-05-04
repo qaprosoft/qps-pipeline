@@ -476,6 +476,7 @@ def abortZafiraTestRun(String authToken, String uuid, String comment) {
       echo "authToken: ${authToken}"
       echo "comment: ${comment}"
       echo "uuid: ${uuid}"
+      comment = "aborted"
       httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
