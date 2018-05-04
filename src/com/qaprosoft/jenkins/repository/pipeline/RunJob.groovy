@@ -58,7 +58,7 @@ def runJob() {
             throw ex
         } finally {
 	  //explicitly execute abort to resolve anomalies with in_progress tests...
-          abortZafiraTestRun(authToken, uuid, getAbortCause())
+          abortZafiraTestRun(authToken, uuid, "aborted by " + getAbortCause())
         }
       }
     }
@@ -476,7 +476,6 @@ def abortZafiraTestRun(String authToken, String uuid, String comment) {
       echo "authToken: ${authToken}"
       echo "comment: ${comment}"
       echo "uuid: ${uuid}"
-      comment = "aborted"
       httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
