@@ -473,6 +473,9 @@ def queueZafiraTestRun(String authToken, String uuid) {
 }
 
 def abortZafiraTestRun(String authToken, String uuid, String comment) {
+      echo "authToken: ${authToken}"
+      echo "comment: ${comment}"
+      echo "uuid: ${uuid}"
       httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
