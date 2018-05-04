@@ -58,8 +58,7 @@ def runJob() {
             throw ex
         } finally {
 	  //explicitly execute abort to resolve anomalies with in_progress tests...
-          //TODO: add error message if possible
-          abortZafiraTestRun(authToken, uuid, "aborted")
+          abortZafiraTestRun(authToken, uuid, getAbortCause())
         }
       }
     }
@@ -516,6 +515,26 @@ def scanConsoleLogs() {
 	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list}"
 }
 
+@NonCPS
+def getAbortCause()
+{
+    def causee = ''
+    def actions = currentBuild.getRawBuild().getActions(jenkins.model.InterruptedBuildAction)
+    for (action in actions) {
+        def causes = action.getCauses()
+
+        // on cancellation, report who cancelled the build
+        for (cause in causes) {
+            causee = cause.getUser().getDisplayName()
+            cause = null
+        }
+        causes = null
+        action = null
+    }
+    actions = null
+
+    return causee
+}
 
 def reportingResults() {
     stage('Results') {
