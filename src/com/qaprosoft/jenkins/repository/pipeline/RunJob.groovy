@@ -58,7 +58,8 @@ def runJob() {
             throw ex
         } finally {
 	  //explicitly execute abort to resolve anomalies with in_progress tests...
-          abortZafiraTestRun(authToken, uuid)
+          //TODO: add error message if possible
+          abortZafiraTestRun(authToken, uuid, "aborted")
         }
       }
     }
@@ -464,20 +465,20 @@ def getZafiraAuthToken() {
 }
 
 def queueZafiraTestRun(String authToken, String uuid) {
-      //echo "body: " + "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}"
       httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
-	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"id\": 0}", \
+	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"ciParentUrl\": \"${ci_parent_url}\", \"ciParentBuild\": \"${ci_parent_build}\"}", \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue"
 }
 
-def abortZafiraTestRun(String authToken, String uuid) {
+def abortZafiraTestRun(String authToken, String uuid, String comment) {
       httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'GET', \
+	    httpMode: 'POST', \
+	    requestBody: "{\"comment\": \"${comment}\"", \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/abort?ciRunId=${uuid}"
 }
 
