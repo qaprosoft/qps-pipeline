@@ -481,7 +481,7 @@ def abortZafiraTestRun(String authToken, String uuid, String comment) {
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
-	    requestBody: "{\"comment\": \"${comment}\"", \
+	    requestBody: "{\"comment\": \"${comment}\"}", \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/abort?ciRunId=${uuid}"
 }
 
