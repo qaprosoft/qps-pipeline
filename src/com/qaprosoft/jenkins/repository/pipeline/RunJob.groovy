@@ -57,6 +57,7 @@ def runJob() {
             throw ex
         } finally {
             reportingResults()
+            //TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules 
             cleanWorkSpace()
         }
       }
