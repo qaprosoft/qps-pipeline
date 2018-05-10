@@ -49,16 +49,15 @@ def runJob() {
                 this.runTests(jobParameters)
 	    }
 
-            this.reportingResults()
-
-//            this.cleanWorkSpace()
           }
         } catch (Exception ex) {
             scanConsoleLogs()
+	    //explicitly execute abort to resolve anomalies with in_progress tests...
+            abortZafiraTestRun(authToken, uuid, "aborted by " + getAbortCause())
             throw ex
         } finally {
-	  //explicitly execute abort to resolve anomalies with in_progress tests...
-          abortZafiraTestRun(authToken, uuid, "aborted by " + getAbortCause())
+            reportingResults()
+            cleanWorkSpace()
         }
       }
     }
@@ -473,9 +472,6 @@ def queueZafiraTestRun(String authToken, String uuid) {
 }
 
 def abortZafiraTestRun(String authToken, String uuid, String comment) {
-      echo "authToken: ${authToken}"
-      echo "comment: ${comment}"
-      echo "uuid: ${uuid}"
       httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
