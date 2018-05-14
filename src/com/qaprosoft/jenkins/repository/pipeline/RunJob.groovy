@@ -51,9 +51,9 @@ def runJob() {
 
           }
         } catch (Exception ex) {
-            scanConsoleLogs()
+            def failureReason = scanConsoleLogs()
 	    //explicitly execute abort to resolve anomalies with in_progress tests...
-            abortZafiraTestRun(authToken, uuid, "aborted by " + getAbortCause())
+            abortZafiraTestRun(authToken, uuid, failureReason)
             throw ex
         } finally {
             reportingResults()
@@ -502,27 +502,29 @@ def setTestResults() {
 }
 
 def scanConsoleLogs() {
+        //TODO: move string constants into object/enum if possible
         currentBuild.result = 'FAILURE'
+        def failureReason = "undefined failure"
 
 	def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
 	def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 
 	if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
-	    echo "Unable to build project!"	    
+            failureReason = "BUILD FAILURE"
 	    bodyHeader = "<p>Unable to execute tests due to the build failure. ${JOB_URL}${BUILD_NUMBER}</p>"
 	    subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 	} else if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-	    echo "found compilation failure error in log!"	    
+            failureReason = "COMPILATION ERROR"
 	    bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}</p>"
 	    subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 	} else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
 	    currentBuild.result = 'ABORTED'
-	    echo "found Aborted by message in log!"	    
+            failureReason = "Aborted by " + getAbortCause()
 	    bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause() + "${JOB_URL}${BUILD_NUMBER}</p>"
 	    subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 	} else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
 	    currentBuild.result = 'ABORTED'
-	    echo "found Aborted by timeout message in log!"	    
+            failureReason = "Aborted by timeout"
 	    bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${JOB_URL}${BUILD_NUMBER}</p>"
 	    subject = "TIMED OUT: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 	}
@@ -534,6 +536,7 @@ def scanConsoleLogs() {
 
 	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list}"
 //	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list},${ADMIN_EMAILS}"
+        return failureReason
 }
 
 @NonCPS
