@@ -37,7 +37,7 @@ def runJob() {
 
             this.repoClone()
 
-            this.getResources()
+            //this.getResources()
 
 	    if (params["device"] != null && !params["device"].isEmpty() && !params["device"].equals("NULL")) {
 		//TODO: test mobile goals appending as this risky change can't be tested now!
