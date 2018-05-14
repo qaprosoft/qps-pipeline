@@ -471,11 +471,12 @@ def getZafiraAuthToken() {
 }
 
 def queueZafiraTestRun(String authToken, String uuid) {
+      echo "env: ${env.env}"
       httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
-	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"ciRunId\": \"${uuid}\", \"ciParentUrl\": \"${ci_parent_url}\", \"ciParentBuild\": \"${ci_parent_build}\"}", \
+	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"branch\": \"${branch}\", \"env\": \"${env.env}\", \"ciRunId\": \"${uuid}\", \"ciParentUrl\": \"${ci_parent_url}\", \"ciParentBuild\": \"${ci_parent_build}\"}", \
             url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue"
 }
 
