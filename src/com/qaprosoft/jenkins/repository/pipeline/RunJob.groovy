@@ -496,23 +496,35 @@ def setTestResults() {
 def scanConsoleLogs() {
         currentBuild.result = 'FAILURE'
 
-	def body = "Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}"
+	def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
 	def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 
-	if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
+	if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
+	    echo "Unable to build project!"	    
+	    bodyHeader = "<p>Unable to execute tests due to the build failure. ${JOB_URL}${BUILD_NUMBER}</p>"
+	    subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+	} else if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
 	    echo "found compilation failure error in log!"	    
-	    body = "Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}"
+	    bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}</p>"
 	    subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
-	}
-
-	if (currentBuild.rawBuild.log.contains("Aborted by ") || currentBuild.rawBuild.log.contains("Sending interrupt signal to process")) {
+	} else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
 	    currentBuild.result = 'ABORTED'
 	    echo "found Aborted by message in log!"	    
-	    body = "Unable to continue tests due to the abort action. It could be aborted due to the default ${env.JOB_MAX_RUN_TIME} minutes timeout! ${JOB_URL}${BUILD_NUMBER}"
+	    bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause() + "${JOB_URL}${BUILD_NUMBER}</p>"
 	    subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+	} else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
+	    currentBuild.result = 'ABORTED'
+	    echo "found Aborted by timeout message in log!"	    
+	    bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${JOB_URL}${BUILD_NUMBER}</p>"
+	    subject = "TIMED OUT: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 	}
 
-	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list}"
+
+        def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
+					eTAF_Report: ${JOB_URL}${BUILD_NUMBER}/eTAF_Report<br>
+					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
+
+	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list},${ADMIN_EMAILS}"
 }
 
 @NonCPS
