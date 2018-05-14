@@ -509,25 +509,25 @@ def scanConsoleLogs() {
 	def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
 	def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 
-	if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
-            failureReason = "BUILD FAILURE"
-	    bodyHeader = "<p>Unable to execute tests due to the build failure. ${JOB_URL}${BUILD_NUMBER}</p>"
-	    subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
-	} else if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
+        if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
             failureReason = "COMPILATION ERROR"
-	    bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}</p>"
-	    subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
-	} else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
-	    currentBuild.result = 'ABORTED'
+            bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
+            failureReason = "BUILD FAILURE"
+            bodyHeader = "<p>Unable to execute tests due to the build failure. ${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
+            currentBuild.result = 'ABORTED'
             failureReason = "Aborted by " + getAbortCause()
-	    bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause() + "${JOB_URL}${BUILD_NUMBER}</p>"
-	    subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
-	} else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
-	    currentBuild.result = 'ABORTED'
+            bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause() + "${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
+            currentBuild.result = 'ABORTED'
             failureReason = "Aborted by timeout"
-	    bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${JOB_URL}${BUILD_NUMBER}</p>"
-	    subject = "TIMED OUT: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
-	}
+            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "TIMED OUT: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        }
 
 
         def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
