@@ -532,7 +532,8 @@ def scanConsoleLogs() {
 					eTAF_Report: ${JOB_URL}${BUILD_NUMBER}/eTAF_Report<br>
 					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
 
-	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list},${ADMIN_EMAILS}"
+	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list}"
+//	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list},${ADMIN_EMAILS}"
 }
 
 @NonCPS
