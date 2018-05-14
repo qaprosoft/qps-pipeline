@@ -52,6 +52,7 @@ def runJob() {
           }
         } catch (Exception ex) {
             def failureReason = scanConsoleLogs()
+            echo "failureReason: ${failureReason}"
 	    //explicitly execute abort to resolve anomalies with in_progress tests...
             abortZafiraTestRun(authToken, uuid, failureReason)
             throw ex
