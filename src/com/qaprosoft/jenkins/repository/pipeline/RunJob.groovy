@@ -371,6 +371,8 @@ def runTests(Map jobParameters) {
 			-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_HOST -Dmax_screen_history=1 \
 			-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG -Duser.timezone=PST -Ds3_local_storage=/opt/apk clean test"
 
+        def mavenDebug=" -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE "
+
 
         def zafiraEnabled = "false"
         if ("${DEFAULT_BASE_MAVEN_GOALS}".contains("zafira_enabled=true")) {
@@ -411,6 +413,12 @@ def runTests(Map jobParameters) {
             echo "Enabling jacoco report generation goals."
             mvnBaseGoals += " jacoco:instrument"
         }
+
+        if ("${debug}".equalsIgnoreCase("true")) {
+            echo "Enabling remote debug."
+            mvnBaseGoals += mavenDebug
+        }
+
 
         mvnBaseGoals += " ${overrideFields}"
         mvnBaseGoals = mvnBaseGoals.replace(", ", ",")
