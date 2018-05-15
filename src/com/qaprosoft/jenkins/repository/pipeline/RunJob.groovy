@@ -299,6 +299,15 @@ def setupGoalsForAndroid(Map<String, String> goalMap) {
 	    break
 	  case "QA_FREEFORM_PROD":
 	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_FreeformBuilds_SingAndroidQaFreeformProd/sing_android-playstore-freeform-prod-.*.apk")
+	    break
+	  case "QA_FREEFORM_BETA":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_FreeformBuilds_SingAndroidQaFreeformBeta/sing_android-playstore-freeform-beta-.*.apk")
+	    break
+	  case "QA_INCREASE_PHOTO_UPLOAD_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_IncreasePhotoUploadBuilds_SingAndroidQaIncreasePhotoUploadInt/sing_android-playstore-increase_photo_upload-int-.*.apk")
+	    break
+	  case "QA_INCREASE_PHOTO_UPLOAD_PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_IncreasePhotoUploadBuilds_SingAndroidQaIncreasePhotoUploadProd/sing_android-playstore-increase_photo_upload-prod-.*.apk")
 	    break	    
 	  default:
 	    throw new RuntimeException("Unknown env: " + params["env"]);
