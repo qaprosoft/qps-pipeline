@@ -96,7 +96,8 @@ def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propaga
 	}
 
         echo "propagate: " + propagateJob
-	if (!entry.get("browser").isEmpty()) {
+        try {
+	  if (!entry.get("browser").isEmpty()) {
        	    build job: folderName + "/" + entry.get("jobName"),
                 propagate: propagateJob,
                     parameters: [
@@ -111,7 +112,7 @@ def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propaga
                         string(name: 'BuildPriority', value: entry.get("priority")),
                     ], 
                 wait: waitJob
-	} else {
+	  } else {
        	    build job: folderName + "/" + entry.get("jobName"),
                 propagate: propagateJob,
                     parameters: [
@@ -125,7 +126,11 @@ def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propaga
                         string(name: 'BuildPriority', value: entry.get("priority")),
                     ], 
                 wait: waitJob
-	}
+          }
+        } catch (Exception e) {
+	  emailext attachLog: true, body: "Unable to start job via cron! " + e.getMessage(), recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "JOBSTART FAILURE: ${entry.get("jobName")}", to: "${email_list},${ADMIN_EMAILS}"          
+        }
+
     }
 }
 
