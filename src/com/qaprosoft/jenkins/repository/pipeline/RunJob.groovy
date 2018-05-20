@@ -122,7 +122,7 @@ def repoClone() {
 	def fork = params["fork"]
 	println "forked_repo: " + fork
 	if (!fork) {
-#	        git branch: '${branch}', single_branch: '${branch}', url: '${GITHUB_SSH_URL}/${project}', depth: 1, changelog: false, poll: false, shallow: true
+//	        git branch: '${branch}', single_branch: '${branch}', url: '${GITHUB_SSH_URL}/${project}', depth: 1, changelog: false, poll: false, shallow: true
 	        git branch: '${branch}', url: '${GITHUB_SSH_URL}/${project}', depth: 1, changelog: false, poll: false, shallow: true
 	} else {
 		def token_name = 'token_' + "${BUILD_USER_ID}"
