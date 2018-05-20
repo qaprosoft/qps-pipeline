@@ -123,7 +123,8 @@ def repoClone() {
 	println "forked_repo: " + fork
 	if (!fork) {
 //	        git branch: '${branch}', single_branch: '${branch}', url: '${GITHUB_SSH_URL}/${project}', depth: 1, changelog: false, poll: false, shallow: true
-	        git branch: '${branch}', url: '${GITHUB_SSH_URL}/${project}'
+//	        git branch: '${branch}', url: '${GITHUB_SSH_URL}/${project}'
+	        checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], submoduleCfg: [], userRemoteConfigs: [[url: '${GITHUB_SSH_URL}/${project}']]], changelog: false, poll: false
 	} else {
 		def token_name = 'token_' + "${BUILD_USER_ID}"
 		println "token_name: ${token_name}"
