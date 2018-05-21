@@ -122,8 +122,6 @@ def repoClone() {
 	def fork = params["fork"]
 	println "forked_repo: " + fork
 	if (!fork) {
-//	        git branch: '${branch}', single_branch: '${branch}', url: '${GITHUB_SSH_URL}/${project}', depth: 1, changelog: false, poll: false, shallow: true
-//	        git branch: '${branch}', url: '${GITHUB_SSH_URL}/${project}'
 	        checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
                     doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], \
                     [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
@@ -135,9 +133,13 @@ def repoClone() {
 		def token_value = env[token_name]
 		//println "token_value: ${token_value}" 
 		if (token_value != null) {
-			def forkUrl = "https://${token_value}@${GITHUB_HOST}/${BUILD_USER_ID}/${project}"
-			println "fork repo url: ${forkUrl}"
-		        git branch: '${branch}', url: "${forkUrl}", changelog: false, poll: false, shallow: true
+                    def forkUrl = "https://${token_value}@${GITHUB_HOST}/${BUILD_USER_ID}/${project}"
+                    println "fork repo url: ${forkUrl}"
+	            checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
+                        doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], \
+                        [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
+                        submoduleCfg: [], userRemoteConfigs: [[url: '${forkUrl}']]], \
+                        changelog: false, poll: false
 		} else {
 			throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI! Visit wiki article for details: AUTO-3636")
 		}
