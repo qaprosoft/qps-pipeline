@@ -4,6 +4,8 @@ import static java.util.UUID.randomUUID
 
 class Runner {
 
+	def uuid = "${ci_run_id}"
+
 	def runJob() {
 		//assign initial node detection logic onto the ec2-fleet to
 		// a) minimize calls on master node
@@ -12,7 +14,6 @@ class Runner {
 		def mobileGoals = ""
 
 		def authToken = ""
-		def uuid = "${ci_run_id}"
 		echo "uuid: " + uuid
 		if (uuid.isEmpty()) {
 			uuid = randomUUID() as String
