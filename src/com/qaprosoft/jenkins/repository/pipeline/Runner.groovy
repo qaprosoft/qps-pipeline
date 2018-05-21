@@ -2,9 +2,9 @@ package com.qaprosoft.jenkins.repository.pipeline
 
 import static java.util.UUID.randomUUID
 
-class Runner {
+def uuid = "${ci_run_id}"
 
-	def uuid = "${ci_run_id}"
+class Runner {
 
 	def runJob() {
 		//assign initial node detection logic onto the ec2-fleet to
