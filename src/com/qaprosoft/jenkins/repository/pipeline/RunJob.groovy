@@ -10,6 +10,7 @@ def runJob() {
     def jobParameters = null
     def mobileGoals = ""
 
+    def authToken = ""
     def uuid = "${ci_run_id}"
     echo "uuid: " + uuid
     if (uuid.isEmpty()) {
@@ -17,36 +18,15 @@ def runJob() {
     }
     echo "uuid: " + uuid
 
-
-/*    def body = "{\"refreshToken\": \"${ZAFIRA_ACCESS_TOKEN}\"}"
-
     try {
-      def response = httpRequest \
-	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'POST', \
-	    requestBody: body, \
-            url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh"
-
-      // move new token schedule request
-      def properties = new groovy.json.JsonSlurper().parseText(response.getContent())
-      
-      def token = properties.get("accessToken")
-      def type = properties.get("type")
-
-      echo "token: ${token}"
-      echo "type: ${type}"
-
-      response = httpRequest customHeaders: [[name: 'Authorization', \
-            value: "${type} ${token}"]], \
-	    acceptType: 'APPLICATION_JSON', \
-	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'POST', \
-            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/schedule?jobName=${JOB_BASE_NAME}&branch=${branch}&ciRunId=${uuid}&autoMilestones=true"
-
-    } catch (Exception e) {
-      echo e.getMessage()
+      authToken = getZafiraAuthToken()
+      queueZafiraTestRun(authToken, uuid)
+    } catch (Exception ex) {
+      echo "exception: " + ex.getMessage();
+      echo "exception class: " + ex.getClass().getName();
+      echo "stacktrace: " + Arrays.toString(ex.getStackTrace());
     }
-*/
+
     jobParameters = setJobType("${platform}", "${browser}")
 
     node(jobParameters.get("node")) {
@@ -57,7 +37,7 @@ def runJob() {
 
             this.repoClone()
 
-            this.getResources()
+            //this.getResources()
 
 	    if (params["device"] != null && !params["device"].isEmpty() && !params["device"].equals("NULL")) {
 		//TODO: test mobile goals appending as this risky change can't be tested now!
@@ -69,15 +49,17 @@ def runJob() {
                 this.runTests(jobParameters)
 	    }
 
-            this.reportingResults()
-
-//            this.cleanWorkSpace()
           }
         } catch (Exception ex) {
-            scanConsoleLogs()
+            def failureReason = scanConsoleLogs()
+            echo "failureReason: ${failureReason}"
+	    //explicitly execute abort to resolve anomalies with in_progress tests...
+            abortZafiraTestRun(authToken, uuid, failureReason)
             throw ex
         } finally {
-	  //do nothing for now
+            reportingResults()
+            //TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules 
+            //cleanWorkSpace()
         }
       }
     }
@@ -140,16 +122,24 @@ def repoClone() {
 	def fork = params["fork"]
 	println "forked_repo: " + fork
 	if (!fork) {
-	        git branch: '${branch}', url: '${GITHUB_SSH_URL}/${project}', changelog: false, poll: false, shallow: true
+	        checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
+                    doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], \
+                    [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
+                    submoduleCfg: [], userRemoteConfigs: [[url: '${GITHUB_SSH_URL}/${project}']]], \
+                    changelog: false, poll: false
 	} else {
 		def token_name = 'token_' + "${BUILD_USER_ID}"
 		println "token_name: ${token_name}"
 		def token_value = env[token_name]
 		//println "token_value: ${token_value}" 
 		if (token_value != null) {
-			def forkUrl = "https://${token_value}@${GITHUB_HOST}/${BUILD_USER_ID}/${project}"
-			println "fork repo url: ${forkUrl}"
-		        git branch: '${branch}', url: "${forkUrl}", changelog: false, poll: false, shallow: true
+                    def forkUrl = "https://${token_value}@${GITHUB_HOST}/${BUILD_USER_ID}/${project}"
+                    println "fork repo url: ${forkUrl}"
+	            checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
+                        doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], \
+                        [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
+                        submoduleCfg: [], userRemoteConfigs: [[url: '${forkUrl}']]], \
+                        changelog: false, poll: false
 		} else {
 			throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI! Visit wiki article for details: AUTO-3636")
 		}
@@ -399,6 +389,7 @@ def runTests(Map jobParameters) {
 			-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_HOST -Dmax_screen_history=1 \
 			-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG -Duser.timezone=PST -Ds3_local_storage=/opt/apk clean test"
 
+        def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
         def zafiraEnabled = "false"
         if ("${DEFAULT_BASE_MAVEN_GOALS}".contains("zafira_enabled=true")) {
@@ -440,6 +431,12 @@ def runTests(Map jobParameters) {
             mvnBaseGoals += " jacoco:instrument"
         }
 
+        if ("${debug}".equalsIgnoreCase("true")) {
+            echo "Enabling remote debug."
+            mvnBaseGoals += mavenDebug
+        }
+
+
         mvnBaseGoals += " ${overrideFields}"
         mvnBaseGoals = mvnBaseGoals.replace(", ", ",")
 
@@ -475,6 +472,40 @@ def buildOutGoals(Map<String, String> goalMap, currentBuild) {
     return goals
 }
 
+def getZafiraAuthToken() {
+      def response = httpRequest \
+	    contentType: 'APPLICATION_JSON', \
+	    httpMode: 'POST', \
+	    requestBody: "{\"refreshToken\": \"${ZAFIRA_ACCESS_TOKEN}\"}", \
+            url: "${ZAFIRA_SERVICE_URL}/api/auth/refresh"
+
+      // reread new acccetToken and auth type
+      def properties = (Map) new groovy.json.JsonSlurper().parseText(response.getContent())
+      
+      def token = properties.get("accessToken")
+      def type = properties.get("type")
+
+      return "${type} ${token}"
+}
+
+def queueZafiraTestRun(String authToken, String uuid) {
+      echo "env: ${env.env}"
+      httpRequest customHeaders: [[name: 'Authorization', \
+            value: "${authToken}"]], \
+	    contentType: 'APPLICATION_JSON', \
+	    httpMode: 'POST', \
+	    requestBody: "{\"jobName\": \"${JOB_BASE_NAME}\", \"buildNumber\": \"${BUILD_NUMBER}\", \"branch\": \"${branch}\", \"env\": \"${env.env}\", \"ciRunId\": \"${uuid}\", \"ciParentUrl\": \"${ci_parent_url}\", \"ciParentBuild\": \"${ci_parent_build}\"}", \
+            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/queue"
+}
+
+def abortZafiraTestRun(String authToken, String uuid, String comment) {
+      httpRequest customHeaders: [[name: 'Authorization', \
+            value: "${authToken}"]], \
+	    contentType: 'APPLICATION_JSON', \
+	    httpMode: 'POST', \
+	    requestBody: "{\"comment\": \"${comment}\"}", \
+            url: "${ZAFIRA_SERVICE_URL}/api/tests/runs/abort?ciRunId=${uuid}"
+}
 
 def setTestResults() {
     //Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
@@ -489,27 +520,63 @@ def setTestResults() {
 }
 
 def scanConsoleLogs() {
+        //TODO: move string constants into object/enum if possible
         currentBuild.result = 'FAILURE'
+        def failureReason = "undefined failure"
 
-	def body = "Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}"
+	def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
 	def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 
-	if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-	    echo "found compilation failure error in log!"	    
-	    body = "Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}"
-	    subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
-	}
+        if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
+            failureReason = "COMPILATION ERROR"
+            bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
+            failureReason = "BUILD FAILURE"
+            bodyHeader = "<p>Unable to execute tests due to the build failure. ${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
+            currentBuild.result = 'ABORTED'
+            failureReason = "Aborted by " + getAbortCause()
+            bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause() + "${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
+            currentBuild.result = 'ABORTED'
+            failureReason = "Aborted by timeout"
+            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "TIMED OUT: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        }
 
-	if (currentBuild.rawBuild.log.contains("Aborted by ") || currentBuild.rawBuild.log.contains("Sending interrupt signal to process")) {
-	    currentBuild.result = 'ABORTED'
-	    echo "found Aborted by message in log!"	    
-	    body = "Unable to continue tests due to the abort action. It could be aborted due to the default ${env.JOB_MAX_RUN_TIME} minutes timeout! ${JOB_URL}${BUILD_NUMBER}"
-	    subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
-	}
+
+        def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
+					eTAF_Report: ${JOB_URL}${BUILD_NUMBER}/eTAF_Report<br>
+					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
 
 	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list}"
+//	emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list},${ADMIN_EMAILS}"
+        return failureReason
 }
 
+@NonCPS
+def getAbortCause()
+{
+    def causee = ''
+    def actions = currentBuild.getRawBuild().getActions(jenkins.model.InterruptedBuildAction)
+    for (action in actions) {
+        def causes = action.getCauses()
+
+        // on cancellation, report who cancelled the build
+        for (cause in causes) {
+            causee = cause.getUser().getDisplayName()
+            cause = null
+        }
+        causes = null
+        action = null
+    }
+    actions = null
+
+    return causee
+}
 
 def reportingResults() {
     stage('Results') {

@@ -26,6 +26,7 @@ class Job {
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
                 booleanParam('fork', false, "Reuse forked repository for ${project} project.")
+                booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
                 def defaultMobilePool = currentSuite.getParameter("jenkinsMobileDefaultPool")
                 if (defaultMobilePool == null) {
