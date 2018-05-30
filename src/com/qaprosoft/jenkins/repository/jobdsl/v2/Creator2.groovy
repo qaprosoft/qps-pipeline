@@ -6,5 +6,6 @@ creator.test()
 class Creator3 {
 	public void test() {
 		 //do nothing
+		echo "qwe"
 	}
 }
