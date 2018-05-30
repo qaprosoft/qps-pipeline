@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.repository.jobdsl
+package com.qaprosoft.jenkins.repository.jobdsl.v2
 
 createPRCheckerJob()
 
