@@ -13,6 +13,6 @@ class Creator3 {
 	
 	public void test() {
 		 //do nothing
-		context.echo "qwe"
+		context.println("qwe")
 	}
 }
