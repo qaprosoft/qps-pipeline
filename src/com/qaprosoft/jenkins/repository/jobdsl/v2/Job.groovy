@@ -152,6 +152,12 @@ class Job {
                     sandbox()
                 }
             }
+
+            properties {
+                ownership {
+                    primaryOwnerId(suiteOwner)
+                }
+            }
         }
     }
 
