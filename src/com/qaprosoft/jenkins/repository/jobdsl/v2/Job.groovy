@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.repository.jobdsl
+package com.qaprosoft.jenkins.repository.jobdsl.v2
 
 import groovy.json.JsonSlurper;
 
@@ -148,7 +148,7 @@ class Job {
             /** Git Stuff **/
             definition {
                 cps {
-                    script("@Library('QPS-Jenkins')\nimport com.qaprosoft.jenkins.repository.pipeline.RunJob;\nnew RunJob().runJob()")
+                    script("@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()")
                     sandbox()
                 }
             }
@@ -230,7 +230,7 @@ class Job {
             }
             definition {
                 cps {
-                    script("@Library('QPS-Jenkins')\nimport com.qaprosoft.jenkins.repository.pipeline.RunCron;\nnew RunCron().runCron()")
+                    script("@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()")
                     sandbox()
                 }
             }
