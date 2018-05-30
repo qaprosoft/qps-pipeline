@@ -1,5 +1,10 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
+def creator = new Creator2()
+creator.test()
+
 class Creator2 {
- //do nothing
+	public void test() {
+		 //do nothing
+	}
 }
