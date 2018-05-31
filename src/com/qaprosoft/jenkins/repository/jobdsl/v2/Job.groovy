@@ -291,7 +291,7 @@ class Job {
 				deviceList.add(it.configuration.capabilities.browserName)
 			}
 		}
-		return deviceList.sort()
+		return deviceList.sort(false)
 	}
 
 }
