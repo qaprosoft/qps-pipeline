@@ -287,7 +287,7 @@ class Job {
 		json.each {
 			if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
 				context.println("platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName)
-				deviceList.add(it.configuration.capabilities.browserName.replaceAll("[\\[\\](){}]","");
+				deviceList.add(it.configuration.capabilities.browserName.replaceAll("[\\[\\](){}]",""));
 			}
 		}
 		context.println("------------------------------------")
