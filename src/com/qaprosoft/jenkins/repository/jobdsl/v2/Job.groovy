@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
-import groovy.json.JsonSlurper;
 import com.qaprosoft.selenium.grid.ProxyInfo;
 
 class Job {
