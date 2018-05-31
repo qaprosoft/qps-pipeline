@@ -37,10 +37,10 @@ class Creator {
 		List<XmlSuite> suiteXml = xmlFile.parseToList()
 		XmlSuite currentSuite = suiteXml.get(0)
 		def jobName = currentSuite.getParameter("jenkinsJobName").toString()
-		Job.createPipeline(pipelineJob(jobFolder + "/" + jobName), currentSuite, project, sub_project, suite, suiteOwner, zafira_project)
+		Job.createPipeline(context.pipelineJob(jobFolder + "/" + jobName), currentSuite, project, sub_project, suite, suiteOwner, zafira_project)
 		if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
 			def cronJobName = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
-			Job.createRegressionPipeline(pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
+			Job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
 		}
 	}
 }
