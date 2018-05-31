@@ -308,13 +308,12 @@ class Job {
 			"Samsung_Galaxy_Tab_A10",
 			"LG_Nexus_4"
 		]
-		println(deviceList)
-/*		println "test message for sync2"
-		def json = new JsonSlurper().parse("https://demo.qaprosoft.com/grid/admin/ProxyInfo".toURL())
-		println json
+		context.println(deviceList)
+		def json = new JsonSlurper().parse("http://smule.qaprosoft.com:14444/grid/admin/ProxyInfo".toURL())
+		context.println(json)
 		json.each {
-			println "platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName
-		}*/
+			context.println("platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName)
+		}
 		return deviceList
 	}
 
