@@ -4,7 +4,7 @@ import groovy.json.JsonSlurper;
 
 class ProxyInfo {
 	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
-	public static List<String> getDevicesList(String platform) {
+	public static List<String> getDevicesList(context, String platform) {
 		def baseDeviceList = ["DefaultPool", "ANY"]
 		//context.println(baseDeviceList)
 		
