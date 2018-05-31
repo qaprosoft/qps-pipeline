@@ -271,7 +271,7 @@ class Runner extends Executor {
 			
 			def CARINA_CORE_VERSION = vars.get("CARINA_CORE_VERSION")
 			def CORE_LOG_LEVEL = vars.get("CORE_LOG_LEVEL")
-			def SELENIUM_HOST = vars.get("SELENIUM_HOST")
+			def SELENIUM_URL = vars.get("SELENIUM_URL")
 			def ZAFIRA_BASE_CONFIG = vars.get("ZAFIRA_BASE_CONFIG")
 			
 			
@@ -285,7 +285,7 @@ class Runner extends Executor {
 			
 			//TODO: investigate how user timezone can be declared on qps-infra level
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${pomFile} \
-				-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_HOST -Dmax_screen_history=1 \
+				-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_URL -Dmax_screen_history=1 \
 				-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG clean test" //-Duser.timezone=PST 
 
 			//TODO: move 8000 port into the global var
