@@ -25,7 +25,6 @@ class Runner extends Executor {
 	
 	public Runner(context) {
 		super(context)
-		this.context = context
 		scmClient = new GitHub(context)
 	}
 	
