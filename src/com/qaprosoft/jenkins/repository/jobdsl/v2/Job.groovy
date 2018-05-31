@@ -4,14 +4,16 @@ import com.qaprosoft.selenium.grid.ProxyInfo;
 
 class Job {
 	protected def context
+	protected def selenium
 	
 	public Job(context) {
 		this.context = context
+		selenium = context.binding.variables.SELENIUM_PROTOCOL + "://" + context.binding.variables.SELENIUM_HOST + ":" + context.binding.variables.SELENIUM_PORT 
 	}
 
 	void createPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project, String suite, String suiteOwner, String zafira_project) {
 
-		context.println("selenium_host" + context.binding.variables.SELENIUM_HOST)
+		
 		pipelineJob.with {
 			description("project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}")
 			logRotator { numToKeep 100 }
@@ -58,7 +60,7 @@ class Job {
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
-						choiceParam('device', ProxyInfo.getDevicesList("selenium-test", 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('device', ProxyInfo.getDevicesList(selenium, 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
@@ -69,7 +71,7 @@ class Job {
 						break;
 					case ~/^.*ios.*$/:
 					//TODO:  Need to adjust this for virtual as well.
-						choiceParam('device', ProxyInfo.getDevicesList("selenium-test", 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('device', ProxyInfo.getDevicesList(selenium, 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
