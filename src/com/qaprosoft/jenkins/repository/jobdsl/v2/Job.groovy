@@ -271,6 +271,7 @@ class Job {
 		return genericFields
 	}
 
+	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
 	static List<String> getAndroidDeviceList(String suite) {
 		def deviceList = [
 			"DefaultPool",
@@ -308,12 +309,12 @@ class Job {
 			"LG_Nexus_4"
 		]
 		println(deviceList)
-		println "test message for sync2"
-		def json = new JsonSlurper().parse("https://smule.qaprosoft.com/grid/admin/ProxyInfo".toURL())
+/*		println "test message for sync2"
+		def json = new JsonSlurper().parse("https://demo.qaprosoft.com/grid/admin/ProxyInfo".toURL())
 		println json
 		json.each {
 			println "platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName
-		}
+		}*/
 		return deviceList
 	}
 
