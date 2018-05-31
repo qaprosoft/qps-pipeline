@@ -1,9 +1,11 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
-def creator = new Creator3(this)
-creator.test()
+import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 
-class Creator3 {
+def creator = new Creator(this)
+creator.createJob()
+
+/*class Creator3 {
 	//pipeline context to provide access to existing pipeline methods like echo, sh etc...
 	protected def context
 	
@@ -16,3 +18,4 @@ class Creator3 {
 		context.println("qwe")
 	}
 }
+*/
