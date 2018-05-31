@@ -279,9 +279,9 @@ class Job {
 	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
 	protected List<String> getDevicesList(String platform) {
 		def baseDeviceList = ["DefaultPool", "ANY"]
-		context.println(deviceList)
+		//context.println(baseDeviceList)
 		
-		def deviceList = ["DefaultPool", "ANY"]
+		def deviceList = []
 		//TODO: reuse selenium host/port/protocol from env jobVars
 		def json = new JsonSlurper().parse("http://smule.qaprosoft.com:14444/grid/admin/ProxyInfo".toURL())
 		//context.println(json)
