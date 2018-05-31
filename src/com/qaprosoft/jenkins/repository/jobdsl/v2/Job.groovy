@@ -291,7 +291,13 @@ class Job {
 				deviceList.add(it.configuration.capabilities.browserName)
 			}
 		}
-		return deviceList.sort(false)
+		context.println("------------------------------------")
+		context.println(deviceList.sort())
+		context.println("------------------------------------")
+		context.println(deviceList.sort(false))
+		context.println("------------------------------------")
+		context.println(deviceList)
+		return deviceList
 	}
 
 }
