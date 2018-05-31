@@ -8,7 +8,7 @@ package com.qaprosoft.jenkins.repository.jobdsl.v2
 
 
 
-class Creator() {
+class Creator {
 	public def context
 
 	void createJob() {
