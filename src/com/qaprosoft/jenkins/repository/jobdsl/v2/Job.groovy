@@ -3,8 +3,13 @@ package com.qaprosoft.jenkins.repository.jobdsl.v2
 import groovy.json.JsonSlurper;
 
 class Job {
+	protected def context
+	
+	public Job(context) {
+		this.context = context
+	}
 
-	static void createPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project, String suite, String suiteOwner, String zafira_project) {
+	void createPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project, String suite, String suiteOwner, String zafira_project) {
 
 		pipelineJob.with {
 			description("project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}")
@@ -155,7 +160,7 @@ class Job {
 		}
 	}
 
-	static Closure addExtensibleChoice(choiceName, globalName, desc, choice) {
+	protected Closure addExtensibleChoice(choiceName, globalName, desc, choice) {
 		return { node ->
 			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'jp.ikedam.jenkins.plugins.extensible__choice__parameter.ExtensibleChoiceParameterDefinition'(plugin: 'extensible-choice-parameter@1.3.3') {
 				name choiceName
@@ -170,7 +175,7 @@ class Job {
 		}
 	}
 
-	static Closure addExtensibleChoice(choiceName, desc, code) {
+	protected Closure addExtensibleChoice(choiceName, desc, code) {
 		return { node ->
 			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'jp.ikedam.jenkins.plugins.extensible__choice__parameter.ExtensibleChoiceParameterDefinition'(plugin: 'extensible-choice-parameter@1.3.3') {
 				name choiceName
@@ -187,7 +192,7 @@ class Job {
 		}
 	}
 
-	static Closure addHiddenParameter(paramName, paramDesc, paramValue) {
+	protected Closure addHiddenParameter(paramName, paramDesc, paramValue) {
 		return { node ->
 			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'com.wangyin.parameter.WHideParameterDefinition'(plugin: 'hidden-parameter@0.0.4') {
 				name paramName
@@ -197,7 +202,7 @@ class Job {
 		}
 	}
 
-	static void createRegressionPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project) {
+	public void createRegressionPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project) {
 
 		pipelineJob.with {
 
@@ -233,7 +238,7 @@ class Job {
 		}
 	}
 
-	static List<String> getEnvironments(currentSuite) {
+	protected List<String> getEnvironments(currentSuite) {
 		def envList = getGenericSplit(currentSuite, "jenkinsEnvironments")
 
 		if (envList.isEmpty()) {
@@ -244,7 +249,7 @@ class Job {
 		return envList
 	}
 
-	static String getCustomFields(currentSuite) {
+	protected String getCustomFields(currentSuite) {
 		def overrideFields = getGenericSplit(currentSuite, "overrideFields")
 		def prepCustomFields = ""
 
@@ -257,7 +262,7 @@ class Job {
 		return prepCustomFields
 	}
 
-	static List<String> getGenericSplit(currentSuite, parameterName) {
+	protected List<String> getGenericSplit(currentSuite, parameterName) {
 		String genericField = currentSuite.getParameter(parameterName)
 		def genericFields = []
 
@@ -272,7 +277,7 @@ class Job {
 	}
 
 	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
-	static List<String> getAndroidDeviceList(String suite) {
+	protected List<String> getAndroidDeviceList(String suite) {
 		def deviceList = [
 			"DefaultPool",
 			"ANY",
@@ -318,7 +323,7 @@ class Job {
 	}
 
 
-	static List<String> getiOSDeviceList() {
+	protected List<String> getiOSDeviceList() {
 		def deviceList = ["DefaultPool", "ANY", "iPhone_7_Plus", "iPhone_7", "iPhone_6S", "iPad_Air_2", "iPhone_7Plus", "iPhone_8", "iPhone_8Plus", "iPhone_5s", "iPad_Air2", "iPhone_7_Black", "iPhone_8_Black"]
 		return deviceList
 	}
