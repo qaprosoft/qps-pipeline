@@ -10,9 +10,6 @@ import com.qaprosoft.jenkins.repository.jobdsl.v2.Job;
 createJob()
 
 def context
-void Creator(context) {
-	this.context = context
-}
 
 void createJob() {
 	def workspace = binding.variables.WORKSPACE
