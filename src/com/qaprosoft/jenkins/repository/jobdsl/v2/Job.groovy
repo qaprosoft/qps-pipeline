@@ -284,7 +284,7 @@ class Job {
 		]
 		context.println(deviceList)
 		def json = new JsonSlurper().parse("http://smule.qaprosoft.com:14444/grid/admin/ProxyInfo".toURL())
-		//context.println(json)
+		context.println(json)
 		json.each {
 			if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
 				context.println("platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName)
