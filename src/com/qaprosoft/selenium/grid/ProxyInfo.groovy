@@ -12,13 +12,19 @@ class ProxyInfo {
 		//TODO: reuse selenium host/port/protocol from env jobVars
 		def proxyInfoUrl = selenium + "/grid/admin/ProxyInfo"
 		//println("ProxyInfo url: ${proxyInfoUrl}")
-		def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
-		//println(json)
-		json.each {
-			if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
-				println("platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0])
-				deviceList.add(it.configuration.capabilities.browserName[0]);
+		
+		try {
+			def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
+			//println(json)
+			json.each {
+				if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
+					println("platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0])
+					deviceList.add(it.configuration.capabilities.browserName[0]);
+				}
 			}
+		} catch (Exception e) {
+			//TODO: find a way to write message in static methods
+			println(e.getMessage())
 		}
 
 		return baseDeviceList + deviceList.sort()
