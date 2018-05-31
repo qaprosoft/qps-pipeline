@@ -277,41 +277,10 @@ class Job {
 	}
 
 	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
-	protected List<String> getAndroidDeviceList(String suite) {
+	protected List<String> getAndroidDeviceList() {
 		def deviceList = [
 			"DefaultPool",
-			"ANY",
-			"Google_Nexus_7",
-			"Google_Pixel",
-			"Google_Pixel_XL",
-			"One_M8",
-			"Samsung_Grand_Prime",
-			"Samsung_Galaxy_S7",
-			"Samsung_Galaxy_S6",
-			"Samsung_Galaxy_Note_4",
-			"Motorola_Nexus_6",
-			"Samsung_Galaxy_J3",
-			"Samsung_Galaxy_J5",
-			"Samsung_Galaxy_J7",
-			"Xiaomi_Redmi_Note4",
-			"LG_K7",
-			"Nexus_7",
-			"Samsung_Galaxy_S5",
-			"Moto_G4_Plus",
-			"Samsung_Galaxy_S7_Ed",
-			"LG_Nexus_5",
-			"Xiaomi_MI_MAX",
-			"Lenovo_Tab4",
-			"Samsung_Galaxy_Tab_A8",
-			"Honor_6X",
-			"OnePlus_3",
-			"Nokia_3",
-			"Xiaomi_Redmi_4X",
-			"Sony_Xperia_XA1",
-			"Xiaomi_Redmi_4A",
-			"Samsung_Galaxy_A5",
-			"Samsung_Galaxy_Tab_A10",
-			"LG_Nexus_4"
+			"ANY"
 		]
 		context.println(deviceList)
 		def json = new JsonSlurper().parse("http://smule.qaprosoft.com:14444/grid/admin/ProxyInfo".toURL())
