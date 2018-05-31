@@ -12,7 +12,7 @@ class Creator {
 	protected def context
 	protected def binding
 
-	void Creator(context) {
+	public Creator(context) {
 		this.context = context
 		this.binding = context.binding
 	}
