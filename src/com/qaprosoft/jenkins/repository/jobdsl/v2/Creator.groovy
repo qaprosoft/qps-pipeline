@@ -9,7 +9,7 @@ import com.qaprosoft.jenkins.repository.jobdsl.v2.Job;
 
 createJob()
 
-protected def context
+public def context
 
 void createJob() {
 	def workspace = binding.variables.WORKSPACE
