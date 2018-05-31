@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
 import groovy.json.JsonSlurper;
+import com.qaprosoft.selenium.grid.ProxyInfo;
 
 class Job {
 	protected def context
@@ -57,7 +58,7 @@ class Job {
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
-						choiceParam('device', getDevicesList('ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('device', ProxyInfo.getDevicesList('ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
@@ -68,7 +69,7 @@ class Job {
 						break;
 					case ~/^.*ios.*$/:
 					//TODO:  Need to adjust this for virtual as well.
-						choiceParam('device', getDevicesList('iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('device', ProxyInfo.getDevicesList('iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
@@ -276,23 +277,6 @@ class Job {
 		return genericFields
 	}
 
-	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
-	protected List<String> getDevicesList(String platform) {
-		def baseDeviceList = ["DefaultPool", "ANY"]
-		//context.println(baseDeviceList)
-		
-		def deviceList = []
-		//TODO: reuse selenium host/port/protocol from env jobVars
-		def json = new JsonSlurper().parse("http://smule.qaprosoft.com:14444/grid/admin/ProxyInfo".toURL())
-		//context.println(json)
-		json.each {
-			if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
-				context.println("platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0])
-				deviceList.add(it.configuration.capabilities.browserName[0]);
-			}
-		}
 
-		return baseDeviceList + deviceList.sort()
-	}
 
 }
