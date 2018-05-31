@@ -22,7 +22,7 @@ class Job {
 				triggers { cron(scheduling) }
 			}
 
-			println "test message for sync1"
+			context.println("test message for sync1")
 			/** Properties & Parameters Area **/
 			parameters {
 				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
