@@ -10,6 +10,9 @@ class ProxyInfo {
 		
 		def deviceList = []
 		//TODO: reuse selenium host/port/protocol from env jobVars
+		def envVars = context.env.getEnvironment()
+		def proxyInfoUrl = envVars.get("SELENIUM_HOST")
+		context.println("ProxyInfo url: ${proxyInfoUrl}")
 		def json = new JsonSlurper().parse("http://smule.qaprosoft.com:14444/grid/admin/ProxyInfo".toURL())
 		//context.println(json)
 		json.each {
