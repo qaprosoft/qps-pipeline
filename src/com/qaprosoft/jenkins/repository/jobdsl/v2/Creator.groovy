@@ -9,12 +9,16 @@ import com.qaprosoft.jenkins.repository.jobdsl.v2.Job;
 
 createJob()
 
+def context
+void Creator(context) {
+	this.context = context
+}
 
 void createJob() {
 	def workspace = binding.variables.WORKSPACE
 
 
-	def jobFolder = binding.variables.jobFolder
+/*	def jobFolder = binding.variables.jobFolder
 	def project = binding.variables.project
 	def sub_project = binding.variables.sub_project
 	def suite = binding.variables.suite
@@ -42,5 +46,5 @@ void createJob() {
 	if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
 		def cronJobName = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
 		Job.createRegressionPipeline(pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
-	}
+	}*/
 }
