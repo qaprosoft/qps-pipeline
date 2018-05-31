@@ -278,10 +278,9 @@ class Job {
 
 	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
 	protected List<String> getDevicesList(String platform) {
-		def deviceList = [
-			"DefaultPool",
-			"ANY"
-		]
+		def deviceList = []
+		deviceList.add("DefaultPool")
+		deviceList.add("ANY")
 		context.println(deviceList)
 		def json = new JsonSlurper().parse("http://smule.qaprosoft.com:14444/grid/admin/ProxyInfo".toURL())
 		context.println(json)
