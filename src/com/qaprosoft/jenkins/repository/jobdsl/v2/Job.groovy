@@ -57,7 +57,7 @@ class Job {
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
-						choiceParam('device', getAndroidDeviceList(), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('device', getDevicesList('ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
@@ -68,7 +68,7 @@ class Job {
 						break;
 					case ~/^.*ios.*$/:
 					//TODO:  Need to adjust this for virtual as well.
-						choiceParam('device', getiOSDeviceList(), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('device', getDevicesList('iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
@@ -277,23 +277,20 @@ class Job {
 	}
 
 	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
-	protected List<String> getAndroidDeviceList() {
+	protected List<String> getDevicesList(String platform) {
 		def deviceList = [
 			"DefaultPool",
 			"ANY"
 		]
 		context.println(deviceList)
 		def json = new JsonSlurper().parse("http://smule.qaprosoft.com:14444/grid/admin/ProxyInfo".toURL())
-		context.println(json)
+		//context.println(json)
 		json.each {
-			context.println("platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName)
+			if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
+				context.println("platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName)
+				deviceList.add(it.configuration.capabilities.browserName)
+			}
 		}
-		return deviceList
-	}
-
-
-	protected List<String> getiOSDeviceList() {
-		def deviceList = ["DefaultPool", "ANY", "iPhone_7_Plus", "iPhone_7", "iPhone_6S", "iPad_Air_2", "iPhone_7Plus", "iPhone_8", "iPhone_8Plus", "iPhone_5s", "iPad_Air2", "iPhone_7_Black", "iPhone_8_Black"]
 		return deviceList
 	}
 
