@@ -2,19 +2,16 @@ package com.qaprosoft.jenkins.repository.jobdsl.v2
 
 import com.qaprosoft.selenium.grid.ProxyInfo;
 
-import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
-
-class Job extends Executor {
+class Job {
+	protected def context
 	
 	public Job(context) {
-		super(context)
+		this.context = context
 	}
 
 	void createPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project, String suite, String suiteOwner, String zafira_project) {
-		jobParams = initParams(context.currentBuild)
-		jobVars = initVars(context.env)
 
-
+		context.println("selenium_host" + context.binding.variables.SELENIUM_HOST)
 		pipelineJob.with {
 			description("project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}")
 			logRotator { numToKeep 100 }
@@ -61,7 +58,7 @@ class Job extends Executor {
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
-						choiceParam('device', ProxyInfo.getDevicesList("test-selenium", 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('device', ProxyInfo.getDevicesList("selenium-test", 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
@@ -72,7 +69,7 @@ class Job extends Executor {
 						break;
 					case ~/^.*ios.*$/:
 					//TODO:  Need to adjust this for virtual as well.
-						choiceParam('device', ProxyInfo.getDevicesList("test-selenium", 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('device', ProxyInfo.getDevicesList("selenium-test", 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
