@@ -38,7 +38,7 @@ class Job {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-				println("jobType: " + jobType)
+				context.println("jobType: " + jobType)
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -117,12 +117,12 @@ class Job {
 
 				def paramsMap = [:]
 				paramsMap = currentSuite.getAllParameters()
-				println "paramsMap: " + paramsMap
+				context.println("paramsMap: " + paramsMap)
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-					println("param: " + param)
+					context.println("param: " + param)
 					def delimitor = "::"
 					if (param.key.contains(delimitor)) {
 						def (type, name, desc) = param.key.split(delimitor)
@@ -313,11 +313,11 @@ class Job {
 			"Samsung_Galaxy_Tab_A10",
 			"LG_Nexus_4"
 		]
-		println(deviceList)
+		context.println(deviceList)
 		def json = new JsonSlurper().parse("http://smule.qaprosoft.com:14444/grid/admin/ProxyInfo".toURL())
-		println(json)
+		context.println(json)
 		json.each {
-			println("platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName)
+			context.println("platform: " + it.configuration.capabilities.platform + "; device: " + it.configuration.capabilities.browserName)
 		}
 		return deviceList
 	}
