@@ -1,5 +1,6 @@
 package com.qaprosoft.zafira
 
+import groovy.json.JsonSlurper
 
 class ZafiraClient {
 	private String serviceURL;
@@ -24,6 +25,7 @@ class ZafiraClient {
 	public boolean isAvailable() {
 		return this.isAvailable
 	}
+
 	public String getZafiraAuthToken(String accessToken) {
 		if (!isAvailable) {
 			return ""
@@ -36,13 +38,13 @@ class ZafiraClient {
 			url: this.serviceURL + "/api/auth/refresh"
 
 		// reread new accessToken and auth type
-		def properties = (Map) new groovy.json.JsonSlurper().parseText(response.getContent())
+		def properties = (Map) new JsonSlurper().parseText(response.getContent()) as java.lang.Object
 
 		//new accessToken in response is authToken
 		def authToken = properties.get("accessToken")
 		def type = properties.get("type")
 
-		this.token = "${type} ${authToken}"
+		this.token = "${type} ${authToken}" as String
 		context.echo "${this.token}"
 		return this.token
 	}
@@ -60,8 +62,6 @@ class ZafiraClient {
 		String ciParentUrl = jobParams.get("ci_parent_url")
 		String ciParentBuild = jobParams.get("ci_parent_build")
 
-
-
 		context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
@@ -70,6 +70,25 @@ class ZafiraClient {
             url: this.serviceURL + "/api/tests/runs/queue"
 			
 		//TODO: analyze response and put info about registered or not registered test run here
+	}
+
+	public void smartRerun(Integer hashcode, Integer failurePercent, Boolean doRebuild, Boolean rerunFailures, jobParams) {
+		if (!isAvailable) {
+			return
+		}
+
+        String ciUserId = jobParams.get("ci_user_id")
+        String ciParentUrl = jobParams.get("ci_parent_url")
+		String ciParentBuild = jobParams.get("ci_parent_build")
+        String gitUrl = jobParams.get("git_url")
+
+        context.httpRequest customHeaders: [[name: 'Authorization', \
+            value: "${token}"]], \
+	    contentType: 'APPLICATION_JSON', \
+	    httpMode: 'POST', \
+	    requestBody: "{\"ownerId\": \"${ciUserId}\", \"upstreamJobUrl\": \"${ciParentUrl}\", \"upstreamJobBuildNumber\": \"${ciParentBuild}\", " +
+                "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
+        url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}"
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
