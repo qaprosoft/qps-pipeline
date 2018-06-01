@@ -138,11 +138,15 @@ class Runner extends Executor {
 
     public void rerunJobs(){
         jobParams = initParams(context.currentBuild)
-        context.println("asdasd")
-        context.println(jobParams.get("hashcode"))
-        context.println(jobParams.get("failurePercent"))
-        context.println(jobParams.get("rerunFailures"))
-        context.println(jobParams.get("doRebuild"))
+        def hashcode = jobParams.get("hashcode")
+        def failurePercent = jobParams.get("failurePercent")
+        def rerunFailures = jobParams.get("rerunFailures")
+        def doRebuild = jobParams.get("doRebuild")
+
+        context.println(jobParams.get(hashcode))
+        context.println(jobParams.get(failurePercent))
+        context.println(jobParams.get(rerunFailures))
+        context.println(jobParams.get(doRebuild))
     }
 
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
@@ -292,9 +296,9 @@ class Runner extends Executor {
 			params.put("scm_branch", branch)
 			
 			//TODO: investigate how user timezone can be declared on qps-infra level
-			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${pomFile}" \
-				" -Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_URL -Dmax_screen_history=1" \
-				" -Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG clean test" //-Duser.timezone=PST
+			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${pomFile} \
+				-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_URL -Dmax_screen_history=1 \
+				-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG clean test" //-Duser.timezone=PST
 
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
