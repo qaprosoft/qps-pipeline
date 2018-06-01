@@ -308,7 +308,6 @@ class Runner extends Executor {
 			params.put("ci_build", BUILD_NUMBER)
 
 
-
 			
 			def goals = DEFAULT_BASE_MAVEN_GOALS
 			//register all env variables
