@@ -149,7 +149,7 @@ class Runner extends Executor {
         try {
             zc = new ZafiraClient(context, jobVars.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
             def token = zc.getZafiraAuthToken(jobVars.get("ZAFIRA_ACCESS_TOKEN"))
-            zc.smartRerun(uuid, hashcode, failurePercent, rerunFailures, doRebuild, jobParams)
+            zc.smartRerun(hashcode, failurePercent, rerunFailures, doRebuild, jobParams)
         } catch (Exception ex) {
             printStackTrace(ex)
         }
