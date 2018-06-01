@@ -72,7 +72,7 @@ class ZafiraClient {
 		//TODO: analyze response and put info about registered or not registered test run here
 	}
 
-	public void smartRerun(Integer hashcode, Integer failurePercent, Boolean doRebuild, Boolean rerunFailures, jobParams) {
+	public void smartRerun(String hashcode, String failurePercent, Boolean doRebuild, Boolean rerunFailures, jobParams) {
 		if (!isAvailable) {
 			return
 		}

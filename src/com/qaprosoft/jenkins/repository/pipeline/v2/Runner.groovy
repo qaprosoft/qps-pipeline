@@ -136,6 +136,15 @@ class Runner extends Executor {
 
 	}
 
+    public void rerunJobs(){
+        jobParams = initParams(context.currentBuild)
+        context.println("asdasd")
+        context.println(jobParams.get("hashcode"))
+        context.println(jobParams.get("failurePercent"))
+        context.println(jobParams.get("rerunFailures"))
+        context.println(jobParams.get("doRebuild"))
+    }
+
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
 	protected void prepare(currentBuild, params, vars) {
 		String BUILD_NUMBER = vars.get("BUILD_NUMBER")
