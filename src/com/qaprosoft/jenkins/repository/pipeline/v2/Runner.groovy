@@ -137,16 +137,22 @@ class Runner extends Executor {
 	}
 
     public void rerunJobs(){
+
         jobParams = initParams(context.currentBuild)
+        jobVars = initVars(context.env)
+
         def hashcode = jobParams.get("hashcode")
         def failurePercent = jobParams.get("failurePercent")
         def rerunFailures = jobParams.get("rerunFailures")
         def doRebuild = jobParams.get("doRebuild")
 
-        context.println(jobParams.get(hashcode))
-        context.println(jobParams.get(failurePercent))
-        context.println(jobParams.get(rerunFailures))
-        context.println(jobParams.get(doRebuild))
+        try {
+            zc = new ZafiraClient(context, jobVars.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
+            def token = zc.getZafiraAuthToken(jobVars.get("ZAFIRA_ACCESS_TOKEN"))
+            zc.smartRerun(uuid, hashcode, failurePercent, rerunFailures, doRebuild, jobParams)
+        } catch (Exception ex) {
+            printStackTrace(ex)
+        }
     }
 
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
