@@ -38,13 +38,13 @@ class ZafiraClient {
 			url: this.serviceURL + "/api/auth/refresh"
 
 		// reread new accessToken and auth type
-		def properties = (Map) new JsonSlurper().parseText(response.getContent()) as java.lang.Object
+		def properties = (Map) new JsonSlurper().parseText(response.getContent())
 
 		//new accessToken in response is authToken
 		def authToken = properties.get("accessToken")
 		def type = properties.get("type")
 
-		this.token = "${type} ${authToken}" as String
+		this.token = "${type} ${authToken}"
 		context.echo "${this.token}"
 		return this.token
 	}
