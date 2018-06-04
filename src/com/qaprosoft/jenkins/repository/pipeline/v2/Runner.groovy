@@ -93,7 +93,7 @@ class Runner extends Executor {
 				zc = new ZafiraClient(context, jobVars.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
 				def token = zc.getZafiraAuthToken(jobVars.get("ZAFIRA_ACCESS_TOKEN"))
                 def queuedTestRun = zc.queueZafiraTestRun(uuid, jobVars, jobParams)
-                Object parsedQueuedTestRun = this.parseJSON(queuedTestRun)
+                Object parsedQueuedTestRun = new groovy.json.JsonSlurperClassic().parseText(queuedTestRun)
                 context.echo "Queued TestRun: ${parsedQueuedTestRun}"
 			} catch (Exception ex) {
 				printStackTrace(ex)
