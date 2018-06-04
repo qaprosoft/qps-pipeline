@@ -16,9 +16,12 @@ class ZafiraClient {
 		if (developMode) {
 			isAvailable = false
 		} else {
+            context.echo "ping request"
             def response = context.httpRequest \
 	    	httpMode: 'GET', \
 			url: this.serviceURL + "/api/status"
+
+            context.echo "request is sent"
 			//TODO: execute ping call to zafira "/api/status"
             if(response.status == 200){
                 isAvailable = true
