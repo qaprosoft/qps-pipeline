@@ -70,7 +70,8 @@ class ZafiraClient {
             url: this.serviceURL + "/api/tests/runs/queue"
 			
 		//TODO: analyze response and put info about registered or not registered test run here
-	}
+        context.echo "Queued testrun: ${response.content}"
+    }
 
 	public void smartRerun(jobParams) {
 		if (!isAvailable) {
