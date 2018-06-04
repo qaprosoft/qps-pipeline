@@ -85,13 +85,15 @@ class ZafiraClient {
 		String ciParentBuild = jobParams.get("ci_parent_build")
         String gitUrl = jobParams.get("git_url")
 
-        context.httpRequest customHeaders: [[name: 'Authorization', \
+        def response = context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
 	    requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobUrl\": \"${ciParentUrl}\", \"upstreamJobBuildNumber\": \"${ciParentBuild}\", " +
                 "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
                 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}"
+
+        context.echo "Number of tests for rerun : ${response}"
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
