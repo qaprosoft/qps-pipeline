@@ -49,7 +49,7 @@ class ZafiraClient {
 		return this.token
 	}
 
-	public String queueZafiraTestRun(String uuid, jobVars, jobParams) {
+	public void queueZafiraTestRun(String uuid, jobVars, jobParams) {
 		if (!isAvailable) {
 			return
 		}
@@ -70,7 +70,8 @@ class ZafiraClient {
             url: this.serviceURL + "/api/tests/runs/queue"
 			
 		//TODO: analyze response and put info about registered or not registered test run here
-        return "${response.content}"
+        String formattedJSON = groovy.json.JsonOutput.prettyPrint(response.content)
+        context.echo "Queued TestRun: ${formattedJSON}"
     }
 
 	public void smartRerun(jobParams) {
