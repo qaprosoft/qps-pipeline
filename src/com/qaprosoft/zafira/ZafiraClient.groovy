@@ -16,9 +16,16 @@ class ZafiraClient {
 		if (developMode) {
 			isAvailable = false
 		} else {
-            context.httpRequest \
+            try {
+                context.httpRequest \
 	    	httpMode: 'GET', \
 			url: this.serviceURL + "/api/status"
+
+            } catch (Exception ex) {
+                printStackTrace(ex)
+            }
+
+
 
 			//TODO: execute ping call to zafira "/api/status"
             isAvailable = true
