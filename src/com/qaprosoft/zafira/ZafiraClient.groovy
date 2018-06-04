@@ -21,7 +21,7 @@ class ZafiraClient {
 	    	httpMode: 'GET', \
 			url: this.serviceURL + "/api/status"
 
-            context.echo "${response.status}"
+            context.echo "${response}"
 			//TODO: execute ping call to zafira "/api/status"
 //            if(response.status == 200){
 //                isAvailable = true
