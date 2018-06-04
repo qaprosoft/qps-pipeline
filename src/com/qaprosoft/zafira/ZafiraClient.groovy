@@ -16,8 +16,16 @@ class ZafiraClient {
 		if (developMode) {
 			isAvailable = false
 		} else {
+            def response = context.httpRequest \
+	    	contentType: 'APPLICATION_JSON', \
+			httpMode: 'GET', \
+			url: this.serviceURL + "/api/status"
 			//TODO: execute ping call to zafira "/api/status"
-			isAvailable = true
+            if(response.status == 200){
+                isAvailable = true
+            } else {
+                context.echo "Zafira is unavailable"
+            }
 		}
 
 	}
