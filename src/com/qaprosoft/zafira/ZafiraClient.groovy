@@ -62,7 +62,7 @@ class ZafiraClient {
 		String ciParentUrl = jobParams.get("ci_parent_url")
 		String ciParentBuild = jobParams.get("ci_parent_build")
 
-		context.httpRequest customHeaders: [[name: 'Authorization', \
+        def response = context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
@@ -70,7 +70,7 @@ class ZafiraClient {
             url: this.serviceURL + "/api/tests/runs/queue"
 			
 		//TODO: analyze response and put info about registered or not registered test run here
-        context.echo "Queued testrun: ${response.content}"
+        context.echo "Queued testrun: ${response}"
     }
 
 	public void smartRerun(jobParams) {
