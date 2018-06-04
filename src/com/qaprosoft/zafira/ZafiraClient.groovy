@@ -72,11 +72,14 @@ class ZafiraClient {
 		//TODO: analyze response and put info about registered or not registered test run here
 	}
 
-	public void smartRerun(String hashcode, String failurePercent, Boolean doRebuild, Boolean rerunFailures, jobParams) {
+	public void smartRerun(jobParams) {
 		if (!isAvailable) {
 			return
 		}
-
+        String hashcode = jobParams.get("hashcode")
+        String failurePercent = jobParams.get("failurePercent")
+        String rerunFailures = jobParams.get("rerunFailures")
+        String doRebuild = jobParams.get("doRebuild")
         String ciUserId = jobParams.get("ci_user_id")
         String ciParentUrl = jobParams.get("ci_parent_url")
 		String ciParentBuild = jobParams.get("ci_parent_build")
