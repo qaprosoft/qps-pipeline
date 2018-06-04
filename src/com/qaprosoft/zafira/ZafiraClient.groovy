@@ -93,7 +93,7 @@ class ZafiraClient {
                 "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
                 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}"
 
-        context.echo "Number of tests for rerun : ${response}"
+        context.echo "Number of tests for rerun : ${response.content}"
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
