@@ -313,7 +313,7 @@ class Runner extends Executor {
 			
 			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
 			if (!params.get("ci_parent_url").isEmpty() && !params.get("ci_parent_build").isEmpty()) {
-				params.put("ci_build_cause", "UPSTREAM_JOB")
+				params.put("ci_build_cause", "UPSTREAMTRIGGER")
 			}
 			
 			def goals = DEFAULT_BASE_MAVEN_GOALS
