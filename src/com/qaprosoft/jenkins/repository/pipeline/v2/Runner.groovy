@@ -312,7 +312,7 @@ class Runner extends Executor {
 			//TODO: determine correctly ci_build_cause (HUMAn, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
 			
 			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
-			if (!param.get("ci_parent_url").toString().isEmpty() && !param.get("ci_parent_build").toString().isEmpty()) {
+			if (!params.get("ci_parent_url").isEmpty() && !params.get("ci_parent_build").isEmpty()) {
 				params.put("ci_build_cause", "UPSTREAM_JOB")
 			}
 			
