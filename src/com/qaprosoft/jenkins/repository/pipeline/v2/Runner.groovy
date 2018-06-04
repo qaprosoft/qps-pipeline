@@ -309,7 +309,12 @@ class Runner extends Executor {
 			params.put("ci_url", JOB_URL)
 			params.put("ci_build", BUILD_NUMBER)
 
-
+			//TODO: determine correctly ci_build_cause (HUMAn, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
+			
+			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
+			if (!param.get("ci_parent_url").isEmpty() && !param.get("ci_parent_build").isEmpty()) {
+				params.put("ci_build_cause", "UPSTREAM_JOB")
+			}
 			
 			def goals = DEFAULT_BASE_MAVEN_GOALS
 			//register all env variables
