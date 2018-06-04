@@ -21,13 +21,13 @@ class ZafiraClient {
 	    	httpMode: 'GET', \
 			url: this.serviceURL + "/api/status"
 
-            context.echo "request is sent"
+            context.echo "${response.status}"
 			//TODO: execute ping call to zafira "/api/status"
-            if(response.status == 200){
-                isAvailable = true
-            } else {
-                context.echo "Zafira is unavailable"
-            }
+//            if(response.status == 200){
+//                isAvailable = true
+//            } else {
+//                context.echo "Zafira is unavailable"
+//            }
 		}
 
 	}
