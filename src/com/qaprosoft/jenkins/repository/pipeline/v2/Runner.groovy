@@ -84,7 +84,6 @@ class Runner extends Executor {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 		uuid = getUUID()
-		
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
@@ -93,8 +92,8 @@ class Runner extends Executor {
 				zc = new ZafiraClient(context, jobVars.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
 				def token = zc.getZafiraAuthToken(jobVars.get("ZAFIRA_ACCESS_TOKEN"))
                 def queuedTestRun = zc.queueZafiraTestRun(uuid, jobVars, jobParams)
-                groovy.json.JsonOutput.prettyPrint(queuedTestRun)
-               // context.echo "Queued TestRun: ${parsedQueuedTestRun}"
+                String formattedJSON = groovy.json.JsonOutput.prettyPrint(queuedTestRun)
+                context.echo "Queued TestRun: ${formattedJSON}"
 			} catch (Exception ex) {
 				printStackTrace(ex)
 			}
