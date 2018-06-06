@@ -105,8 +105,8 @@ class ZafiraClient {
                 "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
                 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}"
 
-		String formattedJSON = JsonOutput.prettyPrint(response.content)
-        context.echo "Tests for rerun : ${formattedJSON}"
+		def responseJson = new JsonSlurper().parseText(response.content)
+        context.echo "Tests for rerun : ${responseJson}"
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
