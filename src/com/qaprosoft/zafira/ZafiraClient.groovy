@@ -98,7 +98,7 @@ class ZafiraClient {
                 "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
                 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}"
 
-		def responseJson = new JsonSlurper().parseText(response.content) as Array
+		def responseJson = new JsonSlurper().parseText(response.content)
 
         context.echo "Tests for rerun : ${responseJson}"
 		context.echo "Number of testRuns : ${responseJson.size()}"
