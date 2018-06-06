@@ -78,9 +78,9 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return
 		}
-        String ciParentUrl = jobParams.get("ci_parent_url")
+		String ciParentUrl = jobParams.get("ci_parent_url")
 		String ciParentBuild = jobParams.get("ci_parent_build")
-        String gitUrl = jobParams.get("git_url")
+		String gitUrl = jobParams.get("git_url")
 		String ciUserId = jobParams.get("ci_user_id")
 		String failurePercent = jobParams.get("failurePercent")
 		String hashcode = jobParams.get("hashcode")
