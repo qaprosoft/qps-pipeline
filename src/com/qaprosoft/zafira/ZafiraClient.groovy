@@ -69,7 +69,6 @@ class ZafiraClient {
 	    requestBody: "{\"jobName\": \"${jobName}\", \"buildNumber\": \"${buildNumber}\", \"branch\": \"${branch}\", \"env\": \"${_env}\", \"ciRunId\": \"${uuid}\", \"ciParentUrl\": \"${ciParentUrl}\", \"ciParentBuild\": \"${ciParentBuild}\"}", \
             url: this.serviceURL + "/api/tests/runs/queue"
 			
-		//TODO: analyze response and put info about registered or not registered test run here
         String formattedJSON = groovy.json.JsonOutput.prettyPrint(response.content)
         context.echo "Queued TestRun: ${formattedJSON}"
     }
@@ -95,7 +94,8 @@ class ZafiraClient {
                 "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
                 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}"
 
-        context.echo "Number of tests for rerun : ${response.content}"
+		String formattedJSON = groovy.json.JsonOutput.prettyPrint(response.content)
+        context.echo "Tests for rerun : ${formattedJSON}"
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
