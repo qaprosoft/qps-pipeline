@@ -101,7 +101,7 @@ class ZafiraClient {
 
 		def responseJson = new JsonSlurper().parseText(response.content)
 
-		context.echo "Number of testRuns : ${responseJson.size()}"
+		context.echo "Number of tests : ${responseJson.size()}"
 		context.echo "Tests for rerun : ${responseJson}"
 	}
 
