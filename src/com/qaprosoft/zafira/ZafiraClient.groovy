@@ -87,15 +87,8 @@ class ZafiraClient {
 		String doRebuild = jobParams.get("doRebuild")
 		String rerunFailures = jobParams.get("rerunFailures")
 
-		context.echo "Rebuild parameters:"
-		context.echo "ci_parent_url : ${ciParentUrl}"
-		context.echo "ci_parent_build : ${ciParentBuild}"
-		context.echo "git_url : ${gitUrl}"
-		context.echo "ci_user_id : ${ciUserId}"
-		context.echo "failurePercent : ${failurePercent}"
-		context.echo "hashcode : ${hashcode}"
-		context.echo "doRebuild : ${doRebuild}"
-		context.echo "rerunFailures : ${rerunFailures}"
+		context.echo "Rebuild parameters: ci_parent_url : ${ciParentUrl} ci_parent_build : ${ciParentBuild} git_url : ${gitUrl} " +
+				"ci_user_id : ${ciUserId} failurePercent : ${failurePercent} hashcode : ${hashcode} doRebuild : ${doRebuild} rerunFailures : ${rerunFailures}"
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
@@ -105,8 +98,10 @@ class ZafiraClient {
                 "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
                 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}"
 
-		def responseJson = new JsonSlurper().parseText(response.content)
+		def responseJson = new JsonSlurper().parseText(response.content) as Array
+
         context.echo "Tests for rerun : ${responseJson}"
+		context.echo "Number of testRuns : ${responseJson.size()}"
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
