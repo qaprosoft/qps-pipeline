@@ -101,8 +101,8 @@ class ZafiraClient {
 
 		def responseJson = new JsonSlurper().parseText(response.content)
 
-		context.echo "Tests for rerun : ${responseJson}"
 		context.echo "Number of testRuns : ${responseJson.size()}"
+		context.echo "Tests for rerun : ${responseJson}"
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
