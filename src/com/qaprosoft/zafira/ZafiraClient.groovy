@@ -90,18 +90,18 @@ class ZafiraClient {
 		context.echo "Rebuild parameters: ci_parent_url : ${ciParentUrl} ci_parent_build : ${ciParentBuild} git_url : ${gitUrl} " +
 				"ci_user_id : ${ciUserId} failurePercent : ${failurePercent} hashcode : ${hashcode} doRebuild : ${doRebuild} rerunFailures : ${rerunFailures}"
 
-		def response = context.httpRequest customHeaders: [[name: 'Authorization', \
-            value: "${token}"]], \
-	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'POST', \
-	    requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobUrl\": \"${ciParentUrl}\", \"upstreamJobBuildNumber\": \"${ciParentBuild}\", " +
-                "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
-                url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}", \
-                timeout: 300000
+		def response = context.httpRequest customHeaders: [[name: 'Authorization',   \
+              value: "${token}"]],   \
+	      contentType: 'APPLICATION_JSON',   \
+	      httpMode: 'POST',   \
+	      requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobUrl\": \"${ciParentUrl}\", \"upstreamJobBuildNumber\": \"${ciParentBuild}\", " +
+				"\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}",   \
+                  url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}",   \
+                  timeout: 300000
 
 		def responseJson = new JsonSlurper().parseText(response.content)
 
-        context.echo "Tests for rerun : ${responseJson}"
+		context.echo "Tests for rerun : ${responseJson}"
 		context.echo "Number of testRuns : ${responseJson.size()}"
 	}
 
