@@ -96,7 +96,8 @@ class ZafiraClient {
 	    httpMode: 'POST', \
 	    requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobUrl\": \"${ciParentUrl}\", \"upstreamJobBuildNumber\": \"${ciParentBuild}\", " +
                 "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
-                url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}"
+                url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}", \
+                timeout: 300000
 
 		def responseJson = new JsonSlurper().parseText(response.content)
 
