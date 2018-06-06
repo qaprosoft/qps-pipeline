@@ -25,7 +25,7 @@ class Job {
 				triggers { cron(scheduling) }
 			}
 
-			context.println("test message for sync1")
+			context.println("selenium: ${selenium}")
 			/** Properties & Parameters Area **/
 			parameters {
 				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
@@ -213,11 +213,6 @@ class Job {
 			logRotator { numToKeep 100 }
 
 			authenticationToken('ciStart')
-
-			def scheduling = currentSuite.getParameter("scheduling")
-			if (scheduling != null) {
-				triggers { cron(scheduling) }
-			}
 
 			parameters {
 				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
