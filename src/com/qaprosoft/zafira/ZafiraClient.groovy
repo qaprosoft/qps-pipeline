@@ -1,5 +1,6 @@
 package com.qaprosoft.zafira
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class ZafiraClient {
@@ -69,7 +70,7 @@ class ZafiraClient {
 	    requestBody: "{\"jobName\": \"${jobName}\", \"buildNumber\": \"${buildNumber}\", \"branch\": \"${branch}\", \"env\": \"${_env}\", \"ciRunId\": \"${uuid}\", \"ciParentUrl\": \"${ciParentUrl}\", \"ciParentBuild\": \"${ciParentBuild}\"}", \
             url: this.serviceURL + "/api/tests/runs/queue"
 			
-        String formattedJSON = groovy.json.JsonOutput.prettyPrint(response.content)
+        String formattedJSON = JsonOutput.prettyPrint(response.content)
         context.echo "Queued TestRun: ${formattedJSON}"
     }
 
@@ -77,16 +78,26 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return
 		}
-        String hashcode = jobParams.get("hashcode")
-        String failurePercent = jobParams.get("failurePercent")
-        String rerunFailures = jobParams.get("rerunFailures")
-        String doRebuild = jobParams.get("doRebuild")
-        String ciUserId = jobParams.get("ci_user_id")
         String ciParentUrl = jobParams.get("ci_parent_url")
 		String ciParentBuild = jobParams.get("ci_parent_build")
         String gitUrl = jobParams.get("git_url")
+		String ciUserId = jobParams.get("ci_user_id")
+		String failurePercent = jobParams.get("failurePercent")
+		String hashcode = jobParams.get("hashcode")
+		String doRebuild = jobParams.get("doRebuild")
+		String rerunFailures = jobParams.get("rerunFailures")
 
-        def response = context.httpRequest customHeaders: [[name: 'Authorization', \
+		context.echo "Rebuild parameters:"
+		context.echo "ci_parent_url : ${ciParentUrl}"
+		context.echo "ci_parent_build : ${ciParentBuild}"
+		context.echo "git_url : ${gitUrl}"
+		context.echo "ci_user_id : ${ciUserId}"
+		context.echo "failurePercent : ${failurePercent}"
+		context.echo "hashcode : ${hashcode}"
+		context.echo "doRebuild : ${doRebuild}"
+		context.echo "rerunFailures : ${rerunFailures}"
+
+		def response = context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
@@ -94,7 +105,7 @@ class ZafiraClient {
                 "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
                 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}"
 
-		String formattedJSON = groovy.json.JsonOutput.prettyPrint(response.content)
+		String formattedJSON = JsonOutput.prettyPrint(response.content)
         context.echo "Tests for rerun : ${formattedJSON}"
 	}
 
