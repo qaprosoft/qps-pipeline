@@ -1,5 +1,6 @@
 package com.qaprosoft.zafira
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class ZafiraClient {
@@ -69,8 +70,7 @@ class ZafiraClient {
 	    requestBody: "{\"jobName\": \"${jobName}\", \"buildNumber\": \"${buildNumber}\", \"branch\": \"${branch}\", \"env\": \"${_env}\", \"ciRunId\": \"${uuid}\", \"ciParentUrl\": \"${ciParentUrl}\", \"ciParentBuild\": \"${ciParentBuild}\"}", \
             url: this.serviceURL + "/api/tests/runs/queue"
 			
-		//TODO: analyze response and put info about registered or not registered test run here
-        String formattedJSON = groovy.json.JsonOutput.prettyPrint(response.content)
+        String formattedJSON = JsonOutput.prettyPrint(response.content)
         context.echo "Queued TestRun: ${formattedJSON}"
     }
 
@@ -78,24 +78,31 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return
 		}
-        String hashcode = jobParams.get("hashcode")
-        String failurePercent = jobParams.get("failurePercent")
-        String rerunFailures = jobParams.get("rerunFailures")
-        String doRebuild = jobParams.get("doRebuild")
-        String ciUserId = jobParams.get("ci_user_id")
-        String ciParentUrl = jobParams.get("ci_parent_url")
+		String ciParentUrl = jobParams.get("ci_parent_url")
 		String ciParentBuild = jobParams.get("ci_parent_build")
-        String gitUrl = jobParams.get("git_url")
+		String gitUrl = jobParams.get("git_url")
+		String ciUserId = jobParams.get("ci_user_id")
+		String failurePercent = jobParams.get("failurePercent")
+		String hashcode = jobParams.get("hashcode")
+		String doRebuild = jobParams.get("doRebuild")
+		String rerunFailures = jobParams.get("rerunFailures")
 
-        def response = context.httpRequest customHeaders: [[name: 'Authorization', \
-            value: "${token}"]], \
-	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'POST', \
-	    requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobUrl\": \"${ciParentUrl}\", \"upstreamJobBuildNumber\": \"${ciParentBuild}\", " +
-                "\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}", \
-                url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}"
+		context.echo "Rebuild parameters: ci_parent_url : ${ciParentUrl} ci_parent_build : ${ciParentBuild} git_url : ${gitUrl} " +
+				"ci_user_id : ${ciUserId} failurePercent : ${failurePercent} hashcode : ${hashcode} doRebuild : ${doRebuild} rerunFailures : ${rerunFailures}"
 
-        context.echo "Number of tests for rerun : ${response.content}"
+		def response = context.httpRequest customHeaders: [[name: 'Authorization',   \
+              value: "${token}"]],   \
+	      contentType: 'APPLICATION_JSON',   \
+	      httpMode: 'POST',   \
+	      requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobUrl\": \"${ciParentUrl}\", \"upstreamJobBuildNumber\": \"${ciParentBuild}\", " +
+				"\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}",   \
+                  url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}",   \
+                  timeout: 300000
+
+		def responseJson = new JsonSlurper().parseText(response.content)
+
+		context.echo "Number of tests : ${responseJson.size()}"
+		context.echo "Tests for rerun : ${responseJson}"
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
