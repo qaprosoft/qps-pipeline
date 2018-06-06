@@ -302,6 +302,12 @@ def setupGoalsForAndroid(Map<String, String> goalMap) {
 	  case "QA_FF_PH3-INT":
 	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_FfPh3builds_SingAndroidQaFfPh3int/sing_android-playstore-ff_ph3-int-.*.apk")
 	    break
+	  case "QA_GDPR_ACCEPTING_PROD":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_GdprAcceptingNewPrivacyPolicyBuilds_SingAndroidQaGdprAcceptingNewPri/sing_android-playstore-GDPR_accepting_new_privacy_policy-prod-.*.apk")
+	    break
+	  case "QA_GDPR_ACCEPTING_INT":
+	    goalMap.put("capabilities.app", "s3://smule.qaprosoft.com/SingAndroid_GdprAcceptingNewPrivacyPolicyBuilds_SingAndroidQaGdprAcceptingNewP_2/sing_android-playstore-GDPR_accepting_new_privacy_policy-int-.*.apk")
+	    break
 	  default:
 	    throw new RuntimeException("Unknown env: " + params["env"]);
 	    break
