@@ -20,8 +20,12 @@ class Job {
 
 			authenticationToken('ciStart')
 			
-			properties {
-				durabilityHint { hint("PERFORMANCE_OPTIMIZED") }
+			try {
+				properties {
+					durabilityHint { hint("PERFORMANCE_OPTIMIZED") }
+				}
+			} catch (Exception e) {
+				context.println("Unable to specify performance_optimized mode!")
 			}
 
 			def scheduling = currentSuite.getParameter("scheduling")
