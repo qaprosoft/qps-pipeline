@@ -21,7 +21,7 @@ class Job {
 			authenticationToken('ciStart')
 			
 			properties {
-				durabilityHint { hint("PERFORMANCE_OPTIMIZIED") }
+				durabilityHint { hint("PERFORMANCE_OPTIMIZED") }
 			}
 
 			def scheduling = currentSuite.getParameter("scheduling")
