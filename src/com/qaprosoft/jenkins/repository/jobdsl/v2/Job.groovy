@@ -12,7 +12,6 @@ class Job {
 	}
 
 	void createPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project, String suite, String suiteOwner, String zafira_project) {
-
 		
 		pipelineJob.with {
 			description("project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}")
@@ -155,6 +154,9 @@ class Job {
 						}
 					}
 				}
+				
+				
+				customPipelineParams(currentSuite, suiteOwner)
 			}
 
 			/** Git Stuff **/
@@ -169,6 +171,10 @@ class Job {
 				ownership { primaryOwnerId(suiteOwner) }
 			}
 		}
+	}
+	
+	protected void customPipelineParams(org.testng.xml.XmlSuite currentSuite, String suiteOwner) {
+		//do nothing here
 	}
 
 	protected Closure addExtensibleChoice(choiceName, globalName, desc, choice) {
