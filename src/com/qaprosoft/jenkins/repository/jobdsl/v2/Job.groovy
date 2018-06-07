@@ -19,6 +19,8 @@ class Job {
 			logRotator { numToKeep 100 }
 
 			authenticationToken('ciStart')
+			
+			durabilityHint { hint("PERFORMANCE_OPTIMIZIED") }
 
 			def scheduling = currentSuite.getParameter("scheduling")
 			if (scheduling != null) {
