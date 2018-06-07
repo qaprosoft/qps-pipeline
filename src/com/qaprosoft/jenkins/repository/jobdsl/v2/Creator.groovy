@@ -40,9 +40,12 @@ class Creator {
 		
 		Job job = new Job(context)
 		job.createPipeline(context.pipelineJob(jobFolder + "/" + jobName), currentSuite, project, sub_project, suite, suiteOwner, zafira_project)
+		
 		if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
-			def cronJobName = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
-			job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
+			def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
+			for (def cronJobName : cronJobNames.split(",").trim()) {
+				job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
+			}
 		}
 	}
 }
