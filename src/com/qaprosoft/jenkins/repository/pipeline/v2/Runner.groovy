@@ -547,6 +547,9 @@ class Runner extends Executor {
 	protected void reportingResultsEx() {
 		def eTAFReport = zc.exportZafiraReport(uuid)
 		
+		File tempFile = new File(".")
+		context.println("cur dir: " + tempFile.getAbsolutePath())
+		/*
 		if(context.manager.build.workspace.isRemote())
 		{
 			channel = context.manager.build.workspace.channel;
@@ -559,7 +562,7 @@ class Runner extends Executor {
 			fp.write(eTAFReport, null); //writing to file
 			versionString = fp.readToString(); //reading from file
 		}
-		context.println(versionString)
+		context.println(versionString)*/
 	}
 
 	
