@@ -547,7 +547,7 @@ class Runner extends Executor {
 	protected void reportingResultsEx() {
 		def eTAFReport = zc.exportZafiraReport(uuid)
 
-		def reportPath = this.getWorkspace() + "${zafira_report_folder}/zafira-report2.html"
+		def reportPath = this.getWorkspace() + "/${zafira_report_folder}/zafira-report2.html"
 		File file = new File(reportPath)
 		file.write eTAFReport
 
