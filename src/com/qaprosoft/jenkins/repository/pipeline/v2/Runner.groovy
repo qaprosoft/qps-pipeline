@@ -50,32 +50,31 @@ class Runner extends Executor {
 			def suiteFilter = "src/test/resources/**"
 			Object subProjects = this.parseJSON(WORKSPACE + "/" + jenkinsFile).sub_projects
 			subProjects.each {
-				if (it.name.equals(sub_project)) {
-					suiteFilter = it.suite_filter
+				def listPipelines = []
+				suiteFilter = it.suite_filter
+				sub_project = it.name
+
+				def subProjectFilter = sub_project
+				if (sub_project.equals(".")) {
+					subProjectFilter = "**"
 				}
-			}
-
-			def subProjectFilter = sub_project
-			if (sub_project.equals(".")) {
-				subProjectFilter = "**"
-			}
-
-			def files = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
-			if(files.length > 0) {
-				context.println("Number of Test Suites to Scan Through: " + files.length)
-				for (int i = 0; i < files.length; i++) {
-					this.parsePipeline(jobVars, jobParams, WORKSPACE + "/" + files[i].path)
+	
+				def files = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
+				if(files.length > 0) {
+					context.println("Number of Test Suites to Scan Through: " + files.length)
+					for (int i = 0; i < files.length; i++) {
+						this.parsePipeline(jobVars, jobParams, WORKSPACE + "/" + files[i].path)
+					}
+	
+					context.println("Finished Dynamic Mapping: " + listPipelines)
+					sortPipelineList()
+					context.println("Finished Dynamic Mapping Sorted Order: " + listPipelines)
+	
+					this.executeStages(folderName)
+				} else {
+					context.println("No Test Suites Found to Scan...")
 				}
-
-				context.println("Finished Dynamic Mapping: " + listPipelines)
-				sortPipelineList()
-				context.println("Finished Dynamic Mapping Sorted Order: " + listPipelines)
-
-				this.executeStages(folderName)
-			} else {
-				context.println("No Test Suites Found to Scan...")
-			}
-			
+			}			
 		}		
 	}
 	
