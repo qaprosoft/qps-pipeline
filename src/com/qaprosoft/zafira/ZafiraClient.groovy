@@ -115,7 +115,7 @@ class ZafiraClient {
 	
 	public String exportZafiraReport(String uuid) {
 		if (!isAvailable) {
-			return
+			return ""
 		}
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization', \

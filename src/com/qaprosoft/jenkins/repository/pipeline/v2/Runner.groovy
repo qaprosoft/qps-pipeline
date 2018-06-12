@@ -21,6 +21,8 @@ class Runner extends Executor {
 	
 	// with new Zafirta implementation it could be static and finalfor any project
 	protected static final String zafira_report_folder = "./reports/qa"
+	protected static final String etafReport = "eTAF_Report"
+	protected static final String etafReportEncoded = "eTAF_5fReport"
 	
 	//CRON related vars
 	protected def listPipelines = []
@@ -353,11 +355,11 @@ class Runner extends Executor {
 			if (context.isUnix()) {
 				def suiteNameForUnix = params.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
-				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAFReport"
+				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
 			} else {
 				def suiteNameForWindows = "${suite}".replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
-				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAFReport"
+				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
 			}
 
 			this.setJobResults(context.currentBuild)
@@ -447,7 +449,7 @@ class Runner extends Executor {
 
 
 		def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
-					eTAFReport: ${JOB_URL}${BUILD_NUMBER}/eTAFReport<br>
+					${etafReport}: ${JOB_URL}${BUILD_NUMBER}/${etafReportEncoded}<br>
 					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
 
 		//TODO: enable emailing but seems like it should be moved to the notification code
@@ -532,9 +534,7 @@ class Runner extends Executor {
 	
 	protected void reportingResults() {
 		context.stage('Results') {
-			if (!publishReport('**/reports/qa/zafira-report.html', 'eTAFReport')) {
-				publishReport('**/reports/qa/emailable-report.html', 'eTAFReport')
-			}
+			publishReport('**/reports/qa/emailable-report.html', '${etafReport}')
 			
 			publishReport('**/artifacts/**', 'eTAF_Artifacts')
 			
@@ -545,8 +545,10 @@ class Runner extends Executor {
 	}
 	
 	protected void reportingResultsEx() {
-		def eTAFReport = zc.exportZafiraReport(uuid)
-		context.writeFile file: "${zafira_report_folder}/zafira-report.html", text: eTAFReport
+		def zafiraReport = zc.exportZafiraReport(uuid)
+		if (!zafiraReport.isEmpty()) {
+			context.writeFile file: "${zafira_report_folder}/emailable-report.html", text: zafiraReport
+		}
 	}
 
 	
