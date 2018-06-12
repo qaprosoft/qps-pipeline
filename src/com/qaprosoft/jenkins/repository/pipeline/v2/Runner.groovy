@@ -491,6 +491,12 @@ class Runner extends Executor {
 
 	//TODO: move into valid jacoco related package
 	protected void publishJacocoReport(vars) {
+		def JACOCO_ENABLE = vars.get("JACOCO_ENABLE")
+		if (!JACOCO_ENABLE) {
+			// do not publish any content to AWS S3 if integration is disabled
+			return
+		}
+		
 		def JACOCO_BUCKET = vars.get("JACOCO_BUCKET")
 		def JOB_NAME = vars.get("JOB_NAME")
 		def BUILD_NUMBER = vars.get("BUILD_NUMBER")
