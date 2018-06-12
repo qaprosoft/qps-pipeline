@@ -113,7 +113,7 @@ class ZafiraClient {
             url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"
 	}
 	
-	public void exportZafiraReport(String uuid) {
+	public String exportZafiraReport(String uuid) {
 		if (!isAvailable) {
 			return
 		}
@@ -125,6 +125,6 @@ class ZafiraClient {
 			url: this.serviceURL + "/api/tests/runs/${uuid}/export"
 			
 		context.println("exportZafiraReport response: ${response.content}")
-
+		return response.content
 	}
 }
