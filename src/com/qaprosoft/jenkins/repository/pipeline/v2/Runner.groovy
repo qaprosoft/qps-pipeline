@@ -549,7 +549,7 @@ class Runner extends Executor {
 		
 		File file = new File(getWorkspace() + "/reports/qa/zafira-report.html")
 		file.mkdirs()
-		file.write(String)
+		file.write(eTAFReport)
 
 		context.println("cur dir: " + file.getAbsolutePath())
 		/*
