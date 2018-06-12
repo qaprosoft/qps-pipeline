@@ -118,15 +118,13 @@ class ZafiraClient {
 			return
 		}
 
-		context.httpRequest customHeaders: [[name: 'Authorization', \
+		def response = context.httpRequest customHeaders: [[name: 'Authorization', \
 			value: "${token}"]], \
 		contentType: 'APPLICATION_JSON', \
 		httpMode: 'GET', \
 			url: this.serviceURL + "/api/tests/runs/${uuid}/export"
 			
-		def responseJson = new JsonSlurper().parseText(response.content)
-
-		context.println("exportZafiraReport response: ${responseJson}")
+		context.println("exportZafiraReport response: ${response.content}")
 
 	}
 }
