@@ -124,7 +124,7 @@ class ZafiraClient {
 		httpMode: 'GET', \
 			url: this.serviceURL + "/api/tests/runs/${uuid}/export"
 			
-		context.println("exportZafiraReport response: ${response.content}")
+		//context.println("exportZafiraReport response: ${response.content}")
 		return response.content
 	}
 }
