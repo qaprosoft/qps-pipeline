@@ -125,6 +125,7 @@ class Runner extends Executor {
 					zc.abortZafiraTestRun(uuid, failureReason)
 					throw ex
 				} finally {
+					this.reportingResultsEx()
 					this.reportingResults()
 					//TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
 					this.clean()
@@ -539,6 +540,11 @@ class Runner extends Executor {
 
 		}
 	}
+	
+	protected void reportingResultsEx() {
+		zc.exportZafiraReport(uuid)
+	}
+
 	
 	protected void publishTestNgReports(String pattern, String reportName) {
 		def reports = context.findFiles(glob: "${pattern}")
