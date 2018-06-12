@@ -547,12 +547,12 @@ class Runner extends Executor {
 	protected void reportingResultsEx() {
 		def eTAFReport = zc.exportZafiraReport(uuid)
 		
-		if(manager.build.workspace.isRemote())
+		if(context.manager.build.workspace.isRemote())
 		{
-			channel = manager.build.workspace.channel;
+			channel = context.manager.build.workspace.channel;
 		}
 
-		fp = new hudson.FilePath(channel, manager.build.workspace.toString() + "/reports/qa/zafira-report2.html")
+		fp = new hudson.FilePath(channel, context.manager.build.workspace.toString() + "/reports/qa/zafira-report2.html")
 
 		if(fp != null)
 		{
