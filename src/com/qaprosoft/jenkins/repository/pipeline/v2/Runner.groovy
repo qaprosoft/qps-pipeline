@@ -50,7 +50,7 @@ class Runner extends Executor {
 			def suiteFilter = "src/test/resources/**"
 			Object subProjects = this.parseJSON(WORKSPACE + "/" + jenkinsFile).sub_projects
 			subProjects.each {
-				def listPipelines = []
+				listPipelines = []
 				suiteFilter = it.suite_filter
 				sub_project = it.name
 
