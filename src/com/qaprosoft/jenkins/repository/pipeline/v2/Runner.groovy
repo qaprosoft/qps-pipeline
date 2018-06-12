@@ -19,6 +19,9 @@ class Runner extends Executor {
 	//using constructor it will be possible to redefine this folder on pipeline/jobdsl level
 	protected def folderName = "Automation"
 	
+	// with new Zafirta implementation it could be static and finalfor any project
+	protected static final String zafira_report_folder = "./reports/qa"
+	
 	//CRON related vars
 	protected def listPipelines = []
 	
@@ -350,11 +353,11 @@ class Runner extends Executor {
 			if (context.isUnix()) {
 				def suiteNameForUnix = params.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
-				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=./reports/qa -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAF_Report"
+				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAF_Report"
 			} else {
 				def suiteNameForWindows = "${suite}".replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
-				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=./reports/qa -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAF_Report"
+				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAF_Report"
 			}
 
 			this.setJobResults(context.currentBuild)
@@ -516,7 +519,7 @@ class Runner extends Executor {
 	protected void setJobResults(currentBuild) {
 		//Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
 		//TODO: hardoced path here! Update logic to find it across all sub-folders
-		String checkReport = context.readFile("./reports/qa/emailable-report.html")
+		String checkReport = context.readFile("${zafira_report_folder}/emailable-report.html")
 
 		if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
 			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
@@ -542,7 +545,14 @@ class Runner extends Executor {
 	}
 	
 	protected void reportingResultsEx() {
-		zc.exportZafiraReport(uuid)
+		def eTAFReport = zc.exportZafiraReport(uuid)
+		
+		//find "./reports/qa" location
+		File file = new File("${zafira_report_folder}/zafira-report2.html")
+		file.write eTAFReport
+		
+		def files = context.findFiles(glob: '**/zafira-report2.html')
+		context.println(files.length)
 	}
 
 	
