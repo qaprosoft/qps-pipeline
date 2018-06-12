@@ -534,7 +534,7 @@ class Runner extends Executor {
 	
 	protected void reportingResults() {
 		context.stage('Results') {
-			publishReport('**/reports/qa/emailable-report.html', '${etafReport}')
+			publishReport('**/reports/qa/emailable-report.html', "${etafReport}")
 			
 			publishReport('**/artifacts/**', 'eTAF_Artifacts')
 			
