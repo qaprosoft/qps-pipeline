@@ -121,8 +121,8 @@ class ZafiraClient {
 		context.httpRequest customHeaders: [[name: 'Authorization', \
 			value: "${token}"]], \
 		contentType: 'APPLICATION_JSON', \
-		httpMode: 'POST', \
-			url: this.serviceURL + "GET /api/tests/runs/${uuid}/export"
+		httpMode: 'GET', \
+			url: this.serviceURL + "/api/tests/runs/${uuid}/export"
 			
 		def responseJson = new JsonSlurper().parseText(response.content)
 
