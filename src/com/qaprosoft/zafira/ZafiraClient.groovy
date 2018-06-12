@@ -91,7 +91,7 @@ class ZafiraClient {
 	      contentType: 'APPLICATION_JSON',   \
 	      httpMode: 'POST',   \
 	      requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobId\": \"${upstreamJobId}\", \"upstreamJobBuildNumber\": \"${upstreamjobBuildNumber}\", " +
-				"\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\"}",   \
+				"\"scmUrl\": \"${scmUrl}\", \"hashcode\": \"${hashcode}\"}",   \
                   url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}",   \
                   timeout: 300000
 
