@@ -546,26 +546,7 @@ class Runner extends Executor {
 	
 	protected void reportingResultsEx() {
 		String eTAFReport = zc.exportZafiraReport(uuid)
-		
-		File file = new File(getWorkspace() + "/reports/qa/zafira-report.html")
-		file.mkdirs()
-		file.write(eTAFReport)
-
-		context.println("cur dir: " + file.getAbsolutePath())
-		/*
-		if(context.manager.build.workspace.isRemote())
-		{
-			channel = context.manager.build.workspace.channel;
-		}
-
-		fp = new hudson.FilePath(channel, context.manager.build.workspace.toString() + "/reports/qa/zafira-report2.html")
-
-		if(fp != null)
-		{
-			fp.write(eTAFReport, null); //writing to file
-			versionString = fp.readToString(); //reading from file
-		}
-		context.println(versionString)*/
+		writeFile file: "${zafira_report_folder}/zafira-report.html", text: "${eTAFReport}"
 	}
 
 	
