@@ -570,7 +570,7 @@ class Runner extends Executor {
 			def reportFile = files[0]
 			def reportDir = new File(reportFile.path).getParentFile()
 			context.echo "Report File Found, Publishing ${reportFile.path}"
-			context.publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${reportDir}", reportFiles: "${reportFile.name}", reportName: '${reportName}'])
+			context.publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${reportDir}", reportFiles: "${reportFile.name}", reportName: 'eTAF_Report])
 			return true;
 		} else if (files.length > 1) {
 			context.echo "ERROR: too many report file discovered! count: ${files.length}"
