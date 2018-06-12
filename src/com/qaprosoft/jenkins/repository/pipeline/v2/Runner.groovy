@@ -492,7 +492,6 @@ class Runner extends Executor {
 	//TODO: move into valid jacoco related package
 	protected void publishJacocoReport(vars) {
 		def JACOCO_ENABLE = vars.get("JACOCO_ENABLE").toBoolean()
-		context.println("JACOCO_ENABLE: ${JACOCO_ENABLE}")
 		if (!JACOCO_ENABLE) {
 			context.println("do not publish any content to AWS S3 if integration is disabled")
 			return
