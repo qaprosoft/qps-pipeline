@@ -134,7 +134,7 @@ class Runner extends Executor {
 					this.exportZafiraReport()
 					this.reportingResults()
 					//TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
-					//this.clean()
+					this.clean()
 				}
 			}
 		}
@@ -315,7 +315,7 @@ class Runner extends Executor {
 			params.put("ci_url", JOB_URL)
 			params.put("ci_build", BUILD_NUMBER)
 
-			//TODO: determine correctly ci_build_cause (HUMAn, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
+			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
 			
 			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
 			if (!params.get("ci_parent_url").isEmpty() && !params.get("ci_parent_build").isEmpty()) {
