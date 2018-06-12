@@ -353,11 +353,11 @@ class Runner extends Executor {
 			if (context.isUnix()) {
 				def suiteNameForUnix = params.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
-				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAF_Report"
+				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAFReport"
 			} else {
 				def suiteNameForWindows = "${suite}".replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
-				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAF_Report"
+				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/eTAFReport"
 			}
 
 			this.setJobResults(context.currentBuild)
@@ -447,7 +447,7 @@ class Runner extends Executor {
 
 
 		def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
-					eTAF_Report: ${JOB_URL}${BUILD_NUMBER}/eTAF_Report<br>
+					eTAFReport: ${JOB_URL}${BUILD_NUMBER}/eTAFReport<br>
 					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
 
 		//TODO: enable emailing but seems like it should be moved to the notification code
@@ -532,8 +532,8 @@ class Runner extends Executor {
 	
 	protected void reportingResults() {
 		context.stage('Results') {
-			if (!publishReport('**/reports/qa/zafira-report.html', 'eTAF_Report')) {
-				publishReport('**/reports/qa/emailable-report.html', 'eTAF_Report')
+			if (!publishReport('**/reports/qa/zafira-report.html', 'eTAFReport')) {
+				publishReport('**/reports/qa/emailable-report.html', 'eTAFReport')
 			}
 			
 			publishReport('**/artifacts/**', 'eTAF_Artifacts')
@@ -570,7 +570,7 @@ class Runner extends Executor {
 			def reportFile = files[0]
 			def reportDir = new File(reportFile.path).getParentFile()
 			context.echo "Report File Found, Publishing ${reportFile.path}"
-			context.publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${reportDir}", reportFiles: "${reportFile.name}", reportName: 'eTAF_Report'])
+			context.publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${reportDir}", reportFiles: "${reportFile.name}", reportName: "{reportName}"])
 			return true;
 		} else if (files.length > 1) {
 			context.echo "ERROR: too many report file discovered! count: ${files.length}"
