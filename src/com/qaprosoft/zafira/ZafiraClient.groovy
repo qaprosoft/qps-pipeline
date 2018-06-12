@@ -12,7 +12,7 @@ class ZafiraClient {
 	public ZafiraClient(context, String url, Boolean developMode) {
 		this.context = context;
 		this.serviceURL = url;
-		context.echo "zafiraUrl: ${serviceURL}"
+		context.println("zafiraUrl: ${serviceURL}")
 		
 		if (developMode) {
 			isAvailable = false
@@ -31,7 +31,7 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return ""
 		}
-		context.echo "accessToken: ${accessToken}"
+		context.println("accessToken: ${accessToken}")
 		def response = context.httpRequest \
 	    	contentType: 'APPLICATION_JSON', \
 			httpMode: 'POST', \
@@ -46,7 +46,7 @@ class ZafiraClient {
 		def type = properties.get("type")
 
 		this.token = "${type} ${authToken}"
-		context.echo "${this.token}"
+		//context.println("${this.token}")
 		return this.token
 	}
 
@@ -71,7 +71,7 @@ class ZafiraClient {
             url: this.serviceURL + "/api/tests/runs/queue"
 			
         String formattedJSON = JsonOutput.prettyPrint(response.content)
-        context.echo "Queued TestRun: ${formattedJSON}"
+        context.println("Queued TestRun: ${formattedJSON}")
     }
 
 	public void smartRerun(jobParams) {
@@ -97,8 +97,8 @@ class ZafiraClient {
 
 		def responseJson = new JsonSlurper().parseText(response.content)
 
-		context.echo "Results : ${responseJson.size()}"
-		context.echo "Tests for rerun : ${responseJson}"
+		context.println("Results : ${responseJson.size()}")
+		context.println("Tests for rerun : ${responseJson}")
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
@@ -111,5 +111,22 @@ class ZafiraClient {
 	    httpMode: 'POST', \
 	    requestBody: "{\"comment\": \"${comment}\"}", \
             url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"
+	}
+	
+	public void exportZafiraReport(String uuid) {
+		if (!isAvailable) {
+			return
+		}
+
+		context.httpRequest customHeaders: [[name: 'Authorization', \
+			value: "${token}"]], \
+		contentType: 'APPLICATION_JSON', \
+		httpMode: 'POST', \
+			url: this.serviceURL + "GET /api/tests/runs/${uuid}/export"
+			
+		def responseJson = new JsonSlurper().parseText(response.content)
+
+		context.println("exportZafiraReport response: ${responseJson}")
+
 	}
 }
