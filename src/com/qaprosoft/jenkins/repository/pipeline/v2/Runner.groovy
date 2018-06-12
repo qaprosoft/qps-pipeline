@@ -545,10 +545,13 @@ class Runner extends Executor {
 	}
 	
 	protected void reportingResultsEx() {
-		def eTAFReport = zc.exportZafiraReport(uuid)
+		String eTAFReport = zc.exportZafiraReport(uuid)
 		
-		File tempFile = new File(".")
-		context.println("cur dir: " + tempFile.getAbsolutePath())
+		File file = new File(getWorkspace() + "/reports/qa/zafira-report.html")
+		file.mkdirs()
+		file.write(String)
+
+		context.println("cur dir: " + file.getAbsolutePath())
 		/*
 		if(context.manager.build.workspace.isRemote())
 		{
