@@ -549,7 +549,7 @@ class Runner extends Executor {
 
 		def reportPath = this.getWorkspace() + "/${zafira_report_folder}/zafira-report2.html"
 		File file = new File(reportPath)
-		file.write eTAFReport
+		file << eTAFReport
 
 		def files = context.findFiles(glob: '**/zafira-report2.html')
 		context.println(files.length)
