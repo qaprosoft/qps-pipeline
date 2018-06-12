@@ -78,24 +78,20 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return
 		}
-		String ciParentUrl = jobParams.get("ci_parent_url")
-		String ciParentBuild = jobParams.get("ci_parent_build")
-		String gitUrl = jobParams.get("git_url")
+		String upstreamJobId = jobParams.get("upstream_job_id")
+		String upstreamjobBuildNumber = jobParams.get("upstream_job_build_number")
+		String scmUrl = jobParams.get("scm_url")
 		String ciUserId = jobParams.get("ci_user_id")
-		String failurePercent = jobParams.get("failurePercent")
 		String hashcode = jobParams.get("hashcode")
 		String doRebuild = jobParams.get("doRebuild")
 		String rerunFailures = jobParams.get("rerunFailures")
-
-		context.echo "Rebuild parameters: ci_parent_url : ${ciParentUrl} ci_parent_build : ${ciParentBuild} git_url : ${gitUrl} " +
-				"ci_user_id : ${ciUserId} failurePercent : ${failurePercent} hashcode : ${hashcode} doRebuild : ${doRebuild} rerunFailures : ${rerunFailures}"
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization',   \
               value: "${token}"]],   \
 	      contentType: 'APPLICATION_JSON',   \
 	      httpMode: 'POST',   \
-	      requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobUrl\": \"${ciParentUrl}\", \"upstreamJobBuildNumber\": \"${ciParentBuild}\", " +
-				"\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\", \"failurePercent\": \"${failurePercent}\"}",   \
+	      requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobId\": \"${upstreamJobId}\", \"upstreamJobBuildNumber\": \"${upstreamjobBuildNumber}\", " +
+				"\"scmUrl\": \"${gitUrl}\", \"hashcode\": \"${hashcode}\"}",   \
                   url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}",   \
                   timeout: 300000
 
