@@ -547,7 +547,7 @@ class Runner extends Executor {
 	protected void reportingResultsEx() {
 		def eTAFReport = zc.exportZafiraReport(uuid)
 		
-		def reportLocations = context.findFiles(glob: "**/${zafira_report_folder}")
+		def reportLocations = context.findFiles(glob: "${zafira_report_folder}")
 		context.println("zafira_report_folder count: " + reportLocations.length)
 		
 		if(reportLocations.length == 1) {
