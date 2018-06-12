@@ -545,8 +545,8 @@ class Runner extends Executor {
 	}
 	
 	protected void reportingResultsEx() {
-		String eTAFReport = zc.exportZafiraReport(uuid)
-		writeFile file: "${zafira_report_folder}/zafira-report.html", text: "${eTAFReport}"
+		def eTAFReport = zc.exportZafiraReport(uuid)
+		writeFile file: "${zafira_report_folder}/zafira-report.html", text: eTAFReport.toString()
 	}
 
 	
