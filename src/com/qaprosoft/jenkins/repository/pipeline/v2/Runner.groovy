@@ -20,8 +20,9 @@ class Runner extends Executor {
 	protected def folderName = "Automation"
 	
 	// with new Zafirta implementation it could be static and finalfor any project
-	protected static final String zafira_report_folder = "./reports/qa"
+	protected static final String ZAFIRA_REPORT_FOLDER = "./reports/qa"
 	protected static final String etafReport = "eTAF_Report"
+	//TODO: /api/test/runs/{id}/export should use encoded url value as well
 	protected static final String etafReportEncoded = "eTAF_5fReport"
 	
 	//CRON related vars
@@ -130,7 +131,7 @@ class Runner extends Executor {
 					zc.abortZafiraTestRun(uuid, failureReason)
 					throw ex
 				} finally {
-					this.reportingResultsEx()
+					this.exportZafiraReport()
 					this.reportingResults()
 					//TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
 					//this.clean()
@@ -351,15 +352,15 @@ class Runner extends Executor {
 			
 			context.echo "goals: ${goals}"
 			
-			//TODO: adjust zafira_report_folder correclty
+			//TODO: adjust ZAFIRA_REPORT_FOLDER correclty
 			if (context.isUnix()) {
 				def suiteNameForUnix = params.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
-				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
+				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
 			} else {
 				def suiteNameForWindows = "${suite}".replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
-				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${zafira_report_folder} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
+				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
 			}
 
 			this.setJobResults(context.currentBuild)
@@ -521,7 +522,7 @@ class Runner extends Executor {
 	protected void setJobResults(currentBuild) {
 		//Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
 		//TODO: hardoced path here! Update logic to find it across all sub-folders
-		String checkReport = context.readFile("${zafira_report_folder}/emailable-report.html")
+		String checkReport = context.readFile("${ZAFIRA_REPORT_FOLDER}/emailable-report.html")
 
 		if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
 			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
@@ -544,10 +545,11 @@ class Runner extends Executor {
 		}
 	}
 	
-	protected void reportingResultsEx() {
+	protected void exportZafiraReport() {
+		//replace existing local emailable-report.html by Zafira content
 		def zafiraReport = zc.exportZafiraReport(uuid)
 		if (!zafiraReport.isEmpty()) {
-			context.writeFile file: "${zafira_report_folder}/emailable-report.html", text: zafiraReport
+			context.writeFile file: "${ZAFIRA_REPORT_FOLDER}/emailable-report.html", text: zafiraReport
 		}
 	}
 
