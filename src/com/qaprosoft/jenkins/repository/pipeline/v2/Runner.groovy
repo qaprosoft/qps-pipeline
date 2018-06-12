@@ -128,7 +128,7 @@ class Runner extends Executor {
 					zc.abortZafiraTestRun(uuid, failureReason)
 					throw ex
 				} finally {
-					this.reportingResultsEx()
+//					this.reportingResultsEx()
 					this.reportingResults()
 					//TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
 					this.clean()
