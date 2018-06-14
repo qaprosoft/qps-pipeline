@@ -3,12 +3,22 @@ package com.qaprosoft.jenkins.repository.jobdsl.v2
 import com.qaprosoft.selenium.grid.ProxyInfo;
 
 class Job {
+	protected String runJobPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
+	protected String runCronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
+
 	protected def context
 	protected def selenium
 	
 	public Job(context) {
 		this.context = context
 		selenium = context.binding.variables.SELENIUM_PROTOCOL + "://" + context.binding.variables.SELENIUM_HOST + ":" + context.binding.variables.SELENIUM_PORT 
+	}
+	
+	
+	public Job(context, runJobScript, runCronScript) {
+		this(context)
+		this.runJobPipelineScript = runJobScript
+		this.runCronPipelineScript = runCronScript
 	}
 
 	void createPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project, String suite, String suiteOwner, String zafira_project) {
@@ -162,7 +172,7 @@ class Job {
 			/** Git Stuff **/
 			definition {
 				cps {
-					script("@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()")
+					script(runJobPipelineScript)
 					sandbox()
 				}
 			}
@@ -243,7 +253,7 @@ class Job {
 			}
 			definition {
 				cps {
-					script("@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()")
+					script(runCronPipelineScript)
 					sandbox()
 				}
 			}
