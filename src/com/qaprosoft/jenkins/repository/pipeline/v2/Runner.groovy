@@ -125,6 +125,7 @@ class Runner extends Executor {
 					}
 					
 				} catch (Exception ex) {
+					printStackTrace(ex)
 					String failureReason = getFailure(context.currentBuild, jobParams, jobVars)
 					context.echo "failureReason: ${failureReason}"
 					//explicitly execute abort to resolve anomalies with in_progress tests...
