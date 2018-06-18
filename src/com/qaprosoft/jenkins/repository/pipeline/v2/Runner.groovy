@@ -236,6 +236,9 @@ class Runner extends Executor {
 		params.put("capabilities.noSign", "true")
 		params.put("capabilities.STF_ENABLED", "true")
 		
+		params.put("capabilities.appWaitDuration", "270000")
+		params.put("capabilities.androidInstallTimeout", "270000")
+		
 		customPrepareForAndroid(params)
 	}
 	
