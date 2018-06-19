@@ -140,7 +140,6 @@ class Scanner extends Executor {
 						}
 
 						//TODO: review later if we need views by zafira poject name and owner
-/*						
 						if (!views.contains(zafira_project)) {
 							views << zafira_project
 
@@ -156,8 +155,6 @@ class Scanner extends Executor {
 								propagate: false,
 								parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: suiteOwner), context.string(name: 'descFilter', value: suiteOwner),]
 						}
-*/						
-
 
 						def createCron = false
 						if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
