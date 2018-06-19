@@ -106,7 +106,7 @@ class Runner extends Executor {
 		
 		context.node(nodeName) {
 			context.wrap([$class: 'BuildUser']) {
-				params.put("BUILD_USER_ID", env.BUILD_USER_ID)
+				jobParams.put("BUILD_USER_ID", env.BUILD_USER_ID)
 				try {
 					context.timestamps {
 						
