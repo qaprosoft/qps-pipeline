@@ -106,7 +106,6 @@ class Runner extends Executor {
 		
 		context.node(nodeName) {
 			context.wrap([$class: 'BuildUser']) {
-				jobParams.put("BUILD_USER_ID", BUILD_USER)
 				try {
 					context.timestamps {
 						
@@ -161,6 +160,9 @@ class Runner extends Executor {
 
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
 	protected void prepare(currentBuild, params, vars) {
+		
+		jobParams.put("BUILD_USER_ID", getBuildUser())
+		
 		String BUILD_NUMBER = vars.get("BUILD_NUMBER")
 		String CARINA_CORE_VERSION = vars.get("CARINA_CORE_VERSION")
 
