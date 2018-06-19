@@ -77,7 +77,12 @@ public abstract class Executor {
 	}
 	
 	protected String getBuildUser() {
-		return context.currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
+		try {
+			return context.currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
+		} catch (Exception e) {
+			return ""
+		}
+		
 	}
 
 	protected Object parseJSON(String path) {
