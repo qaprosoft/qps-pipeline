@@ -19,7 +19,7 @@ class GitHub implements ISCM {
 
 			def GITHUB_SSH_URL = vars.get("GITHUB_SSH_URL")
 			def userId = params.get("BUILD_USER_ID")
-			context.println("userId: ${userId}")
+			//context.println("userId: ${userId}")
 			def GITHUB_HOST = vars.get("GITHUB_HOST")
 
 			def gitUrl = "${GITHUB_SSH_URL}/${project}"
@@ -32,9 +32,9 @@ class GitHub implements ISCM {
 						changelog: false, poll: false
 			} else {
 				def token_name = 'token_' + "${userId}"
-				context.println("token_name: ${token_name}")
+				//context.println("token_name: ${token_name}")
 				def token_value = vars.get(token_name)
-				context.println("token_value: ${token_value}")
+				//context.println("token_value: ${token_value}")
 				//if token_value contains ":" as delimiter then redefine build_user_id using the 1st part
 				if (token_value != null && token_value.contains(":")) {
 					def (tempUserId, tempToken) = token_value.tokenize( ':' )
