@@ -18,7 +18,7 @@ class GitHub implements ISCM {
 			def project = params.get("project")
 
 			def GITHUB_SSH_URL = vars.get("GITHUB_SSH_URL")
-			def BUILD_USER_ID = vars.get("BUILD_USER_ID")
+			def userId = vars.get("BUILD_USER_ID")
 			def GITHUB_HOST = vars.get("GITHUB_HOST")
 
 			def gitUrl = "${GITHUB_SSH_URL}/${project}"
@@ -33,6 +33,12 @@ class GitHub implements ISCM {
 				def token_name = 'token_' + "${BUILD_USER_ID}"
 				context.println("token_name: ${token_name}")
 				def token_value = vars.get(token_name)
+				//if token_value contains ":" as delimiter then redefine build_user_id using the 1st part
+				if (token_value.contans(":")) {
+					def (tempUserId, tempToken) = token_value.tokenize( ':' )
+					userId = tempUserId
+					token_value =  tempToken
+				}
 				if (token_value != null) {
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${BUILD_USER_ID}/${project}"
 					context.println "fork repo url: ${gitUrl}"
