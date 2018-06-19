@@ -75,6 +75,10 @@ public abstract class Executor {
 	protected String getWorkspace() {
 		return context.pwd()
 	}
+	
+	protected String getBuildUser() {
+		return context.currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
+	}
 
 	protected Object parseJSON(String path) {
 		def inputFile = new File(path)
