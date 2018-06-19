@@ -30,7 +30,7 @@ class GitHub implements ISCM {
 						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
 						changelog: false, poll: false
 			} else {
-				def token_name = 'token_' + "${BUILD_USER_ID}"
+				def token_name = 'token_' + "${userId}"
 				context.println("token_name: ${token_name}")
 				def token_value = vars.get(token_name)
 				//if token_value contains ":" as delimiter then redefine build_user_id using the 1st part
@@ -40,7 +40,7 @@ class GitHub implements ISCM {
 					token_value =  tempToken
 				}
 				if (token_value != null) {
-					gitUrl = "https://${token_value}@${GITHUB_HOST}/${BUILD_USER_ID}/${project}"
+					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
 					context.println "fork repo url: ${gitUrl}"
 					context.checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
 							doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
