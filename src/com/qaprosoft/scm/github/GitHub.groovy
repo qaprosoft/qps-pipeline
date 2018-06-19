@@ -34,8 +34,9 @@ class GitHub implements ISCM {
 				def token_name = 'token_' + "${userId}"
 				context.println("token_name: ${token_name}")
 				def token_value = vars.get(token_name)
+				context.println("token_value: ${token_value}")
 				//if token_value contains ":" as delimiter then redefine build_user_id using the 1st part
-				if (token_value.contans(":")) {
+				if (token_value != null && token_value.contans(":")) {
 					def (tempUserId, tempToken) = token_value.tokenize( ':' )
 					userId = tempUserId
 					token_value =  tempToken
