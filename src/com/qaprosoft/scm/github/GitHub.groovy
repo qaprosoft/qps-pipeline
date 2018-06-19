@@ -19,6 +19,9 @@ class GitHub implements ISCM {
 
 			def GITHUB_SSH_URL = vars.get("GITHUB_SSH_URL")
 			def userId = vars.get("BUILD_USER_ID")
+			context.println("userId: ${userId}")
+			userId = vars.get("ci_user_id")
+			context.println("userId: ${userId}")
 			def GITHUB_HOST = vars.get("GITHUB_HOST")
 
 			def gitUrl = "${GITHUB_SSH_URL}/${project}"
