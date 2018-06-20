@@ -92,6 +92,9 @@ class Runner extends Executor {
         for (action in context.currentBuild.rawBuild.actions) {
 			if(action.getClass() == CauseAction)
             context.println(action.getCauses())
+			if(action.causeBag){
+				context.println(causeBag.keySet().iterator().next().getShortDescription())
+			}
         }
 
 		uuid = getUUID()
