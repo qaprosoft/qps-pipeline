@@ -94,7 +94,9 @@ class Runner extends Executor {
 				context.println(action.getDisplayName())
 				context.println(action.getCauses())
 				action.getCauses().each { cause ->
-					context.println(cause.dump())
+					if (cause.getClass() == RebuildCause){
+						context.println(cause.dump())
+					}
 				}
 
 			}
