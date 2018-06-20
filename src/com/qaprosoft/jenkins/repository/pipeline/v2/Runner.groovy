@@ -92,11 +92,11 @@ class Runner extends Executor {
         context.println("CAUSES " + context.currentBuild.rawBuild.getCauses())
 
 
-        context.println("@@@@" + context.currentBuild.rawBuild.getAction(hudson.model.CauseAction.class))
+        context.println("CAUSES2 " + context.currentBuild.rawBuild.getAction(hudson.model.CauseAction.class))
 
         context.currentBuild.rawBuild.actions.each { action ->
 			if (action instanceof CauseAction){
-                context.println("REBUILD CAUSES" + cause.dump())
+                context.println("REBUILD CAUSES" + action.dump())
 				action.getCauses().each { cause ->
 					if (cause instanceof Cause.UpstreamCause){
 						context.println("UPSTREAM CAUSE" + cause.dump())
