@@ -604,9 +604,9 @@ class Runner extends Executor {
 	protected def sortPipelineList(List pipelines) {
 		//return pipelines.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
 		context.println(pipelines.dump())
-		pipelines.sort { a, b -> a.order <=> b.order }
-		context.println(pipelines.dump())
-		return pipelines
+		def tmp = pipelines.sort { a, b -> a.order <=> b.order }
+		context.println(tmp.dump())
+		return tmp
 	}
 
 	protected void parsePipeline(jobVars, jobParams, String filePath) {
