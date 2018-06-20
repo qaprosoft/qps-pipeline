@@ -49,6 +49,7 @@ class Scanner extends Executor {
 				return
 			}
 
+			context.println(context.currentBuild.rawBuild.dump())
 			Object subProjects = this.parseJSON("${workspace}/${jenkinsFile}").sub_projects
 		
 			subProjects.each {
