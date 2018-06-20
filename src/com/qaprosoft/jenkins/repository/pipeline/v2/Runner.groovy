@@ -89,19 +89,16 @@ class Runner extends Executor {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 
-        context.println("RRRRRRR")
-
-
         context.println("CAUSE " + context.currentBuild.rawBuild.getCauses())
 
 		context.currentBuild.rawBuild.actions.each { action ->
-			if (action.getClass() == CauseAction){
-
+			if (action instanceof CauseAction){
 				context.println("MY CAUSE " + action.getCauses())
+
 				action.getCauses().each { cause ->
-					//if (cause.getClass() == RebuildCause){
+					if (cause instanceof com.sonyericsson.rebuild.RebuildCause){
 						context.println(cause.dump())
-					//}
+					}
 				}
 			}
 //			if(action.hasProperty('causeBag') && action.causeBag){
