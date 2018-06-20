@@ -95,7 +95,7 @@ class Runner extends Executor {
         context.println("ACTIONS USING METHOD " + action1)
 
         def cause1 = action1.findCause(hudson.model.Cause.UpstreamCause.class)
-        context.println ("UPSTREAM CAUSE" + cause1)
+        context.println ("UPSTREAM CAUSE " + cause1)
 
         context.currentBuild.rawBuild.actions.each { action ->
 			if (action instanceof CauseAction){
@@ -108,9 +108,6 @@ class Runner extends Executor {
 					}
 				}
 			}
-//			if(action.hasProperty('causeBag') && action.causeBag){
-//				context.println(causeBag.keySet().iterator().next().getShortDescription())
-//			}
 		}
 
 		uuid = getUUID()
