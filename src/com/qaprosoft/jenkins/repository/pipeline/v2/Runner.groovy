@@ -94,8 +94,8 @@ class Runner extends Executor {
 
         def action1 = context.currentBuild.rawBuild.getAction(hudson.model.CauseAction.class)
         context.println("CAUSES2 " + action1)
-        cause = action1.findCause(hudson.model.Cause.UpstreamCause.class)
-        context.println ("RRRRRR" + cause.getUpstreamRun())
+        def cause1 = action1.findCause(hudson.model.Cause.UpstreamCause.class)
+        context.println ("RRRRRR" + cause1.getUpstreamRun())
         context.currentBuild.rawBuild.actions.each { action ->
 			if (action instanceof CauseAction){
                 context.println("REBUILD CAUSES" + action.dump())
