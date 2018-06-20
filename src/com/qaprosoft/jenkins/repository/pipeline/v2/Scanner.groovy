@@ -19,7 +19,7 @@ class Scanner extends Executor {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 		
-		context.node() {
+		context.node('master') {
 			context.timestamps {
 				scmClient.clone(jobParams, jobVars)
 				this.scan(jobParams, jobVars)
