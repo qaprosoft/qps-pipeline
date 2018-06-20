@@ -91,6 +91,7 @@ class Runner extends Executor {
 
 		context.currentBuild.rawBuild.actions.each { action ->
 			if (action.getClass() == CauseAction){
+				context.println(action.getDisplayName())
 				context.println(action.getCauses())
 				action.getCauses().each { cause ->
 					context.println(cause.dump())
