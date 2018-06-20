@@ -92,7 +92,7 @@ class Runner extends Executor {
         context.println("CAUSES " + context.currentBuild.rawBuild.getCauses())
 
 
-        context.println("@@@@" + context.currentBuild.getAction(hudson.model.CauseAction.class))
+        context.println("@@@@" + context.currentBuild.rawBuild.getAction(hudson.model.CauseAction.class))
 
         context.currentBuild.rawBuild.actions.each { action ->
 			if (action instanceof CauseAction){
