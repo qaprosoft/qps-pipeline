@@ -600,8 +600,16 @@ class Runner extends Executor {
 		}
 	}
 	
+	@NonCPS
+	protected def sortPipelineList(List pipelineList) {
+		context.println(pipelineList.dump())
+		def tmp = pipelineList.sort { map1, map2 -> !map1.priority ? !map2.priority ? 0 : 1 : !map2.priority ? -1 : map1.priority.toInteger() <=> map2.priority.toInteger() }
+		context.println(tmp.dump())
+		return tmp
+		
+	}
 	
-	protected def sortPipelineList(List pipelines) {
+	protected def sortPipelineList2(List pipelines) {
 		//return pipelines.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
 		context.println(pipelines.dump())
 		def tmp = pipelines.sort { a, b -> a.order <=> b.order }
