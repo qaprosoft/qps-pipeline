@@ -89,6 +89,8 @@ class Runner extends Executor {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 
+        context.println("RRRRRRR")
+        context.println(context.currentBuild.dump())
         context.currentBuild.upstreamBuilds?.each { b ->
 			context.println("Rebuild" + b.dump())
 		}
