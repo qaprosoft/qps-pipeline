@@ -594,7 +594,7 @@ class Runner extends Executor {
 	
 	
 	protected void sortPipelineList() {
-		listPipelines.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
+		listPipelines = listPipelines.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
 	}
 
 	protected void parsePipeline(jobVars, jobParams, String filePath) {
