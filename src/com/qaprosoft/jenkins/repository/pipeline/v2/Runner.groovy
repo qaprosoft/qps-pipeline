@@ -93,11 +93,9 @@ class Runner extends Executor {
 
 		context.currentBuild.rawBuild.actions.each { action ->
 			if (action instanceof CauseAction){
-				context.println("MY CAUSE " + action.getCauses())
-
 				action.getCauses().each { cause ->
 					if (cause instanceof com.sonyericsson.rebuild.RebuildCause){
-						context.println(cause.dump())
+						context.println("MY CAUSE" + cause.dump())
 					}
 				}
 			}
