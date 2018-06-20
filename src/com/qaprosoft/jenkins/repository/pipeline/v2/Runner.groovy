@@ -88,7 +88,7 @@ class Runner extends Executor {
 	public void runJob() {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
-
+        String JOB_URL = vars.get("JOB_URL")
         context.println("CAUSE " + context.currentBuild.rawBuild.getCauses())
 
 		context.currentBuild.rawBuild.actions.each { action ->
@@ -96,6 +96,10 @@ class Runner extends Executor {
 				action.getCauses().each { cause ->
 					if (cause instanceof com.sonyericsson.rebuild.RebuildCause){
 						context.println("MY CAUSE" + cause.dump())
+                        context.println(cause.upstreamUrl)
+                        if (JOB_URL == cause.upstreamUrl) {
+                            context.println("TRUE")
+                        }
 					}
 				}
 			}
