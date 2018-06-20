@@ -92,7 +92,7 @@ class Runner extends Executor {
         for (action in context.currentBuild.rawBuild.actions) {
 			if(action.getClass() == CauseAction)
             context.println(action.getCauses())
-			if(action.causeBag){
+			if(action.hasProperty('causeBag') && action.causeBag){
 				context.println(causeBag.keySet().iterator().next().getShortDescription())
 			}
         }
