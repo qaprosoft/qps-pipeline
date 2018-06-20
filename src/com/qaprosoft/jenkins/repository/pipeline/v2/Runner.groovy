@@ -90,7 +90,7 @@ class Runner extends Executor {
 		jobVars = initVars(context.env)
 
         for (action in context.currentBuild.rawBuild.actions) {
-            context.println(action.dump())
+            context.println(action.getCauses())
         }
 
 		uuid = getUUID()
