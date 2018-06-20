@@ -88,6 +88,9 @@ class Runner extends Executor {
 	public void runJob() {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
+
+		context.println(context.currentBuild.rawBuild.dump())
+
 		uuid = getUUID()
 		def nodeName = "master"
 		//TODO: remove master node assignment
