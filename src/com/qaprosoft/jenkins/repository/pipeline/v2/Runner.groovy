@@ -90,10 +90,12 @@ class Runner extends Executor {
 		jobVars = initVars(context.env)
 
 		context.currentBuild.rawBuild.actions.each { action ->
-			if (action.getClass() == CauseAction)
+			if (action.getClass() == CauseAction){
 				context.println(action.getCauses())
-			action.getCauses().each { cause ->
-				context.println(cause.dump())
+				action.getCauses().each { cause ->
+					context.println(cause.dump())
+				}
+
 			}
 //			if(action.hasProperty('causeBag') && action.causeBag){
 //				context.println(causeBag.keySet().iterator().next().getShortDescription())
