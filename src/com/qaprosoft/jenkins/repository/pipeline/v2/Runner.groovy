@@ -90,6 +90,7 @@ class Runner extends Executor {
 		jobVars = initVars(context.env)
 
         for (action in context.currentBuild.rawBuild.actions) {
+			if(action.getClass() == CauseAction)
             context.println(action.getCauses())
         }
 
