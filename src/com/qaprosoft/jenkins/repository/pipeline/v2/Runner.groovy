@@ -89,16 +89,17 @@ class Runner extends Executor {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
         String JOB_URL = jobVars.get("JOB_URL")
-        context.println("CAUSES " + context.currentBuild.rawBuild.getCauses())
-
+        context.println("CAUSES USING METHOD" + context.currentBuild.rawBuild.getCauses())
 
         def action1 = context.currentBuild.rawBuild.getAction(hudson.model.CauseAction.class)
-        context.println("CAUSES2 " + action1)
+        context.println("ACTIONS USING METHOD " + action1)
+
         def cause1 = action1.findCause(hudson.model.Cause.UpstreamCause.class)
-        context.println ("RRRRRR" + cause1)
+        context.println ("UPSTREAM CAUSE" + cause1)
+
         context.currentBuild.rawBuild.actions.each { action ->
 			if (action instanceof CauseAction){
-                context.println("REBUILD CAUSES" + action.dump())
+                context.println("ACTIONS USING instanceof" + action.dump())
 				action.getCauses().each { cause ->
 					if (cause instanceof Cause.UpstreamCause){
 						context.println("UPSTREAM CAUSE" + cause.dump())
