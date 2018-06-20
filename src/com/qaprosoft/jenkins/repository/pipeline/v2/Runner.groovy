@@ -91,6 +91,9 @@ class Runner extends Executor {
 
         context.println("RRRRRRR")
         context.println(context.currentBuild.dump())
+        context.println(context.currentBuild.getUpstreamBuilds());
+        context.println(context.currentBuild.rawBuild.getUpstreamBuilds());
+
         context.currentBuild.upstreamBuilds?.each { b ->
 			context.println("Rebuild" + b.dump())
 		}
