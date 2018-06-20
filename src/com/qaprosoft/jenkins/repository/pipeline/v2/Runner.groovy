@@ -89,21 +89,26 @@ class Runner extends Executor {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 
-		context.currentBuild.rawBuild.actions.each { action ->
-			if (action.getClass() == CauseAction){
-				context.println(action.getDisplayName())
-				context.println(action.getCauses())
-				action.getCauses().each { cause ->
-					if (cause.getClass() == RebuildCause){
-						context.println(cause.dump())
-					}
-				}
+		currentBuild.upstreamBuilds?.each { b ->
+			context.echo "Upstream build: ${b.getFullDisplayName()}"
+		}
 
-			}
+//		context.currentBuild.rawBuild.actions.each { action ->
+//			if (action.getClass() == CauseAction){
+//				context.println(action.getDisplayName())
+//				context.println(action.getCauses())
+//				action.getCauses().each { cause ->
+//					if (cause.getClass() == RebuildCause){
+//
+//						context.println(cause.dump())
+//					}
+//				}
+
+//			}
 //			if(action.hasProperty('causeBag') && action.causeBag){
 //				context.println(causeBag.keySet().iterator().next().getShortDescription())
 //			}
-		}
+//		}
 
 		uuid = getUUID()
 		def nodeName = "master"
