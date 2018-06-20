@@ -90,7 +90,7 @@ class Runner extends Executor {
 		jobVars = initVars(context.env)
 
         context.currentBuild.upstreamBuilds?.each { b ->
-			context.echo "Upstream build: ${b.getFullDisplayName()}"
+			context.println("Rebuild" + b.dump())
 		}
 
 //		context.currentBuild.rawBuild.actions.each { action ->
