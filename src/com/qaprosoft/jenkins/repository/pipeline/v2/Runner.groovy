@@ -647,9 +647,9 @@ class Runner extends Executor {
 				}
 
 				for (def supportedEnv : supportedEnvs.split(",")) {
-					context.println("supportedEnv: " + supportedEnv)
+					//context.println("supportedEnv: " + supportedEnv)
 					if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
-						context.println("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
+						//context.println("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
 						//launch test only if current suite support cron regression execution for current env
 						continue;
 					}
@@ -661,9 +661,9 @@ class Runner extends Executor {
 
 						// currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
 
-						context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
+						//context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
 						if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("null")) {
-							context.println("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
+							//context.println("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
 							continue;
 						}
 						
