@@ -73,7 +73,15 @@ class Runner extends Executor {
 					}
 	
 					context.println("Finished Dynamic Mapping: " + listPipelines)
-					sortPipelineList()
+					context.println("size1: " + listPipelines.size())
+					listPipelines = sortPipelineList(listPipelines)
+					context.println("size2: " + listPipelines.size())
+					
+					
+					for (Map entry : listPipelines) {
+						def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))
+						context.println("stageName: ${stageName}")
+					}
 					context.println("Finished Dynamic Mapping Sorted Order: " + listPipelines)
 	
 					this.executeStages(folderName)
@@ -593,9 +601,8 @@ class Runner extends Executor {
 	}
 	
 	
-	protected void sortPipelineList() {
-		//listPipelines.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
-		listPipelines = listPipelines.sort { a,b -> a.order <=> b.order }
+	protected def sortPipelineList(pipelines) {
+		return pipelines.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
 	}
 
 	protected void parsePipeline(jobVars, jobParams, String filePath) {
