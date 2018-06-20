@@ -94,10 +94,10 @@ class Runner extends Executor {
 		context.currentBuild.rawBuild.actions.each { action ->
 			if (action instanceof CauseAction){
 				action.getCauses().each { cause ->
-					if (cause instanceof com.sonyericsson.rebuild.RebuildCause){
+					if (cause instanceof Cause.UpstreamCause){
 						context.println("MY CAUSE" + cause.dump())
-                        context.println(cause.upstreamUrl)
-                        if (JOB_URL == cause.upstreamUrl) {
+                        context.println(cause.getUpstreamUrl())
+                        if (JOB_URL == cause.getUpstreamUrl()) {
                             context.println("TRUE")
                         }
 					}
