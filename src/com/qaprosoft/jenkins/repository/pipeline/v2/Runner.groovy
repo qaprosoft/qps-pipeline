@@ -95,7 +95,7 @@ class Runner extends Executor {
 			context.println("Upstream " + b.dump())
 		}
 
-        context.println ("CAUSE ${currentBuild.rawBuild.getCause(hudson.model.Cause$UpstreamCause).properties}")
+        context.println ("CAUSE ${context.currentBuild.rawBuild.getCause(hudson.model.Cause$UpstreamCause).properties}")
         context.println(context.currentBuild.getCauses)
 //		context.currentBuild.rawBuild.actions.each { action ->
 //			if (action.getClass() == CauseAction){
