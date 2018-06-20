@@ -89,7 +89,9 @@ class Runner extends Executor {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 
-		context.println(context.currentBuild.rawBuild.dump())
+        for (action in context.currentBuild.rawBuild.actions) {
+            context.println(action.name)
+        }
 
 		uuid = getUUID()
 		def nodeName = "master"
