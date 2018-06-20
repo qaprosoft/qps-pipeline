@@ -72,17 +72,7 @@ class Runner extends Executor {
 						this.parsePipeline(jobVars, jobParams, WORKSPACE + "/" + files[i].path)
 					}
 	
-					context.println("Finished Dynamic Mapping: " + listPipelines)
-					context.println("size1: " + listPipelines.size())
 					listPipelines = sortPipelineList(listPipelines)
-					context.println("size2: " + listPipelines.size())
-					
-					
-					for (Map entry : listPipelines) {
-						def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))
-						context.println("stageName: ${stageName}")
-					}
-					context.println("Finished Dynamic Mapping Sorted Order: " + listPipelines)
 	
 					this.executeStages(folderName)
 				} else {
@@ -601,20 +591,12 @@ class Runner extends Executor {
 	}
 	
 	@NonCPS
-	protected def sortPipelineList(List pipelineList) {
-		context.println(pipelineList.dump())
-		def tmp = pipelineList.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
-		context.println(tmp.dump())
-		return tmp
+	protected def sortPipelineList(List pipelinesList) {
+		context.println("Finished Dynamic Mapping: " + pipelinesList.dump())
+		pipelinesList = pipelinesList.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
+		context.println("Finished Dynamic Mapping Sorted Order: " + pipelinesList.dump())
+		return pipelinesList
 		
-	}
-	
-	protected def sortPipelineList2(List pipelines) {
-		//return pipelines.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
-		context.println(pipelines.dump())
-		def tmp = pipelines.sort { a, b -> a.order <=> b.order }
-		context.println(tmp.dump())
-		return tmp
 	}
 
 	protected void parsePipeline(jobVars, jobParams, String filePath) {
