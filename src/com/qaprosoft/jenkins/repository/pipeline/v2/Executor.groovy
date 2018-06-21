@@ -91,15 +91,41 @@ public abstract class Executor {
 		return content
 	}
 
-	protected Boolean isRebuild(String jobName) {
-		Boolean isRebuild = false
-		context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
-			action ->
-				if (action.findCause(hudson.model.Cause.UpstreamCause.class) != null)
-					isRebuild = (jobName == action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())
-		}
-		return isRebuild
-	}
+    /* Checks if current job started as rebuild */
+    protected Boolean isRebuild(String jobName) {
+        Boolean isRebuild = false
+        /* Gets CauseActions of the job */
+        context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
+            action ->
+                /* Search UpstreamCause among CauseActions */
+                if (action.findCause(hudson.model.Cause.UpstreamCause.class) != null)
+                /* If UpstreamCause exists and has the same name as current job, rebuild was called */
+                    isRebuild = (jobName == action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())
+        }
+        return isRebuild
+    }
+
+    /* Determines BuildCause */
+    protected String getBuildCause(String jobName) {
+        String buildCause = null
+        /* Gets CauseActions of the job */
+        context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
+            action ->
+                /* Searches UpstreamCause among CauseActions and checks if it is not the same job as current(the other way it was rebuild) */
+                if (action.findCause(hudson.model.Cause.UpstreamCause.class)
+                        && (jobName != action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())) {
+                    buildCause = "UPSTREAMTRIGGER"
+                }
+                /* Searches TimerTriggerCause among CauseActions */
+                else if (action.findCause(hudson.triggers.TimerTrigger$TimerTriggerCause.class)) {
+                    buildCause = "TIMERTRIGGER"
+                }
+                else {
+                    buildCause = "MANUALTRIGGER"
+                }
+        }
+        return buildCause
+    }
 
 	XmlSuite parseSuite(String path) {
 		def xmlFile = new Parser(path)
