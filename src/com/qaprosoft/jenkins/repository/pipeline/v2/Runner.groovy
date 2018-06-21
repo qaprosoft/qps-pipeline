@@ -814,7 +814,7 @@ class Runner extends Executor {
 
         String buildCause = null
 
-        context.currentBuild.rawBuild.getActions().each {
+        context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
             action ->
                 if (action.findCause(hudson.model.Cause.UpstreamCause.class)
                         && (jobName != action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())) {
