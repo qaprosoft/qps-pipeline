@@ -88,11 +88,11 @@ class Runner extends Executor {
 		jobVars = initVars(context.env)
         uuid = getUUID()
 
-        //getBuildCause(jobVars.get("JOB_NAME"))
-
         context.currentBuild.rawBuild.getActions().each {
             action -> context.println("Action " + action.dump())
         }
+        String JOB_NAME = jobVars.get("JOB_NAME")
+        getBuildCause(JOB_NAME)
 
         def nodeName = "master"
 		//TODO: remove master node assignment
@@ -816,16 +816,18 @@ class Runner extends Executor {
 
         context.currentBuild.rawBuild.getActions().each {
             action ->
-                if (action.findCause(hudson.model.Cause.UpstreamCause.class) != null
+                if (action.findCause(hudson.model.Cause.UpstreamCause.class)
                         && (jobName != action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())) {
                     buildCause = "UPSTREAMTRIGGER"
                     return
                 }
-//                else if () {
-//
-//                }
+                else if (action.findCause(hudson.triggers.TimerTrigger$TimerTriggerCause.class)) {
+                    buildCause = "TIMERTRIGGER"
+                } else {
+                    buildCause = "MANUALTRIGGER"
+                }
         }
-
+        context.println("BUILD CAUSE": buildCause)
         return buildCause
     }
 }
