@@ -91,7 +91,16 @@ public abstract class Executor {
 		return content
 	}
 
-	
+	protected Boolean isRebuild(String jobName) {
+		Boolean isRebuild = false
+		context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
+			action ->
+				if (action.findCause(hudson.model.Cause.UpstreamCause.class) != null)
+					isRebuild = (jobName == action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())
+		}
+		return isRebuild
+	}
+
 	XmlSuite parseSuite(String path) {
 		def xmlFile = new Parser(path)
 		xmlFile.setLoadClasses(false)
