@@ -72,9 +72,7 @@ class Runner extends Executor {
 						this.parsePipeline(jobVars, jobParams, WORKSPACE + "/" + files[i].path)
 					}
 	
-					context.println("Finished Dynamic Mapping: " + listPipelines)
-					sortPipelineList()
-					context.println("Finished Dynamic Mapping Sorted Order: " + listPipelines)
+					listPipelines = sortPipelineList(listPipelines)
 	
 					this.executeStages(folderName)
 				} else {
@@ -601,9 +599,13 @@ class Runner extends Executor {
 		}
 	}
 	
-	
-	protected void sortPipelineList() {
-		listPipelines.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
+	@NonCPS
+	protected def sortPipelineList(List pipelinesList) {
+		context.println("Finished Dynamic Mapping: " + pipelinesList.dump())
+		pipelinesList = pipelinesList.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
+		context.println("Finished Dynamic Mapping Sorted Order: " + pipelinesList.dump())
+		return pipelinesList
+		
 	}
 
 	protected void parsePipeline(jobVars, jobParams, String filePath) {
@@ -656,9 +658,9 @@ class Runner extends Executor {
 				}
 
 				for (def supportedEnv : supportedEnvs.split(",")) {
-					context.println("supportedEnv: " + supportedEnv)
+					//context.println("supportedEnv: " + supportedEnv)
 					if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
-						context.println("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
+						//context.println("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
 						//launch test only if current suite support cron regression execution for current env
 						continue;
 					}
@@ -670,9 +672,9 @@ class Runner extends Executor {
 
 						// currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
 
-						context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
+						//context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
 						if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("null")) {
-							context.println("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
+							//context.println("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
 							continue;
 						}
 						
