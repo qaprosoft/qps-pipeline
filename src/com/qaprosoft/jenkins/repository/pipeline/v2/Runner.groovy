@@ -819,9 +819,7 @@ class Runner extends Executor {
                 if (action.findCause(hudson.model.Cause.UpstreamCause.class)
                         && (jobName != action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())) {
                     buildCause = "UPSTREAMTRIGGER"
-                    return
-                }
-                else if (action.findCause(hudson.triggers.TimerTrigger$TimerTriggerCause.class)) {
+                } else if (action.findCause(hudson.triggers.TimerTrigger$TimerTriggerCause.class)) {
                     buildCause = "TIMERTRIGGER"
                 } else {
                     buildCause = "MANUALTRIGGER"
