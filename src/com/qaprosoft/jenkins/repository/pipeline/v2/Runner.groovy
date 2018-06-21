@@ -114,7 +114,7 @@ class Runner extends Executor {
 			}
 		}
 
-        context.println ("UPSTREAM CAUSE " + isRebuild)
+        context.println ("IS REBUILD = " + isRebuild)
 
 		uuid = getUUID()
 		def nodeName = "master"
