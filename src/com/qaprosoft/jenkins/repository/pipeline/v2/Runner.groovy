@@ -90,9 +90,7 @@ class Runner extends Executor {
 		jobVars = initVars(context.env)
         String JOB_NAME = jobVars.get("JOB_NAME")
 
-        context.println("CAUSES USING METHOD " + context.currentBuild.rawBuild.getCauses())
-
-        def action1 = context.currentBuild.rawBuild.getAction(hudson.model.CauseAction.class)
+        def action1 = context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class)
         context.println("ACTIONS USING METHOD " + action1)
 
         def cause1 = action1.findCause(hudson.model.Cause.UpstreamCause.class)
@@ -106,15 +104,13 @@ class Runner extends Executor {
 				action.getCauses().each { cause ->
 					if (cause instanceof Cause.UpstreamCause){
 						context.println("UPSTREAM CAUSE " + cause.dump())
-                        context.println(cause.getUpstreamProject())
-                        context.println(JOB_NAME)
                         isRebuild = (JOB_NAME == cause.getUpstreamProject())
 					}
 				}
 			}
 		}
 
-        context.println ("IS REBUILD = " + isRebuild)
+        context.println ("REBUILD=" + isRebuild)
 
 		uuid = getUUID()
 		def nodeName = "master"
