@@ -88,7 +88,7 @@ class Runner extends Executor {
 	public void runJob() {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
-        String JOB_NAME = vars.get("JOB_NAME")
+        String JOB_NAME = jobVars.get("JOB_NAME")
 
         context.println("CAUSES USING METHOD " + context.currentBuild.rawBuild.getCauses())
 
