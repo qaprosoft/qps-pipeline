@@ -107,8 +107,8 @@ class Runner extends Executor {
 					if (cause instanceof Cause.UpstreamCause){
 						context.println("UPSTREAM CAUSE " + cause.dump())
                         context.println(cause.getUpstreamProject())
-                        context.println(JOB_URL)
-                        isRebuild = (JOB_URL == cause.getUpstreamProject())
+                        context.println(JOB_NAME)
+                        isRebuild = (JOB_NAME == cause.getUpstreamProject())
 					}
 				}
 			}
