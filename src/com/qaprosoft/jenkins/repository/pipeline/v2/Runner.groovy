@@ -38,11 +38,6 @@ class Runner extends Executor {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 
-        //getBuildCause(jobVars.get("JOB_NAME"))
-        context.currentBuild.rawBuild.getActions().each {
-            action -> context.println("Action " + action.dump())
-        }
-
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
@@ -93,12 +88,11 @@ class Runner extends Executor {
 		jobVars = initVars(context.env)
         uuid = getUUID()
 
-        Boolean isRebuild = false
-        context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
-            action ->
-                context.println(action.causeBag.dump())
+        //getBuildCause(jobVars.get("JOB_NAME"))
+
+        context.currentBuild.rawBuild.getActions().each {
+            action -> context.println("Action " + action.dump())
         }
-        context.println("REBUILD=" + isRebuild)
 
         def nodeName = "master"
 		//TODO: remove master node assignment
