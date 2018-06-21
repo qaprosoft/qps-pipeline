@@ -86,15 +86,8 @@ class Runner extends Executor {
 	public void runJob() {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
-        uuid = getUUID()
-
-        context.currentBuild.rawBuild.getActions().each {
-            action -> context.println("Action " + action.dump())
-        }
-        String JOB_NAME = jobVars.get("JOB_NAME")
-        getBuildCause(JOB_NAME)
-
-        def nodeName = "master"
+		uuid = getUUID()
+		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
@@ -809,23 +802,4 @@ class Runner extends Executor {
 
 		}
 	}
-
-    protected String getBuildCause(String jobName) {
-
-        String buildCause = null
-
-        context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
-            action ->
-                if (action.findCause(hudson.model.Cause.UpstreamCause.class)
-                        && (jobName != action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())) {
-                    buildCause = "UPSTREAMTRIGGER"
-                } else if (action.findCause(hudson.triggers.TimerTrigger$TimerTriggerCause.class)) {
-                    buildCause = "TIMERTRIGGER"
-                } else {
-                    buildCause = "MANUALTRIGGER"
-                }
-        }
-        context.println("BUILD CAUSE": buildCause)
-        return buildCause
-    }
 }
