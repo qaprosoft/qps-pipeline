@@ -90,11 +90,13 @@ class Runner extends Executor {
 		jobVars = initVars(context.env)
         String JOB_NAME = jobVars.get("JOB_NAME")
 
-        def action1 = context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class)
-        context.println("ACTIONS USING METHOD " + action1)
 
-        def cause1 = action1.findCause(hudson.model.Cause.UpstreamCause.class)
-        context.println ("UPSTREAM CAUSE " + cause1)
+        context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
+            action1 ->
+                context.println("ACTIONS USING METHOD " + action1)
+                def cause1 = action1.findCause(hudson.model.Cause.UpstreamCause.class)
+                context.println ("UPSTREAM CAUSE " + cause1)
+        }
 
         Boolean isRebuild = false;
 
