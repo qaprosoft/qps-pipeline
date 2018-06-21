@@ -95,8 +95,8 @@ class Runner extends Executor {
 
         context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
             action ->
-                action.findCause(hudson.model.Cause.UpstreamCause.class)
-                isRebuild = (JOB_NAME == action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())
+                if (action.findCause(hudson.model.Cause.UpstreamCause.class) != null)
+                    isRebuild = (JOB_NAME == action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())
         }
 
         context.println ("REBUILD=" + isRebuild)
