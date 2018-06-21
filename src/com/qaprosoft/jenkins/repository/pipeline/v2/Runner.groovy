@@ -88,21 +88,17 @@ class Runner extends Executor {
 	public void runJob() {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
+        uuid = getUUID()
 
-        String JOB_NAME = jobVars.get("JOB_NAME")
-
-        Boolean isRebuild = false;
-
+        Boolean isRebuild = false
         context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
             action ->
                 if (action.findCause(hudson.model.Cause.UpstreamCause.class) != null)
-                    isRebuild = (JOB_NAME == action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())
+                    isRebuild = (jobVars.get("JOB_NAME") == action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())
         }
+        context.println("REBUILD=" + isRebuild)
 
-        context.println ("REBUILD=" + isRebuild)
-
-		uuid = getUUID()
-		def nodeName = "master"
+        def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
