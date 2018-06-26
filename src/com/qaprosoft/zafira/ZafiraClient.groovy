@@ -124,21 +124,24 @@ class ZafiraClient {
 		httpMode: 'GET', \
 			url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"
 
+        context.println("Response1" + ${response})
         if (response.content == null){
             context.println("Unable to send test run results")
             return
         }
-        Object responseJson = new JsonSlurper().parseText(response.content)
+
+        def responseJson = new JsonSlurper().parseText(response.content)
         def testRunId = responseJson.id
 
-        context.httpRequest customHeaders: [[name: 'Authorization', \
+        def response2 = context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
 	    requestBody: "{\"recipients\": \"${email_list}\"}", \
             url: this.serviceURL + "/api/tests/runs/${testRunId}/email"
 
-        context.println("Emails are sent by zafira client")
+        context.println("Check if request was sent" + ${response2.content})
+
 	}
 
 	public String exportZafiraReport(String uuid) {
