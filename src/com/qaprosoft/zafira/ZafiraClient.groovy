@@ -128,7 +128,8 @@ class ZafiraClient {
             context.println("Unable to send test run results")
             return
         }
-        def testRunId = response.content.id
+        Object responseJson = new JsonSlurper().parseText(response.content)
+        def testRunId = responseJson.id
 
         context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
