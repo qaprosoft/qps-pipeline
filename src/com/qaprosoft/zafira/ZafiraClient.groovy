@@ -124,7 +124,6 @@ class ZafiraClient {
 		httpMode: 'GET', \
 			url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"
 
-        context.println("Response1" + ${response})
         if (response.content == null){
             context.println("Unable to send test run results")
             return
