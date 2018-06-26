@@ -87,7 +87,8 @@ class Runner extends Executor {
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 		uuid = getUUID()
-		def nodeName = "master"
+        String nodeName = "master"
+        String email_list = params.get("email_list")
 		//TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
@@ -133,7 +134,8 @@ class Runner extends Executor {
 					this.exportZafiraReport()
 					this.reportingResults()
 					//TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
-					this.clean()
+                    this.sendTestRunResultsEmail(email_list)
+                    this.clean()
 				}
 			}
 		}
@@ -550,15 +552,10 @@ class Runner extends Executor {
 		}
 	}
 	
-	protected void exportZafiraReport() {
-		//replace existing local emailable-report.html by Zafira content
-		def zafiraReport = zc.exportZafiraReport(uuid)
-		if (!zafiraReport.isEmpty()) {
-			context.writeFile file: "${ZAFIRA_REPORT_FOLDER}/emailable-report.html", text: zafiraReport
-		}
+	protected void sendTestRunResultsEmail(String email_list) {
+		zc.exportZafiraReport(uuid, email_list)
 	}
 
-	
 	protected void publishTestNgReports(String pattern, String reportName) {
 		def reports = context.findFiles(glob: "${pattern}")
 		for (int i = 0; i < reports.length; i++) {
