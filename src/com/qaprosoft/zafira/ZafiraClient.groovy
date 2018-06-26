@@ -137,7 +137,6 @@ class ZafiraClient {
 	     httpMode: 'POST',  \
 	     requestBody: "{\"recipients\": \"${email_list}\"}",  \
              url: this.serviceURL + "/api/tests/runs/${testRunId}/email"
-
     }
 
 	public String exportZafiraReport(String uuid) {
