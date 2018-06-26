@@ -552,10 +552,18 @@ class Runner extends Executor {
 		}
 	}
 	
-	protected void sendTestRunResultsEmail(String email_list) {
-        if (email_list != null && !email_list.isEmpty())
-		zc.exportZafiraReport(uuid, email_list)
+	protected void exportZafiraReport() {
+		//replace existing local emailable-report.html by Zafira content
+		def zafiraReport = zc.exportZafiraReport(uuid)
+		if (!zafiraReport.isEmpty()) {
+			context.writeFile file: "${ZAFIRA_REPORT_FOLDER}/emailable-report.html", text: zafiraReport
+		}
 	}
+
+    protected void sendTestRunResultsEmail(String email_list) {
+        if (email_list != null && !email_list.isEmpty())
+            zc.exportZafiraReport(uuid, email_list)
+    }
 
 	protected void publishTestNgReports(String pattern, String reportName) {
 		def reports = context.findFiles(glob: "${pattern}")
