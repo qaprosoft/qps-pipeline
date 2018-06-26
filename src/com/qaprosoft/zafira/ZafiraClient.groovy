@@ -139,7 +139,8 @@ class ZafiraClient {
 	    requestBody: "{\"recipients\": \"${email_list}\"}", \
             url: this.serviceURL + "/api/tests/runs/${testRunId}/email"
 
-        context.println("Check if request was sent" + ${response2.content})
+        def responseJson2 = new JsonSlurper().parseText(response2.content)
+        context.println("Check if request was sent" + ${responseJson2})
 
 	}
 
