@@ -132,15 +132,12 @@ class ZafiraClient {
         def responseJson = new JsonSlurper().parseText(response.content)
         def testRunId = responseJson.id
 
-        def response2 = context.httpRequest customHeaders: [[name: 'Authorization', \
+        context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
 	    requestBody: "{\"recipients\": \"${email_list}\"}", \
             url: this.serviceURL + "/api/tests/runs/${testRunId}/email"
-
-        def responseJson2 = response2.content
-        context.println("Check if request was sent" + responseJson2)
 
 	}
 
