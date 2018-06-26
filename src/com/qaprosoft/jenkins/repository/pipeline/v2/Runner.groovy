@@ -84,9 +84,9 @@ class Runner extends Executor {
 	
 	
 	public void runJob() {
-		jobParams = initParams(context.currentBuild)
-		jobVars = initVars(context.env)
-		uuid = getUUID()
+        jobParams = initParams(context.currentBuild)
+        jobVars = initVars(context.env)
+        uuid = getUUID()
         String nodeName = "master"
         String email_list = jobParams.get("email_list")
         //TODO: remove master node assignment
