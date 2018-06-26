@@ -114,31 +114,31 @@ class ZafiraClient {
 	}
 
     void sendTestRunResultsEmail(String uuid, String email_list) {
-		if (!isAvailable) {
-			return
-		}
+        if (!isAvailable) {
+            return
+        }
 
-		def response = context.httpRequest customHeaders: [[name: 'Authorization', \
-			value: "${token}"]], \
-		contentType: 'APPLICATION_JSON', \
-		httpMode: 'GET', \
-			url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"
+        def response = context.httpRequest customHeaders: [[name: 'Authorization',  \
+			 value: "${token}"]],  \
+		 contentType: 'APPLICATION_JSON',  \
+		 httpMode: 'GET',  \
+			 url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"
 
-        if (response.content == null){
+        if (response.content == null) {
             context.println("Unable to send test run results")
             return
         }
 
         def testRunId = new JsonSlurper().parseText(response.content).id
 
-        context.httpRequest customHeaders: [[name: 'Authorization', \
-            value: "${token}"]], \
-	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'POST', \
-	    requestBody: "{\"recipients\": \"${email_list}\"}", \
-            url: this.serviceURL + "/api/tests/runs/${testRunId}/email"
+        context.httpRequest customHeaders: [[name: 'Authorization',  \
+             value: "${token}"]],  \
+	     contentType: 'APPLICATION_JSON',  \
+	     httpMode: 'POST',  \
+	     requestBody: "{\"recipients\": \"${email_list}\"}",  \
+             url: this.serviceURL + "/api/tests/runs/${testRunId}/email"
 
-	}
+    }
 
 	public String exportZafiraReport(String uuid) {
 		if (!isAvailable) {
