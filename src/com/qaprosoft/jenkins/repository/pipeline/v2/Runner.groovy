@@ -553,6 +553,7 @@ class Runner extends Executor {
 	}
 	
 	protected void sendTestRunResultsEmail(String email_list) {
+        if (email_list != null && !email_list.isEmpty())
 		zc.exportZafiraReport(uuid, email_list)
 	}
 
