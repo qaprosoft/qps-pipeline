@@ -129,8 +129,7 @@ class ZafiraClient {
             return
         }
 
-        def responseJson = new JsonSlurper().parseText(response.content)
-        def testRunId = responseJson.id
+        def testRunId = new JsonSlurper().parseText(response.content).id
 
         context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
