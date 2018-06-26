@@ -101,7 +101,7 @@ class ZafiraClient {
 		context.println("Tests for rerun : ${responseJson}")
 	}
 
-	public void abortZafiraTestRun(jobParams) {
+	public void abortZafiraTestRun(String uuid, String comment) {
 		if (!isAvailable) {
 			return 
 		}
