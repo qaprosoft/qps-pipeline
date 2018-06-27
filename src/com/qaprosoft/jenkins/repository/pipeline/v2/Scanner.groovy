@@ -167,6 +167,7 @@ class Scanner extends Executor {
 							def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
 
 							if (!doesExist(jobFolder + "/" + cronName)) {
+                                context.println("CRON WAS CREATED")
 								createCron = true
 							}
 							// we need only single regression cron declaration
