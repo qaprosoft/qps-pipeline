@@ -162,19 +162,19 @@ class Scanner extends Executor {
 								parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: suiteOwner), context.string(name: 'descFilter', value: suiteOwner),]
 						}
 
-						def createCron = false
-						if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
-							def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
+                        def createCron = false
+                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
+                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
 
-							if (!doesExist(jobFolder + "/" + cronName)) {
-								createCron = true
-							}
-							// we need only single regression cron declaration
-							//createCron = !crons.contains(cronName)
-							crons << cronName
-						}
+                            if (!doesExist(jobFolder + "/" + cronName)) {
+                                createCron = true
+                            }
+                            // we need only single regression cron declaration
+                            //createCron = !crons.contains(cronName)
+                            crons << cronName
+                        }
 
-						context.build job: "Management_Jobs/CreateJob",
+                        context.build job: "Management_Jobs/CreateJob",
 						propagate: false,
 						parameters: [
 							context.string(name: 'jobFolder', value: jobFolder),
