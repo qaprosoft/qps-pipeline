@@ -41,8 +41,14 @@ class Scanner extends Executor {
 			context.println("WORKSPACE: ${workspace}")
 
 			def jobFolder = params.get("folder")
+            def folder = Jenkins.instance.getItemByFullName(jobFolder)
+            if (folder == null){
+                context.build job: "Management_Jobs/CreateFolder",
+                        propagate: false,
+                        parameters: [context.string(name: 'folder', value: jobFolder)]
+            }
 
-			def jenkinsFile = ".jenkinsfile.json"
+            def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
 				context.println("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
 				ccontext.urrentBuild.result = 'UNSTABLE'
