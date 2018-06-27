@@ -105,16 +105,14 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return 
 		}
-		try {
+
 		context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
 	    requestBody: "{\"comment\": \"${comment}\"}", \
             url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"
-		} catch (Exception ex) {
-			context.println("Unable to send result Email")
-		}
+
 	}
 
     void sendTestRunResultsEmail(String uuid, String email_list) {
