@@ -41,8 +41,8 @@ class Scanner extends Executor {
 			context.println("WORKSPACE: ${workspace}")
 
 			def jobFolder = params.get("folder")
-            def folder = Jenkins.instance.getItemByFullName(jobFolder)
-            if (!folder){
+
+            if (!doesExist(jobFolder)){
                 context.build job: "Management_Jobs/CreateFolder",
                         propagate: false,
                         parameters: [context.string(name: 'folder', value: jobFolder)]
@@ -166,8 +166,7 @@ class Scanner extends Executor {
 						if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
 							def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
 
-							def job = Jenkins.instance.getItemByFullName(jobFolder + "/" + cronName);
-							if (job == null) {
+							if (!doesExist(jobFolder + "/" + cronName)) {
 								createCron = true
 							}
 							// we need only single regression cron declaration
