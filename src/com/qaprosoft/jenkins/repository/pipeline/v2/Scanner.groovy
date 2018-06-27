@@ -42,7 +42,7 @@ class Scanner extends Executor {
 
 			def jobFolder = params.get("folder")
             def folder = Jenkins.instance.getItemByFullName(jobFolder)
-            if (folder == null){
+            if (!folder){
                 context.build job: "Management_Jobs/CreateFolder",
                         propagate: false,
                         parameters: [context.string(name: 'folder', value: jobFolder)]
