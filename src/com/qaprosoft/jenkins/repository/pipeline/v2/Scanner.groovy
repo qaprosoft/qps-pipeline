@@ -170,6 +170,7 @@ class Scanner extends Executor {
                                 context.println("CRON WAS CREATED")
 								createCron = true
 							}
+                            context.println("CRON WAS NOT CREATED")
 							// we need only single regression cron declaration
 							//createCron = !crons.contains(cronName)
 							crons << cronName
