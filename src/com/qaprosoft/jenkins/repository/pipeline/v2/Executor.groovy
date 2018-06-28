@@ -86,9 +86,11 @@ public abstract class Executor {
 	}
 
     @NonCPS
-    protected boolean isItemAvailable(String path) {
+	/* Checks whether the item with provided @name exists on Jenkins
+	**/
+    protected boolean isItemAvailable(String name) {
         boolean available = false
-        def job = Jenkins.instance.getItemByFullName(path)
+        def job = Jenkins.instance.getItemByFullName(name)
         if (job) {
             available = true
         }
