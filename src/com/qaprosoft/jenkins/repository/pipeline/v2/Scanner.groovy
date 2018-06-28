@@ -175,17 +175,17 @@ class Scanner extends Executor {
                         }
 
                         context.build job: "Management_Jobs/CreateJob",
-						propagate: false,
-						parameters: [
-							context.string(name: 'jobFolder', value: jobFolder),
-							context.string(name: 'project', value: project),
-							context.string(name: 'sub_project', value: sub_project),
-							context.string(name: 'suite', value: suiteName),
-							context.string(name: 'suiteOwner', value: suiteOwner),
-							context.string(name: 'zafira_project', value: zafira_project),
-							context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
-							context.booleanParam(name: 'createCron', value: createCron),
-						], wait: false
+                                propagate: false,
+                                parameters: [
+                                        context.string(name: 'jobFolder', value: jobFolder),
+                                        context.string(name: 'project', value: project),
+                                        context.string(name: 'sub_project', value: sub_project),
+                                        context.string(name: 'suite', value: suiteName),
+                                        context.string(name: 'suiteOwner', value: suiteOwner),
+                                        context.string(name: 'zafira_project', value: zafira_project),
+                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
+                                        context.booleanParam(name: 'createCron', value: createCron),
+                                ], wait: false
 						
 					}
 				}
