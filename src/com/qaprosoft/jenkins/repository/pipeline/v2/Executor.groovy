@@ -86,13 +86,13 @@ public abstract class Executor {
 	}
 
     @NonCPS
-    protected boolean doesExist(String path) {
-        boolean doesExist = false
+    protected boolean isItemAvailable(String path) {
+        boolean available = false
         def job = Jenkins.instance.getItemByFullName(path)
         if (job) {
-            doesExist = true
+            available = true
         }
-        return doesExist
+        return available
     }
 
 	protected Object parseJSON(String path) {
