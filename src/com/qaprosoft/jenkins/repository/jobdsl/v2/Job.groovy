@@ -78,7 +78,7 @@ class Job {
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
-						choiceParam('device', ProxyInfo.getDevicesList(selenium, 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
@@ -88,10 +88,11 @@ class Job {
 						configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'ANDROID')
+						configure addHiddenParameter('deviceName', '', 'MOBILE') // to reuse QPS-GGR default setup
 						break;
 					case ~/^.*ios.*$/:
 					//TODO:  Need to adjust this for virtual as well.
-						choiceParam('device', ProxyInfo.getDevicesList(selenium, 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
@@ -100,6 +101,7 @@ class Job {
 						configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'iOS')
+						configure addHiddenParameter('deviceName', '', 'MOBILE') // to reuse QPS-GGR default setup
 						break;
 					default:
 						booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
