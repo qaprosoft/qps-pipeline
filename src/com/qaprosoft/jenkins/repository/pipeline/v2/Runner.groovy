@@ -489,7 +489,7 @@ class Runner extends Executor {
 	}
 
     protected boolean isFailure(currentBuild) {
-        boolean failure = false;
+        boolean failure = false
         if (currentBuild.result && currentBuild.result == 'FAILURE') {
             failure = true
         }
@@ -572,9 +572,8 @@ class Runner extends Executor {
 
     protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
 
-        context.println("BUILD DUMP" + context.currentBuild.rawBuild.dump())
-
         boolean isFailure = isFailure(context.currentBuild.rawBuild)
+        context.println("ISFAILURE" + isFailure)
         if (emailList != null && !emailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, emailList, "all", true)
 		}
