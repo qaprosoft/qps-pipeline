@@ -568,10 +568,10 @@ class Runner extends Executor {
 
     protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
         if (emailList != null && !emailList.isEmpty()) {
-			zc.sendTestRunResultsEmail(uuid, emailList, "all", true)
+			zc.sendTestRunResultsEmail(uuid, emailList, "all")
 		}
 		if (isFailure(context.currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
-			zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures", true)
+			zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures")
 		}
 	}
 
