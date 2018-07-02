@@ -112,8 +112,8 @@ class Runner extends Executor {
 					context.timestamps {
 						
 						this.prepare(context.currentBuild, jobParams, jobVars)
-						scmClient.clone(jobParams, jobVars)
 
+						scmClient.clone(jobParams, jobVars)
 
 						this.downloadResources(jobParams, jobVars)
 
@@ -121,8 +121,6 @@ class Runner extends Executor {
 						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
 							  this.build(jobParams, jobVars)  
 						}
-
-                        context.println("VARS AFTER RUN" + jobVars)
 						//TODO: think about seperate stage for uploading jacoco reports
 						this.publishJacocoReport(jobVars);
 					}
@@ -138,7 +136,7 @@ class Runner extends Executor {
                     this.exportZafiraReport()
                     this.reportingResults()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
-                    this.sendTestRunResultsEmail(emailList, failureEmailList, failureReason)
+                    this.sendTestRunResultsEmail(emailList, failureEmailList)
                     this.clean()
                 }
 			}
@@ -489,6 +487,14 @@ class Runner extends Executor {
 
 		return causee
 	}
+
+    protected boolean isFailure(currentBuild) {
+        boolean failure = false;
+        if (currentBuild.result && currentBuild.result == 'FAILURE') {
+            failure = true
+        }
+        return failure
+    }
 	
 	protected boolean isParamEmpty(String value) {
 		if (value == null || value.isEmpty() || value.equals("NULL")) {
@@ -564,13 +570,12 @@ class Runner extends Executor {
 		}
 	}
 
-    protected void sendTestRunResultsEmail(String emailList, String failureEmailList, String failureReason) {
-        context.println("FAILURE_REASON" + failureReason)
+    protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
 
         if (emailList != null && !emailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, emailList, "all", true)
 		}
-		if (failureReason != null && failureEmailList != null && !failureEmailList.isEmpty()) {
+		if (isFailure(context.currentBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures", true)
 		}
 	}
