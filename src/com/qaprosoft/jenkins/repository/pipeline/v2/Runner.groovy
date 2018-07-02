@@ -145,7 +145,7 @@ class Runner extends Executor {
 
 	}
 
-    public void rerunJobs(){
+    void rerunJobs(){
 
         jobParams = initParams(context.currentBuild)
         jobVars = initVars(context.env)
@@ -564,6 +564,8 @@ class Runner extends Executor {
 	}
 
     protected void sendTestRunResultsEmail(String emailList, String failureEmailList, String failureReason) {
+        context.println("FAILURE_REASON" + failureReason)
+
         if (emailList != null && !emailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, emailList, "all", true)
 		}
