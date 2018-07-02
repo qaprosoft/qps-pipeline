@@ -544,7 +544,9 @@ class Runner extends Executor {
 		if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
 			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
 			currentBuild.result = 'FAILURE'
-		} else if (checkReport.contains("SKIP_ALL:")) {
+            context.println("BUILD DUMP 2" + context.currentBuild.dump())
+
+        } else if (checkReport.contains("SKIP_ALL:")) {
 			currentBuild.result = 'UNSTABLE'
 		}
 	}
