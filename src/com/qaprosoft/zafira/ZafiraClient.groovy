@@ -115,7 +115,7 @@ class ZafiraClient {
 
 	}
 
-    void sendTestRunResultsEmail(String uuid, String emailList, String filter, boolean showStacktrace) {
+    void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
         if (!isAvailable) {
             return
         }
@@ -125,7 +125,7 @@ class ZafiraClient {
 	     contentType: 'APPLICATION_JSON',  \
 	     httpMode: 'POST',  \
 	     requestBody: "{\"recipients\": \"${emailList}\"}",  \
-             url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}&showStacktrace=${showStacktrace}"
+             url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"
     }
 
 	String exportZafiraReport(String uuid) {
