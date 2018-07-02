@@ -121,7 +121,8 @@ class Runner extends Executor {
 						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
 							  this.build(jobParams, jobVars)  
 						}
-						
+
+                        context.println("VARS AFTER RUN" + jobVars)
 						//TODO: think about seperate stage for uploading jacoco reports
 						this.publishJacocoReport(jobVars);
 					}
