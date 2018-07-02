@@ -572,10 +572,13 @@ class Runner extends Executor {
 
     protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
 
+        context.println("BUILD DUMP" + context.currentBuild.dump())
+
+        boolean isFailure = isFailure(context.currentBuild)
         if (emailList != null && !emailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, emailList, "all", true)
 		}
-		if (isFailure(context.currentBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
+		if (isFailure && failureEmailList != null && !failureEmailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures", true)
 		}
 	}
