@@ -9,7 +9,7 @@ class ZafiraClient {
 	private def context;
 	private boolean isAvailable;
 
-	public ZafiraClient(context, String url, Boolean developMode) {
+	ZafiraClient(context, String url, Boolean developMode) {
 		this.context = context;
 		this.serviceURL = url;
 		context.println("zafiraUrl: ${serviceURL}")
@@ -23,11 +23,11 @@ class ZafiraClient {
 
 	}
 	
-	public boolean isAvailable() {
+	boolean isAvailable() {
 		return this.isAvailable
 	}
 
-	public String getZafiraAuthToken(String accessToken) {
+	String getZafiraAuthToken(String accessToken) {
 		if (!isAvailable) {
 			return ""
 		}
@@ -50,7 +50,7 @@ class ZafiraClient {
 		return this.token
 	}
 
-	public void queueZafiraTestRun(String uuid, jobVars, jobParams) {
+	void queueZafiraTestRun(String uuid, jobVars, jobParams) {
 		if (!isAvailable) {
 			return
 		}
@@ -74,7 +74,7 @@ class ZafiraClient {
         context.println("Queued TestRun: ${formattedJSON}")
     }
 
-	public void smartRerun(jobParams) {
+	void smartRerun(jobParams) {
 		if (!isAvailable) {
 			return
 		}
@@ -101,7 +101,7 @@ class ZafiraClient {
 		context.println("Tests for rerun : ${responseJson}")
 	}
 
-	public void abortZafiraTestRun(String uuid, String comment) {
+	void abortZafiraTestRun(String uuid, String comment) {
 		if (!isAvailable) {
 			return 
 		}
@@ -115,7 +115,7 @@ class ZafiraClient {
 
 	}
 
-    void sendTestRunResultsEmail(String uuid, String email_list) {
+    void sendTestRunResultsEmail(String uuid, String emailList, String filter, boolean showStacktrace) {
         if (!isAvailable) {
             return
         }
@@ -124,11 +124,11 @@ class ZafiraClient {
              value: "${token}"]],  \
 	     contentType: 'APPLICATION_JSON',  \
 	     httpMode: 'POST',  \
-	     requestBody: "{\"recipients\": \"${email_list}\"}",  \
-             url: this.serviceURL + "/api/tests/runs/${uuid}/email"
+	     requestBody: "{\"recipients\": \"${emailList}\"}",  \
+             url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}&showStacktrace=${showStacktrace}"
     }
 
-	public String exportZafiraReport(String uuid) {
+	String exportZafiraReport(String uuid) {
 		if (!isAvailable) {
 			return ""
 		}

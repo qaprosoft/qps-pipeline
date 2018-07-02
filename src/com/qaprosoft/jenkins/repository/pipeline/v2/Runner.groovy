@@ -90,8 +90,8 @@ class Runner extends Executor {
         String nodeName = "master"
         String emailList = jobParams.get("email_list")
         String failureEmailList = jobParams.get("failure_email_list")
+        String failureReason = null
 
-        context.println("FAILURE EMAIL LIST" + failureEmailList)
         //TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
@@ -128,7 +128,7 @@ class Runner extends Executor {
 					
 				} catch (Exception ex) {
 					printStackTrace(ex)
-					String failureReason = getFailure(context.currentBuild, jobParams, jobVars)
+					failureReason = getFailure(context.currentBuild, jobParams, jobVars)
 					context.echo "failureReason: ${failureReason}"
 					//explicitly execute abort to resolve anomalies with in_progress tests...
 					zc.abortZafiraTestRun(uuid, failureReason)
@@ -137,7 +137,7 @@ class Runner extends Executor {
                     this.exportZafiraReport()
                     this.reportingResults()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
-                    this.sendTestRunResultsEmail(emailList, failureEmailList)
+                    this.sendTestRunResultsEmail(emailList, failureEmailList, failureReason)
                     this.clean()
                 }
 			}
@@ -563,14 +563,13 @@ class Runner extends Executor {
 		}
 	}
 
-    protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
+    protected void sendTestRunResultsEmail(String emailList, String failureEmailList, String failureReason) {
         if (emailList != null && !emailList.isEmpty()) {
-			zc.sendTestRunResultsEmail(uuid, emailList)
+			zc.sendTestRunResultsEmail(uuid, emailList, "all", true)
 		}
-		if (failureEmailList != null && !failureEmailList.isEmpty()) {
-			zc.sendTestRunResultsEmail(uuid, failureEmailList)
+		if (failureReason != null && failureEmailList != null && !failureEmailList.isEmpty()) {
+			zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures", true)
 		}
-
 	}
 
 	protected void publishTestNgReports(String pattern, String reportName) {
