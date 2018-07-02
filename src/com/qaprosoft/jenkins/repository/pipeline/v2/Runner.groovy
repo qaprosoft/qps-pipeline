@@ -490,7 +490,7 @@ class Runner extends Executor {
 
     protected boolean isFailure(currentBuild) {
         context.println("result output" + currentBuild.result)
-        return "FAILURE".equals(currentBuild.result)
+        return currentBuild.result == "FAILURE"
     }
 	
 	protected boolean isParamEmpty(String value) {
