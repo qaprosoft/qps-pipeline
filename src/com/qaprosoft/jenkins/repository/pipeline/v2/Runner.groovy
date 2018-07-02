@@ -90,6 +90,8 @@ class Runner extends Executor {
         String nodeName = "master"
         String emailList = jobParams.get("email_list")
         String failureEmailList = jobParams.get("failure_email_list")
+
+        context.println("FAILURE EMAIL LIST" + failureEmailList)
         //TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
