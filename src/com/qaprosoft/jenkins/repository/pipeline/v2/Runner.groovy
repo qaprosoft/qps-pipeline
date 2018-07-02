@@ -490,7 +490,7 @@ class Runner extends Executor {
 
     protected boolean isFailure(currentBuild) {
         boolean failure = currentBuild.result.equals("FAILURE")
-        context.println("result output " + currentBuild.result)
+        context.println("result output " + currentBuild.result.dump())
         context.println("failre output " + failure)
         return failure
     }
