@@ -489,11 +489,7 @@ class Runner extends Executor {
 	}
 
     protected boolean isFailure(currentBuild) {
-        boolean failure = false
-        if (currentBuild.result && currentBuild.result == 'FAILURE') {
-            failure = true
-        }
-        return failure
+        return "FAILURE".equals(currentBuild.result)
     }
 	
 	protected boolean isParamEmpty(String value) {
@@ -571,13 +567,10 @@ class Runner extends Executor {
 	}
 
     protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
-
-        boolean isFailure = isFailure(context.currentBuild.rawBuild)
-        context.println("ISFAILURE" + isFailure)
         if (emailList != null && !emailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, emailList, "all", true)
 		}
-		if (isFailure && failureEmailList != null && !failureEmailList.isEmpty()) {
+		if (isFailure(context.currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures", true)
 		}
 	}
