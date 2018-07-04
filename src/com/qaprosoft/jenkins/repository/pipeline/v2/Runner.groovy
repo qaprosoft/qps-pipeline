@@ -206,7 +206,7 @@ class Runner extends Executor {
 	}
 	
 	protected void prepareForMobile(params) {
-		def device = params.get("device")
+		def devicePool = params.get("devicePool")
 		def defaultPool = params.get("DefaultPool")
 		def platform = params.get("platform")
 
@@ -221,15 +221,17 @@ class Runner extends Executor {
 		//geeral mobile capabilities
 		//TODO: find valid way for naming this global "MOBILE" quota
 		params.put("capabilities.deviceName", "MOBILE")
-		if ("DefaultPool".equalsIgnoreCase(device)) {
+		if ("DefaultPool".equalsIgnoreCase(devicePool)) {
 			//reuse list of devices from hidden parameter DefaultPool
 			params.put("capabilities.devicePool", defaultPool)
+		} else {
+			params.put("capabilities.devicePool", devicePool)
 		}
 		
 		// ATTENTION! Obligatory remove device from the params otherwise
 		// hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
 		// Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
-		params.remove("device")
+		//params.remove("device")
 
 		//TODO: move it to the global jenkins variable
 		params.put("capabilities.newCommandTimeout", "180")
