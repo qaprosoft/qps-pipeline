@@ -105,14 +105,29 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return 
 		}
+
 		context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
 	    requestBody: "{\"comment\": \"${comment}\"}", \
             url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"
+
 	}
-	
+
+    void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
+        if (!isAvailable) {
+            return
+        }
+
+        context.httpRequest customHeaders: [[name: 'Authorization',  \
+             value: "${token}"]],  \
+	     contentType: 'APPLICATION_JSON',  \
+	     httpMode: 'POST',  \
+	     requestBody: "{\"recipients\": \"${emailList}\"}",  \
+             url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"
+    }
+
 	public String exportZafiraReport(String uuid) {
 		if (!isAvailable) {
 			return ""
