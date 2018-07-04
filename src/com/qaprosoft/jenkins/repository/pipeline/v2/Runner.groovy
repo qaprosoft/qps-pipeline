@@ -211,13 +211,12 @@ class Runner extends Executor {
 			context.echo "Unable to identify mobile platform: ${platform}"
 		}
 
-		//general mobile capabilities
+		//geeral mobile capabilities
+		//TODO: find valid way for naming this global "MOBILE" quota
+		params.put("capabilities.device", "MOBILE")
 		if ("DefaultPool".equalsIgnoreCase(device)) {
 			//reuse list of devices from hidden parameter DefaultPool
 			params.put("capabilities.devicePool", defaultPool)
-			params.put("capabilities.deviceName", "MOBILE")
-		} else {
-			params.put("capabilities.deviceName", "MOBILE")
 		}
 		
 		// ATTENTION! Obligatory remove device from the params otherwise
