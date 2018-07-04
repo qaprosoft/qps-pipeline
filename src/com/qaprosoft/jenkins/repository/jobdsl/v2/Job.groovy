@@ -88,7 +88,6 @@ class Job {
 						configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'ANDROID')
-						configure addHiddenParameter('deviceName', '', 'MOBILE') // to reuse QPS-GGR default setup
 						break;
 					case ~/^.*ios.*$/:
 					//TODO:  Need to adjust this for virtual as well.
@@ -101,7 +100,6 @@ class Job {
 						configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'iOS')
-						configure addHiddenParameter('deviceName', '', 'MOBILE') // to reuse QPS-GGR default setup
 						break;
 					default:
 						booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
