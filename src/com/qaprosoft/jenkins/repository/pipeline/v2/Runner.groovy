@@ -570,8 +570,8 @@ class Runner extends Executor {
 		}
 	}
 
-    protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
-        if (emailList != null && !emailList.isEmpty()) {
+	protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
+		if (emailList != null && !emailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, emailList, "all")
 		}
 		if (isFailure(context.currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
