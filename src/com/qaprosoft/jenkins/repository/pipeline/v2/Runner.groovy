@@ -200,7 +200,7 @@ class Runner extends Executor {
 
 	protected boolean isMobile(params) {
 		def platform = params.get("platform")
-		return platform.equalsIgnorecase("android") || platform.equalsIgnorecase("ios")
+		return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
 	}
 	
 	protected void prepareForMobile(params) {
