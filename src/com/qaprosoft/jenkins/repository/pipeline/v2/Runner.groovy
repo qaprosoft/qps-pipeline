@@ -84,11 +84,12 @@ class Runner extends Executor {
 	
 	
 	public void runJob() {
-		jobParams = initParams(context.currentBuild)
-		jobVars = initVars(context.env)
-		uuid = getUUID()
-		def nodeName = "master"
-		//TODO: remove master node assignment
+        jobParams = initParams(context.currentBuild)
+        jobVars = initVars(context.env)
+        uuid = getUUID()
+        String nodeName = "master"
+        String email_list = jobParams.get("email_list")
+        //TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
@@ -130,11 +131,12 @@ class Runner extends Executor {
 					zc.abortZafiraTestRun(uuid, failureReason)
 					throw ex
 				} finally {
-					this.exportZafiraReport()
-					this.reportingResults()
-					//TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
-					this.clean()
-				}
+                    this.exportZafiraReport()
+                    this.reportingResults()
+                    //TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
+                    this.sendTestRunResultsEmail(email_list)
+                    this.clean()
+                }
 			}
 		}
 
@@ -558,7 +560,11 @@ class Runner extends Executor {
 		}
 	}
 
-	
+    protected void sendTestRunResultsEmail(String email_list) {
+        if (email_list != null && !email_list.isEmpty())
+            zc.sendTestRunResultsEmail(uuid, email_list)
+    }
+
 	protected void publishTestNgReports(String pattern, String reportName) {
 		def reports = context.findFiles(glob: "${pattern}")
 		for (int i = 0; i < reports.length; i++) {
