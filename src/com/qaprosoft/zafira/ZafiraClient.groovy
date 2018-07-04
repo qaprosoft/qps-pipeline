@@ -9,7 +9,7 @@ class ZafiraClient {
 	private def context;
 	private boolean isAvailable;
 
-	ZafiraClient(context, String url, Boolean developMode) {
+	public ZafiraClient(context, String url, Boolean developMode) {
 		this.context = context;
 		this.serviceURL = url;
 		context.println("zafiraUrl: ${serviceURL}")
@@ -23,11 +23,11 @@ class ZafiraClient {
 
 	}
 	
-	boolean isAvailable() {
+	public boolean isAvailable() {
 		return this.isAvailable
 	}
 
-	String getZafiraAuthToken(String accessToken) {
+	public String getZafiraAuthToken(String accessToken) {
 		if (!isAvailable) {
 			return ""
 		}
@@ -50,7 +50,7 @@ class ZafiraClient {
 		return this.token
 	}
 
-	void queueZafiraTestRun(String uuid, jobVars, jobParams) {
+	public void queueZafiraTestRun(String uuid, jobVars, jobParams) {
 		if (!isAvailable) {
 			return
 		}
@@ -74,7 +74,7 @@ class ZafiraClient {
         context.println("Queued TestRun: ${formattedJSON}")
     }
 
-	void smartRerun(jobParams) {
+	public void smartRerun(jobParams) {
 		if (!isAvailable) {
 			return
 		}
@@ -101,7 +101,7 @@ class ZafiraClient {
 		context.println("Tests for rerun : ${responseJson}")
 	}
 
-	void abortZafiraTestRun(String uuid, String comment) {
+	public void abortZafiraTestRun(String uuid, String comment) {
 		if (!isAvailable) {
 			return 
 		}
@@ -128,7 +128,7 @@ class ZafiraClient {
              url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"
     }
 
-	String exportZafiraReport(String uuid) {
+	public String exportZafiraReport(String uuid) {
 		if (!isAvailable) {
 			return ""
 		}
