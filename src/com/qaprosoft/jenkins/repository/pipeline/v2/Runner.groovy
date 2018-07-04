@@ -105,6 +105,7 @@ class Runner extends Executor {
 			nodeName = chooseNode(jobParams)
 		}
 		
+		context.println("nodeName: " + nodeName)
 		context.node(nodeName) {
 			context.wrap([$class: 'BuildUser']) {
 				try {
