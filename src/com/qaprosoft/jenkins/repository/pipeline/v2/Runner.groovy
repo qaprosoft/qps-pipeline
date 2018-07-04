@@ -488,14 +488,14 @@ class Runner extends Executor {
 		return causee
 	}
 
-    protected boolean isFailure(currentBuild) {
-		boolean failure  = false
+	protected boolean isFailure(currentBuild) {
+		boolean failure = false
 		if (currentBuild.result) {
 			failure = "FAILURE".equals(currentBuild.result.name)
 		}
-        return failure
-    }
-	
+		return failure
+	}
+
 	protected boolean isParamEmpty(String value) {
 		if (value == null || value.isEmpty() || value.equals("NULL")) {
 			return true
