@@ -115,7 +115,7 @@ class ZafiraClient {
 
 	}
 
-    void sendTestRunResultsEmail(String uuid, String email_list) {
+    void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
         if (!isAvailable) {
             return
         }
@@ -124,8 +124,8 @@ class ZafiraClient {
              value: "${token}"]],  \
 	     contentType: 'APPLICATION_JSON',  \
 	     httpMode: 'POST',  \
-	     requestBody: "{\"recipients\": \"${email_list}\"}",  \
-             url: this.serviceURL + "/api/tests/runs/${uuid}/email"
+	     requestBody: "{\"recipients\": \"${emailList}\"}",  \
+             url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"
     }
 
 	public String exportZafiraReport(String uuid) {
