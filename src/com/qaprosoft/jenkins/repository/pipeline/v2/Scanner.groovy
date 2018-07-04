@@ -42,7 +42,13 @@ class Scanner extends Executor {
 
 			def jobFolder = params.get("folder")
 
-			def jenkinsFile = ".jenkinsfile.json"
+            if (!isItemAvailable(jobFolder)){
+                context.build job: "Management_Jobs/CreateFolder",
+                        propagate: false,
+                        parameters: [context.string(name: 'folder', value: jobFolder)]
+            }
+
+            def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
 				context.println("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
 				ccontext.urrentBuild.result = 'UNSTABLE'
@@ -156,31 +162,30 @@ class Scanner extends Executor {
 								parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: suiteOwner), context.string(name: 'descFilter', value: suiteOwner),]
 						}
 
-						def createCron = false
-						if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
-							def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
+                        def createCron = false
+                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
+                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
 
-							def job = Jenkins.instance.getItemByFullName(jobFolder + "/" + cronName);
-							if (job == null) {
-								createCron = true
-							}
-							// we need only single regression cron declaration
-							//createCron = !crons.contains(cronName)
-							crons << cronName
-						}
+                            if (!isItemAvailable(jobFolder + "/" + cronName)) {
+                                createCron = true
+                            }
+                            // we need only single regression cron declaration
+                            //createCron = !crons.contains(cronName)
+                            crons << cronName
+                        }
 
-						context.build job: "Management_Jobs/CreateJob",
-						propagate: false,
-						parameters: [
-							context.string(name: 'jobFolder', value: jobFolder),
-							context.string(name: 'project', value: project),
-							context.string(name: 'sub_project', value: sub_project),
-							context.string(name: 'suite', value: suiteName),
-							context.string(name: 'suiteOwner', value: suiteOwner),
-							context.string(name: 'zafira_project', value: zafira_project),
-							context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
-							context.booleanParam(name: 'createCron', value: createCron),
-						], wait: false
+                        context.build job: "Management_Jobs/CreateJob",
+                                propagate: false,
+                                parameters: [
+                                        context.string(name: 'jobFolder', value: jobFolder),
+                                        context.string(name: 'project', value: project),
+                                        context.string(name: 'sub_project', value: sub_project),
+                                        context.string(name: 'suite', value: suiteName),
+                                        context.string(name: 'suiteOwner', value: suiteOwner),
+                                        context.string(name: 'zafira_project', value: zafira_project),
+                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
+                                        context.booleanParam(name: 'createCron', value: createCron),
+                                ], wait: false
 						
 					}
 				}

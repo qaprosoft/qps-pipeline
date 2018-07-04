@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.repository.pipeline.v2
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
-import groovy.json.JsonSlurper;
+import com.cloudbees.groovy.cps.NonCPS
 
 //import static java.util.UUID.randomUUID
 
@@ -84,6 +84,18 @@ public abstract class Executor {
 		}
 		
 	}
+
+    @NonCPS
+	/* Checks whether the item with provided @name exists on Jenkins
+	**/
+    protected boolean isItemAvailable(String name) {
+        boolean available = false
+        def job = Jenkins.instance.getItemByFullName(name)
+        if (job) {
+            available = true
+        }
+        return available
+    }
 
 	protected Object parseJSON(String path) {
 		def inputFile = new File(path)
