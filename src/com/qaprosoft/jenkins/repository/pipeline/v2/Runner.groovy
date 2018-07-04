@@ -214,11 +214,12 @@ class Runner extends Executor {
 		//general mobile capabilities
 		if ("DefaultPool".equalsIgnoreCase(device)) {
 			//reuse list of devices from hidden parameter DefaultPool
-			params.put("capabilities.deviceName", defaultPool)
+			params.put("capabilities.devicePool", defaultPool)
+			params.put("capabilities.deviceName", "MOBILE")
 		} else {
-			params.put("capabilities.deviceName", device)
+			params.put("capabilities.deviceName", "MOBILE")
 		}
-
+		
 		// ATTENTION! Obligatory remove device from the params otherwise
 		// hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
 		// Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
