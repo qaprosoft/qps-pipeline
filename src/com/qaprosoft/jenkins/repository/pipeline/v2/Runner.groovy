@@ -566,9 +566,9 @@ class Runner extends Executor {
 		// set job status based on zafira report
 		if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
 			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
-			currentBuild.result = 'FAILURE'
+			context.currentBuild.result = 'FAILURE'
 		} else if (zafiraReport.contains("SKIP_ALL:")) {
-			currentBuild.result = 'UNSTABLE'
+			context.currentBuild.result = 'UNSTABLE'
 		}
 	}
 
