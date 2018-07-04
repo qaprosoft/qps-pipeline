@@ -558,6 +558,9 @@ class Runner extends Executor {
 			context.writeFile file: "${ZAFIRA_REPORT_FOLDER}/emailable-report.html", text: zafiraReport
 		}
 		
+		//TODO: think about method renaming because in additions it also could redefin job status in Jenkins.
+		// or move below code into another method
+		
 		// set job status based on zafira report
 		if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
 			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
