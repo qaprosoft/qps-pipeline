@@ -144,7 +144,7 @@ class Runner extends Executor {
 
 	}
 
-    void rerunJobs(){
+    public void rerunJobs(){
 
         jobParams = initParams(context.currentBuild)
         jobVars = initVars(context.env)
