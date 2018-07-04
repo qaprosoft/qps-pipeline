@@ -105,7 +105,6 @@ class Runner extends Executor {
 			nodeName = chooseNode(jobParams)
 		}
 		
-		context.println("nodeName: " + nodeName)
 		context.node(nodeName) {
 			context.wrap([$class: 'BuildUser']) {
 				try {
@@ -378,8 +377,6 @@ class Runner extends Executor {
 				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
 			}
 
-			this.setJobResults(context.currentBuild)
-
 		}
 	}
 	
@@ -542,20 +539,6 @@ class Runner extends Executor {
 		}
 	}
 	
-	protected void setJobResults(currentBuild) {
-		//Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
-		//TODO: hardoced path here! Update logic to find it across all sub-folders
-		String checkReport = context.readFile("${ZAFIRA_REPORT_FOLDER}/emailable-report.html")
-
-		if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
-			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
-			currentBuild.result = 'FAILURE'
-		} else if (checkReport.contains("SKIP_ALL:")) {
-			currentBuild.result = 'UNSTABLE'
-		}
-	}
-
-	
 	protected void reportingResults() {
 		context.stage('Results') {
 			publishReport('**/reports/qa/emailable-report.html', "${etafReport}")
@@ -573,6 +556,14 @@ class Runner extends Executor {
 		def zafiraReport = zc.exportZafiraReport(uuid)
 		if (!zafiraReport.isEmpty()) {
 			context.writeFile file: "${ZAFIRA_REPORT_FOLDER}/emailable-report.html", text: zafiraReport
+		}
+		
+		// set job status based on zafira report
+		if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
+			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
+			currentBuild.result = 'FAILURE'
+		} else if (checkReport.contains("SKIP_ALL:")) {
+			currentBuild.result = 'UNSTABLE'
 		}
 	}
 
