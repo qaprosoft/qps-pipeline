@@ -191,13 +191,18 @@ class Runner extends Executor {
 			currentBuild.description = "${suite}"
 			
 			// identify if it is mobile test using "device" param. Don't reuse node as it can be changed based on client needs 
-			if (device != null && !device.isEmpty() && !device.equalsIgnoreCase("NULL")) {
+			if (isMobile(params)) {
 				//this is mobile test
 				this.prepareForMobile(params)
 			}
 		}
 	}
 
+	protected boolean isMobile(params) {
+		def platform = params.get("platform")
+		return platform.equalsIgnorecase("android") || platform.equalsIgnorecase("ios")
+	}
+	
 	protected void prepareForMobile(params) {
 		def device = params.get("device")
 		def defaultPool = params.get("DefaultPool")
@@ -213,7 +218,7 @@ class Runner extends Executor {
 
 		//geeral mobile capabilities
 		//TODO: find valid way for naming this global "MOBILE" quota
-		params.put("capabilities.device", "MOBILE")
+		params.put("capabilities.deviceName", "MOBILE")
 		if ("DefaultPool".equalsIgnoreCase(device)) {
 			//reuse list of devices from hidden parameter DefaultPool
 			params.put("capabilities.devicePool", defaultPool)
