@@ -4,6 +4,7 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class ZafiraClient {
+
 	private String serviceURL;
 	private String token;
 	private def context;
