@@ -84,11 +84,14 @@ class Runner extends Executor {
 	
 	
 	public void runJob() {
-		jobParams = initParams(context.currentBuild)
-		jobVars = initVars(context.env)
-		uuid = getUUID()
-		def nodeName = "master"
-		//TODO: remove master node assignment
+        jobParams = initParams(context.currentBuild)
+        jobVars = initVars(context.env)
+        uuid = getUUID()
+        String nodeName = "master"
+        String emailList = jobParams.get("email_list")
+        String failureEmailList = jobParams.get("failure_email_list")
+
+        //TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
@@ -117,7 +120,7 @@ class Runner extends Executor {
 						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
 							  this.build(jobParams, jobVars)  
 						}
-						
+
 						//TODO: think about seperate stage for uploading jacoco reports
 						this.publishJacocoReport(jobVars);
 					}
@@ -130,11 +133,12 @@ class Runner extends Executor {
 					zc.abortZafiraTestRun(uuid, failureReason)
 					throw ex
 				} finally {
-					this.exportZafiraReport()
-					this.reportingResults()
-					//TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
-					this.clean()
-				}
+                    this.exportZafiraReport()
+                    this.reportingResults()
+                    //TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
+                    this.sendTestRunResultsEmail(emailList, failureEmailList)
+                    this.clean()
+                }
 			}
 		}
 
@@ -483,6 +487,10 @@ class Runner extends Executor {
 
 		return causee
 	}
+
+    protected boolean isFailure(currentBuild) {
+        return "FAILURE".equals(currentBuild.result.name)
+    }
 	
 	protected boolean isParamEmpty(String value) {
 		if (value == null || value.isEmpty() || value.equals("NULL")) {
@@ -558,7 +566,15 @@ class Runner extends Executor {
 		}
 	}
 
-	
+    protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
+        if (emailList != null && !emailList.isEmpty()) {
+			zc.sendTestRunResultsEmail(uuid, emailList, "all")
+		}
+		if (isFailure(context.currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
+			zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures")
+		}
+	}
+
 	protected void publishTestNgReports(String pattern, String reportName) {
 		def reports = context.findFiles(glob: "${pattern}")
 		for (int i = 0; i < reports.length; i++) {
