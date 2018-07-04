@@ -90,7 +90,6 @@ class Runner extends Executor {
         String nodeName = "master"
         String emailList = jobParams.get("email_list")
         String failureEmailList = jobParams.get("failure_email_list")
-        String failureReason = null
 
         //TODO: remove master node assignment
 		context.node(nodeName) {
@@ -112,8 +111,8 @@ class Runner extends Executor {
 					context.timestamps {
 						
 						this.prepare(context.currentBuild, jobParams, jobVars)
-
 						scmClient.clone(jobParams, jobVars)
+
 
 						this.downloadResources(jobParams, jobVars)
 
@@ -121,13 +120,14 @@ class Runner extends Executor {
 						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
 							  this.build(jobParams, jobVars)  
 						}
+
 						//TODO: think about seperate stage for uploading jacoco reports
 						this.publishJacocoReport(jobVars);
 					}
 					
 				} catch (Exception ex) {
 					printStackTrace(ex)
-					failureReason = getFailure(context.currentBuild, jobParams, jobVars)
+					String failureReason = getFailure(context.currentBuild, jobParams, jobVars)
 					context.echo "failureReason: ${failureReason}"
 					//explicitly execute abort to resolve anomalies with in_progress tests...
 					zc.abortZafiraTestRun(uuid, failureReason)
@@ -540,7 +540,7 @@ class Runner extends Executor {
 		if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
 			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
 			currentBuild.result = 'FAILURE'
-        } else if (checkReport.contains("SKIP_ALL:")) {
+		} else if (checkReport.contains("SKIP_ALL:")) {
 			currentBuild.result = 'UNSTABLE'
 		}
 	}
