@@ -1,5 +1,3 @@
-package com.qaprosoft.zafira
-
 class Configurator {
 
     //list of job vars/params as a map
