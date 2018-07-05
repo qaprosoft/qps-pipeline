@@ -69,16 +69,16 @@ class Configurator {
         HASHCODE("hashcode", ""),
         DO_REBUILD("doRebuild", ""),
 
-        CAPABILITIES_NEW_COMMAND_TIMEOUT(getCapabilityKey("newCommandTimeout"), ""),
-        CAPABILITIES_PLATFORM_NAME(getCapabilityKey("platformName"), ""),
-        CAPABILITIES_STF_ENABLED(getCapabilityKey("STF_ENABLED"), ""),
-        CAPABILITIES_APP_WAIT_DURATION(getCapabilityKey("appWaitDuration"), ""),
-        CAPABILITIES_PLATFORM(getCapabilityKey("platform"), ""),
-        CAPABILITIES_DEVICE_NAME(getCapabilityKey("deviceName"), ""),
-        CAPABILITIES_APP_PACKAGE(getCapabilityKey("appPackage"), ""),
-        CAPABILITIES_APP_ACTIVITY(getCapabilityKey("appActivity"), ""),
-        CAPABILITIES_AUTO_ACCEPT_ALERTS(getCapabilityKey("autoAcceptAlerts"), ""),
-        CAPABILITIES_AUTO_GRANT_PERMISSIONS(getCapabilityKey("autoGrantPermissions"), ""),
+//        CAPABILITIES_NEW_COMMAND_TIMEOUT(getCapabilityKey("newCommandTimeout"), ""),
+//        CAPABILITIES_PLATFORM_NAME(getCapabilityKey("platformName"), ""),
+//        CAPABILITIES_STF_ENABLED(getCapabilityKey("STF_ENABLED"), ""),
+//        CAPABILITIES_APP_WAIT_DURATION(getCapabilityKey("appWaitDuration"), ""),
+//        CAPABILITIES_PLATFORM(getCapabilityKey("platform"), ""),
+//        CAPABILITIES_DEVICE_NAME(getCapabilityKey("deviceName"), ""),
+//        CAPABILITIES_APP_PACKAGE(getCapabilityKey("appPackage"), ""),
+//        CAPABILITIES_APP_ACTIVITY(getCapabilityKey("appActivity"), ""),
+//        CAPABILITIES_AUTO_ACCEPT_ALERTS(getCapabilityKey("autoAcceptAlerts"), ""),
+//        CAPABILITIES_AUTO_GRANT_PERMISSIONS(getCapabilityKey("autoGrantPermissions"), ""),
 
         private final String key;
         private final String value;
