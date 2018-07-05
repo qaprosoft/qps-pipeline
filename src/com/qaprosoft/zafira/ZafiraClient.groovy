@@ -43,7 +43,7 @@ class ZafiraClient {
 		def properties = (Map) new JsonSlurper().parseText(response.getContent())
 
 		//new accessToken in response is authToken
-		def authToken = propertieF("accessToken")
+		def authToken = properties.get("accessToken")
 		def type = properties.get("type")
 
 		this.token = "${type} ${authToken}"
