@@ -36,6 +36,7 @@ class Runner extends Executor {
 	}
 	
 	public void runCron() {
+        configurator.load(context)
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 
