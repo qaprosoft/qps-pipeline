@@ -87,12 +87,14 @@ class Runner extends Executor {
 	public void runJob() {
 		context.println("DUMP1")
         configurator.args.each { k, v ->
-            context.println(k + "=" + v)
+			context.println(k + "=")
+			context.println(v)
         }
         configurator.load(context)
 		context.println("DUMP2")
 		configurator.args.each { k, v ->
-			context.println(k + "=" + v)
+			context.println(k + "=")
+			context.println(v)
 		}
 
         jobParams = initParams(context.currentBuild)
