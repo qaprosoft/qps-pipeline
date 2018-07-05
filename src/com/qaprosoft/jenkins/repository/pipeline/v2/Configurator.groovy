@@ -2,6 +2,24 @@ package com.qaprosoft.jenkins.repository.pipeline.v2
 
 class Configurator {
 
+    public Configurator(context) {
+
+        //1. load all Parameter key/values to args
+        Parameter.values().each { parameter ->
+            args.put(parameter.getKey(), parameter.getValue())
+        }
+        //2. load all string keys/values from env
+        def envVars = context.env.getEnvironment()
+        envVars.each { k, v ->
+            args.put(k, v)
+        }
+        //3. load all string keys/values from params
+        def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
+        jobParams.each { k, v ->
+            args.put(k, v)
+        }
+        //4. investigate how private pipeline can override those values
+    }
     //list of job vars/params as a map
     protected static Map args = [:]
 
@@ -102,7 +120,6 @@ class Configurator {
         return prefix + key
     }
 
-    @NonCPS
     public void load(def context) {
         //1. load all Parameter key/values to args
         Parameter.values().each { parameter ->
