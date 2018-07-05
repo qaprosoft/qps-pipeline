@@ -97,7 +97,7 @@ class Configurator {
 
     }
 
-    private static String getCapabilityKey(String key) {
+    private String getCapabilityKey(String key) {
         String prefix = "capabilities."
         return prefix + key
     }
