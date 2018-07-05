@@ -113,7 +113,7 @@ class Configurator {
             args.put(k, v)
         }
         //3. load all string keys/values from params
-        Map jobParams = currentBuild.rawBuild.getAction(ParametersAction)
+        Map jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         jobParams.each { k, v ->
             args.put(k, v)
         }
