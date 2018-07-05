@@ -1,3 +1,5 @@
+package com.qaprosoft.jenkins.repository.pipeline.v2
+
 class Configurator {
 
     //list of job vars/params as a map
