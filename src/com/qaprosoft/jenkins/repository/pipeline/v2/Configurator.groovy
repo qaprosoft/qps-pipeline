@@ -104,7 +104,6 @@ class Configurator {
         return prefix + key
     }
 
-    @NonCPS
     public void load(def context) {
         //1. load all Parameter key/values to args
         Parameter.values().each { parameter ->
