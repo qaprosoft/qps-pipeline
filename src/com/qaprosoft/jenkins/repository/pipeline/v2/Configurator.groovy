@@ -6,7 +6,6 @@ class Configurator {
 
     public Configurator(context) {
         this.context = context
-        load(context)
     }
     //list of job vars/params as a map
     protected static Map args = [:]
