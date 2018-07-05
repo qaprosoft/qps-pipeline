@@ -36,7 +36,9 @@ class Runner extends Executor {
 	}
 	
 	public void runCron() {
+		context.println("DUMP1" + configurator.dump())
         configurator.load(context)
+		context.println("DUMP2" + configurator.dump())
 		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 
