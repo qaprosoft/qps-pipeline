@@ -1,10 +1,10 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
-@Grab('org.testng:testng:6.8.8')
+@Grab('org.testng:testng:6.8.8')\
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import com.cloudbees.groovy.cps.NonCPS
-
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 //import static java.util.UUID.randomUUID
 
 import com.qaprosoft.scm.ISCM;
@@ -21,7 +21,8 @@ public abstract class Executor {
 	protected def jobVars = [:]
 	
 	protected ISCM scmClient
-	
+	protected Configurator configurator
+
 	public Executor(context) {
 		this.context = context
 	}

@@ -7,7 +7,7 @@ import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 
 import com.qaprosoft.scm.github.GitHub;
-
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 
 class Runner extends Executor {
@@ -32,6 +32,7 @@ class Runner extends Executor {
 	public Runner(context) {
 		super(context)
 		scmClient = new GitHub(context)
+        configurator = new Configurator(context)
 	}
 	
 	public void runCron() {
