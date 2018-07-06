@@ -28,7 +28,7 @@ class Creator {
 		def suite = binding.variables.suite
 		def suiteOwner = binding.variables.suiteOwner
 		def zafira_project = binding.variables.zafira_project
-		def createCron = binding.variables.createCron
+		boolean createCron = binding.variables.createCron.toBoolean()
 		def suiteTmpPath = "${workspace}/suite.xml"
 		File file = new File(suiteTmpPath)
 		file.write(binding.variables.suiteXML)
@@ -43,7 +43,6 @@ class Creator {
 		
 		if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
 			def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
-			context.println("NEW CRON WAS CREATED")
 			for (def cronJobName : cronJobNames.split(",")) {
 				job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
 			}
