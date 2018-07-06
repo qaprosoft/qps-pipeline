@@ -86,17 +86,6 @@ class Runner extends Executor {
 	
 	public void runJob() {
 		configurator.load(context)
-        context.println("enum getter")
-        context.println(Configurator.getArg(Configurator.Parameter.ENV))
-        context.println("enum setter")
-        Configurator.setArg(Configurator.Parameter.ENV, "MYENV")
-        context.println("1st string getter")
-        context.println(Configurator.getArg("env"))
-        context.println("1st string setter")
-        Configurator.setArg("env", "111111")
-        context.println("2nd string getter")
-        context.println(Configurator.getArg("env"))
-
         jobParams = initParams(context.currentBuild)
         jobVars = initVars(context.env)
         uuid = getUUID()
