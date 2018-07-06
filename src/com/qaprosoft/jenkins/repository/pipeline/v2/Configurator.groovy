@@ -4,9 +4,12 @@ import com.cloudbees.groovy.cps.NonCPS
 
 class Configurator {
 
+    private def context
+
     public static Configurator init(def context) {
         Configurator configurator = new Configurator()
-        configurator.load(context)
+//        configurator.load(context)
+        this.context = context
         return configurator
     }
     //list of job vars/params as a map
