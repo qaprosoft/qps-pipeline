@@ -128,6 +128,12 @@ class Configurator {
     public void load() {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
+        args.put("A", "B")
+        args.each { k, v ->
+            context.println(k)
+            context.println(v)
+        }
+        /*
         Parameter.values().each { parameter ->
             args.put(parameter.getKey(), parameter.getValue())
             context.println(parameter.getKey())
@@ -143,6 +149,7 @@ class Configurator {
         jobParams.each { k, v ->
             args.put(k, v)
         }
+        */
         //4. investigate how private pipeline can override those values
     }
 
