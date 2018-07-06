@@ -140,7 +140,7 @@ class Configurator {
     public void load() {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
-        context.println(getArg(Parameter.ENV))
+        context.println(getArg("env"))
 
 //        Parameter.values().each { parameter ->
 //            args.put(parameter.getKey(), parameter.getValue())
