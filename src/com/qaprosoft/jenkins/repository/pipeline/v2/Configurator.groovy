@@ -133,6 +133,7 @@ class Configurator {
             context.println(k)
             context.println(v)
         }
+        context.println(Parameter.values())
         /*
         Parameter.values().each { parameter ->
             args.put(parameter.getKey(), parameter.getValue())
