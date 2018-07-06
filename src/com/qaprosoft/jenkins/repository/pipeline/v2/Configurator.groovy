@@ -130,7 +130,7 @@ class Configurator {
     }
 
     @NonCPS
-    public void load(def context) {
+    public void load() {
         //1. load all Parameter key/values to args
         Parameter.values().each { parameter ->
             args.put(parameter.getKey(), parameter.getValue())
