@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins.repository.pipeline.v2
 
 import com.cloudbees.groovy.cps.NonCPS
 
+@NonCPS
 class Configurator {
 
     private def context
@@ -14,7 +15,7 @@ class Configurator {
     //list of job vars/params as a map
     protected static Map args = [:]
 
-    @NonCPS
+
     public enum Parameter {
 
         //vars
