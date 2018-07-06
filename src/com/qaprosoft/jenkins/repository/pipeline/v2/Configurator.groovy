@@ -6,10 +6,10 @@ class Configurator {
 
     //list of job vars/params as a map
     protected static Map args = [:]
-    private final String prefix = "capabilities."
 
     public enum Parameter {
 
+        //vars
         CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.3.4.105"),
         JOB_URL("JOB_URL", ""),
         JOB_NAME("JOB_NAME", ""),
@@ -24,7 +24,7 @@ class Configurator {
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", ""),
         SELENIUM_URL("SELENIUM_URL", ""),
         JACOCO_ENABLE("JACOCO_ENABLE", ""),
-
+        //params
         ZAFIRA_ENABLED("zafira_enabled", ""),
         BUILD("build", ""),
         BUILD_USER_ID("BUILD_USER_ID", ""),
@@ -83,7 +83,6 @@ class Configurator {
         CAPABILITIES_AUTO_ACCEPT_ALERTS("capabilities.autoAcceptAlerts", ""),
         CAPABILITIES_AUTO_GRANT_PERMISSIONS("capabilities.autoGrantPermissions", "")
 
-        
         private final String key;
         private final String value;
 
@@ -93,12 +92,29 @@ class Configurator {
         }
         
         public String getKey() {
-            return key;
+            return key
         }
+
         public String getValue() {
             return value;
         }
 
+    }
+
+    public static String getArg(Parameter param) {
+        return args.get(param.getKey())
+    }
+
+    public static void setArg(Parameter param, String value) {
+        return args.put(param.getKey(), value)
+    }
+
+    public static String getArg(String paramName) {
+        return args.get(paramName.getKey())
+    }
+
+    public static void setArg(String paramName, String value) {
+        return args.put(paramName, value)
     }
 
     public void load(def context) {
