@@ -6,12 +6,16 @@ class Configurator {
 
     private def context
 
-    public static Configurator init(def context) {
-        Configurator configurator = new Configurator()
-//        configurator.load(context)
+    public Configurator(context) {
         this.context = context
+    }
+
+    public static Configurator init(context) {
+        Configurator configurator = new Configurator()
+        configurator.load(context)
         return configurator
     }
+
     //list of job vars/params as a map
     protected static Map args = [:]
 

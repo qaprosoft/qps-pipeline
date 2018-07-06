@@ -32,7 +32,8 @@ class Runner extends Executor {
 	public Runner(context) {
 		super(context)
 		scmClient = new GitHub(context)
-        configurator = Configurator.init(context)
+		configurator = new Configurator(context)
+        //configurator = Configurator.init(context)
 	}
 	
 	public void runCron() {
