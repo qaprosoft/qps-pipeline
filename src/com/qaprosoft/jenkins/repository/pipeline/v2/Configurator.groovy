@@ -117,7 +117,7 @@ class Configurator {
         return args.put(paramName, value)
     }
 
-    public void load(def context) {
+    public static void load(def context) {
         //1. load all Parameter key/values to args
         Parameter.values().each { parameter ->
             args.put(parameter.getKey(), parameter.getValue())
