@@ -10,12 +10,6 @@ class Configurator {
         this.context = context
     }
 
-    public static Configurator init(context) {
-        Configurator configurator = new Configurator()
-        configurator.load(context)
-        return configurator
-    }
-
     //list of job vars/params as a map
     protected static Map args = [:]
 
@@ -129,7 +123,7 @@ class Configurator {
         return args.put(paramName, value)
     }
 
-    @NonCPS
+    //@NonCPS
     public void load() {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
