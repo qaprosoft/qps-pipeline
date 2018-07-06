@@ -129,6 +129,7 @@ class Configurator {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
         context.println(Parameter.values())
+        context.println(getArg("env"))
 //        for (value in Parameter.values()) {
 //            context.println(value.getKey())
 //            context.println(value.getValue())
