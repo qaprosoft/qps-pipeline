@@ -128,7 +128,7 @@ class Configurator {
     public void load() {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
-        context.println(Parameter.values())
+        context.println(Parameter.values().dump())
 //        for (value in Parameter.values()) {
 //            context.println(value.getKey())
 //            context.println(value.getValue())
