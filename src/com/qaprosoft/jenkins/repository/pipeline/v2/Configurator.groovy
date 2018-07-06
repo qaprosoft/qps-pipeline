@@ -127,14 +127,25 @@ class Configurator {
     }
 
     @NonCPS
-    public void load() {
-        context.println("LOAD METHOD CALLED")
-        //1. load all Parameter key/values to args
-        Parameter.values().each { parameter ->
+    public static void fillArgs(def params) {
+        params.each { parameter ->
             args.put(parameter.getKey(), parameter.getValue())
             context.println(parameter.getKey())
             context.println(parameter.getValue())
         }
+    }
+
+    @NonCPS
+    public void load() {
+        context.println("LOAD METHOD CALLED")
+        //1. load all Parameter key/values to args
+        fillArgs(Parameter.values())
+
+//        Parameter.values().each { parameter ->
+//            args.put(parameter.getKey(), parameter.getValue())
+//            context.println(parameter.getKey())
+//            context.println(parameter.getValue())
+//        }
         /*
         //2. load all string keys/values from env
         def envVars = context.env.getEnvironment()
