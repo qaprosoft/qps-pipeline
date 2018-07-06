@@ -85,17 +85,20 @@ class Runner extends Executor {
 	
 	
 	public void runJob() {
-		context.println("DUMP1")
-		configurator.args.each { k, v ->
-			context.println(k)
-			context.println(v)
-		}
+        context.println("1st enum getter")
+        context.println(Configurator.getArg(Configurator.Parameter.BUILD))
+        context.println("context loading")
 		configurator.load(context)
-		context.println("DUMP2")
-		configurator.args.each { k, v ->
-			context.println(k)
-			context.println(v)
-		}
+        context.println("2nd enum getter")
+        context.println(Configurator.getArg(Configurator.Parameter.BUILD))
+        context.println("1st enum setter")
+        Configurator.setArg(Configurator.Parameter.BUILD, "mybuild")
+        context.println("1st string getter")
+        context.println(Configurator.getArg("build"))
+        context.println("1st string setter")
+        Configurator.setArg("build", "111111")
+        context.println("2nd string getter")
+        context.println(Configurator.getArg("build"))
 
         jobParams = initParams(context.currentBuild)
         jobVars = initVars(context.env)
