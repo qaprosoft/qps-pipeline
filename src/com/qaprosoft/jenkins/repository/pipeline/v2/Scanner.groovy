@@ -160,7 +160,8 @@ class Scanner extends Executor {
 						if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
 							def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
 
-							def job = Jenkins.instance.getItemByFullName(jobFolder + "/" + cronName);
+							def job = Jenkins.instance.getItemByFullName(jobFolder + "/" + cronName)
+
 							if (job == null) {
 								createCron = true
 							}
