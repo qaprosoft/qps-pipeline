@@ -6,6 +6,7 @@ class Configurator {
 
     //list of job vars/params as a map
     protected static Map args = [:]
+    private final String prefix = "capabilities."
 
     public enum Parameter {
 
@@ -70,18 +71,19 @@ class Configurator {
         UPSTREAM_JOB_BUILD_NUMBER("upstream_job_build_number", ""),
         HASHCODE("hashcode", ""),
         DO_REBUILD("doRebuild", ""),
+        
+        CAPABILITIES_NEW_COMMAND_TIMEOUT("capabilities.newCommandTimeout", ""),
+        CAPABILITIES_PLATFORM_NAME("capabilities.platformName", ""),
+        CAPABILITIES_STF_ENABLED("capabilities.STF_ENABLED", ""),
+        CAPABILITIES_APP_WAIT_DURATION("capabilities.appWaitDuration", ""),
+        CAPABILITIES_PLATFORM("capabilities.platform", ""),
+        CAPABILITIES_DEVICE_NAME("capabilities.deviceName", ""),
+        CAPABILITIES_APP_PACKAGE("capabilities.appPackage", ""),
+        CAPABILITIES_APP_ACTIVITY("capabilities.appActivity", ""),
+        CAPABILITIES_AUTO_ACCEPT_ALERTS("capabilities.autoAcceptAlerts", ""),
+        CAPABILITIES_AUTO_GRANT_PERMISSIONS("capabilities.autoGrantPermissions", "")
 
-//        CAPABILITIES_NEW_COMMAND_TIMEOUT(getCapabilityKey("newCommandTimeout"), ""),
-//        CAPABILITIES_PLATFORM_NAME(getCapabilityKey("platformName"), ""),
-//        CAPABILITIES_STF_ENABLED(getCapabilityKey("STF_ENABLED"), ""),
-//        CAPABILITIES_APP_WAIT_DURATION(getCapabilityKey("appWaitDuration"), ""),
-//        CAPABILITIES_PLATFORM(getCapabilityKey("platform"), ""),
-//        CAPABILITIES_DEVICE_NAME(getCapabilityKey("deviceName"), ""),
-//        CAPABILITIES_APP_PACKAGE(getCapabilityKey("appPackage"), ""),
-//        CAPABILITIES_APP_ACTIVITY(getCapabilityKey("appActivity"), ""),
-//        CAPABILITIES_AUTO_ACCEPT_ALERTS(getCapabilityKey("autoAcceptAlerts"), ""),
-//        CAPABILITIES_AUTO_GRANT_PERMISSIONS(getCapabilityKey("autoGrantPermissions"), ""),
-
+        
         private final String key;
         private final String value;
 
@@ -97,11 +99,6 @@ class Configurator {
             return value;
         }
 
-    }
-
-    private String getCapabilityKey(String key) {
-        String prefix = "capabilities."
-        return prefix + key
     }
 
     public void load(def context) {
