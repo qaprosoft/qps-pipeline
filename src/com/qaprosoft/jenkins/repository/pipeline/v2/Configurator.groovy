@@ -128,12 +128,16 @@ class Configurator {
     public void load() {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
-        Parameter.values().each { parameter ->
-          //  args.put(parameter.getKey(), parameter.getValue())
+        for (value in Parameter.values()) {
             context.println(parameter.getKey())
             context.println(parameter.getValue())
         }
-        /*
+//        Parameter.values().each { parameter ->
+//            args.put(parameter.getKey(), parameter.getValue())
+//            context.println(parameter.getKey())
+//            context.println(parameter.getValue())
+//        }
+//        /*
         //2. load all string keys/values from env
         def envVars = context.env.getEnvironment()
         envVars.each { k, v ->
