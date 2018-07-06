@@ -8,6 +8,7 @@ class Configurator {
 
     public Configurator(context) {
         this.context = context
+
     }
 
     //list of job vars/params as a map
