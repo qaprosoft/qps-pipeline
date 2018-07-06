@@ -137,7 +137,7 @@ class Configurator {
 //            context.println(parameter.getKey())
 //            context.println(parameter.getValue())
 //        }
-//        /*
+        /*
         //2. load all string keys/values from env
         def envVars = context.env.getEnvironment()
         envVars.each { k, v ->
