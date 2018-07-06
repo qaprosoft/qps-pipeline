@@ -109,6 +109,7 @@ class Configurator {
 
     }
 
+    @NonCPS
     public static String getArg(Parameter param) {
         return args.get(param.getKey())
     }
@@ -116,6 +117,7 @@ class Configurator {
     public static void setArg(Parameter param, String value) {
         return args.put(param.getKey(), value)
     }
+
     @NonCPS
     public static String getArg(String paramName) {
         return args.get(paramName)
@@ -138,7 +140,7 @@ class Configurator {
     public void load() {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
-        fillArgs(Parameter.values())
+        context.println(getArg(Parameter.ENV))
 
 //        Parameter.values().each { parameter ->
 //            args.put(parameter.getKey(), parameter.getValue())
