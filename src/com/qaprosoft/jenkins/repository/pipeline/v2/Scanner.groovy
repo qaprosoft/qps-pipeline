@@ -168,9 +168,7 @@ class Scanner extends Executor {
 
                             if (!isItemAvailable(jobFolder + "/" + cronName)) {
                                 createCron = true
-								context.println("NEW CRON WAS CREATED")
                             }
-							context.println("NEW CRON WAS NOT CREATED")
                             // we need only single regression cron declaration
                             //createCron = !crons.contains(cronName)
                             crons << cronName
