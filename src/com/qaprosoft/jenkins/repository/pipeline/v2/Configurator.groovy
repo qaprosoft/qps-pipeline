@@ -110,7 +110,7 @@ class Configurator {
     }
 
     public static String getArg(String paramName) {
-        return args.get(paramName.getKey())
+        return args.get(paramName)
     }
 
     public static void setArg(String paramName, String value) {
