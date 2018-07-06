@@ -5,9 +5,9 @@ import com.cloudbees.groovy.cps.NonCPS
 class Configurator {
 
     public static Configurator init(def context) {
-        Configurator configurator = new Configurator();
-        configurator.load(context);
-        return configurator;
+        Configurator configurator = new Configurator()
+        configurator.load(context)
+        return configurator
     }
     //list of job vars/params as a map
     protected static Map args = [:]
@@ -122,6 +122,7 @@ class Configurator {
         return args.put(paramName, value)
     }
 
+    @NonCPS
     public void load(def context) {
         //1. load all Parameter key/values to args
         Parameter.values().each { parameter ->
