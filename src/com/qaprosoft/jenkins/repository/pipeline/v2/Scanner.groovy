@@ -162,6 +162,7 @@ class Scanner extends Executor {
 
 							def job = Jenkins.instance.getItemByFullName(jobFolder + "/" + cronName);
 							if (job == null) {
+								context.println("NEW CRON WAS CREATED")
 								createCron = true
 							}
 							// we need only single regression cron declaration
