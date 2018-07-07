@@ -605,7 +605,12 @@ class Runner extends Executor {
 
 	protected void parsePipeline(jobVars, jobParams, String filePath) {
 		//context.println("filePath: " + filePath)
-		XmlSuite currentSuite = parseSuite(filePath)
+		try {
+			XmlSuite currentSuite = parseSuite(filePath)
+		} catch (FileNotFoundException e) {
+			context.println("Unable to find suite: " + filePath)
+			return
+		}
 		
 		def jobName = currentSuite.getParameter("jenkinsJobName").toString()
 		def supportedPipelines = currentSuite.getParameter("jenkinsRegressionPipeline").toString() 
