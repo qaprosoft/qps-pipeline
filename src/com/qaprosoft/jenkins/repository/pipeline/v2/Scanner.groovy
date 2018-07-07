@@ -45,7 +45,7 @@ class Scanner extends Executor {
 			def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
 				context.println("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
-				ccontext.urrentBuild.result = 'UNSTABLE'
+				context.urrentBuild.result = 'UNSTABLE'
 				return
 			}
 
