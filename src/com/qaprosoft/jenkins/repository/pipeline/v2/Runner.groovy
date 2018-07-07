@@ -23,7 +23,7 @@ class Runner extends Executor {
 	protected static final String ZAFIRA_REPORT_FOLDER = "./reports/qa"
 	protected static final String etafReport = "eTAF_Report"
 	//TODO: /api/test/runs/{id}/export should use encoded url value as well
-	protected static final String etafReportEncoded = "eTAF_5fReport"
+	protected static final String etafReportEncoded = "eTAF_Report"
 	
 	//CRON related vars
 	protected def listPipelines = []
