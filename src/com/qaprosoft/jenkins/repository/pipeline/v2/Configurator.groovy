@@ -5,10 +5,11 @@ import com.cloudbees.groovy.cps.NonCPS
 class Configurator {
 
     private def context
+    private def enumValues
 
     public Configurator(context) {
         this.context = context
-        getEnumValuesMap()
+        this.enumValues = Parameter.values()
     }
 
     //list of job vars/params as a map
@@ -111,8 +112,7 @@ class Configurator {
 
     @NonCPS
     public void getEnumValuesMap() {
-        def enumParams = Parameter.values()
-        for ( enumParam in enumParams ) {
+        for ( enumParam in enumValues ) {
             context.println(enumParam.dump())
             args.put(enumParam.key, enumParam.value)
         }
