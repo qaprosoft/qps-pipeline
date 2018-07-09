@@ -22,8 +22,6 @@ public abstract class Executor {
 
 	protected ISCM scmClient
 
-	protected Configurator configurator
-
 	public Executor(context) {
 		this.context = context
 	}
