@@ -5,7 +5,7 @@ import com.cloudbees.groovy.cps.NonCPS
 class Configurator {
 
     private def context
-    private def build;
+    private def build
 
     public Configurator(context) {
         this.context = context
@@ -153,13 +153,13 @@ class Configurator {
         def envVars = context.env.getEnvironment()
         envVars.each { k, v ->
             args.put(k, v)
-        }
+        }*/
         //3. load all string keys/values from params
-        def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
+        def jobParams = build.rawBuild.getAction(ParametersAction)
         jobParams.each { k, v ->
             args.put(k, v)
         }
-        */
+
         //4. investigate how private pipeline can override those values
     }
 
