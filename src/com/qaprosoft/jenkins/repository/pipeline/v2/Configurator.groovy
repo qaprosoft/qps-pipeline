@@ -5,11 +5,9 @@ import com.cloudbees.groovy.cps.NonCPS
 class Configurator {
 
     private def context
-    private def enumValues
 
     public Configurator(context) {
         this.context = context
-        this.enumValues = Parameter.values()
     }
 
     //list of job vars/params as a map
@@ -112,14 +110,6 @@ class Configurator {
 
     }
 
-
-    public void getEnumValuesMap() {
-        for ( enumParam in enumValues ) {
-            context.println(enumParam.dump())
-            args.put(enumParam.name(), enumParam.value)
-        }
-    }
-
     @NonCPS
     public static String getArg(Parameter param) {
         return args.get(param.getKey())
@@ -142,25 +132,13 @@ class Configurator {
     public void load() {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
-        for ( enumParam in enumValues ) {
-            context.println(enumParam.dump())
-            args.put(enumParam.getKey(), enumParam.getValue())
+        def enumValues  = Parameter.values()
+        for ( enumValue in enumValues ) {
+            args.put(enumValue.getKey(), enumValue.getValue())
         }
-        context.println(Parameter.values()*.name())
-
-//        def enumParams = Parameter.values()
-//
-//        for ( enumParam in enumParams ) {
-//            context.println(enumParam.dump())
-
-//            args.put(enumParam.key, enumParam.value)
-//        }
-//        Parameter.values().each { parameter ->
-//            args.put(parameter.getKey(), parameter.getValue())
-//            context.println(parameter.getKey())
-//            context.println(parameter.getValue())
-//        }
-
+        for ( arg in args ) {
+            context.println(arg)
+        }
         //2. load all string keys/values from env
         def envVars = context.env.getEnvironment()
         for ( var in envVars ) {
