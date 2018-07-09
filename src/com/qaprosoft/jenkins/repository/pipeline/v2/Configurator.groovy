@@ -114,7 +114,6 @@ class Configurator {
     public void getEnumValuesMap() {
         for ( enumParam in enumValues ) {
             context.println(enumParam.dump())
-            ImageTypes.values()*.name()
             args.put(enumParam.name(), enumParam.value)
         }
     }
