@@ -137,8 +137,11 @@ class Configurator {
         context.println(getArg("env"))
 
         def enumParams = Parameter.values()
-        for ( enumParam in enumParams ) {
-            context.println(enumParam)
+
+        context.println(enumParams.dump())
+
+//        for ( enumParam in enumParams ) {
+//            context.println(enumParam)
 //            args.put(var.key, var.value)
         }
 //        Parameter.values().each { parameter ->
