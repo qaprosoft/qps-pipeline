@@ -158,7 +158,7 @@ class Configurator {
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
 
         for ( e in jobParams ) {
-            context.println(e.key)
+            context.println(e.dump())
 
 //            context.println("key = ${e.key}, value = ${e.value}")
         }
