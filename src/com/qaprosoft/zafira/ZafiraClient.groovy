@@ -4,15 +4,14 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class ZafiraClient {
-
-	private String serviceURL
-	private String token
-	private def context
-	private boolean isAvailable
+	private String serviceURL;
+	private String token;
+	private def context;
+	private boolean isAvailable;
 
 	public ZafiraClient(context, String url, Boolean developMode) {
-		this.context = context
-		this.serviceURL = url
+		this.context = context;
+		this.serviceURL = url;
 		context.println("zafiraUrl: ${serviceURL}")
 		
 		if (developMode) {
