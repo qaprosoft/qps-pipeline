@@ -99,11 +99,13 @@ class Configurator {
             this.key = key;
             this.value = value;
         }
-        
+
+        @NonCPS
         public String getKey() {
             return key
         }
 
+        @NonCPS
         public String getValue() {
             return value;
         }
@@ -142,7 +144,7 @@ class Configurator {
         //1. load all Parameter key/values to args
         for ( enumParam in enumValues ) {
             context.println(enumParam.dump())
-            args.put(enumParam.name(), enumParam.value)
+            args.put(enumParam.getKey(), enumParam.getValue())
         }
         context.println(Parameter.values()*.name())
 
