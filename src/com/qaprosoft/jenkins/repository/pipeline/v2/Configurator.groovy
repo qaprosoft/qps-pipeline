@@ -134,16 +134,12 @@ class Configurator {
     public void load() {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
-        context.println(getArg("env"))
-
         def enumParams = Parameter.values()
 
-        context.println(enumParams.dump())
-
-//        for ( enumParam in enumParams ) {
-//            context.println(enumParam)
-//            args.put(var.key, var.value)
-//        }
+        for ( enumParam in enumParams ) {
+            context.println(enumParam)
+            args.put(var.key, var.value)
+        }
 //        Parameter.values().each { parameter ->
 //            args.put(parameter.getKey(), parameter.getValue())
 //            context.println(parameter.getKey())
