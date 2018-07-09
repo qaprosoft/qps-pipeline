@@ -610,11 +610,8 @@ class Runner extends Executor {
 		} catch (FileNotFoundException e) {
 			context.println("ERROR! Unable to find suite: " + filePath)
 			return
-		} catch (SAXParseException e) {
-			context.println("ERROR! Unable to parse suite: " + filePath)
-			return
 		} catch (Exception e) {
-			context.println("ERROR! Undefined failure during suite parsing: " + filePath)
+			context.println("ERROR! Unable to parse suite: " + filePath)
 			return
 		}
 
