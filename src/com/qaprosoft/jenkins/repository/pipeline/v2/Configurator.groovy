@@ -146,10 +146,7 @@ class Configurator {
         for (param in jobParams) {
             args.put(param.name, param.value)
         }
-        for (arg in args) {
-            context.println(arg)
-        }
-        //4. investigate how private pipeline can override those values
+        //4. TODO: investigate how private pipeline can override those values
     }
 
 }
