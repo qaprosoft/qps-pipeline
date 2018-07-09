@@ -92,12 +92,11 @@ class Runner extends Executor {
 		context.println("1st enum getter")
 		context.println(Configurator.getArg(Configurator.Parameter.ENV))
 		context.println("1st enum setter")
-		context.println("enum setter")
 		Configurator.setArg(Configurator.Parameter.ENV, "MYENV")
 		context.println("1st string getter")
 		context.println(Configurator.getArg("env"))
 		context.println("1st string setter")
-		Configurator.setArg("build", "111111")
+		Configurator.setArg("env", "111111")
 		context.println("2nd string getter")
 		context.println(Configurator.getArg("env"))
 
