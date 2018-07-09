@@ -604,7 +604,7 @@ class Runner extends Executor {
 	}
 
 	protected void parsePipeline(jobVars, jobParams, String filePath) {
-		//context.println("filePath: " + filePath)
+		context.println("parse file as TestNG suite: " + filePath)
 		def XmlSuite currentSuite = null
 		try {
 			currentSuite = parseSuite(filePath)
