@@ -36,7 +36,7 @@ class Runner extends Executor {
 	}
 	
 	public void runCron() {
-    	jobParams = initParams(context.currentBuild)
+		jobParams = initParams(context.currentBuild)
 		jobVars = initVars(context.env)
 
 		def nodeName = "master"
@@ -85,12 +85,12 @@ class Runner extends Executor {
 	
 	
 	public void runJob() {
-            jobParams = initParams(context.currentBuild)
-            jobVars = initVars(context.env)
-            uuid = getUUID()
-            String nodeName = "master"
-            String emailList = jobParams.get("email_list")
-            String failureEmailList = jobParams.get("failure_email_list")
+        jobParams = initParams(context.currentBuild)
+        jobVars = initVars(context.env)
+        uuid = getUUID()
+        String nodeName = "master"
+        String emailList = jobParams.get("email_list")
+        String failureEmailList = jobParams.get("failure_email_list")
 
         //TODO: remove master node assignment
 		context.node(nodeName) {
