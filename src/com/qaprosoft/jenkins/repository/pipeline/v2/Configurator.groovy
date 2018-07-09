@@ -13,7 +13,6 @@ class Configurator {
     //list of job vars/params as a map
     protected static Map args = [:]
 
-
     public enum Parameter {
 
         //vars
@@ -144,10 +143,16 @@ class Configurator {
         for ( var in envVars ) {
             args.put(var.key, var.value)
         }
+        for ( arg in args ) {
+            context.println(arg)
+        }
         //3. load all string keys/values from params
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for ( param in jobParams ) {
             args.put(param.name, param.value)
+        }
+        for ( arg in args ) {
+            context.println(arg)
         }
         //4. investigate how private pipeline can override those values
     }
