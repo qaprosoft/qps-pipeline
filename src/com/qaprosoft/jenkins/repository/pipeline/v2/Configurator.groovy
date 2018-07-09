@@ -110,7 +110,7 @@ class Configurator {
 
     }
 
-    @NonCPS
+
     public void getEnumValuesMap() {
         for ( enumParam in enumValues ) {
             context.println(enumParam.dump())
