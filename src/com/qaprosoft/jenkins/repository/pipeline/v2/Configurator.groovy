@@ -109,6 +109,7 @@ class Configurator {
 
     }
 
+    @NonCPS
     public void getEnumValuesMap() {
         def enumParams = Parameter.values()
         for ( enumParam in enumParams ) {
