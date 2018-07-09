@@ -605,8 +605,9 @@ class Runner extends Executor {
 
 	protected void parsePipeline(jobVars, jobParams, String filePath) {
 		//context.println("filePath: " + filePath)
+		def XmlSuite currentSuite = null
 		try {
-			XmlSuite currentSuite = parseSuite(filePath)
+			currentSuite = parseSuite(filePath)
 		} catch (FileNotFoundException e) {
 			context.println("Unable to find suite: " + filePath)
 			return
