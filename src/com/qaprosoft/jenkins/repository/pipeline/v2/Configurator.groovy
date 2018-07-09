@@ -112,20 +112,20 @@ class Configurator {
     }
 
     @NonCPS
-    public static String getArg(Parameter param) {
+    public static String get(Parameter param) {
         return args.get(param.getKey())
     }
 
-    public static void setArg(Parameter param, String value) {
+    public static void set(Parameter param, String value) {
         return args.put(param.getKey(), value)
     }
 
     @NonCPS
-    public static String getArg(String paramName) {
+    public static String get(String paramName) {
         return args.get(paramName)
     }
 
-    public static void setArg(String paramName, String value) {
+    public static void set(String paramName, String value) {
         return args.put(paramName, value)
     }
 
