@@ -89,7 +89,19 @@ class Runner extends Executor {
 	
 	
 	public void runJob() {
-        jobParams = initParams(context.currentBuild)
+		context.println("1st enum getter")
+		context.println(Configurator.getArg(Configurator.Parameter.ENV))
+		context.println("1st enum setter")
+		context.println("enum setter")
+		Configurator.setArg(Configurator.Parameter.ENV, "MYENV")
+		context.println("1st string getter")
+		context.println(Configurator.getArg("env"))
+		context.println("1st string setter")
+		Configurator.setArg("build", "111111")
+		context.println("2nd string getter")
+		context.println(Configurator.getArg("env"))
+
+		jobParams = initParams(context.currentBuild)
         jobVars = initVars(context.env)
         uuid = getUUID()
         String nodeName = "master"
