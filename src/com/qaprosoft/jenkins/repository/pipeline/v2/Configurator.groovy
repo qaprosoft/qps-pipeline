@@ -156,9 +156,14 @@ class Configurator {
         }*/
         //3. load all string keys/values from params
         def jobParams = build.rawBuild.getAction(ParametersAction)
-        jobParams.each { k, v ->
-            args.put(k, v)
+
+        for ( e in jobParams ) {
+            context.println("key = ${e.key}, value = ${e.value}")
         }
+
+//        jobParams.each { k, v ->
+//            args.put(k, v)
+//        }
 
         //4. investigate how private pipeline can override those values
     }
