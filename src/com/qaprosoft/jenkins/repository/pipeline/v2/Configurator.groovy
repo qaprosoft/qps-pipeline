@@ -152,7 +152,8 @@ class Configurator {
         //2. load all string keys/values from env
         def envVars = context.env.getEnvironment()
         for ( var in envVars ) {
-            args.put(var.name, var.value)
+            context.println(var.dump())
+            //args.put(var.name, var.value)
         }
         //3. load all string keys/values from params
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
