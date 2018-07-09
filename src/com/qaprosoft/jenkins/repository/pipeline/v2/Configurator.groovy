@@ -115,7 +115,7 @@ class Configurator {
         return args.get(param.getKey())
     }
 
-    @NonCPS
+
     public static void setArg(Parameter param, String value) {
         return args.put(param.getKey(), value)
     }
@@ -125,7 +125,7 @@ class Configurator {
         return args.get(paramName)
     }
 
-    @NonCPS
+
     public static void setArg(String paramName, String value) {
         return args.put(paramName, value)
     }
