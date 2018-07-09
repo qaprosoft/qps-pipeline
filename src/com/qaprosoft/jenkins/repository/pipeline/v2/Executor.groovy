@@ -19,8 +19,9 @@ public abstract class Executor {
 
 	//list of job variables as a map
 	protected def jobVars = [:]
-	
+
 	protected ISCM scmClient
+
 	protected Configurator configurator
 
 	public Executor(context) {
