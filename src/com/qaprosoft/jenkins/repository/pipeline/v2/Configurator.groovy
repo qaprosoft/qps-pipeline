@@ -114,6 +114,7 @@ class Configurator {
     public void getEnumValuesMap() {
         for ( enumParam in enumValues ) {
             context.println(enumParam.dump())
+            ImageTypes.values()*.name()
             args.put(enumParam.key, enumParam.value)
         }
     }
@@ -140,7 +141,8 @@ class Configurator {
     public void load() {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
-        getEnumValuesMap()
+        context.println(Parameter.values()*.name())
+
 //        def enumParams = Parameter.values()
 //
 //        for ( enumParam in enumParams ) {
