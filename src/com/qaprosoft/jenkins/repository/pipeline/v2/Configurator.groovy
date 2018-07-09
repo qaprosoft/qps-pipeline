@@ -115,6 +115,7 @@ class Configurator {
         return args.get(param.getKey())
     }
 
+    @NonCPS
     public static void setArg(Parameter param, String value) {
         return args.put(param.getKey(), value)
     }
@@ -124,17 +125,9 @@ class Configurator {
         return args.get(paramName)
     }
 
+    @NonCPS
     public static void setArg(String paramName, String value) {
         return args.put(paramName, value)
-    }
-
-    @NonCPS
-    public static void fillArgs(def params) {
-        params.each { parameter ->
-            args.put(parameter.getKey(), parameter.getValue())
-            context.println(parameter.getKey())
-            context.println(parameter.getValue())
-        }
     }
 
     @NonCPS
@@ -143,6 +136,11 @@ class Configurator {
         //1. load all Parameter key/values to args
         context.println(getArg("env"))
 
+        def enumParams = Parameter.values()
+        for ( enumParam in enumParams ) {
+            context.println(enumParam.dump())
+//            args.put(var.key, var.value)
+        }
 //        Parameter.values().each { parameter ->
 //            args.put(parameter.getKey(), parameter.getValue())
 //            context.println(parameter.getKey())
