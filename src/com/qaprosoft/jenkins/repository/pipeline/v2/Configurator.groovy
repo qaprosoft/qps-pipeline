@@ -130,7 +130,7 @@ class Configurator {
         return args.put(paramName, value)
     }
 
-    @NonCPS
+//    @NonCPS
     public void load() {
         context.println("LOAD METHOD CALLED")
         //1. load all Parameter key/values to args
