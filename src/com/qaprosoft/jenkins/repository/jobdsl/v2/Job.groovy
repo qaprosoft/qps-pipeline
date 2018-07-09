@@ -105,6 +105,12 @@ class Job {
 						break;
 				}
 
+				def nodeLabel = ""
+				if (currentSuite.toXml().contains("jenkinsNodeLabel")) {
+					nodeLabel = currentSuite.getParameter("jenkinsNodeLabel")
+					configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
+				}
+
 				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", "master")
 				configure addHiddenParameter('project', '', project)
 				configure addHiddenParameter('sub_project', '', sub_project)
