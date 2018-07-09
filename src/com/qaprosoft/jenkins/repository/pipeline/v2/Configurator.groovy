@@ -5,10 +5,11 @@ import com.cloudbees.groovy.cps.NonCPS
 class Configurator {
 
     private def context
+    private def build;
 
     public Configurator(context) {
         this.context = context
-
+        this.build = context.currentBuild
     }
 
     //list of job vars/params as a map
