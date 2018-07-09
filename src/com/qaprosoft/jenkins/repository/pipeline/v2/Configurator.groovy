@@ -155,10 +155,10 @@ class Configurator {
             args.put(k, v)
         }*/
         //3. load all string keys/values from params
-        def jobParams = build.rawBuild.getAction(ParametersAction)
+        def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
 
         for ( e in jobParams ) {
-            context.println(e)
+            context.println(e.key)
 
 //            context.println("key = ${e.key}, value = ${e.value}")
         }
