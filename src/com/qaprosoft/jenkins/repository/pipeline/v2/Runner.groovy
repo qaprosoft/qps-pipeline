@@ -412,12 +412,12 @@ class Runner extends Executor {
 		def nodeLabel = params.get("node_label")
 		context.println("nodeLabel: " + nodeLabel)
 		if (!isParamEmpty(nodeLabel)) {
-			echo "overriding default node to: " + nodeLabel
+			context.println("overriding default node to: " + nodeLabel)
 			params.put("node", nodeLabel)
 		}
 	
 		
-		context.echo "node: " + params.get("node") 
+		context.println("node: " + params.get("node")) 
 		return params.get("node")
 	}
 
