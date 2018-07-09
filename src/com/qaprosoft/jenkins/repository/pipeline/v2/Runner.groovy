@@ -604,14 +604,20 @@ class Runner extends Executor {
 	}
 
 	protected void parsePipeline(jobVars, jobParams, String filePath) {
-		context.println("parse file as TestNG suite: " + filePath)
 		def XmlSuite currentSuite = null
 		try {
 			currentSuite = parseSuite(filePath)
 		} catch (FileNotFoundException e) {
-			context.println("Unable to find suite: " + filePath)
+			context.println("ERROR! Unable to find suite: " + filePath)
+			return
+		} catch (SAXParseException e) {
+			context.println("ERROR! Unable to parse suite: " + filePath)
+			return
+		} catch (Exception e) {
+			context.println("ERROR! Undefined failure during suite parsing: " + filePath)
 			return
 		}
+
 		
 		def jobName = currentSuite.getParameter("jenkinsJobName").toString()
 		def supportedPipelines = currentSuite.getParameter("jenkinsRegressionPipeline").toString() 
