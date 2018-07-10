@@ -382,7 +382,7 @@ class Runner extends Executor {
 			}
 
 			//append again overrideFields to make sure they are declared at the end
-			goals += Configurator.get(Configurator.Parameter.OVERRIDE_FIELDS)
+			goals = goals + " " + Configurator.get("overrideFields")
 
 			context.echo "goals: ${goals}"
 
