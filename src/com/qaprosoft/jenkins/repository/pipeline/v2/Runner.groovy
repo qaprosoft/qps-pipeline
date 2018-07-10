@@ -304,8 +304,6 @@ class Runner extends Executor {
 			def SELENIUM_URL = Configurator.get("SELENIUM_URL")
 
             def ZAFIRA_SERVICE_URL = Configurator.get("ZAFIRA_SERVICE_URL")
-			def ZAFIRA_BASE_CONFIG = Configurator.get("ZAFIRA_BASE_CONFIG")
-
 
 			def JOB_URL = Configurator.get("JOB_URL")
 			def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
@@ -330,7 +328,7 @@ class Runner extends Executor {
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${pomFile} \
 				-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_URL -Dmax_screen_history=1 \
 				-Dinit_retry_count=0 -Dinit_retry_interval=10 -Dzafira_enabled=true -Dzafira_rerun_failures=$rerun_failures \
-                -Dzafira_service_url = $ZAFIRA_SERVICE_URL -Dgit_branch = $branch -Dgit_commit = $GIT_COMMIT -Dgit_url = $repository \
+                -Dzafira_service_url=$ZAFIRA_SERVICE_URL -Dgit_branch=$branch -Dgit_commit=$GIT_COMMIT -Dgit_url=$repository \
                 -Dci_user_id=$BUILD_USER_ID -Dc i_user_first_name=$BUILD_USER_FIRST_NAME -Dc i_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL \
                 -Dzafira_access_token=$ZAFIRA_ACCESS_TOKEN clean test" //-Duser.timezone=PST
 
