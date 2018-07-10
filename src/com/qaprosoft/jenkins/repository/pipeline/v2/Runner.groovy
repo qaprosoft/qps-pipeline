@@ -84,7 +84,7 @@ class Runner extends Executor {
 	}
 
 
-	public void runJob(jobVars, jobParams) {
+	public void runJob() {
 
         uuid = getUUID()
         String nodeName = "master"
