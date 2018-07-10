@@ -136,20 +136,26 @@ class Configurator {
         //1. load all Parameter key/values to args
         def enumValues  = Parameter.values()
         for (enumValue in enumValues) {
-            context.println(enumValue)
             args.put(enumValue.getKey(), enumValue.getValue())
+        }
+        for (arg in args) {
+            context.println(args)
         }
         //2. load all string keys/values from env
         def envVars = context.env.getEnvironment()
         for (var in envVars) {
-            context.println(var)
             args.put(var.key, var.value)
+        }
+        for (arg in args) {
+            context.println(args)
         }
         //3. load all string keys/values from params
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
-            context.println(param)
             args.put(param.name, param.value)
+        }
+        for (arg in args) {
+            context.println(args)
         }
         //4. TODO: investigate how private pipeline can override those values
     }
