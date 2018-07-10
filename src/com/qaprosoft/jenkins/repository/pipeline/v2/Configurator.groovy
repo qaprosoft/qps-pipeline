@@ -58,7 +58,7 @@ public class Configurator {
         SUITE("suite", ""),
         BRANCH("branch", ""),
         FOLDER("folder", ""),
-        FORK("fork", ""),
+        FORK("fork", "false"),
         PLATFORM("platform", ""),
         ENV("env", ""),
         BROWSER("browser", ""),
