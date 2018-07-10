@@ -2,6 +2,7 @@ package com.qaprosoft.scm.github
 
 
 import com.qaprosoft.scm.ISCM
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 
 class GitHub implements ISCM {
 	private def context;
@@ -10,17 +11,18 @@ class GitHub implements ISCM {
 		this.context = context
 	}
 	
-	public void clone(params, vars) {
+	public void clone() {
 		context.stage('Checkout GitHub Repository') {
 			context.println("GitHub->clone")
-			def fork = params.get("fork")
-			def branch = params.get("branch")
-			def project = params.get("project")
 
-			def GITHUB_SSH_URL = vars.get("GITHUB_SSH_URL")
-			def userId = params.get("BUILD_USER_ID")
+			def fork = Configurator.get("fork")
+			def branch = Configurator.get("branch")
+			def project = Configurator.get("project")
+
+			def GITHUB_SSH_URL = Configurator.get("GITHUB_SSH_URL")
+			def userId = Configurator.get("BUILD_USER_ID")
 			//context.println("userId: ${userId}")
-			def GITHUB_HOST = vars.get("GITHUB_HOST")
+			def GITHUB_HOST = Configurator.get("GITHUB_HOST")
 
 			def gitUrl = "${GITHUB_SSH_URL}/${project}"
 			context.println("gitUrl: " + gitUrl)
@@ -33,7 +35,7 @@ class GitHub implements ISCM {
 			} else {
 				def token_name = 'token_' + "${userId}"
 				//context.println("token_name: ${token_name}")
-				def token_value = vars.get(token_name)
+				def token_value = Configurator.get(token_name)
 				//context.println("token_value: ${token_value}")
 				//if token_value contains ":" as delimiter then redefine build_user_id using the 1st part
 				if (token_value != null && token_value.contains(":")) {
@@ -53,8 +55,8 @@ class GitHub implements ISCM {
 				}
 			}
 			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
-			params.put("git_url", gitUrl)
-			params.put("scm_url", gitUrl)
+			Configurator.set("git_url", gitUrl)
+			Configurator.set("scm_url", gitUrl)
 			//TODO: init git_commit as well
 		}
 	}
