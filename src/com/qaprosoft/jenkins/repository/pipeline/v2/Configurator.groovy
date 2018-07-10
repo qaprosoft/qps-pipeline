@@ -38,7 +38,9 @@ class Configurator {
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
         SELENIUM_URL("SELENIUM_URL", "$SELENIUM_PROTOCOL://$SELENIUM_HOST:$SELENIUM_PORT/wd/hub"),
         ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", "REPLACE_ME"),
-        ZAFIRA_BASE_CONFIG("ZAFIRA_BASE_CONFIG", "-Dzafira_enabled=true -Dzafira_rerun_failures=$rerun_failures -Dzafira_service_url=$ZAFIRA_SERVICE_URL -Dgit_branch=$branch -Dgit_commit=$GIT_COMMIT -Dgit_url=$repository -Dci_user_id=$BUILD_USER_ID -Dci_user_first_name=$BUILD_USER_FIRST_NAME -Dci_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL -Dzafira_access_token=$ZAFIRA_ACCESS_TOKEN"),
+        ZAFIRA_BASE_CONFIG("ZAFIRA_BASE_CONFIG", "-Dzafira_enabled=true -Dzafira_rerun_failures=${rerun_failures} -Dzafira_service_url=$ZAFIRA_SERVICE_URL " +
+                "-Dgit_branch=${branch} -Dgit_commit=$GIT_COMMIT -Dgit_url=${repository} -Dci_user_id=$BUILD_USER_ID -Dci_user_first_name=$BUILD_USER_FIRST_NAME " +
+                "-Dci_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL -Dzafira_access_token=$ZAFIRA_ACCESS_TOKEN"),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
         JOB_URL("JOB_URL", ""),
         JOB_NAME("JOB_NAME", ""),
