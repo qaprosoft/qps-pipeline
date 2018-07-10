@@ -42,14 +42,14 @@ class Runner extends Executor {
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
-			scmClient.clone()
-		
+			scmClient.clone(jobParams, jobVars)
+
 			def WORKSPACE = this.getWorkspace()
 			context.println("WORKSPACE: " + WORKSPACE)
 			def project = jobParams.get("project")
 			def sub_project = jobParams.get("sub_project")
 			def jenkinsFile = ".jenkinsfile.json"
-			
+
 			if (!context.fileExists("${jenkinsFile}")) {
 				context.println("no .jenkinsfile.json discovered! Scannr will use default qps-pipeline logic for project: ${project}")
 			}
@@ -65,25 +65,25 @@ class Runner extends Executor {
 				if (sub_project.equals(".")) {
 					subProjectFilter = "**"
 				}
-	
+
 				def files = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
 				if(files.length > 0) {
 					context.println("Number of Test Suites to Scan Through: " + files.length)
 					for (int i = 0; i < files.length; i++) {
 						this.parsePipeline(jobVars, jobParams, WORKSPACE + "/" + files[i].path)
 					}
-	
+
 					listPipelines = sortPipelineList(listPipelines)
-	
+
 					this.executeStages(folderName)
 				} else {
 					context.println("No Test Suites Found to Scan...")
 				}
-			}			
-		}		
+			}
+		}
 	}
-	
-	
+
+
 	public void runJob() {
         jobParams = initParams(context.currentBuild)
         jobVars = initVars(context.env)
@@ -102,17 +102,17 @@ class Runner extends Executor {
 			} catch (Exception ex) {
 				printStackTrace(ex)
 			}
-	
+
 			nodeName = chooseNode(jobParams)
 		}
-		
+
 		context.node(nodeName) {
 			context.wrap([$class: 'BuildUser']) {
 				try {
 					context.timestamps {
-						
+
 						this.prepare(context.currentBuild, jobParams, jobVars)
-						scmClient.clone()
+						scmClient.clone(jobParams, jobVars)
 
 
 						this.downloadResources(jobParams, jobVars)
@@ -192,8 +192,8 @@ class Runner extends Executor {
 				currentBuild.displayName += "|${browser_version}"
 			}
 			currentBuild.description = "${suite}"
-			
-			// identify if it is mobile test using "device" param. Don't reuse node as it can be changed based on client needs 
+
+			// identify if it is mobile test using "device" param. Don't reuse node as it can be changed based on client needs
 			if (device != null && !device.isEmpty() && !device.equalsIgnoreCase("NULL")) {
 				//this is mobile test
 				this.prepareForMobile(params)
@@ -232,7 +232,7 @@ class Runner extends Executor {
 		params.put("java.awt.headless", "true")
 
 	}
-	
+
 	protected void prepareForAndroid(params) {
 		params.put("mobile_app_clear_cache", "true")
 
@@ -241,17 +241,17 @@ class Runner extends Executor {
 		params.put("capabilities.autoGrantPermissions", "true")
 		params.put("capabilities.noSign", "true")
 		params.put("capabilities.STF_ENABLED", "true")
-		
+
 		params.put("capabilities.appWaitDuration", "270000")
 		params.put("capabilities.androidInstallTimeout", "270000")
-		
+
 		customPrepareForAndroid(params)
 	}
-	
+
 	protected void customPrepareForAndroid(params) {
 		//do nothing here
 	}
-		
+
 
 	protected void prepareForiOS(params) {
 
@@ -265,14 +265,14 @@ class Runner extends Executor {
 		params.put("capabilities.autoAcceptAlerts", "true")
 
 		params.put("capabilities.STF_ENABLED", "false")
-		
+
 		customPrepareForiOS(params)
 	}
-	
+
 	protected void customPrepareForiOS(params) {
 		//do nothing here
 	}
-		
+
 	protected void downloadResources(params, vars) {
 		//DO NOTHING as of now
 
@@ -288,23 +288,23 @@ class Runner extends Executor {
 			}
 		}
 */	}
-	
-	
+
+
 	protected void getResources() {
 		context.echo "Do nothing in default implementation"
 	}
-	
+
 	protected void build(params, vars) {
 		context.stage('Run Test Suite') {
 
 			def pomFile = getSubProjectFolder(params) + "/pom.xml"
-			
+
 			def CARINA_CORE_VERSION = Configurator.get("CARINA_CORE_VERSION")
 			def CORE_LOG_LEVEL = Configurator.get("CORE_LOG_LEVEL")
 			def SELENIUM_URL = Configurator.get("SELENIUM_URL")
 			def ZAFIRA_BASE_CONFIG = Configurator.get("ZAFIRA_BASE_CONFIG")
-			
-			
+
+
 			def JOB_URL = Configurator.get("JOB_URL")
 			def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
 
@@ -312,7 +312,7 @@ class Runner extends Executor {
 			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			params.put("git_branch", branch)
 			params.put("scm_branch", branch)
-			
+
 			//TODO: investigate how user timezone can be declared on qps-infra level
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${pomFile} \
 				-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_URL -Dmax_screen_history=1 \
@@ -326,42 +326,42 @@ class Runner extends Executor {
 			params.put("ci_build", BUILD_NUMBER)
 
 			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
-			
+
 			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
 			if (!params.get("ci_parent_url").isEmpty() && !params.get("ci_parent_build").isEmpty()) {
 				params.put("ci_build_cause", "UPSTREAMTRIGGER")
 			}
-			
+
 			def goals = DEFAULT_BASE_MAVEN_GOALS
 			//register all env variables
 			vars.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
-			
+
 			//register all params after vars to be able to override
 			params.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
-			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo" 
+			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
 			if (Configurator.get("enableVNC")) {
 				goals += " -Dcapabilities.enableVNC=true "
 			}
-			
+
 			if (Configurator.get("enableVideo")) {
 				goals += " -Dcapabilities.enableVideo=true "
 			}
-			
+
 			if (Configurator.get("JACOCO_ENABLE").toBoolean()) {
 				goals += " jacoco:instrument "
 			}
-			
+
 			if (params.get("debug")) {
 				context.echo "Enabling remote debug..."
 				goals += mavenDebug
 			}
-			
+
 			//append again overrideFields to make sure they are declared at the end
 			goals += params.get("overrideFields")
-			
+
 			context.echo "goals: ${goals}"
-			
+
 			//TODO: adjust ZAFIRA_REPORT_FOLDER correclty
 			if (context.isUnix()) {
 				def suiteNameForUnix = params.get("suite").replace("\\", "/")
@@ -377,7 +377,7 @@ class Runner extends Executor {
 
 		}
 	}
-	
+
 	protected String chooseNode(params) {
 		def platform = params.get("platform")
 		def browser = params.get("browser")
@@ -409,7 +409,7 @@ class Runner extends Executor {
 					params.put("node", "web")
 				}
 		}
-		context.echo "node: " + params.get("node") 
+		context.echo "node: " + params.get("node")
 		return params.get("node")
 	}
 
@@ -422,17 +422,17 @@ class Runner extends Executor {
 		context.echo "final uuid: " + ci_run_id
 		return ci_run_id
 	}
-	
+
 	//TODO: investigate howto transfer jobVars
 	protected String getFailure(currentBuild, params, vars) {
 		//TODO: move string constants into object/enum if possible
 		currentBuild.result = 'FAILURE'
 		def failureReason = "undefined failure"
-		
+
 		String JOB_URL = Configurator.get("JOB_URL")
 		String BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
 		String JOB_NAME = Configurator.get("JOB_NAME")
-		
+
 		String email_list = params.get("email_list")
 
 		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
@@ -521,7 +521,7 @@ class Runner extends Executor {
 			context.println("do not publish any content to AWS S3 if integration is disabled")
 			return
 		}
-		
+
 		def JACOCO_BUCKET = Configurator.get("JACOCO_BUCKET")
 		def JOB_NAME = Configurator.get("JOB_NAME")
 		def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
