@@ -78,7 +78,6 @@ public class Configurator {
         RECOVERY_MODE("recoveryMode", ""),
         ENABLE_VNC("enableVNC", "false"),
         ENABLE_VIDEO("enableVideo", "false"),
-        OVERRIDE_FIELDS("overrideFields", ""),
         GIT_BRANCH("git_branch", ""),
         GIT_URL("git_url", ""),
         GIT_COMMIT("GIT_COMMIT", ""),
@@ -94,7 +93,7 @@ public class Configurator {
         UPSTREAM_JOB_ID("upstream_job_id", ""),
         UPSTREAM_JOB_BUILD_NUMBER("upstream_job_build_number", ""),
         HASHCODE("hashcode", ""),
-        DO_REBUILD("doRebuild", "")
+        DO_REBUILD("doRebuild", "false")
 
         private final String key;
         private final String value;
