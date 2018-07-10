@@ -37,7 +37,7 @@ class Configurator {
         SELENIUM_HOST("SELENIUM_HOST", "demo.qaprosoft.com"),
         SELENIUM_PORT("SELENIUM_PORT", "4444"),
         SELENIUM_URL("SELENIUM_URL", SELENIUM_PROTOCOL.value + "://" + SELENIUM_HOST.value +":" + SELENIUM_PORT.value + "/wd/hub"),
-        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", "CHANGE_ME"),
+        ZAFIRA_ACCESS_TOKEN("zafira_access_token", "CHANGE_ME"),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
         JOB_URL("JOB_URL", ""),
         JOB_NAME("JOB_NAME", ""),
