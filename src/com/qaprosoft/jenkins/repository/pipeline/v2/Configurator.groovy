@@ -24,7 +24,7 @@ class Configurator {
         GITHUB_API_URL("GITHUB_API_URL", "https://api.$GITHUB_HOST/"),
         GITHUB_HOST("GITHUB_HOST", "github.com"),
         GITHUB_HTML_URL("GITHUB_HTML_URL", "https://$GITHUB_HOST/$GITHUB_ORGANIZATION"),
-        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", "REPLACE_ME"),
+        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", "CHANGE_ME"),
         GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft"),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@$GITHUB_HOST:$GITHUB_ORGANIZATION "),
         JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
@@ -37,7 +37,7 @@ class Configurator {
         SELENIUM_PORT("SELENIUM_PORT", "4444"),
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
         SELENIUM_URL("SELENIUM_URL", "$SELENIUM_PROTOCOL://$SELENIUM_HOST:$SELENIUM_PORT/wd/hub"),
-        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", "REPLACE_ME"),
+        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", "CHANGE_ME"),
         ZAFIRA_BASE_CONFIG("ZAFIRA_BASE_CONFIG", '-Dzafira_enabled=true -Dzafira_rerun_failures=$rerun_failures -Dzafira_service_url=$ZAFIRA_SERVICE_URL -Dgit_branch=$branch -Dgit_commit=$GIT_COMMIT -Dgit_url=$repository -Dci_user_id=$BUILD_USER_ID -Dci_user_first_name=$BUILD_USER_FIRST_NAME -Dci_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL -Dzafira_access_token=$ZAFIRA_ACCESS_TOKEN'),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
         JOB_URL("JOB_URL", ""),
@@ -136,16 +136,19 @@ class Configurator {
         //1. load all Parameter key/values to args
         def enumValues  = Parameter.values()
         for (enumValue in enumValues) {
+            context.println(enumValue)
             args.put(enumValue.getKey(), enumValue.getValue())
         }
         //2. load all string keys/values from env
         def envVars = context.env.getEnvironment()
         for (var in envVars) {
+            context.println(var)
             args.put(var.key, var.value)
         }
         //3. load all string keys/values from params
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
+            context.println(param)
             args.put(param.name, param.value)
         }
         //4. TODO: investigate how private pipeline can override those values
