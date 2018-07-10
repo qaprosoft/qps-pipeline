@@ -79,17 +79,6 @@ class Configurator {
         UPSTREAM_JOB_BUILD_NUMBER("upstream_job_build_number", ""),
         HASHCODE("hashcode", ""),
         DO_REBUILD("doRebuild", ""),
-        
-        CAPABILITIES_NEW_COMMAND_TIMEOUT("capabilities.newCommandTimeout", ""),
-        CAPABILITIES_PLATFORM_NAME("capabilities.platformName", ""),
-        CAPABILITIES_STF_ENABLED("capabilities.STF_ENABLED", ""),
-        CAPABILITIES_APP_WAIT_DURATION("capabilities.appWaitDuration", ""),
-        CAPABILITIES_PLATFORM("capabilities.platform", ""),
-        CAPABILITIES_DEVICE_NAME("capabilities.deviceName", ""),
-        CAPABILITIES_APP_PACKAGE("capabilities.appPackage", ""),
-        CAPABILITIES_APP_ACTIVITY("capabilities.appActivity", ""),
-        CAPABILITIES_AUTO_ACCEPT_ALERTS("capabilities.autoAcceptAlerts", ""),
-        CAPABILITIES_AUTO_GRANT_PERMISSIONS("capabilities.autoGrantPermissions", "")
 
         private final String key;
         private final String value;
