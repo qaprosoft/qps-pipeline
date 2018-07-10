@@ -74,7 +74,7 @@ class Configurator {
         THREAD_COUNT("thread_count", ""),
         KEEP_ALL_SCREENSHOTS("keep_all_screenshots", ""),
         AUTO_SCREENSHOT("auto_screenshot", ""),
-        RERUN_FAILURES("rerunFailures", "true"),
+        RERUN_FAILURES("rerunFailures", "false"),
         RECOVERY_MODE("recoveryMode", ""),
         ENABLE_VNC("enableVNC", ""),
         ENABLE_VIDEO("enableVideo", ""),
