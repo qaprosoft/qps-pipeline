@@ -94,11 +94,7 @@ class Configurator {
         UPSTREAM_JOB_ID("upstream_job_id", ""),
         UPSTREAM_JOB_BUILD_NUMBER("upstream_job_build_number", ""),
         HASHCODE("hashcode", ""),
-        DO_REBUILD("doRebuild", ""),
-
-        ZAFIRA_BASE_CONFIG("ZAFIRA_BASE_CONFIG", "-Dzafira_enabled=true -Dzafira_rerun_failures=" + RERUN_FAILURES.value + " -Dzafira_service_url=" + ZAFIRA_SERVICE_URL.value +
-                " -Dgit_branch=" + BRANCH.value + " -Dgit_commit=" + GIT_COMMIT.value + " -Dgit_url=" + GIT_URL.value + " -Dci_user_id=" + BUILD_USER_ID.value + " -Dci_user_first_name=" + BUILD_USER_FIRST_NAME.value +
-                " -Dci_user_last_name=" + BUILD_USER_LAST_NAME.value +" -Dci_user_email=" + BUILD_USER_EMAIL.value + " -Dzafira_access_token=" + ZAFIRA_ACCESS_TOKEN.value),
+        DO_REBUILD("doRebuild", "")
 
         private final String key;
         private final String value;
