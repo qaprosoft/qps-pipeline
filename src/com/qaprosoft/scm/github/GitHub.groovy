@@ -20,7 +20,7 @@ class GitHub implements ISCM {
 			def project = Configurator.get("project")
 
 			def GITHUB_SSH_URL = Configurator.get("GITHUB_SSH_URL")
-			def userId = Configurator.get("BUILD_USER_ID")
+			def userId = params.get("BUILD_USER_ID")
 			//context.println("userId: ${userId}")
 			def GITHUB_HOST = Configurator.get("GITHUB_HOST")
 
