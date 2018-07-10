@@ -178,7 +178,8 @@ class Runner extends Executor {
 		String suite = Configurator.get(Configurator.Parameter.SUITE)
 		String branch = Configurator.get(Configurator.Parameter.BRANCH)
 		String _env = Configurator.get(Configurator.Parameter.ENV)
-		String device = Configurator.get(Configurator.Parameter.DEVICE)
+        //TODO: rename to devicePool
+		String device = Configurator.get("Configurator.Parameter.DEVICE")
 		String browser = Configurator.get(Configurator.Parameter.BROWSER)
 
 		//TODO: improve carina to detect browser_version on the fly
@@ -210,7 +211,8 @@ class Runner extends Executor {
 
 	protected void prepareForMobile(params) {
 
-		def device = Configurator.get(Configurator.Parameter.DEVICE)
+        //TODO: rename to devicePool
+        def device = Configurator.get("Configurator.Parameter.DEVICE")
 		def defaultPool = Configurator.get(Configurator.Parameter.DEFAULT_POOL)
 		def platform = Configurator.get(Configurator.Parameter.PLATFORM)
 
