@@ -93,7 +93,7 @@ class Runner extends Executor {
         String failureEmailList = Configurator.get("failure_email_list")
         String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
         String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        String DEVELOP = Configurator.get(Configurator.Parameter.DEVELOP)
+        String DEVELOP = Configurator.get(Configurator.Parameter.DEVELOP).toBoolean()
 
         //TODO: remove master node assignment
 		context.node(nodeName) {
