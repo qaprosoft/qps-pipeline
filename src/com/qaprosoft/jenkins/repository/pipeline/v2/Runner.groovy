@@ -86,6 +86,9 @@ class Runner extends Executor {
 
 	public void runJob() {
 
+        jobParams = initParams(context.currentBuild)
+        jobVars = initVars(context.env)
+
         uuid = getUUID()
         String nodeName = "master"
 
