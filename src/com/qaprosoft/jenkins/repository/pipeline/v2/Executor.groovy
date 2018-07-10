@@ -53,6 +53,7 @@ public abstract class Executor {
 			vars.put(k, v)
 		}
 
+        context.println("VARS CONTENT " + vars)
 		def variables = ""
 		vars.each { k, v -> variables = variables + " -D${k}=${v}"}
 		context.echo "variables: ${variables}"
