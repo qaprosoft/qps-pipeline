@@ -29,7 +29,6 @@ public class Configurator {
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@" + GITHUB_HOST.value + ":" + GITHUB_ORGANIZATION.value),
         JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
         JACOCO_ENABLE("JACOCO_ENABLE", "false"),
-        JENKINS_SECURITY_INITIALIZED("JENKINS_SECURITY_INITIALIZED", "true"),
         JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
         QPS_PIPELINE_GIT_BRANCH("QPS_PIPELINE_GIT_BRANCH", "demo"),
         QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", "git@github.com:qaprosoft/qps-pipeline.git"),
@@ -43,7 +42,9 @@ public class Configurator {
         JOB_NAME("JOB_NAME", ""),
         JOB_BASE_NAME("JOB_BASE_NAME", ""),
         BUILD_NUMBER("BUILD_NUMBER", ""),
-
+        NGINX_HOST("NGINX_HOST", "localhost"),
+        NGINX_PORT("NGINX_PORT", "80"),
+        NGINXT_PROTOCOL("NGINXT_PROTOCOL", "http"),
         //params
         ZAFIRA_ENABLED("zafira_enabled", "true"),
         BUILD("build", ""),

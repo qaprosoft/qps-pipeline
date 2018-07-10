@@ -46,8 +46,8 @@ class Runner extends Executor {
 
 			def WORKSPACE = this.getWorkspace()
 			context.println("WORKSPACE: " + WORKSPACE)
-			def project = Configurator.get("project")
-			def sub_project = Configurator.get("sub_project")
+			def project = Configurator.get(Configurator.Parameter.PROJECT)
+			def sub_project = Configurator.get(Configurator.Parameter.SUB_PROJECT)
 			def jenkinsFile = ".jenkinsfile.json"
 
 			if (!context.fileExists("${jenkinsFile}")) {
@@ -92,8 +92,8 @@ class Runner extends Executor {
         uuid = getUUID()
         String nodeName = "master"
 
-        String emailList = Configurator.get("email_list")
-        String failureEmailList = Configurator.get("failure_email_list")
+        String emailList = Configurator.get(Configurator.Parameter.EMAIL_LIST)
+        String failureEmailList = Configurator.get(Configurator.Parameter.FAILURE_EMAIL_LIST)
         String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
         String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
         boolean DEVELOP = Configurator.get(Configurator.Parameter.DEVELOP).toBoolean()
@@ -123,7 +123,7 @@ class Runner extends Executor {
 
 						this.downloadResources(jobParams, jobVars)
 
-						def timeoutValue = Configurator.get("JOB_MAX_RUN_TIME")
+						def timeoutValue = Configurator.get(Configurator.Parameter.JOB_MAX_RUN_TIME)
 						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
 							  this.build(jobParams, jobVars)  
 						}
@@ -153,14 +153,15 @@ class Runner extends Executor {
 
     public void rerunJobs(){
 
-        jobParams = initParams(context.currentBuild)
-        jobVars = initVars(context.env)
+        String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
+        String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+        boolean DEVELOP = Configurator.get(Configurator.Parameter.DEVELOP).toBoolean()
 
         context.stage('Rerun Tests'){
             try {
-                zc = new ZafiraClient(context, Configurator.get("ZAFIRA_SERVICE_URL"), Configurator.get("develop"))
-                def token = zc.getZafiraAuthToken(Configurator.get("ZAFIRA_ACCESS_TOKEN"))
-                zc.smartRerun(jobParams)
+                zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, DEVELOP)
+                def token = zc.getZafiraAuthToken(ZAFIRA_ACCESS_TOKEN)
+                zc.smartRerun()
             } catch (Exception ex) {
                 printStackTrace(ex)
             }
@@ -172,16 +173,16 @@ class Runner extends Executor {
 		
 		jobParams.put("BUILD_USER_ID", getBuildUser())
 		
-		String BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
-		String CARINA_CORE_VERSION = Configurator.get("CARINA_CORE_VERSION")
+		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+		String CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
+		String suite = Configurator.get(Configurator.Parameter.SUITE)
+		String branch = Configurator.get(Configurator.Parameter.BRANCH)
+		String _env = Configurator.get(Configurator.Parameter.ENV)
+		String device = Configurator.get(Configurator.Parameter.DEVICE)
+		String browser = Configurator.get(Configurator.Parameter.BROWSER)
 
-		String suite = Configurator.get("suite")
-		String branch = Configurator.get("branch")
-		String _env = Configurator.get("env")
-		String device = Configurator.get("device")
-		String browser = Configurator.get("browser")
 		//TODO: improve carina to detect browser_version on the fly
-		String browser_version = Configurator.get("browser_version")
+		String browser_version = Configurator.get(Configurator.Parameter.BROWSER_VERSION)
 
 		context.stage('Preparation') {
 			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${_env}|${branch}"
@@ -208,9 +209,10 @@ class Runner extends Executor {
 	}
 
 	protected void prepareForMobile(params) {
-		def device = Configurator.get("device")
-		def defaultPool = Configurator.get("DefaultPool")
-		def platform = Configurator.get("platform")
+
+		def device = Configurator.get(Configurator.Parameter.DEVICE)
+		def defaultPool = Configurator.get(Configurator.Parameter.DEFAULT_POOL)
+		def platform = Configurator.get(Configurator.Parameter.PLATFORM)
 
 		if (platform.equalsIgnoreCase("android")) {
 			prepareForAndroid(params)
@@ -282,7 +284,7 @@ class Runner extends Executor {
 	protected void downloadResources(params, vars) {
 		//DO NOTHING as of now
 
-/*		def CARINA_CORE_VERSION = Configurator.get("CARINA_CORE_VERSION")
+/*		def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
 		context.stage("Download Resources") {
 		def pomFile = getSubProjectFolder(params) + "/pom.xml"
 		context.echo "pomFile: " + pomFile
@@ -378,17 +380,17 @@ class Runner extends Executor {
 			}
 
 			//append again overrideFields to make sure they are declared at the end
-			goals += Configurator.get("overrideFields")
+			goals += Configurator.get(Configurator.Parameter.OVERRIDE_FIELDS)
 
 			context.echo "goals: ${goals}"
 
 			//TODO: adjust ZAFIRA_REPORT_FOLDER correclty
 			if (context.isUnix()) {
-				def suiteNameForUnix = Configurator.get("suite").replace("\\", "/")
+				def suiteNameForUnix = Configurator.get(Configurator.Parameter.SUITE).replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
 				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$JOB_BUILD_NUMBER/${etafReportEncoded}"
 			} else {
-				def suiteNameForWindows = "${suite}".replace("/", "\\")
+				def suiteNameForWindows = Configurator.get(Configurator.Parameter.SUITE).replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
 				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$JOB_BUILD_NUMBER/${etafReportEncoded}"
 			}
@@ -399,8 +401,8 @@ class Runner extends Executor {
 	}
 
 	protected String chooseNode(params) {
-		def platform = Configurator.get("platform")
-		def browser = Configurator.get("browser")
+		def platform = Configurator.get(Configurator.Parameter.PLATFORM)
+		def browser = Configurator.get(Configurator.Parameter.BROWSER)
 
 		params.put("node", "master") //master is default node to execute job
 
@@ -429,12 +431,12 @@ class Runner extends Executor {
 					params.put("node", "web")
 				}
 		}
-		context.echo "node: " + Configurator.get("node")
-		return Configurator.get("node")
+		context.echo "node: " + Configurator.get(Configurator.Parameter.NODE)
+		return Configurator.get(Configurator.Parameter.NODE)
 	}
 
 	protected String getUUID() {
-		def ci_run_id = Configurator.get("ci_run_id")
+		def ci_run_id = Configurator.get(Configurator.Parameter.CI_RUN_ID)
 		context.echo "uuid from jobParams: " + ci_run_id
 		if (ci_run_id.isEmpty()) {
 				ci_run_id = randomUUID() as String
@@ -449,11 +451,11 @@ class Runner extends Executor {
 		currentBuild.result = 'FAILURE'
 		def failureReason = "undefined failure"
 
-		String JOB_URL = Configurator.get("JOB_URL")
-		String BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
-		String JOB_NAME = Configurator.get("JOB_NAME")
+		String JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
+		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+		String JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
 
-		String email_list = Configurator.get("email_list")
+		String email_list = Configurator.get(Configurator.Parameter.EMAIL_LIST)
 
 		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
 		def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
@@ -528,23 +530,23 @@ class Runner extends Executor {
 	protected String getSubProjectFolder(params) {
 		//specify current dir as subProject folder by default
 		def subProjectFolder = "."
-		if (!isParamEmpty(Configurator.get("sub_project"))) {
-			subProjectFolder = "./" + Configurator.get("sub_project")
+		if (!isParamEmpty(Configurator.get(Configurator.Parameter.SUB_PROJECT))) {
+			subProjectFolder = "./" + Configurator.get(Configurator.Parameter.SUB_PROJECT)
 		}
 		return subProjectFolder
 	}
 
 	//TODO: move into valid jacoco related package
 	protected void publishJacocoReport(vars) {
-		def JACOCO_ENABLE = Configurator.get("JACOCO_ENABLE").toBoolean()
+		def JACOCO_ENABLE = Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()
 		if (!JACOCO_ENABLE) {
 			context.println("do not publish any content to AWS S3 if integration is disabled")
 			return
 		}
 
-		def JACOCO_BUCKET = Configurator.get("JACOCO_BUCKET")
-		def JOB_NAME = Configurator.get("JOB_NAME")
-		def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
+		def JACOCO_BUCKET = Configurator.get(Configurator.Parameter.JACOCO_BUCKET)
+		def JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
+		def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 
 		def files = context.findFiles(glob: '**/jacoco.exec')
 		if(files.length == 1) {
@@ -655,18 +657,18 @@ class Runner extends Executor {
 
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
-		def currentEnv = Configurator.get("env")
-		def pipelineJobName = Configurator.get("JOB_BASE_NAME")
+		def currentEnv = Configurator.get(Configurator.Parameter.ENV)
+		def pipelineJobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 
 		// override suite email_list from params if defined
 		def emailList = currentSuite.getParameter("jenkinsEmail").toString()
-		def paramEmailList = Configurator.get("email_list")
+		def paramEmailList = Configurator.get(Configurator.Parameter.EMAIL_LIST)
 		if (!paramEmailList.isEmpty()) {
 			emailList = paramEmailList
 		}
 		
 		def priorityNum = "5"
-		def curPriorityNum = Configurator.get("priority")
+		def curPriorityNum = Configurator.get(Configurator.Parameter.PRIORITY)
 		if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
@@ -675,7 +677,7 @@ class Runner extends Executor {
 		def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
-		def currentBrowser = Configurator.get("browser")
+		def currentBrowser = Configurator.get(Configurator.Parameter.BROWSER)
 		if (currentBrowser == null) {
 			currentBrowser = "null"
 		}
@@ -714,17 +716,17 @@ class Runner extends Executor {
 
 						def pipelineMap = [:]
 
-						def branch = Configurator.get("branch")
-						def ci_parent_url = Configurator.get("ci_parent_url")
+						def branch = Configurator.get(Configurator.Parameter.BRANCH)
+						def ci_parent_url = Configurator.get(Configurator.Parameter.CI_PARENT_URL)
 						if (ci_parent_url.isEmpty()) {
-							ci_parent_url = Configurator.get("JOB_URL")
+							ci_parent_url = Configurator.get(Configurator.Parameter.JOB_URL)
 						}
-						def ci_parent_build = Configurator.get("ci_parent_build")
+						def ci_parent_build = Configurator.get(Configurator.Parameter.CI_PARENT_BUILD)
 						if (ci_parent_build.isEmpty()) {
-							ci_parent_build = Configurator.get("BUILD_NUMBER")
+							ci_parent_build = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 						}
-						def retry_count = Configurator.get("retry_count")
-						def thread_count = Configurator.get("thread_count")
+						def retry_count = Configurator.get(Configurator.Parameter.RETRY_COUNT)
+						def thread_count = Configurator.get(Configurator.Parameter.THREAD_COUNT)
 
 						pipelineMap.put("browser", supportedBrowser)
 						pipelineMap.put("name", pipeName)
@@ -820,7 +822,7 @@ class Runner extends Executor {
 			//context.println("Checking EmailList: " + entry.get("emailList"))
 			
 			def email_list = entry.get("email_list")
-			def ADMIN_EMAILS = Configurator.get("email_list")
+			def ADMIN_EMAILS = Configurator.get(Configurator.Parameter.EMAIL_LIST)
 
 			//context.println("propagate: " + propagateJob)
 			try {

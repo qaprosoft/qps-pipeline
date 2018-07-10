@@ -1,6 +1,5 @@
 package com.qaprosoft.scm.github
 
-
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 
@@ -13,6 +12,7 @@ class GitHub implements ISCM {
 	
 	public void clone(params, vars) {
 		context.stage('Checkout GitHub Repository') {
+
 			context.println("GitHub->clone")
 
 			boolean fork = Configurator.get(Configurator.Parameter.FORK).toBoolean()
@@ -23,6 +23,7 @@ class GitHub implements ISCM {
 			def GITHUB_HOST = Configurator.get(Configurator.Parameter.GITHUB_HOST)
 
 			def GIT_URL = "${GITHUB_SSH_URL}/${PROJECT}"
+
 			context.println("GIT_URL: " + GIT_URL)
 			context.println("forked_repo: " + fork)
 			if (!fork) {
