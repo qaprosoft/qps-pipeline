@@ -46,8 +46,8 @@ class Runner extends Executor {
 
 			def WORKSPACE = this.getWorkspace()
 			context.println("WORKSPACE: " + WORKSPACE)
-			def project = jobParams.get("project")
-			def sub_project = jobParams.get("sub_project")
+			def project = Configurator.get("project")
+			def sub_project = Configurator.get("sub_project")
 			def jenkinsFile = ".jenkinsfile.json"
 
 			if (!context.fileExists("${jenkinsFile}")) {
@@ -89,14 +89,14 @@ class Runner extends Executor {
         jobVars = initVars(context.env)
         uuid = getUUID()
         String nodeName = "master"
-        String emailList = jobParams.get("email_list")
-        String failureEmailList = jobParams.get("failure_email_list")
+        String emailList = Configurator.get("email_list")
+        String failureEmailList = Configurator.get("failure_email_list")
 
         //TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
-				zc = new ZafiraClient(context, Configurator.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
+				zc = new ZafiraClient(context, Configurator.get("ZAFIRA_SERVICE_URL"), Configurator.get("develop"))
 				def token = zc.getZafiraAuthToken(Configurator.get("ZAFIRA_ACCESS_TOKEN"))
                 zc.queueZafiraTestRun(uuid, jobVars, jobParams)
 			} catch (Exception ex) {
@@ -152,7 +152,7 @@ class Runner extends Executor {
 
         context.stage('Rerun Tests'){
             try {
-                zc = new ZafiraClient(context, Configurator.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
+                zc = new ZafiraClient(context, Configurator.get("ZAFIRA_SERVICE_URL"), Configurator.get("develop"))
                 def token = zc.getZafiraAuthToken(Configurator.get("ZAFIRA_ACCESS_TOKEN"))
                 zc.smartRerun(jobParams)
             } catch (Exception ex) {
@@ -169,13 +169,13 @@ class Runner extends Executor {
 		String BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
 		String CARINA_CORE_VERSION = Configurator.get("CARINA_CORE_VERSION")
 
-		String suite = params.get("suite")
-		String branch = params.get("branch")
-		String _env = params.get("env")
-		String device = params.get("device")
-		String browser = params.get("browser")
+		String suite = Configurator.get("suite")
+		String branch = Configurator.get("branch")
+		String _env = Configurator.get("env")
+		String device = Configurator.get("device")
+		String browser = Configurator.get("browser")
 		//TODO: improve carina to detect browser_version on the fly
-		String browser_version = params.get("browser_version")
+		String browser_version = Configurator.get("browser_version")
 
 		context.stage('Preparation') {
 			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${_env}|${branch}"
@@ -202,9 +202,9 @@ class Runner extends Executor {
 	}
 
 	protected void prepareForMobile(params) {
-		def device = params.get("device")
-		def defaultPool = params.get("DefaultPool")
-		def platform = params.get("platform")
+		def device = Configurator.get("device")
+		def defaultPool = Configurator.get("DefaultPool")
+		def platform = Configurator.get("platform")
 
 		if (platform.equalsIgnoreCase("android")) {
 			prepareForAndroid(params)
@@ -297,21 +297,18 @@ class Runner extends Executor {
 	protected void build(params, vars) {
 		context.stage('Run Test Suite') {
 
-			def pomFile = getSubProjectFolder(params) + "/pom.xml"
+			def POM_FILE = getSubProjectFolder(params) + "/pom.xml"
 
-			def CARINA_CORE_VERSION = Configurator.get("CARINA_CORE_VERSION")
-			def CORE_LOG_LEVEL = Configurator.get("CORE_LOG_LEVEL")
-			def SELENIUM_URL = Configurator.get("SELENIUM_URL")
-
-            def ZAFIRA_SERVICE_URL = Configurator.get("ZAFIRA_SERVICE_URL")
-
-			def JOB_URL = Configurator.get("JOB_URL")
-			def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
-
-			def branch = params.get("branch")
-            def rerun_failures = params.get("rerun_failures")
-            def GIT_COMMIT = params.get("GIT_COMMIT")
-            def repository = params.get("git_url")
+			def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
+			def CORE_LOG_LEVEL = Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)
+			def SELENIUM_URL = Configurator.get(Configurator.Parameter.SELENIUM_URL)
+            def ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
+			def JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
+			def JOB_BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+			def BRANCH = Configurator.get(Configurator.Parameter.BRANCH)
+            def RERUN_FAILURES = Configurator.get(Configurator.Parameter.RERUN_FAILURES)
+            def GIT_COMMIT = Configurator.get(Configurator.Parameter.GIT_COMMIT)
+            def GIT_URL = Configurator.get(Configurator.Parameter.GIT_URL)
             def BUILD_USER_ID = Configurator.get(Configurator.Parameter.BUILD_USER_ID)
             def BUILD_USER_FIRST_NAME = Configurator.get(Configurator.Parameter.BUILD_USER_FIRST_NAME)
             def BUILD_USER_LAST_NAME = Configurator.get(Configurator.Parameter.BUILD_USER_LAST_NAME)
@@ -319,16 +316,14 @@ class Runner extends Executor {
             def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 
 			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
-			params.put("git_branch", branch)
-			params.put("scm_branch", branch)
-
-
+			params.put("git_branch", BRANCH)
+			params.put("scm_branch", BRANCH)
 
             //TODO: investigate how user timezone can be declared on qps-infra level
-			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${pomFile} \
+			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${POM_FILE} \
 				-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_URL -Dmax_screen_history=1 \
-				-Dinit_retry_count=0 -Dinit_retry_interval=10 -Dzafira_enabled=true -Dzafira_rerun_failures=$rerun_failures \
-                -Dzafira_service_url=$ZAFIRA_SERVICE_URL -Dgit_branch=$branch -Dgit_commit=$GIT_COMMIT -Dgit_url=$repository \
+				-Dinit_retry_count=0 -Dinit_retry_interval=10 -Dzafira_enabled=true -Dzafira_rerun_failures=$RERUN_FAILURES \
+                -Dzafira_service_url=$ZAFIRA_SERVICE_URL -Dgit_branch=$BRANCH -Dgit_commit=$GIT_COMMIT -Dgit_url=$GIT_URL \
                 -Dci_user_id=$BUILD_USER_ID -Dci_user_first_name=$BUILD_USER_FIRST_NAME -Dci_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL \
                 -Dzafira_access_token=$ZAFIRA_ACCESS_TOKEN clean test" //-Duser.timezone=PST
 
@@ -337,12 +332,12 @@ class Runner extends Executor {
 
 			params.put("zafira_enabled", zc.isAvailable())
 			params.put("ci_url", JOB_URL)
-			params.put("ci_build", BUILD_NUMBER)
+			params.put("ci_build", JOB_BUILD_NUMBER)
 
 			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
 
 			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
-			if (!params.get("ci_parent_url").isEmpty() && !params.get("ci_parent_build").isEmpty()) {
+			if (!Configurator.get(Configurator.Parameter.CI_PARENT_URL).isEmpty() && !Configurator.get(Configurator.Parameter.CI_PARENT_BUILD).isEmpty()) {
 				params.put("ci_build_cause", "UPSTREAMTRIGGER")
 			}
 
@@ -354,11 +349,11 @@ class Runner extends Executor {
 			params.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
-			if (Configurator.get("enableVNC")) {
+			if (!Configurator.get("enableVNC").isEmpty()) {
 				goals += " -Dcapabilities.enableVNC=true "
 			}
 
-			if (Configurator.get("enableVideo")) {
+			if (!Configurator.get("enableVideo").isEmpty()) {
 				goals += " -Dcapabilities.enableVideo=true "
 			}
 
@@ -366,25 +361,25 @@ class Runner extends Executor {
 				goals += " jacoco:instrument "
 			}
 
-			if (params.get("debug")) {
+			if (!Configurator.get("debug").isEmpty()) {
 				context.echo "Enabling remote debug..."
 				goals += mavenDebug
 			}
 
 			//append again overrideFields to make sure they are declared at the end
-			goals += params.get("overrideFields")
+			goals += Configurator.get("overrideFields")
 
 			context.echo "goals: ${goals}"
 
 			//TODO: adjust ZAFIRA_REPORT_FOLDER correclty
 			if (context.isUnix()) {
-				def suiteNameForUnix = params.get("suite").replace("\\", "/")
+				def suiteNameForUnix = Configurator.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
-				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
+				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$JOB_BUILD_NUMBER/${etafReportEncoded}"
 			} else {
 				def suiteNameForWindows = "${suite}".replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
-				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
+				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$JOB_BUILD_NUMBER/${etafReportEncoded}"
 			}
 
 			this.setJobResults(context.currentBuild)
@@ -393,8 +388,8 @@ class Runner extends Executor {
 	}
 
 	protected String chooseNode(params) {
-		def platform = params.get("platform")
-		def browser = params.get("browser")
+		def platform = Configurator.get("platform")
+		def browser = Configurator.get("browser")
 
 		params.put("node", "master") //master is default node to execute job
 
@@ -423,12 +418,12 @@ class Runner extends Executor {
 					params.put("node", "web")
 				}
 		}
-		context.echo "node: " + params.get("node")
-		return params.get("node")
+		context.echo "node: " + Configurator.get("node")
+		return Configurator.get("node")
 	}
 
 	protected String getUUID() {
-		def ci_run_id = jobParams.get("ci_run_id")
+		def ci_run_id = Configurator.get("ci_run_id")
 		context.echo "uuid from jobParams: " + ci_run_id
 		if (ci_run_id.isEmpty()) {
 				ci_run_id = randomUUID() as String
@@ -447,7 +442,7 @@ class Runner extends Executor {
 		String BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
 		String JOB_NAME = Configurator.get("JOB_NAME")
 
-		String email_list = params.get("email_list")
+		String email_list = Configurator.get("email_list")
 
 		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
 		def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
@@ -522,8 +517,8 @@ class Runner extends Executor {
 	protected String getSubProjectFolder(params) {
 		//specify current dir as subProject folder by default
 		def subProjectFolder = "."
-		if (!isParamEmpty(params.get("sub_project"))) {
-			subProjectFolder = "./" + params.get("sub_project")
+		if (!isParamEmpty(Configurator.get("sub_project"))) {
+			subProjectFolder = "./" + Configurator.get("sub_project")
 		}
 		return subProjectFolder
 	}
@@ -649,18 +644,18 @@ class Runner extends Executor {
 
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
-		def currentEnv = jobParams.get("env")
+		def currentEnv = Configurator.get("env")
 		def pipelineJobName = Configurator.get("JOB_BASE_NAME")
 
 		// override suite email_list from params if defined
 		def emailList = currentSuite.getParameter("jenkinsEmail").toString()
-		def paramEmailList = jobParams.get("email_list")
+		def paramEmailList = Configurator.get("email_list")
 		if (!paramEmailList.isEmpty()) {
 			emailList = paramEmailList
 		}
 		
 		def priorityNum = "5"
-		def curPriorityNum = jobParams.get("priority")
+		def curPriorityNum = Configurator.get("priority")
 		if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
@@ -669,7 +664,7 @@ class Runner extends Executor {
 		def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
-		def currentBrowser = jobParams.get("browser")
+		def currentBrowser = Configurator.get("browser")
 		if (currentBrowser == null) {
 			currentBrowser = "null"
 		}
@@ -708,17 +703,17 @@ class Runner extends Executor {
 
 						def pipelineMap = [:]
 
-						def branch = jobParams.get("branch")
-						def ci_parent_url = jobParams.get("ci_parent_url")
+						def branch = Configurator.get("branch")
+						def ci_parent_url = Configurator.get("ci_parent_url")
 						if (ci_parent_url.isEmpty()) {
 							ci_parent_url = Configurator.get("JOB_URL")
 						}
-						def ci_parent_build = jobParams.get("ci_parent_build")
+						def ci_parent_build = Configurator.get("ci_parent_build")
 						if (ci_parent_build.isEmpty()) {
 							ci_parent_build = Configurator.get("BUILD_NUMBER")
 						}
-						def retry_count = jobParams.get("retry_count")
-						def thread_count = jobParams.get("thread_count")
+						def retry_count = Configurator.get("retry_count")
+						def thread_count = Configurator.get("thread_count")
 
 						pipelineMap.put("browser", supportedBrowser)
 						pipelineMap.put("name", pipeName)

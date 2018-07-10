@@ -44,7 +44,6 @@ public class Configurator {
         JOB_BASE_NAME("JOB_BASE_NAME", ""),
         BUILD_NUMBER("BUILD_NUMBER", ""),
 
-
         //params
         ZAFIRA_ENABLED("zafira_enabled", "true"),
         BUILD("build", ""),
@@ -87,7 +86,7 @@ public class Configurator {
         CI_RUN_ID("ci_run_id", ""),
         CI_URL("ci_url", ""),
         CI_BUILD("ci_build", ""),
-        CI_BUILD_CAUSE("ci_parent_url", ""),
+        CI_BUILD_CAUSE("ci_build_cause", ""),
         CI_PARENT_URL("ci_parent_url", ""),
         CI_PARENT_BUILD("ci_parent_build", ""),
         CI_USER_ID("ci_user_id", ""),
