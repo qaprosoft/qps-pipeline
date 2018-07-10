@@ -42,7 +42,7 @@ class Runner extends Executor {
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
-			scmClient.clone(jobParams, jobVars)
+			scmClient.clone()
 		
 			def WORKSPACE = this.getWorkspace()
 			context.println("WORKSPACE: " + WORKSPACE)
@@ -112,7 +112,7 @@ class Runner extends Executor {
 					context.timestamps {
 						
 						this.prepare(context.currentBuild, jobParams, jobVars)
-						scmClient.clone(jobParams, jobVars)
+						scmClient.clone()
 
 
 						this.downloadResources(jobParams, jobVars)
