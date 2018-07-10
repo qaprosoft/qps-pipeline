@@ -84,21 +84,24 @@ class Runner extends Executor {
 	}
 
 
-	public void runJob() {
-        jobParams = initParams(context.currentBuild)
-        jobVars = initVars(context.env)
+	public void runJob(jobVars, jobParams) {
+
         uuid = getUUID()
         String nodeName = "master"
+
         String emailList = Configurator.get("email_list")
         String failureEmailList = Configurator.get("failure_email_list")
+        String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
+        String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+        String DEVELOP = Configurator.get(Configurator.Parameter.DEVELOP)
 
         //TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
-				zc = new ZafiraClient(context, Configurator.get("ZAFIRA_SERVICE_URL"), Configurator.get("develop"))
-				def token = zc.getZafiraAuthToken(Configurator.get("ZAFIRA_ACCESS_TOKEN"))
-                zc.queueZafiraTestRun(uuid, jobVars, jobParams)
+				zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, DEVELOP)
+				def token = zc.getZafiraAuthToken(ZAFIRA_ACCESS_TOKEN)
+                zc.queueZafiraTestRun(uuid)
 			} catch (Exception ex) {
 				printStackTrace(ex)
 			}
