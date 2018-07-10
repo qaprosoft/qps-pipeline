@@ -540,13 +540,17 @@ class Runner extends Executor {
 	protected void setJobResults(currentBuild) {
 		//Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
 		//TODO: hardoced path here! Update logic to find it across all sub-folders
-		String checkReport = context.readFile("${ZAFIRA_REPORT_FOLDER}/emailable-report.html")
-
-		if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
-			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
-			currentBuild.result = 'FAILURE'
-		} else if (checkReport.contains("SKIP_ALL:")) {
-			currentBuild.result = 'UNSTABLE'
+		try {
+			String checkReport = context.readFile("${ZAFIRA_REPORT_FOLDER}/emailable-report.html")
+	
+			if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
+				context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
+				currentBuild.result = 'FAILURE'
+			} else if (checkReport.contains("SKIP_ALL:")) {
+				currentBuild.result = 'UNSTABLE'
+			}
+		} catch (Exception e) {
+			e.printStackTrace()
 		}
 	}
 
