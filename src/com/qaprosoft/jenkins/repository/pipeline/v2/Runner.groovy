@@ -117,7 +117,7 @@ class Runner extends Executor {
 
 						this.downloadResources(jobParams, jobVars)
 
-						def timeoutValue = jobVars.get("JOB_MAX_RUN_TIME")
+						def timeoutValue = Configurator.get("JOB_MAX_RUN_TIME")
 						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
 							  this.build(jobParams, jobVars)  
 						}
