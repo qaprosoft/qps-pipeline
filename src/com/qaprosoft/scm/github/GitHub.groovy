@@ -20,7 +20,7 @@ class GitHub implements ISCM {
 			def project = Configurator.get("project")
 
 			def GITHUB_SSH_URL = Configurator.get("GITHUB_SSH_URL")
-			def userId = params.get("BUILD_USER_ID")
+			def userId = Configurator.get("BUILD_USER_ID")
 			//context.println("userId: ${userId}")
 			def GITHUB_HOST = Configurator.get("GITHUB_HOST")
 
@@ -28,11 +28,13 @@ class GitHub implements ISCM {
 			context.println("gitUrl: " + gitUrl)
 			context.println("forked_repo: " + fork)
 			if (!fork) {
+				context.println("I SHOULDN BE HERE")
 				context.checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
 						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
 						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
 						changelog: false, poll: false
 			} else {
+				context.println("I SHOULDN'T BE HERE")
 				def token_name = 'token_' + "${userId}"
 				//context.println("token_name: ${token_name}")
 				def token_value = Configurator.get(token_name)
