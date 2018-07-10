@@ -312,7 +312,6 @@ class Runner extends Executor {
 			def JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
 			def JOB_BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 			def BRANCH = Configurator.get(Configurator.Parameter.BRANCH)
-            def RERUN_FAILURES = Configurator.get(Configurator.Parameter.RERUN_FAILURES)
             def GIT_COMMIT = Configurator.get(Configurator.Parameter.GIT_COMMIT)
             def GIT_URL = Configurator.get(Configurator.Parameter.GIT_URL)
             def BUILD_USER_ID = Configurator.get(Configurator.Parameter.BUILD_USER_ID)
@@ -320,8 +319,13 @@ class Runner extends Executor {
             def BUILD_USER_LAST_NAME = Configurator.get(Configurator.Parameter.BUILD_USER_LAST_NAME)
             def BUILD_USER_EMAIL = Configurator.get(Configurator.Parameter.BUILD_USER_EMAIL)
             def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+            boolean RERUN_FAILURES = Configurator.get(Configurator.Parameter.RERUN_FAILURES).toBoolean()
+            boolean DEBUG = Configurator.get(Configurator.Parameter.DEBUG).toBoolean()
+            boolean JACOCO_ENABLE = Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()
+            boolean ENABLE_VNC = Configurator.get(Configurator.Parameter.ENABLE_VNC).toBoolean()
+            boolean ENABLE_VIDEO = Configurator.get(Configurator.Parameter.ENABLE_VIDEO).toBoolean()
 
-			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
+            //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			params.put("git_branch", BRANCH)
 			params.put("scm_branch", BRANCH)
 
@@ -355,19 +359,19 @@ class Runner extends Executor {
 			params.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
-			if (!Configurator.get("enableVNC").isEmpty()) {
+			if (ENABLE_VNC) {
 				goals += " -Dcapabilities.enableVNC=true "
 			}
 
-			if (!Configurator.get("enableVideo").isEmpty()) {
+			if (ENABLE_VIDEO) {
 				goals += " -Dcapabilities.enableVideo=true "
 			}
 
-			if (Configurator.get("JACOCO_ENABLE").toBoolean()) {
+			if (JACOCO_ENABLE) {
 				goals += " jacoco:instrument "
 			}
 
-			if (!Configurator.get("debug").isEmpty()) {
+			if (DEBUG) {
 				context.echo "Enabling remote debug..."
 				goals += mavenDebug
 			}
