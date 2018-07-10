@@ -67,7 +67,7 @@ public class Configurator {
         DEFAULT_POOL("DefaultPool", ""),
         NODE("node", ""),
         PRIORITY("priority", ""),
-        DEVELOP("develop", ""),
+        DEVELOP("develop", "false"),
         DEBUG("debug", ""),
         RETRY_COUNT("retry_count", ""),
         THREAD_COUNT("thread_count", ""),
