@@ -143,9 +143,7 @@ class Configurator {
         //1. load all Parameter key/values to args
         def enumValues  = Parameter.values()
         for (enumValue in enumValues) {
-            if(!enumValue.getKey().isEmpty()){
-                args.put(enumValue.getKey(), enumValue.getValue())
-            }
+            args.put(enumValue.getKey(), enumValue.getValue())
         }
         for (arg in args) {
             context.println(arg)
@@ -153,9 +151,7 @@ class Configurator {
         //2. load all string keys/values from env
         def envVars = context.env.getEnvironment()
         for (var in envVars) {
-            if(!var.key.isEmpty()){
-                args.put(var.key, var.value)
-            }
+            args.put(var.key, var.value)
         }
         for (arg in args) {
             context.println(arg)
@@ -163,9 +159,7 @@ class Configurator {
         //3. load all string keys/values from params
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
-            if(!param.name.isEmpty()) {
-                args.put(param.name, param.value)
-            }
+            args.put(param.name, param.value)
         }
         for (arg in args) {
             context.println(arg)
