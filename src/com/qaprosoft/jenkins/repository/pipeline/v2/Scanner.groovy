@@ -2,10 +2,9 @@ package com.qaprosoft.jenkins.repository.pipeline.v2
 
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.XmlSuite;
-
 import com.qaprosoft.scm.github.GitHub;
-
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 
 class Scanner extends Executor {
 
@@ -31,7 +30,7 @@ class Scanner extends Executor {
 
 	protected void scan(params, vars) {
 		context.stage("Scan Repository") {
-			def BUILD_NUMBER = vars.get("BUILD_NUMBER")
+			def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
 			def project = params.get("project")
 			def branch = params.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"

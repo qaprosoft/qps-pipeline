@@ -96,8 +96,8 @@ class Runner extends Executor {
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
-				zc = new ZafiraClient(context, jobVars.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
-				def token = zc.getZafiraAuthToken(jobVars.get("ZAFIRA_ACCESS_TOKEN"))
+				zc = new ZafiraClient(context, Configurator.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
+				def token = zc.getZafiraAuthToken(Configurator.get("ZAFIRA_ACCESS_TOKEN"))
                 zc.queueZafiraTestRun(uuid, jobVars, jobParams)
 			} catch (Exception ex) {
 				printStackTrace(ex)
@@ -152,8 +152,8 @@ class Runner extends Executor {
 
         context.stage('Rerun Tests'){
             try {
-                zc = new ZafiraClient(context, jobVars.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
-                def token = zc.getZafiraAuthToken(jobVars.get("ZAFIRA_ACCESS_TOKEN"))
+                zc = new ZafiraClient(context, Configurator.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
+                def token = zc.getZafiraAuthToken(Configurator.get("ZAFIRA_ACCESS_TOKEN"))
                 zc.smartRerun(jobParams)
             } catch (Exception ex) {
                 printStackTrace(ex)
@@ -166,8 +166,8 @@ class Runner extends Executor {
 		
 		jobParams.put("BUILD_USER_ID", getBuildUser())
 		
-		String BUILD_NUMBER = vars.get("BUILD_NUMBER")
-		String CARINA_CORE_VERSION = vars.get("CARINA_CORE_VERSION")
+		String BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
+		String CARINA_CORE_VERSION = Configurator.get("CARINA_CORE_VERSION")
 
 		String suite = params.get("suite")
 		String branch = params.get("branch")
@@ -276,7 +276,7 @@ class Runner extends Executor {
 	protected void downloadResources(params, vars) {
 		//DO NOTHING as of now
 
-/*		def CARINA_CORE_VERSION = vars.get("CARINA_CORE_VERSION")
+/*		def CARINA_CORE_VERSION = Configurator.get("CARINA_CORE_VERSION")
 		context.stage("Download Resources") {
 		def pomFile = getSubProjectFolder(params) + "/pom.xml"
 		context.echo "pomFile: " + pomFile
@@ -299,14 +299,14 @@ class Runner extends Executor {
 
 			def pomFile = getSubProjectFolder(params) + "/pom.xml"
 			
-			def CARINA_CORE_VERSION = vars.get("CARINA_CORE_VERSION")
-			def CORE_LOG_LEVEL = vars.get("CORE_LOG_LEVEL")
-			def SELENIUM_URL = vars.get("SELENIUM_URL")
-			def ZAFIRA_BASE_CONFIG = vars.get("ZAFIRA_BASE_CONFIG")
+			def CARINA_CORE_VERSION = Configurator.get("CARINA_CORE_VERSION")
+			def CORE_LOG_LEVEL = Configurator.get("CORE_LOG_LEVEL")
+			def SELENIUM_URL = Configurator.get("SELENIUM_URL")
+			def ZAFIRA_BASE_CONFIG = Configurator.get("ZAFIRA_BASE_CONFIG")
 			
 			
-			def JOB_URL = vars.get("JOB_URL")
-			def BUILD_NUMBER = vars.get("BUILD_NUMBER")
+			def JOB_URL = Configurator.get("JOB_URL")
+			def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
 
 			def branch = params.get("branch")
 			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
@@ -340,15 +340,15 @@ class Runner extends Executor {
 			params.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo" 
-			if (vars.get("enableVNC")) {
+			if (Configurator.get("enableVNC")) {
 				goals += " -Dcapabilities.enableVNC=true "
 			}
 			
-			if (vars.get("enableVideo")) {
+			if (Configurator.get("enableVideo")) {
 				goals += " -Dcapabilities.enableVideo=true "
 			}
 			
-			if (vars.get("JACOCO_ENABLE").toBoolean()) {
+			if (Configurator.get("JACOCO_ENABLE").toBoolean()) {
 				goals += " jacoco:instrument "
 			}
 			
@@ -429,9 +429,9 @@ class Runner extends Executor {
 		currentBuild.result = 'FAILURE'
 		def failureReason = "undefined failure"
 		
-		String JOB_URL = vars.get("JOB_URL")
-		String BUILD_NUMBER = vars.get("BUILD_NUMBER")
-		String JOB_NAME = vars.get("JOB_NAME")
+		String JOB_URL = Configurator.get("JOB_URL")
+		String BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
+		String JOB_NAME = Configurator.get("JOB_NAME")
 		
 		String email_list = params.get("email_list")
 
@@ -516,15 +516,15 @@ class Runner extends Executor {
 
 	//TODO: move into valid jacoco related package
 	protected void publishJacocoReport(vars) {
-		def JACOCO_ENABLE = vars.get("JACOCO_ENABLE").toBoolean()
+		def JACOCO_ENABLE = Configurator.get("JACOCO_ENABLE").toBoolean()
 		if (!JACOCO_ENABLE) {
 			context.println("do not publish any content to AWS S3 if integration is disabled")
 			return
 		}
 		
-		def JACOCO_BUCKET = vars.get("JACOCO_BUCKET")
-		def JOB_NAME = vars.get("JOB_NAME")
-		def BUILD_NUMBER = vars.get("BUILD_NUMBER")
+		def JACOCO_BUCKET = Configurator.get("JACOCO_BUCKET")
+		def JOB_NAME = Configurator.get("JOB_NAME")
+		def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
 
 		def files = context.findFiles(glob: '**/jacoco.exec')
 		if(files.length == 1) {
@@ -636,7 +636,7 @@ class Runner extends Executor {
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
 		def currentEnv = jobParams.get("env")
-		def pipelineJobName = jobVars.get("JOB_BASE_NAME")
+		def pipelineJobName = Configurator.get("JOB_BASE_NAME")
 
 		// override suite email_list from params if defined
 		def emailList = currentSuite.getParameter("jenkinsEmail").toString()
@@ -697,11 +697,11 @@ class Runner extends Executor {
 						def branch = jobParams.get("branch")
 						def ci_parent_url = jobParams.get("ci_parent_url")
 						if (ci_parent_url.isEmpty()) {
-							ci_parent_url = jobVars.get("JOB_URL")
+							ci_parent_url = Configurator.get("JOB_URL")
 						}
 						def ci_parent_build = jobParams.get("ci_parent_build")
 						if (ci_parent_build.isEmpty()) {
-							ci_parent_build = jobVars.get("BUILD_NUMBER")
+							ci_parent_build = Configurator.get("BUILD_NUMBER")
 						}
 						def retry_count = jobParams.get("retry_count")
 						def thread_count = jobParams.get("thread_count")
@@ -800,7 +800,7 @@ class Runner extends Executor {
 			//context.println("Checking EmailList: " + entry.get("emailList"))
 			
 			def email_list = entry.get("email_list")
-			def ADMIN_EMAILS = jobVars.get("email_list")
+			def ADMIN_EMAILS = Configurator.get("email_list")
 
 			//context.println("propagate: " + propagateJob)
 			try {
