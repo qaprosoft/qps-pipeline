@@ -8,7 +8,7 @@ import com.qaprosoft.zafira.ZafiraClient
 
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
-import static com.qaprosoft.jenkins.repository.pipeline.v2.Configurator.Parameter.*
+import static com.qaprosoft.jenkins.repository.pipeline.v2.Configurator.Parameter
 
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 
