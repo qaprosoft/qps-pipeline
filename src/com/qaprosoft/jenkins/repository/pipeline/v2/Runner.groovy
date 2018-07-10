@@ -96,7 +96,7 @@ class Runner extends Executor {
 
         String emailList = Configurator.get("email_list")
         String failureEmailList = Configurator.get("failure_email_list")
-        String ZAFIRA_SERVICE_URL = Configurator.get(ZAFIRA_SERVICE_URL)
+        String ZAFIRA_SERVICE_URL = Configurator.get(Parameter.ZAFIRA_SERVICE_URL)
         String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
         boolean DEVELOP = Configurator.get(Configurator.Parameter.DEVELOP).toBoolean()
 
