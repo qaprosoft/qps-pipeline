@@ -20,7 +20,7 @@ class Scanner extends Executor {
 		
 		context.node('master') {
 			context.timestamps {
-				scmClient.clone(jobParams, jobVars)
+				scmClient.clone()
 				this.scan(jobParams, jobVars)
 				this.clean()
 			}
