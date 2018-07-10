@@ -143,7 +143,9 @@ class Configurator {
         //1. load all Parameter key/values to args
         def enumValues  = Parameter.values()
         for (enumValue in enumValues) {
-            args.put(enumValue.getKey(), enumValue.getValue())
+            if(!enumValue.getKey().isEmpty()){
+                args.put(enumValue.getKey(), enumValue.getValue())
+            }
         }
         for (arg in args) {
             context.println(arg)
