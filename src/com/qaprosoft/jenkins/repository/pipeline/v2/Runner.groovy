@@ -8,7 +8,6 @@ import com.qaprosoft.zafira.ZafiraClient
 
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
-import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator.Parameter
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 
 class Runner extends Executor {
@@ -315,11 +314,11 @@ class Runner extends Executor {
             def rerun_failures = params.get("rerun_failures")
             def GIT_COMMIT = params.get("GIT_COMMIT")
             def repository = params.get("git_url")
-            def BUILD_USER_ID = Configurator.get(Parameter.BUILD_USER_ID)
-            def BUILD_USER_FIRST_NAME = Configurator.get(Parameter.BUILD_USER_FIRST_NAME)
-            def BUILD_USER_LAST_NAME = Configurator.get(Parameter.BUILD_USER_LAST_NAME)
-            def BUILD_USER_EMAIL = Configurator.get(Parameter.BUILD_USER_EMAIL)
-            def ZAFIRA_ACCESS_TOKEN = Configurator.get(Parameter.ZAFIRA_ACCESS_TOKEN)
+            def BUILD_USER_ID = Configurator.get(Configurator.Parameter.BUILD_USER_ID)
+            def BUILD_USER_FIRST_NAME = Configurator.get(Configurator.Parameter.BUILD_USER_FIRST_NAME)
+            def BUILD_USER_LAST_NAME = Configurator.get(Configurator.Parameter.BUILD_USER_LAST_NAME)
+            def BUILD_USER_EMAIL = Configurator.get(Configurator.Parameter.BUILD_USER_EMAIL)
+            def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 
 			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			params.put("git_branch", branch)

@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.repository.pipeline.v2
 import com.cloudbees.groovy.cps.NonCPS
 import java.util.List
 
-class Configurator {
+public class Configurator {
 
     private def context
 
