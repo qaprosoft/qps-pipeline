@@ -96,8 +96,8 @@ class Configurator {
         HASHCODE("hashcode", ""),
         DO_REBUILD("doRebuild", ""),
 
-        ZAFIRA_BASE_CONFIG("ZAFIRA_BASE_CONFIG", "-Dzafira_enabled=true -Dzafira_rerun_failures=" + RERUN_FAILURES.value + "-Dzafira_service_url=" + ZAFIRA_SERVICE_URL.value +
-                " -Dgit_branch=" + BRANCH.value + "-Dgit_commit=" + GIT_COMMIT.value + "-Dgit_url=" + GIT_URL.value + "-Dci_user_id=" + BUILD_USER_ID.value + "-Dci_user_first_name=" + BUILD_USER_FIRST_NAME.value +
+        ZAFIRA_BASE_CONFIG("ZAFIRA_BASE_CONFIG", "-Dzafira_enabled=true -Dzafira_rerun_failures=" + RERUN_FAILURES.value + " -Dzafira_service_url=" + ZAFIRA_SERVICE_URL.value +
+                " -Dgit_branch=" + BRANCH.value + " -Dgit_commit=" + GIT_COMMIT.value + " -Dgit_url=" + GIT_URL.value + " -Dci_user_id=" + BUILD_USER_ID.value + " -Dci_user_first_name=" + BUILD_USER_FIRST_NAME.value +
                 " -Dci_user_last_name=" + BUILD_USER_LAST_NAME.value +" -Dci_user_email=" + BUILD_USER_EMAIL.value + " -Dzafira_access_token=" + ZAFIRA_ACCESS_TOKEN.value),
 
         private final String key;
