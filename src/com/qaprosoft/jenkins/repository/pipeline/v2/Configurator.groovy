@@ -21,7 +21,7 @@ class Configurator {
         ADMIN_EMAILS("ADMIN_EMAILS", "qps-auto@qaprosoft.com"),
         CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.105"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
-        GITHUB_API_URL("GITHUB_API_URL", "https://api.$GITHUB_HOST/"),
+        GITHUB_API_URL("GITHUB_API_URL", "https://api." + GITHUB_HOST.value + "/"),
         GITHUB_HOST("GITHUB_HOST", "github.com"),
         GITHUB_HTML_URL("GITHUB_HTML_URL", 'https://$GITHUB_HOST/$GITHUB_ORGANIZATION'),
         GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", "CHANGE_ME"),
