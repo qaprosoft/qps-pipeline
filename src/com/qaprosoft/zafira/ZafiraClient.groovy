@@ -2,6 +2,7 @@ package com.qaprosoft.zafira
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 
 class ZafiraClient {
 	private String serviceURL;
@@ -54,8 +55,8 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return
 		}
-		String jobName = jobVars.get("JOB_BASE_NAME")
-		String buildNumber = jobVars.get("BUILD_NUMBER")
+		String jobName = Configurator.get("JOB_BASE_NAME")
+		String buildNumber = Configurator.get("BUILD_NUMBER")
 
 		String branch = jobParams.get("branch")
 		String _env = jobParams.get("env")
