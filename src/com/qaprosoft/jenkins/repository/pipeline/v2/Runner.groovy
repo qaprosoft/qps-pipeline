@@ -8,6 +8,8 @@ import com.qaprosoft.zafira.ZafiraClient
 
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
+import static com.qaprosoft.jenkins.repository.pipeline.v2.Configurator.Parameter.*
+
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 
 class Runner extends Executor {
@@ -319,6 +321,7 @@ class Runner extends Executor {
             def BUILD_USER_LAST_NAME = Configurator.get(Configurator.Parameter.BUILD_USER_LAST_NAME)
             def BUILD_USER_EMAIL = Configurator.get(Configurator.Parameter.BUILD_USER_EMAIL)
             def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+
             boolean RERUN_FAILURES = Configurator.get(Configurator.Parameter.RERUN_FAILURES).toBoolean()
             boolean DEBUG = Configurator.get(Configurator.Parameter.DEBUG).toBoolean()
             boolean JACOCO_ENABLE = Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()
