@@ -46,7 +46,7 @@ class Configurator {
 
 
         //params
-        ZAFIRA_ENABLED("zafira_enabled", ""),
+        ZAFIRA_ENABLED("zafira_enabled", "true"),
         BUILD("build", ""),
         BUILD_USER_ID("BUILD_USER_ID", ""),
         BUILD_USER_FIRST_NAME("BUILD_USER_FIRST_NAME", ""),
