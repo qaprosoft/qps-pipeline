@@ -666,7 +666,7 @@ class Runner extends Executor {
 		
 		def currentBrowser = Configurator.get("browser")
 		if (currentBrowser == null || currentBrowser.isEmpty()) {
-			currentBrowser = "null"
+			currentBrowser = "NULL"
 		}
 		logLine += "	currentBrowser: ${currentBrowser};\n"
 		context.println(logLine)
@@ -694,7 +694,7 @@ class Runner extends Executor {
 						// currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
 
 						//context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
-						if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("null")) {
+						if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
 							//context.println("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
 							continue;
 						}
