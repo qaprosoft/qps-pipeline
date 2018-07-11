@@ -16,19 +16,17 @@ class Scanner extends Executor {
 
 	public void scanRepository() {
 		jobParams = initParams(context.currentBuild)
-		jobVars = initVars(context.env)
-		
 		context.node('master') {
 			context.timestamps {
 				scmClient.clone(jobParams)
-				this.scan(jobParams, jobVars)
+				this.scan(jobParams)
 				this.clean()
 			}
 		}
 	}
 
 
-	protected void scan(params, vars) {
+	protected void scan(params) {
 		context.stage("Scan Repository") {
 			def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
 			def project = params.get("project")
