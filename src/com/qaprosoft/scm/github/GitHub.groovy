@@ -12,58 +12,59 @@ class GitHub implements ISCM {
 	
 	public void clone(params) {
 		context.stage('Checkout GitHub Repository') {
-
 			context.println("GitHub->clone")
 
 
-			def fork = Configurator.get("fork")
-            if (fork != null && !fork.isEmpty()) {
-                fork = fork.toBoolean()
-            } else {
-                fork = false
-            }
+			def fork = parseFork(Configurator.get("fork"))
             def branch = Configurator.get("branch")
-			def PROJECT = Configurator.get("project")
-            def USER_ID = Configurator.get("BUILD_USER_ID")
+			def project = Configurator.get("project")
+            def userId = Configurator.get("BUILD_USER_ID")
 			def GITHUB_SSH_URL = Configurator.get(Configurator.Parameter.GITHUB_SSH_URL)
 			def GITHUB_HOST = Configurator.get(Configurator.Parameter.GITHUB_HOST)
 
-			def GIT_URL = "${GITHUB_SSH_URL}/${PROJECT}"
+			def gitUrl = "${GITHUB_SSH_URL}/${project}"
 
-			context.println("GIT_URL: " + GIT_URL)
+			context.println("GIT_URL: " + gitUrl)
 			context.println("forked_repo: " + fork)
 			if (!fork) {
 				context.checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
 						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
-						submoduleCfg: [], userRemoteConfigs: [[url: GIT_URL]]], \
+						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
 						changelog: false, poll: false
 			} else {
-				def token_name = 'token_' + "${USER_ID}"
+				def token_name = 'token_' + "${userId}"
 				//context.println("token_name: ${token_name}")
 				def token_value = Configurator.get(token_name)
 				//context.println("token_value: ${token_value}")
 				//if token_value contains ":" as delimiter then redefine build_user_id using the 1st part
 				if (token_value != null && token_value.contains(":")) {
 					def (tempUserId, tempToken) = token_value.tokenize( ':' )
-					USER_ID = tempUserId
+					userId = tempUserId
 					token_value =  tempToken
 				}
 				if (token_value != null) {
-					GIT_URL = "https://${token_value}@${GITHUB_HOST}/${USER_ID}/${PROJECT}"
-					context.println "fork repo url: ${GIT_URL}"
+					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
+					context.println "fork repo url: ${gitUrl}"
 					context.checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
 							doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
-							submoduleCfg: [], userRemoteConfigs: [[url: GIT_URL]]], \
+							submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
 							changelog: false, poll: false
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
 				}
 			}
 			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
-			Configurator.set("git_url", GIT_URL)
-			Configurator.set("scm_url", GIT_URL)
+			Configurator.set("git_url", gitUrl)
+			Configurator.set("scm_url", gitUrl)
 			//TODO: init git_commit as well
 		}
 	}
-	
+
+    private boolean parseFork(fork) {
+        boolean booleanFork = false
+        if (fork != null && !fork.isEmpty()) {
+            booleanFork = fork.toBoolean()
+        }
+        return booleanFork
+    }
 }
