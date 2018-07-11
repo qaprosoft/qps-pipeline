@@ -17,9 +17,6 @@ public abstract class Executor {
 	//list of job parameters as a map
 	protected def jobParams = [:]
 
-	//list of job variables as a map
-	protected def jobVars = [:]
-
 	protected ISCM scmClient
 
 	protected Configurator configurator = new Configurator(context)
@@ -43,22 +40,6 @@ public abstract class Executor {
 		context.echo "goals: ${goals}"
 	
 		return params
-	}
-	
-	protected def initVars(env) {
-		// read all job params and put them into the map
-		def vars = [:]
-
-		def envvars = env.getEnvironment()
-		envvars.each{ k, v ->
-			vars.put(k, v)
-		}
-
-		def variables = ""
-		vars.each { k, v -> variables = variables + " -D${k}=${v}"}
-		context.echo "variables: ${variables}"
-
-		return vars
 	}
 	
 	protected clean() {
