@@ -368,7 +368,7 @@ class Runner extends Executor {
 				goals += " jacoco:instrument "
 			}
 
-			if (Configurator.get("debug")) {
+			if (Configurator.get("debug").toBoolean()) {
 				context.echo "Enabling remote debug..."
 				goals += mavenDebug
 			}
