@@ -343,10 +343,11 @@ class Runner extends Executor {
 
 			def goals = DEFAULT_BASE_MAVEN_GOALS
 			//register all env variables
-            Configurator.getVars.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+
+            Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//register all params after vars to be able to override
-            Configurator.getParams.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+            Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
 			if (Configurator.get("enableVNC") && Configurator.get("enableVNC").toBoolean()) {
