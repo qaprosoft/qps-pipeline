@@ -67,7 +67,6 @@ public abstract class Executor {
 		}
 	}
 	
-	
 	protected void printStackTrace(Exception ex) {
 		context.println("exception: " + ex.getMessage())
 		context.println("exception class: " + ex.getClass().getName())

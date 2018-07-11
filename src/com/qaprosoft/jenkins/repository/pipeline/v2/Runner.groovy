@@ -69,7 +69,7 @@ class Runner extends Executor {
 				if(files.length > 0) {
 					context.println("Number of Test Suites to Scan Through: " + files.length)
 					for (int i = 0; i < files.length; i++) {
-						this.parsePipeline(jobVars, jobParams, WORKSPACE + "/" + files[i].path)
+						this.parsePipeline(jobParams, WORKSPACE + "/" + files[i].path)
 					}
 
 					listPipelines = sortPipelineList(listPipelines)
@@ -113,24 +113,24 @@ class Runner extends Executor {
 				try {
 					context.timestamps {
 
-						this.prepare(context.currentBuild, jobParams, jobVars)
+						this.prepare(context.currentBuild, jobParams)
 						scmClient.clone(jobParams, jobVars)
 
 
-						this.downloadResources(jobParams, jobVars)
+						this.downloadResources(jobParams)
 
 						def timeoutValue = Configurator.get(Configurator.Parameter.JOB_MAX_RUN_TIME)
 						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
-							  this.build(jobParams, jobVars)  
+							  this.build(jobParams)
 						}
 
 						//TODO: think about seperate stage for uploading jacoco reports
-						this.publishJacocoReport(jobVars);
+						this.publishJacocoReport()
 					}
 					
 				} catch (Exception ex) {
 					printStackTrace(ex)
-					String failureReason = getFailure(context.currentBuild, jobParams, jobVars)
+					String failureReason = getFailure(context.currentBuild, jobParams)
 					context.echo "failureReason: ${failureReason}"
 					//explicitly execute abort to resolve anomalies with in_progress tests...
 					zc.abortZafiraTestRun(uuid, failureReason)
@@ -165,7 +165,7 @@ class Runner extends Executor {
     }
 
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
-	protected void prepare(currentBuild, params, vars) {
+	protected void prepare(currentBuild, params) {
 
         Configurator.set("BUILD_USER_ID", getBuildUser())
 		
@@ -279,7 +279,7 @@ class Runner extends Executor {
 		//do nothing here
 	}
 
-	protected void downloadResources(params, vars) {
+	protected void downloadResources(params) {
 		//DO NOTHING as of now
 
 /*		def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
@@ -300,7 +300,7 @@ class Runner extends Executor {
 		context.echo "Do nothing in default implementation"
 	}
 
-	protected void build(params, vars) {
+	protected void build(params) {
 		context.stage('Run Test Suite') {
 
 			def POM_FILE = getSubProjectFolder(params) + "/pom.xml"
@@ -440,7 +440,7 @@ class Runner extends Executor {
 	}
 
 	//TODO: investigate howto transfer jobVars
-	protected String getFailure(currentBuild, params, vars) {
+	protected String getFailure(currentBuild, params) {
 		//TODO: move string constants into object/enum if possible
 		currentBuild.result = 'FAILURE'
 		def failureReason = "undefined failure"
@@ -531,7 +531,7 @@ class Runner extends Executor {
 	}
 
 	//TODO: move into valid jacoco related package
-	protected void publishJacocoReport(vars) {
+	protected void publishJacocoReport() {
 		def JACOCO_ENABLE = Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()
 		if (!JACOCO_ENABLE) {
 			context.println("do not publish any content to AWS S3 if integration is disabled")
@@ -636,7 +636,7 @@ class Runner extends Executor {
 		
 	}
 
-	protected void parsePipeline(jobVars, jobParams, String filePath) {
+	protected void parsePipeline(jobParams, String filePath) {
 		//context.println("filePath: " + filePath)
 		XmlSuite currentSuite = parseSuite(filePath)
 		
