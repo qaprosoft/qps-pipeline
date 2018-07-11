@@ -676,7 +676,7 @@ class Runner extends Executor {
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
 		def currentBrowser = Configurator.get(Configurator.Parameter.BROWSER)
-		if (currentBrowser == null) {
+		if (currentBrowser == null || currentBrowser.isEmpty()) {
 			currentBrowser = "null"
 		}
 		logLine += "	currentBrowser: ${currentBrowser};\n"
