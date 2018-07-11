@@ -10,7 +10,7 @@ class GitHub implements ISCM {
 		this.context = context
 	}
 	
-	public void clone(params, vars) {
+	public void clone(params) {
 		context.stage('Checkout GitHub Repository') {
 
 			context.println("GitHub->clone")
