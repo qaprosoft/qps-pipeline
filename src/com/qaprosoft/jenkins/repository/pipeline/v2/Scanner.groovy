@@ -24,7 +24,6 @@ class Scanner extends Executor {
 		}
 	}
 
-
 	protected void scan() {
 		context.stage("Scan Repository") {
 			def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")

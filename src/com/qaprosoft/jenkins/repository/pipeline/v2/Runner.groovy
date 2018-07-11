@@ -35,8 +35,6 @@ class Runner extends Executor {
 	}
 	
 	public void runCron() {
-		jobParams = initParams(context.currentBuild)
-
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
@@ -68,7 +66,7 @@ class Runner extends Executor {
 				if(files.length > 0) {
 					context.println("Number of Test Suites to Scan Through: " + files.length)
 					for (int i = 0; i < files.length; i++) {
-						this.parsePipeline(jobParams, WORKSPACE + "/" + files[i].path)
+						this.parsePipeline(WORKSPACE + "/" + files[i].path)
 					}
 
 					listPipelines = sortPipelineList(listPipelines)
@@ -83,7 +81,6 @@ class Runner extends Executor {
 
 
 	public void runJob() {
-        jobParams = initParams(context.currentBuild)
         uuid = getUUID()
         String nodeName = "master"
         String emailList = Configurator.get("email_list")
@@ -102,8 +99,7 @@ class Runner extends Executor {
 			} catch (Exception ex) {
 				printStackTrace(ex)
 			}
-
-			nodeName = chooseNode(jobParams)
+			nodeName = chooseNode()
 		}
 
 		context.node(nodeName) {
@@ -111,14 +107,14 @@ class Runner extends Executor {
 				try {
 					context.timestamps {
 
-						this.prepare(context.currentBuild, jobParams)
+						this.prepare(context.currentBuild)
 						scmClient.clone()
 
-						this.downloadResources(jobParams)
+						this.downloadResources()
 
 						def timeoutValue = Configurator.get(Configurator.Parameter.JOB_MAX_RUN_TIME)
 						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
-							  this.build(jobParams)
+							  this.build()
 						}
 
 						//TODO: think about seperate stage for uploading jacoco reports
@@ -127,7 +123,7 @@ class Runner extends Executor {
 					
 				} catch (Exception ex) {
 					printStackTrace(ex)
-					String failureReason = getFailure(context.currentBuild, jobParams)
+					String failureReason = getFailure(context.currentBuild)
 					context.echo "failureReason: ${failureReason}"
 					//explicitly execute abort to resolve anomalies with in_progress tests...
 					zc.abortZafiraTestRun(uuid, failureReason)
@@ -162,7 +158,7 @@ class Runner extends Executor {
     }
 
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
-	protected void prepare(currentBuild, params) {
+	protected void prepare(currentBuild) {
 
         Configurator.set("BUILD_USER_ID", getBuildUser())
 		
@@ -183,13 +179,13 @@ class Runner extends Executor {
 			if (!isParamEmpty("${CARINA_CORE_VERSION}")) {
 				currentBuild.displayName += "|" + "${CARINA_CORE_VERSION}"
 			}
-			if (!isParamEmpty(params["device"])) {
+			if (!isParamEmpty(Configurator.get("device"))) {
 				currentBuild.displayName += "|${device}"
 			}
-			if (!isParamEmpty(params["browser"])) {
+			if (!isParamEmpty(Configurator.get("browser"))) {
 				currentBuild.displayName += "|${browser}"
 			}
-			if (!isParamEmpty(params["browser_version"])) {
+			if (!isParamEmpty(Configurator.get("browser_version"))) {
 				currentBuild.displayName += "|${browser_version}"
 			}
 			currentBuild.description = "${suite}"
@@ -197,12 +193,12 @@ class Runner extends Executor {
 			// identify if it is mobile test using "device" param. Don't reuse node as it can be changed based on client needs
 			if (device != null && !device.isEmpty() && !device.equalsIgnoreCase("NULL")) {
 				//this is mobile test
-				this.prepareForMobile(params)
+				this.prepareForMobile()
 			}
 		}
 	}
 
-	protected void prepareForMobile(params) {
+	protected void prepareForMobile() {
 
         //TODO: rename to devicePool
         def device = Configurator.get("DEVICE")
@@ -210,9 +206,9 @@ class Runner extends Executor {
 		def platform = Configurator.get("platform")
 
 		if (platform.equalsIgnoreCase("android")) {
-			prepareForAndroid(params)
+			prepareForAndroid()
 		} else if (platform.equalsIgnoreCase("ios")) {
-			prepareForiOS(params)
+			prepareForiOS()
 		} else {
 			context.echo "Unable to identify mobile platform: ${platform}"
 		}
@@ -228,7 +224,7 @@ class Runner extends Executor {
 		// ATTENTION! Obligatory remove device from the params otherwise
 		// hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
 		// Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
-		params.remove("device")
+        Configurator.remove("device")
 
 		//TODO: move it to the global jenkins variable
 		Configurator.set("capabilities.newCommandTimeout", "180")
@@ -236,7 +232,7 @@ class Runner extends Executor {
 
 	}
 
-	protected void prepareForAndroid(params) {
+	protected void prepareForAndroid() {
 		Configurator.set("mobile_app_clear_cache", "true")
 
 		Configurator.set("capabilities.platformName", "ANDROID")
@@ -248,15 +244,15 @@ class Runner extends Executor {
 		Configurator.set("capabilities.appWaitDuration", "270000")
 		Configurator.set("capabilities.androidInstallTimeout", "270000")
 
-		customPrepareForAndroid(params)
+		customPrepareForAndroid()
 	}
 
-	protected void customPrepareForAndroid(params) {
+	protected void customPrepareForAndroid() {
 		//do nothing here
 	}
 
 
-	protected void prepareForiOS(params) {
+	protected void prepareForiOS() {
 
 		Configurator.set("capabilities.platform", "IOS")
 		Configurator.set("capabilities.platformName", "IOS")
@@ -269,19 +265,19 @@ class Runner extends Executor {
 
 		Configurator.set("capabilities.STF_ENABLED", "false")
 
-		customPrepareForiOS(params)
+		customPrepareForiOS()
 	}
 
-	protected void customPrepareForiOS(params) {
+	protected void customPrepareForiOS() {
 		//do nothing here
 	}
 
-	protected void downloadResources(params) {
+	protected void downloadResources() {
 		//DO NOTHING as of now
 
 /*		def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
 		context.stage("Download Resources") {
-		def pomFile = getSubProjectFolder(params) + "/pom.xml"
+		def pomFile = getSubProjectFolder() + "/pom.xml"
 		context.echo "pomFile: " + pomFile
 			if (context.isUnix()) {
 				context.sh "'mvn' -B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION"
@@ -297,10 +293,10 @@ class Runner extends Executor {
 		context.echo "Do nothing in default implementation"
 	}
 
-	protected void build(params) {
+	protected void build() {
 		context.stage('Run Test Suite') {
 
-			def POM_FILE = getSubProjectFolder(params) + "/pom.xml"
+			def POM_FILE = getSubProjectFolder() + "/pom.xml"
 
 			def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
 			def CORE_LOG_LEVEL = Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)
@@ -391,7 +387,7 @@ class Runner extends Executor {
 		}
 	}
 
-	protected String chooseNode(params) {
+	protected String chooseNode() {
 		def platform = Configurator.get("platform")
 		def browser = Configurator.get("browser")
 
@@ -436,7 +432,7 @@ class Runner extends Executor {
 		return ci_run_id
 	}
 
-	protected String getFailure(currentBuild, params) {
+	protected String getFailure(currentBuild) {
 		//TODO: move string constants into object/enum if possible
 		currentBuild.result = 'FAILURE'
 		def failureReason = "undefined failure"
@@ -517,7 +513,7 @@ class Runner extends Executor {
 		}
 	}
 
-	protected String getSubProjectFolder(params) {
+	protected String getSubProjectFolder() {
 		//specify current dir as subProject folder by default
 		def subProjectFolder = "."
 		if (!isParamEmpty(Configurator.get("sub_project"))) {
@@ -632,7 +628,7 @@ class Runner extends Executor {
 		
 	}
 
-	protected void parsePipeline(jobParams, String filePath) {
+	protected void parsePipeline(String filePath) {
 		//context.println("filePath: " + filePath)
 		XmlSuite currentSuite = parseSuite(filePath)
 		

@@ -95,6 +95,10 @@ public class Configurator {
         return params.put(paramName, value)
     }
 
+    public static void remove(String key) {
+        return params.remove(key)
+    }
+
     @NonCPS
     public void loadContext() {
         //1. load all Parameter key/values to vars
