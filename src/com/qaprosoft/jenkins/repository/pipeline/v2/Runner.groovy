@@ -321,10 +321,6 @@ class Runner extends Executor {
             def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 
             def RERUN_FAILURES = Configurator.get("rerunFailures")
-            boolean DEBUG = Configurator.get("debug").toBoolean()
-            boolean JACOCO_ENABLE = Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()
-            boolean ENABLE_VNC = Configurator.get("enableVNC").toBoolean()
-            boolean ENABLE_VIDEO = Configurator.get("enableVideo").toBoolean()
 
             //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			params.put("git_branch", BRANCH)
@@ -360,19 +356,19 @@ class Runner extends Executor {
 			params.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
-			if (ENABLE_VNC) {
+			if (Configurator.get("enableVNC")) {
 				goals += " -Dcapabilities.enableVNC=true "
 			}
 
-			if (ENABLE_VIDEO) {
+			if (Configurator.get("enableVideo")) {
 				goals += " -Dcapabilities.enableVideo=true "
 			}
 
-			if (JACOCO_ENABLE) {
+			if (Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()) {
 				goals += " jacoco:instrument "
 			}
 
-			if (DEBUG) {
+			if (Configurator.get("debug")) {
 				context.echo "Enabling remote debug..."
 				goals += mavenDebug
 			}
