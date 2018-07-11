@@ -50,7 +50,7 @@ class Scanner extends Executor {
             def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
 				context.println("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
-				ccontext.urrentBuild.result = 'UNSTABLE'
+				context.currentBuild.result = 'UNSTABLE'
 				return
 			}
 
@@ -121,71 +121,75 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
-					
-					if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
-						def suiteName = suite.path
-						suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
+					try{
+						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
 
-						context.println("suite name: " + suiteName)
-						context.println("suite path: " + suite.path)
+						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
+							def suiteName = suite.path
+							suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 
-						if (currentSuite.toXml().contains("suiteOwner")) {
-							suiteOwner = currentSuite.getParameter("suiteOwner")
+							context.println("suite name: " + suiteName)
+							context.println("suite path: " + suite.path)
+
+							if (currentSuite.toXml().contains("suiteOwner")) {
+								suiteOwner = currentSuite.getParameter("suiteOwner")
+							}
+							if (currentSuite.toXml().contains("zafira_project")) {
+								zafira_project = currentSuite.getParameter("zafira_project")
+							}
+
+							if (!views.contains(project.toUpperCase())) {
+								views << project.toUpperCase()
+								context.build job: "Management_Jobs/CreateView",
+									propagate: false,
+									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: project.toUpperCase()), context.string(name: 'descFilter', value: project),]
+							}
+
+							//TODO: review later if we need views by zafira poject name and owner
+							if (!views.contains(zafira_project)) {
+								views << zafira_project
+
+								context.build job: "Management_Jobs/CreateView",
+									propagate: false,
+									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: zafira_project), context.string(name: 'descFilter', value: zafira_project),]
+							}
+
+							if (!views.contains(suiteOwner)) {
+								views << suiteOwner
+
+								context.build job: "Management_Jobs/CreateView",
+									propagate: false,
+									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: suiteOwner), context.string(name: 'descFilter', value: suiteOwner),]
+							}
+
+	                        def createCron = false
+	                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
+	                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
+
+	                            if (!isItemAvailable(jobFolder + "/" + cronName)) {
+	                                createCron = true
+	                            }
+	                            // we need only single regression cron declaration
+	                            //createCron = !crons.contains(cronName)
+	                            crons << cronName
+	                        }
+
+	                        context.build job: "Management_Jobs/CreateJob",
+	                                propagate: false,
+	                                parameters: [
+	                                        context.string(name: 'jobFolder', value: jobFolder),
+	                                        context.string(name: 'project', value: project),
+	                                        context.string(name: 'sub_project', value: sub_project),
+	                                        context.string(name: 'suite', value: suiteName),
+	                                        context.string(name: 'suiteOwner', value: suiteOwner),
+	                                        context.string(name: 'zafira_project', value: zafira_project),
+	                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
+	                                        context.booleanParam(name: 'createCron', value: createCron),
+	                                ], wait: false
+
 						}
-						if (currentSuite.toXml().contains("zafira_project")) {
-							zafira_project = currentSuite.getParameter("zafira_project")
-						}
-						
-						if (!views.contains(project.toUpperCase())) {
-							views << project.toUpperCase()
-							context.build job: "Management_Jobs/CreateView",
-								propagate: false,
-								parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: project.toUpperCase()), context.string(name: 'descFilter', value: project),]
-						}
-
-						//TODO: review later if we need views by zafira poject name and owner
-						if (!views.contains(zafira_project)) {
-							views << zafira_project
-
-							context.build job: "Management_Jobs/CreateView",
-								propagate: false,
-								parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: zafira_project), context.string(name: 'descFilter', value: zafira_project),]
-						}
-
-						if (!views.contains(suiteOwner)) {
-							views << suiteOwner
-
-							context.build job: "Management_Jobs/CreateView",
-								propagate: false,
-								parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: suiteOwner), context.string(name: 'descFilter', value: suiteOwner),]
-						}
-
-                        def createCron = false
-                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
-                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
-
-                            if (!isItemAvailable(jobFolder + "/" + cronName)) {
-                                createCron = true
-                            }
-                            // we need only single regression cron declaration
-                            //createCron = !crons.contains(cronName)
-                            crons << cronName
-                        }
-
-                        context.build job: "Management_Jobs/CreateJob",
-                                propagate: false,
-                                parameters: [
-                                        context.string(name: 'jobFolder', value: jobFolder),
-                                        context.string(name: 'project', value: project),
-                                        context.string(name: 'sub_project', value: sub_project),
-                                        context.string(name: 'suite', value: suiteName),
-                                        context.string(name: 'suiteOwner', value: suiteOwner),
-                                        context.string(name: 'zafira_project', value: zafira_project),
-                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
-                                        context.booleanParam(name: 'createCron', value: createCron),
-                                ], wait: false
-						
+					} catch (FileNotFoundException e) {
+						context.println("Unable to find suite: " + suite.path)
 					}
 				}
 			}
