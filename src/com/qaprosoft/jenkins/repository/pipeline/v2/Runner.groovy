@@ -356,11 +356,11 @@ class Runner extends Executor {
 			params.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
-			if (Configurator.get("enableVNC")) {
+			if (Configurator.get("enableVNC").toBoolean()) {
 				goals += " -Dcapabilities.enableVNC=true "
 			}
 
-			if (Configurator.get("enableVideo")) {
+			if (Configurator.get("enableVideo").toBoolean()) {
 				goals += " -Dcapabilities.enableVideo=true "
 			}
 
