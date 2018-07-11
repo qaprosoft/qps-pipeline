@@ -22,9 +22,10 @@ public abstract class Executor {
 
 	protected ISCM scmClient
 
-	protected Configurator configurator
+	protected Configurator configurator = new Configurator(context)
 
-	public Executor(context) {
+
+    public Executor(context) {
 		this.context = context
 	}
 
