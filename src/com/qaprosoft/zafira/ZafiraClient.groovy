@@ -56,8 +56,8 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return
 		}
-		String jobName = Configurator.get("JOB_BASE_NAME")
-		String buildNumber = Configurator.get("BUILD_NUMBER")
+		String jobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
+		String buildNumber = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 
 		String branch = Configurator.get("branch")
 		String _env = Configurator.get("env")
