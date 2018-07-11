@@ -52,18 +52,18 @@ class ZafiraClient {
 		return this.token
 	}
 
-	public void queueZafiraTestRun(String uuid, jobParams) {
+	public void queueZafiraTestRun(String uuid) {
 		if (!isAvailable) {
 			return
 		}
 		String jobName = Configurator.get("JOB_BASE_NAME")
 		String buildNumber = Configurator.get("BUILD_NUMBER")
 
-		String branch = jobParams.get("branch")
-		String _env = jobParams.get("env")
+		String branch = Configurator.get("branch")
+		String _env = Configurator.get("env")
 
-		String ciParentUrl = jobParams.get("ci_parent_url")
-		String ciParentBuild = jobParams.get("ci_parent_build")
+		String ciParentUrl = Configurator.get("ci_parent_url")
+		String ciParentBuild = Configurator.get("ci_parent_build")
 
         def response = context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
@@ -76,17 +76,17 @@ class ZafiraClient {
         context.println("Queued TestRun: ${formattedJSON}")
     }
 
-	public void smartRerun(jobParams) {
+	public void smartRerun() {
 		if (!isAvailable) {
 			return
 		}
-		String upstreamJobId = jobParams.get("upstream_job_id")
-		String upstreamjobBuildNumber = jobParams.get("upstream_job_build_number")
-		String scmUrl = jobParams.get("scm_url")
-		String ciUserId = jobParams.get("ci_user_id")
-		String hashcode = jobParams.get("hashcode")
-		String doRebuild = jobParams.get("doRebuild")
-		String rerunFailures = jobParams.get("rerunFailures")
+		String upstreamJobId = Configurator.get("upstream_job_id")
+		String upstreamjobBuildNumber = Configurator.get("upstream_job_build_number")
+		String scmUrl = Configurator.get("scm_url")
+		String ciUserId = Configurator.get("ci_user_id")
+		String hashcode = Configurator.get("hashcode")
+		String doRebuild = Configurator.get("doRebuild")
+		String rerunFailures = Configurator.get("rerunFailures")
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization',   \
               value: "${token}"]],   \
