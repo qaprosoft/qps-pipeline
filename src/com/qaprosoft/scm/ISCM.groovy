@@ -1,5 +1,5 @@
 package com.qaprosoft.scm
 
 public interface ISCM {
-	public void clone(params)
+	public void clone()
 }

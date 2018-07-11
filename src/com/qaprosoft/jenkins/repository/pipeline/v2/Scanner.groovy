@@ -10,7 +10,7 @@ class Scanner extends Executor {
 
 	public Scanner(context) {
 		super(context)
-		this.context = context
+		this.context = contextF
 		scmClient = new GitHub(context)
 	}
 
@@ -18,7 +18,7 @@ class Scanner extends Executor {
 		jobParams = initParams(context.currentBuild)
 		context.node('master') {
 			context.timestamps {
-				scmClient.clone(jobParams)
+				scmClient.clone()
 				this.scan(jobParams)
 				this.clean()
 			}

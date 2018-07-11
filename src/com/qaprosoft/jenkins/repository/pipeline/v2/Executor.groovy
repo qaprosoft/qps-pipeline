@@ -54,7 +54,6 @@ public abstract class Executor {
 		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
 	}
 
-
 	protected String getWorkspace() {
 		return context.pwd()
 	}
