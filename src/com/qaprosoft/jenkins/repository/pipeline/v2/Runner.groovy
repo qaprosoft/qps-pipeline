@@ -350,10 +350,10 @@ class Runner extends Executor {
 
 			def goals = DEFAULT_BASE_MAVEN_GOALS
 			//register all env variables
-			vars.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+            Configurator.getVars.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//register all params after vars to be able to override
-			params.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+            Configurator.getParams.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
 			if (Configurator.get("enableVNC") && Configurator.get("enableVNC").toBoolean()) {
@@ -368,7 +368,7 @@ class Runner extends Executor {
 				goals += " jacoco:instrument "
 			}
 
-			if (Configurator.get("debug").toBoolean()) {
+			if (Configurator.get("debug") && Configurator.get("debug").toBoolean()) {
 				context.echo "Enabling remote debug..."
 				goals += mavenDebug
 			}
