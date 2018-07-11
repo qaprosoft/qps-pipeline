@@ -310,7 +310,7 @@ class Runner extends Executor {
 			def SELENIUM_URL = Configurator.get(Configurator.Parameter.SELENIUM_URL)
             def ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
 			def JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
-			def JOB_BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 			def BRANCH = Configurator.get("branch")
             def GIT_COMMIT = Configurator.get("GIT_COMMIT")
             def GIT_URL = Configurator.get("git_url")
@@ -343,7 +343,7 @@ class Runner extends Executor {
 
 			params.put("zafira_enabled", zc.isAvailable())
 			params.put("ci_url", JOB_URL)
-			params.put("ci_build", JOB_BUILD_NUMBER)
+			params.put("ci_build", BUILD_NUMBER)
 
 			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
 
@@ -386,11 +386,11 @@ class Runner extends Executor {
 			if (context.isUnix()) {
 				def suiteNameForUnix = Configurator.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
-				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$JOB_BUILD_NUMBER/${etafReportEncoded}"
+				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
 			} else {
 				def suiteNameForWindows = Configurator.get("suite").replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
-				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$JOB_BUILD_NUMBER/${etafReportEncoded}"
+				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
 			}
 
 			this.setJobResults(context.currentBuild)
@@ -661,7 +661,7 @@ class Runner extends Executor {
 		// override suite email_list from params if defined
 		def emailList = currentSuite.getParameter("jenkinsEmail").toString()
 		def paramEmailList = Configurator.get("email_list")
-		if (!paramEmailList.isEmpty()) {
+		if (paramEmailList != null && !paramEmailList.isEmpty()) {
 			emailList = paramEmailList
 		}
 		
