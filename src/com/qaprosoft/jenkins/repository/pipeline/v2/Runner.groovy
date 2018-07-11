@@ -84,13 +84,10 @@ class Runner extends Executor {
 
 
 	public void runJob() {
-
         jobParams = initParams(context.currentBuild)
         jobVars = initVars(context.env)
-
         uuid = getUUID()
         String nodeName = "master"
-
         String emailList = Configurator.get(Configurator.Parameter.EMAIL_LIST)
         String failureEmailList = Configurator.get(Configurator.Parameter.FAILURE_EMAIL_LIST)
         String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
