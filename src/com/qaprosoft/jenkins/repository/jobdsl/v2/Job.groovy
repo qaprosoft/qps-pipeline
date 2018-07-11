@@ -62,7 +62,7 @@ class Job {
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
-						configure addHiddenParameter('browser', '', 'NULL')
+						//configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter("keep_all_screenshots", '', 'false')
 						configure addHiddenParameter('platform', '', 'API')
 						break;
@@ -104,7 +104,7 @@ class Job {
 					default:
 						booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', false, 'Keep screenshots even if the tests pass')
-						configure addHiddenParameter('browser', '', 'NULL')
+						//configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter('platform', '', '*')
 						break;
 				}
