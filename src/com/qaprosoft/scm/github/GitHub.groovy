@@ -15,7 +15,9 @@ class GitHub implements ISCM {
 
 			context.println("GitHub->clone")
 
-			def fork = Configurator.get("fork")
+
+			asBoolean() fork = Configurator.get("fork").toBoolean()
+
             def branch = Configurator.get("branch")
 			def PROJECT = Configurator.get("project")
             def USER_ID = Configurator.get("BUILD_USER_ID")
