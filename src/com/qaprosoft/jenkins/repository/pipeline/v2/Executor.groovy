@@ -15,7 +15,6 @@ public abstract class Executor {
 	protected def context
 
 	//list of job parameters as a map
-	protected def jobParams = [:]
 
 	protected ISCM scmClient
 
@@ -24,22 +23,6 @@ public abstract class Executor {
 
 	public Executor(context) {
 		this.context = context
-	}
-
-	
-	protected def initParams(currentBuild) {
-		// read all job params and put them into the map
-		def params = [:]
-		def myparams = currentBuild.rawBuild.getAction(ParametersAction)
-		for( p in myparams ) {
-			params.put(p.name.toString(), p.value)
-		}
-		
-		def goals = ""
-		params.each { k, v -> goals = goals + " -D${k}=${v}"}
-		context.echo "goals: ${goals}"
-	
-		return params
 	}
 	
 	protected clean() {
@@ -64,7 +47,6 @@ public abstract class Executor {
 		} catch (Exception e) {
 			return ""
 		}
-		
 	}
 
     @NonCPS
