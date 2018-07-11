@@ -16,6 +16,16 @@ public class Configurator {
     protected static Map params = [:]
     protected static Map vars = [:]
 
+    @NonCPS
+    public static Map getParams() {
+        return params
+    }
+
+    @NonCPS
+    public static Map getVars() {
+        return vars
+    }
+
     public enum Parameter {
 
         //vars
