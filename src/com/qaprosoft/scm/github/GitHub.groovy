@@ -17,6 +17,11 @@ class GitHub implements ISCM {
 
 
 			def fork = Configurator.get("fork")
+            if (fork != null && !fork.isEmpty()) {
+                fork = fork.toBoolean()
+            } else {
+                fork = false
+            }
             def branch = Configurator.get("branch")
 			def PROJECT = Configurator.get("project")
             def USER_ID = Configurator.get("BUILD_USER_ID")
@@ -27,7 +32,7 @@ class GitHub implements ISCM {
 
 			context.println("GIT_URL: " + GIT_URL)
 			context.println("forked_repo: " + fork)
-			if (fork != null && !fork.isEmpty() && !fork.toBoolean()) {
+			if (!fork) {
 				context.checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
 						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
 						submoduleCfg: [], userRemoteConfigs: [[url: GIT_URL]]], \
