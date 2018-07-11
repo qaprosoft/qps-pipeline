@@ -26,7 +26,7 @@ class Scanner extends Executor {
 
 	protected void scan() {
 		context.stage("Scan Repository") {
-			def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
+			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 			def project = Configurator.get("project")
 			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
