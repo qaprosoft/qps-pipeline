@@ -92,7 +92,7 @@ class Runner extends Executor {
         String failureEmailList = Configurator.get("failure_email_list")
         String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
         String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        boolean DEVELOP = convertToBooleanSafe(Configurator.get("develop"))
+        boolean DEVELOP = Configurator.get("develop").toBoolean()
 
         //TODO: remove master node assignment
 		context.node(nodeName) {
@@ -151,7 +151,7 @@ class Runner extends Executor {
 
         String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
         String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        boolean DEVELOP = convertToBooleanSafe(Configurator.get("develop"))
+        boolean DEVELOP = Configurator.get("develop").toBoolean()
 
         context.stage('Rerun Tests'){
             try {
@@ -320,11 +320,11 @@ class Runner extends Executor {
             def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
             def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 
-            boolean RERUN_FAILURES = convertToBooleanSafe(Configurator.get("rerunFailures"))
-            boolean DEBUG = convertToBooleanSafe(Configurator.get("debug"))
-            boolean JACOCO_ENABLE = convertToBooleanSafe(Configurator.get(Configurator.Parameter.JACOCO_ENABLE))
-            boolean ENABLE_VNC = convertToBooleanSafe(Configurator.get("enableVNC"))
-            boolean ENABLE_VIDEO = convertToBooleanSafe(Configurator.get("enableVideo"))
+            boolean RERUN_FAILURES = Configurator.get("rerunFailures").toBoolean()
+            boolean DEBUG = Configurator.get("debug").toBoolean()
+            boolean JACOCO_ENABLE = Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()
+            boolean ENABLE_VNC = Configurator.get("enableVNC").toBoolean()
+            boolean ENABLE_VIDEO = Configurator.get("enableVideo").toBoolean()
 
             //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			params.put("git_branch", BRANCH)
