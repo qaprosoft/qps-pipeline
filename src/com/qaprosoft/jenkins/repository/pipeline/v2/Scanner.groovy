@@ -10,7 +10,7 @@ class Scanner extends Executor {
 
 	public Scanner(context) {
 		super(context)
-		this.context = contextF
+		this.context = context
 		scmClient = new GitHub(context)
 	}
 
