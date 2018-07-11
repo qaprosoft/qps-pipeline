@@ -13,7 +13,8 @@ public class Configurator {
     }
 
     //list of job vars/params as a map
-    protected static Map args = [:]
+    protected static Map params = [:]
+    protected static Map vars = [:]
 
     public enum Parameter {
 
@@ -46,56 +47,6 @@ public class Configurator {
         NGINX_PORT("NGINX_PORT", "80"),
         NGINXT_PROTOCOL("NGINXT_PROTOCOL", "http"),
 
-        //params
-        ZAFIRA_ENABLED("zafira_enabled", "true"),
-        BUILD("build", ""),
-        BUILD_USER_ID("BUILD_USER_ID", ""),
-        BUILD_USER_FIRST_NAME("BUILD_USER_FIRST_NAME", ""),
-        BUILD_USER_LAST_NAME("BUILD_USER_LAST_NAME", ""),
-        BUILD_USER_EMAIL("BUILD_USER_EMAIL", ""),
-        PROJECT("project", ""),
-        SUB_PROJECT("sub_project", ""),
-        ZAFIRA_PROJECT("zafira_project", ""),
-        SUITE("suite", ""),
-        BRANCH("branch", ""),
-        FOLDER("folder", ""),
-        FORK("fork", "false"),
-        PLATFORM("platform", ""),
-        ENV("env", ""),
-        BROWSER("browser", ""),
-        BROWSER_VERSION("browser_version", ""),
-        EMAIL_LIST("email_list", ""),
-        FAILURE_EMAIL_LIST("failure_email_list", ""),
-        DEFAULT_POOL("DefaultPool", ""),
-        NODE("node", ""),
-        PRIORITY("priority", ""),
-        DEVELOP("develop", "false"),
-        DEBUG("debug", "false"),
-        RETRY_COUNT("retry_count", ""),
-        THREAD_COUNT("thread_count", ""),
-        KEEP_ALL_SCREENSHOTS("keep_all_screenshots", ""),
-        AUTO_SCREENSHOT("auto_screenshot", ""),
-        RERUN_FAILURES("rerunFailures", "false"),
-        RECOVERY_MODE("recoveryMode", ""),
-        ENABLE_VNC("enableVNC", "false"),
-        ENABLE_VIDEO("enableVideo", "false"),
-        GIT_BRANCH("git_branch", ""),
-        GIT_URL("git_url", ""),
-        GIT_COMMIT("GIT_COMMIT", ""),
-        SCM_URL("scm_url", ""),
-        JAVA_AWT_HEADLESS("java.awt.headless", ""),
-        CI_RUN_ID("ci_run_id", ""),
-        CI_URL("ci_url", ""),
-        CI_BUILD("ci_build", ""),
-        CI_BUILD_CAUSE("ci_build_cause", ""),
-        CI_PARENT_URL("ci_parent_url", ""),
-        CI_PARENT_BUILD("ci_parent_build", ""),
-        CI_USER_ID("ci_user_id", ""),
-        UPSTREAM_JOB_ID("upstream_job_id", ""),
-        UPSTREAM_JOB_BUILD_NUMBER("upstream_job_build_number", ""),
-        HASHCODE("hashcode", ""),
-        DO_REBUILD("doRebuild", "false")
-
         private final String key;
         private final String value;
 
@@ -118,47 +69,53 @@ public class Configurator {
 
     @NonCPS
     public static String get(Parameter param) {
-        return args.get(param.getKey())
+        return vars.get(param.getKey())
     }
 
     public static void set(Parameter param, String value) {
-        return args.put(param.getKey(), value)
+        return vars.put(param.getKey(), value)
     }
 
     @NonCPS
     public static String get(String paramName) {
-        return args.get(paramName)
+        return params.get(paramName)
     }
 
     public static void set(String paramName, String value) {
-        return args.put(paramName, value)
+        return params.put(paramName, value)
     }
 
     @NonCPS
     public void loadContext() {
-        //1. load all Parameter key/values to args
+        //1. load all Parameter key/values to vars
         def enumValues  = Parameter.values()
         for (enumValue in enumValues) {
-            args.put(enumValue.getKey(), enumValue.getValue())
+            if (!enumValue.getValue().isEmpty()) {
+                vars.put(enumValue.getKey(), enumValue.getValue())
+            }
         }
-        for (arg in args) {
-            context.println(arg)
+        for (var in vars) {
+            context.println(var)
         }
         //2. load all string keys/values from env
         def envVars = context.env.getEnvironment()
         for (var in envVars) {
-            args.put(var.key, var.value)
+            if (var.value != null && !var.value.isEmpty()) {
+                vars.put(var.key, var.value)
+            }
         }
-        for (arg in args) {
-            context.println(arg)
+        for (var in vars) {
+            context.println(var)
         }
         //3. load all string keys/values from params
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
-            args.put(param.name, param.value)
+            if (param.value != null && !param.value.isEmpty()) {
+                params.put(param.name, param.value)
+            }
         }
-        for (arg in args) {
-            context.println(arg)
+        for (param in params) {
+            context.println(param)
         }
         //4. TODO: investigate how private pipeline can override those values
     }
