@@ -15,10 +15,10 @@ class GitHub implements ISCM {
 
 			context.println("GitHub->clone")
 
-			boolean fork = Configurator.get(Configurator.Parameter.FORK).toBoolean()
-            def branch = Configurator.get(Configurator.Parameter.BRANCH)
-			def PROJECT = Configurator.get(Configurator.Parameter.PROJECT)
-            def USER_ID = Configurator.get(Configurator.Parameter.BUILD_USER_ID)
+			boolean fork = Configurator.get("fork").toBoolean()
+            def branch = Configurator.get("branch")
+			def PROJECT = Configurator.get("project")
+            def USER_ID = Configurator.get("BUILD_USER_ID")
 			def GITHUB_SSH_URL = Configurator.get(Configurator.Parameter.GITHUB_SSH_URL)
 			def GITHUB_HOST = Configurator.get(Configurator.Parameter.GITHUB_HOST)
 
