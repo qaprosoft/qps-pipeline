@@ -320,7 +320,7 @@ class Runner extends Executor {
             def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
             def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 
-            def RERUN_FAILURES = Configurator.get("rerunFailures")
+            def RERUN_FAILURES = Configurator.get("rerun_failures")
 
             //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			Configurator.set("git_branch", BRANCH)
