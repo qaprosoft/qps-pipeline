@@ -21,6 +21,7 @@ public class Configurator {
         ADMIN_EMAILS("ADMIN_EMAILS", "qps-auto@qaprosoft.com"),
         CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.105"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
+        ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
         JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
         JACOCO_ENABLE("JACOCO_ENABLE", "false"),
         JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
