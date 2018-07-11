@@ -337,7 +337,7 @@ class Runner extends Executor {
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
-			Configurator.set("zafira_enabled", zc.isAvailable())
+			Configurator.set("zafira_enabled", zc.isAvailable().toString())
 			Configurator.set("ci_url", JOB_URL)
 			Configurator.set("ci_build", BUILD_NUMBER)
 
