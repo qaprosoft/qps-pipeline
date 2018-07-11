@@ -28,7 +28,7 @@ class Creator {
 		def suite = binding.variables.suite
 		def suiteOwner = binding.variables.suiteOwner
 		def zafira_project = binding.variables.zafira_project
-		def createCron = binding.variables.createCron
+		boolean createCron = binding.variables.createCron.toBoolean()
 		def suiteTmpPath = "${workspace}/suite.xml"
 		File file = new File(suiteTmpPath)
 		file.write(binding.variables.suiteXML)

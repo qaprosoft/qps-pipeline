@@ -138,7 +138,12 @@ class Job {
 					retryCount = currentSuite.getParameter("jenkinsDefaultRetryCount").toInteger()
 				}
 				
-				choiceParam('retry_count', [retryCount, 0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
+				if (retryCount != 0) {
+					choiceParam('retry_count', [retryCount, 0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
+				} else {
+					choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
+				}
+				
 				booleanParam('develop', false, 'Check to execute test without registration to Zafira')
 				booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
 				def customFields = getCustomFields(currentSuite)
