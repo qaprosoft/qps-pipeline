@@ -15,29 +15,28 @@ class Scanner extends Executor {
 	}
 
 	public void scanRepository() {
-		jobParams = initParams(context.currentBuild)
 		context.node('master') {
 			context.timestamps {
 				scmClient.clone()
-				this.scan(jobParams)
+				this.scan()
 				this.clean()
 			}
 		}
 	}
 
 
-	protected void scan(params) {
+	protected void scan() {
 		context.stage("Scan Repository") {
 			def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
-			def project = params.get("project")
-			def branch = params.get("branch")
+			def project = Configurator.get("project")
+			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
 			
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
 
-			def jobFolder = params.get("folder")
+			def jobFolder = Configurator.get("folder")
 
             if (!isItemAvailable(jobFolder)){
                 context.build job: "Management_Jobs/CreateFolder",
