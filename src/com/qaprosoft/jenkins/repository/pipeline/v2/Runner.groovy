@@ -320,7 +320,7 @@ class Runner extends Executor {
             def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
             def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 
-            boolean RERUN_FAILURES = Configurator.get("rerunFailures").toBoolean()
+            def RERUN_FAILURES = Configurator.get("rerunFailures")
             boolean DEBUG = Configurator.get("debug").toBoolean()
             boolean JACOCO_ENABLE = Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()
             boolean ENABLE_VNC = Configurator.get("enableVNC").toBoolean()
