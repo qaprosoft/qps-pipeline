@@ -10,10 +10,9 @@ class GitHub implements ISCM {
 		this.context = context
 	}
 	
-	public void clone(params) {
+	public void clone() {
 		context.stage('Checkout GitHub Repository') {
 			context.println("GitHub->clone")
-
 
 			def fork = parseFork(Configurator.get("fork"))
             def branch = Configurator.get("branch")

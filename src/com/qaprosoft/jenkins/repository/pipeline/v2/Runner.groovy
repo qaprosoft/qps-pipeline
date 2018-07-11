@@ -40,7 +40,7 @@ class Runner extends Executor {
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
-			scmClient.clone(jobParams)
+			scmClient.clone()
 
 			def WORKSPACE = this.getWorkspace()
 			context.println("WORKSPACE: " + WORKSPACE)
@@ -112,8 +112,7 @@ class Runner extends Executor {
 					context.timestamps {
 
 						this.prepare(context.currentBuild, jobParams)
-						scmClient.clone(jobParams)
-
+						scmClient.clone()
 
 						this.downloadResources(jobParams)
 
@@ -437,7 +436,6 @@ class Runner extends Executor {
 		return ci_run_id
 	}
 
-	//TODO: investigate howto transfer jobVars
 	protected String getFailure(currentBuild, params) {
 		//TODO: move string constants into object/enum if possible
 		currentBuild.result = 'FAILURE'
