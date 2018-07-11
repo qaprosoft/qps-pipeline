@@ -89,6 +89,14 @@ public abstract class Executor {
 		
 	}
 
+    protected boolean convertToBooleanSafe(String value) {
+        boolean parsedValue = false
+        if(value != null && !value.isEmpty()){
+            parsedValue = value.toBoolean()
+        }
+        return parsedValue
+    }
+
     @NonCPS
 	/* Checks whether the item with provided @name exists on Jenkins
 	**/
