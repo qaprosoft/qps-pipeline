@@ -166,8 +166,8 @@ class Runner extends Executor {
 
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
 	protected void prepare(currentBuild, params, vars) {
-		
-		jobParams.put("BUILD_USER_ID", getBuildUser())
+
+        Configurator.set("BUILD_USER_ID", getBuildUser())
 		
 		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 		String CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
@@ -223,9 +223,9 @@ class Runner extends Executor {
 		//general mobile capabilities
 		if ("DefaultPool".equalsIgnoreCase(device)) {
 			//reuse list of devices from hidden parameter DefaultPool
-			params.put("capabilities.deviceName", defaultPool)
+			Configurator.set("capabilities.deviceName", defaultPool)
 		} else {
-			params.put("capabilities.deviceName", device)
+			Configurator.set("capabilities.deviceName", device)
 		}
 
 		// ATTENTION! Obligatory remove device from the params otherwise
@@ -234,22 +234,22 @@ class Runner extends Executor {
 		params.remove("device")
 
 		//TODO: move it to the global jenkins variable
-		params.put("capabilities.newCommandTimeout", "180")
-		params.put("java.awt.headless", "true")
+		Configurator.set("capabilities.newCommandTimeout", "180")
+		Configurator.set("java.awt.headless", "true")
 
 	}
 
 	protected void prepareForAndroid(params) {
-		params.put("mobile_app_clear_cache", "true")
+		Configurator.set("mobile_app_clear_cache", "true")
 
-		params.put("capabilities.platformName", "ANDROID")
+		Configurator.set("capabilities.platformName", "ANDROID")
 
-		params.put("capabilities.autoGrantPermissions", "true")
-		params.put("capabilities.noSign", "true")
-		params.put("capabilities.STF_ENABLED", "true")
+		Configurator.set("capabilities.autoGrantPermissions", "true")
+		Configurator.set("capabilities.noSign", "true")
+		Configurator.set("capabilities.STF_ENABLED", "true")
 
-		params.put("capabilities.appWaitDuration", "270000")
-		params.put("capabilities.androidInstallTimeout", "270000")
+		Configurator.set("capabilities.appWaitDuration", "270000")
+		Configurator.set("capabilities.androidInstallTimeout", "270000")
 
 		customPrepareForAndroid(params)
 	}
@@ -261,16 +261,16 @@ class Runner extends Executor {
 
 	protected void prepareForiOS(params) {
 
-		params.put("capabilities.platform", "IOS")
-		params.put("capabilities.platformName", "IOS")
-		params.put("capabilities.deviceName", "*")
+		Configurator.set("capabilities.platform", "IOS")
+		Configurator.set("capabilities.platformName", "IOS")
+		Configurator.set("capabilities.deviceName", "*")
 
-		params.put("capabilities.appPackage", "")
-		params.put("capabilities.appActivity", "")
+		Configurator.set("capabilities.appPackage", "")
+		Configurator.set("capabilities.appActivity", "")
 
-		params.put("capabilities.autoAcceptAlerts", "true")
+		Configurator.set("capabilities.autoAcceptAlerts", "true")
 
-		params.put("capabilities.STF_ENABLED", "false")
+		Configurator.set("capabilities.STF_ENABLED", "false")
 
 		customPrepareForiOS(params)
 	}
@@ -323,8 +323,8 @@ class Runner extends Executor {
             def RERUN_FAILURES = Configurator.get("rerunFailures")
 
             //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
-			params.put("git_branch", BRANCH)
-			params.put("scm_branch", BRANCH)
+			Configurator.set("git_branch", BRANCH)
+			Configurator.set("scm_branch", BRANCH)
 
             //TODO: investigate how user timezone can be declared on qps-infra level
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${POM_FILE} \
@@ -337,15 +337,15 @@ class Runner extends Executor {
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
-			params.put("zafira_enabled", zc.isAvailable())
-			params.put("ci_url", JOB_URL)
-			params.put("ci_build", BUILD_NUMBER)
+			Configurator.set("zafira_enabled", zc.isAvailable())
+			Configurator.set("ci_url", JOB_URL)
+			Configurator.set("ci_build", BUILD_NUMBER)
 
 			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
 
 			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
 			if (!Configurator.get("ci_parent_url").isEmpty() && !Configurator.get("ci_parent_build").isEmpty()) {
-				params.put("ci_build_cause", "UPSTREAMTRIGGER")
+				Configurator.set("ci_build_cause", "UPSTREAMTRIGGER")
 			}
 
 			def goals = DEFAULT_BASE_MAVEN_GOALS
@@ -398,31 +398,31 @@ class Runner extends Executor {
 		def platform = Configurator.get("platform")
 		def browser = Configurator.get("browser")
 
-		params.put("node", "master") //master is default node to execute job
+        Configurator.set("node", "master") //master is default node to execute job
 
 		//TODO: handle browserstack etc integration here?
 		switch(platform.toLowerCase()) {
 			case "api":
 				context.println("Suite Type: API")
-				params.put("node", "api")
-				params.put("browser", "NULL")
+				Configurator.set("node", "api")
+				Configurator.set("browser", "NULL")
 				break;
 			case "android":
 				context.println("Suite Type: ANDROID")
-				params.put("node", "android")
+				Configurator.set("node", "android")
 				break;
 			case "ios":
 				//TODO: Need to improve this to be able to handle where emulator vs. physical tests should be run.
 				context.println("Suite Type: iOS")
-				params.put("node", "ios")
+				Configurator.set("node", "ios")
 				break;
 			default:
 				if ("NULL".equals(browser)) {
 					context.println("Suite Type: Default")
-					params.put("node", "master")
+					Configurator.set("node", "master")
 				} else {
 					context.println("Suite Type: Web")
-					params.put("node", "web")
+					Configurator.set("node", "web")
 				}
 		}
 		context.echo "node: " + Configurator.get("node")
