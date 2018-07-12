@@ -337,7 +337,7 @@ class Job {
 		return prepCustomFields
 	}
 	
-	static String listToString(currentSuite, parameterName) {
+	protected String listToString(currentSuite, parameterName) {
 		def list = getGenericSplit(currentSuite, parameterName)
 		def prepList = 'return ['
 
