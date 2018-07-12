@@ -137,7 +137,7 @@ class Runner extends Executor {
                     this.reportingResults()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
                     this.sendTestRunResultsEmail(emailList, failureEmailList)
-                    this.clean()
+                    // this.clean()
                 }
 			}
 		}
@@ -547,7 +547,7 @@ class Runner extends Executor {
 		def filePath = "${ZAFIRA_REPORT_FOLDER}/emailable-report.html"
 		def file = new File(filePath)
 		if (!file.exists()) {
-			context.echo "File doesn’t exist: " + filePath
+			context.echo "File doesn't exist: " + filePath
 			context.echo "Setting build status to FAILURE"
 			currentBuild.result = 'FAILURE'
 			return
