@@ -7,7 +7,7 @@ public class Configurator {
 
     private def context
 	
-	private final String mustOverride = "{must_override}"
+	private final static def mustOverride = "{must_override}"
 
     public Configurator(context) {
         this.context = context
