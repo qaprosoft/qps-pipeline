@@ -55,7 +55,7 @@ class Job {
 						filterable()
 						choiceType("MULTI_SELECT")
 						groovyScript {
-							script(listToString(currentSuite, "jenkinsGroups"))
+							script(this.listToString(currentSuite, "jenkinsGroups"))
 							fallbackScript("return ['error']")
 						}
 					}
