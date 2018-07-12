@@ -189,19 +189,22 @@ class Runner extends Executor {
 				currentBuild.displayName += "|${browser_version}"
 			}
 			currentBuild.description = "${suite}"
-
-			// identify if it is mobile test using "device" param. Don't reuse node as it can be changed based on client needs
-			if (device != null && !device.isEmpty() && !device.equalsIgnoreCase("NULL")) {
+			
+			// identify if it is mobile test using "device" param. Don't reuse node as it can be changed based on client needs 
+			if (isMobile(params)) {
 				//this is mobile test
 				this.prepareForMobile()
 			}
 		}
 	}
 
-	protected void prepareForMobile() {
-
-        //TODO: rename to devicePool
-        def device = Configurator.get("DEVICE")
+	protected boolean isMobile(params) {
+		def platform = params.get("platform")
+		return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
+	}
+	
+	protected void prepareForMobile(params) {
+		def devicePool = Configurator.get("devicePool")
 		def defaultPool = Configurator.get("DefaultPool")
 		def platform = Configurator.get("platform")
 
@@ -213,18 +216,20 @@ class Runner extends Executor {
 			context.echo "Unable to identify mobile platform: ${platform}"
 		}
 
-		//general mobile capabilities
-		if ("DefaultPool".equalsIgnoreCase(device)) {
+		//geeral mobile capabilities
+		//TODO: find valid way for naming this global "MOBILE" quota
+		params.put("capabilities.deviceName", "QPS-HUB")
+		if ("DefaultPool".equalsIgnoreCase(devicePool)) {
 			//reuse list of devices from hidden parameter DefaultPool
-			Configurator.set("capabilities.deviceName", defaultPool)
+			Configurator.set("capabilities.devicePool", defaultPool)
 		} else {
-			Configurator.set("capabilities.deviceName", device)
+			Configurator.set("capabilities.devicePool", devicePool)
 		}
-
+		
 		// ATTENTION! Obligatory remove device from the params otherwise
 		// hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
 		// Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
-        Configurator.remove("device")
+    Configurator.remove("device")
 
 		//TODO: move it to the global jenkins variable
 		Configurator.set("capabilities.newCommandTimeout", "180")
@@ -382,8 +387,6 @@ class Runner extends Executor {
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
 				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
 			}
-
-			this.setJobResults(context.currentBuild)
 
 		}
 	}
@@ -546,20 +549,6 @@ class Runner extends Executor {
 		}
 	}
 	
-	protected void setJobResults(currentBuild) {
-		//Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
-		//TODO: hardoced path here! Update logic to find it across all sub-folders
-		String checkReport = context.readFile("${ZAFIRA_REPORT_FOLDER}/emailable-report.html")
-
-		if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
-			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
-			currentBuild.result = 'FAILURE'
-		} else if (checkReport.contains("SKIP_ALL:")) {
-			currentBuild.result = 'UNSTABLE'
-		}
-	}
-
-	
 	protected void reportingResults() {
 		context.stage('Results') {
 			publishReport('**/reports/qa/emailable-report.html', "${etafReport}")
@@ -577,6 +566,17 @@ class Runner extends Executor {
 		def zafiraReport = zc.exportZafiraReport(uuid)
 		if (!zafiraReport.isEmpty()) {
 			context.writeFile file: "${ZAFIRA_REPORT_FOLDER}/emailable-report.html", text: zafiraReport
+		}
+		
+		//TODO: think about method renaming because in additions it also could redefin job status in Jenkins.
+		// or move below code into another method
+		
+		// set job status based on zafira report
+		if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
+			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
+			context.currentBuild.result = 'FAILURE'
+		} else if (zafiraReport.contains("SKIP_ALL:")) {
+			context.currentBuild.result = 'UNSTABLE'
 		}
 	}
 
