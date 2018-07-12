@@ -544,15 +544,7 @@ class Runner extends Executor {
 	protected void setJobResults(currentBuild) {
 		//Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
 		//TODO: hardoced path here! Update logic to find it across all sub-folders
-		def filePath = "${ZAFIRA_REPORT_FOLDER}/emailable-report.html"
-		def file = new File(filePath)
-		if (!file.exists()) {
-			context.echo "File doesn't exist: " + filePath
-			context.echo "Setting build status to FAILURE"
-			currentBuild.result = 'FAILURE'
-			return
-		}
-		String checkReport = context.readFile(filePath)
+		String checkReport = context.readFile("${ZAFIRA_REPORT_FOLDER}/emailable-report.html")
 
 		if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
 			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
