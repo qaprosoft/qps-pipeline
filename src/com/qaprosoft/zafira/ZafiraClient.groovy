@@ -2,16 +2,18 @@ package com.qaprosoft.zafira
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 
 class ZafiraClient {
-	private String serviceURL;
-	private String token;
-	private def context;
-	private boolean isAvailable;
+
+	private String serviceURL
+	private String token
+	private def context
+	private boolean isAvailable
 
 	public ZafiraClient(context, String url, Boolean developMode) {
-		this.context = context;
-		this.serviceURL = url;
+		this.context = context
+		this.serviceURL = url
 		context.println("zafiraUrl: ${serviceURL}")
 		
 		if (developMode) {
@@ -50,18 +52,18 @@ class ZafiraClient {
 		return this.token
 	}
 
-	public void queueZafiraTestRun(String uuid, jobVars, jobParams) {
+	public void queueZafiraTestRun(String uuid) {
 		if (!isAvailable) {
 			return
 		}
-		String jobName = jobVars.get("JOB_BASE_NAME")
-		String buildNumber = jobVars.get("BUILD_NUMBER")
+		String jobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
+		String buildNumber = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 
-		String branch = jobParams.get("branch")
-		String _env = jobParams.get("env")
+		String branch = Configurator.get("branch")
+		String _env = Configurator.get("env")
 
-		String ciParentUrl = jobParams.get("ci_parent_url")
-		String ciParentBuild = jobParams.get("ci_parent_build")
+		String ciParentUrl = Configurator.get("ci_parent_url")
+		String ciParentBuild = Configurator.get("ci_parent_build")
 
         def response = context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
@@ -74,17 +76,17 @@ class ZafiraClient {
         context.println("Queued TestRun: ${formattedJSON}")
     }
 
-	public void smartRerun(jobParams) {
+	public void smartRerun() {
 		if (!isAvailable) {
 			return
 		}
-		String upstreamJobId = jobParams.get("upstream_job_id")
-		String upstreamjobBuildNumber = jobParams.get("upstream_job_build_number")
-		String scmUrl = jobParams.get("scm_url")
-		String ciUserId = jobParams.get("ci_user_id")
-		String hashcode = jobParams.get("hashcode")
-		String doRebuild = jobParams.get("doRebuild")
-		String rerunFailures = jobParams.get("rerunFailures")
+		String upstreamJobId = Configurator.get("upstream_job_id")
+		String upstreamjobBuildNumber = Configurator.get("upstream_job_build_number")
+		String scmUrl = Configurator.get("scm_url")
+		String ciUserId = Configurator.get("ci_user_id")
+		String hashcode = Configurator.get("hashcode")
+		String doRebuild = Configurator.get("doRebuild")
+		String rerunFailures = Configurator.get("rerunFailures")
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization',   \
               value: "${token}"]],   \
