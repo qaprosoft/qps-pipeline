@@ -71,12 +71,12 @@ class Job {
 
 				def autoScreenshot = true
 				if (currentSuite.getParameter("jenkinsAutoScreenshot") != null) {
-					autoScreenshot = currentSuite.getParameter("jenkinsAutoScreenshot")
+					autoScreenshot = booleanParam(currentSuite.getParameter("jenkinsAutoScreenshot"))
 				}
 				
 				def keepAllScreenshots = true
 				if (currentSuite.getParameter("jenkinsKeepAllScreenshots") != null) {
-					keepAllScreenshots = currentSuite.getParameter("jenkinsKeepAllScreenshots")
+					keepAllScreenshots = booleanParam(currentSuite.getParameter("jenkinsKeepAllScreenshots"))
 				}
 				
 				def jobType = suite
