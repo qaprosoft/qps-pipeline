@@ -62,7 +62,7 @@ class Job {
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
-						configure addHiddenParameter('browser', '', 'NULL')
+						//configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter("keep_all_screenshots", '', 'false')
 						configure addHiddenParameter('platform', '', 'API')
 						break;
@@ -74,7 +74,7 @@ class Job {
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', true, 'Keep screenshots even if the tests pass')
 						booleanParam('enableVNC', true, 'Enable VNC live sessions')
-						booleanParam('enableVideo', true, 'Enable video recording')
+						booleanParam('enableVideo', false, 'Enable video recording')
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
@@ -84,7 +84,7 @@ class Job {
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', true, 'Keep screenshots even if the tests pass')
 						booleanParam('enableVNC', true, 'Enable VNC live sessions')
-						booleanParam('enableVideo', true, 'Enable video recording')
+						booleanParam('enableVideo', false, 'Enable video recording')
 						configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'ANDROID')
@@ -96,7 +96,7 @@ class Job {
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', true, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVideo', true, 'Enable video recording')
+						booleanParam('enableVideo', false, 'Enable video recording')
 						configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'iOS')
@@ -104,7 +104,7 @@ class Job {
 					default:
 						booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', false, 'Keep screenshots even if the tests pass')
-						configure addHiddenParameter('browser', '', 'NULL')
+						//configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter('platform', '', '*')
 						break;
 				}
