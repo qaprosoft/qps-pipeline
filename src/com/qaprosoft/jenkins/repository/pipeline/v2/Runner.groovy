@@ -137,7 +137,7 @@ class Runner extends Executor {
                     this.reportingResults()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
                     this.sendTestRunResultsEmail(emailList, failureEmailList)
-                    // this.clean()
+                    this.clean()
                 }
 			}
 		}
