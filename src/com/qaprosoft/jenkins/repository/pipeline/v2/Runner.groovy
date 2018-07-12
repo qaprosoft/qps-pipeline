@@ -191,15 +191,15 @@ class Runner extends Executor {
 			currentBuild.description = "${suite}"
 			
 			// identify if it is mobile test using "device" param. Don't reuse node as it can be changed based on client needs 
-			if (isMobile(params)) {
+			if (isMobile()) {
 				//this is mobile test
 				this.prepareForMobile()
 			}
 		}
 	}
 
-	protected boolean isMobile(params) {
-		def platform = params.get("platform")
+	protected boolean isMobile() {
+		def platform = Configurator.get("platform")
 		return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
 	}
 	
