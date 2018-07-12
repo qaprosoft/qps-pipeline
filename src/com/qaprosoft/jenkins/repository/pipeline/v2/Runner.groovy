@@ -356,6 +356,11 @@ class Runner extends Executor {
 				goals += mavenDebug
 			}
 			
+			if (params.get("deploy_to_local_repo") != null && params.get("deploy_to_local_repo").equalsIgnoreCase("true")) {
+				context.echo "Enabling deployment of tests jar to local repo."
+				goals += " install"
+			}
+			
 			//append again overrideFields to make sure they are declared at the end
 			goals += params.get("overrideFields")
 			
@@ -539,7 +544,15 @@ class Runner extends Executor {
 	protected void setJobResults(currentBuild) {
 		//Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
 		//TODO: hardoced path here! Update logic to find it across all sub-folders
-		String checkReport = context.readFile("${ZAFIRA_REPORT_FOLDER}/emailable-report.html")
+		def filePath = "${ZAFIRA_REPORT_FOLDER}/emailable-report.html"
+		def file = new File(filePath)
+		if (!file.exists()) {
+			context.echo "File doesn’t exist: " + filePath
+			context.echo "Setting build status to FAILURE"
+			currentBuild.result = 'FAILURE'
+			return
+		}
+		String checkReport = context.readFile(filePath)
 
 		if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
 			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
