@@ -79,6 +79,16 @@ class Job {
 					keepAllScreenshots = currentSuite.getParameter("jenkinsKeepAllScreenshots").toBoolean()
 				}
 				
+				def enableVNC = true
+				if (currentSuite.getParameter("jenkinsEnableVNC") != null) {
+					enableVNC = currentSuite.getParameter("jenkinsEnableVNC").toBoolean()
+				}
+				
+				def enableVideo = true
+				if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
+					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
+				}
+				
 				def jobType = suite
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
@@ -98,8 +108,8 @@ class Job {
 						configure addExtensibleChoice('browser', 'gc_BROWSER', 'Select a browser to run tests against.', 'chrome')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVNC', true, 'Enable VNC live sessions')
-						booleanParam('enableVideo', true, 'Enable video recording')
+						booleanParam('enableVNC', enableVNC, 'Enable VNC live sessions')
+						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
@@ -108,8 +118,8 @@ class Job {
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVNC', true, 'Enable VNC live sessions')
-						booleanParam('enableVideo', true, 'Enable video recording')
+						booleanParam('enableVNC', enableVNC, 'Enable VNC live sessions')
+						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'ANDROID')
@@ -121,7 +131,7 @@ class Job {
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVideo', true, 'Enable video recording')
+						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('browser', '', 'NULL')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'iOS')
