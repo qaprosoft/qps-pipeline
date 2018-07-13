@@ -150,6 +150,8 @@ public class Configurator {
             context.println(param)
         }
         //4. TODO: investigate how private pipeline can override those values
+		
+		vars2.put("qwe", "rty")
     }
 
 }
