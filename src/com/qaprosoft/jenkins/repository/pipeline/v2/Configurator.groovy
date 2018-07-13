@@ -86,6 +86,57 @@ public class Configurator {
         }
 
     }
+	
+	@NonCPS
+	public void loadContext() {
+		//1. load all obligatory Parameter(s) and their default key/values to args. 
+		// any non empty value should be resolved in such order: Parameter, envvars and jobParams 
+		
+		def enumValues  = Parameter.values()
+		def envVars = context.env.getEnvironment()
+		def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
+		
+		for (enumValue in enumValues) {
+			//1. set default values from enum
+			args.put(enumValue.getKey(), enumValue.getValue())
+			
+			if (envVars.get(enumValue.getKey()) != null) {
+				args.put(enumValue.getKey(), envVars.get(enumValue.getKey()))
+			}
+			
+			if (jobParams.get(enumValue.getKey()) != null) {
+				args.put(enumValue.getKey(), jobParams.get(enumValue.getKey()))
+			}
+		}
+		
+		for (var in args) {
+			context.println(var)
+		}
+
+		/*		
+		//2. load all string keys/values from env
+		//def envVars = context.env.getEnvironment()
+		for (var in envVars) {
+			if (var.value != null) {
+				args.put(var.key, var.value)
+			}
+		}
+		for (var in args) {
+			context.println(var)
+		}
+		//3. load all string keys/values from params
+		def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
+		for (param in jobParams) {
+			if (param.value != null) {
+				params.put(param.name, param.value)
+			}
+		}
+		for (param in params) {
+			context.println(param)
+		}
+		*/
+		//4. TODO: investigate how private pipeline can override those values
+	}
 
     @NonCPS
     public static String get(Parameter param) {
@@ -98,50 +149,15 @@ public class Configurator {
 
     @NonCPS
     public static String get(String paramName) {
-        return params.get(paramName)
+        return args.get(paramName)
     }
 
     public static void set(String paramName, String value) {
-        return params.put(paramName, value)
+        return args.put(paramName, value)
     }
 
     public static void remove(String key) {
-        return params.remove(key)
-    }
-
-    @NonCPS
-    public void loadContext() {
-        //1. load all obligatory Parameter(s) and their default key/values to args
-        def enumValues  = Parameter.values()
-		for (enumValue in enumValues) {
-			if (!enumValue.getValue().equals(mustOverride)){
-				args.put(enumValue.getKey(), enumValue.getValue())
-			}
-		}
-		for (var in args) {
-            context.println(var)
-        }
-        //2. load all string keys/values from env
-        def envVars = context.env.getEnvironment()
-        for (var in envVars) {
-            if (var.value != null) {
-                args.put(var.key, var.value)
-            }
-        }
-        for (var in args) {
-            context.println(var)
-        }
-        //3. load all string keys/values from params
-        def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
-        for (param in jobParams) {
-            if (param.value != null) {
-                params.put(param.name, param.value)
-            }
-        }
-        for (param in params) {
-            context.println(param)
-        }
-        //4. TODO: investigate how private pipeline can override those values
+        return args.remove(key)
     }
 
 }
