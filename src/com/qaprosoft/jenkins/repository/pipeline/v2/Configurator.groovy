@@ -18,15 +18,10 @@ public class Configurator {
 	protected static Map args = [:]
 
 
-	protected static def params2
-	protected static def vars2
-	
     public Configurator(context) {
         this.context = context
         this.loadContext()
 		
-		vars2 = context.env.getEnvironment()
-		params2 = context.currentBuild.rawBuild.getAction(ParametersAction)
     }
 
     @NonCPS
@@ -151,7 +146,7 @@ public class Configurator {
         }
         //4. TODO: investigate how private pipeline can override those values
 		
-		vars2.put("qwe", "rty")
+		context.env.getEnvironment().put("qwe", "rty")
     }
 
 }
