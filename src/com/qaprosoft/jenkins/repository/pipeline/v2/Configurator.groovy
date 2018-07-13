@@ -95,7 +95,7 @@ public class Configurator {
 		def enumValues  = Parameter.values()
 		def envVars = context.env.getEnvironment()
 		
-		def params = context.currentBuild.rawBuild.getAction(ParametersAction)
+		params = context.currentBuild.rawBuild.getAction(ParametersAction)
 		
 		for (enumValue in enumValues) {
 			//1. set default values from enum
@@ -114,6 +114,10 @@ public class Configurator {
 			context.println(var)
 		}
 
+		for (param in params) {
+			context.println(param)
+		}
+		
 		/*		
 		//2. load all string keys/values from env
 		//def envVars = context.env.getEnvironment()
