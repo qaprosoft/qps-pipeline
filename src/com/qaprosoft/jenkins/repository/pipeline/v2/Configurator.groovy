@@ -10,7 +10,7 @@ public class Configurator {
 	private final static def mustOverride = "{must_override}"
 
 		//list of job vars/params as a map
-	protected static Map params = [:]
+	protected static def params = [:]
 	//list of required goals params which must present in command line obligatory
 	protected static Map args = [:]
 	
