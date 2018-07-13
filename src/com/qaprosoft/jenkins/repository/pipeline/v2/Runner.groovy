@@ -7,7 +7,7 @@ import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 
 import com.qaprosoft.scm.github.GitHub;
-
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 
 class Runner extends Executor {
@@ -35,20 +35,17 @@ class Runner extends Executor {
 	}
 	
 	public void runCron() {
-		jobParams = initParams(context.currentBuild)
-		jobVars = initVars(context.env)
-
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
-			scmClient.clone(jobParams, jobVars)
-		
+			scmClient.clone()
+
 			def WORKSPACE = this.getWorkspace()
 			context.println("WORKSPACE: " + WORKSPACE)
-			def project = jobParams.get("project")
-			def sub_project = jobParams.get("sub_project")
+			def project = Configurator.get("project")
+			def sub_project = Configurator.get("sub_project")
 			def jenkinsFile = ".jenkinsfile.json"
-			
+
 			if (!context.fileExists("${jenkinsFile}")) {
 				context.println("no .jenkinsfile.json discovered! Scannr will use default qps-pipeline logic for project: ${project}")
 			}
@@ -64,70 +61,69 @@ class Runner extends Executor {
 				if (sub_project.equals(".")) {
 					subProjectFilter = "**"
 				}
-	
+
 				def files = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
 				if(files.length > 0) {
 					context.println("Number of Test Suites to Scan Through: " + files.length)
 					for (int i = 0; i < files.length; i++) {
-						this.parsePipeline(jobVars, jobParams, WORKSPACE + "/" + files[i].path)
+						this.parsePipeline(WORKSPACE + "/" + files[i].path)
 					}
-	
+
 					listPipelines = sortPipelineList(listPipelines)
-	
+
 					this.executeStages(folderName)
 				} else {
 					context.println("No Test Suites Found to Scan...")
 				}
-			}			
-		}		
+			}
+		}
 	}
-	
-	
+
+
 	public void runJob() {
-        jobParams = initParams(context.currentBuild)
-        jobVars = initVars(context.env)
         uuid = getUUID()
         String nodeName = "master"
-        String emailList = jobParams.get("email_list")
-        String failureEmailList = jobParams.get("failure_email_list")
+        String emailList = Configurator.get("email_list")
+        String failureEmailList = Configurator.get("failure_email_list")
+        String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
+        String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+        boolean DEVELOP = Configurator.get("develop").toBoolean()
 
         //TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
-				zc = new ZafiraClient(context, jobVars.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
-				def token = zc.getZafiraAuthToken(jobVars.get("ZAFIRA_ACCESS_TOKEN"))
-                zc.queueZafiraTestRun(uuid, jobVars, jobParams)
+				zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, DEVELOP)
+				def token = zc.getZafiraAuthToken(ZAFIRA_ACCESS_TOKEN)
+                zc.queueZafiraTestRun(uuid)
 			} catch (Exception ex) {
 				printStackTrace(ex)
 			}
-	
-			nodeName = chooseNode(jobParams)
+			nodeName = chooseNode()
 		}
-		
+
 		context.node(nodeName) {
 			context.wrap([$class: 'BuildUser']) {
 				try {
 					context.timestamps {
-						
-						this.prepare(context.currentBuild, jobParams, jobVars)
-						scmClient.clone(jobParams, jobVars)
 
+						this.prepare(context.currentBuild)
+						scmClient.clone()
 
-						this.downloadResources(jobParams, jobVars)
+						this.downloadResources()
 
-						def timeoutValue = jobVars.get("JOB_MAX_RUN_TIME")
+						def timeoutValue = Configurator.get(Configurator.Parameter.JOB_MAX_RUN_TIME)
 						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
-							  this.build(jobParams, jobVars)  
+							  this.build()
 						}
 
 						//TODO: think about seperate stage for uploading jacoco reports
-						this.publishJacocoReport(jobVars);
+						this.publishJacocoReport()
 					}
 					
 				} catch (Exception ex) {
 					printStackTrace(ex)
-					String failureReason = getFailure(context.currentBuild, jobParams, jobVars)
+					String failureReason = getFailure(context.currentBuild)
 					context.echo "failureReason: ${failureReason}"
 					//explicitly execute abort to resolve anomalies with in_progress tests...
 					zc.abortZafiraTestRun(uuid, failureReason)
@@ -146,14 +142,15 @@ class Runner extends Executor {
 
     public void rerunJobs(){
 
-        jobParams = initParams(context.currentBuild)
-        jobVars = initVars(context.env)
+        String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
+        String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+        boolean DEVELOP = Configurator.get("develop").toBoolean()
 
         context.stage('Rerun Tests'){
             try {
-                zc = new ZafiraClient(context, jobVars.get("ZAFIRA_SERVICE_URL"), jobParams.get("develop"))
-                def token = zc.getZafiraAuthToken(jobVars.get("ZAFIRA_ACCESS_TOKEN"))
-                zc.smartRerun(jobParams)
+                zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, DEVELOP)
+                def token = zc.getZafiraAuthToken(ZAFIRA_ACCESS_TOKEN)
+                zc.smartRerun()
             } catch (Exception ex) {
                 printStackTrace(ex)
             }
@@ -161,123 +158,131 @@ class Runner extends Executor {
     }
 
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
-	protected void prepare(currentBuild, params, vars) {
-		
-		jobParams.put("BUILD_USER_ID", getBuildUser())
-		
-		String BUILD_NUMBER = vars.get("BUILD_NUMBER")
-		String CARINA_CORE_VERSION = vars.get("CARINA_CORE_VERSION")
+	protected void prepare(currentBuild) {
 
-		String suite = params.get("suite")
-		String branch = params.get("branch")
-		String _env = params.get("env")
-		String device = params.get("device")
-		String browser = params.get("browser")
+        Configurator.set("BUILD_USER_ID", getBuildUser())
+		
+		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+		String CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
+		String suite = Configurator.get("suite")
+		String branch = Configurator.get("branch")
+		String env = Configurator.get("env")
+        //TODO: rename to devicePool
+		String device = Configurator.get("DEVICE")
+		String browser = Configurator.get("browser")
+
 		//TODO: improve carina to detect browser_version on the fly
-		String browser_version = params.get("browser_version")
+		String browser_version = Configurator.get("browser_version")
 
 		context.stage('Preparation') {
-			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${_env}|${branch}"
+			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${branch}"
 			if (!isParamEmpty("${CARINA_CORE_VERSION}")) {
 				currentBuild.displayName += "|" + "${CARINA_CORE_VERSION}"
 			}
-			if (!isParamEmpty(params["device"])) {
+			if (!isParamEmpty(Configurator.get("device"))) {
 				currentBuild.displayName += "|${device}"
 			}
-			if (!isParamEmpty(params["browser"])) {
+			if (!isParamEmpty(Configurator.get("browser"))) {
 				currentBuild.displayName += "|${browser}"
 			}
-			if (!isParamEmpty(params["browser_version"])) {
+			if (!isParamEmpty(Configurator.get("browser_version"))) {
 				currentBuild.displayName += "|${browser_version}"
 			}
 			currentBuild.description = "${suite}"
 			
 			// identify if it is mobile test using "device" param. Don't reuse node as it can be changed based on client needs 
-			if (device != null && !device.isEmpty() && !device.equalsIgnoreCase("NULL")) {
+			if (isMobile()) {
 				//this is mobile test
-				this.prepareForMobile(params)
+				this.prepareForMobile()
 			}
 		}
 	}
 
+	protected boolean isMobile() {
+		def platform = Configurator.get("platform")
+		return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
+	}
+	
 	protected void prepareForMobile(params) {
-		def device = params.get("device")
-		def defaultPool = params.get("DefaultPool")
-		def platform = params.get("platform")
+		def devicePool = Configurator.get("devicePool")
+		def defaultPool = Configurator.get("DefaultPool")
+		def platform = Configurator.get("platform")
 
 		if (platform.equalsIgnoreCase("android")) {
-			prepareForAndroid(params)
+			prepareForAndroid()
 		} else if (platform.equalsIgnoreCase("ios")) {
-			prepareForiOS(params)
+			prepareForiOS()
 		} else {
 			context.echo "Unable to identify mobile platform: ${platform}"
 		}
 
-		//general mobile capabilities
-		if ("DefaultPool".equalsIgnoreCase(device)) {
+		//geeral mobile capabilities
+		//TODO: find valid way for naming this global "MOBILE" quota
+		params.put("capabilities.deviceName", "QPS-HUB")
+		if ("DefaultPool".equalsIgnoreCase(devicePool)) {
 			//reuse list of devices from hidden parameter DefaultPool
-			params.put("capabilities.deviceName", defaultPool)
+			Configurator.set("capabilities.devicePool", defaultPool)
 		} else {
-			params.put("capabilities.deviceName", device)
+			Configurator.set("capabilities.devicePool", devicePool)
 		}
-
+		
 		// ATTENTION! Obligatory remove device from the params otherwise
 		// hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
 		// Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
-		params.remove("device")
+    Configurator.remove("device")
 
 		//TODO: move it to the global jenkins variable
-		params.put("capabilities.newCommandTimeout", "180")
-		params.put("java.awt.headless", "true")
+		Configurator.set("capabilities.newCommandTimeout", "180")
+		Configurator.set("java.awt.headless", "true")
 
 	}
-	
-	protected void prepareForAndroid(params) {
-		params.put("mobile_app_clear_cache", "true")
 
-		params.put("capabilities.platformName", "ANDROID")
+	protected void prepareForAndroid() {
+		Configurator.set("mobile_app_clear_cache", "true")
 
-		params.put("capabilities.autoGrantPermissions", "true")
-		params.put("capabilities.noSign", "true")
-		params.put("capabilities.STF_ENABLED", "true")
-		
-		params.put("capabilities.appWaitDuration", "270000")
-		params.put("capabilities.androidInstallTimeout", "270000")
-		
-		customPrepareForAndroid(params)
+		Configurator.set("capabilities.platformName", "ANDROID")
+
+		Configurator.set("capabilities.autoGrantPermissions", "true")
+		Configurator.set("capabilities.noSign", "true")
+		Configurator.set("capabilities.STF_ENABLED", "true")
+
+		Configurator.set("capabilities.appWaitDuration", "270000")
+		Configurator.set("capabilities.androidInstallTimeout", "270000")
+
+		customPrepareForAndroid()
 	}
-	
-	protected void customPrepareForAndroid(params) {
+
+	protected void customPrepareForAndroid() {
 		//do nothing here
 	}
-		
 
-	protected void prepareForiOS(params) {
 
-		params.put("capabilities.platform", "IOS")
-		params.put("capabilities.platformName", "IOS")
-		params.put("capabilities.deviceName", "*")
+	protected void prepareForiOS() {
 
-		params.put("capabilities.appPackage", "")
-		params.put("capabilities.appActivity", "")
+		Configurator.set("capabilities.platform", "IOS")
+		Configurator.set("capabilities.platformName", "IOS")
+		Configurator.set("capabilities.deviceName", "*")
 
-		params.put("capabilities.autoAcceptAlerts", "true")
+		Configurator.set("capabilities.appPackage", "")
+		Configurator.set("capabilities.appActivity", "")
 
-		params.put("capabilities.STF_ENABLED", "false")
-		
-		customPrepareForiOS(params)
+		Configurator.set("capabilities.autoAcceptAlerts", "true")
+
+		Configurator.set("capabilities.STF_ENABLED", "false")
+
+		customPrepareForiOS()
 	}
-	
-	protected void customPrepareForiOS(params) {
+
+	protected void customPrepareForiOS() {
 		//do nothing here
 	}
-		
-	protected void downloadResources(params, vars) {
+
+	protected void downloadResources() {
 		//DO NOTHING as of now
 
-/*		def CARINA_CORE_VERSION = vars.get("CARINA_CORE_VERSION")
+/*		def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
 		context.stage("Download Resources") {
-		def pomFile = getSubProjectFolder(params) + "/pom.xml"
+		def pomFile = getSubProjectFolder() + "/pom.xml"
 		context.echo "pomFile: " + pomFile
 			if (context.isUnix()) {
 				context.sh "'mvn' -B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION"
@@ -287,71 +292,82 @@ class Runner extends Executor {
 			}
 		}
 */	}
-	
-	
+
+
 	protected void getResources() {
 		context.echo "Do nothing in default implementation"
 	}
-	
-	protected void build(params, vars) {
+
+	protected void build() {
 		context.stage('Run Test Suite') {
 
-			def pomFile = getSubProjectFolder(params) + "/pom.xml"
-			
-			def CARINA_CORE_VERSION = vars.get("CARINA_CORE_VERSION")
-			def CORE_LOG_LEVEL = vars.get("CORE_LOG_LEVEL")
-			def SELENIUM_URL = vars.get("SELENIUM_URL")
-			def ZAFIRA_BASE_CONFIG = vars.get("ZAFIRA_BASE_CONFIG")
-			
-			
-			def JOB_URL = vars.get("JOB_URL")
-			def BUILD_NUMBER = vars.get("BUILD_NUMBER")
+			def POM_FILE = getSubProjectFolder() + "/pom.xml"
 
-			def branch = params.get("branch")
-			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
-			params.put("git_branch", branch)
-			params.put("scm_branch", branch)
-			
-			//TODO: investigate how user timezone can be declared on qps-infra level
-			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${pomFile} \
+			def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
+			def CORE_LOG_LEVEL = Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)
+			def SELENIUM_URL = Configurator.get(Configurator.Parameter.SELENIUM_URL)
+            def ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
+			def JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
+			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+			def BRANCH = Configurator.get("branch")
+            def GIT_COMMIT = Configurator.get("GIT_COMMIT")
+            def GIT_URL = Configurator.get("git_url")
+            def BUILD_USER_ID = Configurator.get("BUILD_USER_ID")
+            def BUILD_USER_FIRST_NAME = Configurator.get("BUILD_USER_FIRST_NAME")
+            def BUILD_USER_LAST_NAME = Configurator.get("BUILD_USER_LAST_NAME")
+            def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
+            def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+
+            def RERUN_FAILURES = Configurator.get("rerun_failures")
+
+            //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
+			Configurator.set("git_branch", BRANCH)
+			Configurator.set("scm_branch", BRANCH)
+
+            //TODO: investigate how user timezone can be declared on qps-infra level
+			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${POM_FILE} \
 				-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_URL -Dmax_screen_history=1 \
-				-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG clean test" //-Duser.timezone=PST
+				-Dinit_retry_count=0 -Dinit_retry_interval=10 -Dzafira_enabled=true -Dzafira_rerun_failures=$RERUN_FAILURES \
+                -Dzafira_service_url=$ZAFIRA_SERVICE_URL -Dgit_branch=$BRANCH -Dgit_commit=$GIT_COMMIT -Dgit_url=$GIT_URL \
+                -Dci_user_id=$BUILD_USER_ID -Dci_user_first_name=$BUILD_USER_FIRST_NAME -Dci_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL \
+                -Dzafira_access_token=$ZAFIRA_ACCESS_TOKEN clean test" //-Duser.timezone=PST
 
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
-			params.put("zafira_enabled", zc.isAvailable())
-			params.put("ci_url", JOB_URL)
-			params.put("ci_build", BUILD_NUMBER)
+			Configurator.set("zafira_enabled", zc.isAvailable().toString())
+			Configurator.set("ci_url", JOB_URL)
+			Configurator.set("ci_build", BUILD_NUMBER)
 
 			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
-			
+
 			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
-			if (!params.get("ci_parent_url").isEmpty() && !params.get("ci_parent_build").isEmpty()) {
-				params.put("ci_build_cause", "UPSTREAMTRIGGER")
+			if (!Configurator.get("ci_parent_url").isEmpty() && !Configurator.get("ci_parent_build").isEmpty()) {
+				Configurator.set("ci_build_cause", "UPSTREAMTRIGGER")
 			}
-			
+
 			def goals = DEFAULT_BASE_MAVEN_GOALS
 			//register all env variables
-			vars.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
-			
-			//register all params after vars to be able to override
-			params.each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
-			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo" 
-			if (vars.get("enableVNC")) {
+            Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+
+			//register all params after vars to be able to override
+            Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+
+			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
+			if (Configurator.get("enableVNC") && Configurator.get("enableVNC").toBoolean()) {
 				goals += " -Dcapabilities.enableVNC=true "
 			}
-			
-			if (vars.get("enableVideo")) {
+
+			if (Configurator.get("enableVideo") && Configurator.get("enableVideo").toBoolean()) {
 				goals += " -Dcapabilities.enableVideo=true "
 			}
-			
-			if (vars.get("JACOCO_ENABLE").toBoolean()) {
+
+			if (Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()) {
 				goals += " jacoco:instrument "
 			}
-			
-			if (params.get("debug")) {
+
+			if (Configurator.get("debug") && Configurator.get("debug").toBoolean()) {
 				context.echo "Enabling remote debug..."
 				goals += mavenDebug
 			}
@@ -362,63 +378,61 @@ class Runner extends Executor {
 			}
 			
 			//append again overrideFields to make sure they are declared at the end
-			goals += params.get("overrideFields")
-			
+			goals = goals + " " + Configurator.get("overrideFields")
+
 			context.echo "goals: ${goals}"
-			
+
 			//TODO: adjust ZAFIRA_REPORT_FOLDER correclty
 			if (context.isUnix()) {
-				def suiteNameForUnix = params.get("suite").replace("\\", "/")
+				def suiteNameForUnix = Configurator.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
 				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
 			} else {
-				def suiteNameForWindows = "${suite}".replace("/", "\\")
+				def suiteNameForWindows = Configurator.get("suite").replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
 				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
 			}
 
-			this.setJobResults(context.currentBuild)
-
 		}
 	}
-	
-	protected String chooseNode(params) {
-		def platform = params.get("platform")
-		def browser = params.get("browser")
 
-		params.put("node", "master") //master is default node to execute job
+	protected String chooseNode() {
+		def platform = Configurator.get("platform")
+		def browser = Configurator.get("browser")
+
+        Configurator.set("node", "master") //master is default node to execute job
 
 		//TODO: handle browserstack etc integration here?
 		switch(platform.toLowerCase()) {
 			case "api":
 				context.println("Suite Type: API")
-				params.put("node", "api")
-				params.put("browser", "NULL")
+				Configurator.set("node", "api")
+				Configurator.set("browser", "NULL")
 				break;
 			case "android":
 				context.println("Suite Type: ANDROID")
-				params.put("node", "android")
+				Configurator.set("node", "android")
 				break;
 			case "ios":
 				//TODO: Need to improve this to be able to handle where emulator vs. physical tests should be run.
 				context.println("Suite Type: iOS")
-				params.put("node", "ios")
+				Configurator.set("node", "ios")
 				break;
 			default:
 				if ("NULL".equals(browser)) {
 					context.println("Suite Type: Default")
-					params.put("node", "master")
+					Configurator.set("node", "master")
 				} else {
 					context.println("Suite Type: Web")
-					params.put("node", "web")
+					Configurator.set("node", "web")
 				}
 		}
-		context.echo "node: " + params.get("node") 
-		return params.get("node")
+		context.echo "node: " + Configurator.get("node")
+		return Configurator.get("node")
 	}
 
 	protected String getUUID() {
-		def ci_run_id = jobParams.get("ci_run_id")
+		def ci_run_id = Configurator.get("ci_run_id")
 		context.echo "uuid from jobParams: " + ci_run_id
 		if (ci_run_id.isEmpty()) {
 				ci_run_id = randomUUID() as String
@@ -426,18 +440,17 @@ class Runner extends Executor {
 		context.echo "final uuid: " + ci_run_id
 		return ci_run_id
 	}
-	
-	//TODO: investigate howto transfer jobVars
-	protected String getFailure(currentBuild, params, vars) {
+
+	protected String getFailure(currentBuild) {
 		//TODO: move string constants into object/enum if possible
 		currentBuild.result = 'FAILURE'
 		def failureReason = "undefined failure"
-		
-		String JOB_URL = vars.get("JOB_URL")
-		String BUILD_NUMBER = vars.get("BUILD_NUMBER")
-		String JOB_NAME = vars.get("JOB_NAME")
-		
-		String email_list = params.get("email_list")
+
+		String JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
+		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+		String JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
+
+		String email_list = Configurator.get("email_list")
 
 		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
 		def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
@@ -509,26 +522,26 @@ class Runner extends Executor {
 		}
 	}
 
-	protected String getSubProjectFolder(params) {
+	protected String getSubProjectFolder() {
 		//specify current dir as subProject folder by default
 		def subProjectFolder = "."
-		if (!isParamEmpty(params.get("sub_project"))) {
-			subProjectFolder = "./" + params.get("sub_project")
+		if (!isParamEmpty(Configurator.get("sub_project"))) {
+			subProjectFolder = "./" + Configurator.get("sub_project")
 		}
 		return subProjectFolder
 	}
 
 	//TODO: move into valid jacoco related package
-	protected void publishJacocoReport(vars) {
-		def JACOCO_ENABLE = vars.get("JACOCO_ENABLE").toBoolean()
+	protected void publishJacocoReport() {
+		def JACOCO_ENABLE = Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()
 		if (!JACOCO_ENABLE) {
 			context.println("do not publish any content to AWS S3 if integration is disabled")
 			return
 		}
-		
-		def JACOCO_BUCKET = vars.get("JACOCO_BUCKET")
-		def JOB_NAME = vars.get("JOB_NAME")
-		def BUILD_NUMBER = vars.get("BUILD_NUMBER")
+
+		def JACOCO_BUCKET = Configurator.get(Configurator.Parameter.JACOCO_BUCKET)
+		def JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
+		def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 
 		def files = context.findFiles(glob: '**/jacoco.exec')
 		if(files.length == 1) {
@@ -540,20 +553,6 @@ class Runner extends Executor {
 			}
 		}
 	}
-	
-	protected void setJobResults(currentBuild) {
-		//Need to do a forced failure here in case the report doesn't have PASSED or PASSED KNOWN ISSUES in it.
-		//TODO: hardoced path here! Update logic to find it across all sub-folders
-		String checkReport = context.readFile("${ZAFIRA_REPORT_FOLDER}/emailable-report.html")
-
-		if (!checkReport.contains("PASSED:") && !checkReport.contains("PASSED (known issues):") && !checkReport.contains("SKIP_ALL:")) {
-			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
-			currentBuild.result = 'FAILURE'
-		} else if (checkReport.contains("SKIP_ALL:")) {
-			currentBuild.result = 'UNSTABLE'
-		}
-	}
-
 	
 	protected void reportingResults() {
 		context.stage('Results') {
@@ -572,6 +571,17 @@ class Runner extends Executor {
 		def zafiraReport = zc.exportZafiraReport(uuid)
 		if (!zafiraReport.isEmpty()) {
 			context.writeFile file: "${ZAFIRA_REPORT_FOLDER}/emailable-report.html", text: zafiraReport
+		}
+		
+		//TODO: think about method renaming because in additions it also could redefin job status in Jenkins.
+		// or move below code into another method
+		
+		// set job status based on zafira report
+		if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
+			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
+			context.currentBuild.result = 'FAILURE'
+		} else if (zafiraReport.contains("SKIP_ALL:")) {
+			context.currentBuild.result = 'UNSTABLE'
 		}
 	}
 
@@ -624,7 +634,7 @@ class Runner extends Executor {
 		
 	}
 
-	protected void parsePipeline(jobVars, jobParams, String filePath) {
+	protected void parsePipeline(String filePath) {
 		//context.println("filePath: " + filePath)
 		XmlSuite currentSuite = parseSuite(filePath)
 		
@@ -639,18 +649,18 @@ class Runner extends Executor {
 
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
-		def currentEnv = jobParams.get("env")
-		def pipelineJobName = jobVars.get("JOB_BASE_NAME")
+		def currentEnv = Configurator.get("env")
+		def pipelineJobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 
 		// override suite email_list from params if defined
 		def emailList = currentSuite.getParameter("jenkinsEmail").toString()
-		def paramEmailList = jobParams.get("email_list")
-		if (!paramEmailList.isEmpty()) {
+		def paramEmailList = Configurator.get("email_list")
+		if (paramEmailList != null && !paramEmailList.isEmpty()) {
 			emailList = paramEmailList
 		}
 		
 		def priorityNum = "5"
-		def curPriorityNum = jobParams.get("priority")
+		def curPriorityNum = Configurator.get("priority")
 		if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
@@ -659,9 +669,9 @@ class Runner extends Executor {
 		def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
-		def currentBrowser = jobParams.get("browser")
-		if (currentBrowser == null) {
-			currentBrowser = "null"
+		def currentBrowser = Configurator.get("browser")
+		if (currentBrowser == null || currentBrowser.isEmpty()) {
+			currentBrowser = "NULL"
 		}
 		logLine += "	currentBrowser: ${currentBrowser};\n"
 		context.println(logLine)
@@ -689,7 +699,7 @@ class Runner extends Executor {
 						// currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
 
 						//context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
-						if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("null")) {
+						if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
 							//context.println("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
 							continue;
 						}
@@ -698,17 +708,17 @@ class Runner extends Executor {
 
 						def pipelineMap = [:]
 
-						def branch = jobParams.get("branch")
-						def ci_parent_url = jobParams.get("ci_parent_url")
+						def branch = Configurator.get("branch")
+						def ci_parent_url = Configurator.get("ci_parent_url")
 						if (ci_parent_url.isEmpty()) {
-							ci_parent_url = jobVars.get("JOB_URL")
+							ci_parent_url = Configurator.get(Configurator.Parameter.JOB_URL)
 						}
-						def ci_parent_build = jobParams.get("ci_parent_build")
+						def ci_parent_build = Configurator.get("ci_parent_build")
 						if (ci_parent_build.isEmpty()) {
-							ci_parent_build = jobVars.get("BUILD_NUMBER")
+							ci_parent_build = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 						}
-						def retry_count = jobParams.get("retry_count")
-						def thread_count = jobParams.get("thread_count")
+						def retry_count = Configurator.get("retry_count")
+						def thread_count = Configurator.get("thread_count")
 
 						pipelineMap.put("browser", supportedBrowser)
 						pipelineMap.put("name", pipeName)
@@ -804,7 +814,7 @@ class Runner extends Executor {
 			//context.println("Checking EmailList: " + entry.get("emailList"))
 			
 			def email_list = entry.get("email_list")
-			def ADMIN_EMAILS = jobVars.get("email_list")
+			def ADMIN_EMAILS = Configurator.get("email_list")
 
 			//context.println("propagate: " + propagateJob)
 			try {
