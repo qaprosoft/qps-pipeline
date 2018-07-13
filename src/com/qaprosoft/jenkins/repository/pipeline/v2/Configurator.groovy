@@ -65,7 +65,7 @@ public class Configurator {
         BUILD_NUMBER("BUILD_NUMBER", mustOverride),
         NGINX_HOST("NGINX_HOST", mustOverride),
         NGINX_PORT("NGINX_PORT", mustOverride),
-        NGINXT_PROTOCOL("NGINXT_PROTOCOL", mustOverride),
+        NGINX_PROTOCOL("NGINX_PROTOCOL", mustOverride),
 
         private final String key;
         private final String value;
@@ -140,16 +140,19 @@ public class Configurator {
 
     @NonCPS
     public static String get(Parameter param) {
-        return args.get(param.getKey())
+		return get(param.getKey());
     }
+	
+	@NonCPS
+	public static String get(String paramName) {
+		if (params.get(paramName) != null) {
+			return params.get(paramName);
+		}
+		return args.get(paramName)
+	}
 
     public static void set(Parameter param, String value) {
-        return args.put(param.getKey(), value)
-    }
-
-    @NonCPS
-    public static String get(String paramName) {
-        return args.get(paramName)
+        set(param.getKey(), value)
     }
 
     public static void set(String paramName, String value) {
