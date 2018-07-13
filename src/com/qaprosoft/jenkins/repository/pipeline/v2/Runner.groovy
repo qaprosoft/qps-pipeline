@@ -371,7 +371,12 @@ class Runner extends Executor {
 				context.echo "Enabling remote debug..."
 				goals += mavenDebug
 			}
-
+			
+			if (Configurator.get("deploy_to_local_repo") && Configurator.get("deploy_to_local_repo").toBoolean()) {
+				context.echo "Enabling deployment of tests jar to local repo."
+				goals += " install"
+			}
+			
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
 
