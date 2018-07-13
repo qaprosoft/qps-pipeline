@@ -46,6 +46,21 @@ class Job {
 			/** Properties & Parameters Area **/
 			parameters {
 				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
+				
+				/** Requires Active Choices Plug-in v1.2+ **/
+				/** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **/
+				if (currentSuite.toXml().contains("jenkinsGroups")) {
+					activeChoiceParam("groups") {
+						description("Please select test group(s) to run")
+						filterable()
+						choiceType("MULTI_SELECT")
+						groovyScript {
+							script(this.listToString(currentSuite, "jenkinsGroups"))
+							fallbackScript("return ['error']")
+						}
+					}
+				}
+				
 				booleanParam('fork', false, "Reuse forked repository for ${project} project.")
 				booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
@@ -54,6 +69,26 @@ class Job {
 					defaultMobilePool = "ANY"
 				}
 
+				def autoScreenshot = true
+				if (currentSuite.getParameter("jenkinsAutoScreenshot") != null) {
+					autoScreenshot = currentSuite.getParameter("jenkinsAutoScreenshot").toBoolean()
+				}
+				
+				def keepAllScreenshots = true
+				if (currentSuite.getParameter("jenkinsKeepAllScreenshots") != null) {
+					keepAllScreenshots = currentSuite.getParameter("jenkinsKeepAllScreenshots").toBoolean()
+				}
+				
+				def enableVNC = true
+				if (currentSuite.getParameter("jenkinsEnableVNC") != null) {
+					enableVNC = currentSuite.getParameter("jenkinsEnableVNC").toBoolean()
+				}
+				
+				def enableVideo = false
+				if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
+					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
+				}
+				
 				def jobType = suite
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
@@ -70,20 +105,20 @@ class Job {
 					// WEB tests specific
 						configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
 						configure addExtensibleChoice('browser', 'gc_BROWSER', 'Select a browser to run tests against.', 'chrome')
-						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
-						booleanParam('keep_all_screenshots', true, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVNC', true, 'Enable VNC live sessions')
-						booleanParam('enableVideo', false, 'Enable video recording')
+						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
+						booleanParam('enableVNC', enableVNC, 'Enable VNC live sessions')
+						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
 						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
-						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
-						booleanParam('keep_all_screenshots', true, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVNC', true, 'Enable VNC live sessions')
-						booleanParam('enableVideo', false, 'Enable video recording')
+						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
+						booleanParam('enableVNC', enableVNC, 'Enable VNC live sessions')
+						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'ANDROID')
 						break;
@@ -92,9 +127,9 @@ class Job {
 						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
-						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
-						booleanParam('keep_all_screenshots', true, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVideo', false, 'Enable video recording')
+						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
+						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'iOS')
 						break;
@@ -105,7 +140,11 @@ class Job {
 						break;
 				}
 
-				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", "master")
+				def gitBranch = "master"
+				if (currentSuite.getParameter("jenkinsDefaultGitBranch") != null) {
+					gitBranch = currentSuite.getParameter("jenkinsDefaultGitBranch")
+				}
+				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", gitBranch)
 				configure addHiddenParameter('project', '', project)
 				configure addHiddenParameter('sub_project', '', sub_project)
 				configure addHiddenParameter('zafira_project', '', zafira_project)
@@ -292,6 +331,22 @@ class Job {
 		}
 
 		return prepCustomFields
+	}
+	
+	protected String listToString(currentSuite, parameterName) {
+		def list = getGenericSplit(currentSuite, parameterName)
+		def prepList = 'return ['
+
+		if (!list.isEmpty()) {
+			for (String l : list) {
+				prepList = prepList + '"' + l + '", '
+			}
+			prepList = prepList.take(prepList.length() - 2)
+		}
+
+		prepList = prepList + ']'
+
+		return prepList
 	}
 
 	protected List<String> getGenericSplit(currentSuite, parameterName) {
