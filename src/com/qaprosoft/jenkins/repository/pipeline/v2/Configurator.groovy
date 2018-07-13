@@ -104,9 +104,9 @@ public class Configurator {
 				args.put(enumValue.getKey(), envVars.get(enumValue.getKey()))
 			}
 			
-			if (jobParams.get(enumValue.getKey()) != null) {
-				args.put(enumValue.getKey(), jobParams.get(enumValue.getKey()))
-			}
+//			if (jobParams.get(enumValue.getKey()) != null) {
+//				args.put(enumValue.getKey(), jobParams.get(enumValue.getKey()))
+//			}
 		}
 		
 		for (var in args) {
