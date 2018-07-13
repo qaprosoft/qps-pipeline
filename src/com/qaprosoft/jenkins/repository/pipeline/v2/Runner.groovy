@@ -320,6 +320,8 @@ class Runner extends Executor {
 
             def RERUN_FAILURES = Configurator.get("rerun_failures")
 
+			context.println("qwe: " + context.env.getEnvironment().get("qwe"))
+			
             //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			Configurator.set("git_branch", BRANCH)
 			Configurator.set("scm_branch", BRANCH)
