@@ -372,7 +372,7 @@ class Runner extends Executor {
 				goals += mavenDebug
 			}
 			
-			if (params.get("deploy_to_local_repo") != null && params.get("deploy_to_local_repo").equalsIgnoreCase("true")) {
+			if (Configurator.get("deploy_to_local_repo") && Configurator.get("deploy_to_local_repo").toBoolean()) {
 				context.echo "Enabling deployment of tests jar to local repo."
 				goals += " install"
 			}
