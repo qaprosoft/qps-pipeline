@@ -12,11 +12,20 @@ public class Configurator {
     public Configurator(context) {
         this.context = context
         this.loadContext()
+		
+		vars2 = context.env.getEnvironment()
+		params2 = context.currentBuild.rawBuild.getAction(ParametersAction)
     }
 
     //list of job vars/params as a map
     protected static Map params = [:]
     protected static Map vars = [:]
+	
+	protected static Map params2 = [:]
+	protected static Map vars2 = [:]
+	
+	//list of required goals params which must present in command line obligatory
+	protected static Map args = [:]
 
     @NonCPS
     public static Map getParams() {
