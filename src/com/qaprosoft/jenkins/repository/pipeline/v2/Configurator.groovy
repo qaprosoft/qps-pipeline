@@ -11,13 +11,10 @@ public class Configurator {
 
 		//list of job vars/params as a map
 	protected static Map params = [:]
-	protected static Map vars = [:]
-	
-	
 	//list of required goals params which must present in command line obligatory
 	protected static Map args = [:]
-
-
+	
+	
     public Configurator(context) {
         this.context = context
         this.loadContext()
@@ -30,14 +27,14 @@ public class Configurator {
     }
 
     @NonCPS
-    public static Map getVars() {
-        return vars
+    public static Map getArgs() {
+        return args
     }
 
     public enum Parameter {
 
-        //vars
-        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.106"),
+        //args
+        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.107"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
 		JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
 		JACOCO_ENABLE("JACOCO_ENABLE", "false"),
@@ -92,11 +89,11 @@ public class Configurator {
 
     @NonCPS
     public static String get(Parameter param) {
-        return vars.get(param.getKey())
+        return args.get(param.getKey())
     }
 
     public static void set(Parameter param, String value) {
-        return vars.put(param.getKey(), value)
+        return args.put(param.getKey(), value)
     }
 
     @NonCPS
@@ -114,24 +111,24 @@ public class Configurator {
 
     @NonCPS
     public void loadContext() {
-        //1. load all Parameter key/values to vars
+        //1. load all obligatory Parameter(s) and their default key/values to args
         def enumValues  = Parameter.values()
 		for (enumValue in enumValues) {
 			if (!enumValue.getValue().equals(mustOverride)){
-				vars.put(enumValue.getKey(), enumValue.getValue())
+				args.put(enumValue.getKey(), enumValue.getValue())
 			}
 		}
-		for (var in vars) {
+		for (var in args) {
             context.println(var)
         }
         //2. load all string keys/values from env
         def envVars = context.env.getEnvironment()
         for (var in envVars) {
             if (var.value != null) {
-                vars.put(var.key, var.value)
+                args.put(var.key, var.value)
             }
         }
-        for (var in vars) {
+        for (var in args) {
             context.println(var)
         }
         //3. load all string keys/values from params
@@ -145,8 +142,6 @@ public class Configurator {
             context.println(param)
         }
         //4. TODO: investigate how private pipeline can override those values
-		
-		context.env.getEnvironment().put("qwe", "rty")
     }
 
 }
