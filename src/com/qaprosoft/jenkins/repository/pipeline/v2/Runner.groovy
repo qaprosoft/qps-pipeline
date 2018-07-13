@@ -320,8 +320,6 @@ class Runner extends Executor {
 
             def RERUN_FAILURES = Configurator.get("rerun_failures")
 
-			context.println("qwe: " + context.env.getEnvironment().get("qwe"))
-			
             //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			Configurator.set("git_branch", BRANCH)
 			Configurator.set("scm_branch", BRANCH)
@@ -351,7 +349,7 @@ class Runner extends Executor {
 			def goals = DEFAULT_BASE_MAVEN_GOALS
 			//register all env variables
 
-            Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+            Configurator.getArgs().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//register all params after vars to be able to override
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
