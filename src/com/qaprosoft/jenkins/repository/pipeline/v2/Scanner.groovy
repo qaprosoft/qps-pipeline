@@ -2,10 +2,9 @@ package com.qaprosoft.jenkins.repository.pipeline.v2
 
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.XmlSuite;
-
 import com.qaprosoft.scm.github.GitHub;
-
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 
 class Scanner extends Executor {
 
@@ -16,31 +15,27 @@ class Scanner extends Executor {
 	}
 
 	public void scanRepository() {
-		jobParams = initParams(context.currentBuild)
-		jobVars = initVars(context.env)
-		
 		context.node('master') {
 			context.timestamps {
-				scmClient.clone(jobParams, jobVars)
-				this.scan(jobParams, jobVars)
+				scmClient.clone()
+				this.scan()
 				this.clean()
 			}
 		}
 	}
 
-
-	protected void scan(params, vars) {
+	protected void scan() {
 		context.stage("Scan Repository") {
-			def BUILD_NUMBER = vars.get("BUILD_NUMBER")
-			def project = params.get("project")
-			def branch = params.get("branch")
+			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+			def project = Configurator.get("project")
+			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
 			
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
 
-			def jobFolder = params.get("folder")
+			def jobFolder = Configurator.get("folder")
 
             if (!isItemAvailable(jobFolder)){
                 context.build job: "Management_Jobs/CreateFolder",
@@ -124,49 +119,49 @@ class Scanner extends Executor {
 
 					try{
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
-						
+
 						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
 							def suiteName = suite.path
 							suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
-	
+
 							context.println("suite name: " + suiteName)
 							context.println("suite path: " + suite.path)
-	
+
 							if (currentSuite.toXml().contains("suiteOwner")) {
 								suiteOwner = currentSuite.getParameter("suiteOwner")
 							}
 							if (currentSuite.toXml().contains("zafira_project")) {
 								zafira_project = currentSuite.getParameter("zafira_project")
 							}
-							
+
 							if (!views.contains(project.toUpperCase())) {
 								views << project.toUpperCase()
 								context.build job: "Management_Jobs/CreateView",
 									propagate: false,
 									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: project.toUpperCase()), context.string(name: 'descFilter', value: project),]
 							}
-	
+
 							//TODO: review later if we need views by zafira poject name and owner
 							if (!views.contains(zafira_project)) {
 								views << zafira_project
-	
+
 								context.build job: "Management_Jobs/CreateView",
 									propagate: false,
 									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: zafira_project), context.string(name: 'descFilter', value: zafira_project),]
 							}
-	
+
 							if (!views.contains(suiteOwner)) {
 								views << suiteOwner
-	
+
 								context.build job: "Management_Jobs/CreateView",
 									propagate: false,
 									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: suiteOwner), context.string(name: 'descFilter', value: suiteOwner),]
 							}
-	
+
 	                        def createCron = false
 	                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
 	                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
-	
+
 	                            if (!isItemAvailable(jobFolder + "/" + cronName)) {
 	                                createCron = true
 	                            }
@@ -174,7 +169,7 @@ class Scanner extends Executor {
 	                            //createCron = !crons.contains(cronName)
 	                            crons << cronName
 	                        }
-	
+
 	                        context.build job: "Management_Jobs/CreateJob",
 	                                propagate: false,
 	                                parameters: [
@@ -187,7 +182,7 @@ class Scanner extends Executor {
 	                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
 	                                        context.booleanParam(name: 'createCron', value: createCron),
 	                                ], wait: false
-							
+
 						}
 					} catch (FileNotFoundException e) {
 						context.println("Unable to find suite: " + suite.path)
