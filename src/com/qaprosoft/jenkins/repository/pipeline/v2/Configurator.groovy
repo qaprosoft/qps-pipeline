@@ -94,7 +94,8 @@ public class Configurator {
 		
 		def enumValues  = Parameter.values()
 		def envVars = context.env.getEnvironment()
-		def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
+		
+		def params = context.currentBuild.rawBuild.getAction(ParametersAction)
 		
 		for (enumValue in enumValues) {
 			//1. set default values from enum
