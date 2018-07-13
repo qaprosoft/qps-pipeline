@@ -84,7 +84,7 @@ class Job {
 					enableVNC = currentSuite.getParameter("jenkinsEnableVNC").toBoolean()
 				}
 				
-				def enableVideo = true
+				def enableVideo = false
 				if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
 					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
 				}
