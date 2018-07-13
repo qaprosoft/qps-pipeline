@@ -10,7 +10,7 @@ public class Configurator {
 	private final static def mustOverride = "{must_override}"
 
 		//list of job vars/params as a map
-	protected static def params = [:]
+	protected static Map params = [:]
 	//list of required goals params which must present in command line obligatory
 	protected static Map args = [:]
 	
@@ -95,8 +95,6 @@ public class Configurator {
 		def enumValues  = Parameter.values()
 		def envVars = context.env.getEnvironment()
 		
-		params = context.currentBuild.rawBuild.getAction(ParametersAction)
-		
 		for (enumValue in enumValues) {
 			//1. set default values from enum
 			args.put(enumValue.getKey(), enumValue.getValue())
@@ -114,6 +112,13 @@ public class Configurator {
 			context.println(var)
 		}
 
+		def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
+		for (param in jobParams) {
+			if (param.value != null) {
+				params.put(param.name, param.value)
+			}
+		}
+		
 		for (param in params) {
 			context.println(param)
 		}
