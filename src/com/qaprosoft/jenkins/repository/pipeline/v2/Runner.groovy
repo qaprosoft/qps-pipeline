@@ -303,7 +303,6 @@ class Runner extends Executor {
 
 			def POM_FILE = getSubProjectFolder() + "/pom.xml"
 
-			//def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
 			def CORE_LOG_LEVEL = Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)
 			def SELENIUM_URL = Configurator.get(Configurator.Parameter.SELENIUM_URL)
             def ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
@@ -326,8 +325,8 @@ class Runner extends Executor {
 			Configurator.set("git_branch", BRANCH)
 			Configurator.set("scm_branch", BRANCH)
 
-            //TODO: investigate how user timezone can be declared on qps-infra level
-			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${CARINA_CORE_VERSION} -f ${POM_FILE} \
+			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
+				-f ${POM_FILE} \
 				-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_URL -Dmax_screen_history=1 \
 				-Dinit_retry_count=0 -Dinit_retry_interval=10 -Dzafira_enabled=true -Dzafira_rerun_failures=$RERUN_FAILURES \
                 -Dzafira_service_url=$ZAFIRA_SERVICE_URL -Dgit_branch=$BRANCH -Dgit_commit=$GIT_COMMIT -Dgit_url=$GIT_URL \
