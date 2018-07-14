@@ -303,7 +303,7 @@ class Runner extends Executor {
 
 			def POM_FILE = getSubProjectFolder() + "/pom.xml"
 
-			def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
+			//def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
 			def CORE_LOG_LEVEL = Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)
 			def SELENIUM_URL = Configurator.get(Configurator.Parameter.SELENIUM_URL)
             def ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
