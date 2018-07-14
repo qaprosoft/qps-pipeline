@@ -319,24 +319,24 @@ class Runner extends Executor {
 			Configurator.set("scm_branch", BRANCH)
 
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
-				-f ${POM_FILE} -Dmaven.test.failure.ignore=true \
-				-Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
-				-Dselenium_host=${Configurator.get(Configurator.Parameter.SELENIUM_URL)} \
-				-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
-				-Dzafira_enabled=true \
-				-Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
-                -Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
-				-Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-				-Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} \
-				-Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded} \
-				-Dgit_branch=$BRANCH \
-				-Dgit_commit=${Configurator.get("GIT_COMMIT")} \
-				-Dgit_url=${Configurator.get("git_url")} \
-				-Dci_url=${JOB_URL} \
-				-Dci_build=${BUILD_NUMBER} \
-                -Dci_user_id=\"$BUILD_USER_ID\" -Dci_user_first_name=$BUILD_USER_FIRST_NAME -Dci_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL \
-                -Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
-				clean test"
+-f ${POM_FILE} -Dmaven.test.failure.ignore=true \
+-Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
+-Dselenium_host=${Configurator.get(Configurator.Parameter.SELENIUM_URL)} \
+-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
+-Dzafira_enabled=true \
+-Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
+-Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
+-Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
+-Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} \
+-Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded} \
+-Dgit_branch=$BRANCH \
+-Dgit_commit=${Configurator.get("GIT_COMMIT")} \
+-Dgit_url=${Configurator.get("git_url")} \
+-Dci_url=${JOB_URL} \
+-Dci_build=${BUILD_NUMBER} \
+-Dci_user_id=\"$BUILD_USER_ID\" -Dci_user_first_name=$BUILD_USER_FIRST_NAME -Dci_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL \
+-Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
+clean test"
 
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
