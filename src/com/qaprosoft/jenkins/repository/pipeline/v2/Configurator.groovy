@@ -9,10 +9,10 @@ public class Configurator {
 	
 	private final static def mustOverride = "{must_override}"
 
-		//list of job vars/params as a map
+	//list of CI job params as a map
 	protected static Map params = [:]
-	//list of required goals params which must present in command line obligatory
-	protected static Map args = [:]
+	//list of required goals vars which must present in command line obligatory
+	protected static Map vars = [:]
 	
 	
     public Configurator(context) {
@@ -27,13 +27,13 @@ public class Configurator {
     }
 
     @NonCPS
-    public static Map getArgs() {
-        return args
+    public static Map getVars() {
+        return vars
     }
 
     public enum Parameter {
 
-        //args
+        //vars
         CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.107"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
 		JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
@@ -89,7 +89,7 @@ public class Configurator {
 	
 	@NonCPS
 	public void loadContext() {
-		//1. load all obligatory Parameter(s) and their default key/values to args. 
+		//1. load all obligatory Parameter(s) and their default key/values to vars. 
 		// any non empty value should be resolved in such order: Parameter, envvars and jobParams 
 		
 		def enumValues  = Parameter.values()
@@ -97,15 +97,15 @@ public class Configurator {
 		
 		for (enumValue in enumValues) {
 			//1. set default values from enum
-			args.put(enumValue.getKey(), enumValue.getValue())
+			vars.put(enumValue.getKey(), enumValue.getValue())
 			
 			if (envVars.get(enumValue.getKey()) != null) {
-				args.put(enumValue.getKey(), envVars.get(enumValue.getKey()))
+				vars.put(enumValue.getKey(), envVars.get(enumValue.getKey()))
 			}
 			
 		}
 		
-		for (var in args) {
+		for (var in vars) {
 			context.println(var)
 		}
 
@@ -125,10 +125,10 @@ public class Configurator {
 		//def envVars = context.env.getEnvironment()
 		for (var in envVars) {
 			if (var.value != null) {
-				args.put(var.key, var.value)
+				vars.put(var.key, var.value)
 			}
 		}
-		for (var in args) {
+		for (var in vars) {
 			context.println(var)
 		}
 		//3. load all string keys/values from params
@@ -155,7 +155,7 @@ public class Configurator {
 		if (params.get(paramName) != null) {
 			return params.get(paramName);
 		}
-		return args.get(paramName)
+		return vars.get(paramName)
 	}
 
     public static void set(Parameter param, String value) {
@@ -163,11 +163,11 @@ public class Configurator {
     }
 
     public static void set(String paramName, String value) {
-        return args.put(paramName, value)
+        return vars.put(paramName, value)
     }
 
     public static void remove(String key) {
-        return args.remove(key)
+        return vars.remove(key)
     }
 
 }
