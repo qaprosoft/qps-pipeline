@@ -159,7 +159,15 @@ public class Configurator {
 		}
 	}
 	
-	
+	/*
+	 * replace all ${PARAM} occurrences by real values from var/params
+	 * String cmd 
+	 * return String cmd
+	 */
+	public static String prepareCmd(String cmd) {
+		cmd += " -Dqwe=rty"
+		return cmd
+	}
 
     public static void remove(String key) {
         return vars.remove(key)

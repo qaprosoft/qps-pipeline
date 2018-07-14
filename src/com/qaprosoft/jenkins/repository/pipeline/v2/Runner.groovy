@@ -351,6 +351,8 @@ class Runner extends Executor {
 			def goals = DEFAULT_BASE_MAVEN_GOALS
 			//register all env variables
 
+			def prepareCmd = Configurator.prepareCmd(goals)
+			context.println("prepareCmd: " + prepareCmd)
             Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//register all params after vars to be able to override
