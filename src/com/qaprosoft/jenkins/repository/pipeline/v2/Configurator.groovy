@@ -69,6 +69,8 @@ public class Configurator {
         NGINX_HOST("NGINX_HOST", mustOverride),
         NGINX_PORT("NGINX_PORT", mustOverride),
         NGINX_PROTOCOL("NGINX_PROTOCOL", mustOverride),
+		
+		TIMEZONE("user.timezone", "UTC"),
 
         private final String key;
         private final String value;

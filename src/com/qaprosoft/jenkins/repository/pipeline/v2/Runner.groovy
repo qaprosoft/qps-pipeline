@@ -317,6 +317,8 @@ class Runner extends Executor {
             def BUILD_USER_LAST_NAME = Configurator.get("BUILD_USER_LAST_NAME")
             def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
             def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+			
+			def TIMEZONE = Configurator.get(Configurator.Parameter.TIMEZONE)
 
             def RERUN_FAILURES = Configurator.get("rerun_failures")
 
@@ -330,7 +332,7 @@ class Runner extends Executor {
 				-Dinit_retry_count=0 -Dinit_retry_interval=10 -Dzafira_enabled=true -Dzafira_rerun_failures=$RERUN_FAILURES \
                 -Dzafira_service_url=$ZAFIRA_SERVICE_URL -Dgit_branch=$BRANCH -Dgit_commit=$GIT_COMMIT -Dgit_url=$GIT_URL \
                 -Dci_user_id=\"$BUILD_USER_ID\" -Dci_user_first_name=$BUILD_USER_FIRST_NAME -Dci_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL \
-                -Dzafira_access_token=$ZAFIRA_ACCESS_TOKEN clean test" //-Duser.timezone=PST
+                -Dzafira_access_token=$ZAFIRA_ACCESS_TOKEN -Duser.timezone=$TIMEZONE clean test"
 
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
