@@ -303,9 +303,6 @@ class Runner extends Executor {
 
 			def POM_FILE = getSubProjectFolder() + "/pom.xml"
 
-			def CORE_LOG_LEVEL = Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)
-			def SELENIUM_URL = Configurator.get(Configurator.Parameter.SELENIUM_URL)
-            def ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
 			def JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 			def BRANCH = Configurator.get("branch")
@@ -315,23 +312,24 @@ class Runner extends Executor {
             def BUILD_USER_FIRST_NAME = Configurator.get("BUILD_USER_FIRST_NAME")
             def BUILD_USER_LAST_NAME = Configurator.get("BUILD_USER_LAST_NAME")
             def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
-            def ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 			
-			def TIMEZONE = Configurator.get(Configurator.Parameter.TIMEZONE)
-
-            def RERUN_FAILURES = Configurator.get("rerun_failures")
-
             //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			Configurator.set("git_branch", BRANCH)
 			Configurator.set("scm_branch", BRANCH)
 
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
-				-f ${POM_FILE} \
-				-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_URL -Dmax_screen_history=1 \
-				-Dinit_retry_count=0 -Dinit_retry_interval=10 -Dzafira_enabled=true -Dzafira_rerun_failures=$RERUN_FAILURES \
-                -Dzafira_service_url=$ZAFIRA_SERVICE_URL -Dgit_branch=$BRANCH -Dgit_commit=$GIT_COMMIT -Dgit_url=$GIT_URL \
+				-f ${POM_FILE} -Dmaven.test.failure.ignore=true \
+				-Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
+				-Dselenium_host=${Configurator.get(Configurator.Parameter.SELENIUM_URL)} \
+				-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
+				-Dzafira_enabled=true \
+				-Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
+                -Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
+				-Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
+				-Dgit_branch=$BRANCH -Dgit_commit=$GIT_COMMIT -Dgit_url=$GIT_URL \
                 -Dci_user_id=\"$BUILD_USER_ID\" -Dci_user_first_name=$BUILD_USER_FIRST_NAME -Dci_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL \
-                -Dzafira_access_token=$ZAFIRA_ACCESS_TOKEN -Duser.timezone=$TIMEZONE clean test"
+                -Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
+				clean test"
 
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
