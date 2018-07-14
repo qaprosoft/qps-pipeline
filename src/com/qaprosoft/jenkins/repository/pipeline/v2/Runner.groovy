@@ -303,15 +303,16 @@ class Runner extends Executor {
 
 			def POM_FILE = getSubProjectFolder() + "/pom.xml"
 
-			def JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
-			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 			def BRANCH = Configurator.get("branch")
-            def GIT_COMMIT = Configurator.get("GIT_COMMIT")
-            def GIT_URL = Configurator.get("git_url")
             def BUILD_USER_ID = Configurator.get("BUILD_USER_ID")
             def BUILD_USER_FIRST_NAME = Configurator.get("BUILD_USER_FIRST_NAME")
             def BUILD_USER_LAST_NAME = Configurator.get("BUILD_USER_LAST_NAME")
             def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
+			
+			def JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
+			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+			Configurator.set("ci_url", JOB_URL)
+			Configurator.set("ci_build", BUILD_NUMBER)
 			
             //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			Configurator.set("git_branch", BRANCH)
@@ -326,7 +327,13 @@ class Runner extends Executor {
 				-Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
                 -Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
 				-Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-				-Dgit_branch=$BRANCH -Dgit_commit=$GIT_COMMIT -Dgit_url=$GIT_URL \
+				-Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} \
+				-Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded} \
+				-Dgit_branch=$BRANCH \
+				-Dgit_commit=${Configurator.get("GIT_COMMIT")} \
+				-Dgit_url=${Configurator.get("git_url")} \
+				-Dci_url=${JOB_URL} \
+				-Dci_build=${BUILD_NUMBER} \
                 -Dci_user_id=\"$BUILD_USER_ID\" -Dci_user_first_name=$BUILD_USER_FIRST_NAME -Dci_user_last_name=$BUILD_USER_LAST_NAME -Dci_user_email=$BUILD_USER_EMAIL \
                 -Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
 				clean test"
@@ -335,8 +342,8 @@ class Runner extends Executor {
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
 			Configurator.set("zafira_enabled", zc.isAvailable().toString())
-			Configurator.set("ci_url", JOB_URL)
-			Configurator.set("ci_build", BUILD_NUMBER)
+			
+
 
 			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
 
@@ -387,11 +394,11 @@ class Runner extends Executor {
 			if (context.isUnix()) {
 				def suiteNameForUnix = Configurator.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
-				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
+				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix}"
 			} else {
 				def suiteNameForWindows = Configurator.get("suite").replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
-				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows} -Dzafira_report_folder=${ZAFIRA_REPORT_FOLDER} -Dreport_url=$JOB_URL$BUILD_NUMBER/${etafReportEncoded}"
+				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows}"
 			}
 
 		}
