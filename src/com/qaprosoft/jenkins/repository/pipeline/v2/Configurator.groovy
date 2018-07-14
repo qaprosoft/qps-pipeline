@@ -53,9 +53,9 @@ public class Configurator {
         GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride),
         GITHUB_SSH_URL("GITHUB_SSH_URL", mustOverride),
 
-        SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", mustOverride),
+        SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
         SELENIUM_HOST("SELENIUM_HOST", mustOverride),
-        SELENIUM_PORT("SELENIUM_PORT", mustOverride),
+        SELENIUM_PORT("SELENIUM_PORT", "4444"),
         SELENIUM_URL("SELENIUM_URL", mustOverride),
 		
         ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride),
