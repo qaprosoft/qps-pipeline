@@ -56,7 +56,7 @@ public class Configurator {
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
         SELENIUM_HOST("SELENIUM_HOST", mustOverride),
         SELENIUM_PORT("SELENIUM_PORT", "4444"),
-        SELENIUM_URL("SELENIUM_URL", "\${SELENIUM_PROTOCOL}://demo:demo@\${SELENIUM_HOST}:${SELENIUM_PORT}/wd/hub"),
+        SELENIUM_URL("SELENIUM_URL", "\${SELENIUM_PROTOCOL}://demo:demo@\${SELENIUM_HOST}:\${SELENIUM_PORT}/wd/hub"),
 		
         ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
@@ -165,6 +165,8 @@ public class Configurator {
 	 * return String cmd
 	 */
 	public static String prepareCmd(String cmd) {
+		
+		//TODO: implement matcher and var replacement here
 		cmd += " -Dqwe=rty"
 		return cmd
 	}
