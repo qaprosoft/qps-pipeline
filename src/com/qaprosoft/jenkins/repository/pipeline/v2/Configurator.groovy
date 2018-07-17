@@ -167,7 +167,7 @@ public class Configurator {
 	public static String prepareCmd(String cmd) {
 		
 		//TODO: implement matcher and var replacement here
-		cmd = cmd.replaceAll('\\$\\{[^\\{\\}]*\\}') { m -> "X${m}X" }
+		cmd = cmd.replaceAll('\\$\\{[^\\{\\}]*\\}') { m -> "${m}" }
 		
 //		def matcher = pattern.matcher(cmd);
 		
