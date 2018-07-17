@@ -167,7 +167,7 @@ public class Configurator {
 	public static String prepareCmd(String cmd) {
 		
 		//TODO: implement matcher and var replacement here
-		def pattern = "\\${\w+\}"
+		def pattern = "\\${\\w+\\}"
 		Matcher matcher = pattern.matcher(cmd);
 		
 		while (matcher.find()) {
