@@ -352,14 +352,7 @@ clean test"
 				Configurator.set("ci_build_cause", "UPSTREAMTRIGGER")
 			}
 
-			def goals = DEFAULT_BASE_MAVEN_GOALS
-			//register all env variables
-			
-			context.println("nonprepareCmd: " + goals)
-
-			def prepareCmd = Configurator.resolveVars(goals)
-			context.println("prepareCmd: " + prepareCmd)
-            Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
 			//register all params after vars to be able to override
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
