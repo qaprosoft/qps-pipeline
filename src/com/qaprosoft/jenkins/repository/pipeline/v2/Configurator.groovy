@@ -46,12 +46,12 @@ public class Configurator {
 		QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", mustOverride),
 		ADMIN_EMAILS("ADMIN_EMAILS", mustOverride),
 		
-        GITHUB_HOST("GITHUB_HOST", mustOverride),
-        GITHUB_API_URL("GITHUB_API_URL", mustOverride),
+        GITHUB_HOST("GITHUB_HOST", "github.com"),
+        GITHUB_API_URL("GITHUB_API_URL", "https://api.$GITHUB_HOST/"),
         GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", mustOverride),
-        GITHUB_HTML_URL("GITHUB_HTML_URL", mustOverride),
+        GITHUB_HTML_URL("GITHUB_HTML_URL", "https://$GITHUB_HOST/$GITHUB_ORGANIZATION"),
         GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride),
-        GITHUB_SSH_URL("GITHUB_SSH_URL", mustOverride),
+        GITHUB_SSH_URL("GITHUB_SSH_URL", "git@$GITHUB_HOST:$GITHUB_ORGANIZATION"),
 
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
         SELENIUM_HOST("SELENIUM_HOST", mustOverride),
