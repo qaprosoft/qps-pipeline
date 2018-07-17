@@ -167,6 +167,13 @@ public class Configurator {
 	public static String prepareCmd(String cmd) {
 		
 		//TODO: implement matcher and var replacement here
+		def pattern = "\\${\w+\}"
+		Matcher matcher = pattern.matcher(cmd);
+		
+		while (matcher.find()) {
+			context.println("var group: " + matcher.group())
+		}
+		
 		cmd += " -Dqwe=rty"
 		return cmd
 	}
