@@ -164,17 +164,15 @@ public class Configurator {
 	 * String cmd 
 	 * return String cmd
 	 */
-	public String prepareCmd(String cmd) {
+	public static String prepareCmd(String cmd) {
 		
 		//TODO: implement matcher and var replacement here
 		def pattern = '\\$\\{[^\\{\\}]*\\}'
 		def matcher = pattern.matcher(cmd);
 		
 		while (matcher.find()) {
-			context.println("var group: " + matcher.group())
+			StringUtils.replace(cmd, matcher.group(), "hhhhh")
 		}
-		
-		cmd += " -Dqwe=rty"
 		return cmd
 	}
 
