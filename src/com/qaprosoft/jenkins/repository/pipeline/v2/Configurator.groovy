@@ -43,7 +43,7 @@ public class Configurator {
 		JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
 	
 		QPS_PIPELINE_GIT_BRANCH("QPS_PIPELINE_GIT_BRANCH", mustOverride),
-		QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", mustOverride),
+		QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", "git@github.com:qaprosoft/qps-pipeline.git"),
 		ADMIN_EMAILS("ADMIN_EMAILS", mustOverride),
 		
         GITHUB_HOST("GITHUB_HOST", "github.com"),
@@ -54,7 +54,7 @@ public class Configurator {
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
 
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
-        SELENIUM_HOST("SELENIUM_HOST", mustOverride),
+        SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}"),
         SELENIUM_PORT("SELENIUM_PORT", "4444"),
         SELENIUM_URL("SELENIUM_URL", "\${SELENIUM_PROTOCOL}://demo:demo@\${SELENIUM_HOST}:\${SELENIUM_PORT}/wd/hub"),
 		
@@ -66,9 +66,10 @@ public class Configurator {
         JOB_BASE_NAME("JOB_BASE_NAME", mustOverride),
         BUILD_NUMBER("BUILD_NUMBER", mustOverride),
 		
-        NGINX_HOST("NGINX_HOST", mustOverride),
-        NGINX_PORT("NGINX_PORT", mustOverride),
-        NGINX_PROTOCOL("NGINX_PROTOCOL", mustOverride),
+        SCREEN_RECORD_FTP("screen_record_ftp", "ftp://\${QPS_HOST}/%s.mp4"),
+		SCREEN_RECORD_HOST("screen_record_host", "http://\${QPS_HOST}/video/%s.mp4"),
+		SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
+		SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
 		
 		TIMEZONE("user.timezone", "UTC"),
 
