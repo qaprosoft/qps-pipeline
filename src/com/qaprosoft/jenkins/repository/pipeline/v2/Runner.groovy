@@ -354,6 +354,8 @@ clean test"
 
 			def goals = DEFAULT_BASE_MAVEN_GOALS
 			//register all env variables
+			
+			context.println("nonprepareCmd: " + goals)
 
 			def prepareCmd = Configurator.resolveVars(goals)
 			context.println("prepareCmd: " + prepareCmd)
