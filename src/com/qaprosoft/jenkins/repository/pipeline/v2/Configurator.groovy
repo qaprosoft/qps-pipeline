@@ -168,7 +168,7 @@ public class Configurator {
 		
 		//TODO: implement matcher and var replacement here
 		def pattern = Pattern.compile('\\$\\{[^\\{\\}]*\\}')
-		Matcher matcher = pattern.matcher(cmd);
+		def matcher = pattern.matcher(cmd);
 		
 		while (matcher.find()) {
 			context.println("var group: " + matcher.group())
