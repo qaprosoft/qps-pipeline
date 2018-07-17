@@ -22,7 +22,7 @@ class GitHub implements ISCM {
 			def GITHUB_SSH_URL = Configurator.get(Configurator.Parameter.GITHUB_SSH_URL)
 			def GITHUB_HOST = Configurator.get(Configurator.Parameter.GITHUB_HOST)
 
-			def gitUrl = "${GITHUB_SSH_URL}/${project}"
+			def gitUrl = Configurator.resolveVars("${GITHUB_SSH_URL}/${project}")
 
 			context.println("GIT_URL: " + gitUrl)
 			context.println("forked_repo: " + fork)
