@@ -164,7 +164,7 @@ public class Configurator {
 	 * String cmd 
 	 * return String cmd
 	 */
-	public static String prepareCmd(String cmd) {
+	public String prepareCmd(String cmd) {
 		
 		//TODO: implement matcher and var replacement here
 		def pattern = '\\$\\{[^\\{\\}]*\\}'
