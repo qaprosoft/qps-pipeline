@@ -164,17 +164,8 @@ public class Configurator {
 	 * String cmd 
 	 * return String cmd
 	 */
-	public static String prepareCmd(String cmd) {
-		
-		//TODO: implement matcher and var replacement here
-		cmd = cmd.replaceAll('\\$\\{[^\\{\\}]*\\}') { m -> get(m.substring(2, m.size() - 1)) }
-		
-//		def matcher = pattern.matcher(cmd);
-		
-//		while (matcher.find()) {
-//			StringUtils.replace(cmd, matcher.group(), "hhhhh")
-//		}
-		return cmd
+	public static String resolveVars(String cmd) {
+		return cmd.replaceAll('\\$\\{[^\\{\\}]*\\}') { m -> get(m.substring(2, m.size() - 1)) }
 	}
 
     public static void remove(String key) {
