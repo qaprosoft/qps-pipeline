@@ -355,7 +355,7 @@ clean test"
 			def goals = DEFAULT_BASE_MAVEN_GOALS
 			//register all env variables
 
-			def prepareCmd = Configurator.prepareCmd(goals)
+			def prepareCmd = Configurator.resolveVars(goals)
 			context.println("prepareCmd: " + prepareCmd)
             Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
