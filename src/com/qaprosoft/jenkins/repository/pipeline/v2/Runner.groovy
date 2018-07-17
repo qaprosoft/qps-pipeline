@@ -358,6 +358,9 @@ clean test"
 
 			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
+			//register all obligatory vars
+			Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+			
 			//register all params after vars to be able to override
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
