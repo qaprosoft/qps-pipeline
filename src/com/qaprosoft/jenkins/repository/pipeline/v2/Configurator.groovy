@@ -70,7 +70,7 @@ public class Configurator {
 		
 		VNC_PROTOCOL("vnc_protocol", "http"),
 		VNC_HOST("vnc_host", "\${QPS_HOST}"),
-		VNC_PORT("vnc_protocol", "80"),
+		VNC_PORT("vnc_port", "80"),
 		
 		TIMEZONE("user.timezone", "UTC"),
 
