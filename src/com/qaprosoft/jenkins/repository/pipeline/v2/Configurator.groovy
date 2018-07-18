@@ -1,7 +1,6 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
-import com.cloudbees.groovy.cps.NonCPS
-import java.util.List
+import com.qaprosoft.carina.core.foundation.utils.R
 
 public class Configurator {
 
@@ -71,7 +70,9 @@ public class Configurator {
 		SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
 		SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
 		
-		VNC_DESKTOP("vnc_desktop", "http://\${QPS_HOST}/vnc/%s"),
+		VNC_PROTOCOL("vnc_protocol", "http"),
+		VNC_HOST("vnc_host", "\${QPS_HOST}"),
+		VNC_PORT("vnc_protocol", "80"),
 		
 		TIMEZONE("user.timezone", "UTC"),
 
