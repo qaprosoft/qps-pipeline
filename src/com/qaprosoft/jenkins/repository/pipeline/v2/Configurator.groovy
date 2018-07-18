@@ -1,7 +1,5 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
-import com.qaprosoft.carina.core.foundation.utils.R
-
 public class Configurator {
 
     private def context
