@@ -71,7 +71,7 @@ public class Configurator {
 		SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
 		SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
 		
-		VNC_DESKTOP("vnc_desktop", "http://\${QPS_HOST}/vnc/%s"),
+		//VNC_DESKTOP("vnc_desktop", "http://\${QPS_HOST}/vnc/%s"),
 		
 		TIMEZONE("user.timezone", "UTC"),
 
