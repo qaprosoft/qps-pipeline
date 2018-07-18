@@ -68,7 +68,7 @@ public class Configurator {
 		SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
 		SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
 		
-		VNC_PROTOCOL("vnc_protocol", "http"),
+		VNC_PROTOCOL("vnc_protocol", "ws"),
 		VNC_HOST("vnc_host", "\${QPS_HOST}"),
 		VNC_PORT("vnc_port", "80"),
 		
