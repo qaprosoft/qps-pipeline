@@ -313,7 +313,7 @@ class Runner extends Executor {
 			//TODO: investigate how user timezone can be declared on qps-infra level
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=$CARINA_CORE_VERSION -f ${pomFile} \
 				-Dcore_log_level=$CORE_LOG_LEVEL -Dmaven.test.failure.ignore=true -Dselenium_host=$SELENIUM_URL -Dmax_screen_history=1 \
-				-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG -Duser.timezone=PST clean test" //-Duser.timezone=PST
+				-Dinit_retry_count=0 -Dinit_retry_interval=10 $ZAFIRA_BASE_CONFIG -Duser.timezone=PST -Dcapabilities.browserstack.local=true clean test" //-Duser.timezone=PST
 			
 			DEFAULT_BASE_MAVEN_GOALS += " -Dvnc_protocol=wss -Dvnc_host=${SELENIUM_HOST} -Dvnc_port=443 "
 
