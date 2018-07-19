@@ -73,6 +73,8 @@ public class Configurator {
 		VNC_PORT("vnc_port", "80"),
 		
 		TIMEZONE("user.timezone", "UTC"),
+		
+		S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
 
         private final String key;
         private final String value;
