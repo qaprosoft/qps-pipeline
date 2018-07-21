@@ -653,7 +653,7 @@ class Runner extends Executor {
 		}
 		
 		def priorityNum = "5"
-		def curPriorityNum = jobParams.get("priority")
+		def curPriorityNum = jobParams.get("BuildPriority")
 		if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
@@ -719,7 +719,6 @@ class Runner extends Executor {
 						pipelineMap.put("ci_parent_url", ci_parent_url)
 						pipelineMap.put("ci_parent_build", ci_parent_build)
 						pipelineMap.put("retry_count", retry_count)
-						pipelineMap.put("thread_count", thread_count)
 						pipelineMap.put("jobName", jobName)
 						pipelineMap.put("environment", supportedEnv)
 						pipelineMap.put("order", orderNum)
@@ -814,12 +813,12 @@ class Runner extends Executor {
 				if (!entry.get("browser").isEmpty()) {
 					context.build job: folderName + "/" + entry.get("jobName"),
 						propagate: propagateJob,
-						parameters: [context.string(name: 'branch', value: entry.get("branch")), context.string(name: 'env', value: entry.get("environment")), context.string(name: 'browser', value: entry.get("browser")), context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), context.string(name: 'email_list', value: entry.get("emailList")), context.string(name: 'thread_count', value: entry.get("thread_count")), context.string(name: 'retry_count', value: entry.get("retry_count")), context.string(name: 'BuildPriority', value: entry.get("priority")),],
+						parameters: [context.string(name: 'branch', value: entry.get("branch")), context.string(name: 'env', value: entry.get("environment")), context.string(name: 'browser', value: entry.get("browser")), context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), context.string(name: 'email_list', value: entry.get("emailList")), context.string(name: 'retry_count', value: entry.get("retry_count")), context.string(name: 'BuildPriority', value: entry.get("priority")),],
 						wait: waitJob
 				} else {
 					context.build job: folderName + "/" + entry.get("jobName"),
 						propagate: propagateJob,
-						parameters: [context.string(name: 'branch', value: entry.get("branch")), context.string(name: 'env', value: entry.get("environment")), context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), context.string(name: 'email_list', value: entry.get("emailList")), context.string(name: 'thread_count', value: entry.get("thread_count")), context.string(name: 'retry_count', value: entry.get("retry_count")), context.string(name: 'BuildPriority', value: entry.get("priority")),],
+						parameters: [context.string(name: 'branch', value: entry.get("branch")), context.string(name: 'env', value: entry.get("environment")), context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), context.string(name: 'email_list', value: entry.get("emailList")), context.string(name: 'retry_count', value: entry.get("retry_count")), context.string(name: 'BuildPriority', value: entry.get("priority")),],
 						wait: waitJob
 				}
 			} catch (Exception ex) {
