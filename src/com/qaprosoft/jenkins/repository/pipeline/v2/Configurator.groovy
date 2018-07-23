@@ -14,7 +14,7 @@ public class Configurator {
 	
     public Configurator(context) {
         this.context = context
-        this.loadContext()
+        //this.loadContext()
     }
 
     //@NonCPS
@@ -95,7 +95,7 @@ public class Configurator {
 
     }
 	
-	@NonCPS
+	//@NonCPS
 	public void loadContext() {
 		// 1. load all obligatory Parameter(s) and their default key/values to vars. 
 		// any non empty value should be resolved in such order: Parameter, envvars and jobParams 
