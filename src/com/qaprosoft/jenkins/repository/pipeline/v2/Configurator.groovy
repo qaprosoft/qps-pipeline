@@ -172,7 +172,7 @@ public class Configurator {
 	}
 
     public static void remove(String key) {
-        return vars.remove(key)
+        vars.remove(key)
     }
 
 }
