@@ -27,16 +27,16 @@ class Scanner extends Executor {
 
 	protected void scan() {
 		context.stage("Scan Repository") {
-			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-			def project = Configurator.get("project")
-			def branch = Configurator.get("branch")
+			def BUILD_NUMBER = configurator.get(Configurator.Parameter.BUILD_NUMBER)
+			def project = configurator.get("project")
+			def branch = configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
 			
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
 
-			def jobFolder = Configurator.get("folder")
+			def jobFolder = configurator.get("folder")
 
             if (!isItemAvailable(jobFolder)){
                 context.build job: "Management_Jobs/CreateFolder",
