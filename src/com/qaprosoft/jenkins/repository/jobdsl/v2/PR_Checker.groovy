@@ -5,7 +5,6 @@ import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 
 createPRCheckerJob()
 
-@NonCPS
 void createPRCheckerJob() {
   def repositoryName = "${project}"
   def repositorySubName = "${sub_project}"
