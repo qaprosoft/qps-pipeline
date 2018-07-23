@@ -83,19 +83,19 @@ public class Configurator {
             this.value = value;
         }
 
-        @NonCPS
+        //@NonCPS
         public String getKey() {
             return key
         }
 
-        @NonCPS
+        //@NonCPS
         public String getValue() {
             return value;
         }
 
     }
 	
-	//@NonCPS
+	@NonCPS
 	public void loadContext() {
 		// 1. load all obligatory Parameter(s) and their default key/values to vars. 
 		// any non empty value should be resolved in such order: Parameter, envvars and jobParams 
