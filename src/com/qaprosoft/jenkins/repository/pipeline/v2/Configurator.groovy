@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
-//import com.cloudbees.groovy.cps.NonCPS
+import com.cloudbees.groovy.cps.NonCPS
 
 public class Configurator {
 
