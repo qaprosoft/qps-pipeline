@@ -8,6 +8,8 @@ class PR_Checker {
 	//jobdsl context to provide access to existing pipeline methods like echo, sh etc...
 	
     def create() {
+		compile('com.cloudbees:groovy-cps:1.22')
+		
         //TODO: parametrize "jenkins_su - PR Checker"
         def repositoryName = "${project}"
         def repositorySubName = "${sub_project}"

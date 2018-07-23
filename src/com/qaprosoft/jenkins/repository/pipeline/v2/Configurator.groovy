@@ -3,7 +3,6 @@ package com.qaprosoft.jenkins.repository.pipeline.v2
 import com.cloudbees.groovy.cps.NonCPS
 
 public class Configurator {
-	compile('com.cloudbees:groovy-cps:1.22')
 	
     private def context
 	
