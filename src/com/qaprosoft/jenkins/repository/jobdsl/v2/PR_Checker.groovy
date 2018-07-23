@@ -4,7 +4,7 @@ class PR_Checker {
 	//jobdsl context to provide access to existing pipeline methods like echo, sh etc...
 	
 	public PR_Checker(context) {
-		this.context = context
+		//this.context = context
 	}
 	
     def create() {
