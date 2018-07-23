@@ -1,15 +1,8 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
-//import com.cloudbees.groovy.cps.NonCPS
-
-//import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
-
 class PR_Checker {
 	//jobdsl context to provide access to existing pipeline methods like echo, sh etc...
 	
-	protected Configurator configurator = new Configurator(context)
-
-
 	public PR_Checker(context) {
 		this.context = context
 	}
@@ -24,10 +17,16 @@ class PR_Checker {
         println "repositoryName: ${repositoryName}"
         println "repositorySubName: ${repositorySubName}"
 
-        def htmlUrl = Configurator.resolveVars("${GITHUB_HTML_URL}/${project}")
-        def sshUrl = Configurator.resolveVars("${GITHUB_SSH_URL}/${project}.git")
-        def apiUrl = Configurator.resolveVars("${GITHUB_API_URL}")
-        def organization = Configurator.resolveVars("${GITHUB_ORGANIZATION}")
+//        def htmlUrl = Configurator.resolveVars("${GITHUB_HTML_URL}/${project}")
+//        def sshUrl = Configurator.resolveVars("${GITHUB_SSH_URL}/${project}.git")
+//        def apiUrl = Configurator.resolveVars("${GITHUB_API_URL}")
+//        def organization = Configurator.resolveVars("${GITHUB_ORGANIZATION}")
+		
+		def htmlUrl = "${GITHUB_HTML_URL}/${project}"
+		def sshUrl = "${GITHUB_SSH_URL}/${project}.git"
+		def apiUrl = "${GITHUB_API_URL}"
+		def organization = "${GITHUB_ORGANIZATION}"
+
 
         println "htmlUrl: ${htmlUrl}"
         println "sshUrl: ${sshUrl}"
