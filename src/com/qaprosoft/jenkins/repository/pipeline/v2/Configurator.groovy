@@ -1,10 +1,7 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
-import com.cloudbees.groovy.cps.NonCPS
-import java.util.List
-
 public class Configurator {
-
+	
     private def context
 	
 	private final static def mustOverride = "{must_override}"
@@ -17,16 +14,15 @@ public class Configurator {
 	
     public Configurator(context) {
         this.context = context
-        this.loadContext()
-		
+        //this.loadContext()
     }
 
-    @NonCPS
+    //@NonCPS
     public static Map getParams() {
         return params
     }
 
-    @NonCPS
+    //@NonCPS
     public static Map getVars() {
         return vars
     }
@@ -34,7 +30,7 @@ public class Configurator {
     public enum Parameter {
 
         //vars
-        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.107"),
+        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.108"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
 		//to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
 		//the biggest problem is that AWS key can't be located in public repositories
@@ -52,6 +48,8 @@ public class Configurator {
         GITHUB_HTML_URL("GITHUB_HTML_URL", "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}"),
         GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
+		PROJECT("project", mustOverride),
+		SUB_PROJECT("sub_project", mustOverride),
 
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
         SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}"),
@@ -71,7 +69,13 @@ public class Configurator {
 		SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
 		SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
 		
+		VNC_PROTOCOL("vnc_protocol", "ws"),
+		VNC_HOST("vnc_host", "\${QPS_HOST}"),
+		VNC_PORT("vnc_port", "80"),
+		
 		TIMEZONE("user.timezone", "UTC"),
+		
+		S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
 
         private final String key;
         private final String value;
@@ -81,25 +85,25 @@ public class Configurator {
             this.value = value;
         }
 
-        @NonCPS
+        //@NonCPS
         public String getKey() {
             return key
         }
 
-        @NonCPS
+        //@NonCPS
         public String getValue() {
             return value;
         }
 
     }
 	
-	@NonCPS
-	public void loadContext() {
+	//@NonCPS
+	public void loadContext(jobVars, jobParams) {
 		// 1. load all obligatory Parameter(s) and their default key/values to vars. 
 		// any non empty value should be resolved in such order: Parameter, envvars and jobParams 
 		
 		def enumValues  = Parameter.values()
-		def envVars = context.env.getEnvironment()
+		def envVars = jobVars
 		
 		for (enumValue in enumValues) {
 			//a. set default values from enum
@@ -117,27 +121,28 @@ public class Configurator {
 		}
 
 		// 2. Load all job parameters into unmodifiable map
-		def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
-		for (param in jobParams) {
-			if (param.value != null) {
-				params.put(param.name, param.value)
+		if (jobParams != null) {
+			for (param in jobParams) {
+				if (param.value != null) {
+					params.put(param.name, param.value)
+				}
 			}
-		}
-		
-		for (param in params) {
-			context.println(param)
+			
+			for (param in params) {
+				context.println(param)
+			}
 		}
 	
 		//3. TODO: investigate how private pipeline can override those values
 		// public static void set(Map args) - ???
 	}
 
-    @NonCPS
+    //@NonCPS
     public static String get(Parameter param) {
 		return get(param.getKey());
     }
 	
-	@NonCPS
+	//@NonCPS
 	public static String get(String paramName) {
 		if (params.get(paramName) != null) {
 			return params.get(paramName);
@@ -150,7 +155,7 @@ public class Configurator {
     }
 
     public static void set(String paramName, String value) {
-        return vars.put(paramName, value)
+        vars.put(paramName, value)
     }
 
 	// simple way to reload as a bundle all project custom arguments from private pipeline	
@@ -170,7 +175,7 @@ public class Configurator {
 	}
 
     public static void remove(String key) {
-        return vars.remove(key)
+        vars.remove(key)
     }
 
 }

@@ -218,7 +218,7 @@ class Runner extends Executor {
 
 		//geeral mobile capabilities
 		//TODO: find valid way for naming this global "MOBILE" quota
-		params.put("capabilities.deviceName", "QPS-HUB")
+		Configurator.set("capabilities.deviceName", "QPS-HUB")
 		if ("DefaultPool".equalsIgnoreCase(devicePool)) {
 			//reuse list of devices from hidden parameter DefaultPool
 			Configurator.set("capabilities.devicePool", defaultPool)

@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
 @Grab('org.testng:testng:6.8.8')
+
 import org.testng.xml.XmlSuite;
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
@@ -10,11 +11,12 @@ class Scanner extends Executor {
 
 	public Scanner(context) {
 		super(context)
-		this.context = context
 		scmClient = new GitHub(context)
 	}
 
 	public void scanRepository() {
+		configurator.loadContext(context.env.getEnvironment(), context.currentBuild.rawBuild.getAction(ParametersAction))
+		
 		context.node('master') {
 			context.timestamps {
 				scmClient.clone()
@@ -26,16 +28,16 @@ class Scanner extends Executor {
 
 	protected void scan() {
 		context.stage("Scan Repository") {
-			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-			def project = Configurator.get("project")
-			def branch = Configurator.get("branch")
+			def BUILD_NUMBER = configurator.get(Configurator.Parameter.BUILD_NUMBER)
+			def project = configurator.get("project")
+			def branch = configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
 			
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
 
-			def jobFolder = Configurator.get("folder")
+			def jobFolder = configurator.get("folder")
 
             if (!isItemAvailable(jobFolder)){
                 context.build job: "Management_Jobs/CreateFolder",
