@@ -96,12 +96,12 @@ public class Configurator {
     }
 	
 	//@NonCPS
-	public void loadContext(vars, params) {
+	public void loadContext(jobVars, jobParams) {
 		// 1. load all obligatory Parameter(s) and their default key/values to vars. 
 		// any non empty value should be resolved in such order: Parameter, envvars and jobParams 
 		
 		def enumValues  = Parameter.values()
-		def envVars = vars
+		def envVars = jobVars
 		
 		for (enumValue in enumValues) {
 			//a. set default values from enum
@@ -119,7 +119,6 @@ public class Configurator {
 		}
 
 		// 2. Load all job parameters into unmodifiable map
-		def jobParams = params
 		for (param in jobParams) {
 			if (param.value != null) {
 				params.put(param.name, param.value)
