@@ -152,7 +152,7 @@ public class Configurator {
     }
 
     public static void set(String paramName, String value) {
-        return vars.put(paramName, value)
+        vars.put(paramName, value)
     }
 
 	// simple way to reload as a bundle all project custom arguments from private pipeline	
