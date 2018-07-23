@@ -8,11 +8,11 @@ void createPRCheckerJob() {
   
   println "repositoryName: ${repositoryName}"
   println "repositorySubName: ${repositorySubName}"
-  
-  def htmlUrl = "${GITHUB_HTML_URL}/${project}"
-  def sshUrl = "${GITHUB_SSH_URL}/${project}.git"
-  def apiUrl = "${GITHUB_API_URL}"
-  def organization = "${GITHUB_ORGANIZATION}"
+
+  def htmlUrl = Configurator.resolveVars("${GITHUB_HTML_URL}/${project}")
+  def sshUrl = Configurator.resolveVars("${GITHUB_SSH_URL}/${project}.git")
+  def apiUrl = Configurator.resolveVars("${GITHUB_API_URL}")
+  def organization = Configurator.resolveVars("${GITHUB_ORGANIZATION}")
   
   println "htmlUrl: ${htmlUrl}"
   println "sshUrl: ${sshUrl}"
