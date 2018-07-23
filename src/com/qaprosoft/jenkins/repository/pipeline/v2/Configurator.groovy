@@ -1,10 +1,10 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
-compile('com.cloudbees:groovy-cps:1.22')
 import com.cloudbees.groovy.cps.NonCPS
 
 public class Configurator {
-
+	compile('com.cloudbees:groovy-cps:1.22')
+	
     private def context
 	
 	private final static def mustOverride = "{must_override}"
@@ -18,7 +18,6 @@ public class Configurator {
     public Configurator(context) {
         this.context = context
         this.loadContext()
-		
     }
 
     @NonCPS

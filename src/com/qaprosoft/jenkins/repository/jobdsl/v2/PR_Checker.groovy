@@ -4,7 +4,7 @@ import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 
 new PRChecker().create()
 
-class PRChecker {
+class PR_Checker {
 	//jobdsl context to provide access to existing pipeline methods like echo, sh etc...
 	
     def create() {
