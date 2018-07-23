@@ -23,7 +23,7 @@ public abstract class Executor {
 
 	public Executor(context) {
 		this.context = context
-		configurator.loadContext()
+		//configurator.loadContext()
 	}
 	
 	protected clean() {
