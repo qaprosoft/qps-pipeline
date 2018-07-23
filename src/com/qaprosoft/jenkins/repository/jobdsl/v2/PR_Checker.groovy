@@ -26,10 +26,10 @@ class PR_Checker {
         println "repositoryName: ${repositoryName}"
         println "repositorySubName: ${repositorySubName}"
 
-        def htmlUrl = configurator.resolveVars("${GITHUB_HTML_URL}/${project}")
-        def sshUrl = configurator.resolveVars("${GITHUB_SSH_URL}/${project}.git")
-        def apiUrl = configurator.resolveVars("${GITHUB_API_URL}")
-        def organization = configurator.resolveVars("${GITHUB_ORGANIZATION}")
+        def htmlUrl = configurator.resolveVars("\${GITHUB_HTML_URL}/${project}")
+        def sshUrl = configurator.resolveVars("\${GITHUB_SSH_URL}/${project}.git")
+        def apiUrl = configurator.resolveVars("\${GITHUB_API_URL}")
+        def organization = configurator.resolveVars("\${GITHUB_ORGANIZATION}")
 		
         println "htmlUrl: ${htmlUrl}"
         println "sshUrl: ${sshUrl}"
