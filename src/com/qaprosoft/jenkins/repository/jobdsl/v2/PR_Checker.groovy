@@ -1,9 +1,11 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
+import com.cloudbees.groovy.cps.NonCPS
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 
 createPRCheckerJob()
 
+@NonCPS
 void createPRCheckerJob() {
   def repositoryName = "${project}"
   def repositorySubName = "${sub_project}"
