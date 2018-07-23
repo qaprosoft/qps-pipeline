@@ -1,7 +1,8 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
-compile('com.cloudbees:groovy-cps:1.22')
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
+
+new PRChecker().create()
 
 class PRChecker {
 	//jobdsl context to provide access to existing pipeline methods like echo, sh etc...
