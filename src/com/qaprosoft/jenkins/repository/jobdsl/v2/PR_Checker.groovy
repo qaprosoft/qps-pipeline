@@ -2,17 +2,20 @@ package com.qaprosoft.jenkins.repository.jobdsl.v2
 
 class PR_Checker {
 	//jobdsl context to provide access to existing pipeline methods like echo, sh etc...
+	protected def context
+	protected def binding
 	
 	public PR_Checker(context) {
-		//this.context = context
+		this.context = context
+		this.binding = context.binding
 	}
 	
     def create() {
 		//compile('com.cloudbees:groovy-cps:1.22')
 		
         //TODO: parametrize "jenkins_su - PR Checker"
-        def repositoryName = "${project}"
-        def repositorySubName = "${sub_project}"
+        def repositoryName = binding.variables.project
+        def repositorySubName = binding.variables.sub_project
 
         println "repositoryName: ${repositoryName}"
         println "repositorySubName: ${repositorySubName}"
