@@ -38,12 +38,12 @@ class PR_Checker {
 
 
         def jobFolder = "Pull-Request-Checkers"
-        folder(jobFolder) {
+        context.folder(jobFolder) {
             displayName(jobFolder)
         }
 
         def jobName = "${jobFolder}/${repositoryName}"
-        job(jobName) {
+        context.job(jobName) {
             logRotator(-1, 100)
             concurrentBuild()
             properties {
