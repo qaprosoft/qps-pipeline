@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
+
 createPRCheckerJob()
 
 void createPRCheckerJob() {
