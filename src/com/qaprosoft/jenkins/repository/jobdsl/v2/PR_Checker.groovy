@@ -13,6 +13,7 @@ class PR_Checker {
 	}
 	
     def create() {
+		context.println(binding.dump());
 		Configurator configurator = new Configurator(context)
 		configurator.loadContext()
 		
