@@ -15,7 +15,7 @@ class Scanner extends Executor {
 	}
 
 	public void scanRepository() {
-		configurator.loadContext()
+		configurator.loadContext(context.env.getEnvironment(), context.currentBuild.rawBuild.getAction(ParametersAction))
 		
 		context.node('master') {
 			context.timestamps {

@@ -15,7 +15,7 @@ class PR_Checker {
     def create() {
 		context.println(binding.dump());
 		Configurator configurator = new Configurator(context)
-		configurator.loadContext()
+		configurator.loadContext(binding.variables, binding.variables)
 		
 		//compile('com.cloudbees:groovy-cps:1.22')
 		
