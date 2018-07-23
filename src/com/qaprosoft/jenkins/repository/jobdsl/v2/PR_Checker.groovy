@@ -8,7 +8,7 @@ class PR_Checker {
 	}
 	
     def create() {
-		compile('com.cloudbees:groovy-cps:1.22')
+		//compile('com.cloudbees:groovy-cps:1.22')
 		
         //TODO: parametrize "jenkins_su - PR Checker"
         def repositoryName = "${project}"
