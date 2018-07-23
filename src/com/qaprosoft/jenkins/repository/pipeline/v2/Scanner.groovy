@@ -12,10 +12,11 @@ class Scanner extends Executor {
 	public Scanner(context) {
 		super(context)
 		scmClient = new GitHub(context)
-		configurator.loadContext()
 	}
 
 	public void scanRepository() {
+		configurator.loadContext()
+		
 		context.node('master') {
 			context.timestamps {
 				scmClient.clone()
