@@ -17,12 +17,12 @@ public class Configurator {
         this.loadContext()
     }
 
-    @NonCPS
+    //@NonCPS
     public static Map getParams() {
         return params
     }
 
-    @NonCPS
+    //@NonCPS
     public static Map getVars() {
         return vars
     }
@@ -95,7 +95,7 @@ public class Configurator {
 
     }
 	
-	@NonCPS
+	//@NonCPS
 	public void loadContext() {
 		// 1. load all obligatory Parameter(s) and their default key/values to vars. 
 		// any non empty value should be resolved in such order: Parameter, envvars and jobParams 
@@ -134,12 +134,12 @@ public class Configurator {
 		// public static void set(Map args) - ???
 	}
 
-    @NonCPS
+    //@NonCPS
     public static String get(Parameter param) {
 		return get(param.getKey());
     }
 	
-	@NonCPS
+	//@NonCPS
 	public static String get(String paramName) {
 		if (params.get(paramName) != null) {
 			return params.get(paramName);
