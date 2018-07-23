@@ -11,8 +11,8 @@ class Scanner extends Executor {
 
 	public Scanner(context) {
 		super(context)
-		this.context = context
 		scmClient = new GitHub(context)
+		configurator.loadContext()
 	}
 
 	public void scanRepository() {
