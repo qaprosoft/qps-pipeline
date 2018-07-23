@@ -1,8 +1,16 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
-//import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 
 class PR_Checker {
+	//jobdsl context to provide access to existing pipeline methods like echo, sh etc...
+	protected def context
+	protected def configurator
+	
+	public PR_Checker(context) {
+		this.context = context
+		configurator = new Configurator(context)
+	}
 
     def create() {
         //TODO: parametrize "jenkins_su - PR Checker"
