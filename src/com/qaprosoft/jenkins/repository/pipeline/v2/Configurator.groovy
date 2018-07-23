@@ -49,7 +49,7 @@ public class Configurator {
         GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
 		PROJECT("project", mustOverride),
-		PROJECT("sub_project", mustOverride),
+		SUB_PROJECT("sub_project", mustOverride),
 
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
         SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}"),
