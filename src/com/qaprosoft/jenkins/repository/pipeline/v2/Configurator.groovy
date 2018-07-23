@@ -119,14 +119,16 @@ public class Configurator {
 		}
 
 		// 2. Load all job parameters into unmodifiable map
-		for (param in jobParams) {
-			if (param.value != null) {
-				params.put(param.name, param.value)
+		if (jobParams != null) {
+			for (param in jobParams) {
+				if (param.value != null) {
+					params.put(param.name, param.value)
+				}
 			}
-		}
-		
-		for (param in params) {
-			context.println(param)
+			
+			for (param in params) {
+				context.println(param)
+			}
 		}
 	
 		//3. TODO: investigate how private pipeline can override those values
