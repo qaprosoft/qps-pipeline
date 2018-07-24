@@ -5,6 +5,7 @@ import org.testng.xml.XmlSuite;
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
+import com.qaprosoft.jenkins.repository.jobdsl.v2.Job
 
 class Scanner extends Executor {
 
@@ -173,13 +174,8 @@ class Scanner extends Executor {
 	                            crons << cronName
 	                        }
 
-							context.jobDsl additionalClasspath: 'src', scriptText: '''package com.qaprosoft.jenkins.repository.jobdsl.v2
+							context.jobDsl additionalClasspath: 'src', scriptText: '''
 
-@Grab('org.testng:testng:6.8.8')
-
-import org.testng.xml.Parser;
-import org.testng.xml.XmlSuite;
-import com.qaprosoft.jenkins.repository.jobdsl.v2.Job;
 
 def gitUrl = \'git://github.com/jenkinsci/job-dsl-plugin.git\'
 
