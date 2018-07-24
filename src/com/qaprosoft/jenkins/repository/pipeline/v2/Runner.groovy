@@ -442,7 +442,7 @@ clean test"
 				}
 		}
 		
-		def nodeLabel = params.get("node_label")
+		def nodeLabel = Configurator.get("node_label")
 		context.println("nodeLabel: " + nodeLabel)
 		if (!isParamEmpty(nodeLabel)) {
 			context.println("overriding default node to: " + nodeLabel)
