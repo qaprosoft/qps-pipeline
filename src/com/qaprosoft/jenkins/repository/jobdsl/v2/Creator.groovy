@@ -44,6 +44,7 @@ class Creator {
 		if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
 			def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
 			for (def cronJobName : cronJobNames.split(",")) {
+				cronJobName = cronJobName.trim()
 				job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
 			}
 		}

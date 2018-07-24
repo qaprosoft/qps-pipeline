@@ -1,8 +1,5 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
-import com.cloudbees.groovy.cps.NonCPS
-import java.util.List
-
 public class Configurator {
 
     private def context
@@ -34,7 +31,7 @@ public class Configurator {
     public enum Parameter {
 
         //vars
-        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.107"),
+        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.108"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
 		//to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
 		//the biggest problem is that AWS key can't be located in public repositories
@@ -71,7 +68,13 @@ public class Configurator {
 		SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
 		SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
 		
+		VNC_PROTOCOL("vnc_protocol", "ws"),
+		VNC_HOST("vnc_host", "\${QPS_HOST}"),
+		VNC_PORT("vnc_port", "80"),
+		
 		TIMEZONE("user.timezone", "UTC"),
+		
+		S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
 
         private final String key;
         private final String value;

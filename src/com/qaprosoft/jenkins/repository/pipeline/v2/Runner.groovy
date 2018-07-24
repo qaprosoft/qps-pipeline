@@ -87,8 +87,10 @@ class Runner extends Executor {
         String failureEmailList = Configurator.get("failure_email_list")
         String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
         String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        boolean DEVELOP = Configurator.get("develop").toBoolean()
-
+        boolean DEVELOP = false
+        if (Configurator.get("develop")) {
+            DEVELOP = Configurator.get("develop").toBoolean()
+        }
         //TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
@@ -144,8 +146,10 @@ class Runner extends Executor {
 
         String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
         String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        boolean DEVELOP = Configurator.get("develop").toBoolean()
-
+        boolean DEVELOP = false
+        if (Configurator.get("develop")) {
+            DEVELOP = Configurator.get("develop").toBoolean()
+        }
         context.stage('Rerun Tests'){
             try {
                 zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, DEVELOP)
@@ -218,7 +222,7 @@ class Runner extends Executor {
 
 		//geeral mobile capabilities
 		//TODO: find valid way for naming this global "MOBILE" quota
-		params.put("capabilities.deviceName", "QPS-HUB")
+		Configurator.set("capabilities.deviceName", "QPS-HUB")
 		if ("DefaultPool".equalsIgnoreCase(devicePool)) {
 			//reuse list of devices from hidden parameter DefaultPool
 			Configurator.set("capabilities.devicePool", defaultPool)
@@ -437,6 +441,14 @@ clean test"
 					Configurator.set("node", "web")
 				}
 		}
+		
+		def nodeLabel = Configurator.get("node_label")
+		context.println("nodeLabel: " + nodeLabel)
+		if (!isParamEmpty(nodeLabel)) {
+			context.println("overriding default node to: " + nodeLabel)
+			params.put("node", nodeLabel)
+		}
+
 		context.echo "node: " + Configurator.get("node")
 		return Configurator.get("node")
 	}
@@ -491,8 +503,7 @@ clean test"
 					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
 
 		//TODO: enable emailing but seems like it should be moved to the notification code
-		//context.emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list}"
-		//	context.emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list},${ADMIN_EMAILS}"
+		context.emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list},${ADMIN_EMAILS}"
 		return failureReason
 	}
 
@@ -646,8 +657,17 @@ clean test"
 
 	protected void parsePipeline(String filePath) {
 		//context.println("filePath: " + filePath)
-		XmlSuite currentSuite = parseSuite(filePath)
-		
+		def XmlSuite currentSuite = null
+		try {
+			currentSuite = parseSuite(filePath)
+		} catch (FileNotFoundException e) {
+			context.println("ERROR! Unable to find suite: " + filePath)
+			return
+		} catch (Exception e) {
+			context.println("ERROR! Unable to parse suite: " + filePath, e)
+			return
+		}
+
 		def jobName = currentSuite.getParameter("jenkinsJobName").toString()
 		def supportedPipelines = currentSuite.getParameter("jenkinsRegressionPipeline").toString() 
 		def orderNum = currentSuite.getParameter("jenkinsJobExecutionOrder").toString()
@@ -670,7 +690,7 @@ clean test"
 		}
 		
 		def priorityNum = "5"
-		def curPriorityNum = Configurator.get("priority")
+		def curPriorityNum = Configurator.get("BuildPriority")
 		if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
@@ -831,12 +851,12 @@ clean test"
 				if (!entry.get("browser").isEmpty()) {
 					context.build job: folderName + "/" + entry.get("jobName"),
 						propagate: propagateJob,
-						parameters: [context.string(name: 'branch', value: entry.get("branch")), context.string(name: 'env', value: entry.get("environment")), context.string(name: 'browser', value: entry.get("browser")), context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), context.string(name: 'email_list', value: entry.get("emailList")), context.string(name: 'thread_count', value: entry.get("thread_count")), context.string(name: 'retry_count', value: entry.get("retry_count")), context.string(name: 'BuildPriority', value: entry.get("priority")),],
+						parameters: [context.string(name: 'branch', value: entry.get("branch")), context.string(name: 'env', value: entry.get("environment")), context.string(name: 'browser', value: entry.get("browser")), context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), context.string(name: 'email_list', value: entry.get("emailList")), context.string(name: 'retry_count', value: entry.get("retry_count")), context.string(name: 'BuildPriority', value: entry.get("priority")),],
 						wait: waitJob
 				} else {
 					context.build job: folderName + "/" + entry.get("jobName"),
 						propagate: propagateJob,
-						parameters: [context.string(name: 'branch', value: entry.get("branch")), context.string(name: 'env', value: entry.get("environment")), context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), context.string(name: 'email_list', value: entry.get("emailList")), context.string(name: 'thread_count', value: entry.get("thread_count")), context.string(name: 'retry_count', value: entry.get("retry_count")), context.string(name: 'BuildPriority', value: entry.get("priority")),],
+						parameters: [context.string(name: 'branch', value: entry.get("branch")), context.string(name: 'env', value: entry.get("environment")), context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), context.string(name: 'email_list', value: entry.get("emailList")), context.string(name: 'retry_count', value: entry.get("retry_count")), context.string(name: 'BuildPriority', value: entry.get("priority")),],
 						wait: waitJob
 				}
 			} catch (Exception ex) {
