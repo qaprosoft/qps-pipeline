@@ -19,7 +19,16 @@ class Scanner extends Executor {
 		context.node('master') {
 			context.timestamps {
 				scmClient.clone()
-				this.scan()
+				
+				String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
+				String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
+				
+				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+				context.sh "pwd"
+				context.sh "ls -la"
+				context.sh "ls -la qps-pipeline"
+				
+//				this.scan()
 //				this.clean()
 			}
 		}

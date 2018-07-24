@@ -59,6 +59,29 @@ class GitHub implements ISCM {
 			//TODO: init git_commit as well
 		}
 	}
+	
+	public def clone(gitUrl, branch, subFolder) {
+		context.stage('Checkout GitHub Repository') {
+			context.println("GitHub->clone")
+
+			context.println("GIT_URL: " + gitUrl)
+			if (subFolder != null) {
+				context.checkout \
+					scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
+					doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]], \
+					submoduleCfg: [], \
+					userRemoteConfigs: [[url: gitUrl]]], \
+				changelog: false, poll: false,
+			else {
+				context.checkout \
+						scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
+						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], \
+							[$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
+						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
+						changelog: false, poll: false
+			}
+		}
+	}
 
     private boolean parseFork(fork) {
         boolean booleanFork = false
