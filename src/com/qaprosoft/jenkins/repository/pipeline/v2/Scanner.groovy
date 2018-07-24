@@ -193,14 +193,8 @@ class Scanner extends Executor {
 	                                        context.booleanParam(name: 'createCron', value: createCron),
 	                                ], wait: false*/
 									
-//							context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-//								targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
-							
-							jobDsl additionalClasspath: 'qps-pipeline/src', scriptText: '''
-import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
-
-def creator = new Creator(this)
-creator.createJob()'''
+							context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+								targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 									
 						}
 					} catch (FileNotFoundException e) {

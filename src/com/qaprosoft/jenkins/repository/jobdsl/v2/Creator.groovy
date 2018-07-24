@@ -18,7 +18,9 @@ class Creator {
 	}
 
 	void createJob() {
-		def workspace = binding.variables.WORKSPACE
+		context.dump(this)
+
+/*		def workspace = binding.variables.WORKSPACE
 		context.println("workspace: ${workspace}")
 
 
@@ -48,5 +50,5 @@ class Creator {
 				job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
 			}
 		}
-	}
+*/	}
 }
