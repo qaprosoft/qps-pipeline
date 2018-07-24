@@ -189,8 +189,7 @@ class Scanner extends Executor {
 									
 									context.jobDsl additionalClasspath: 'src', scriptText: '''
 def creator = new Creator(this)
-creator.createJob()
-}'''
+creator.createJob()'''
 									
 						}
 					} catch (FileNotFoundException e) {
