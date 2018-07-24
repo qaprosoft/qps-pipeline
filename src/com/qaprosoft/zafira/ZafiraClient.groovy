@@ -80,8 +80,8 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return
 		}
-		String upstreamJobId = Configurator.get("upstream_job_id")
-		String upstreamjobBuildNumber = Configurator.get("upstream_job_build_number")
+		String upstreamJobId = Configurator.get("ci_job_id")
+		String upstreamJobBuildNumber = Configurator.get("ci_parent_build")
 		String scmUrl = Configurator.get("scm_url")
 		String ciUserId = Configurator.get("ci_user_id")
 		String hashcode = Configurator.get("hashcode")
@@ -92,7 +92,7 @@ class ZafiraClient {
               value: "${token}"]],   \
 	      contentType: 'APPLICATION_JSON',   \
 	      httpMode: 'POST',   \
-	      requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobId\": \"${upstreamJobId}\", \"upstreamJobBuildNumber\": \"${upstreamjobBuildNumber}\", " +
+	      requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobId\": \"${upstreamJobId}\", \"upstreamJobBuildNumber\": \"${upstreamJobBuildNumber}\", " +
 				"\"scmUrl\": \"${scmUrl}\", \"hashcode\": \"${hashcode}\"}",   \
                   url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}",   \
                   timeout: 300000
