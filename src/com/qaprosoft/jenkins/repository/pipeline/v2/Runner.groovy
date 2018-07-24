@@ -87,8 +87,10 @@ class Runner extends Executor {
         String failureEmailList = Configurator.get("failure_email_list")
         String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
         String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        boolean DEVELOP = Configurator.get("develop").toBoolean()
-
+        boolean DEVELOP = false
+        if (Configurator.get("develop")) {
+            DEVELOP = Configurator.get("develop").toBoolean()
+        }
         //TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
