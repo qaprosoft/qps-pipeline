@@ -5,7 +5,7 @@ import org.testng.xml.XmlSuite;
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
-import com.qaprosoft.jenkins.repository.jobdsl.v2.Job
+import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 
 class Scanner extends Executor {
 
@@ -176,19 +176,9 @@ class Scanner extends Executor {
 
 							context.jobDsl additionalClasspath: 'src', scriptText: '''
 
+def creator = new Creator(this)
+creator.createJob()
 
-def gitUrl = \'git://github.com/jenkinsci/job-dsl-plugin.git\'
-
-job(\'PROJ-unit-tests\') {
-    scm {
-        git(gitUrl)
-    }
-    triggers {
-        scm(\'*/15 * * * *\')
-    }
-    steps {
-        maven(\'-e clean test\')
-    }
 }'''
 
 
