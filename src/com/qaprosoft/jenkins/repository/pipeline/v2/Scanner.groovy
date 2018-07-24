@@ -19,7 +19,7 @@ class Scanner extends Executor {
 			context.timestamps {
 				scmClient.clone()
 				this.scan()
-				this.clean()
+//				this.clean()
 			}
 		}
 	}
@@ -173,7 +173,15 @@ class Scanner extends Executor {
 	                            crons << cronName
 	                        }
 
-							context.jobDsl additionalClasspath: 'src', scriptText: '''def gitUrl = \'git://github.com/jenkinsci/job-dsl-plugin.git\'
+							context.jobDsl additionalClasspath: 'src', scriptText: '''package com.qaprosoft.jenkins.repository.jobdsl.v2
+
+@Grab('org.testng:testng:6.8.8')
+
+import org.testng.xml.Parser;
+import org.testng.xml.XmlSuite;
+import com.qaprosoft.jenkins.repository.jobdsl.v2.Job;
+
+def gitUrl = \'git://github.com/jenkinsci/job-dsl-plugin.git\'
 
 job(\'PROJ-unit-tests\') {
     scm {
