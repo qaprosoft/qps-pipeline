@@ -193,9 +193,15 @@ class Scanner extends Executor {
 	                                        context.booleanParam(name: 'createCron', value: createCron),
 	                                ], wait: false*/
 									
-							context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-								targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
-									
+//							context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+//								targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
+
+							jobDsl additionalClasspath: 'qps-pipeline/src', scriptText: '''package com.qaprosoft.jenkins.repository.jobdsl.v2
+
+import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
+
+def creator = new Creator(this)
+creator.createJob()'''
 						}
 					} catch (FileNotFoundException e) {
 						context.echo("ERROR! Unable to find suite: " + suite.path)
