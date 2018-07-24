@@ -27,8 +27,9 @@ class Scanner extends Executor {
 				context.sh "pwd"
 				context.sh "ls -la"
 				context.sh "ls -la qps-pipeline"
+				context.sh "ls -la qps-pipeline/com/qaprosoft/scm/github"
 				
-//				this.scan()
+				this.scan()
 //				this.clean()
 			}
 		}
