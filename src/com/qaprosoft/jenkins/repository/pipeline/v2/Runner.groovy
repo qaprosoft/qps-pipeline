@@ -144,8 +144,11 @@ class Runner extends Executor {
 
         String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
         String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        boolean DEVELOP = Configurator.get("develop").toBoolean()
-
+        if (Configurator.get("develop")) {
+            boolean DEVELOP = Configurator.get("develop").toBoolean()
+        } else {
+            boolean DEVELOP = false
+        }
         context.stage('Rerun Tests'){
             try {
                 zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, DEVELOP)
