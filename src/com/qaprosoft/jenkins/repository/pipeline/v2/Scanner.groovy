@@ -173,6 +173,21 @@ class Scanner extends Executor {
 	                            crons << cronName
 	                        }
 
+							jobDsl additionalClasspath: 'src', scriptText: '''def gitUrl = \'git://github.com/jenkinsci/job-dsl-plugin.git\'
+
+job(\'PROJ-unit-tests\') {
+    scm {
+        git(gitUrl)
+    }
+    triggers {
+        scm(\'*/15 * * * *\')
+    }
+    steps {
+        maven(\'-e clean test\')
+    }
+}'''
+
+
 	                        context.build job: "Management_Jobs/CreateJob",
 	                                propagate: false,
 	                                parameters: [
