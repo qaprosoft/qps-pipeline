@@ -76,14 +76,17 @@ class Scanner extends Executor {
 				}
 				context.println("zafira_project: ${zafira_project}")
 
-				if (prChecker) {
+				//TODO: restore PR checker functionality after configuring by default sonarqube scanner in jenkins-master:
+				// https://github.com/qaprosoft/jenkins-master/issues/11
+				
+/*				if (prChecker) {
 					// PR_Checker is supported only for the repo with single sub_project!
 					context.println("Launching Create-PR-Checker job for " + project)
 					context.build job: 'Management_Jobs/Create-PR-Checker', \
 							parameters: [context.string(name: 'project', value: project), context.string(name: 'sub_project', value: sub_project)], \
 							wait: false
 				}
-				
+*/				
 				
 				if (prMerger) {
 					//TODO: implement auto-deploy artifact job
@@ -185,7 +188,9 @@ class Scanner extends Executor {
 
 						}
 					} catch (FileNotFoundException e) {
-						context.println("Unable to find suite: " + suite.path)
+						context.println("ERROR! Unable to find suite: " + suite.path)
+					} catch (Exception e) {
+						context.println("ERROR! Unable to parse suite: " + filePath, e)
 					}
 				}
 			}
