@@ -72,7 +72,7 @@ class GitHub implements ISCM {
 					submoduleCfg: [], \
 					userRemoteConfigs: [[url: gitUrl]]], \
 				changelog: false, poll: false
-			else {
+			} else {
 				context.checkout \
 						scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
 						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], \
