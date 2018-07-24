@@ -24,13 +24,9 @@ class Scanner extends Executor {
 				String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
 				
 				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
-				context.sh "pwd"
-				context.sh "ls -la"
-				context.sh "ls -la qps-pipeline"
-				context.sh "ls -la qps-pipeline/src/com/qaprosoft/scm/github"
 				
 				this.scan()
-//				this.clean()
+				this.clean()
 			}
 		}
 	}
@@ -184,7 +180,7 @@ class Scanner extends Executor {
 	                            crons << cronName
 	                        }
 
-	                        context.build job: "Management_Jobs/CreateJob",
+/*	                        context.build job: "Management_Jobs/CreateJob",
 	                                propagate: false,
 	                                parameters: [
 	                                        context.string(name: 'jobFolder', value: jobFolder),
@@ -195,12 +191,10 @@ class Scanner extends Executor {
 	                                        context.string(name: 'zafira_project', value: zafira_project),
 	                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
 	                                        context.booleanParam(name: 'createCron', value: createCron),
-	                                ], wait: false
+	                                ], wait: false*/
 									
-									context.jobDsl additionalClasspath: 'src', scriptText: '''
-import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
-def creator = new Creator(this)
-creator.createJob()'''
+							context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+								targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 									
 						}
 					} catch (FileNotFoundException e) {
