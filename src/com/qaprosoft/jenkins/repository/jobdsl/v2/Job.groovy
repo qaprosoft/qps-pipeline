@@ -142,6 +142,12 @@ class Job {
 						break;
 				}
 
+				def nodeLabel = ""
+				if (currentSuite.toXml().contains("jenkinsNodeLabel")) {
+					nodeLabel = currentSuite.getParameter("jenkinsNodeLabel")
+					configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
+				}
+
 				def gitBranch = "master"
 				if (currentSuite.getParameter("jenkinsDefaultGitBranch") != null) {
 					gitBranch = currentSuite.getParameter("jenkinsDefaultGitBranch")
@@ -299,7 +305,7 @@ class Job {
 				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", "master")
 
 				stringParam('email_list', '', 'List of Users to be emailed after the test. If empty then populate from jenkinsEmail suite property')
-				stringParam('thread_count', '1', 'number of threads, number')
+				configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
 				choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
 			}
 			definition {
