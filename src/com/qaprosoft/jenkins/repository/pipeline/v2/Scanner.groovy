@@ -174,14 +174,6 @@ class Scanner extends Executor {
 	                            crons << cronName
 	                        }
 
-							context.jobDsl additionalClasspath: 'src', scriptText: '''
-
-def creator = new Creator(this)
-creator.createJob()
-
-}'''
-
-
 	                        context.build job: "Management_Jobs/CreateJob",
 	                                propagate: false,
 	                                parameters: [
@@ -194,7 +186,11 @@ creator.createJob()
 	                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
 	                                        context.booleanParam(name: 'createCron', value: createCron),
 	                                ], wait: false
-
+									
+									context.jobDsl additionalClasspath: 'src', scriptText: '''
+def creator = new Creator(this)
+creator.createJob()
+}'''
 						}
 					} catch (FileNotFoundException e) {
 						context.println("ERROR! Unable to find suite: " + suite.path)
