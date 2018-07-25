@@ -18,11 +18,16 @@ class Creator {
 	}
 
 	void createJob() {
-		context.println("this dump: " + this.dump())
-		context.println("context dump: " + context.dump())
-		context.println("binding dump: " + binding.dump())
-		
 		context.println("suite path: " + context.readFileFromWorkspace("curremt_suite.xml"))
+		def xmlFile = new Parser(context.readFileFromWorkspace("curremt_suite.xml"))
+		
+		xmlFile.setLoadClasses(false)
+		List<XmlSuite> suiteXml = xmlFile.parseToList()
+		XmlSuite currentSuite = suiteXml.get(0)
+		def jobName = currentSuite.getParameter("jenkinsJobName").toString()
+		context.println("jobName: " + jobName)
+
+		
 
 /*		def workspace = binding.variables.WORKSPACE
 		context.println("workspace: ${workspace}")
