@@ -127,6 +127,13 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
+					context.writeFile file: "curremt_suite.xml", text: suite.path
+					
+					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
+
+					continue;
+					
 					try{
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
 
@@ -193,17 +200,12 @@ class Scanner extends Executor {
 	                                        context.booleanParam(name: 'createCron', value: createCron),
 	                                ], wait: false*/
 									
-//							context.withEnv(['MYTOOL_HOME=/usr/local/mytool']) {
-//								context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-//									targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
-//							}
-
-							context.jobDsl additionalClasspath: 'qps-pipeline/src', scriptText: '''package com.qaprosoft.jenkins.repository.jobdsl.v2
-
-import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
-
-def creator = new Creator(this)
-creator.createJob()'''
+//							context.jobDsl additionalClasspath: 'qps-pipeline/src', scriptText: '''package com.qaprosoft.jenkins.repository.jobdsl.v2
+//
+//import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
+//
+//def creator = new Creator(this)
+//creator.createJob()'''
 						}
 					} catch (FileNotFoundException e) {
 						context.echo("ERROR! Unable to find suite: " + suite.path)
