@@ -53,7 +53,7 @@ class Creator {
 		}
 		
 		//TODO: improve cron recreation here
-		boolean createCron = binding.variables.createCron.toBoolean()
+		//boolean createCron = binding.variables.createCron.toBoolean()
 		boolean createCron = true
 
 		Job job = new Job(context)
