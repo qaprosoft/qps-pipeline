@@ -20,7 +20,7 @@ class Creator {
 	void createJob() {
 		context.println("suite path: " + context.readFileFromWorkspace("curremt_suite.xml"))
 		context.println("vars: " + binding.variables.dump())
-		def xmlFile = new Parser(context.readFileFromWorkspace("curremt_suite.xml"))
+		def xmlFile = new Parser(new File(context.readFileFromWorkspace("curremt_suite.xml")).absolutePath)
 		
 		xmlFile.setLoadClasses(false)
 		List<XmlSuite> suiteXml = xmlFile.parseToList()
