@@ -129,7 +129,7 @@ class Scanner extends Executor {
 
 					context.writeFile file: "curremt_suite.xml", text: suite.path
 					
-					withEnv(['a=qwe']) {
+					context.withEnv(['a=qwe']) {
 						context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 							targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 					}
