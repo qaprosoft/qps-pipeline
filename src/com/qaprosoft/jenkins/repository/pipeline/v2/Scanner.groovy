@@ -130,8 +130,12 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					context.writeFile file: "suite.path.txt", text: getWorkspace() + "/" + suite.path
+					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
 					
+					def suiteName = suite.path
+					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
+					context.writeFile file: "suite_name.txt", text: suiteName
+
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 
@@ -141,8 +145,8 @@ class Scanner extends Executor {
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
 
 						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
-							def suiteName = suite.path
-							suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
+							//def suiteName = suite.path
+							//suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 
 							context.println("suite name: " + suiteName)
 							context.println("suite path: " + suite.path)
