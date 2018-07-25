@@ -194,7 +194,6 @@ class Scanner extends Executor {
 						context.echo("ERROR! Unable to find suite: ${suite.path}")
 					} catch (Exception e) {
 						context.echo("ERROR! Unable to parse suite: ${suite.path}")
-                        context.echo(e.detailMessage)
                         context.echo(e.stackTrace)
                     }
 				}
