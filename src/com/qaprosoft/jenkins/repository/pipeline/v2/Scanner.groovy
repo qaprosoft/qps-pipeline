@@ -167,9 +167,8 @@ class Scanner extends Executor {
 	                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
 	                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
 
-                                context.println("RECREATE CRON = " + recreateCron);
+                                context.echo("RECREATE CRON = ${recreateCron}")
 	                            if (recreateCron && !isItemAvailable(jobFolder + "/" + cronName)) {
-                                    context.println("NEW CRON WAS CRETED " + recreateCron);
 	                                createCron = true
 	                            }
 	                            // we need only single regression cron declaration
