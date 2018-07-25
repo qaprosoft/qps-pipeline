@@ -29,7 +29,7 @@ class Scanner extends Executor {
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 			def project = Configurator.get("project")
 			def branch = Configurator.get("branch")
-			def recreateCron = Configurator.get("recreate_cron").toBoolean()
+			def createCron = Configurator.get("recreate_cron").toBoolean()
 
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
@@ -163,14 +163,9 @@ class Scanner extends Executor {
 									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: suiteOwner), context.string(name: 'descFilter', value: suiteOwner),]
 							}
 
-	                        def createCron = false
 	                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
 	                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
 
-                                context.println("RECREATE CRON" + recreateCron)
-	                            if (recreateCron) {
-	                                createCron = true
-	                            }
 	                            // we need only single regression cron declaration
 	                            //createCron = !crons.contains(cronName)
 	                            crons << cronName
