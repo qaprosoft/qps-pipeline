@@ -127,7 +127,7 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					context.writeFile file: "curremt_suite.xml", text: suite.path
+					context.writeFile file: "curremt_suite.xml", text: getWorkspace() + "/" + suite.path
 					
 					context.withEnv(['a=qwe']) {
 						context.jobDsl additionalClasspath: 'qps-pipeline/src', \
