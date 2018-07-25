@@ -117,11 +117,11 @@ context.println(context.env.getOverriddenEnvironment().dump())
 			
 		}
 
-        if (secureMode) {
-            vars.put("screen_record_host", "https://\${QPS_HOST}/video/%s.mp4")
-            vars.put("vnc_protocol", "wss")
-            vars.put("vnc_port", "443")
-        }
+//        if (secureMode) {
+//            vars.put("screen_record_host", "https://\${QPS_HOST}/video/%s.mp4")
+//            vars.put("vnc_protocol", "wss")
+//            vars.put("vnc_port", "443")
+//        }
 
 		for (var in vars) {
 			context.println(var)
