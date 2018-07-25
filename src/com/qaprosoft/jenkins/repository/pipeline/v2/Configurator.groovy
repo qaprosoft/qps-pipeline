@@ -103,6 +103,7 @@ public class Configurator {
 		
 		def enumValues  = Parameter.values()
 		def envVars = context.env.getEnvironment()
+        def secureMode = context.env.getOverriddenEnvironment().get("JENKINS_URL").contains("https")
 
         for (enumValue in enumValues) {
 			//a. set default values from enum
@@ -115,7 +116,7 @@ public class Configurator {
 			
 		}
 
-        if (context.env.getOverriddenEnvironment().get("JENKINS_URL").contains("https")) {
+        if (secureMode) {
             vars.put("screen_record_host", "https://\${QPS_HOST}/video/%s.mp4")
             vars.put("vnc_protocol", "wss")
             vars.put("vnc_port", "443")
