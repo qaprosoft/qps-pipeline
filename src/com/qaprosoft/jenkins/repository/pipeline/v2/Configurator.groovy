@@ -121,7 +121,7 @@ public class Configurator {
             vars.put("vnc_port", "443")
         }
 
-		for (var in vars) {
+        for (var in vars) {
 			context.println(var)
 		}
 
