@@ -18,6 +18,7 @@ public class BuildFactory extends JobFactory {
 		job.with {
             logRotator { numToKeep 100 }
             parameters {
+                description("project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}")
                 booleanParam('parameterIsHere', true, 'First factory parameter')
             }
 		}
