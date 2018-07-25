@@ -11,7 +11,7 @@ public class JobFactory {
     def myJob(_name, _description) {
         return _dslFactory.freeStyleJob(_name){
             description "DSL MANAGED: - $_description"
-            logRotator(-1, 10, -1, 10)
+            logRotator { numToKeep 100 }
         }
     }
 
