@@ -21,10 +21,10 @@ class Creator {
 		//TODO: remove hardcoded folder name 
 		def jobFolder = "Automation"
 		
-		context.println("suite path: " + context.readFileFromWorkspace("curremt_suite.xml"))
+		context.println("suite path: " + context.readFileFromWorkspace("suite.path.txt"))
 		context.println("vars: " + binding.variables.dump())
 		
-		def xmlFile = new Parser(new File(context.readFileFromWorkspace("curremt_suite.xml")).absolutePath)
+		def xmlFile = new Parser(new File(context.readFileFromWorkspace("suite.path.txt")).absolutePath)
 		
 		xmlFile.setLoadClasses(false)
 		List<XmlSuite> suiteXml = xmlFile.parseToList()
@@ -34,10 +34,11 @@ class Creator {
 
 		def project = binding.variables.project
 		context.println("project: " + project)
-		def sub_project = binding.variables.sub_project
+		
+		def sub_project = context.readFileFromWorkspace("sub_project.txt")
 		context.println("sub_project: " + sub_project)
 		
-		def zafira_project = binding.variables.zafira_project
+		def zafira_project = context.readFileFromWorkspace("zafira_project.txt")
 		context.println("zafira_project: " + zafira_project)
 		
 

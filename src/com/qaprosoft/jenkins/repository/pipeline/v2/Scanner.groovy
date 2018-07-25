@@ -63,6 +63,8 @@ class Scanner extends Executor {
 				context.println("sub_project: " + it)
 
 				def sub_project = it.name
+				context.writeFile file: "sub_project.txt", text: sub_project
+				
 				def subProjectFilter = it.name
 				if (sub_project.equals(".")) {
 					subProjectFilter = "**"
@@ -82,6 +84,7 @@ class Scanner extends Executor {
 					}
 				}
 				context.println("zafira_project: ${zafira_project}")
+				context.writeFile file: "zafira_project.txt", text: zafira_project
 
 				//TODO: restore PR checker functionality after configuring by default sonarqube scanner in jenkins-master:
 				// https://github.com/qaprosoft/jenkins-master/issues/11
@@ -127,7 +130,7 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					context.writeFile file: "curremt_suite.xml", text: getWorkspace() + "/" + suite.path
+					context.writeFile file: "suite.path.txt", text: getWorkspace() + "/" + suite.path
 					
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
