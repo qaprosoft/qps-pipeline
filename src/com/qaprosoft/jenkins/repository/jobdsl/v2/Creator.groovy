@@ -21,10 +21,12 @@ class Creator {
 		//TODO: remove hardcoded folder name 
 		def jobFolder = "Automation"
 		
-		context.println("suite path: " + context.readFileFromWorkspace("suite.path.txt"))
+		context.println("suite path: " + context.readFileFromWorkspace("suite_path.txt"))
 		context.println("vars: " + binding.variables.dump())
 		
-		def xmlFile = new Parser(new File(context.readFileFromWorkspace("suite.path.txt")).absolutePath)
+		def suite_name = context.readFileFromWorkspace("suite_name.txt")
+		
+		def xmlFile = new Parser(new File(context.readFileFromWorkspace("suite_path.txt")).absolutePath)
 		
 		xmlFile.setLoadClasses(false)
 		List<XmlSuite> suiteXml = xmlFile.parseToList()
@@ -57,7 +59,7 @@ class Creator {
 		boolean createCron = true
 
 		Job job = new Job(context)
-		job.createPipeline(context.pipelineJob(jobFolder + "/" + jobName), currentSuite, project, sub_project, suite, suiteOwner, zafira_project)
+		job.createPipeline(context.pipelineJob(jobFolder + "/" + jobName), currentSuite, project, sub_project, suite_name, suiteOwner, zafira_project)
 		
 		if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
 			def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
