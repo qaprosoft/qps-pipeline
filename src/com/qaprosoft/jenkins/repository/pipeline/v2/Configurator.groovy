@@ -104,11 +104,6 @@ public class Configurator {
 		def enumValues  = Parameter.values()
 		def envVars = context.env.getEnvironment()
 
-        context.println("ENV DUMP" + context.env.getOverriddenEnvironment())
-        for (var in envVars) {
-            context.println(var)
-        }
-
         for (enumValue in enumValues) {
 			//a. set default values from enum
 			vars.put(enumValue.getKey(), enumValue.getValue())
@@ -120,7 +115,7 @@ public class Configurator {
 			
 		}
 
-        if (!envVars.get("QPS_HOST").contains("https")) {
+        if (context.env.getOverriddenEnvironment().get("JENKINS_URL").contains("https")) {
             vars.put("screen_record_host", "https://\${QPS_HOST}/video/%s.mp4")
             vars.put("vnc_protocol", "wss")
             vars.put("vnc_port", "443")
