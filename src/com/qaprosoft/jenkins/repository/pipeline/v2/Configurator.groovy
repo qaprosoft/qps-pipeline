@@ -104,7 +104,7 @@ public class Configurator {
 		def enumValues  = Parameter.values()
 		def envVars = context.env.getEnvironment()
 
-        context.println("ENV DUMP" + context.env.getUrlName().dump())
+        context.println("ENV DUMP" + context.env.getUrlName())
 		for (enumValue in enumValues) {
 			//a. set default values from enum
 			vars.put(enumValue.getKey(), enumValue.getValue())
