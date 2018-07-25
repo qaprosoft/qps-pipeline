@@ -193,8 +193,10 @@ class Scanner extends Executor {
 	                                        context.booleanParam(name: 'createCron', value: createCron),
 	                                ], wait: false*/
 									
-							context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-								targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
+							withEnv(['MYTOOL_HOME=/usr/local/mytool']) {
+								context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+									targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
+							}
 
 //							jobDsl additionalClasspath: 'qps-pipeline/src', scriptText: '''package com.qaprosoft.jenkins.repository.jobdsl.v2
 //
