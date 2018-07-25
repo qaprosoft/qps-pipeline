@@ -20,6 +20,7 @@ class Creator {
 	void createJob() {
 		context.println("this dump: " + this.dump())
 		context.println("context dump: " + context.dump())
+		context.println("binding dump: " + binding.dump())
 
 /*		def workspace = binding.variables.WORKSPACE
 		context.println("workspace: ${workspace}")
