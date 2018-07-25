@@ -8,3 +8,4 @@ creator.createJob()
 
 def buildJobFactory = new BuildFactory(this)
 buildJobFactory.emptyJob("Empty job", "First factory job")
+buildJobFactory.jobWithParameter("Job with parameter", "First parametrized job")
