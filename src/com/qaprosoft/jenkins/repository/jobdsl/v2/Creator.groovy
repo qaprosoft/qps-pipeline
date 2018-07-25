@@ -18,6 +18,9 @@ class Creator {
 	}
 
 	void createJob() {
+		//TODO: remove hardcoded folder name 
+		def jobFolder = "Automation"
+		
 		context.println("suite path: " + context.readFileFromWorkspace("curremt_suite.xml"))
 		context.println("vars: " + binding.variables.dump())
 		
@@ -29,15 +32,12 @@ class Creator {
 		def jobName = currentSuite.getParameter("jenkinsJobName").toString()
 		context.println("jobName: " + jobName)
 
-		
-
-/*		def workspace = binding.variables.WORKSPACE
-		context.println("workspace: ${workspace}")
-
-
-		def jobFolder = binding.variables.jobFolder
 		def project = binding.variables.project
 		def sub_project = binding.variables.sub_project
+		
+
+/*		
+
 		def suite = binding.variables.suite
 		def suiteOwner = binding.variables.suiteOwner
 		def zafira_project = binding.variables.zafira_project
