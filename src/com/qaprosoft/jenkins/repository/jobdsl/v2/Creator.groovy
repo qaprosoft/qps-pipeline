@@ -33,23 +33,19 @@ class Creator {
 		context.println("jobName: " + jobName)
 
 		def project = binding.variables.project
+		context.println("project: " + project)
 		def sub_project = binding.variables.sub_project
+		context.println("sub_project: " + sub_project)
+		
+		def zafira_project = binding.variables.zafira_project
+		context.println("zafira_project: " + zafira_project)
 		
 
 /*		
 
 		def suite = binding.variables.suite
 		def suiteOwner = binding.variables.suiteOwner
-		def zafira_project = binding.variables.zafira_project
 		boolean createCron = binding.variables.createCron.toBoolean()
-		def suiteTmpPath = "${workspace}/suite.xml"
-		File file = new File(suiteTmpPath)
-		file.write(binding.variables.suiteXML)
-		def xmlFile = new Parser(new File(suiteTmpPath).absolutePath)
-		xmlFile.setLoadClasses(false)
-		List<XmlSuite> suiteXml = xmlFile.parseToList()
-		XmlSuite currentSuite = suiteXml.get(0)
-		def jobName = currentSuite.getParameter("jenkinsJobName").toString()
 		
 		Job job = new Job(context)
 		job.createPipeline(context.pipelineJob(jobFolder + "/" + jobName), currentSuite, project, sub_project, suite, suiteOwner, zafira_project)
