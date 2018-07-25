@@ -103,7 +103,8 @@ public class Configurator {
 		
 		def enumValues  = Parameter.values()
 		def envVars = context.env.getEnvironment()
-        def secureMode = context.env.getOverriddenEnvironment().get("JENKINS_URL").contains("https")
+        //def secureMode = context.env.getOverriddenEnvironment().get("JENKINS_URL").contains("https")
+context.println(context.env.getOverriddenEnvironment().dump())
 
         for (enumValue in enumValues) {
 			//a. set default values from enum
