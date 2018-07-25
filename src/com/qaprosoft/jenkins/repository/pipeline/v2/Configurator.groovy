@@ -105,7 +105,11 @@ public class Configurator {
 		def envVars = context.env.getEnvironment()
 
         context.println("ENV DUMP" + context.env.getOverriddenEnvironment())
-		for (enumValue in enumValues) {
+        for (var in envVars) {
+            context.println(var)
+        }
+
+        for (enumValue in enumValues) {
 			//a. set default values from enum
 			vars.put(enumValue.getKey(), enumValue.getValue())
 			
@@ -122,9 +126,9 @@ public class Configurator {
             vars.put("vnc_port", "443")
         }
 
-        for (var in vars) {
-            c
-        }
+		for (var in vars) {
+			context.println(var)
+		}
 
 		// 2. Load all job parameters into unmodifiable map
 		def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
