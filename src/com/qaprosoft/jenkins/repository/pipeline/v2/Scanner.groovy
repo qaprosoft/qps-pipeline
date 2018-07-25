@@ -166,7 +166,7 @@ class Scanner extends Executor {
                             boolean createCron = true
                             if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
 	                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
-                                if (!isItemAvailable(jobFolder + "/" + cronName)) {
+                                if (isItemAvailable(jobFolder + "/" + cronName)) {
                                     createCron = recreateCron
                                 }
 	                            // we need only single regression cron declaration
