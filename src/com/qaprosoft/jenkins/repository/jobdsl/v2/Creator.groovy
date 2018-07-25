@@ -41,13 +41,21 @@ class Creator {
 		def zafira_project = context.readFileFromWorkspace("zafira_project.txt")
 		context.println("zafira_project: " + zafira_project)
 		
-
-/*		
-
-		def suite = binding.variables.suite
-		def suiteOwner = binding.variables.suiteOwner
-		boolean createCron = binding.variables.createCron.toBoolean()
+		def suiteOwner = "anonymous"
+		if (currentSuite.toXml().contains("suiteOwner")) {
+			suiteOwner = currentSuite.getParameter("suiteOwner")
+		}
+		context.println("suiteOwner: " + suiteOwner)
 		
+		if (currentSuite.toXml().contains("zafira_project")) {
+			zafira_project = currentSuite.getParameter("zafira_project")
+			context.println("updated zafira_project: " + zafira_project)
+		}
+		
+		//TODO: improve cron recreation here
+		boolean createCron = binding.variables.createCron.toBoolean()
+		boolean createCron = true
+
 		Job job = new Job(context)
 		job.createPipeline(context.pipelineJob(jobFolder + "/" + jobName), currentSuite, project, sub_project, suite, suiteOwner, zafira_project)
 		
@@ -58,5 +66,5 @@ class Creator {
 				job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
 			}
 		}
-*/	}
+	}
 }
