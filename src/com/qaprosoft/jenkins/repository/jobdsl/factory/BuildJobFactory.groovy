@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.repository.jobdsl.factory
 import groovy.transform.*
 
 @InheritConstructors
-public class BuildFactory extends JobFactory {
+public class BuildJobFactory extends JobFactory {
 
 	def emptyJob(_name, _description) {
 		def job = myJob(_name, _description)
