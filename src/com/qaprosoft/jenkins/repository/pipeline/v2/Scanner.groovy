@@ -167,7 +167,7 @@ class Scanner extends Executor {
 	                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
 	                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
 
-                                context.echo("RECREATE CRON = ${recreateCron}")
+                                context.println("RECREATE CRON" + recreateCron)
 	                            if (recreateCron && !isItemAvailable(jobFolder + "/" + cronName)) {
 	                                createCron = true
 	                            }
@@ -191,11 +191,10 @@ class Scanner extends Executor {
 
 						}
 					} catch (FileNotFoundException e) {
-						context.echo("ERROR! Unable to find suite: ${suite.path}")
+						context.println("ERROR! Unable to find suite: " + suite.path)
 					} catch (Exception e) {
-						context.echo("ERROR! Unable to parse suite: ${suite.path}")
-                        context.echo(e.stackTrace.toString())
-                    }
+						context.println("ERROR! Unable to parse suite: " + suite.path, e)
+					}
 				}
 			}
 		}
