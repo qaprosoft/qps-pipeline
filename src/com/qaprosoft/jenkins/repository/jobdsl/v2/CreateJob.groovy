@@ -7,4 +7,4 @@ def creator = new Creator(this)
 creator.createJob()
 
 def buildJobFactory = new BuildFactory(this)
-buildJobFactory.emptyJob()
+buildJobFactory.emptyJob("Empty job", "First factory job")
