@@ -31,7 +31,7 @@ public class Configurator {
     public enum Parameter {
 
         //vars
-        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.108"),
+        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.5.113"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
 		//to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
 		//the biggest problem is that AWS key can't be located in public repositories
