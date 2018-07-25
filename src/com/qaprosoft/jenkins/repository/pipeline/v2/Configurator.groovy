@@ -103,7 +103,10 @@ public class Configurator {
 		
 		def enumValues  = Parameter.values()
 		def envVars = context.env.getEnvironment()
-		
+        boolean secure = envVars.get("QPS_HOST").contains("https")
+
+        context.println("IS HTTPS" + secure)
+
 		for (enumValue in enumValues) {
 			//a. set default values from enum
 			vars.put(enumValue.getKey(), enumValue.getValue())
