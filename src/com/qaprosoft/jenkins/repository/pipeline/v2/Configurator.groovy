@@ -103,9 +103,6 @@ public class Configurator {
 		
 		def enumValues  = Parameter.values()
 		def envVars = context.env.getEnvironment()
-        boolean secure = envVars.get("QPS_HOST").contains("https")
-
-        context.println("IS HTTPS" + secure)
 
 		for (enumValue in enumValues) {
 			//a. set default values from enum
@@ -117,7 +114,13 @@ public class Configurator {
 			}
 			
 		}
-		
+
+        if (!envVars.get("QPS_HOST").contains("https")) {
+            vars.put("screen_record_host", "https://\${QPS_HOST}/video/%s.mp4")
+            vars.put("vnc_protocol", "wss")
+            vars.put("vnc_port", "443")
+        }
+
 		for (var in vars) {
 			context.println(var)
 		}
@@ -133,7 +136,7 @@ public class Configurator {
 		for (param in params) {
 			context.println(param)
 		}
-	
+
 		//3. TODO: investigate how private pipeline can override those values
 		// public static void set(Map args) - ???
 	}
