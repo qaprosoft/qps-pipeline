@@ -22,7 +22,7 @@ class Creator {
 		context.println("context dump: " + context.dump())
 		context.println("binding dump: " + binding.dump())
 		
-		context.println("suite path: " + readFileFromWorkspace("curremt_suite.xml"))
+		context.println("suite path: " + context.readFileFromWorkspace("curremt_suite.xml"))
 
 /*		def workspace = binding.variables.WORKSPACE
 		context.println("workspace: ${workspace}")
