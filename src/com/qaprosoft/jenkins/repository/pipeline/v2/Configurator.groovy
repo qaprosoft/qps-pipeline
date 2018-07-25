@@ -122,8 +122,8 @@ public class Configurator {
         }
 
         for (var in vars) {
-			context.println(var)
-		}
+            context.println(var)
+        }
 
 		// 2. Load all job parameters into unmodifiable map
 		def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
