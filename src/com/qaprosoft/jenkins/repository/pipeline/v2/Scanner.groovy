@@ -198,7 +198,9 @@ class Scanner extends Executor {
 //									targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 //							}
 
-							jobDsl additionalClasspath: 'qps-pipeline/src', scriptText: '''import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
+							context.jobDsl additionalClasspath: 'qps-pipeline/src', scriptText: '''package com.qaprosoft.jenkins.repository.jobdsl.v2
+
+import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 
 def creator = new Creator(this)
 creator.createJob()'''
