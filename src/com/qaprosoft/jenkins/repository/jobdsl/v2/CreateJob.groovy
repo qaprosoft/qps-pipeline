@@ -12,4 +12,4 @@ def buildJobFactory = new BuildJobFactory(this)
 buildJobFactory.job("Free Style Job", "Factory job")
 
 def buildListViewFactory = new BuildListViewFactory(this)
-buildListViewFactory.listView("Automation", "view", "", "Automation")
+buildListViewFactory.listView("Automation", "view", "", "API-Demo-Test")
