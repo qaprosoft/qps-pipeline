@@ -13,4 +13,4 @@ buildJobFactory.job("Automation/Factory-Generated-Job", "Factory job")
 
 def buildViewFactory = new BuildViewFactory(this)
 buildViewFactory.listView("Automation", "listView", "", "Factory-Generated-Job")
-buildViewFactory.categorizedView("Automation", "CategorizedView", "", "Factory-Generated-Job")
+buildViewFactory.categorizedView("Automation", "categorizedView", "", "Factory-Generated-Job")
