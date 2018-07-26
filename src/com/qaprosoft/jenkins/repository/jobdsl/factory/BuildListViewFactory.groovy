@@ -1,5 +1,8 @@
 package com.qaprosoft.jenkins.repository.jobdsl.factory
 
+import groovy.transform.InheritConstructors
+
+@InheritConstructors
 public class BuildListViewFactory extends ListViewFactory{
 
     def listView(folder, viewName, descFilter) {
