@@ -8,9 +8,9 @@ public class JobFactory {
         this.dslFactory = dslFactory
     }
 
-    def freeStyleJob(_name, _description) {
-        return dslFactory.freeStyleJob(_name){
-            description "DSL MANAGED: - $_description"
+    def freeStyleJob(name, description) {
+        return dslFactory.freeStyleJob(name){
+            description "DSL MANAGED: - $description"
             logRotator { numToKeep 100 }
         }
     }
