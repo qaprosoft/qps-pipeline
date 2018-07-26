@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.repository.jobdsl.factory
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class BuildListViewFactory extends ListViewFactory{
+public class BuildViewFactory extends ViewFactory{
 
     def listView(folder, viewName, descFilter, jobNames) {
         def view = factoryListView(folder, viewName)
@@ -27,6 +27,30 @@ public class BuildListViewFactory extends ListViewFactory{
                     }
                 }
             }
+            jobs {
+                names(jobNames)
+            }
+        }
+        return view
+    }
+
+    def categorizedView(folder, viewName, criteria, jobNames) {
+        def view = factoryCategorizedView(folder, viewName)
+        view.with {
+            columns {
+                status()
+                weather()
+                name()
+                lastSuccess()
+                lastFailure()
+                lastDuration()
+                buildButton()
+            }
+
+            categorizationCriteria {
+                regexGroupingRule(criteria)
+            }
+
             jobs {
                 names(jobNames)
             }
