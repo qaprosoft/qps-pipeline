@@ -471,6 +471,7 @@ clean test"
 		String JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
 		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 		String JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
+		String ADMIN_EMAILS = Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
 
 		String email_list = Configurator.get("email_list")
 
