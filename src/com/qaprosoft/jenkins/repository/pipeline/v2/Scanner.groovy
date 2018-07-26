@@ -5,6 +5,7 @@ import org.testng.xml.XmlSuite;
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
+import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 
 class Scanner extends Executor {
 
@@ -18,6 +19,12 @@ class Scanner extends Executor {
 		context.node('master') {
 			context.timestamps {
 				scmClient.clone()
+
+				String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
+				String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
+
+				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+
 				this.scan()
 				this.clean()
 			}
@@ -58,6 +65,8 @@ class Scanner extends Executor {
 				context.println("sub_project: " + it)
 
 				def sub_project = it.name
+				context.writeFile file: "sub_project.txt", text: sub_project
+
 				def subProjectFilter = it.name
 				if (sub_project.equals(".")) {
 					subProjectFilter = "**"
@@ -77,6 +86,7 @@ class Scanner extends Executor {
 					}
 				}
 				context.println("zafira_project: ${zafira_project}")
+				context.writeFile file: "zafira_project.txt", text: zafira_project
 
 				//TODO: restore PR checker functionality after configuring by default sonarqube scanner in jenkins-master:
 				// https://github.com/qaprosoft/jenkins-master/issues/11
@@ -122,12 +132,23 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
+					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
+
+					def suiteName = suite.path
+					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
+					context.writeFile file: "suite_name.txt", text: suiteName
+
+					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
+
+					continue;
+
 					try{
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
 
 						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
-							def suiteName = suite.path
-							suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
+							//def suiteName = suite.path
+							//suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 
 							context.println("suite name: " + suiteName)
 							context.println("suite path: " + suite.path)
@@ -174,7 +195,7 @@ class Scanner extends Executor {
                                 crons << cronName
                             }
 
-	                        context.build job: "Management_Jobs/CreateJob",
+/*	                        context.build job: "Management_Jobs/CreateJob",
 	                                propagate: false,
 	                                parameters: [
 	                                        context.string(name: 'jobFolder', value: jobFolder),
@@ -185,13 +206,19 @@ class Scanner extends Executor {
 	                                        context.string(name: 'zafira_project', value: zafira_project),
 	                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
 	                                        context.booleanParam(name: 'createCron', value: createCron),
-	                                ], wait: false
+	                                ], wait: false*/
 
+//							context.jobDsl additionalClasspath: 'qps-pipeline/src', scriptText: '''package com.qaprosoft.jenkins.repository.jobdsl.v2
+//
+//import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
+//
+//def creator = new Creator(this)
+//creator.createJob()'''
 						}
 					} catch (FileNotFoundException e) {
-						context.println("ERROR! Unable to find suite: " + suite.path)
+						context.echo("ERROR! Unable to find suite: " + suite.path)
 					} catch (Exception e) {
-						context.println("ERROR! Unable to parse suite: " + suite.path, e)
+						context.echo("ERROR! Unable to parse suite: " + suite.path, e)
 					}
 				}
 			}
