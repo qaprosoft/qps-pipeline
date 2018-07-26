@@ -12,6 +12,27 @@ public class ListViewFactory extends JobFactory {
             parameters {
                 booleanParam('parameterIsHere', true, 'First factory parameter')
             }
+            listView("Random view") {
+                columns {
+                    status()
+//                    weather()
+                    name()
+                    lastSuccess()
+                    lastFailure()
+                    lastDuration()
+                    buildButton()
+                }
+
+//                if (!"${descFilter}".isEmpty()) {
+//                    jobFilters {
+//                        regex {
+//                            matchType(MatchType.INCLUDE_MATCHED)
+//                            matchValue(RegexMatchValue.DESCRIPTION)
+//                            regex(".*${descFilter}.*")
+//                        }
+//                    }
+//                }
+            }
 		}
 		return job
 	}
