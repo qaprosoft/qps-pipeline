@@ -8,27 +8,9 @@ public class ListViewFactory {
         _dslFactory = dslFactory
     }
 
-    def listView(folder, view, descFilter) {
-        return _dslFactory.listView("${folder}/${view}") {
-            columns {
-                status()
-                weather()
-                name()
-                lastSuccess()
-                lastFailure()
-                lastDuration()
-                buildButton()
-            }
+    def factoryListView(folder, name) {
+        return _dslFactory.listView("${folder}/${name}") {
 
-            if (!"${descFilter}".isEmpty()) {
-                jobFilters {
-                    regex {
-                        matchType(MatchType.INCLUDE_MATCHED)
-                        matchValue(RegexMatchValue.DESCRIPTION)
-                        regex(".*${descFilter}.*")
-                    }
-                }
-            }
         }
     }
 }
