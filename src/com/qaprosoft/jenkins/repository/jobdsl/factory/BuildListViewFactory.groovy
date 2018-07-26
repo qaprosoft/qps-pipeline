@@ -8,7 +8,6 @@ public class BuildListViewFactory extends ListViewFactory{
     def listView(folder, viewName, descFilter) {
         def view = factoryListView(folder, viewName)
         view.with {
-            logRotator { numToKeep 100 }
             columns {
                 status()
                 weather()
