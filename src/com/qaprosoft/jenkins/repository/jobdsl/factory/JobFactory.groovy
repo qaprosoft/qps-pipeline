@@ -10,15 +10,15 @@ public class JobFactory {
 
     def freeStyleJob(name, description) {
         return dslFactory.freeStyleJob(name){
-            description "DSL MANAGED JOB: - ${description}".toString()
+            description 'DSL MANAGED JOB: - ' + ${description}
             logRotator { numToKeep 100 }
         }
     }
 
-    def pipelineJob(name, description) {
-        return dslFactory.pipelineJob(name){
-            description "DSL MANAGED PIPELINE: - ${description}".toString()
-            logRotator { numToKeep 100 }
-        }
-    }
+//    def pipelineJob(name, description) {
+//        return dslFactory.pipelineJob(name){
+//            description "DSL MANAGED PIPELINE: - ${description}".toString()
+//            logRotator { numToKeep 100 }
+//        }
+//    }
 }
