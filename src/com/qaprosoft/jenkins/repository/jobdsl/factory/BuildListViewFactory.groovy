@@ -5,7 +5,7 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class BuildListViewFactory extends ListViewFactory{
 
-    def listView(folder, viewName, descFilter) {
+    def listView(folder, viewName, descFilter, jobNames) {
         def view = factoryListView(folder, viewName)
         view.with {
             columns {
@@ -26,6 +26,9 @@ public class BuildListViewFactory extends ListViewFactory{
                         regex(".*${descFilter}.*")
                     }
                 }
+            }
+            jobs {
+                names(jobNames)
             }
         }
         return view
