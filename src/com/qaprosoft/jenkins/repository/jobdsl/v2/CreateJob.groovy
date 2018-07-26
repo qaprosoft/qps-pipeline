@@ -7,5 +7,4 @@ def creator = new Creator(this)
 creator.createJob()
 
 def listViewFactory = new ListViewFactory(this)
-listViewFactory.emptyJob("Empty job", "First factory job")
-listViewFactory.jobWithParameter("Job with parameter", "First parametrized job")
+listViewFactory.job("Free Style Job", "Factory job")
