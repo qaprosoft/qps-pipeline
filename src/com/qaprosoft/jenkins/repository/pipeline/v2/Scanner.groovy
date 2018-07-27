@@ -15,7 +15,9 @@ class Scanner extends Executor {
 		scmClient = new GitHub(context)
 	}
 
-	public void scanRepository() {
+    def createViewFactory = new CreateViewFactory(this)
+
+    public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
 				scmClient.clone()
@@ -109,9 +111,11 @@ class Scanner extends Executor {
 				//TODO: #2 declare global list for created regression cron jobs
 				//	   provide extra flag includeIntoCron for CreateJob
 				List<String> crons = []
-				context.build job: "Management_Jobs/CreateView",
-					propagate: false,
-					parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: 'CRON'), context.string(name: 'descFilter', value: 'cron'),]
+
+                createViewFactory.scannerListView("Management_Jobs/CreateView", jobFolder, 'CRON', 'cron', false)
+//				context.build job: "Management_Jobs/CreateView",
+//					propagate: false,
+//					parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: 'CRON'), context.string(name: 'descFilter', value: 'cron'),]
 
 				if (suiteFilter.endsWith("/")) {
 					//remove last character if it is slash
@@ -139,7 +143,7 @@ class Scanner extends Executor {
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 
-					continue;
+					continue
 
 					try{
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
