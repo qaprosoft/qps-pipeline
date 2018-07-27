@@ -113,7 +113,7 @@ class Scanner extends Executor {
 				//	   provide extra flag includeIntoCron for CreateJob
 				List<String> crons = []
 
-                createViewFactory.scannerListView("Management_Jobs/CreateView", jobFolder, 'CRON', 'cron', false)
+//                createViewFactory.scannerListView("Management_Jobs/CreateView", jobFolder, 'CRON', 'cron', false)
 //				context.build job: "Management_Jobs/CreateView",
 //					propagate: false,
 //					parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: 'CRON'), context.string(name: 'descFilter', value: 'cron'),]
