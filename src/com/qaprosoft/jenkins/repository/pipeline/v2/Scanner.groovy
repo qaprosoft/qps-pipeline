@@ -14,9 +14,8 @@ class Scanner extends Executor {
 		super(context)
 		this.context = context
 		scmClient = new GitHub(context)
+        def createViewFactory = new CreateViewFactory(context.binding)
 	}
-
-//    def createViewFactory = new CreateViewFactory(context.binding)
 
     public void scanRepository() {
 		context.node('master') {
@@ -36,7 +35,7 @@ class Scanner extends Executor {
 
 	protected void scan() {
         context.println('DUMP')
-        context.println(context.jobDsl.dump())
+        context.println(context.binding.dump())
 
 		context.stage("Scan Repository") {
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
