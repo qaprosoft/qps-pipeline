@@ -8,8 +8,8 @@ public class ViewFactory {
         _dslFactory = dslFactory
     }
 
-    def factoryListView(folder, name) {
-        return _dslFactory.listView("${folder}/${name}") {
+    def factoryListView(_folder, _name) {
+        return _dslFactory.listView("$_folder/$_name") {
         }
     }
 
