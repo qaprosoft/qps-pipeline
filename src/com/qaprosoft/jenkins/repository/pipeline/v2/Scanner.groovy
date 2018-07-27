@@ -10,16 +10,16 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.CreateViewFactory
 
 class Scanner extends Executor {
 
-    protected def jobDsl
+    protected def binding
 
 	public Scanner(context) {
 		super(context)
 		this.context = context
-//        this.jobDsl = context.jobDsl
+        this.binding = context.binding
 		scmClient = new GitHub(context)
 	}
 
-//    def createViewFactory = new CreateViewFactory(jobDsl)
+    def createViewFactory = new CreateViewFactory(binding)
 
     public void scanRepository() {
 		context.node('master') {
@@ -119,7 +119,7 @@ class Scanner extends Executor {
 				//	   provide extra flag includeIntoCron for CreateJob
 				List<String> crons = []
 
-               // createViewFactory.listView(jobFolder, 'CRON', 'cron', '')
+                createViewFactory.listView(jobFolder, 'CRON', 'cron', '')
 
 				if (suiteFilter.endsWith("/")) {
 					//remove last character if it is slash
