@@ -6,7 +6,7 @@ import groovy.transform.InheritConstructors
 public class CreateViewFactory extends ViewFactory{
 
     def scannerListView(jobName, jobFolder, view, descFilter, propagate) {
-        def _view = factoryListView(jobFolder, view)
+        //def _view = factoryListView(jobFolder, view)
         _view.with {
             job {
                 name(jobName)
