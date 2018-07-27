@@ -142,8 +142,8 @@ class Scanner extends Executor {
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 
-                    context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
+//                    context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+//						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
 
 
                     continue
