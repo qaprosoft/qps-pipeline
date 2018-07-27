@@ -8,13 +8,11 @@ public class ViewFactory {
         _dslFactory = dslFactory
     }
 
-    def factoryListView(_folder, _name) {
-        return _dslFactory.listView(${_folder} + '/' + ${_name}){
-            description('Any')
-        }
+    def factoryListView(folder, name) {
+        return _dslFactory.listView(${folder} + '/' + ${name})
     }
 
-    def factoryCategorizedView(_folder, _name) {
-        return _dslFactory.categorizedJobsView("$_folder/$_name".toString())
+    def factoryCategorizedView(folder, name) {
+        return _dslFactory.categorizedJobsView(${folder} + '/' + ${name})
     }
 }
