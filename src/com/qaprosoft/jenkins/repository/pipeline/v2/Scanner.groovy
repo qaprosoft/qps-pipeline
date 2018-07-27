@@ -38,6 +38,7 @@ class Scanner extends Executor {
 	}
 
 	protected void scan() {
+        context.println('DUMP')
         context.println(context.dump())
 
 		context.stage("Scan Repository") {
