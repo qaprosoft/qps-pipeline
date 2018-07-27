@@ -12,21 +12,22 @@ public class CreateViewFactory extends ViewFactory{
                 name(jobName)
             }
 
-            stringParameterValue {
-                name('folder')
-                value(jobFolder)
-            }
+            parameters {
+                stringParameterValue {
+                    name('folder')
+                    value(jobFolder)
+                }
 
-            stringParameterValue {
-                name('view')
-                value(view)
-            }
+                stringParameterValue {
+                    name('view')
+                    value(view)
+                }
 
-            stringParameterValue {
-                name('descFilter')
-                value(descFilter)
+                stringParameterValue {
+                    name('descFilter')
+                    value(descFilter)
+                }
             }
-
             propagate(propagate)
        }
         return _view
