@@ -8,7 +8,7 @@ public class CreateViewFactory extends ViewFactory{
     def scannerListView(jobName, jobFolder, view, descFilter, propagate) {
         def _view = factoryListView(jobFolder, view)
         _view.with {
-            job {
+            jobs {
                 name(jobName)
             }
 
