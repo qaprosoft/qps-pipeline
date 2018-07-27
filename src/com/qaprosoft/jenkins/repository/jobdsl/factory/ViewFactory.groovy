@@ -9,12 +9,10 @@ public class ViewFactory {
     }
 
     def factoryListView(_folder, _name) {
-        return _dslFactory.listView("$_folder/$_name") {
-        }
+        return _dslFactory.listView("$_folder/$_name")
     }
 
-    def factoryCategorizedView(folder, name) {
-        return _dslFactory.categorizedJobsView("${folder}/${name}") {
-        }
+    def factoryCategorizedView(_folder, _name) {
+        return _dslFactory.categorizedJobsView("$_folder/$_name")
     }
 }
