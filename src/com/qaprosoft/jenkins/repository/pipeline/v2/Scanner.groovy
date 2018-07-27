@@ -16,7 +16,7 @@ class Scanner extends Executor {
 		scmClient = new GitHub(context)
 	}
 
-    def createViewFactory = new CreateViewFactory()
+    def createViewFactory = new CreateViewFactory(context)
 
     public void scanRepository() {
 		context.node('master') {
@@ -113,10 +113,7 @@ class Scanner extends Executor {
 				//	   provide extra flag includeIntoCron for CreateJob
 				List<String> crons = []
 
-//                createViewFactory.scannerListView("Management_Jobs/CreateView", jobFolder, 'CRON', 'cron', false)
-//				context.build job: "Management_Jobs/CreateView",
-//					propagate: false,
-//					parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: 'CRON'), context.string(name: 'descFilter', value: 'cron'),]
+                createViewFactory.listView(jobFolder, 'CRON', 'cron', '')
 
 				if (suiteFilter.endsWith("/")) {
 					//remove last character if it is slash
