@@ -16,7 +16,7 @@ class Scanner extends Executor {
 		scmClient = new GitHub(context)
 	}
 
-    def createViewFactory = new CreateViewFactory(context)
+    def createViewFactory = new CreateViewFactory(context.jobDsl)
 
     public void scanRepository() {
 		context.node('master') {
