@@ -10,11 +10,13 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.CreateViewFactory
 
 class Scanner extends Executor {
 
+    def createViewFactory
+
 	public Scanner(context) {
 		super(context)
 		this.context = context
 		scmClient = new GitHub(context)
-        def createViewFactory = new CreateViewFactory(context.binding)
+        createViewFactory = new CreateViewFactory(context.binding)
 	}
 
     public void scanRepository() {
