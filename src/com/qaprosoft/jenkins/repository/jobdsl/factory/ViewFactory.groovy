@@ -9,7 +9,7 @@ public class ViewFactory {
     }
 
     def factoryListView(_folder, _name) {
-        return _dslFactory.listView($_folder + '/' + $_name)
+        return _dslFactory.listView(${_folder} + '/' + ${_name})
     }
 
     def factoryCategorizedView(_folder, _name) {
