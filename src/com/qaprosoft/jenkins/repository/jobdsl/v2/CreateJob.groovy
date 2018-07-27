@@ -7,4 +7,4 @@ def creator = new Creator(this)
 creator.createJob()
 
 def createViewFactory = new CreateViewFactory(this)
-createViewFactory.scannerListView("Management_Jobs/CreateView", "Automation", 'CRON', 'cron', false)
+createViewFactory.listView('Automation', 'CRON', 'cron', '')
