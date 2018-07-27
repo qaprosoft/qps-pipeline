@@ -36,7 +36,7 @@ class Scanner extends Executor {
 
 	protected void scan() {
         context.println('DUMP')
-        context.println(context.binding.variables.dump())
+        context.println(context.jobDsl.dump())
 
 		context.stage("Scan Repository") {
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
