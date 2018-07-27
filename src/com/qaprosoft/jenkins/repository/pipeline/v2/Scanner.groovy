@@ -10,7 +10,6 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.CreateViewFactory
 
 class Scanner extends Executor {
 
-    protected CreateViewFactory createViewFactory = new CreateViewFactory(context.binding)
 
     public Scanner(context) {
 		super(context)
@@ -116,7 +115,6 @@ class Scanner extends Executor {
 				//	   provide extra flag includeIntoCron for CreateJob
 				List<String> crons = []
 
-              //  createViewFactory.listView(jobFolder, 'CRON', 'cron', '')
 
 				if (suiteFilter.endsWith("/")) {
 					//remove last character if it is slash
@@ -144,9 +142,13 @@ class Scanner extends Executor {
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 
-					continue
+                    context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
 
-					try{
+
+                    continue
+
+					try {
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
 
 						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {

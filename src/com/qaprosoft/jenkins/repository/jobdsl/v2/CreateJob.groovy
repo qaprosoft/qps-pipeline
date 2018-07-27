@@ -6,5 +6,5 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.CreateViewFactory
 def creator = new Creator(this)
 creator.createJob()
 
-//def createViewFactory = new CreateViewFactory(this)
-//createViewFactory.listView('Automation', 'CRON', 'cron', '')
+def createViewFactory = new CreateViewFactory(this)
+createViewFactory.listView('Automation', 'CRON', 'cron', '')
