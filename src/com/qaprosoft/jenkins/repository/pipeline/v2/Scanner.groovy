@@ -116,7 +116,7 @@ class Scanner extends Executor {
 				//	   provide extra flag includeIntoCron for CreateJob
 				List<String> crons = []
 
-                createViewFactory.listView(jobFolder, 'CRON', 'cron', '')
+              //  createViewFactory.listView(jobFolder, 'CRON', 'cron', '')
 
 				if (suiteFilter.endsWith("/")) {
 					//remove last character if it is slash
