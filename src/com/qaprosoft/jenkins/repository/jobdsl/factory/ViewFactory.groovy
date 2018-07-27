@@ -17,5 +17,4 @@ public class ViewFactory {
         return _dslFactory.categorizedJobsView("${folder}/${name}") {
         }
     }
-
 }

@@ -36,8 +36,6 @@ class Scanner extends Executor {
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 			def project = Configurator.get("project")
 			def branch = Configurator.get("branch")
-			def recreateCron = Configurator.get("recreate_cron").toBoolean()
-
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
 			
@@ -184,16 +182,17 @@ class Scanner extends Executor {
 									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: suiteOwner), context.string(name: 'descFilter', value: suiteOwner),]
 							}
 
-                            boolean createCron = true
-                            if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
-                                def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
-                                if (isItemAvailable(jobFolder + "/" + cronName)) {
-                                    createCron = recreateCron
-                                }
-                                // we need only single regression cron declaration
-                                //createCron = !crons.contains(cronName)
-                                crons << cronName
-                            }
+	                        def createCron = false
+	                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
+	                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
+
+	                            if (!isItemAvailable(jobFolder + "/" + cronName)) {
+	                                createCron = true
+	                            }
+	                            // we need only single regression cron declaration
+	                            //createCron = !crons.contains(cronName)
+	                            crons << cronName
+	                        }
 
 /*	                        context.build job: "Management_Jobs/CreateJob",
 	                                propagate: false,
