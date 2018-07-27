@@ -14,5 +14,4 @@ public class JobFactory {
             logRotator { numToKeep 100 }
         }
     }
-
 }
