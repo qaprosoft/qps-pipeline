@@ -142,6 +142,8 @@ class Scanner extends Executor {
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 
+					
+					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project 
                     context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
 
