@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.repository.jobdsl.factory
+package com.qaprosoft.jenkins.repository.jobdsl.factory.view
 
 import groovy.transform.InheritConstructors
 
