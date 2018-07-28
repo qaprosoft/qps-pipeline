@@ -9,3 +9,6 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFacto
 
 def listViewFactory = new ListViewFactory(this)
 listViewFactory.create('Automation', 'CRON', 'cron', '')
+
+def categorizedViewFactory = new CategorizedViewFactory(this)
+categorizedViewFactory.create('Automation', 'CRON2', '.*cron.*', '')
