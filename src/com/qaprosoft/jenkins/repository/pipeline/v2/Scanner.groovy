@@ -6,10 +6,10 @@ import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
-import com.qaprosoft.jenkins.repository.jobdsl.factory.CreateViewFactory
 
 class Scanner extends Executor {
-
+	//TODO: specify default factory classes
+	//protected String viewFactory = "CreateViewFactory"
 
     public Scanner(context) {
 		super(context)
