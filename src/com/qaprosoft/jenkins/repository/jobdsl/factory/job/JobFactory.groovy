@@ -17,22 +17,6 @@ public class JobFactory extends DslFactory {
 		
 		this.clazz = this.getClass().getCanonicalName()
 	}
-
-	public JobFactory(name, description) {
-		this.name = name
-		this.description = description
-		this.logRotator = 100
-		
-		this.clazz = this.getClass().getCanonicalName()
-	}
-	
-	public JobFactory(name) {
-		this.name = name
-		this.description = "desc"
-		this.logRotator = 100
-
-		this.clazz = this.getClass().getCanonicalName()
-	}
 	
 	def create() {
 		def job = _dslFactory.freeStyleJob("${name}"){
