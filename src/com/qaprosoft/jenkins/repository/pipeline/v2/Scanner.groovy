@@ -147,7 +147,7 @@ class Scanner extends Executor {
 					listViewFactories.put(cronListFactory.viewName, cronListFactory)
 
 					listViewFactories.each{
-						context.println(it.value)
+						context.println(it.value.dump())
 					}
 
 					cronListFactory.viewName = project.toUpperCase()
@@ -155,7 +155,7 @@ class Scanner extends Executor {
 					listViewFactories.put(cronListFactory.viewName, cronListFactory)
 
 					listViewFactories.each{
-						context.println(it.value)
+						context.println(it.value.dump())
 					}
 
 					cronListFactory.viewName = zafira_project
@@ -163,7 +163,7 @@ class Scanner extends Executor {
 					listViewFactories.put(cronListFactory.viewName, cronListFactory)
 
 					listViewFactories.each{
-						context.println(it.value)
+						context.println(it.value.dump())
 					}
 
 					cronListFactory.viewName = suiteOwner
@@ -171,7 +171,7 @@ class Scanner extends Executor {
 					listViewFactories.put(cronListFactory.viewName, cronListFactory)
 
 					listViewFactories.each{
-						context.println(it.value)
+						context.println(it.value.dump())
 					}
 
 					context.writeFile file: "factory_data.txt", text: JsonOutput.toJson(listViewFactories)
