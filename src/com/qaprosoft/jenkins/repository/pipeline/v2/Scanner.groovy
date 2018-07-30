@@ -156,10 +156,10 @@ class Scanner extends Executor {
 
 					// VIEWS
 					
-					dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', 'cron'))
-					dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), project))
-					dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, zafira_project))
-					dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, suiteOwner))
+					dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
+					dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
+					dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".${zafira_project}.*"))
+					dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 					
 
 					//TODO: remove below factories
