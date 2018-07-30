@@ -17,7 +17,6 @@ public class ViewType {
     String factory
     String folder
     String viewName
-    String jobNames
     String descFilter
     String criteria
 }
