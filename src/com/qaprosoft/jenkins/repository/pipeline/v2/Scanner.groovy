@@ -9,6 +9,8 @@ import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory2
+
+import com.qaprosoft.jenkins.repository.jobdsl.v3.Creator3
 import groovy.json.JsonOutput
 
 
@@ -165,6 +167,9 @@ class Scanner extends Executor {
 					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 					context.writeFile file: "suite_name.txt", text: suiteName
 
+					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v3/Creator3.groovy'
+					
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 
