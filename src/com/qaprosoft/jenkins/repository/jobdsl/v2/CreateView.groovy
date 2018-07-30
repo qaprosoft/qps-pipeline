@@ -15,7 +15,3 @@ factories.each{
 	println(factory.dump())
 	factory.create()
 }
-
-
-//def categorizedViewFactory = this.class.classLoader.loadClass('com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory')?.newInstance(this)
-//categorizedViewFactory.create('Automation', 'CRON2', 'API|Web')

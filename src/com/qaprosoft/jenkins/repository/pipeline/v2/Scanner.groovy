@@ -8,7 +8,6 @@ import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
-import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory2
 
 import groovy.json.JsonOutput
 
@@ -163,7 +162,7 @@ class Scanner extends Executor {
 					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 					context.writeFile file: "suite_name.txt", text: suiteName
 
-					viewFactories.put("com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory2", new ListViewFactory2(jobFolder, 'CRON3', 'cron3'))
+					viewFactories.put("com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory", new ListViewFactory(jobFolder, 'CRON3', 'cron3'))
 					context.writeFile file: "factories.txt", text: JsonOutput.toJson(viewFactories)
 					
 					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project
