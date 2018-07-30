@@ -22,6 +22,8 @@ public class ListViewFactory extends DslFactory {
 		this.folder = args.get("folder")
 		this.viewName = args.get("viewName")
 		this.descFilter = args.get("descFilter")
+		
+		this.clazz = args.get("clazz")
 	}
 	
 	def factoryListView(folder, name) {
