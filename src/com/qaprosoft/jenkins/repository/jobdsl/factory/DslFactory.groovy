@@ -20,9 +20,9 @@ public class DslFactory {
 	
 	// dynamically load properties from map to members
 	public load(args) {
-		println("loads: " + args.dump())
+		_dslFactory.println("loads: " + args.dump())
 		args.each{
-			println(it.dump())
+			_dslFactory.println(it.dump())
 		}
 		//this."$objectName" = <value>"
 	}
