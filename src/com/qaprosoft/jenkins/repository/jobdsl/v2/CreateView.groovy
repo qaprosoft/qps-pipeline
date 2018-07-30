@@ -7,8 +7,8 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFacto
 //TODO: read parameters from pipeline and created file to determine valid factory class and params
 //def suite_name = context.readFileFromWorkspace("suite_name.txt")
 
-def listViewFactory = this.class.classLoader.loadClass('ListViewFactory')?.newInstance(this)
+def listViewFactory = this.class.classLoader.loadClass('com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory')?.newInstance(this)
 listViewFactory.create('Automation', 'CRON', 'cron', '')
 
-def categorizedViewFactory = this.class.classLoader.loadClass('com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory', true, false )?.newInstance(this)
+def categorizedViewFactory = this.class.classLoader.loadClass('com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory')?.newInstance(this)
 categorizedViewFactory.create('Automation', 'CRON2', '.*cron.*', '')
