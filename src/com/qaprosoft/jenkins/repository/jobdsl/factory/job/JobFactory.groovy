@@ -5,12 +5,13 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class JobFactory extends DslFactory {
-	
+	def folder
 	def name
 	def description
 	def logRotator
 	
-	public JobFactory(name, description, logRotator) {
+	public JobFactory(folder, name, description, logRotator) {
+		this.folder = folder
 		this.name = name
 		this.description = description
 		this.logRotator = logRotator
@@ -19,7 +20,7 @@ public class JobFactory extends DslFactory {
 	}
 	
 	def create() {
-		def job = _dslFactory.freeStyleJob("${name}"){
+		def job = _dslFactory.freeStyleJob("${folder}/${name}"){
 			description "${description}"
 			logRotator { numToKeep logRotator }
 		}
