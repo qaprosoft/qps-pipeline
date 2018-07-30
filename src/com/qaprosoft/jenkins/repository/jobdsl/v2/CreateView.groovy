@@ -1,12 +1,13 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
-println("qwe1")
-println(this.dump())
-
 import groovy.json.JsonSlurper
 
-println("qwe2")
+println("this")
 println(this.dump())
+
+println("this.binding")
+println(this.binding.dump())
+
 
 def slurper = new JsonSlurper()
 String factoryDataMap = readFileFromWorkspace("factories.txt")
