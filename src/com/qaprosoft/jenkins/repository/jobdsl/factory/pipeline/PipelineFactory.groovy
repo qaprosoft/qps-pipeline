@@ -1,33 +1,28 @@
 package com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline
 
-import com.qaprosoft.jenkins.repository.jobdsl.factory.DslFactory
+import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class PipelineFactory extends DslFactory {
-	def folder
-	def name
-	def description
-	def logRotator = 100
-	
+public class PipelineFactory extends JobFactory {
 	def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
 	
 	
 	public PipelineFactory(folder, name, description) {
-		this.folder = folder
-		this.name = name
-		this.description = description
+		super(folder, name, description)
 	}
 	
 	public PipelineFactory(folder, name, description, logRotator) {
-		this.folder = folder
-		this.name = name
-		this.description = description
-		this.logRotator = logRotator
+		super(folder, name, description, logRotator)
+	}
+	
+	public PipelineFactory(folder, name, description, logRotator, pipelineScript) {
+		super(folder, name, description, logRotator)
+		this.pipelineScript = pipelineScript
 	}
 	
 	def create() {
-		def job = _dslFactory.pipelineJob("${folder}/${name}"){
+		def job = _dslFactory.pipelineJob(getFullName()){
 			description "${description}"
 			logRotator { numToKeep logRotator }
 /*			
