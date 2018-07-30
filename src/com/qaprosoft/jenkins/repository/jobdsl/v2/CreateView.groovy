@@ -7,11 +7,12 @@ import groovy.json.JsonSlurper
 
 //TODO: read parameters from pipeline and created file to determine valid factory class and params
 String factoryDataMap = readFileFromWorkspace("factory_data.txt")
-println(factoryDataMap)
 
 def slurper = new JsonSlurper()
 def result = slurper.parseText(factoryDataMap)
 println(result)
+Map<String, ViewType> factories = new Map(result)
+println(factories)
 
 def listViewFactory = Class.forName("com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory")?.newInstance(this)
 listViewFactory.create('Automation', 'CRON', 'cron', '')
