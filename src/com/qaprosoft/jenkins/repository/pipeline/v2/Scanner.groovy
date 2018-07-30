@@ -8,8 +8,11 @@ import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
+
 import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.job.BuildJobFactory
+
+import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
 
 
 import groovy.json.JsonOutput
@@ -168,7 +171,8 @@ class Scanner extends Executor {
 					
 					dslFactories.put("job3", new BuildJobFactory(jobFolder, "job3", "desc3"))
 					
-
+					dslFactories.put("pipeline1", new PipelineFactory(jobFolder, "pipeline1", "desc pipeline"))
+					
 					
 					context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
 					
