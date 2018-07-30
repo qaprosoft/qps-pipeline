@@ -3,16 +3,17 @@ package com.qaprosoft.jenkins.repository.jobdsl.factory.view
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
+@MapConstructor
 public class ListViewFactory2 extends ViewFactory {
 	def folder
 	def viewName
 	def descFilter
 	
-	public ListViewFactory2(folder, viewName, descFilter) {
+/*	public ListViewFactory2(folder, viewName, descFilter) {
 		this.folder = folder
 		this.viewName = viewName
 		this.descFilter = descFilter
-	}
+	}*/
 	
 	def get() {
 		return folder + "/" + viewName + "/" + descFilter
