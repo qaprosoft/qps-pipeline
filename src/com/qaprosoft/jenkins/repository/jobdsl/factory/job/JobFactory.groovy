@@ -1,7 +1,7 @@
 package com.qaprosoft.jenkins.repository.jobdsl.factory.job
 
 import com.qaprosoft.jenkins.repository.jobdsl.factory.DslFactory
-import groovy.transform.InheritConstructors
+import groovy.transform.*
 
 @InheritConstructors
 public class JobFactory extends DslFactory {
