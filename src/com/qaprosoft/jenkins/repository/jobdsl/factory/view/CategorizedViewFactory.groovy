@@ -15,12 +15,16 @@ public class CategorizedViewFactory extends DslFactory {
 		this.folder = folder
 		this.viewName = viewName
 		this.criteria = criteria
+		
+		this.clazz = this.getClass().getCanonicalName()
 	}
 	
 	public load(args) {
 		this.folder = args.get("folder")
 		this.viewName = args.get("viewName")
 		this.criteria = args.get("criteria")
+		
+		this.clazz = args.get("clazz")
 	}
 	
 	def factoryCategorizedView(folder, name) {
