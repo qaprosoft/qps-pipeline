@@ -15,6 +15,10 @@ public class ViewFactory {
 	def setDsl(dsl) {
 		this._dslFactory = dsl
 	}
+	
+	def getDsl() {
+		return _dslFactory
+	}
 
     def factoryListView(folder, name) {
         return _dslFactory.listView("${folder}/${name}")
