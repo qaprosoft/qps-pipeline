@@ -5,7 +5,7 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFacto
 
 
 //TODO: read parameters from pipeline and created file to determine valid factory class and params
-def factoryDataMap = context.readFileFromWorkspace("factory_data.txt")
+def factoryDataMap = readFileFromWorkspace("factory_data.txt")
 context.println(factoryDataMap)
 
 def listViewFactory = Class.forName("com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory")?.newInstance(this)
