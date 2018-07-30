@@ -9,6 +9,7 @@ public class ListViewFactory2 extends ViewFactory {
 	def descFilter
 	
 	public ListViewFactory2(folder, viewName, descFilter) {
+		super(this)
 		this.folder = folder
 		this.viewName = viewName
 		this.descFilter = descFilter
