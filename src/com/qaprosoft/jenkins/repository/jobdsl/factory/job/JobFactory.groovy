@@ -17,11 +17,11 @@ public class JobFactory extends DslFactory {
 	}
 
 	public JobFactory(name, description) {
-		this(name, descritption, 100)
+		this(name, description, 100)
 	}
 	
 	public JobFactory(name) {
-		this(name, "descritption", 100)
+		this(name, "description", 100)
 	}
 	
 	
