@@ -39,10 +39,6 @@ public class DslFactory {
 		}
 	}
 	
-	public String getDescription() {
-		return description
-	}
-	
 	// dynamically load properties from map to members
 	public load(args) {
 		_dslFactory.println("loads: " + args.dump())
