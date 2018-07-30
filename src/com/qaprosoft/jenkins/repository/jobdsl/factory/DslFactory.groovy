@@ -19,7 +19,7 @@ public class DslFactory {
 	}
 	
 	// dynamically load properties from map to members
-	def load(args) {
+	public load(args) {
 		println("loads: " + args.dump())
 		args.each{
 			println(it.dump())

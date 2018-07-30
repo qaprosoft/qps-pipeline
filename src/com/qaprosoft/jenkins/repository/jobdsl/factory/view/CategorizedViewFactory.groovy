@@ -20,6 +20,7 @@ public class CategorizedViewFactory extends DslFactory {
 	}
 	
 	public load(args) {
+		super.load(args)
 		this.folder = args.get("folder")
 		this.viewName = args.get("viewName")
 		this.criteria = args.get("criteria")
