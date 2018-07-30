@@ -4,7 +4,7 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.DslFactory
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class ListViewFactory extends ViewFactory {
+public class ListViewFactory extends DslFactory {
 	def folder
 	def viewName
 	def descFilter
