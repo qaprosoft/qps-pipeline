@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins.repository.jobdsl.factory.view
 
 import groovy.transform.InheritConstructors
+import groovy.transform.MapConstructor
 
 @InheritConstructors
 @MapConstructor
