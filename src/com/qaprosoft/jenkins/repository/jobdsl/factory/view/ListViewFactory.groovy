@@ -8,7 +8,6 @@ public class ListViewFactory extends DslFactory {
 	def folder
 	def viewName
 	def descFilter
-	def clazz
 	
 	public ListViewFactory(folder, viewName, descFilter) {
 		this.folder = folder
