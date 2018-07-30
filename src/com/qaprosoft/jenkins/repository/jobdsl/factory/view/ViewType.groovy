@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.repository.jobdsl.factory.view
 
 import groovy.transform.Canonical
 
-@Canonical
+//@Canonical
 public class ViewType {
 
     String factory
