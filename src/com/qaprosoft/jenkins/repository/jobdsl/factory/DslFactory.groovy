@@ -4,20 +4,12 @@ public class DslFactory {
 
     def _dslFactory
 
-    ViewFactory(dslFactory) {
+    DslFactory(dslFactory) {
         _dslFactory = dslFactory
     }
 	
-	ViewFactory() {
+	DslFactory() {
 		_dslFactory = null
-	}
-
-	def setDsl(dsl) {
-		this._dslFactory = dsl
-	}
-	
-	def getDsl() {
-		return _dslFactory
 	}
 
 }
