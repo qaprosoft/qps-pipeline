@@ -18,6 +18,7 @@ public class ListViewFactory extends DslFactory {
 	}
 	
 	public load(args) {
+		super.load(args)
 		this.folder = args.get("folder")
 		this.viewName = args.get("viewName")
 		this.descFilter = args.get("descFilter")
