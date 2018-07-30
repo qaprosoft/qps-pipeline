@@ -137,20 +137,28 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					Map<String, ViewType> factories = [:]
+					Map<String, ViewType> listViewFactories = [:]
 
-					ViewType cronListFactory = new ViewType()
+					ViewType cronListFactory = new ViewType(ListViewFactory.class.getCanonicalName(), jobFolder)
 					cronListFactory.factory = ListViewFactory.class.getCanonicalName()
-					cronListFactory.folder = jobFolder
+
 					cronListFactory.viewName = 'CRON'
 					cronListFactory.descFilter = 'cron'
-                    cronListFactory.jobNames = ''
+					listViewFactories.put(cronListFactory.viewName, cronListFactory)
 
-					factories.put('CRON', cronListFactory)
+					cronListFactory.viewName = project.toUpperCase()
+					cronListFactory.descFilter = project
+					listViewFactories.put(cronListFactory.viewName, cronListFactory)
 
-					String factoriesJson = JsonOutput.toJson(factories)
-					context.println(factoriesJson)
-					context.writeFile file: "factory_data.txt", text: factoriesJson
+					cronListFactory.viewName = zafira_project
+					cronListFactory.descFilter = zafira_project
+					listViewFactories.put(cronListFactory.viewName, cronListFactory)
+
+					cronListFactory.viewName = suiteOwner
+					cronListFactory.descFilter = suiteOwner
+					listViewFactories.put(cronListFactory.viewName, cronListFactory)
+
+					context.writeFile file: "factory_data.txt", text: JsonOutput.toJson(listViewFactories)
 
 					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
 

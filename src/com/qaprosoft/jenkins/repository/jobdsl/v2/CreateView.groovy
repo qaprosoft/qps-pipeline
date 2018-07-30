@@ -1,7 +1,5 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
-import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
-import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
 import groovy.json.JsonSlurper
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
 
@@ -15,11 +13,8 @@ Map<String, ViewType> factories = new HashMap(result)
 factories.each{
     ViewType viewData = it.value
     def listViewFactory = Class.forName(viewData.factory)?.newInstance(this)
-    listViewFactory.create(viewData.folder, viewData.viewName, viewData.descFilter, viewData.jobNames)
+    listViewFactory.create(viewData.folder, viewData.viewName, viewData.descFilter)
 }
-
-//def listViewFactory = Class.forName(cronViewData.factory)?.newInstance(this)
-//listViewFactory.create(cronViewData.folder, cronViewData.viewName, cronViewData.descFilter, cronViewData.jobNames)
 
 def categorizedViewFactory = this.class.classLoader.loadClass('com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory')?.newInstance(this)
 categorizedViewFactory.create('Automation', 'CRON2', 'API|Web', '')
