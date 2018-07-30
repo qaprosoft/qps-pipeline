@@ -142,9 +142,6 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					viewFactories.put("cronListfactory2", new ListViewFactory2(jobFolder, 'CRON3', 'cron3'))
-					context.writeFile file: "factories.txt", text: JsonOutput.toJson(viewFactories)
-					
 					Map<String, ViewType> listViewFactories = [:]
 
 					ViewType cronView = createListView(jobFolder, 'CRON', 'cron')
@@ -167,16 +164,15 @@ class Scanner extends Executor {
 					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 					context.writeFile file: "suite_name.txt", text: suiteName
 
-					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v3/Creator3.groovy'
+					viewFactories.put("cronListfactory2", new ListViewFactory2(jobFolder, 'CRON3', 'cron3'))
+					context.writeFile file: "factories.txt", text: JsonOutput.toJson(viewFactories)
 					
+					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project
+					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
+						
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
-
-
-					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project 
-                    context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
 
 
                     continue
