@@ -151,11 +151,11 @@ class Scanner extends Executor {
 //					def json = new JsonBuilder()
 //					def result = json(factories)
 
-					def json2 = JsonOutput.toJson(factories)
+					String json2 = JsonOutput.toJson(factories)
 					context.println(json2)
 
 //					def builder = new JsonBuilder(factories)
-					context.writeFile file: "factory_data.txt", text: result.toString()
+					context.writeFile file: "factory_data.txt", text: json2
 
 					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
 
