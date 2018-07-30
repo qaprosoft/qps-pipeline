@@ -10,7 +10,6 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory2
 
-import com.qaprosoft.jenkins.repository.jobdsl.v3.Creator3
 import groovy.json.JsonOutput
 
 
