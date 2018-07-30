@@ -1,9 +1,11 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
+// groovy script for initialization and execution all kind of jobdsl factories which are transfered from pipeline scanner script
+
 import groovy.json.JsonSlurper
 def slurper = new JsonSlurper()
 
-String factoryDataMap = readFileFromWorkspace("factories.txt")
+String factoryDataMap = readFileFromWorkspace("factories.json")
 println("factoryDataMap: " + factoryDataMap)
 def factories = new HashMap(slurper.parseText(factoryDataMap))
 

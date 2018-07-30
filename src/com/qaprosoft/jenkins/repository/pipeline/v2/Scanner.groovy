@@ -156,11 +156,11 @@ class Scanner extends Executor {
 					
 					viewFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, suiteOwner))
 					
-					context.writeFile file: "factories.txt", text: JsonOutput.toJson(viewFactories)
+					context.writeFile file: "factories.json", text: JsonOutput.toJson(viewFactories)
 					
 					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
+						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy'
 						
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
