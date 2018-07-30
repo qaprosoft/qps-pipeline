@@ -16,8 +16,7 @@ factories.each{
 }
 
 
-context.writeFile file: "factories.txt", text: JsonOutput.toJson(viewFactories)
-String factoryDataMap = readFileFromWorkspace("factories.txt")
+factoryDataMap = readFileFromWorkspace("factories.txt")
 factories = new HashMap(slurper.parseText(factoryDataMap))
 
 factories.each{
