@@ -19,6 +19,8 @@ factories.each{
 }*/
 
 
+def slurper = new JsonSlurper()
+
 println("this")
 println(this.dump())
 
