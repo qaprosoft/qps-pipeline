@@ -10,10 +10,9 @@ String factoryDataMap = readFileFromWorkspace("factory_data.txt")
 
 def slurper = new JsonSlurper()
 def result = slurper.parseText(factoryDataMap)
-println(result)
 Map<String, ViewType> factories = new HashMap(result)
-println(factories)
-
+ViewType cronViewData = factories.get('CRON')
+println(cronViewData)
 def listViewFactory = Class.forName("com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory")?.newInstance(this)
 listViewFactory.create('Automation', 'CRON', 'cron', '')
 
