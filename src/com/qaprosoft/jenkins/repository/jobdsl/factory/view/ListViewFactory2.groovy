@@ -8,6 +8,12 @@ public class ListViewFactory2 extends ViewFactory {
 	def viewName
 	def descFilter
 	
+	public ListViewFactory2(folder, viewName, descFilter) {
+		this.folder = folder
+		this.viewName = viewName
+		this.descFilter = descFilter
+	}
+	
 	public init(args) {
 		this.folder = args.get("folder")
 		this.viewName = args.get("viewName")
