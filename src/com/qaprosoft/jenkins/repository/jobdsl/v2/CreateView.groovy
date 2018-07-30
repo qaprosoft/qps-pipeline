@@ -2,11 +2,16 @@ package com.qaprosoft.jenkins.repository.jobdsl.v2
 
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
+import groovy.json.JsonSlurper
 
 
 //TODO: read parameters from pipeline and created file to determine valid factory class and params
-def factoryDataMap = readFileFromWorkspace("factory_data.txt")
+String factoryDataMap = readFileFromWorkspace("factory_data.txt")
 println(factoryDataMap)
+
+def slurper = new JsonSlurper()
+def result = slurper.parseText(factoryDataMap)
+println(result)
 
 def listViewFactory = Class.forName("com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory")?.newInstance(this)
 listViewFactory.create('Automation', 'CRON', 'cron', '')
