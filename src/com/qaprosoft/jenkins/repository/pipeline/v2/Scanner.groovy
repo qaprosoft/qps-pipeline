@@ -1,11 +1,15 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
 @Grab('org.testng:testng:6.8.8')
-import org.testng.xml.XmlSuite;
-import com.qaprosoft.scm.github.GitHub;
+import org.testng.xml.XmlSuite
+import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
+import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
+import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
+import groovy.json.JsonBuilder
+
 
 class Scanner extends Executor {
 	//TODO: specify default factory classes
@@ -133,6 +137,19 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
+					List<ViewType> factories = new List<>()
+
+					ViewType cronListFactory = new ViewType()
+					cronListFactory.factory = ListViewFactory.getClass()
+					cronListFactory.folder = jobFolder
+					cronListFactory.viewName = 'CRON'
+					cronListFactory.descFilter = 'cron'
+
+					factories.add(cronListFactory)
+
+					def builder = new JsonBuilder(factories)
+					context.writeFile file: "factory_data.txt", text: builder.toString()
+
 					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
 
 					def suiteName = suite.path
@@ -142,7 +159,7 @@ class Scanner extends Executor {
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 
-					
+
 					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project 
                     context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
