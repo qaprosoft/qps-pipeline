@@ -13,8 +13,9 @@ def result = slurper.parseText(factoryDataMap)
 Map<String, ViewType> factories = new HashMap(result)
 
 factories.each{
-    def listViewFactory = Class.forName(it.factory)?.newInstance(this)
-    listViewFactory.create(it.folder, it.viewName, it.descFilter, it.jobNames)
+    ViewType viewData = it.value
+    def listViewFactory = Class.forName(viewData.factory)?.newInstance(this)
+    listViewFactory.create(viewData.folder, viewData.viewName, viewData.descFilter, viewData.jobNames)
 }
 
 //def listViewFactory = Class.forName(cronViewData.factory)?.newInstance(this)
