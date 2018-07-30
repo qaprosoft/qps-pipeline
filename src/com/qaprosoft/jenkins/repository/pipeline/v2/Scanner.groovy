@@ -141,7 +141,7 @@ class Scanner extends Executor {
 					Map factories = [:]
 
 					ViewType cronListFactory = new ViewType()
-					cronListFactory.factory = ListViewFactory.class
+					cronListFactory.factory = ListViewFactory.getClass().getCanonicalName()
 					cronListFactory.folder = jobFolder
 					cronListFactory.viewName = 'CRON'
 					cronListFactory.descFilter = 'cron'
