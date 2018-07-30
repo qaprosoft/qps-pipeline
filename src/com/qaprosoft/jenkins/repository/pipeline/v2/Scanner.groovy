@@ -166,7 +166,7 @@ class Scanner extends Executor {
 					dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc1", 10))
 					dslFactories.put("job2", new JobFactory(jobFolder, "job2", "desc2"))
 					
-					dslFactories.put("job3", new BuildJobFactory(jobFolder, "job2", "desc2"))
+					dslFactories.put("job3", new BuildJobFactory(jobFolder, "job3", "desc3"))
 					
 
 					
