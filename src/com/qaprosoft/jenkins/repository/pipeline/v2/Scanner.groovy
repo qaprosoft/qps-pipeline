@@ -145,6 +145,7 @@ class Scanner extends Executor {
 					cronListFactory.folder = jobFolder
 					cronListFactory.viewName = 'CRON'
 					cronListFactory.descFilter = 'cron'
+                    cronListFactory.jobNames = ''
 
 					factories.put('CRON', cronListFactory)
 
