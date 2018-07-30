@@ -9,6 +9,7 @@ import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
 import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
 
 
 class Scanner extends Executor {
@@ -137,7 +138,7 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					List<ViewType> factories = new ArrayList<>()
+					Map factories = [:]
 
 					ViewType cronListFactory = new ViewType()
 					cronListFactory.factory = ListViewFactory.getClass()
@@ -145,10 +146,13 @@ class Scanner extends Executor {
 					cronListFactory.viewName = 'CRON'
 					cronListFactory.descFilter = 'cron'
 
-					factories.add(cronListFactory)
+					factories.put('CRON', cronListFactory)
 
-					def json = new JsonBuilder()
-					def result = json(factories)
+//					def json = new JsonBuilder()
+//					def result = json(factories)
+
+					def json2 = JsonOutput.toJson(factories)
+					context.println(json2)
 
 //					def builder = new JsonBuilder(factories)
 					context.writeFile file: "factory_data.txt", text: result.toString()
