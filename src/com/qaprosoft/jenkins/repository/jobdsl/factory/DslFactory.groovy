@@ -24,7 +24,7 @@ public class DslFactory {
 		args.each{
 			_dslFactory.println("it.key: " + it.key)
 			_dslFactory.println("it.value: " + it.value)
-			if (it.value != nul) {
+			if (it.value != null) {
 				this."${it.key}" = it.value
 			}
 		}
