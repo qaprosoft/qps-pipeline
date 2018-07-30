@@ -7,8 +7,8 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
 String factoryDataMap = readFileFromWorkspace("factory_data.txt")
 
 def slurper = new JsonSlurper()
-def result = slurper.parseText(factoryDataMap)
-Map<String, ViewType> factories = new HashMap(result)
+
+Map<String, ViewType> factories = new HashMap(slurper.parseText(factoryDataMap))
 
 factories.each{
     ViewType viewData = it.value
