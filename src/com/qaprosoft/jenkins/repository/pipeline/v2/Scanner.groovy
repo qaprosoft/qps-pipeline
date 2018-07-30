@@ -8,7 +8,6 @@ import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
-import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 
 
@@ -149,14 +148,9 @@ class Scanner extends Executor {
 
 					factories.put('CRON', cronListFactory)
 
-//					def json = new JsonBuilder()
-//					def result = json(factories)
-
-					String json2 = JsonOutput.toJson(factories)
-					context.println(json2)
-
-//					def builder = new JsonBuilder(factories)
-					context.writeFile file: "factory_data.txt", text: json2
+					String factoriesJson = JsonOutput.toJson(factories)
+					context.println(factoriesJson)
+					context.writeFile file: "factory_data.txt", text: factoriesJson
 
 					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
 
