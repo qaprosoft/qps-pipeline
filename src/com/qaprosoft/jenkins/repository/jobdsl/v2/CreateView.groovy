@@ -12,9 +12,9 @@ def slurper = new JsonSlurper()
 def result = slurper.parseText(factoryDataMap)
 Map<String, ViewType> factories = new HashMap(result)
 ViewType cronViewData = factories.get('CRON')
-println(cronViewData)
-def listViewFactory = Class.forName("com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory")?.newInstance(this)
-listViewFactory.create('Automation', 'CRON', 'cron', '')
+
+def listViewFactory = Class.forName(cronViewData.factory)?.newInstance(this)
+listViewFactory.create(cronViewData.folder, cronViewData.viewName, cronViewData.descFilter, cronViewData.jobNames)
 
 def categorizedViewFactory = this.class.classLoader.loadClass('com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory')?.newInstance(this)
 categorizedViewFactory.create('Automation', 'CRON2', 'API|Web', '')
