@@ -139,39 +139,28 @@ class Scanner extends Executor {
 
 					Map<String, ViewType> listViewFactories = [:]
 
-					ViewType basicListViewFactory = new ViewType(ListViewFactory.class.getCanonicalName(), jobFolder)
-					basicListViewFactory.factory = ListViewFactory.class.getCanonicalName()
-
-					ViewType cronViewFactory = basicListViewFactory
-					cronViewFactory.viewName = 'CRON'
-					cronViewFactory.descFilter = 'cron'
-					listViewFactories.put(cronViewFactory.viewName, cronViewFactory)
+					ViewType cronView = createListView(jobFolder, 'CRON', 'cron')
+					listViewFactories.put(cronView.viewName, cronView)
 
 					listViewFactories.each{
 						context.println(it.value.dump())
 					}
 
-					ViewType projectViewFactory = basicListViewFactory
-					projectViewFactory.viewName = project.toUpperCase()
-					projectViewFactory.descFilter = project
-					listViewFactories.put(projectViewFactory.viewName, projectViewFactory)
+					ViewType projectView = createListView(jobFolder, project.toUpperCase(), project)
+					listViewFactories.put(projectView.viewName, projectView)
 
 					listViewFactories.each{
 						context.println(it.value.dump())
 					}
 
-					ViewType zafiraProjectView = basicListViewFactory
-					zafiraProjectView.viewName = zafira_project
-					zafiraProjectView.descFilter = zafira_project
+					ViewType zafiraProjectView = createListView(jobFolder, zafira_project, zafira_project)
 					listViewFactories.put(zafiraProjectView.viewName, zafiraProjectView)
 
 					listViewFactories.each{
 						context.println(it.value.dump())
 					}
 
-					ViewType suiteOwnerView = basicListViewFactory
-					suiteOwnerView.viewName = suiteOwner
-					suiteOwnerView.descFilter = suiteOwner
+					ViewType suiteOwnerView = createListView(jobFolder, suiteOwner, suiteOwner)
 					listViewFactories.put(suiteOwnerView.viewName, suiteOwnerView)
 
 					listViewFactories.each{
@@ -278,6 +267,13 @@ class Scanner extends Executor {
 				}
 			}
 		}
+	}
+
+	protected ViewType createListView(jobFolder, viewName, descFilter){
+		ViewType newView = new ViewType(ListViewFactory.class.getCanonicalName(), jobFolder)
+		newView.viewName = viewName
+		newView.descFilter = descFilter
+		return newView
 	}
 	
 }
