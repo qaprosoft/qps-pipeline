@@ -25,12 +25,9 @@ public class CategorizedViewFactory extends DslFactory {
 		this.criteria = args.get("criteria")
 	}
 	
-	def factoryCategorizedView(folder, name) {
-		return _dslFactory.categorizedJobsView("${folder}/${name}")
-	}
-	
     def create() {
-        def view = factoryCategorizedView(folder, viewName)
+        def view = _dslFactory.categorizedJobsView("${folder}/${viewName}") 
+		factoryCategorizedView(folder, viewName)
         view.with {
             columns {
                 status()
