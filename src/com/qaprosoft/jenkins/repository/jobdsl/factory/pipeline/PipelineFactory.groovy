@@ -241,7 +241,7 @@ public class PipelineFactory extends DslFactory {
 			/** Git Stuff **/
 			definition {
 				cps {
-					script(runJobPipelineScript)
+					script(pipelineScript)
 					sandbox()
 				}
 			}
