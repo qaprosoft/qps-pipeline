@@ -147,7 +147,7 @@ class Scanner extends Executor {
 					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 					context.writeFile file: "suite_name.txt", text: suiteName
 
-					viewFactories.put("cron3", new ListViewFactory(jobFolder, 'CRON3', 'cron3'))
+					viewFactories.put("cron3", new CategorizedViewFactory(jobFolder, 'CRON3', 'API|Web'))
 					viewFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', 'cron'))
 					
 					viewFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), project))
