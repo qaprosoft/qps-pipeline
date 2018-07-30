@@ -456,7 +456,7 @@ clean test"
 	protected String getUUID() {
 		def ci_run_id = Configurator.get("ci_run_id")
 		context.echo "uuid from jobParams: " + ci_run_id
-		if (ci_run_id.isEmpty()) {
+		if (ci_run_id == null || ci_run_id.isEmpty()) {
 				ci_run_id = randomUUID() as String
 		}
 		context.echo "final uuid: " + ci_run_id
