@@ -31,6 +31,17 @@ public class DslFactory {
 		this.clazz = this.getClass().getCanonicalName()
 	}
 	
+	public String getFullName() {
+		if (folder != null && !folder.isEmpty()) {
+			return "${folder}/${name}"
+		} else {
+			return name
+		}
+	}
+	
+	public String getDescription() {
+		return description
+	}
 	
 	// dynamically load properties from map to members
 	public load(args) {
