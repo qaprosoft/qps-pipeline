@@ -147,8 +147,13 @@ class Scanner extends Executor {
 
 					factories.add(cronListFactory)
 
-					def builder = new JsonBuilder(factories)
-					context.writeFile file: "factory_data.txt", text: builder.toString()
+					def json = new groovy.json.JsonBuilder()
+					def factoriesJson = json {
+						response factories
+					}
+
+//					def builder = new JsonBuilder(factories)
+					context.writeFile file: "factory_data.txt", text: factoriesJson.toString()
 
 					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
 
