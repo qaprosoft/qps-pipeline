@@ -11,7 +11,7 @@ public class JobFactory extends DslFactory {
 	def logRotator
 	
 	public JobFactory(folder, name, description) {
-		this(name, descritpnio, 10)
+		this(name, description, 10)
 	}
 	
 	public JobFactory(folder, name, description, logRotator) {
