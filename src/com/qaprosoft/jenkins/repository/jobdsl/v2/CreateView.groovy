@@ -9,6 +9,10 @@ println("this.binding")
 println(this.binding.dump())
 
 
+def listViewFactory = new com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewFactory(this)
+println("listViewFactory")
+println(listViewFactory.dump())
+	
 def slurper = new JsonSlurper()
 String factoryDataMap = readFileFromWorkspace("factories.txt")
 def factories = new HashMap(slurper.parseText(factoryDataMap))
