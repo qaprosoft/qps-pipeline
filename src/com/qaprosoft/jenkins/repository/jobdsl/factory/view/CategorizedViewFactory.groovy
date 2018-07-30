@@ -6,14 +6,14 @@ import groovy.transform.InheritConstructors
 public class CategorizedViewFactory extends ListViewFactory {
 	def criteria
 	
-	public CategorizedViewFactory(folder, viewName, descFilter, criteria) {
-		super(folder, viewName, descFilter)
+	public CategorizedViewFactory(folder, name, descFilter, criteria) {
+		super(folder, name, descFilter)
 		this.criteria = criteria
 	}
 	
 	
     def create() {
-        def view = _dslFactory.categorizedJobsView("${folder}/${viewName}") 
+        def view = _dslFactory.categorizedJobsView("${folder}/${name}") 
         view.with {
             columns {
                 status()

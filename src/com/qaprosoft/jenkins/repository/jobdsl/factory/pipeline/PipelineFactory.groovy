@@ -10,7 +10,7 @@ public class PipelineFactory extends DslFactory {
 	def description
 	def logRotator = 100
 	
-	protected String pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
+	def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
 	
 	
 	public PipelineFactory(folder, name, description) {
