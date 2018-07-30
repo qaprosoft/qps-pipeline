@@ -16,7 +16,7 @@ public class CategorizedViewFactory extends DslFactory {
 		this.viewName = viewName
 		this.criteria = criteria
 		
-		this.clazz = this.getClass().getCanonicalName()
+		//this.clazz = this.getClass().getCanonicalName()
 	}
 	
     def create() {
