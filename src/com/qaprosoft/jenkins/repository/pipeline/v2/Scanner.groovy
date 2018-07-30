@@ -150,7 +150,7 @@ class Scanner extends Executor {
 					context.writeFile file: "suite_name.txt", text: suiteName
 
 					// VIEWS
-					//dslFactories.put("cron3", new CategorizedViewFactory(jobFolder, 'CRON3', 'API|Web'))
+					dslFactories.put("categorizedView", new CategorizedViewFactory(jobFolder, 'Categorized', 'API|Web|Android|iOS'))
 					dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', 'cron'))
 					dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), project))
 					dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, zafira_project))
@@ -158,7 +158,8 @@ class Scanner extends Executor {
 					
 
 					// Freestile jobs
-					//dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc", 10))
+					dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc1", 10))
+					dslFactories.put("job2", new JobFactory(jobFolder, "job2", "desc2"))
 
 					
 					context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)

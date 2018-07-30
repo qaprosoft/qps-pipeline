@@ -10,6 +10,10 @@ public class JobFactory extends DslFactory {
 	def description
 	def logRotator
 	
+	public JobFactory(folder, name, description) {
+		this(name, descritpnio, 10)
+	}
+	
 	public JobFactory(folder, name, description, logRotator) {
 		this.folder = folder
 		this.name = name
