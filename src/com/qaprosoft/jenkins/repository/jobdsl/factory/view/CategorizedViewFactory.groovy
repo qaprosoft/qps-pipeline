@@ -19,11 +19,11 @@ public class CategorizedViewFactory extends DslFactory {
 		this.clazz = this.getClass().getCanonicalName()
 	}
 	
-/*	public load(args) {
+	public load(args) {
 		this.folder = args.get("folder")
 		this.viewName = args.get("viewName")
 		this.criteria = args.get("criteria")
-	}*/
+	}
 	
     def create() {
         def view = _dslFactory.categorizedJobsView("${folder}/${viewName}") 
