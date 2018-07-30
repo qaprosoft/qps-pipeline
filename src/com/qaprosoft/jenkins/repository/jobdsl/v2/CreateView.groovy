@@ -37,6 +37,7 @@ println("listViewFactory2")
 println(listViewFactory2.dump())
 	
 String factoryDataMap = readFileFromWorkspace("factories.txt")
+println("factoryDataMap: " + factoryDataMap)
 def factories = new HashMap(slurper.parseText(factoryDataMap))
 
 factories.each{
