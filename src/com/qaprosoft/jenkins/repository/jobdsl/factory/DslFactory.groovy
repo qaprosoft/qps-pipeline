@@ -1,7 +1,10 @@
 package com.qaprosoft.jenkins.repository.jobdsl.factory
 
 public class DslFactory {
-
+	def folder
+	def name
+	def description
+	
     def _dslFactory
 	def clazz
 
@@ -19,6 +22,15 @@ public class DslFactory {
 		this._dslFactory = null
 		this.clazz = this.getClass().getCanonicalName()
 	}
+	
+	DslFactory(folder, name, description) {
+		this.folder = folder
+		this.name = name
+		this.description = description
+		
+		this.clazz = this.getClass().getCanonicalName()
+	}
+	
 	
 	// dynamically load properties from map to members
 	public load(args) {
