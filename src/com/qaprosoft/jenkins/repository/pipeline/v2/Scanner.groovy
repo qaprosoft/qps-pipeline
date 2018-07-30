@@ -6,10 +6,10 @@ import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
-import com.qaprosoft.jenkins.repository.jobdsl.factory.CreateViewFactory
 
 class Scanner extends Executor {
-
+	//TODO: specify default factory classes
+	//protected String viewFactory = "CreateViewFactory"
 
     public Scanner(context) {
 		super(context)
@@ -142,8 +142,10 @@ class Scanner extends Executor {
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 
-//                    context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-//						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
+					
+					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project 
+                    context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
 
 
                     continue
