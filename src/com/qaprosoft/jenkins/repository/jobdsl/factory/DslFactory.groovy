@@ -20,7 +20,7 @@ public class DslFactory {
 	
 	// dynamically load properties from map to members
 	public load(args) {
-		//_dslFactory.println("loads: " + args.dump())
+		_dslFactory.println("loads: " + args.dump())
 		args.each{
 			_dslFactory.println("it.key: " + it.key)
 			_dslFactory.println("it.value: " + it.value)

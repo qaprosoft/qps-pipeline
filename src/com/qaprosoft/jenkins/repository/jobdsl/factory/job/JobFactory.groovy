@@ -34,10 +34,6 @@ public class JobFactory extends DslFactory {
 		this.clazz = this.getClass().getCanonicalName()
 	}
 	
-	def load(args) {
-		super.load(args)
-	}
-	
 	def create() {
 		def job = _dslFactory.freeStyleJob("${name}"){
 			description "${description}"
