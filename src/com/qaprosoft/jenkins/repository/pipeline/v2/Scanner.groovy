@@ -164,7 +164,7 @@ class Scanner extends Executor {
 
 					//TODO: remove below factories
 					// JUST IN DEMO PURPOSED
-					dslFactories.put("categorizedView", new CategorizedViewFactory(jobFolder, 'Categorized', 'API|Web|Android|iOS'))
+					dslFactories.put("categorizedView", new CategorizedViewFactory(jobFolder, 'Categorized', '.*', 'API|Web|Android|iOS'))
 					
 					dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc1", 10))
 					dslFactories.put("job2", new JobFactory(jobFolder, "job2", "desc2"))

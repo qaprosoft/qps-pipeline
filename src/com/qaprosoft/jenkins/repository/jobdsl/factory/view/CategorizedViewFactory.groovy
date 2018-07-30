@@ -1,19 +1,12 @@
 package com.qaprosoft.jenkins.repository.jobdsl.factory.view
 
-import com.qaprosoft.jenkins.repository.jobdsl.factory.DslFactory
-
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class CategorizedViewFactory extends DslFactory {
-	
-	def folder
-	def viewName
+public class CategorizedViewFactory extends ListViewFactory {
 	def criteria
 	
-	public CategorizedViewFactory(folder, viewName, criteria) {
-		this.folder = folder
-		this.viewName = viewName
+	public CategorizedViewFactory(criteria) {
 		this.criteria = criteria
 	}
 	
@@ -29,6 +22,16 @@ public class CategorizedViewFactory extends DslFactory {
                 lastDuration()
                 buildButton()
             }
+			
+			if (!"${descFilter}".isEmpty()) {
+				jobFilters {
+					regex {
+						matchType(MatchType.INCLUDE_MATCHED)
+						matchValue(RegexMatchValue.DESCRIPTION)
+						regex(".*${descFilter}.*")
+					}
+				}
+			}
 
             categorizationCriteria {
                 regexGroupingRule(criteria)
