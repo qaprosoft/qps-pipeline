@@ -151,7 +151,7 @@ class Scanner extends Executor {
 					ViewType suiteOwnerView = createListView(jobFolder, suiteOwner, suiteOwner)
 					listViewFactories.put(suiteOwnerView.viewName, suiteOwnerView)
 
-					context.writeFile file: "factory_data.txt", text: JsonOutput.toJson(listViewFactories)
+					context.writeFile file: "views.json", text: JsonOutput.toJson(listViewFactories)
 
 					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
 
