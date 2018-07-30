@@ -20,12 +20,4 @@ public class ViewFactory {
 		return _dslFactory
 	}
 
-    def factoryListView(folder, name) {
-        return _dslFactory.listView("${folder}/${name}")
-    }
-
-    def factoryCategorizedView(folder, name) {
-        return _dslFactory.categorizedJobsView("${folder}/${name}")
-    }
-
 }
