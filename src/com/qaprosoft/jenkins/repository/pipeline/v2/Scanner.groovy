@@ -16,7 +16,7 @@ class Scanner extends Executor {
 	//TODO: specify default factory classes
 	//protected String viewFactory = "CreateViewFactory"
 	
-	protected Map viewFactories = [:]
+	protected Map dslFactories = [:]
 
     public Scanner(context) {
 		super(context)
@@ -149,13 +149,18 @@ class Scanner extends Executor {
 					context.writeFile file: "suite_name.txt", text: suiteName
 
 					// VIEWS
-					viewFactories.put("cron3", new CategorizedViewFactory(jobFolder, 'CRON3', 'API|Web'))
-					viewFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', 'cron'))
-					viewFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), project))
-					viewFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, zafira_project))
-					viewFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, suiteOwner))
+					dslFactories.put("cron3", new CategorizedViewFactory(jobFolder, 'CRON3', 'API|Web'))
+					dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', 'cron'))
+					dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), project))
+					dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, zafira_project))
+					dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, suiteOwner))
 					
-					context.writeFile file: "factories.json", text: JsonOutput.toJson(viewFactories)
+
+					// Freestile jobs
+					dslFactories.put("job1", new JobFactory("job1"))
+
+					
+					context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
 					
 					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
