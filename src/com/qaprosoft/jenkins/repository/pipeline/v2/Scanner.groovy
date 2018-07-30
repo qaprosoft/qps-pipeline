@@ -9,6 +9,8 @@ import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
+import com.qaprosoft.jenkins.repository.jobdsl.factory.job.BuildJobFactory
+
 
 import groovy.json.JsonOutput
 
@@ -150,16 +152,22 @@ class Scanner extends Executor {
 					context.writeFile file: "suite_name.txt", text: suiteName
 
 					// VIEWS
-					dslFactories.put("categorizedView", new CategorizedViewFactory(jobFolder, 'Categorized', 'API|Web|Android|iOS'))
+					
 					dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', 'cron'))
 					dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), project))
 					dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, zafira_project))
 					dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, suiteOwner))
 					
 
-					// Freestile jobs
+					//TODO: remove below factories
+					// JUST IN DEMO PURPOSED
+					dslFactories.put("categorizedView", new CategorizedViewFactory(jobFolder, 'Categorized', 'API|Web|Android|iOS'))
+					
 					dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc1", 10))
 					dslFactories.put("job2", new JobFactory(jobFolder, "job2", "desc2"))
+					
+					dslFactories.put("job3", new BuildJobFactory(jobFolder, "job2", "desc2"))
+					
 
 					
 					context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
