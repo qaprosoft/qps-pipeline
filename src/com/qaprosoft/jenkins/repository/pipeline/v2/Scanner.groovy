@@ -14,6 +14,8 @@ import groovy.json.JsonOutput
 class Scanner extends Executor {
 	//TODO: specify default factory classes
 	//protected String viewFactory = "CreateViewFactory"
+	
+	protected Map viewFactories = [:]
 
     public Scanner(context) {
 		super(context)
@@ -137,6 +139,9 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
+					viewFactories.put("cronListfactory2", new ListViewFactory2(jobFolder, 'CRON', 'cron'))
+					
+					
 					Map<String, ViewType> listViewFactories = [:]
 
 					ViewType cronView = createListView(jobFolder, 'CRON', 'cron')

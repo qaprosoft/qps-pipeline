@@ -8,6 +8,14 @@ public class ViewFactory {
         _dslFactory = dslFactory
     }
 
+	ViewFactory(){
+		_dslFactory = null
+	}
+	
+	def setDsl(dsl) {
+		this._dslFactory = dsl
+	}
+
     def factoryListView(folder, name) {
         return _dslFactory.listView("${folder}/${name}")
     }
