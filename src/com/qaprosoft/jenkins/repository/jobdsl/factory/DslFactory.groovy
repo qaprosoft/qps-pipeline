@@ -22,7 +22,7 @@ public class DslFactory {
 	public load(args) {
 		_dslFactory.println("loads: " + args.dump())
 		args.each{
-//			this."${it.key}" = it.value
+			this."${it.key}" = it.value
 			_dslFactory.println("it.key: " + it.key)
 			_dslFactory.println("it.value: " + it.value)
 		}
