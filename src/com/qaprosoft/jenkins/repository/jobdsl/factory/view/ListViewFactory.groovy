@@ -17,13 +17,6 @@ public class ListViewFactory extends DslFactory {
 		this.clazz = this.getClass().getCanonicalName()
 	}
 	
-/*	public load(args) {
-		super.load(args)
-		this.folder = args.get("folder")
-		this.viewName = args.get("viewName")
-		this.descFilter = args.get("descFilter")
-	}*/
-	
 	def create() {
 		def view = _dslFactory.listView("${folder}/${viewName}")
 		view.with {
