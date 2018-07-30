@@ -11,4 +11,4 @@ def listViewFactory = Class.forName("com.qaprosoft.jenkins.repository.jobdsl.fac
 listViewFactory.create('Automation', 'CRON', 'cron', '')
 
 def categorizedViewFactory = this.class.classLoader.loadClass('com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory')?.newInstance(this)
-categorizedViewFactory.create('Automation', 'CRON2', '.*cron.*', '')
+categorizedViewFactory.create('Automation', 'CRON2', 'API|Web', '')
