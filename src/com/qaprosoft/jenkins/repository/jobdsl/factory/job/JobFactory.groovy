@@ -1,7 +1,7 @@
 package com.qaprosoft.jenkins.repository.jobdsl.factory.job
 
 import com.qaprosoft.jenkins.repository.jobdsl.factory.DslFactory
-import groovy.transform.*
+import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class JobFactory extends DslFactory {
@@ -32,6 +32,10 @@ public class JobFactory extends DslFactory {
 		this.logRotator = 100
 
 		this.clazz = this.getClass().getCanonicalName()
+	}
+	
+	def load(args) {
+		super.load(args)
 	}
 	
 	def create() {
