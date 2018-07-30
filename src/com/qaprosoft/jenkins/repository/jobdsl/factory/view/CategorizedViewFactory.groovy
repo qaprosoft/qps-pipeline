@@ -23,8 +23,6 @@ public class CategorizedViewFactory extends DslFactory {
 		this.folder = args.get("folder")
 		this.viewName = args.get("viewName")
 		this.criteria = args.get("criteria")
-		
-		this.clazz = args.get("clazz")
 	}
 	
 	def factoryCategorizedView(folder, name) {
