@@ -139,36 +139,40 @@ class Scanner extends Executor {
 
 					Map<String, ViewType> listViewFactories = [:]
 
-					ViewType cronListFactory = new ViewType(ListViewFactory.class.getCanonicalName(), jobFolder)
-					cronListFactory.factory = ListViewFactory.class.getCanonicalName()
+					ViewType basicListViewFactory = new ViewType(ListViewFactory.class.getCanonicalName(), jobFolder)
+					basicListViewFactory.factory = ListViewFactory.class.getCanonicalName()
 
-					cronListFactory.viewName = 'CRON'
-					cronListFactory.descFilter = 'cron'
-					listViewFactories.put(cronListFactory.viewName, cronListFactory)
-
-					listViewFactories.each{
-						context.println(it.value.dump())
-					}
-
-					cronListFactory.viewName = project.toUpperCase()
-					cronListFactory.descFilter = project
-					listViewFactories.put(cronListFactory.viewName, cronListFactory)
+					ViewType cronViewFactory = basicListViewFactory
+					cronViewFactory.viewName = 'CRON'
+					cronViewFactory.descFilter = 'cron'
+					listViewFactories.put(cronViewFactory.viewName, cronViewFactory)
 
 					listViewFactories.each{
 						context.println(it.value.dump())
 					}
 
-					cronListFactory.viewName = zafira_project
-					cronListFactory.descFilter = zafira_project
-					listViewFactories.put(cronListFactory.viewName, cronListFactory)
+					ViewType projectViewFactory = basicListViewFactory
+					projectViewFactory.viewName = project.toUpperCase()
+					projectViewFactory.descFilter = project
+					listViewFactories.put(projectViewFactory.viewName, projectViewFactory)
 
 					listViewFactories.each{
 						context.println(it.value.dump())
 					}
 
-					cronListFactory.viewName = suiteOwner
-					cronListFactory.descFilter = suiteOwner
-					listViewFactories.put(cronListFactory.viewName, cronListFactory)
+					ViewType zafiraProjectView = basicListViewFactory
+					zafiraProjectView.viewName = zafira_project
+					zafiraProjectView.descFilter = zafira_project
+					listViewFactories.put(zafiraProjectView.viewName, zafiraProjectView)
+
+					listViewFactories.each{
+						context.println(it.value.dump())
+					}
+
+					ViewType suiteOwnerView = basicListViewFactory
+					suiteOwnerView.viewName = suiteOwner
+					suiteOwnerView.descFilter = suiteOwner
+					listViewFactories.put(suiteOwnerView.viewName, suiteOwnerView)
 
 					listViewFactories.each{
 						context.println(it.value.dump())
