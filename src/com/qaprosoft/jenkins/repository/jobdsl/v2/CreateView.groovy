@@ -3,8 +3,10 @@ package com.qaprosoft.jenkins.repository.jobdsl.v2
 import groovy.json.JsonSlurper
 
 println(this.dump())
-factoryDataMap = readFileFromWorkspace("factories.txt")
-factories = new HashMap(slurper.parseText(factoryDataMap))
+
+def slurper = new JsonSlurper()
+String factoryDataMap = readFileFromWorkspace("factories.txt")
+def factories = new HashMap(slurper.parseText(factoryDataMap))
 
 
 factories.each{
