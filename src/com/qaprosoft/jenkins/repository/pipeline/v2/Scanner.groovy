@@ -162,7 +162,7 @@ class Scanner extends Executor {
 					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 					context.writeFile file: "suite_name.txt", text: suiteName
 
-					viewFactories.put("com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory", new ListViewFactory(jobFolder, 'CRON3', 'cron3'))
+					viewFactories.put("cron3", new ListViewFactory(jobFolder, 'CRON3', 'cron3'))
 					context.writeFile file: "factories.txt", text: JsonOutput.toJson(viewFactories)
 					
 					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project
