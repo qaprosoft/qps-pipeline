@@ -27,7 +27,6 @@ public class CategorizedViewFactory extends DslFactory {
 	
     def create() {
         def view = _dslFactory.categorizedJobsView("${folder}/${viewName}") 
-		factoryCategorizedView(folder, viewName)
         view.with {
             columns {
                 status()
