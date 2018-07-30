@@ -146,17 +146,33 @@ class Scanner extends Executor {
 					cronListFactory.descFilter = 'cron'
 					listViewFactories.put(cronListFactory.viewName, cronListFactory)
 
+					listViewFactories.each{
+						context.println(it.value)
+					}
+
 					cronListFactory.viewName = project.toUpperCase()
 					cronListFactory.descFilter = project
 					listViewFactories.put(cronListFactory.viewName, cronListFactory)
+
+					listViewFactories.each{
+						context.println(it.value)
+					}
 
 					cronListFactory.viewName = zafira_project
 					cronListFactory.descFilter = zafira_project
 					listViewFactories.put(cronListFactory.viewName, cronListFactory)
 
+					listViewFactories.each{
+						context.println(it.value)
+					}
+
 					cronListFactory.viewName = suiteOwner
 					cronListFactory.descFilter = suiteOwner
 					listViewFactories.put(cronListFactory.viewName, cronListFactory)
+
+					listViewFactories.each{
+						context.println(it.value)
+					}
 
 					context.writeFile file: "factory_data.txt", text: JsonOutput.toJson(listViewFactories)
 
