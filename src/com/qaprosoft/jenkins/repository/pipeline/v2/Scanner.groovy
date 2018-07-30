@@ -173,6 +173,29 @@ class Scanner extends Executor {
 					
 					dslFactories.put("pipeline1", new PipelineFactory(jobFolder, "pipeline1", "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"))
 					
+					try {
+						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
+						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
+							//def suiteName = suite.path
+							//suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
+
+							context.println("suite name: " + suiteName)
+							context.println("suite path: " + suite.path)
+
+							if (currentSuite.toXml().contains("suiteOwner")) {
+								suiteOwner = currentSuite.getParameter("suiteOwner")
+							}
+							if (currentSuite.toXml().contains("zafira_project")) {
+								zafira_project = currentSuite.getParameter("zafira_project")
+							}
+							//dslFactories.put(suite.path, new PipelineFactory(currentSuite))
+						}
+						
+					} catch (FileNotFoundException e) {
+						context.echo("ERROR! Unable to find suite: " + suite.path)
+					} catch (Exception e) {
+						context.echo("ERROR! Unable to parse suite: " + suite.path, e)
+					}
 					
 					context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
 					

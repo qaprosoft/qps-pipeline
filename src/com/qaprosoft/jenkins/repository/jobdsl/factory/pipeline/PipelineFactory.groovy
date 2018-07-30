@@ -6,7 +6,13 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class PipelineFactory extends JobFactory {
 	def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
+	def currentSuite
 	
+	public PipelineFactory(currentSuite) {
+		this.currentSuite = currentSuite
+		
+		
+	}
 	
 	public PipelineFactory(folder, name, description) {
 		super(folder, name, description)
@@ -36,13 +42,21 @@ public class PipelineFactory extends JobFactory {
 				context.println("Unable to specify performance_optimized mode!")
 			}
 			
-/*			
-
-
+			/** Git Stuff **/
+			definition {
+				cps {
+					script(pipelineScript)
+					sandbox()
+				}
+			}
+			
 			def scheduling = currentSuite.getParameter("scheduling")
 			if (scheduling != null) {
 				triggers { cron(scheduling) }
 			}
+			
+/*			
+
 
 			context.println("selenium: ${selenium}")
 			*//** Properties & Parameters Area **//*
@@ -233,13 +247,6 @@ public class PipelineFactory extends JobFactory {
 				ownership { primaryOwnerId(suiteOwner) }
 			}
 			*/
-			/** Git Stuff **/
-			definition {
-				cps {
-					script(pipelineScript)
-					sandbox()
-				}
-			}
 
 		}
 		return job
