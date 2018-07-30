@@ -1,9 +1,11 @@
 package com.qaprosoft.jenkins.repository.jobdsl.factory.view
 
+import com.qaprosoft.jenkins.repository.jobdsl.factory.DslFactory
+
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class CategorizedViewFactory extends ViewFactory {
+public class CategorizedViewFactory extends DslFactory {
 	
 	def folder
 	def viewName
