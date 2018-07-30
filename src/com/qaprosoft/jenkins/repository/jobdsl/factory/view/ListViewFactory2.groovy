@@ -13,6 +13,10 @@ public class ListViewFactory2 extends ViewFactory {
 		this.viewName = viewName
 		this.descFilter = descFilter
 	}
+	
+	def get() {
+		return folder + "/" + viewName + "/" + descFilter
+	}
 
     def create() {
         def view = factoryListView(folder, viewName)

@@ -142,6 +142,11 @@ class Scanner extends Executor {
 
 					viewFactories.put("cronListfactory2", new ListViewFactory2(jobFolder, 'CRON', 'cron'))
 					
+					writeYaml file: 'datas.yaml', data: viewFactories
+					def read = readYaml file: 'datas.yaml'
+					context.println(read.get("cronListfactory2").get().dump())
+					
+					
 					
 					Map<String, ViewType> listViewFactories = [:]
 
