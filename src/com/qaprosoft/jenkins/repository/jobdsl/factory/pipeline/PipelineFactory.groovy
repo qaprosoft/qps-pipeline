@@ -27,7 +27,6 @@ public class PipelineFactory extends JobFactory {
 			logRotator { numToKeep logRotator }
 /*			
 			description("project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}")
-			logRotator { numToKeep 100 }
 
 			authenticationToken('ciStart')
 			
