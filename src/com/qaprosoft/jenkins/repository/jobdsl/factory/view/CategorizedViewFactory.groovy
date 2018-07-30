@@ -17,7 +17,7 @@ public class CategorizedViewFactory extends DslFactory {
 		this.criteria = criteria
 	}
 	
-	public init(args) {
+	public load(args) {
 		this.folder = args.get("folder")
 		this.viewName = args.get("viewName")
 		this.criteria = args.get("criteria")

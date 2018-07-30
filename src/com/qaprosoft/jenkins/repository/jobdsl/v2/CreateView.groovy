@@ -10,7 +10,7 @@ def factories = new HashMap(slurper.parseText(factoryDataMap))
 factories.each{
 	println(it.value)
 	def factory = Class.forName(it.value.clazz)?.newInstance(this)
-	factory.init(it.value)
+	factory.load(it.value)
 	println("factory")
 	println(factory.dump())
 	factory.create()
