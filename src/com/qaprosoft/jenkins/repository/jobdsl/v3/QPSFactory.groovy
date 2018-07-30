@@ -15,11 +15,11 @@ class QPSFactory {
 		println(context.dump())
 		
 		def slurper = new JsonSlurper()
-		String factoryDataMap = readFileFromWorkspace("factories.txt")
+		String factoryDataMap = context.readFileFromWorkspace("factories.txt")
 		def factories = new HashMap(slurper.parseText(factoryDataMap))
 		
 		factories.each{
-			println(it.value)
+			context.println(it.value)
 			it.setDsl(context)
 			it.create()
 		}
