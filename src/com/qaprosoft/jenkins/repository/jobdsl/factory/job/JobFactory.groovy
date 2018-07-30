@@ -19,11 +19,19 @@ public class JobFactory extends DslFactory {
 	}
 
 	public JobFactory(name, description) {
-		this(name, description, 100)
+		this.name = name
+		this.description = description
+		this.logRotator = 100
+		
+		this.clazz = this.getClass().getCanonicalName()
 	}
 	
 	public JobFactory(name) {
-		this(name, "description", 100)
+		this.name = name
+		this.description = "desc"
+		this.logRotator = 100
+
+		this.clazz = this.getClass().getCanonicalName()
 	}
 	
 	def create() {
