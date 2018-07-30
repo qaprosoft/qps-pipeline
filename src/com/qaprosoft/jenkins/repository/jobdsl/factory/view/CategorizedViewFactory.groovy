@@ -7,8 +7,10 @@ public class CategorizedViewFactory extends ListViewFactory {
 	def criteria
 	
 	public CategorizedViewFactory(folder, viewName, descFilter, criteria) {
+		super(folder, viewName, descFilter)
 		this.criteria = criteria
 	}
+	
 	
     def create() {
         def view = _dslFactory.categorizedJobsView("${folder}/${viewName}") 
