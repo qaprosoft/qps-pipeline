@@ -158,7 +158,7 @@ class Scanner extends Executor {
 					
 
 					// Freestile jobs
-					dslFactories.put("job1", new JobFactory("job1"))
+					//dslFactories.put("job1", new JobFactory("job1"))
 
 					
 					context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
