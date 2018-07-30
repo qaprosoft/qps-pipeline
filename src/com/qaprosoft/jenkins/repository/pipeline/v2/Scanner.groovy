@@ -7,6 +7,7 @@ import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
+import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
 
 import groovy.json.JsonOutput
 
