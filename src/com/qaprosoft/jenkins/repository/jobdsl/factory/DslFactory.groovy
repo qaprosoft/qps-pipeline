@@ -11,11 +11,13 @@ public class DslFactory {
 	}
 	
     DslFactory(dslFactory) {
-        _dslFactory = dslFactory
+        this._dslFactory = dslFactory
+		this.clazz = this.getClass().getCanonicalName()
     }
 	
 	DslFactory() {
-		_dslFactory = null
+		this._dslFactory = null
+		this.clazz = this.getClass().getCanonicalName()
 	}
 	
 	// dynamically load properties from map to members
