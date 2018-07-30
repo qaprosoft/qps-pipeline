@@ -7,11 +7,14 @@ public class ListViewFactory extends ViewFactory {
 	def folder
 	def viewName
 	def descFilter
+	def clazz
 	
 	public ListViewFactory(folder, viewName, descFilter) {
 		this.folder = folder
 		this.viewName = viewName
 		this.descFilter = descFilter
+		
+		this.clazz = this.getClass().getCanonicalName()
 	}
 	
 	public init(args) {
@@ -20,10 +23,6 @@ public class ListViewFactory extends ViewFactory {
 		this.descFilter = args.get("descFilter")
 	}
 	
-	def get() {
-		return folder + "/" + viewName + "/" + descFilter
-	}
-
 	def create() {
 		def view = factoryListView(folder, viewName)
 		view.with {
