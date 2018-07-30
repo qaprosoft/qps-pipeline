@@ -13,8 +13,6 @@ public class ListViewFactory extends DslFactory {
 		this.folder = folder
 		this.viewName = viewName
 		this.descFilter = descFilter
-		
-		//this.clazz = this.getClass().getCanonicalName()
 	}
 	
 	def create() {
