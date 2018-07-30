@@ -8,10 +8,14 @@ public class JobFactory extends DslFactory {
 	def folder
 	def name
 	def description
-	def logRotator
+	def logRotator = 100
 	
 	public JobFactory(folder, name, description) {
-		this(name, description, 10)
+		this.folder = folder
+		this.name = name
+		this.description = description
+		
+		this.clazz = this.getClass().getCanonicalName()
 	}
 	
 	public JobFactory(folder, name, description, logRotator) {
