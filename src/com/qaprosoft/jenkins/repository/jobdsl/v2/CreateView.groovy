@@ -20,7 +20,7 @@ def factories = new HashMap(slurper.parseText(factoryDataMap))
 
 factories.each{
 	println(it.value)
-	it.setDsl(this)
+	it.setDsl(listViewFactory.getDsl())
 	it.create()
 }
 
