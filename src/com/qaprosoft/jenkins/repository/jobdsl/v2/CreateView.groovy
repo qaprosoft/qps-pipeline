@@ -1,7 +1,11 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
+println("qwe1")
+println(this.dump())
+
 import groovy.json.JsonSlurper
 
+println("qwe2")
 println(this.dump())
 
 def slurper = new JsonSlurper()
