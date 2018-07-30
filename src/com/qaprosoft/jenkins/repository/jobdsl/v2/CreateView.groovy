@@ -12,6 +12,7 @@ Map<String, ViewType> factories = new HashMap(result)
 
 factories.each{
     ViewType viewData = it.value
+    println(it.value)
     def listViewFactory = Class.forName(viewData.factory)?.newInstance(this)
     listViewFactory.create(viewData.folder, viewData.viewName, viewData.descFilter)
 }
