@@ -150,7 +150,7 @@ class Scanner extends Executor {
 					context.writeFile file: "suite_name.txt", text: suiteName
 
 					// VIEWS
-					dslFactories.put("cron3", new CategorizedViewFactory(jobFolder, 'CRON3', 'API|Web'))
+					//dslFactories.put("cron3", new CategorizedViewFactory(jobFolder, 'CRON3', 'API|Web'))
 					dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', 'cron'))
 					dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), project))
 					dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, zafira_project))
@@ -158,13 +158,14 @@ class Scanner extends Executor {
 					
 
 					// Freestile jobs
-					dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc", 10))
+					//dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc", 10))
 
 					
 					context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
 					
 					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+						removedConfigFilesAction: 'DELETE', removedJobAction: 'DELETE', removedViewAction: 'DELETE', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy'
 						
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
