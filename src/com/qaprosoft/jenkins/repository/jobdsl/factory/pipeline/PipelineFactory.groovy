@@ -25,9 +25,7 @@ public class PipelineFactory extends JobFactory {
 		def job = _dslFactory.pipelineJob(getFullName()){
 			description "${description}"
 			logRotator { numToKeep logRotator }
-/*			
-			description("project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}")
-
+			
 			authenticationToken('ciStart')
 			
 			try {
@@ -37,6 +35,9 @@ public class PipelineFactory extends JobFactory {
 			} catch (Exception e) {
 				context.println("Unable to specify performance_optimized mode!")
 			}
+			
+/*			
+
 
 			def scheduling = currentSuite.getParameter("scheduling")
 			if (scheduling != null) {
