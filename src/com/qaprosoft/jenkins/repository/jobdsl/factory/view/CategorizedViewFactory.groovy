@@ -30,7 +30,7 @@ public class CategorizedViewFactory extends ListViewFactory {
 					regex {
 						matchType(MatchType.INCLUDE_MATCHED)
 						matchValue(RegexMatchValue.DESCRIPTION)
-						regex(".*${descFilter}.*")
+						regex("${descFilter}")
 					}
 				}
 			}

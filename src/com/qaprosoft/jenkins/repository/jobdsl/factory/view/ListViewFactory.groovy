@@ -33,7 +33,7 @@ public class ListViewFactory extends DslFactory {
 					regex {
 						matchType(MatchType.INCLUDE_MATCHED)
 						matchValue(RegexMatchValue.DESCRIPTION)
-						regex(".*${descFilter}.*")
+						regex("${descFilter}")
 					}
 				}
 			}
