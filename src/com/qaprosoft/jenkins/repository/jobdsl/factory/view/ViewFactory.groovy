@@ -12,7 +12,7 @@ public class ViewFactory {
 		_dslFactory = null
 	}
 
-	def setDsl(def dsl) {
+	def setDsl(dsl) {
 		this._dslFactory = dsl
 	}
 	

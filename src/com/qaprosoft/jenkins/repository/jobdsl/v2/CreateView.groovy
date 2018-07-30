@@ -1,8 +1,8 @@
 package com.qaprosoft.jenkins.repository.jobdsl.v2
 
 import groovy.json.JsonSlurper
-
-/*import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
+/*
+import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
 
 //TODO: read parameters from pipeline and created file to determine valid factory class and params
 String factoryDataMap = readFileFromWorkspace("factory_data.txt")
@@ -39,10 +39,9 @@ println(listViewFactory2.dump())
 String factoryDataMap = readFileFromWorkspace("factories.txt")
 def factories = new HashMap(slurper.parseText(factoryDataMap))
 
-
 factories.each{
 	println(it.value)
-	it.setDsl(listViewFactory.getDsl())
+//	it.setDsl(listViewFactory.getDsl())
 	it.create()
 }
 
