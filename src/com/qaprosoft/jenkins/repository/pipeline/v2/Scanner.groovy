@@ -137,7 +137,7 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					List<ViewType> factories = new List<>()
+					List<ViewType> factories = new ArrayList<>()
 
 					ViewType cronListFactory = new ViewType()
 					cronListFactory.factory = ListViewFactory.getClass()
