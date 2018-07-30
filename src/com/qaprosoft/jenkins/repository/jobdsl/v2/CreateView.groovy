@@ -12,6 +12,10 @@ println(this.binding.dump())
 def listViewFactory = new com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewFactory(this)
 println("listViewFactory")
 println(listViewFactory.dump())
+
+def listViewFactory2 = Class.forName("com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewFactory")?.newInstance(this)
+println("listViewFactory2")
+println(listViewFactory2.dump())
 	
 def slurper = new JsonSlurper()
 String factoryDataMap = readFileFromWorkspace("factories.txt")
