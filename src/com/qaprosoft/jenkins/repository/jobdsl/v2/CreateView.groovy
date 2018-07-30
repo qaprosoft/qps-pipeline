@@ -17,5 +17,5 @@ factories.each{
     listViewFactory.create(viewData.folder, viewData.viewName, viewData.descFilter)
 }
 
-def categorizedViewFactory = this.class.classLoader.loadClass('com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory')?.newInstance(this)
-categorizedViewFactory.create('Automation', 'CRON2', 'API|Web')
+//def categorizedViewFactory = this.class.classLoader.loadClass('com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory')?.newInstance(this)
+//categorizedViewFactory.create('Automation', 'CRON2', 'API|Web')

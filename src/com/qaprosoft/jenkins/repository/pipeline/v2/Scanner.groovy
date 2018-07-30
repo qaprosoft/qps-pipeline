@@ -142,30 +142,14 @@ class Scanner extends Executor {
 					ViewType cronView = createListView(jobFolder, 'CRON', 'cron')
 					listViewFactories.put(cronView.viewName, cronView)
 
-					listViewFactories.each{
-						context.println(it.value.dump())
-					}
-
 					ViewType projectView = createListView(jobFolder, project.toUpperCase(), project)
 					listViewFactories.put(projectView.viewName, projectView)
-
-					listViewFactories.each{
-						context.println(it.value.dump())
-					}
 
 					ViewType zafiraProjectView = createListView(jobFolder, zafira_project, zafira_project)
 					listViewFactories.put(zafiraProjectView.viewName, zafiraProjectView)
 
-					listViewFactories.each{
-						context.println(it.value.dump())
-					}
-
 					ViewType suiteOwnerView = createListView(jobFolder, suiteOwner, suiteOwner)
 					listViewFactories.put(suiteOwnerView.viewName, suiteOwnerView)
-
-					listViewFactories.each{
-						context.println(it.value.dump())
-					}
 
 					context.writeFile file: "factory_data.txt", text: JsonOutput.toJson(listViewFactories)
 
