@@ -140,13 +140,8 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					viewFactories.put("cronListfactory2", new ListViewFactory2(jobFolder, 'CRON', 'cron'))
-					
-					context.writeYaml file: 'datas.yaml', data: viewFactories
-					def read = context.readYaml file: 'datas.yaml'
-					context.println(read.get("cronListfactory2").get().dump())
-					
-					
+					viewFactories.put("cronListfactory2", new ListViewFactory2(jobFolder, 'CRON3', 'cron3'))
+					context.writeFile file: "factories.txt", text: JsonOutput.toJson(viewFactories)
 					
 					Map<String, ViewType> listViewFactories = [:]
 
