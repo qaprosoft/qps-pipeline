@@ -23,6 +23,10 @@ public class ListViewFactory extends ViewFactory {
 		this.descFilter = args.get("descFilter")
 	}
 	
+	def factoryListView(folder, name) {
+		return _dslFactory.listView("${folder}/${name}")
+	}
+	
 	def create() {
 		def view = factoryListView(folder, viewName)
 		view.with {
