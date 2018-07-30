@@ -14,8 +14,6 @@ public class JobFactory extends DslFactory {
 		this.folder = folder
 		this.name = name
 		this.description = description
-		
-		//this.clazz = this.getClass().getCanonicalName()
 	}
 	
 	public JobFactory(folder, name, description, logRotator) {
@@ -23,8 +21,6 @@ public class JobFactory extends DslFactory {
 		this.name = name
 		this.description = description
 		this.logRotator = logRotator
-		
-		//this.clazz = this.getClass().getCanonicalName()
 	}
 	
 	def create() {

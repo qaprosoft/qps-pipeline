@@ -2,6 +2,8 @@ package com.qaprosoft.jenkins.repository.jobdsl.factory.job
 
 import groovy.transform.InheritConstructors
 
+//TODO: remove this class 
+
 @InheritConstructors
 public class BuildJobFactory extends JobFactory {
 
