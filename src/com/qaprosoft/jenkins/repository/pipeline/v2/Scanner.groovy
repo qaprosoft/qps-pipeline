@@ -6,7 +6,6 @@ import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
-import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
 
 import groovy.json.JsonOutput
@@ -140,21 +139,7 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					Map<String, ViewType> listViewFactories = [:]
 
-					ViewType cronView = createListView(jobFolder, 'CRON', 'cron')
-					listViewFactories.put(cronView.viewName, cronView)
-
-					ViewType projectView = createListView(jobFolder, project.toUpperCase(), project)
-					listViewFactories.put(projectView.viewName, projectView)
-
-					ViewType zafiraProjectView = createListView(jobFolder, zafira_project, zafira_project)
-					listViewFactories.put(zafiraProjectView.viewName, zafiraProjectView)
-
-					ViewType suiteOwnerView = createListView(jobFolder, suiteOwner, suiteOwner)
-					listViewFactories.put(suiteOwnerView.viewName, suiteOwnerView)
-
-					context.writeFile file: "factory_data.txt", text: JsonOutput.toJson(listViewFactories)
 
 					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
 
@@ -163,6 +148,13 @@ class Scanner extends Executor {
 					context.writeFile file: "suite_name.txt", text: suiteName
 
 					viewFactories.put("cron3", new ListViewFactory(jobFolder, 'CRON3', 'cron3'))
+					viewFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', 'cron'))
+					
+					viewFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), project))
+					viewFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, zafira_project))
+					
+					viewFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, suiteOwner))
+					
 					context.writeFile file: "factories.txt", text: JsonOutput.toJson(viewFactories)
 					
 					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project
@@ -258,11 +250,4 @@ class Scanner extends Executor {
 		}
 	}
 
-	protected ViewType createListView(jobFolder, viewName, descFilter){
-		ViewType newView = new ViewType(ListViewFactory.class.getCanonicalName(), jobFolder)
-		newView.viewName = viewName
-		newView.descFilter = descFilter
-		return newView
-	}
-	
 }
