@@ -6,7 +6,7 @@ import groovy.transform.InheritConstructors
 public class CategorizedViewFactory extends ListViewFactory {
 	def criteria
 	
-	public CategorizedViewFactory(criteria) {
+	public CategorizedViewFactory(folder, viewName, descFilter, criteria) {
 		this.criteria = criteria
 	}
 	
