@@ -5,7 +5,7 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class CategorizedViewFactory extends ViewFactory {
 
-    def create(folder, viewName, criteria, jobNames) {
+    def create(folder, viewName, criteria) {
         def view = factoryCategorizedView(folder, viewName)
         view.with {
             columns {
@@ -20,10 +20,6 @@ public class CategorizedViewFactory extends ViewFactory {
 
             categorizationCriteria {
                 regexGroupingRule(criteria)
-            }
-
-            jobs {
-                names(jobNames)
             }
         }
         return view

@@ -5,6 +5,10 @@ import groovy.transform.Canonical
 //@Canonical
 public class ViewType {
 
+    ViewType(factory, jobFolder) {
+        this.factory = factory
+        this.folder = jobFolder
+    }
     String factory
     String folder
     String viewName
