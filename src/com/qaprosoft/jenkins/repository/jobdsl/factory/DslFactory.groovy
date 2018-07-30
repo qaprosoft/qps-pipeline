@@ -17,5 +17,15 @@ public class DslFactory {
 	DslFactory() {
 		_dslFactory = null
 	}
+	
+	// dynamically load properties from map to member
+	public load(args) {
+		println("loads...")
+		args.each{
+			println(it.name)
+			println(it.value)
+		}
+		//this."$objectName" = <value>"
+	}
 
 }
