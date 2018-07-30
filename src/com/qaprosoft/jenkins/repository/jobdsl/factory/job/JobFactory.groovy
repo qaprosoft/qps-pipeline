@@ -21,7 +21,7 @@ public class JobFactory extends DslFactory {
 	def create() {
 		def job = _dslFactory.freeStyleJob("${name}"){
 			description "${description}"
-			logRotator { numToKeep "${logRotator}" }
+			logRotator { numToKeep logRotator }
 		}
 		return job
 	}
