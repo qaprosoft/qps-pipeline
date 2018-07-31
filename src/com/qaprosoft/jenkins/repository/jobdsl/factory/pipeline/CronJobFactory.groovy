@@ -9,12 +9,13 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class CronJobFactory extends PipelineFactory {
 
+    String pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
+
     def project
     def sub_project
     def suitePath
 
     public CronJobFactory(folder, cronJobName, project, sub_project, suitePath) {
-        this.pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
         this.folder = folder
         this.name = cronJobName
         this.project = project
@@ -53,8 +54,15 @@ public class CronJobFactory extends PipelineFactory {
                 choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
             }
 
+            definition {
+                cps {
+                    script(pipelineScript)
+                    sandbox()
+                }
+            }
+
         }
-        return pipelineJob
+       return pipelineJob
     }
 
 }

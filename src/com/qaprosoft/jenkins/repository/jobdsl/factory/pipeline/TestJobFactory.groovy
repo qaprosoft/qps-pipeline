@@ -8,6 +8,9 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class TestJobFactory extends PipelineFactory {
+
+	String pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
+
 	def project
 	def sub_project
 	def zafira_project
@@ -225,7 +228,16 @@ public class TestJobFactory extends PipelineFactory {
 				}
 
 				customPipelineParams(currentSuite, suiteOwner)
-			}
+
+                /** Git Stuff **/
+                definition {
+                    cps {
+                        script(pipelineScript)
+                        sandbox()
+                    }
+                }
+
+            }
 
 		}
 		return pipelineJob
