@@ -82,7 +82,6 @@ class Scanner extends Executor {
 				context.println("sub_project: " + it)
 
 				def sub_project = it.name
-				context.writeFile file: "sub_project.txt", text: sub_project
 
 				def subProjectFilter = it.name
 				if (sub_project.equals(".")) {
@@ -103,7 +102,6 @@ class Scanner extends Executor {
 					}
 				}
 				context.println("zafira_project: ${zafira_project}")
-				context.writeFile file: "zafira_project.txt", text: zafira_project
 
 				//TODO: restore PR checker functionality after configuring by default sonarqube scanner in jenkins-master:
 				// https://github.com/qaprosoft/jenkins-master/issues/11
@@ -144,35 +142,25 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-
-
-					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
-
 					def suiteName = suite.path
 					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
-					context.writeFile file: "suite_name.txt", text: suiteName
 
 					// VIEWS
 					dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
 					dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
-					//TODO: remove below factories
-					// JUST IN DEMO PURPOSED
+					//TODO: remove/comment below factories
+					// --- JUST IN DEMO PURPOSED
 					dslFactories.put("categorizedView", new CategorizedViewFactory(jobFolder, 'Categorized', '.*', 'API|Web|Android|iOS'))
-					
 					dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc1", 10))
-					//dslFactories.put("job2", new JobFactory(jobFolder, "job2", "desc2"))
-					
-					//dslFactories.put("job3", new BuildJobFactory(jobFolder, "job3", "desc3"))
-					
+					dslFactories.put("job2", new JobFactory(jobFolder, "job2", "desc2"))
+					dslFactories.put("job3", new BuildJobFactory(jobFolder, "job3", "desc3"))
 					dslFactories.put("pipeline1", new PipelineFactory(jobFolder, "pipeline1", "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"))
+					// --- JUST IN DEMO PURPOSED
 					
 					try {
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
 						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
-							//def suiteName = suite.path
-							//suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
-
 							context.println("suite name: " + suiteName)
 							context.println("suite path: " + suite.path)
 
@@ -183,10 +171,29 @@ class Scanner extends Executor {
 								zafira_project = currentSuite.getParameter("zafira_project")
 							}
 							
+							
+							// views
 							dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
 							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
+							//pipeline job
+							//TODO: review each argument to TestNGPipelineFactory and think about removal
 							dslFactories.put(suite.name, new TestNGPipelineFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName))
+							
+							//cron job
+							//TODO: 
+							// 1. restore boolean creat/recreate cron logic
+							// 2. create new CronPipelineFactory extending PipelineFactory
+							// 3. move implementatin from Job.createRegressionPipeline to CronPipelineFactory.create()
+							// 4. uncomment below code and adjust according to above points
+/*							boolean createCron = true
+							if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
+								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
+								for (def cronJobName : cronJobNames.split(",")) {
+									cronJobName = cronJobName.trim()
+									job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
+								}
+							}*/
 						}
 						
 					} catch (FileNotFoundException e) {
@@ -195,6 +202,7 @@ class Scanner extends Executor {
 						context.echo("ERROR! Unable to parse suite: " + suite.path, e)
 					}
 					
+					// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc 
 					context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
 					
 					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project
@@ -202,48 +210,6 @@ class Scanner extends Executor {
 						removedConfigFilesAction: 'DELETE', removedJobAction: 'DELETE', removedViewAction: 'DELETE', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy'
 						
-//					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-//						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
-
-
-                    continue
-
-					try {
-						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
-
-						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
-
-	                        def createCron = false
-	                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
-	                            def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
-
-	                            if (!isItemAvailable(jobFolder + "/" + cronName)) {
-	                                createCron = true
-	                            }
-	                            // we need only single regression cron declaration
-	                            //createCron = !crons.contains(cronName)
-	                            crons << cronName
-	                        }
-
-/*	                        context.build job: "Management_Jobs/CreateJob",
-	                                propagate: false,
-	                                parameters: [
-	                                        context.string(name: 'jobFolder', value: jobFolder),
-	                                        context.string(name: 'project', value: project),
-	                                        context.string(name: 'sub_project', value: sub_project),
-	                                        context.string(name: 'suite', value: suiteName),
-	                                        context.string(name: 'suiteOwner', value: suiteOwner),
-	                                        context.string(name: 'zafira_project', value: zafira_project),
-	                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
-	                                        context.booleanParam(name: 'createCron', value: createCron),
-	                                ], wait: false*/
-
-						}
-					} catch (FileNotFoundException e) {
-						context.echo("ERROR! Unable to find suite: " + suite.path)
-					} catch (Exception e) {
-						context.echo("ERROR! Unable to parse suite: " + suite.path, e)
-					}
 				}
 			}
 		}
