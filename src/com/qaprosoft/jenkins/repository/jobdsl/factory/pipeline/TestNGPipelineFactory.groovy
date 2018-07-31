@@ -8,24 +8,22 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class TestNGPipelineFactory extends PipelineFactory {
-	XmlSuite currentSuite
+	
+	def suitePath
 	
 	public TestNGPipelineFactory(folder, suitePath) {
 		//super(folder, name, description, logRotator)
 		this.folder = folder
-		this.name = "qwe1"
-		
-		println("suitePath: " + suitePath)
-
+		rhis.suitePath = suitePath
 	}
 	
 	def create() {
 		
-		def xmlFile = new Parser(path)
+		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 		
 		List<XmlSuite> suiteXml = xmlFile.parseToList()
-		currentSuite = suiteXml.get(0)
+		XmlSuite currentSuite = suiteXml.get(0)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
 		println("name: " + name)
