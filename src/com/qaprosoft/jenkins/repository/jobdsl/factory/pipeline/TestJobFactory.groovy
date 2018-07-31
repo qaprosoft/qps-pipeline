@@ -7,7 +7,7 @@ import org.testng.xml.XmlSuite;
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class TestJobFactory extends PipelineFactory {
+public class TestJobFactory extends PipelineFactory implements PipelineConfigurationTrait {
 	def project
 	def sub_project
 	def zafira_project
@@ -230,90 +230,6 @@ public class TestJobFactory extends PipelineFactory {
 
 		}
 		return pipelineJob
-	}
-
-	protected List<String> getEnvironments(currentSuite) {
-		def envList = getGenericSplit(currentSuite, "jenkinsEnvironments")
-
-		if (envList.isEmpty()) {
-			envList.add("DEMO")
-			envList.add("STAG")
-		}
-
-		return envList
-	}
-	
-	protected List<String> getGenericSplit(currentSuite, parameterName) {
-		String genericField = currentSuite.getParameter(parameterName)
-		def genericFields = []
-
-		if (genericField != null) {
-			if (!genericField.contains(", ")) {
-				genericFields = genericField.split(",")
-			} else {
-				genericFields = genericField.split(", ")
-			}
-		}
-		return genericFields
-	}
-	
-	protected Closure addHiddenParameter(paramName, paramDesc, paramValue) {
-		return { node ->
-			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'com.wangyin.parameter.WHideParameterDefinition'(plugin: 'hidden-parameter@0.0.4') {
-				name paramName
-				description paramDesc
-				defaultValue paramValue
-			}
-		}
-	}
-	
-	protected Closure addExtensibleChoice(choiceName, globalName, desc, choice) {
-		return { node ->
-			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'jp.ikedam.jenkins.plugins.extensible__choice__parameter.ExtensibleChoiceParameterDefinition'(plugin: 'extensible-choice-parameter@1.3.3') {
-				name choiceName
-				description desc
-				editable true
-				choiceListProvider(class: 'jp.ikedam.jenkins.plugins.extensible_choice_parameter.GlobalTextareaChoiceListProvider') {
-					whenToAdd 'Triggered'
-					name globalName
-					defaultChoice choice
-				}
-			}
-		}
-	}
-	
-	protected Closure addExtensibleChoice(choiceName, desc, code) {
-		return { node ->
-			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'jp.ikedam.jenkins.plugins.extensible__choice__parameter.ExtensibleChoiceParameterDefinition'(plugin: 'extensible-choice-parameter@1.3.3') {
-				name choiceName
-				description desc
-				editable true
-				choiceListProvider(class: 'jp.ikedam.jenkins.plugins.extensible_choice_parameter.SystemGroovyChoiceListProvider') {
-					groovyScript {
-						script code
-						sandbox true
-						usePrefinedVariables false
-					}
-				}
-			}
-		}
-	}
-
-	protected String getCustomFields(currentSuite) {
-		def overrideFields = getGenericSplit(currentSuite, "overrideFields")
-		def prepCustomFields = ""
-
-		if (!overrideFields.isEmpty()) {
-			for (String customField : overrideFields) {
-				prepCustomFields = prepCustomFields + " -D" + customField
-			}
-		}
-
-		return prepCustomFields
-	}
-
-	protected void customPipelineParams(org.testng.xml.XmlSuite currentSuite, String suiteOwner) {
-		//do nothing here
 	}
 
 }
