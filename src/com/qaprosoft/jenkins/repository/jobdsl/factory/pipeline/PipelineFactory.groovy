@@ -28,7 +28,7 @@ public class PipelineFactory extends JobFactory {
 	}
 	
 	def create() {
-		def job = _dslFactory.pipelineJob(getFullName()){
+		def pipelineJob = _dslFactory.pipelineJob(getFullName()){
 			description "${description}"
 			logRotator { numToKeep logRotator }
 			
@@ -249,6 +249,6 @@ public class PipelineFactory extends JobFactory {
 			*/
 
 		}
-		return job
+		return pipelineJob
 	}
 }
