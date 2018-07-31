@@ -81,4 +81,14 @@ public class CronJobFactory extends PipelineFactory {
         }
         return genericFields
     }
+
+    protected Closure addHiddenParameter(paramName, paramDesc, paramValue) {
+        return { node ->
+            node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'com.wangyin.parameter.WHideParameterDefinition'(plugin: 'hidden-parameter@0.0.4') {
+                name paramName
+                description paramDesc
+                defaultValue paramValue
+            }
+        }
+    }
 }
