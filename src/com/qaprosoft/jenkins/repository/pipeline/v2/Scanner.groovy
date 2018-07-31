@@ -107,22 +107,13 @@ class Scanner extends Executor {
 				// https://github.com/qaprosoft/jenkins-master/issues/11
 				
 /*				if (prChecker) {
-					// PR_Checker is supported only for the repo with single sub_project!
-					context.println("Launching Create-PR-Checker job for " + project)
-					context.build job: 'Management_Jobs/Create-PR-Checker', \
-							parameters: [context.string(name: 'project', value: project), context.string(name: 'sub_project', value: sub_project)], \
-							wait: false
+					//TODO: implement PR_Checker creation
 				}
 */				
 				
 				if (prMerger) {
 					//TODO: implement auto-deploy artifact job
 				}
-
-
-				//TODO: #2 declare global list for created regression cron jobs
-				//	   provide extra flag includeIntoCron for CreateJob
-				List<String> crons = []
 
 
 				if (suiteFilter.endsWith("/")) {
@@ -132,8 +123,12 @@ class Scanner extends Executor {
 				def testngFolder = suiteFilter.substring(suiteFilter.lastIndexOf("/"), suiteFilter.length()) + "/"
 				context.println("testngFolder: " + testngFolder)
 
+				
+				// VIEWS
+				dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
+				dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
-				// find all tetsng suite xml files and launch job creator dsl job
+				// find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
 				def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
 				for (File suite : suites) {
 					if (!suite.path.endsWith(".xml")) {
@@ -144,10 +139,6 @@ class Scanner extends Executor {
 
 					def suiteName = suite.path
 					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
-
-					// VIEWS
-					dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
-					dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
 					//TODO: remove/comment below factories
 					// --- JUST IN DEMO PURPOSED
@@ -171,14 +162,14 @@ class Scanner extends Executor {
 								zafira_project = currentSuite.getParameter("zafira_project")
 							}
 							
-							
-							// views
+							// put standard views factory into the map
 							dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
 							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
 							//pipeline job
-							//TODO: review each argument to TestNGPipelineFactory and think about removal
-							dslFactories.put(suite.name, new TestNGPipelineFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName))
+							//TODO: review each argument to TestNGPipelineFactory and think about removal, rename class(?!)
+							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+							dslFactories.put(suiteName, new TestNGPipelineFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName))
 							
 							//cron job
 							//TODO: 
@@ -202,15 +193,14 @@ class Scanner extends Executor {
 						context.echo("ERROR! Unable to parse suite: " + suite.path, e)
 					}
 					
-					// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc 
-					context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
-					
-					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project
-					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-						removedConfigFilesAction: 'DELETE', removedJobAction: 'DELETE', removedViewAction: 'DELETE', \
-						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy'
-						
 				}
+				
+				// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
+				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
+				
+				context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+					removedConfigFilesAction: 'DELETE', removedJobAction: 'DELETE', removedViewAction: 'DELETE', \
+					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy'
 			}
 		}
 	}
