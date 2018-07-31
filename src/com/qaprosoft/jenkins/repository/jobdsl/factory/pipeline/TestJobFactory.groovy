@@ -5,7 +5,6 @@ package com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import com.qaprosoft.selenium.grid.ProxyInfo
-import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
@@ -30,7 +29,7 @@ public class TestJobFactory extends PipelineFactory {
 	
 	def create() {
 
-        def selenium = Configurator.get(Configurator.Parameter.QPS_HUB)
+        def selenium = "CHANGE_ME"
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 		
