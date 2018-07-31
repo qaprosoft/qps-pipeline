@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.repository.jobdsl.v2
+package com.qaprosoft.jenkins.repository.jobdsl
 
 // groovy script for initialization and execution all kind of jobdsl factories which are transfered from pipeline scanner script
 
