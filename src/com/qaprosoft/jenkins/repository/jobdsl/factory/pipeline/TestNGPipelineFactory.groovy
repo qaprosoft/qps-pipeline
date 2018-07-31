@@ -14,7 +14,7 @@ public class TestNGPipelineFactory extends PipelineFactory {
 	public TestNGPipelineFactory(folder, suitePath) {
 		//super(folder, name, description, logRotator)
 		this.folder = folder
-		rhis.suitePath = suitePath
+		this.suitePath = suitePath
 	}
 	
 	def create() {
