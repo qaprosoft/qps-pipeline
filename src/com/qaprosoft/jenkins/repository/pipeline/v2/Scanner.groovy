@@ -155,12 +155,8 @@ class Scanner extends Executor {
 					context.writeFile file: "suite_name.txt", text: suiteName
 
 					// VIEWS
-					
 					dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
 					dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
-					dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
-					dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
-					
 
 					//TODO: remove below factories
 					// JUST IN DEMO PURPOSED
@@ -188,6 +184,10 @@ class Scanner extends Executor {
 							if (currentSuite.toXml().contains("zafira_project")) {
 								zafira_project = currentSuite.getParameter("zafira_project")
 							}
+							
+							dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
+							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
+		
 							//dslFactories.put(suite.path, new PipelineFactory(currentSuite))
 						}
 						
