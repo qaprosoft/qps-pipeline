@@ -31,7 +31,7 @@ public class Configurator {
     public enum Parameter {
 
         //vars
-        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.4.108"),
+        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.5.113"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
 		//to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
 		//the biggest problem is that AWS key can't be located in public repositories
@@ -103,8 +103,8 @@ public class Configurator {
 		
 		def enumValues  = Parameter.values()
 		def envVars = context.env.getEnvironment()
-		
-		for (enumValue in enumValues) {
+
+        for (enumValue in enumValues) {
 			//a. set default values from enum
 			vars.put(enumValue.getKey(), enumValue.getValue())
 			
@@ -114,7 +114,13 @@ public class Configurator {
 			}
 			
 		}
-		
+
+        if (context.env.getEnvironment().get("JENKINS_URL").contains("https")) {
+            vars.put("screen_record_host", "https://\${QPS_HOST}/video/%s.mp4")
+            vars.put("vnc_protocol", "wss")
+            vars.put("vnc_port", "443")
+        }
+
 		for (var in vars) {
 			context.println(var)
 		}
@@ -130,7 +136,7 @@ public class Configurator {
 		for (param in params) {
 			context.println(param)
 		}
-	
+
 		//3. TODO: investigate how private pipeline can override those values
 		// public static void set(Map args) - ???
 	}

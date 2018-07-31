@@ -1,30 +1,36 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
 @Grab('org.testng:testng:6.8.8')
-import org.testng.xml.XmlSuite;
-import com.qaprosoft.scm.github.GitHub;
+import org.testng.xml.XmlSuite
+import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
+import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ViewType
+import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
+import groovy.json.JsonOutput
+
 
 class Scanner extends Executor {
+	//TODO: specify default factory classes
+	//protected String viewFactory = "CreateViewFactory"
 
-	public Scanner(context) {
+    public Scanner(context) {
 		super(context)
 		this.context = context
 		scmClient = new GitHub(context)
-	}
+ 	}
 
-	public void scanRepository() {
+    public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
 				scmClient.clone()
-				
+
 				String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
 				String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
-				
+
 				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
-				
+
 				this.scan()
 				this.clean()
 			}
@@ -32,6 +38,9 @@ class Scanner extends Executor {
 	}
 
 	protected void scan() {
+        context.println('DUMP')
+        context.println(context.binding.dump())
+
 		context.stage("Scan Repository") {
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 			def project = Configurator.get("project")
@@ -64,7 +73,7 @@ class Scanner extends Executor {
 
 				def sub_project = it.name
 				context.writeFile file: "sub_project.txt", text: sub_project
-				
+
 				def subProjectFilter = it.name
 				if (sub_project.equals(".")) {
 					subProjectFilter = "**"
@@ -109,9 +118,7 @@ class Scanner extends Executor {
 				//TODO: #2 declare global list for created regression cron jobs
 				//	   provide extra flag includeIntoCron for CreateJob
 				List<String> crons = []
-				context.build job: "Management_Jobs/CreateView",
-					propagate: false,
-					parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: 'CRON'), context.string(name: 'descFilter', value: 'cron'),]
+
 
 				if (suiteFilter.endsWith("/")) {
 					//remove last character if it is slash
@@ -130,8 +137,24 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
+					Map<String, ViewType> listViewFactories = [:]
+
+					ViewType cronView = createListView(jobFolder, 'CRON', 'cron')
+					listViewFactories.put(cronView.viewName, cronView)
+
+					ViewType projectView = createListView(jobFolder, project.toUpperCase(), project)
+					listViewFactories.put(projectView.viewName, projectView)
+
+					ViewType zafiraProjectView = createListView(jobFolder, zafira_project, zafira_project)
+					listViewFactories.put(zafiraProjectView.viewName, zafiraProjectView)
+
+					ViewType suiteOwnerView = createListView(jobFolder, suiteOwner, suiteOwner)
+					listViewFactories.put(suiteOwnerView.viewName, suiteOwnerView)
+
+					context.writeFile file: "views.json", text: JsonOutput.toJson(listViewFactories)
+
 					context.writeFile file: "suite_path.txt", text: getWorkspace() + "/" + suite.path
-					
+
 					def suiteName = suite.path
 					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 					context.writeFile file: "suite_name.txt", text: suiteName
@@ -139,9 +162,15 @@ class Scanner extends Executor {
 					context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateJob.groovy'
 
-					continue;
-					
-					try{
+
+					//TODO: transfer descFilter and maybe jobFolder, owner and zafira project 
+                    context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+						targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/v2/CreateView.groovy'
+
+
+                    continue
+
+					try {
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
 
 						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
@@ -206,7 +235,7 @@ class Scanner extends Executor {
 	                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
 	                                        context.booleanParam(name: 'createCron', value: createCron),
 	                                ], wait: false*/
-									
+
 //							context.jobDsl additionalClasspath: 'qps-pipeline/src', scriptText: '''package com.qaprosoft.jenkins.repository.jobdsl.v2
 //
 //import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
@@ -222,6 +251,13 @@ class Scanner extends Executor {
 				}
 			}
 		}
+	}
+
+	protected ViewType createListView(jobFolder, viewName, descFilter){
+		ViewType newView = new ViewType(ListViewFactory.class.getCanonicalName(), jobFolder)
+		newView.viewName = viewName
+		newView.descFilter = descFilter
+		return newView
 	}
 	
 }
