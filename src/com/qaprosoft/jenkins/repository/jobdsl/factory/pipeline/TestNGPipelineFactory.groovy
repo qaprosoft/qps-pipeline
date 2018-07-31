@@ -4,7 +4,6 @@ package com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline
 
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
-import com.cloudbees.groovy.cps.NonCPS
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
@@ -221,14 +220,4 @@ public class TestNGPipelineFactory extends PipelineFactory {
 		return pipelineJob
 	}
 	
-	
-	@NonCPS
-	private XmlSuite parseSuite(String path) {
-		def xmlFile = new Parser(path)
-		xmlFile.setLoadClasses(false)
-		
-		List<XmlSuite> suiteXml = xmlFile.parseToList()
-		XmlSuite currentSuite = suiteXml.get(0)
-		return currentSuite
-	}
 }
