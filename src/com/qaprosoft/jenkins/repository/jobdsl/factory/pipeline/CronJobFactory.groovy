@@ -68,4 +68,17 @@ public class CronJobFactory extends PipelineFactory {
         return envList
     }
 
+    protected List<String> getGenericSplit(currentSuite, parameterName) {
+        String genericField = currentSuite.getParameter(parameterName)
+        def genericFields = []
+
+        if (genericField != null) {
+            if (!genericField.contains(", ")) {
+                genericFields = genericField.split(",")
+            } else {
+                genericFields = genericField.split(", ")
+            }
+        }
+        return genericFields
+    }
 }
