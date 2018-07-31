@@ -15,6 +15,7 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.CronJobFactory
 
+import com.qaprosoft.selenium.grid.ProxyInfo
 import groovy.json.JsonOutput
 
 
