@@ -8,10 +8,12 @@ public class PipelineFactory extends JobFactory {
 	def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
 	def currentSuite
 	
-	public PipelineFactory(currentSuite) {
+	public PipelineFactory(folder, currentSuite) {
 		this.currentSuite = currentSuite
 		
-		
+		//TODO: get from XmlSuite all required information
+		this.folder = folder
+		this.name = currentSuite.getParameter("jenkinsJobName").toString()
 	}
 	
 	public PipelineFactory(folder, name, description) {

@@ -120,9 +120,6 @@ class Scanner extends Executor {
 					//TODO: implement auto-deploy artifact job
 				}
 
-				//TODO: [OPTIONAL] try to read existing views and compare with suggested settings. Maybe we can skip execution better
-				List<String> views = []
-
 
 				//TODO: #2 declare global list for created regression cron jobs
 				//	   provide extra flag includeIntoCron for CreateJob
@@ -188,7 +185,7 @@ class Scanner extends Executor {
 							dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
 							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
-							//dslFactories.put(suite.path, new PipelineFactory(currentSuite))
+							dslFactories.put(suite.path, new PipelineFactory(jobFolder, currentSuite))
 						}
 						
 					} catch (FileNotFoundException e) {
