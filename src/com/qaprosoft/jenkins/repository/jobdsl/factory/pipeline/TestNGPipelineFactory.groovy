@@ -31,13 +31,12 @@ public class TestNGPipelineFactory extends PipelineFactory {
 		def pipelineJob = super.create()
 		pipelineJob.with {
 			
-/*			
 			def scheduling = currentSuite.getParameter("scheduling")
 			if (scheduling != null) {
 				triggers { cron(scheduling) }
 			}
 
-			context.println("selenium: ${selenium}")
+/*
 			*//** Properties & Parameters Area **//*
 			parameters {
 				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
