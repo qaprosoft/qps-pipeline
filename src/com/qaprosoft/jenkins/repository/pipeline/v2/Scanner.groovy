@@ -54,7 +54,10 @@ class Scanner extends Executor {
 			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
-			def ignoreExisting = Configurator.get("ignore_existing").toBoolean()
+			def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
+			def removedConfigFilesAction = Configurator.get("removedConfigFilesAction")
+			def removedJobAction = Configurator.get("removedJobAction")
+			def removedViewAction = Configurator.get("removedViewAction")
 
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
@@ -182,10 +185,10 @@ class Scanner extends Executor {
 				
 				// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
-				
+
 				//TODO: test carefully auto-removal for jobs/views and configs
 				context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-					removedConfigFilesAction: 'DELETE', removedJobAction: 'DELETE', removedViewAction: 'DELETE', \
+					removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
 					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
                     ignoreExisting: ignoreExisting
 			}
