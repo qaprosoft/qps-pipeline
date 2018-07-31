@@ -15,10 +15,11 @@ public class TestJobFactory extends PipelineFactory {
 	def suitePath
 	def suiteName
 	
-	public TestJobFactory(folder, project, sub_project, zafira_project, suitePath, suiteName) {
+	public TestJobFactory(folder, project, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
 		//super(folder, name, description, logRotator)
 		this.folder = folder
-		
+        this.description = jobDesc
+
 		this.project = project
 		this.sub_project = sub_project
 		this.zafira_project = zafira_project

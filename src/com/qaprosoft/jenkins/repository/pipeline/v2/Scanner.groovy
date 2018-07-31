@@ -161,7 +161,8 @@ class Scanner extends Executor {
 							//TODO: review each argument to TestJobFactory and think about removal, rename class(?!)
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
 							//TODO: restore job description or find better way to split jobs between views
-							dslFactories.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName))
+                            def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
+							dslFactories.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 							
 							//cron job
 							//TODO: return recreate cron logic
@@ -169,8 +170,8 @@ class Scanner extends Executor {
 								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
-									//description("project: ${project}; type: cron")
-									dslFactories.put(cronJobName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path))
+                                    def cronDesc = "project: ${project}; type: cron"
+									dslFactories.put(cronJobName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
 								}
 							}
 						}
