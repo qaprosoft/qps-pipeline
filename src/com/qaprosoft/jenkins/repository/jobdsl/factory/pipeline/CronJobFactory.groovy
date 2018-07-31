@@ -7,7 +7,7 @@ import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class CronJobFactory extends PipelineFactory implements PipelineConfigurationTrait {
+public class CronJobFactory extends PipelineFactory {
 
     def project
     def sub_project
@@ -56,5 +56,6 @@ public class CronJobFactory extends PipelineFactory implements PipelineConfigura
         }
         return pipelineJob
     }
+
 
 }
