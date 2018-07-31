@@ -4,20 +4,22 @@ package com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline
 
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
+import com.qaprosoft.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class TestNGPipelineFactory extends PipelineFactory {
+public class TestJobFactory extends PipelineFactory {
 	def project
 	def sub_project
 	def zafira_project
 	def suitePath
 	def suiteName
 	
-	public TestNGPipelineFactory(folder, project, sub_project, zafira_project, suitePath, suiteName) {
+	public TestJobFactory(folder, project, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
 		//super(folder, name, description, logRotator)
 		this.folder = folder
-		
+        this.description = jobDesc
+
 		this.project = project
 		this.sub_project = sub_project
 		this.zafira_project = zafira_project
@@ -27,7 +29,8 @@ public class TestNGPipelineFactory extends PipelineFactory {
 	}
 	
 	def create() {
-		
+
+        def selenium = "CHANGE_ME"
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 		
@@ -223,80 +226,12 @@ public class TestNGPipelineFactory extends PipelineFactory {
 						}
 					}
 				}
-				
-				
+
 				customPipelineParams(currentSuite, suiteOwner)
 			}
 
 		}
 		return pipelineJob
-	}
-
-	protected List<String> getEnvironments(currentSuite) {
-		def envList = getGenericSplit(currentSuite, "jenkinsEnvironments")
-
-		if (envList.isEmpty()) {
-			envList.add("DEMO")
-			envList.add("STAG")
-		}
-
-		return envList
-	}
-	
-	protected List<String> getGenericSplit(currentSuite, parameterName) {
-		String genericField = currentSuite.getParameter(parameterName)
-		def genericFields = []
-
-		if (genericField != null) {
-			if (!genericField.contains(", ")) {
-				genericFields = genericField.split(",")
-			} else {
-				genericFields = genericField.split(", ")
-			}
-		}
-		return genericFields
-	}
-	
-	protected Closure addHiddenParameter(paramName, paramDesc, paramValue) {
-		return { node ->
-			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'com.wangyin.parameter.WHideParameterDefinition'(plugin: 'hidden-parameter@0.0.4') {
-				name paramName
-				description paramDesc
-				defaultValue paramValue
-			}
-		}
-	}
-	
-	protected Closure addExtensibleChoice(choiceName, globalName, desc, choice) {
-		return { node ->
-			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'jp.ikedam.jenkins.plugins.extensible__choice__parameter.ExtensibleChoiceParameterDefinition'(plugin: 'extensible-choice-parameter@1.3.3') {
-				name choiceName
-				description desc
-				editable true
-				choiceListProvider(class: 'jp.ikedam.jenkins.plugins.extensible_choice_parameter.GlobalTextareaChoiceListProvider') {
-					whenToAdd 'Triggered'
-					name globalName
-					defaultChoice choice
-				}
-			}
-		}
-	}
-	
-	protected Closure addExtensibleChoice(choiceName, desc, code) {
-		return { node ->
-			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'jp.ikedam.jenkins.plugins.extensible__choice__parameter.ExtensibleChoiceParameterDefinition'(plugin: 'extensible-choice-parameter@1.3.3') {
-				name choiceName
-				description desc
-				editable true
-				choiceListProvider(class: 'jp.ikedam.jenkins.plugins.extensible_choice_parameter.SystemGroovyChoiceListProvider') {
-					groovyScript {
-						script code
-						sandbox true
-						usePrefinedVariables false
-					}
-				}
-			}
-		}
 	}
 
 	protected String getCustomFields(currentSuite) {

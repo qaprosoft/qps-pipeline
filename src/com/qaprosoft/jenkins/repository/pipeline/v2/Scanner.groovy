@@ -5,7 +5,6 @@ import org.testng.xml.XmlSuite
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
-import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
 
@@ -13,8 +12,8 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.job.BuildJobFactory
 
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
-import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestNGPipelineFactory
-
+import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
+import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.CronJobFactory
 
 import groovy.json.JsonOutput
 
@@ -48,8 +47,6 @@ class Scanner extends Executor {
 	}
 
 	protected void scan() {
-        context.println('DUMP')
-        context.println(context.binding.dump())
 
 		context.stage("Scan Repository") {
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
@@ -57,7 +54,11 @@ class Scanner extends Executor {
 			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
-			
+			def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
+			def removedConfigFilesAction = Configurator.get("removedConfigFilesAction")
+			def removedJobAction = Configurator.get("removedJobAction")
+			def removedViewAction = Configurator.get("removedViewAction")
+
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
 
@@ -110,11 +111,9 @@ class Scanner extends Executor {
 					//TODO: implement PR_Checker creation
 				}
 */				
-				
 				if (prMerger) {
 					//TODO: implement auto-deploy artifact job
 				}
-
 
 				if (suiteFilter.endsWith("/")) {
 					//remove last character if it is slash
@@ -123,21 +122,11 @@ class Scanner extends Executor {
 				def testngFolder = suiteFilter.substring(suiteFilter.lastIndexOf("/"), suiteFilter.length()) + "/"
 				context.println("testngFolder: " + testngFolder)
 
-				
 				// VIEWS
 				dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
 				dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 				
 				//TODO: create default personalized view here
-				
-				//TODO: remove/comment below factories
-				// --- JUST IN DEMO PURPOSED
-				dslFactories.put("categorizedView", new CategorizedViewFactory(jobFolder, 'Categorized', '.*', 'API|Web|Android|iOS'))
-				dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc1", 10))
-				dslFactories.put("job2", new JobFactory(jobFolder, "job2", "desc2"))
-				dslFactories.put("job3", new BuildJobFactory(jobFolder, "job3", "desc3"))
-				dslFactories.put("pipeline1", new PipelineFactory(jobFolder, "pipeline1", "desc"))
-				// --- JUST IN DEMO PURPOSED
 
 				// find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
 				def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
@@ -169,25 +158,22 @@ class Scanner extends Executor {
 							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
 							//pipeline job
-							//TODO: review each argument to TestNGPipelineFactory and think about removal, rename class(?!)
+							//TODO: review each argument to TestJobFactory and think about removal, rename class(?!)
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
 							//TODO: restore job description or find better way to split jobs between views
-							dslFactories.put(suiteName, new TestNGPipelineFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName))
+                            def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
+							dslFactories.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 							
 							//cron job
-							//TODO: 
-							// 1. restore boolean creat/recreate cron logic
-							// 2. create new CronPipelineFactory extending PipelineFactory
-							// 3. move implementatin from Job.createRegressionPipeline to CronPipelineFactory.create()
-							// 4. uncomment below code and adjust according to above points
-/*							boolean createCron = true
-							if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
+							//TODO: return recreate cron logic
+							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
 								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
-									job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
+                                    def cronDesc = "project: ${project}; type: cron"
+									dslFactories.put(cronJobName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
 								}
-							}*/
+							}
 						}
 						
 					} catch (FileNotFoundException e) {
@@ -200,11 +186,12 @@ class Scanner extends Executor {
 				
 				// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
-				
+
 				//TODO: test carefully auto-removal for jobs/views and configs
 				context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-					removedConfigFilesAction: 'DELETE', removedJobAction: 'DELETE', removedViewAction: 'DELETE', \
-					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy'
+					removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
+					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
+                    ignoreExisting: ignoreExisting
 			}
 		}
 	}
