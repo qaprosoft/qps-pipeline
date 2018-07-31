@@ -127,6 +127,17 @@ class Scanner extends Executor {
 				// VIEWS
 				dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
 				dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
+				
+				//TODO: create default personalized view here
+				
+				//TODO: remove/comment below factories
+				// --- JUST IN DEMO PURPOSED
+				dslFactories.put("categorizedView", new CategorizedViewFactory(jobFolder, 'Categorized', '.*', 'API|Web|Android|iOS'))
+				dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc1", 10))
+				dslFactories.put("job2", new JobFactory(jobFolder, "job2", "desc2"))
+				dslFactories.put("job3", new BuildJobFactory(jobFolder, "job3", "desc3"))
+				dslFactories.put("pipeline1", new PipelineFactory(jobFolder, "pipeline1", "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"))
+				// --- JUST IN DEMO PURPOSED
 
 				// find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
 				def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
@@ -140,15 +151,6 @@ class Scanner extends Executor {
 					def suiteName = suite.path
 					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 
-					//TODO: remove/comment below factories
-					// --- JUST IN DEMO PURPOSED
-					dslFactories.put("categorizedView", new CategorizedViewFactory(jobFolder, 'Categorized', '.*', 'API|Web|Android|iOS'))
-					dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc1", 10))
-					dslFactories.put("job2", new JobFactory(jobFolder, "job2", "desc2"))
-					dslFactories.put("job3", new BuildJobFactory(jobFolder, "job3", "desc3"))
-					dslFactories.put("pipeline1", new PipelineFactory(jobFolder, "pipeline1", "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"))
-					// --- JUST IN DEMO PURPOSED
-					
 					try {
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
 						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
@@ -169,6 +171,7 @@ class Scanner extends Executor {
 							//pipeline job
 							//TODO: review each argument to TestNGPipelineFactory and think about removal, rename class(?!)
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+							//TODO: restore job description or find better way to split jobs between views
 							dslFactories.put(suiteName, new TestNGPipelineFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName))
 							
 							//cron job
