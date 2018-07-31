@@ -162,8 +162,7 @@ class Scanner extends Executor {
 							
 							//cron job
 							//TODO: return recreate cron logic
- 							boolean createCron = true
-							if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
+							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
 								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
