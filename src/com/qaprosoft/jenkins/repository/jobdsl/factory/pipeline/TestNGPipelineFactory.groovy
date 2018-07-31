@@ -54,7 +54,7 @@ public class TestNGPipelineFactory extends PipelineFactory {
 					}
 				}
 				
-				booleanParam('fork', false, "Reuse forked repository for ${project} project.")
+				booleanParam('fork', false, "Reuse forked repository.")
 				booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
 				def defaultMobilePool = currentSuite.getParameter("jenkinsMobileDefaultPool")
