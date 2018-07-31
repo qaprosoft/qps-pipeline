@@ -54,8 +54,8 @@ class Scanner extends Executor {
 			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
-			def recreateCron = Configurator.get("recreate_cron").toBoolean()
-			
+			def ignoreExisting = Configurator.get("ignore_existing").toBoolean()
+
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
 
@@ -166,6 +166,7 @@ class Scanner extends Executor {
 								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
+									//description("project: ${project}; type: cron")
 									dslFactories.put(cronJobName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path))
 								}
 							}
@@ -185,7 +186,8 @@ class Scanner extends Executor {
 				//TODO: test carefully auto-removal for jobs/views and configs
 				context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 					removedConfigFilesAction: 'DELETE', removedJobAction: 'DELETE', removedViewAction: 'DELETE', \
-					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy'
+					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
+                    ignoreExisting: ignoreExisting
 			}
 		}
 	}
