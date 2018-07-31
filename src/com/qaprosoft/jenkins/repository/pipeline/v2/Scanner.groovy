@@ -214,42 +214,6 @@ class Scanner extends Executor {
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
 
 						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
-							//def suiteName = suite.path
-							//suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
-
-							context.println("suite name: " + suiteName)
-							context.println("suite path: " + suite.path)
-
-							if (currentSuite.toXml().contains("suiteOwner")) {
-								suiteOwner = currentSuite.getParameter("suiteOwner")
-							}
-							if (currentSuite.toXml().contains("zafira_project")) {
-								zafira_project = currentSuite.getParameter("zafira_project")
-							}
-
-							if (!views.contains(project.toUpperCase())) {
-								views << project.toUpperCase()
-								context.build job: "Management_Jobs/CreateView",
-									propagate: false,
-									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: project.toUpperCase()), context.string(name: 'descFilter', value: project),]
-							}
-
-							//TODO: review later if we need views by zafira poject name and owner
-							if (!views.contains(zafira_project)) {
-								views << zafira_project
-
-								context.build job: "Management_Jobs/CreateView",
-									propagate: false,
-									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: zafira_project), context.string(name: 'descFilter', value: zafira_project),]
-							}
-
-							if (!views.contains(suiteOwner)) {
-								views << suiteOwner
-
-								context.build job: "Management_Jobs/CreateView",
-									propagate: false,
-									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: suiteOwner), context.string(name: 'descFilter', value: suiteOwner),]
-							}
 
 	                        def createCron = false
 	                        if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
@@ -276,12 +240,6 @@ class Scanner extends Executor {
 	                                        context.booleanParam(name: 'createCron', value: createCron),
 	                                ], wait: false*/
 
-//							context.jobDsl additionalClasspath: 'qps-pipeline/src', scriptText: '''package com.qaprosoft.jenkins.repository.jobdsl.v2
-//
-//import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
-//
-//def creator = new Creator(this)
-//creator.createJob()'''
 						}
 					} catch (FileNotFoundException e) {
 						context.echo("ERROR! Unable to find suite: " + suite.path)
