@@ -14,9 +14,11 @@ public class TestNGPipelineFactory extends PipelineFactory {
 	public TestNGPipelineFactory(folder, suitePath) {
 		//super(folder, name, description, logRotator)
 		this.folder = folder
+		this.name = "qwe1"
 		
-		currentSuite = parseSuite(suitePath)
-		this.name = currentSuite.getParameter("jenkinsJobName").toString()
+		println("suitePath: " + suitePath)
+		//currentSuite = parseSuite(suitePath)
+		//this.name = currentSuite.getParameter("jenkinsJobName").toString()
 	}
 	
 	def create() {
