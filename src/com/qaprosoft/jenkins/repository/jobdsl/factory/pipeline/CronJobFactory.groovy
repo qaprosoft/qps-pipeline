@@ -57,5 +57,4 @@ public class CronJobFactory extends PipelineFactory {
         return pipelineJob
     }
 
-
 }
