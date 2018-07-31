@@ -40,8 +40,8 @@ public class TestNGPipelineFactory extends PipelineFactory {
 			parameters {
 				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
 				
-				*//** Requires Active Choices Plug-in v1.2+ **//*
-				*//** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **//*
+				//** Requires Active Choices Plug-in v1.2+ **//*
+				//** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **//*
 				if (currentSuite.toXml().contains("jenkinsGroups")) {
 					activeChoiceParam("groups") {
 						description("Please select test group(s) to run")
