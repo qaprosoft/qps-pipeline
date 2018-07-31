@@ -50,11 +50,6 @@ public class PipelineFactory extends JobFactory {
 				}
 			}
 			
-			def scheduling = currentSuite.getParameter("scheduling")
-			if (scheduling != null) {
-				triggers { cron(scheduling) }
-			}
-			
 			if (!suiteOwner.isEmpty()) {
 				properties {
 					ownership { primaryOwnerId(suiteOwner) }
@@ -62,7 +57,10 @@ public class PipelineFactory extends JobFactory {
 			}
 			
 /*			
-
+			def scheduling = currentSuite.getParameter("scheduling")
+			if (scheduling != null) {
+				triggers { cron(scheduling) }
+			}
 
 			context.println("selenium: ${selenium}")
 			*//** Properties & Parameters Area **//*
