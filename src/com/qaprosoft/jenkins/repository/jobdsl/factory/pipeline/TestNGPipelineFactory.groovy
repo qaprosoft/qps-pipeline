@@ -158,7 +158,7 @@ public class TestNGPipelineFactory extends PipelineFactory {
 				configure addHiddenParameter('project', '', project)
 				configure addHiddenParameter('sub_project', '', sub_project)
 				configure addHiddenParameter('zafira_project', '', zafira_project)
-				configure addHiddenParameter('suite', '', suite)
+				configure addHiddenParameter('suite', '', suiteName)
 				configure addHiddenParameter('ci_parent_url', '', '')
 				configure addHiddenParameter('ci_parent_build', '', '')
 				configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
