@@ -312,4 +312,8 @@ public class TestNGPipelineFactory extends PipelineFactory {
 		return prepCustomFields
 	}
 
+	protected void customPipelineParams(org.testng.xml.XmlSuite currentSuite, String suiteOwner) {
+		//do nothing here
+	}
+
 }
