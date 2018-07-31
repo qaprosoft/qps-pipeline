@@ -10,15 +10,17 @@ import groovy.transform.InheritConstructors
 public class TestNGPipelineFactory extends PipelineFactory {
 	def project
 	def sub_project
+	def zafira_project
 	def suitePath
 	def suiteName
 	
-	public TestNGPipelineFactory(folder, project, sub_project, suitePath, suiteName) {
+	public TestNGPipelineFactory(folder, project, sub_project, zafira_project, suitePath, suiteName) {
 		//super(folder, name, description, logRotator)
 		this.folder = folder
 		
 		this.project = project
 		this.sub_project = sub_project
+		this.zafira_project = zafira_project
 		this.suitePath = suitePath
 		
 		this.suiteName = suiteName
