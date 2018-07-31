@@ -222,5 +222,16 @@ public class TestNGPipelineFactory extends PipelineFactory {
 		}
 		return pipelineJob
 	}
-	
+
+	protected List<String> getEnvironments(currentSuite) {
+		def envList = getGenericSplit(currentSuite, "jenkinsEnvironments")
+
+		if (envList.isEmpty()) {
+			envList.add("DEMO")
+			envList.add("STAG")
+		}
+
+		return envList
+	}
+
 }
