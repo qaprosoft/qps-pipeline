@@ -161,15 +161,15 @@ class Scanner extends Executor {
 							dslFactories.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName))
 							
 							//cron job
-// 							boolean createCron = true
-//							if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
-//								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
-//								for (def cronJobName : cronJobNames.split(",")) {
-//									cronJobName = cronJobName.trim()
-//									dslFactories.put(suiteName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path))
-//									//job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
-//								}
-//							}
+							//TODO: return recreate cron logic
+ 							boolean createCron = true
+							if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
+								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
+								for (def cronJobName : cronJobNames.split(",")) {
+									cronJobName = cronJobName.trim()
+									dslFactories.put(cronJobName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path))
+								}
+							}
 						}
 						
 					} catch (FileNotFoundException e) {
