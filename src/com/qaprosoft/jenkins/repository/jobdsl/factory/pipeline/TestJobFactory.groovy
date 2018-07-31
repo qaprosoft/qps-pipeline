@@ -4,6 +4,7 @@ package com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline
 
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
+import com.qaprosoft.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
