@@ -1,16 +1,21 @@
 package com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline
 
+@Grab('org.testng:testng:6.8.8')
+
+import org.testng.xml.Parser;
+import org.testng.xml.XmlSuite;
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class TestNGPipelineFactory extends PipelineFactory {
-	def suitePath
+	XmlSuite currentSuite
 	
 	public TestNGPipelineFactory(folder, suitePath) {
 		//super(folder, name, description, logRotator)
 		this.folder = folder
-		this.name = suitePath
-		this.suitePath = suitePath
+		
+		currentSuite = parseSuite(suitePath)
+		this.name = currentSuite.getParameter("jenkinsJobName").toString()
 	}
 	
 	def create() {
@@ -211,5 +216,15 @@ public class TestNGPipelineFactory extends PipelineFactory {
 
 		}
 		return pipelineJob
+	}
+	
+	
+	private XmlSuite parseSuite(String path) {
+		def xmlFile = new Parser(path)
+		xmlFile.setLoadClasses(false)
+		
+		List<XmlSuite> suiteXml = xmlFile.parseToList()
+		XmlSuite currentSuite = suiteXml.get(0)
+		return currentSuite
 	}
 }
