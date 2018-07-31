@@ -5,7 +5,6 @@ import org.testng.xml.XmlSuite
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
-import com.qaprosoft.jenkins.repository.jobdsl.v2.Creator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
 
@@ -111,11 +110,9 @@ class Scanner extends Executor {
 					//TODO: implement PR_Checker creation
 				}
 */				
-				
 				if (prMerger) {
 					//TODO: implement auto-deploy artifact job
 				}
-
 
 				if (suiteFilter.endsWith("/")) {
 					//remove last character if it is slash
@@ -176,11 +173,6 @@ class Scanner extends Executor {
 							dslFactories.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName))
 							
 							//cron job
-							//TODO: 
-							// 1. restore boolean create/recreate cron logic
-							// 2. create new CronPipelineFactory extending PipelineFactory
-							// 3. move implementation from Job.createRegressionPipeline to CronPipelineFactory.create()
-							// 4. uncomment below code and adjust according to above points
  							boolean createCron = true
 							if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
 								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
