@@ -299,5 +299,17 @@ public class TestNGPipelineFactory extends PipelineFactory {
 		}
 	}
 
+	protected String getCustomFields(currentSuite) {
+		def overrideFields = getGenericSplit(currentSuite, "overrideFields")
+		def prepCustomFields = ""
+
+		if (!overrideFields.isEmpty()) {
+			for (String customField : overrideFields) {
+				prepCustomFields = prepCustomFields + " -D" + customField
+			}
+		}
+
+		return prepCustomFields
+	}
 
 }
