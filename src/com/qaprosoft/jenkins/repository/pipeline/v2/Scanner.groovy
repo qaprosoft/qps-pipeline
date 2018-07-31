@@ -167,7 +167,7 @@ class Scanner extends Executor {
 					
 					dslFactories.put("job3", new BuildJobFactory(jobFolder, "job3", "desc3"))
 					
-					dslFactories.put("pipeline1", new PipelineFactory(jobFolder, "pipeline1", "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"))
+					//dslFactories.put("pipeline1", new PipelineFactory(jobFolder, "pipeline1", "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"))
 					
 					try {
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
