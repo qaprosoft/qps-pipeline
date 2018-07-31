@@ -185,7 +185,7 @@ class Scanner extends Executor {
 							dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
 							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
-							//dslFactories.put(suite.path, new QAPipelineFactory(jobFolder, getWorkspace() + "/" + suite.path))
+							dslFactories.put(suite.path, new TestNGPipelineFactory(jobFolder, getWorkspace() + "/" + suite.path))
 						}
 						
 					} catch (FileNotFoundException e) {
