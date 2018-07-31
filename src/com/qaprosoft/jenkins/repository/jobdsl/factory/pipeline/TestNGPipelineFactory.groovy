@@ -36,8 +36,7 @@ public class TestNGPipelineFactory extends PipelineFactory {
 				triggers { cron(scheduling) }
 			}
 
-/*
-			*//** Properties & Parameters Area **//*
+			//** Properties & Parameters Area **//*
 			parameters {
 				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
 				
@@ -219,8 +218,6 @@ public class TestNGPipelineFactory extends PipelineFactory {
 				
 				customPipelineParams(currentSuite, suiteOwner)
 			}
-
-			*/
 
 		}
 		return pipelineJob
