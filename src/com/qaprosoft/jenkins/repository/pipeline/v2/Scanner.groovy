@@ -119,21 +119,11 @@ class Scanner extends Executor {
 				def testngFolder = suiteFilter.substring(suiteFilter.lastIndexOf("/"), suiteFilter.length()) + "/"
 				context.println("testngFolder: " + testngFolder)
 
-				
 				// VIEWS
 				dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
 				dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 				
 				//TODO: create default personalized view here
-				
-				//TODO: remove/comment below factories
-				// --- JUST IN DEMO PURPOSED
-				dslFactories.put("categorizedView", new CategorizedViewFactory(jobFolder, 'Categorized', '.*', 'API|Web|Android|iOS'))
-				dslFactories.put("job1", new JobFactory(jobFolder, "job1", "desc1", 10))
-				dslFactories.put("job2", new JobFactory(jobFolder, "job2", "desc2"))
-				dslFactories.put("job3", new BuildJobFactory(jobFolder, "job3", "desc3"))
-				dslFactories.put("pipeline1", new PipelineFactory(jobFolder, "pipeline1", "desc"))
-				// --- JUST IN DEMO PURPOSED
 
 				// find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
 				def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
