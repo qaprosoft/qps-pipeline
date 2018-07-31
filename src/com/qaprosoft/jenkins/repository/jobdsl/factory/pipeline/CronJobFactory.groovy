@@ -34,11 +34,6 @@ public class CronJobFactory extends PipelineFactory {
 
         pipelineJob.with {
 
-            description("project: ${project}; type: cron")
-            logRotator { numToKeep 100 }
-
-            authenticationToken('ciStart')
-
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
                 configure addHiddenParameter('project', '', project)
