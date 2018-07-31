@@ -7,7 +7,7 @@ import org.testng.xml.XmlSuite;
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class TestJobFactory extends PipelineFactory implements PipelineConfigurationTrait {
+public class TestJobFactory extends PipelineFactory {
 	def project
 	def sub_project
 	def zafira_project
@@ -223,13 +223,29 @@ public class TestJobFactory extends PipelineFactory implements PipelineConfigura
 						}
 					}
 				}
-				
-				
+
 				customPipelineParams(currentSuite, suiteOwner)
 			}
 
 		}
 		return pipelineJob
+	}
+
+	protected String getCustomFields(currentSuite) {
+		def overrideFields = getGenericSplit(currentSuite, "overrideFields")
+		def prepCustomFields = ""
+
+		if (!overrideFields.isEmpty()) {
+			for (String customField : overrideFields) {
+				prepCustomFields = prepCustomFields + " -D" + customField
+			}
+		}
+
+		return prepCustomFields
+	}
+
+	protected void customPipelineParams(org.testng.xml.XmlSuite currentSuite, String suiteOwner) {
+		//do nothing here
 	}
 
 }
