@@ -6,15 +6,7 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class PipelineFactory extends JobFactory {
 	def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
-	def currentSuite
-	
-	public PipelineFactory(folder, currentSuite) {
-		this.currentSuite = currentSuite
-		
-		//TODO: get from XmlSuite all required information
-		this.folder = folder
-		this.name = currentSuite.getParameter("jenkinsJobName").toString()
-	}
+	def suiteOwner = ""
 	
 	public PipelineFactory(folder, name, description) {
 		super(folder, name, description)
@@ -27,6 +19,12 @@ public class PipelineFactory extends JobFactory {
 	public PipelineFactory(folder, name, description, logRotator, pipelineScript) {
 		super(folder, name, description, logRotator)
 		this.pipelineScript = pipelineScript
+	}
+	
+	public PipelineFactory(folder, name, description, logRotator, pipelineScript, suiteOwner) {
+		super(folder, name, description, logRotator)
+		this.pipelineScript = pipelineScript
+		this.suiteOwner = suiteOwner
 	}
 	
 	def create() {
@@ -55,6 +53,12 @@ public class PipelineFactory extends JobFactory {
 			def scheduling = currentSuite.getParameter("scheduling")
 			if (scheduling != null) {
 				triggers { cron(scheduling) }
+			}
+			
+			if (!suiteOwner.isEmpty()) {
+				properties {
+					ownership { primaryOwnerId(suiteOwner) }
+				}
 			}
 			
 /*			
@@ -244,10 +248,6 @@ public class PipelineFactory extends JobFactory {
 				customPipelineParams(currentSuite, suiteOwner)
 			}
 
-			
-			properties {
-				ownership { primaryOwnerId(suiteOwner) }
-			}
 			*/
 
 		}
