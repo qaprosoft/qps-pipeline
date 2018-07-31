@@ -1,8 +1,12 @@
 package com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline
 
+@Grab('org.testng:testng:6.8.8')
+
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
+import groovy.transform.InheritConstructors
 
+@InheritConstructors
 public class CronJobFactory extends PipelineFactory {
 
     def project
