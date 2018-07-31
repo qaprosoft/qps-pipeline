@@ -260,6 +260,23 @@ public class TestNGPipelineFactory extends PipelineFactory {
 			}
 		}
 	}
+	
+	protected Closure addExtensibleChoice(choiceName, desc, code) {
+		return { node ->
+			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'jp.ikedam.jenkins.plugins.extensible__choice__parameter.ExtensibleChoiceParameterDefinition'(plugin: 'extensible-choice-parameter@1.3.3') {
+				name choiceName
+				description desc
+				editable true
+				choiceListProvider(class: 'jp.ikedam.jenkins.plugins.extensible_choice_parameter.SystemGroovyChoiceListProvider') {
+					groovyScript {
+						script code
+						sandbox true
+						usePrefinedVariables false
+					}
+				}
+			}
+		}
+	}
 
 
 }
