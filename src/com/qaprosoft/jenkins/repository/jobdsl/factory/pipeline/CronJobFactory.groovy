@@ -57,6 +57,7 @@ public class CronJobFactory extends PipelineFactory {
                 }
             }
         }
+        return pipelineJob
     }
 
     protected List<String> getEnvironments(currentSuite) {
