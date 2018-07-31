@@ -7,14 +7,14 @@ import org.testng.xml.XmlSuite;
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class TestNGPipelineFactory extends PipelineFactory {
+public class TestJobFactory extends PipelineFactory {
 	def project
 	def sub_project
 	def zafira_project
 	def suitePath
 	def suiteName
 	
-	public TestNGPipelineFactory(folder, project, sub_project, zafira_project, suitePath, suiteName) {
+	public TestJobFactory(folder, project, sub_project, zafira_project, suitePath, suiteName) {
 		//super(folder, name, description, logRotator)
 		this.folder = folder
 		

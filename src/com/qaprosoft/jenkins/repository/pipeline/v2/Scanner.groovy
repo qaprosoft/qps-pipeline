@@ -13,8 +13,8 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.job.BuildJobFactory
 
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
-import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestNGPipelineFactory
-
+import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
+import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.CronJobFactory
 
 import groovy.json.JsonOutput
 
@@ -57,6 +57,7 @@ class Scanner extends Executor {
 			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
+			def recreateCron = Configurator.get("recreate_cron").toBoolean()
 			
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
@@ -169,25 +170,26 @@ class Scanner extends Executor {
 							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
 							//pipeline job
-							//TODO: review each argument to TestNGPipelineFactory and think about removal, rename class(?!)
+							//TODO: review each argument to TestJobFactory and think about removal, rename class(?!)
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
 							//TODO: restore job description or find better way to split jobs between views
-							dslFactories.put(suiteName, new TestNGPipelineFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName))
+							dslFactories.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName))
 							
 							//cron job
 							//TODO: 
-							// 1. restore boolean creat/recreate cron logic
+							// 1. restore boolean create/recreate cron logic
 							// 2. create new CronPipelineFactory extending PipelineFactory
-							// 3. move implementatin from Job.createRegressionPipeline to CronPipelineFactory.create()
+							// 3. move implementation from Job.createRegressionPipeline to CronPipelineFactory.create()
 							// 4. uncomment below code and adjust according to above points
-/*							boolean createCron = true
+ 							boolean createCron = true
 							if (createCron && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
 								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
-									job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
+									dslFactories.put(suiteName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path))
+									//job.createRegressionPipeline(context.pipelineJob(jobFolder + "/" + cronJobName), currentSuite, project, sub_project)
 								}
-							}*/
+							}
 						}
 						
 					} catch (FileNotFoundException e) {
