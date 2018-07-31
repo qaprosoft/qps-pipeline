@@ -10,11 +10,14 @@ import groovy.transform.InheritConstructors
 public class TestNGPipelineFactory extends PipelineFactory {
 	
 	def suitePath
+	def suiteName
 	
-	public TestNGPipelineFactory(folder, suitePath) {
+	public TestNGPipelineFactory(folder, suitePath, suiteName) {
 		//super(folder, name, description, logRotator)
 		this.folder = folder
 		this.suitePath = suitePath
+		
+		this.suiteName = suiteName
 	}
 	
 	def create() {
@@ -82,7 +85,7 @@ public class TestNGPipelineFactory extends PipelineFactory {
 					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
 				}
 				
-				def jobType = suite
+				def jobType = suiteName
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
