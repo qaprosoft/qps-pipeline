@@ -5,6 +5,7 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class PipelineFactory extends JobFactory {
+	def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
 	def suiteOwner = ""
 	
 	public PipelineFactory(folder, name, description) {
@@ -15,8 +16,14 @@ public class PipelineFactory extends JobFactory {
 		super(folder, name, description, logRotator)
 	}
 	
-	public PipelineFactory(folder, name, description, logRotator, suiteOwner) {
+	public PipelineFactory(folder, name, description, logRotator, pipelineScript) {
 		super(folder, name, description, logRotator)
+		this.pipelineScript = pipelineScript
+	}
+
+	public PipelineFactory(folder, name, description, logRotator, pipelineScript, suiteOwner) {
+		super(folder, name, description, logRotator)
+		this.pipelineScript = pipelineScript
 		this.suiteOwner = suiteOwner
 	}
 	
@@ -33,6 +40,14 @@ public class PipelineFactory extends JobFactory {
 				}
 			} catch (Exception e) {
 				context.println("Unable to specify performance_optimized mode!")
+			}
+
+			/** Git Stuff **/
+			definition {
+				cps {
+					script(pipelineScript)
+					sandbox()
+				}
 			}
 
 			if (!suiteOwner.isEmpty()) {
