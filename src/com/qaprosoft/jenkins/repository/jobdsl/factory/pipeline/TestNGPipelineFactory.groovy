@@ -89,7 +89,7 @@ public class TestNGPipelineFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-				context.println("jobType: " + jobType)
+				println("jobType: " + jobType)
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -190,12 +190,12 @@ public class TestNGPipelineFactory extends PipelineFactory {
 
 				def paramsMap = [:]
 				paramsMap = currentSuite.getAllParameters()
-				context.println("paramsMap: " + paramsMap)
+				println("paramsMap: " + paramsMap)
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-					context.println("param: " + param)
+					println("param: " + param)
 					def delimitor = "::"
 					if (param.key.contains(delimitor)) {
 						def (type, name, desc) = param.key.split(delimitor)
