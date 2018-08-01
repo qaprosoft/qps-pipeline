@@ -8,11 +8,7 @@ public class DslFactory {
     def _dslFactory
 	def clazz
 
-	DslFactory(dslFactory, clazz) {
-		this._dslFactory = dslFactory
-		this.clazz = clazz
-	}
-	
+	// ATTENTION! this is very important constructor. Please do not override on children level constructor with single argument
     DslFactory(dslFactory) {
         this._dslFactory = dslFactory
 		this.clazz = this.getClass().getCanonicalName()
