@@ -13,4 +13,9 @@ public class FolderFactory extends DslFactory {
     def create() {
         return _dslFactory.folder("${name}")
     }
+
+    // dynamically load properties from map to members
+    def load(args) {
+        super.load(args)
+    }
 }
