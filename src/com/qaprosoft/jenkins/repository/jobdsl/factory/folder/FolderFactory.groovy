@@ -9,7 +9,7 @@ public class FolderFactory extends DslFactory {
     def logRotator = 100
 
     public FolderFactory(folder) {
-        this.folder = folder
+        super(folder, '', '')
     }
 
     def create() {
