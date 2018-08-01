@@ -8,6 +8,7 @@ public class FolderFactory extends DslFactory {
 
     public FolderFactory(folder) {
         this.folder = folder
+        this.name = ''
     }
 
     def create() {
