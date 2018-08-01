@@ -20,10 +20,8 @@ import groovy.json.JsonOutput
 
 
 class Scanner extends Executor {
-	//TODO: specify default factory classes
-	//protected String viewFactory = "CreateViewFactory"
 	
-	protected Map dslFactories = [:]
+	protected Map dslObjects = [:]
 
     public Scanner(context) {
 		super(context)
@@ -65,17 +63,7 @@ class Scanner extends Executor {
 
 			def jobFolder = Configurator.get("folder")
 
-			Map folderFactory = [:]
-			folderFactory.put(jobFolder, new FolderFactory(jobFolder, ""))
-			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-			context.writeFile file: "factories.json", text: JsonOutput.toJson(folderFactory)
-
-			// execute folder creation as super-high priority
-			context.jobDsl additionalClasspath: 'qps-pipeline/src', \
-				removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
-				targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
-				ignoreExisting: ignoreExisting
-				
+			dslObjects.put(jobFolder, new FolderFactory(jobFolder, ""))
 
 			def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
@@ -130,8 +118,8 @@ class Scanner extends Executor {
 				context.println("testngFolder: " + testngFolder)
 
 				// VIEWS
-				dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
-				dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
+				dslObjects.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
+				dslObjects.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 				
 				//TODO: create default personalized view here
 
@@ -161,14 +149,14 @@ class Scanner extends Executor {
 							}
 							
 							// put standard views factory into the map
-							dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
-							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
+							dslObjects.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
+							dslObjects.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
 							//pipeline job
 							//TODO: review each argument to TestJobFactory and think about removal
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                             def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
-							dslFactories.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+							dslObjects.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 							
 							//cron job
 							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
@@ -176,7 +164,7 @@ class Scanner extends Executor {
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
                                     def cronDesc = "project: ${project}; type: cron"
-									dslFactories.put(cronJobName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
+									dslObjects.put(cronJobName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
 								}
 							}
 						}
@@ -190,7 +178,7 @@ class Scanner extends Executor {
 				}
 				
 				// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
+				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
 				//TODO: test carefully auto-removal for jobs/views and configs
 				context.jobDsl additionalClasspath: 'qps-pipeline/src', \
