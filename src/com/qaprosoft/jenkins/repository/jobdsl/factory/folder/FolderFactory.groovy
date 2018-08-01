@@ -7,16 +7,20 @@ import groovy.transform.InheritConstructors
 public class FolderFactory extends DslFactory {
 
     public FolderFactory(name) {
-        super(name, name, '')
+        super(null, name, '')
     }
+	
+	public FolderFactory(name, description) {
+		super(null, name, description)
+	}
+	
+	public FolderFactory(folder, name, description) {
+		super(folder, name, description)
+	}
 
     def create() {
-        return _dslFactory.folder("${name}")
+		//TODO: add support for multi-level sub-folders
+        return _dslFactory.folder(getFullName())
     }
 
-    // dynamically load properties from map to members
-    public load(args) {
-        println("FolderFactory load: " + args.dump())
-        super.load(args)
-    }
 }
