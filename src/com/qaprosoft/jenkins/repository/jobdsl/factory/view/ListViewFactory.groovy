@@ -16,6 +16,7 @@ public class ListViewFactory extends DslFactory {
 	}
 	
 	def create() {
+		//TODO: reuse getFullName
 		def view = _dslFactory.listView("${folder}/${name}")
 		view.with {
 			columns {
