@@ -66,11 +66,17 @@ class Scanner extends Executor {
 
 			def jobFolder = Configurator.get("folder")
 
-			if (!isItemAvailable(jobFolder)) {
-				dslFactories.put(jobFolder, new FolderFactory(jobFolder))
-			}
+            if (!isItemAvailable(jobFolder)){
+                context.build job: "Management_Jobs/CreateFolder",
+                        propagate: false,
+                        parameters: [context.string(name: 'folder', value: jobFolder)]
+            }
 
-            def jenkinsFile = ".jenkinsfile.json"
+//			if (!isItemAvailable(jobFolder)) {
+//				dslFactories.put(jobFolder, new FolderFactory(jobFolder))
+//			}
+
+			def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
 				context.println("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
 				context.currentBuild.result = 'UNSTABLE'
