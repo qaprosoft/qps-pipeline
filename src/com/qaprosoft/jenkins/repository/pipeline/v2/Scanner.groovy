@@ -128,8 +128,8 @@ class Scanner extends Executor {
 				context.println("testngFolder: " + testngFolder)
 
 				// VIEWS
-//				dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
-//				dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
+				dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
+				dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 				
 				//TODO: create default personalized view here
 
@@ -159,8 +159,8 @@ class Scanner extends Executor {
 							}
 							
 							// put standard views factory into the map
-//							dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
-//							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
+							dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
+							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
 							//pipeline job
 							//TODO: review each argument to TestJobFactory and think about removal
