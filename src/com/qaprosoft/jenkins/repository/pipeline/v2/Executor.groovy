@@ -112,8 +112,4 @@ public abstract class Executor {
 		return currentSuite
 	}
 
-	String parseSuiteToText(String path) {
-		def content = new File(path).getText()
-		return content
-	}
 }

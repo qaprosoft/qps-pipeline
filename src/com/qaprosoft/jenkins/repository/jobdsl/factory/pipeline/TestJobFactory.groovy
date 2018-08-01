@@ -1,54 +1,59 @@
-package com.qaprosoft.jenkins.repository.jobdsl.v2
+package com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline
 
-import com.qaprosoft.selenium.grid.ProxyInfo;
+@Grab('org.testng:testng:6.8.8')
 
-class Job {
-	protected String runJobPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
-	protected String runCronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
+import org.testng.xml.Parser;
+import org.testng.xml.XmlSuite;
+import com.qaprosoft.selenium.grid.ProxyInfo
+import groovy.transform.InheritConstructors
 
-	protected def context
-	protected def selenium
+@InheritConstructors
+public class TestJobFactory extends PipelineFactory {
+	def project
+	def sub_project
+	def zafira_project
+	def suitePath
+	def suiteName
 	
-	public Job(context) {
-		this.context = context
-		selenium = context.binding.variables.SELENIUM_PROTOCOL + "://" + context.binding.variables.SELENIUM_HOST + ":" + context.binding.variables.SELENIUM_PORT 
-	}
-	
-	
-	public Job(context, runJobScript, runCronScript) {
-		this(context)
-		this.runJobPipelineScript = runJobScript
-		this.runCronPipelineScript = runCronScript
-	}
+	public TestJobFactory(folder, project, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
+		//super(folder, name, description, logRotator)
+		this.folder = folder
+        this.description = jobDesc
 
-	void createPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project, String suite, String suiteOwner, String zafira_project) {
+		this.project = project
+		this.sub_project = sub_project
+		this.zafira_project = zafira_project
+		this.suitePath = suitePath
 		
+		this.suiteName = suiteName
+	}
+	
+	def create() {
+
+        def selenium = "CHANGE_ME"
+		def xmlFile = new Parser(suitePath)
+		xmlFile.setLoadClasses(false)
+		
+		List<XmlSuite> suiteXml = xmlFile.parseToList()
+		XmlSuite currentSuite = suiteXml.get(0)
+
+		this.name = currentSuite.getParameter("jenkinsJobName").toString()
+		println("name: " + name)
+		
+		def pipelineJob = super.create()
 		pipelineJob.with {
-			description("project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}")
-			logRotator { numToKeep 100 }
-
-			authenticationToken('ciStart')
 			
-			try {
-				properties {
-					durabilityHint { hint("PERFORMANCE_OPTIMIZED") }
-				}
-			} catch (Exception e) {
-				context.println("Unable to specify performance_optimized mode!")
-			}
-
 			def scheduling = currentSuite.getParameter("scheduling")
 			if (scheduling != null) {
 				triggers { cron(scheduling) }
 			}
 
-			context.println("selenium: ${selenium}")
-			/** Properties & Parameters Area **/
+			//** Properties & Parameters Area **//*
 			parameters {
 				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
 				
-				/** Requires Active Choices Plug-in v1.2+ **/
-				/** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **/
+				//** Requires Active Choices Plug-in v1.2+ **//*
+				//** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **//*
 				if (currentSuite.toXml().contains("jenkinsGroups")) {
 					activeChoiceParam("groups") {
 						description("Please select test group(s) to run")
@@ -89,11 +94,11 @@ class Job {
 					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
 				}
 				
-				def jobType = suite
+				def jobType = suiteName
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-				context.println("jobType: " + jobType)
+				println("jobType: " + jobType)
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -113,8 +118,8 @@ class Job {
 						break;
 					case ~/^.*android.*$/:
 						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
-                        //TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
-                        //stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
+						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
+						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
@@ -124,10 +129,10 @@ class Job {
 						configure addHiddenParameter('platform', '', 'ANDROID')
 						break;
 					case ~/^.*ios.*$/:
-                        //TODO:  Need to adjust this for virtual as well.
-                        choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
-                        //TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
-                        //stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
+						//TODO:  Need to adjust this for virtual as well.
+						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
+						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
@@ -156,7 +161,7 @@ class Job {
 				configure addHiddenParameter('project', '', project)
 				configure addHiddenParameter('sub_project', '', sub_project)
 				configure addHiddenParameter('zafira_project', '', zafira_project)
-				configure addHiddenParameter('suite', '', suite)
+				configure addHiddenParameter('suite', '', suiteName)
 				configure addHiddenParameter('ci_parent_url', '', '')
 				configure addHiddenParameter('ci_parent_build', '', '')
 				configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
@@ -194,12 +199,12 @@ class Job {
 
 				def paramsMap = [:]
 				paramsMap = currentSuite.getAllParameters()
-				context.println("paramsMap: " + paramsMap)
+				println("paramsMap: " + paramsMap)
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-					context.println("param: " + param)
+					println("param: " + param)
 					def delimitor = "::"
 					if (param.key.contains(delimitor)) {
 						def (type, name, desc) = param.key.split(delimitor)
@@ -221,111 +226,12 @@ class Job {
 						}
 					}
 				}
-				
-				
+
 				customPipelineParams(currentSuite, suiteOwner)
 			}
 
-			/** Git Stuff **/
-			definition {
-				cps {
-					script(runJobPipelineScript)
-					sandbox()
-				}
-			}
-
-			properties {
-				ownership { primaryOwnerId(suiteOwner) }
-			}
 		}
-	}
-	
-	protected void customPipelineParams(org.testng.xml.XmlSuite currentSuite, String suiteOwner) {
-		//do nothing here
-	}
-
-	protected Closure addExtensibleChoice(choiceName, globalName, desc, choice) {
-		return { node ->
-			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'jp.ikedam.jenkins.plugins.extensible__choice__parameter.ExtensibleChoiceParameterDefinition'(plugin: 'extensible-choice-parameter@1.3.3') {
-				name choiceName
-				description desc
-				editable true
-				choiceListProvider(class: 'jp.ikedam.jenkins.plugins.extensible_choice_parameter.GlobalTextareaChoiceListProvider') {
-					whenToAdd 'Triggered'
-					name globalName
-					defaultChoice choice
-				}
-			}
-		}
-	}
-
-	protected Closure addExtensibleChoice(choiceName, desc, code) {
-		return { node ->
-			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'jp.ikedam.jenkins.plugins.extensible__choice__parameter.ExtensibleChoiceParameterDefinition'(plugin: 'extensible-choice-parameter@1.3.3') {
-				name choiceName
-				description desc
-				editable true
-				choiceListProvider(class: 'jp.ikedam.jenkins.plugins.extensible_choice_parameter.SystemGroovyChoiceListProvider') {
-					groovyScript {
-						script code
-						sandbox true
-						usePrefinedVariables false
-					}
-				}
-			}
-		}
-	}
-
-	protected Closure addHiddenParameter(paramName, paramDesc, paramValue) {
-		return { node ->
-			node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'com.wangyin.parameter.WHideParameterDefinition'(plugin: 'hidden-parameter@0.0.4') {
-				name paramName
-				description paramDesc
-				defaultValue paramValue
-			}
-		}
-	}
-
-	public void createRegressionPipeline(pipelineJob, org.testng.xml.XmlSuite currentSuite, String project, String sub_project) {
-
-		pipelineJob.with {
-
-			description("project: ${project}; type: cron")
-			logRotator { numToKeep 100 }
-
-			authenticationToken('ciStart')
-
-			parameters {
-				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
-				configure addHiddenParameter('project', '', project)
-				configure addHiddenParameter('sub_project', '', sub_project)
-				configure addHiddenParameter('ci_parent_url', '', '')
-				configure addHiddenParameter('ci_parent_build', '', '')
-
-				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", "master")
-
-				stringParam('email_list', '', 'List of Users to be emailed after the test. If empty then populate from jenkinsEmail suite property')
-				configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-				choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
-			}
-			definition {
-				cps {
-					script(runCronPipelineScript)
-					sandbox()
-				}
-			}
-		}
-	}
-
-	protected List<String> getEnvironments(currentSuite) {
-		def envList = getGenericSplit(currentSuite, "jenkinsEnvironments")
-
-		if (envList.isEmpty()) {
-			envList.add("DEMO")
-			envList.add("STAG")
-		}
-
-		return envList
+		return pipelineJob
 	}
 
 	protected String getCustomFields(currentSuite) {
@@ -340,37 +246,9 @@ class Job {
 
 		return prepCustomFields
 	}
-	
-	protected String listToString(currentSuite, parameterName) {
-		def list = getGenericSplit(currentSuite, parameterName)
-		def prepList = 'return ['
 
-		if (!list.isEmpty()) {
-			for (String l : list) {
-				prepList = prepList + '"' + l + '", '
-			}
-			prepList = prepList.take(prepList.length() - 2)
-		}
-
-		prepList = prepList + ']'
-
-		return prepList
+	protected void customPipelineParams(org.testng.xml.XmlSuite currentSuite, String suiteOwner) {
+		//do nothing here
 	}
-
-	protected List<String> getGenericSplit(currentSuite, parameterName) {
-		String genericField = currentSuite.getParameter(parameterName)
-		def genericFields = []
-
-		if (genericField != null) {
-			if (!genericField.contains(", ")) {
-				genericFields = genericField.split(",")
-			} else {
-				genericFields = genericField.split(", ")
-			}
-		}
-		return genericFields
-	}
-
-
 
 }

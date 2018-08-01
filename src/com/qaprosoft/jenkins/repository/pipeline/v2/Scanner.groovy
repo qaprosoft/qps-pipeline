@@ -1,23 +1,46 @@
 package com.qaprosoft.jenkins.repository.pipeline.v2
 
 @Grab('org.testng:testng:6.8.8')
-import org.testng.xml.XmlSuite;
-import com.qaprosoft.scm.github.GitHub;
+import org.testng.xml.XmlSuite
+import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
+import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
+import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
+
+import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
+
+import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
+import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
+import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.CronJobFactory
+
+import com.qaprosoft.jenkins.repository.jobdsl.factory.folder.FolderFactory
+
+import groovy.json.JsonOutput
+
 
 class Scanner extends Executor {
+	//TODO: specify default factory classes
+	//protected String viewFactory = "CreateViewFactory"
+	
+	protected Map dslFactories = [:]
 
-	public Scanner(context) {
+    public Scanner(context) {
 		super(context)
 		this.context = context
 		scmClient = new GitHub(context)
-	}
+ 	}
 
-	public void scanRepository() {
+    public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
 				scmClient.clone()
+
+				String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
+				String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
+
+				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+
 				this.scan()
 				this.clean()
 			}
@@ -25,27 +48,28 @@ class Scanner extends Executor {
 	}
 
 	protected void scan() {
+
 		context.stage("Scan Repository") {
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 			def project = Configurator.get("project")
 			def branch = Configurator.get("branch")
-			def recreateCron = Configurator.get("recreate_cron").toBoolean()
-
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
-			
+			def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
+			def removedConfigFilesAction = Configurator.get("removedConfigFilesAction")
+			def removedJobAction = Configurator.get("removedJobAction")
+			def removedViewAction = Configurator.get("removedViewAction")
+
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
 
 			def jobFolder = Configurator.get("folder")
 
-            if (!isItemAvailable(jobFolder)){
-                context.build job: "Management_Jobs/CreateFolder",
-                        propagate: false,
-                        parameters: [context.string(name: 'folder', value: jobFolder)]
-            }
+			if (!isItemAvailable(jobFolder)) {
+				dslFactories.put(jobFolder, new FolderFactory(jobFolder, ''))
+			}
 
-            def jenkinsFile = ".jenkinsfile.json"
+			def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
 				context.println("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
 				context.currentBuild.result = 'UNSTABLE'
@@ -58,6 +82,7 @@ class Scanner extends Executor {
 				context.println("sub_project: " + it)
 
 				def sub_project = it.name
+
 				def subProjectFilter = it.name
 				if (sub_project.equals(".")) {
 					subProjectFilter = "**"
@@ -82,28 +107,12 @@ class Scanner extends Executor {
 				// https://github.com/qaprosoft/jenkins-master/issues/11
 				
 /*				if (prChecker) {
-					// PR_Checker is supported only for the repo with single sub_project!
-					context.println("Launching Create-PR-Checker job for " + project)
-					context.build job: 'Management_Jobs/Create-PR-Checker', \
-							parameters: [context.string(name: 'project', value: project), context.string(name: 'sub_project', value: sub_project)], \
-							wait: false
+					//TODO: implement PR_Checker creation
 				}
 */				
-				
 				if (prMerger) {
 					//TODO: implement auto-deploy artifact job
 				}
-
-				//TODO: [OPTIONAL] try to read existing views and compare with suggested settings. Maybe we can skip execution better
-				List<String> views = []
-
-
-				//TODO: #2 declare global list for created regression cron jobs
-				//	   provide extra flag includeIntoCron for CreateJob
-				List<String> crons = []
-				context.build job: "Management_Jobs/CreateView",
-					propagate: false,
-					parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: 'CRON'), context.string(name: 'descFilter', value: 'cron'),]
 
 				if (suiteFilter.endsWith("/")) {
 					//remove last character if it is slash
@@ -112,8 +121,13 @@ class Scanner extends Executor {
 				def testngFolder = suiteFilter.substring(suiteFilter.lastIndexOf("/"), suiteFilter.length()) + "/"
 				context.println("testngFolder: " + testngFolder)
 
+				// VIEWS
+				dslFactories.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
+				dslFactories.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
+				
+				//TODO: create default personalized view here
 
-				// find all tetsng suite xml files and launch job creator dsl job
+				// find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
 				def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
 				for (File suite : suites) {
 					if (!suite.path.endsWith(".xml")) {
@@ -122,13 +136,12 @@ class Scanner extends Executor {
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
 
-					try{
+					def suiteName = suite.path
+					suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
+
+					try {
 						XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
-
 						if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
-							def suiteName = suite.path
-							suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
-
 							context.println("suite name: " + suiteName)
 							context.println("suite path: " + suite.path)
 
@@ -138,64 +151,46 @@ class Scanner extends Executor {
 							if (currentSuite.toXml().contains("zafira_project")) {
 								zafira_project = currentSuite.getParameter("zafira_project")
 							}
-
-							if (!views.contains(project.toUpperCase())) {
-								views << project.toUpperCase()
-								context.build job: "Management_Jobs/CreateView",
-									propagate: false,
-									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: project.toUpperCase()), context.string(name: 'descFilter', value: project),]
+							
+							// put standard views factory into the map
+							dslFactories.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
+							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
+		
+							//pipeline job
+							//TODO: review each argument to TestJobFactory and think about removal
+							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+                            def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
+							dslFactories.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+							
+							//cron job
+							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
+								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
+								for (def cronJobName : cronJobNames.split(",")) {
+									cronJobName = cronJobName.trim()
+                                    def cronDesc = "project: ${project}; type: cron"
+									dslFactories.put(cronJobName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
+								}
 							}
-
-							//TODO: review later if we need views by zafira poject name and owner
-							if (!views.contains(zafira_project)) {
-								views << zafira_project
-
-								context.build job: "Management_Jobs/CreateView",
-									propagate: false,
-									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: zafira_project), context.string(name: 'descFilter', value: zafira_project),]
-							}
-
-							if (!views.contains(suiteOwner)) {
-								views << suiteOwner
-
-								context.build job: "Management_Jobs/CreateView",
-									propagate: false,
-									parameters: [context.string(name: 'folder', value: jobFolder), context.string(name: 'view', value: suiteOwner), context.string(name: 'descFilter', value: suiteOwner),]
-							}
-
-                            boolean createCron = true
-                            if (currentSuite.toXml().contains("jenkinsRegressionPipeline")) {
-                                def cronName = currentSuite.getParameter("jenkinsRegressionPipeline")
-                                if (isItemAvailable(jobFolder + "/" + cronName)) {
-                                    createCron = recreateCron
-                                }
-                                // we need only single regression cron declaration
-                                //createCron = !crons.contains(cronName)
-                                crons << cronName
-                            }
-
-	                        context.build job: "Management_Jobs/CreateJob",
-	                                propagate: false,
-	                                parameters: [
-	                                        context.string(name: 'jobFolder', value: jobFolder),
-	                                        context.string(name: 'project', value: project),
-	                                        context.string(name: 'sub_project', value: sub_project),
-	                                        context.string(name: 'suite', value: suiteName),
-	                                        context.string(name: 'suiteOwner', value: suiteOwner),
-	                                        context.string(name: 'zafira_project', value: zafira_project),
-	                                        context.string(name: 'suiteXML', value: parseSuiteToText(workspace + "/" + suite.path)),
-	                                        context.booleanParam(name: 'createCron', value: createCron),
-	                                ], wait: false
-
 						}
+						
 					} catch (FileNotFoundException e) {
-						context.println("ERROR! Unable to find suite: " + suite.path)
+						context.echo("ERROR! Unable to find suite: " + suite.path)
 					} catch (Exception e) {
-						context.println("ERROR! Unable to parse suite: " + suite.path, e)
+						context.echo("ERROR! Unable to parse suite: " + suite.path, e)
 					}
+					
 				}
+				
+				// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
+				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslFactories)
+
+				//TODO: test carefully auto-removal for jobs/views and configs
+				context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+					removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
+					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
+                    ignoreExisting: ignoreExisting
 			}
 		}
 	}
-	
+
 }
