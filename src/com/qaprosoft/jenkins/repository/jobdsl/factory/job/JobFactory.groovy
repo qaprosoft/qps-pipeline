@@ -17,7 +17,7 @@ public class JobFactory extends DslFactory {
 	}
 	
 	def create() {
-		def job = _dslFactory.freeStyleJob(getFullName()){
+		def job = _dslFactory.folder(getFullName()){
 			description "${description}"
 			logRotator { numToKeep logRotator }
 		}

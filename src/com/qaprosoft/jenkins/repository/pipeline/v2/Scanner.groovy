@@ -15,6 +15,8 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.CronJobFactory
 
+import com.qaprosoft.jenkins.repository.jobdsl.factory.folder.FolderFactory
+
 import groovy.json.JsonOutput
 
 
@@ -64,11 +66,9 @@ class Scanner extends Executor {
 
 			def jobFolder = Configurator.get("folder")
 
-            if (!isItemAvailable(jobFolder)){
-                context.build job: "Management_Jobs/CreateFolder",
-                        propagate: false,
-                        parameters: [context.string(name: 'folder', value: jobFolder)]
-            }
+			if (!isItemAvailable(jobFolder)) {
+				dslFactories.put(jobFolder, new FolderFactory(jobFolder))
+			}
 
             def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
@@ -158,14 +158,12 @@ class Scanner extends Executor {
 							dslFactories.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
 							//pipeline job
-							//TODO: review each argument to TestJobFactory and think about removal, rename class(?!)
+							//TODO: review each argument to TestJobFactory and think about removal
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-							//TODO: restore job description or find better way to split jobs between views
                             def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
 							dslFactories.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 							
 							//cron job
-							//TODO: return recreate cron logic
 							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
 								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
 								for (def cronJobName : cronJobNames.split(",")) {
