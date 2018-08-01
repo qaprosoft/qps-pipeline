@@ -14,7 +14,7 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.CronJobFactory
 
-import com.qaprosoft.jenkins.repository.jobdsl.factory.FolderFactory
+import com.qaprosoft.jenkins.repository.jobdsl.factory.folder.FolderFactory
 
 import groovy.json.JsonOutput
 
