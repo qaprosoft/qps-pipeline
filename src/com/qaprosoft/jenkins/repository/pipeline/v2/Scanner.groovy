@@ -9,7 +9,6 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
 
 import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
-import com.qaprosoft.jenkins.repository.jobdsl.factory.job.BuildJobFactory
 
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
