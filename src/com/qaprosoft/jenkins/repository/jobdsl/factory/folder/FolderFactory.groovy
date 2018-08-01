@@ -7,7 +7,6 @@ import groovy.transform.InheritConstructors
 public class FolderFactory extends DslFactory {
 
     def logRotator = 100
-    def folder
 
     public FolderFactory(folder) {
         this.folder = folder
