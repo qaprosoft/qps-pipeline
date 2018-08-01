@@ -6,8 +6,8 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class FolderFactory extends DslFactory {
 
-    public FolderFactory(folder, name) {
-        this.folder = folder
+    public FolderFactory(name) {
+        this.folder = name
         this.name = name
     }
 

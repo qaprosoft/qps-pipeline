@@ -65,9 +65,7 @@ class Scanner extends Executor {
 
 			def jobFolder = Configurator.get("folder")
 
-			if (!isItemAvailable(jobFolder)) {
-				dslFactories.put(jobFolder, new FolderFactory(jobFolder, ''))
-			}
+			dslFactories.put(jobFolder, new FolderFactory(jobFolder))
 
 			def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {

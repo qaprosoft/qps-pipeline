@@ -49,18 +49,6 @@ public abstract class Executor {
 		}
 	}
 
-    @NonCPS
-	/* Checks whether the item with provided @name exists on Jenkins
-	**/
-    protected boolean isItemAvailable(String name) {
-        boolean available = false
-        def job = Jenkins.instance.getItemByFullName(name)
-        if (job) {
-            available = true
-        }
-        return available
-    }
-
 	protected Object parseJSON(String path) {
 		def inputFile = new File(path)
 		def content = new groovy.json.JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
