@@ -394,7 +394,7 @@ clean test"
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
 
-			context.echo "goals: ${goals}"
+			//context.echo "goals: ${goals}"
 
 			//TODO: adjust ZAFIRA_REPORT_FOLDER correclty
 			if (context.isUnix()) {
