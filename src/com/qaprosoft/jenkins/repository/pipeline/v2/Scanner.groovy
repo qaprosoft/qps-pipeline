@@ -65,7 +65,16 @@ class Scanner extends Executor {
 
 			def jobFolder = Configurator.get("folder")
 
-			dslFactories.put(jobFolder, new FolderFactory(jobFolder, ""))
+			def folderFactory.put(jobFolder, new FolderFactory(jobFolder, ""))
+			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
+			context.writeFile file: "factories.json", text: JsonOutput.toJson(folderFactory)
+
+			// execute folder creation as super-high priority
+			context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+				removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
+				targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
+				ignoreExisting: ignoreExisting
+				
 
 			def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
