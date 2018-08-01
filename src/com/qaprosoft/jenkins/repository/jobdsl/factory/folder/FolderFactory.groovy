@@ -13,7 +13,7 @@ public class FolderFactory extends DslFactory {
     }
 
     def create() {
-        def folder = _dslFactory.folder(this.folder){
+        def folder = _dslFactory.folder(getFullName()){
             logRotator { numToKeep logRotator }
         }
         return folder
