@@ -72,7 +72,7 @@ class Scanner extends Executor {
 //            }
 
 			if (!isItemAvailable(jobFolder)) {
-				dslFactories.put(jobFolder, new FolderFactory(jobFolder, '', null))
+				dslFactories.put(jobFolder, new FolderFactory(jobFolder, ''))
 			}
 
 			def jenkinsFile = ".jenkinsfile.json"
