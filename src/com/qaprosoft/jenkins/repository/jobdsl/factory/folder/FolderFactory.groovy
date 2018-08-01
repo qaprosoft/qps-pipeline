@@ -6,12 +6,17 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class FolderFactory extends DslFactory {
 
-    public FolderFactory(folder, name) {
-        this.folder = folder
-        this.name = name
-    }
+	public FolderFactory(name, description) {
+		super(null, name, description)
+	}
+	
+	public FolderFactory(folder, name, description) {
+		super(folder, name, description)
+	}
 
     def create() {
-        return _dslFactory.folder("${folder}")
+		//TODO: add support for multi-level sub-folders
+        return _dslFactory.folder(getFullName())
     }
+
 }
