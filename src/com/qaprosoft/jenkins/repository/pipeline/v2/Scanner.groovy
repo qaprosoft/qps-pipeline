@@ -65,7 +65,8 @@ class Scanner extends Executor {
 
 			def jobFolder = Configurator.get("folder")
 
-			def folderFactory.put(jobFolder, new FolderFactory(jobFolder, ""))
+			Map folderFactory = [:]
+			folderFactory.put(jobFolder, new FolderFactory(jobFolder, ""))
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(folderFactory)
 
