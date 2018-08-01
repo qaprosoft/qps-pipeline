@@ -14,10 +14,10 @@ public class DslFactory {
 		this.clazz = this.getClass().getCanonicalName()
     }
 	
-	DslFactory() {
+/*	DslFactory() {
 		this._dslFactory = null
 		this.clazz = this.getClass().getCanonicalName()
-	}
+	}*/
 
 
 	DslFactory(folder, name, description) {
