@@ -6,16 +6,14 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class FolderFactory extends DslFactory {
 
-    def logRotator = 100
+    def folder
 
     public FolderFactory(folder) {
-        super(folder, '', '')
+        this.folder = folder
     }
 
     def create() {
-        def folder = _dslFactory.folder(getFullName()){
-            logRotator { numToKeep logRotator }
-        }
+        def folder = _dslFactory.folder("${folder}")
         return folder
     }
 }
