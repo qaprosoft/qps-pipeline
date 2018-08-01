@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.repository.jobdsl.factory.folder
+package com.qaprosoft.jenkins.repository.jobdsl.factory
 
 import com.qaprosoft.jenkins.repository.jobdsl.factory.DslFactory
 import groovy.transform.InheritConstructors
@@ -13,7 +13,6 @@ public class FolderFactory extends DslFactory {
     }
 
     def create() {
-        def folder = _dslFactory.folder("${folder}")
-        return folder
+        return _dslFactory.folder("${folder}")
     }
 }
