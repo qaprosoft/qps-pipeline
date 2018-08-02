@@ -697,13 +697,19 @@ clean test"
 		}
 		
 		
-		def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
-		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
+		String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
+        String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
 		def currentBrowser = Configurator.get("browser")
-		if (currentBrowser == null || currentBrowser.isEmpty()) {
+        def browserVersion = Configurator.get("browser_version")
+
+
+        context.println("PARSED BROWSER VERSION " + browserVersion)
+
+        if (currentBrowser == null || currentBrowser.isEmpty()) {
 			currentBrowser = "NULL"
 		}
+
 		logLine += "	currentBrowser: ${currentBrowser};\n"
 		context.println(logLine)
 		
@@ -727,7 +733,12 @@ clean test"
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
 
-						// currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
+                        if (supportedBrowser.contains("\\s")) {
+                            browserVersion = supportedBrowser.split("\\s")[1]
+                        }
+
+
+                        // currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
 
 						//context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
 						if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
@@ -752,6 +763,7 @@ clean test"
 						def thread_count = Configurator.get("thread_count")
 
 						pipelineMap.put("browser", supportedBrowser)
+                        pipelineMap.put("browser_version", browserVersion)
 						pipelineMap.put("name", pipeName)
 						pipelineMap.put("branch", branch)
 						pipelineMap.put("ci_parent_url", ci_parent_url)
