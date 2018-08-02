@@ -738,6 +738,9 @@ clean test"
                             def browserNameArray = supportedBrowser.split("\\s")
                             context.println("BROWSER NAME ARRAY" + browserNameArray)
                             browser = browserNameArray[0]
+                            if (browser == null || browser.isEmpty()) {
+                                browser = "NULL"
+                            }
                             browserVersion = browserNameArray[1]
                         }
 
