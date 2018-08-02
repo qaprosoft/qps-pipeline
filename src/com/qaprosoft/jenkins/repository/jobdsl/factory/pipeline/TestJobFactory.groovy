@@ -84,11 +84,6 @@ public class TestJobFactory extends PipelineFactory {
 					keepAllScreenshots = currentSuite.getParameter("jenkinsKeepAllScreenshots").toBoolean()
 				}
 				
-				def enableVNC = true
-				if (currentSuite.getParameter("jenkinsEnableVNC") != null) {
-					enableVNC = currentSuite.getParameter("jenkinsEnableVNC").toBoolean()
-				}
-				
 				def enableVideo = false
 				if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
 					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
@@ -113,7 +108,6 @@ public class TestJobFactory extends PipelineFactory {
 						configure addHiddenParameter('browser_version', '', '*')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVNC', enableVNC, 'Enable VNC live sessions')
 						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('platform', '', '*')
 						break;
@@ -124,7 +118,6 @@ public class TestJobFactory extends PipelineFactory {
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVNC', enableVNC, 'Enable VNC live sessions')
 						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'ANDROID')
