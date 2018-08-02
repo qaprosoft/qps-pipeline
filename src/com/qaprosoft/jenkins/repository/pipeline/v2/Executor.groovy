@@ -4,11 +4,8 @@ package com.qaprosoft.jenkins.repository.pipeline.v2
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import com.cloudbees.groovy.cps.NonCPS
-import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
-//import static java.util.UUID.randomUUID
 
-import com.qaprosoft.scm.ISCM;
-import com.qaprosoft.scm.github.GitHub;
+import com.qaprosoft.scm.ISCM
 
 public abstract class Executor {
 	//pipeline context to provide access to existing pipeline methods like echo, sh etc...
