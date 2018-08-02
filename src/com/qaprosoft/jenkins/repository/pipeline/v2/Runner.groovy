@@ -370,10 +370,11 @@ clean test"
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
 
-            context.println("NOOOOODE" + Configurator.get("node"))
 			if (Configurator.get("node").equalsIgnoreCase("web") || Configurator.get("node").equalsIgnoreCase("android")) {
 				goals += " -Dcapabilities.enableVNC=true "
-			}
+			} else {
+                goals += " -Dcapabilities.enableVNC=false "
+            }
 
 			if (Configurator.get("enableVideo") && Configurator.get("enableVideo").toBoolean()) {
 				goals += " -Dcapabilities.enableVideo=true "
