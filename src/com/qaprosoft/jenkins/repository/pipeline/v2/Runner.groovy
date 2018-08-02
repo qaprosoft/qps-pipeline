@@ -734,7 +734,7 @@ clean test"
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
 
-                        if (supportedBrowser.contains("\\s")) {
+                        if (supportedBrowser.contains(" ")) {
                             def browserNameArray = supportedBrowser.split("\\s")
                             context.println("BROWSER NAME ARRAY" + browserNameArray)
                             browser = browserNameArray[0]
