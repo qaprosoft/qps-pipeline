@@ -736,6 +736,7 @@ clean test"
 
                         if (supportedBrowser.contains("\\s")) {
                             def browserNameArray = supportedBrowser.split("\\s")
+                            context.println("BROWSER NAME ARRAY" + browserNameArray)
                             browser = browserNameArray[0]
                             browserVersion = [1]
                         }
