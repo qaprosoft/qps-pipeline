@@ -369,6 +369,8 @@ clean test"
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
+
+            context.println("NOOOOODE" + Configurator.get("node"))
 			if (Configurator.get("node").equalsIgnoreCase("web") || Configurator.get("node").equalsIgnoreCase("android")) {
 				goals += " -Dcapabilities.enableVNC=true "
 			}
