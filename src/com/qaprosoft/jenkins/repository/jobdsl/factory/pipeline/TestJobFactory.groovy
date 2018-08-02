@@ -30,7 +30,7 @@ public class TestJobFactory extends PipelineFactory {
 	
 	def create() {
 
-        def selenium = "CHANGE_ME"
+        def selenium = "http://selenium-hub:4444"
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 		
