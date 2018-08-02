@@ -372,9 +372,7 @@ clean test"
 
 			if (Configurator.get("node").equalsIgnoreCase("web") || Configurator.get("node").equalsIgnoreCase("android")) {
 				goals += " -Dcapabilities.enableVNC=true "
-			} else {
-                goals += " -Dcapabilities.enableVNC=false "
-            }
+			}
 
 			if (Configurator.get("enableVideo") && Configurator.get("enableVideo").toBoolean()) {
 				goals += " -Dcapabilities.enableVideo=true "
