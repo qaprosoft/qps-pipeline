@@ -738,7 +738,7 @@ clean test"
                             def browserNameArray = supportedBrowser.split("\\s")
                             context.println("BROWSER NAME ARRAY" + browserNameArray)
                             browser = browserNameArray[0]
-                            browserVersion = [1]
+                            browserVersion = browserNameArray[1]
                         }
 
 
