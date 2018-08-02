@@ -5,6 +5,7 @@ import groovy.json.JsonSlurper;
 class ProxyInfo {
 	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
 	public static List<String> getDevicesList(String selenium, String platform) {
+		println("SELENIUM" + selenium)
 		def baseDeviceList = ["DefaultPool", "ANY"]
 
 		def deviceList = []
