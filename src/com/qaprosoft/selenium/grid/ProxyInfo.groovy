@@ -7,9 +7,6 @@ class ProxyInfo {
 	public static List<String> getDevicesList(String selenium, String platform) {
 		def baseDeviceList = ["DefaultPool", "ANY"]
 
-		return baseDeviceList
-		println(baseDeviceList)
-		
 		def deviceList = []
 		//TODO: reuse selenium host/port/protocol from env jobVars
 		def proxyInfoUrl = selenium + "/grid/admin/ProxyInfo"
