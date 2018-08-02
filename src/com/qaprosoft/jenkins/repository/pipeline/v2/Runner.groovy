@@ -698,9 +698,12 @@ clean test"
 		
 		
 		String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
-        String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
+        String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	\
+                          jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	\
+                          supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
 		def currentBrowser = Configurator.get("browser")
+        def browser = currentBrowser
         def browserVersion = '*'
 
 
@@ -734,7 +737,9 @@ clean test"
 						// supportedBrowser - splitted single browser name from supportedBrowsers
 
                         if (supportedBrowser.contains("\\s")) {
-                            browserVersion = supportedBrowser.split("\\s")[1]
+                            def browserNameArray = supportedBrowser.split("\\s")
+                            browser = browserNameArray[0]
+                            browserVersion = [1]
                         }
 
 
@@ -762,7 +767,7 @@ clean test"
 						def retry_count = Configurator.get("retry_count")
 						def thread_count = Configurator.get("thread_count")
 
-						pipelineMap.put("browser", supportedBrowser)
+						pipelineMap.put("browser", browser)
                         pipelineMap.put("browser_version", browserVersion)
 						pipelineMap.put("name", pipeName)
 						pipelineMap.put("branch", branch)
