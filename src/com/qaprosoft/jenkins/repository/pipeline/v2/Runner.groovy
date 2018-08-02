@@ -695,15 +695,18 @@ clean test"
 		if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
-		
-		
-		def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
+
+        String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
 		def currentBrowser = Configurator.get("browser")
 		if (currentBrowser == null || currentBrowser.isEmpty()) {
 			currentBrowser = "NULL"
 		}
+
+        def browser = currentBrowser
+        def browserVersion = '*'
+
 		logLine += "	currentBrowser: ${currentBrowser};\n"
 		context.println(logLine)
 		
@@ -727,7 +730,14 @@ clean test"
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
 
-						// currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
+                        if (supportedBrowser.contains(" ")) {
+                            def browserNameArray = supportedBrowser.split("\\s")
+                            browser = browserNameArray[0]
+                            browserVersion = browserNameArray[1]
+                        }
+
+
+                        // currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
 
 						//context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
 						if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
@@ -751,19 +761,20 @@ clean test"
 						def retry_count = Configurator.get("retry_count")
 						def thread_count = Configurator.get("thread_count")
 
-						pipelineMap.put("browser", supportedBrowser)
-						pipelineMap.put("name", pipeName)
-						pipelineMap.put("branch", branch)
-						pipelineMap.put("ci_parent_url", ci_parent_url)
-						pipelineMap.put("ci_parent_build", ci_parent_build)
-						pipelineMap.put("retry_count", retry_count)
-						pipelineMap.put("thread_count", thread_count)
-						pipelineMap.put("jobName", jobName)
-						pipelineMap.put("environment", supportedEnv)
-						pipelineMap.put("order", orderNum)
-						pipelineMap.put("priority", priorityNum)
-						pipelineMap.put("emailList", emailList.replace(", ", ","))
-						pipelineMap.put("executionMode", executionMode.replace(", ", ","))
+                        pipelineMap.put("browser", browser)
+                        pipelineMap.put("browser_version", browserVersion)
+                        pipelineMap.put("name", pipeName)
+                        pipelineMap.put("branch", branch)
+                        pipelineMap.put("ci_parent_url", ci_parent_url)
+                        pipelineMap.put("ci_parent_build", ci_parent_build)
+                        pipelineMap.put("retry_count", retry_count)
+                        pipelineMap.put("thread_count", thread_count)
+                        pipelineMap.put("jobName", jobName)
+                        pipelineMap.put("environment", supportedEnv)
+                        pipelineMap.put("order", orderNum)
+                        pipelineMap.put("priority", priorityNum)
+                        pipelineMap.put("emailList", emailList.replace(", ", ","))
+                        pipelineMap.put("executionMode", executionMode.replace(", ", ","))
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
 						//context.println("pipelines size1: " + listPipelines.size())
@@ -852,12 +863,28 @@ clean test"
 				if (!entry.get("browser").isEmpty()) {
 					context.build job: folderName + "/" + entry.get("jobName"),
 						propagate: propagateJob,
-						parameters: [context.string(name: 'branch', value: entry.get("branch")), context.string(name: 'env', value: entry.get("environment")), context.string(name: 'browser', value: entry.get("browser")), context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), context.string(name: 'email_list', value: entry.get("emailList")), context.string(name: 'retry_count', value: entry.get("retry_count")), context.string(name: 'BuildPriority', value: entry.get("priority")),],
+						parameters: \
+                            [context.string(name: 'branch', value: entry.get("branch")), \
+                             context.string(name: 'env', value: entry.get("environment")), \
+                             context.string(name: 'browser', value: entry.get("browser")), \
+                             context.string(name: 'browser_version', value: entry.get("browser_version")), \
+                             context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), \
+                             context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), \
+                             context.string(name: 'email_list', value: entry.get("emailList")), \
+                             context.string(name: 'retry_count', value: entry.get("retry_count")), \
+                             context.string(name: 'BuildPriority', value: entry.get("priority")),],
 						wait: waitJob
 				} else {
 					context.build job: folderName + "/" + entry.get("jobName"),
 						propagate: propagateJob,
-						parameters: [context.string(name: 'branch', value: entry.get("branch")), context.string(name: 'env', value: entry.get("environment")), context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), context.string(name: 'email_list', value: entry.get("emailList")), context.string(name: 'retry_count', value: entry.get("retry_count")), context.string(name: 'BuildPriority', value: entry.get("priority")),],
+						parameters: \
+                            [context.string(name: 'branch', value: entry.get("branch")),
+                             context.string(name: 'env', value: entry.get("environment")),
+                             context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")),
+                             context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")),
+                             context.string(name: 'email_list', value: entry.get("emailList")),
+                             context.string(name: 'retry_count', value: entry.get("retry_count")),
+                             context.string(name: 'BuildPriority', value: entry.get("priority")),],
 						wait: waitJob
 				}
 			} catch (Exception ex) {
