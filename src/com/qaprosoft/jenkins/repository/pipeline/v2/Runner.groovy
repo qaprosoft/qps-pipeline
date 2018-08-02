@@ -695,10 +695,10 @@ clean test"
 		if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
-		
-		
-		String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
-        String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
+
+
+        String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
+		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
 		def currentBrowser = Configurator.get("browser")
 		if (currentBrowser == null || currentBrowser.isEmpty()) {
