@@ -701,7 +701,7 @@ clean test"
         String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
 		def currentBrowser = Configurator.get("browser")
-        def browserVersion = Configurator.get("browser_version")
+        def browserVersion = '*'
 
 
         context.println("PARSED BROWSER VERSION " + browserVersion)
