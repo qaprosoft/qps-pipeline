@@ -701,15 +701,15 @@ clean test"
         String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
 		def currentBrowser = Configurator.get("browser")
-        def browser = currentBrowser
-        def browserVersion = '*'
-
 
         context.println("PARSED BROWSER VERSION " + browserVersion)
 
         if (currentBrowser == null || currentBrowser.isEmpty()) {
 			currentBrowser = "NULL"
 		}
+
+        def browser = currentBrowser
+        def browserVersion = '*'
 
 		logLine += "	currentBrowser: ${currentBrowser};\n"
 		context.println(logLine)
@@ -738,9 +738,6 @@ clean test"
                             def browserNameArray = supportedBrowser.split("\\s")
                             context.println("BROWSER NAME ARRAY" + browserNameArray)
                             browser = browserNameArray[0]
-                            if (browser == null || browser.isEmpty()) {
-                                browser = "NULL"
-                            }
                             browserVersion = browserNameArray[1]
                         }
 
