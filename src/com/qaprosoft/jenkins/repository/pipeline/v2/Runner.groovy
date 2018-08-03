@@ -369,7 +369,8 @@ clean test"
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
-			if (Configurator.get("enableVNC") && Configurator.get("enableVNC").toBoolean()) {
+
+			if (Configurator.get("node").equalsIgnoreCase("web") || Configurator.get("node").equalsIgnoreCase("android")) {
 				goals += " -Dcapabilities.enableVNC=true "
 			}
 
@@ -696,10 +697,13 @@ clean test"
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
 
+
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
 		def currentBrowser = Configurator.get("browser")
+
+		context.println("CURRENT BROWSER" + currentBrowser)
 		if (currentBrowser == null || currentBrowser.isEmpty()) {
 			currentBrowser = "NULL"
 		}
@@ -734,6 +738,8 @@ clean test"
                             def browserNameArray = supportedBrowser.split("\\s")
                             browser = browserNameArray[0]
                             browserVersion = browserNameArray[1]
+                        } else {
+                            browser = supportedBrowser
                         }
 
 
