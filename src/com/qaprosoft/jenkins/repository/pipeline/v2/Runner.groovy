@@ -697,10 +697,12 @@ clean test"
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
 
+
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
 		def currentBrowser = Configurator.get("browser")
+
 		if (currentBrowser == null || currentBrowser.isEmpty()) {
 			currentBrowser = "NULL"
 		}
@@ -735,6 +737,8 @@ clean test"
                             def browserNameArray = supportedBrowser.split("\\s")
                             browser = browserNameArray[0]
                             browserVersion = browserNameArray[1]
+                        } else {
+                            browser = supportedBrowser
                         }
 
 
