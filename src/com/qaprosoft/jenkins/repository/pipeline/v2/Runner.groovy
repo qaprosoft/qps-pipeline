@@ -703,7 +703,6 @@ clean test"
 		
 		def currentBrowser = Configurator.get("browser")
 
-		context.println("CURRENT BROWSER" + currentBrowser)
 		if (currentBrowser == null || currentBrowser.isEmpty()) {
 			currentBrowser = "NULL"
 		}
