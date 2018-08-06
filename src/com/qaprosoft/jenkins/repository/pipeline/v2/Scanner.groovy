@@ -23,15 +23,13 @@ class Scanner extends Executor {
 	
 	protected Map dslObjects = [:]
 	
-	protected def pipelineScript
-	protected def cronPipelineScript
+	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
+	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
 
     public Scanner(context) {
 		super(context)
 		this.context = context
 		
-		pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
-		cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
 		scmClient = new GitHub(context)
  	}
 
