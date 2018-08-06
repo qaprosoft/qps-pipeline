@@ -47,7 +47,7 @@ class Runner extends Executor {
 			def jenkinsFile = ".jenkinsfile.json"
 
 			if (!context.fileExists("${jenkinsFile}")) {
-				context.println("no .jenkinsfile.json discovered! Scannr will use default qps-pipeline logic for project: ${project}")
+				context.println("no .jenkinsfile.json discovered! Scanner will use default qps-pipeline logic for project: ${project}")
 			}
 
 			def suiteFilter = "src/test/resources/**"
@@ -133,7 +133,7 @@ class Runner extends Executor {
 				} finally {
                     this.exportZafiraReport()
                     this.reportingResults()
-                    //TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
+                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     this.sendTestRunResultsEmail(emailList, failureEmailList)
                     this.clean()
                 }
@@ -391,13 +391,29 @@ clean test"
 				context.echo "Enabling deployment of tests jar to local repo."
 				goals += " install"
 			}
+
+			if (!isParamEmpty(Configurator.get("custom_capabilities"))) {
+
+				if (Configurator.get("custom_capabilities").toLowerCase().contains("browserstack")) {
+					def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configurator.get("suite") + "-" +
+						Configurator.get("browser") + "-" + Configurator.get("env") + "\""
+
+					uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
+
+					useBrowserStack(uniqueBrowserInstance)
+					goals += " -Dcapabilities.project=" + Configurator.get("project")
+					goals += " -Dcapabilities.build=" + uniqueBrowserInstance
+					goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
+					goals += " -Dapp_version=browserStack"
+				}
+			}
 			
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
 
 			//context.echo "goals: ${goals}"
 
-			//TODO: adjust ZAFIRA_REPORT_FOLDER correclty
+			//TODO: adjust ZAFIRA_REPORT_FOLDER correctly
 			if (context.isUnix()) {
 				def suiteNameForUnix = Configurator.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
@@ -697,10 +713,13 @@ clean test"
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
 
-
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
-		
+
+		def useExternalBrowser = currentSuite.getParameter("useExternalBrowser").toString()
+		def operatingSystems = currentSuite.getParameter("jenkinsPipelineOS").toString()
+		def overrideFields = currentSuite.getParameter("overrideFields").toString()
+
 		def currentBrowser = Configurator.get("browser")
 
 		context.println("CURRENT BROWSER" + currentBrowser)
@@ -767,24 +786,29 @@ clean test"
 						def retry_count = Configurator.get("retry_count")
 						def thread_count = Configurator.get("thread_count")
 
-                        pipelineMap.put("browser", browser)
-                        pipelineMap.put("browser_version", browserVersion)
-                        pipelineMap.put("name", pipeName)
-                        pipelineMap.put("branch", branch)
-                        pipelineMap.put("ci_parent_url", ci_parent_url)
-                        pipelineMap.put("ci_parent_build", ci_parent_build)
-                        pipelineMap.put("retry_count", retry_count)
-                        pipelineMap.put("thread_count", thread_count)
-                        pipelineMap.put("jobName", jobName)
-                        pipelineMap.put("environment", supportedEnv)
-                        pipelineMap.put("order", orderNum)
-                        pipelineMap.put("priority", priorityNum)
-                        pipelineMap.put("emailList", emailList.replace(", ", ","))
-                        pipelineMap.put("executionMode", executionMode.replace(", ", ","))
+						pipelineMap.put("browser", supportedBrowser)
+						pipelineMap.put("name", pipeName)
+						pipelineMap.put("branch", branch)
+						pipelineMap.put("ci_parent_url", ci_parent_url)
+						pipelineMap.put("ci_parent_build", ci_parent_build)
+						pipelineMap.put("retry_count", retry_count)
+						pipelineMap.put("thread_count", thread_count)
+						pipelineMap.put("jobName", jobName)
+						pipelineMap.put("environment", supportedEnv)
+						pipelineMap.put("order", orderNum)
+						pipelineMap.put("priority", priorityNum)
+						pipelineMap.put("emailList", emailList.replace(", ", ","))
+						pipelineMap.put("executionMode", executionMode.replace(", ", ","))
+						pipelineMap.put("overrideFields", overrideFields)
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
 						//context.println("pipelines size1: " + listPipelines.size())
-						listPipelines.add(pipelineMap)
+						if (useExternalBrowser.contains("null")) {
+							listPipelines.add(pipelineMap)
+						} else {
+							pipelineMap.put("operatingSystems", operatingSystems)
+							generateOperatingSystemPipeline(pipelineMap, listPipelines)
+						}
 						//context.println("pipelines size2: " + listPipelines.size())
 					}
 
@@ -807,6 +831,10 @@ clean test"
 		String curOrder = ""
 		for (Map entry : listPipelines) {
 			def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))
+			if (entry.get("operatingSystem") != null) {
+				stageName = stageName + " OS: " + entry.get("operatingSystem")
+			}
+
 			context.println("stageName: ${stageName}")
 			
 			boolean propagateJob = true
@@ -878,7 +906,10 @@ clean test"
                              context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), \
                              context.string(name: 'email_list', value: entry.get("emailList")), \
                              context.string(name: 'retry_count', value: entry.get("retry_count")), \
-                             context.string(name: 'BuildPriority', value: entry.get("priority")),],
+                             context.string(name: 'BuildPriority', value: entry.get("priority")),
+							 context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
+							 context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
+
 						wait: waitJob
 				} else {
 					context.build job: folderName + "/" + entry.get("jobName"),
@@ -890,7 +921,10 @@ clean test"
                              context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")),
                              context.string(name: 'email_list', value: entry.get("emailList")),
                              context.string(name: 'retry_count', value: entry.get("retry_count")),
-                             context.string(name: 'BuildPriority', value: entry.get("priority")),],
+                             context.string(name: 'BuildPriority', value: entry.get("priority")),
+							 context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
+							 context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
+
 						wait: waitJob
 				}
 			} catch (Exception ex) {
@@ -898,6 +932,151 @@ clean test"
 				
 				context.emailext attachLog: true, body: "Unable to start job via cron! " + ex.getMessage(), recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "JOBSTART FAILURE: ${entry.get("jobName")}", to: "${email_list},${ADMIN_EMAILS}"
 			}
+
+		}
+	}
+
+	def scanThroughEnvironments(Map parameterMap, String filePath, List listPipelines) {
+		if (!parameterMap.get("envInfo").contains("null")) {
+			for (def envName : getInfo(parameterMap.get("envInfo")).split(",")) {
+				parameterMap.put("envName", envName)
+				scanThroughBrowsers(parameterMap, filePath, listPipelines)
+			}
+		}
+	}
+
+	def scanThroughBrowsers(Map parameterMap, String filePath, List listPipelines) {
+		for (def browser : getInfo(parameterMap.get("browsers")).split(",")) {
+			reviewAddPipelineList(parameterMap, filePath, browser, listPipelines)
+		}
+	}
+
+	def reviewAddPipelineList(Map parameterMap, String filePath, String browser, List listPipelines) {
+		if (filePath.contains("web") && parameterMap.get("browsers").contains("null")) {
+			browser = "chrome"
+		}
+		if ("${JOB_BASE_NAME}".equalsIgnoreCase(parameterMap.get("pipeName"))) {
+			context.println "Pipeline job: " + parameterMap.get("pipeName")
+			parameterMap.put("browser", browser)
+
+			if (parameterMap.get("useExternalBrowser").contains("null")) {
+				listPipelines.add(getMappingTemplate(parameterMap))
+			} else {
+				generateOperatingSystemPipeline(parameterMap, listPipelines)
+			}
+		}
+	}
+
+	def generateOperatingSystemPipeline(Map parameterMap, List listPipelines) {
+		def browserInfo = context.readYaml file: "mlb-qa/src/main/resources/pipeline/browsers.yaml"
+		def listOfOperatingSystems = parameterMap.get("operatingSystems")
+		def storeOverrideField = parameterMap.get("overrideFields")
+		parameterMap.remove("operatingSystems");
+
+		for (def operatingSystem : listOfOperatingSystems.split(",")) {
+			def originalMap = [:]
+			originalMap.putAll(parameterMap)
+			originalMap.put("overrideFields", storeOverrideField)
+			for (Map entry : browserInfo.get("browsers")) {
+				if (entry.get("browser").toString().equalsIgnoreCase(originalMap.get("browser"))
+						&& entry.get("os").toString().toUpperCase().contains(operatingSystem.toUpperCase())) {
+					listPipelines.add(addOsEntryToList(originalMap, operatingSystem, originalMap.get("browser")))
+					break
+				}
+			}
+		}
+	}
+
+	def addOsEntryToList(Map pipelineTemplate, String operatingSystem, String browser) {
+		def pipelineMap = pipelineTemplate
+		def currentOs = operatingSystem
+
+		context.println "Let's Check the Override Fields: " + pipelineTemplate.get("overrideFields")
+
+		pipelineMap.put("custom_capabilities", "browserstack/browserstack_template.properties")
+		pipelineMap.put("overrideFields", buildOverrideParameters(pipelineTemplate.get("overrideFields").toString(), addCustomCapabilityForBrowser(currentOs, browser)))
+		pipelineMap.put("operatingSystem", currentOs)
+
+		context.println "Current Browser: " + browser + " Current OS: " + operatingSystem
+		context.println "Adding to Map: " + pipelineMap
+
+		return pipelineMap
+	}
+
+	def addCustomCapabilityForBrowser(String passedOs, String browser) {
+
+		def browserCapabilities = [:]
+
+		if (passedOs.toLowerCase().contains("win")) {
+			browserCapabilities.put("capabilities.os", "Windows")
+		} else {
+			browserCapabilities.put("capabilities.os", "OS X")
+		}
+
+		browserCapabilities.put("capabilities.os_version", passedOs.replace("WIN", ""))
+		browserCapabilities.put("capabilities.browser", browser)
+
+		if (browser.equalsIgnoreCase("safari") || browser.equalsIgnoreCase("ie") || browser.equalsIgnoreCase("edge")) {
+			browserCapabilities.put("capabilities.browserstack." +  browser.toLowerCase() +".enablePopups", "true")
+		}
+
+		return browserCapabilities
+	}
+
+	def buildOverrideParameter(String originalOverride) {
+		def goals = ""
+
+		if (!isParamEmpty(originalOverride)) {
+			for (String overrideField : getGenericSplit(originalOverride)) {
+				goals = goals + " -D" + overrideField
+			}
+		}
+
+		return goals
+	}
+
+	def buildOverrideParameters(String originalOverride, Map<String, String> goalMap) {
+		def goals = ""
+
+		goals = buildOverrideParameter(originalOverride)
+
+		goalMap.each { k, v -> goals = goals + " -D${k}='${v}'"}
+
+		return goals
+	}
+
+	def getGenericSplit(String stringToSplit) {
+		def genericList = ""
+		if (!isParamEmpty(stringToSplit)) {
+			if (!stringToSplit.contains(", ")) {
+				genericList = stringToSplit.split(",")
+			} else {
+				genericList = stringToSplit.split(", ")
+			}
+		}
+		return genericList
+	}
+
+	def useBrowserStack(String uniqueBrowserInstance) {
+		def browserStackUrl = "https://www.browserstack.com/browserstack-local/BrowserStackLocal"
+		def accessKey = Configurator.get("BROWSERSTACK_ACCESS_KEY")
+
+		if (context.isUnix()) {
+			def browserStackLocation = "/var/tmp/BrowserStackLocal"
+			if (!context.fileExists(browserStackLocation)) {
+				context.sh "curl -sS " + browserStackUrl + "-linux-x64.zip > " + browserStackLocation + ".zip"
+				context.unzip dir: "/var/tmp", glob: "", zipFile: browserStackLocation + ".zip"
+				context.sh "chmod +x " + browserStackLocation
+			}
+			context.sh browserStackLocation + " --key " + accessKey + " --local-identifier " + uniqueBrowserInstance + " --force-local " + " &"
+		} else {
+			def browserStackLocation = "C:\\tmp\\BrowserStackLocal"
+			if (!context.fileExists(browserStackLocation + ".exe")) {
+				context.powershell(returnStdout: true, script: """[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStackLocation}.zip\'""")
+				context.unzip dir: "C:\\tmp", glob: "", zipFile: "${browserStackLocation}.zip"
+			}
+			context.powershell(returnStdout: true, script: "Start-Process -FilePath '${browserStackLocation}.exe' -ArgumentList '--key ${accessKey} --local-identifier ${uniqueBrowserInstance} --force-local'")
 
 		}
 	}

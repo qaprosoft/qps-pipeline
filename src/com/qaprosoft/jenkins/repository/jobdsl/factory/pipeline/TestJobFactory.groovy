@@ -93,7 +93,13 @@ public class TestJobFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-				println("jobType: " + jobType)
+
+				context.println("jobType: " + jobType)
+
+				if (!currentSuite.getParameter("useExternalBrowser").toString().contains("null")) {
+					concurrentBuild(false)
+				}
+
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
