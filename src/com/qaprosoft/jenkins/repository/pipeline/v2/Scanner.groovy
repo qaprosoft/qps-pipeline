@@ -23,12 +23,15 @@ class Scanner extends Executor {
 	
 	protected Map dslObjects = [:]
 	
-	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
-	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
+	protected def pipelineScript
+	protected def cronPipelineScript
 
     public Scanner(context) {
 		super(context)
 		this.context = context
+		
+		pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
+		cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
 		scmClient = new GitHub(context)
  	}
 
@@ -192,19 +195,19 @@ class Scanner extends Executor {
 		}
 	}
 
-	protected void setPipelineScript(pipelineScript) {
-		this.pipelineScript = pipelineScript
+	protected void setPipelineScript(script) {
+		this.pipelineScript = script
 	}
 	
-	protected String getPipelineScript(pipelineScript) {
+	protected String getPipelineScript() {
 		return pipelineScript
 	}
 	
-	protected void setCronPipelineScript(cronPipelineScript) {
-		this.cronPipelineScript = cronPipelineScript
+	protected void setCronPipelineScript(script) {
+		this.cronPipelineScript = script
 	}
 	
-	protected String getCronPipelineScript(pipelineScript) {
+	protected String getCronPipelineScript() {
 		return cronPipelineScript
 	}
 	
