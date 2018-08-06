@@ -15,10 +15,10 @@ public class TestJobFactory extends PipelineFactory {
 	def suitePath
 	def suiteName
 	
-	public TestJobFactory(folder, project, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
-		//super(folder, name, description, logRotator)
+	public TestJobFactory(folder, pipelineScript, project, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
 		this.folder = folder
         this.description = jobDesc
+		this.pipelineScript = pipelineScript
 
 		this.project = project
 		this.sub_project = sub_project
@@ -29,7 +29,7 @@ public class TestJobFactory extends PipelineFactory {
 	}
 	
 	def create() {
-
+		//TODO: try to move it under Configurator which is hard due to the unsupported NonCPS in jobdsl files
         def selenium = "http://selenium-hub:4444"
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)

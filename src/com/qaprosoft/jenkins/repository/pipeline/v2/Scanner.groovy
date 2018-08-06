@@ -22,6 +22,9 @@ import groovy.json.JsonOutput
 class Scanner extends Executor {
 	
 	protected Map dslObjects = [:]
+	
+	def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
+	def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
 
     public Scanner(context) {
 		super(context)
@@ -156,7 +159,7 @@ class Scanner extends Executor {
 							//TODO: review each argument to TestJobFactory and think about removal
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                             def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
-							dslObjects.put(suiteName, new TestJobFactory(jobFolder, project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+							dslObjects.put(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 							
 							//cron job
 							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
@@ -164,7 +167,7 @@ class Scanner extends Executor {
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
                                     def cronDesc = "project: ${project}; type: cron"
-									dslObjects.put(cronJobName, new CronJobFactory(jobFolder, cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
+									dslObjects.put(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
 								}
 							}
 						}
@@ -189,4 +192,22 @@ class Scanner extends Executor {
 		}
 	}
 
+	protected void setPipelineScript(pipelineScript) {
+		this.pipelineScript = pipelineScript
+	}
+	
+	protected String getPipelineScript(pipelineScript) {
+		return pipelineScript
+	}
+	
+	protected void setCronPipelineScript(cronPipelineScript) {
+		this.cronPipelineScript = cronPipelineScript
+	}
+	
+	protected String getCronPipelineScript(pipelineScript) {
+		return cronPipelineScript
+	}
+	
+	
+	
 }
