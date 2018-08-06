@@ -786,7 +786,8 @@ clean test"
 						def retry_count = Configurator.get("retry_count")
 						def thread_count = Configurator.get("thread_count")
 
-						pipelineMap.put("browser", supportedBrowser)
+						pipelineMap.put("browser", browser)
+						pipelineMap.put("browser_version", browserVersion)
 						pipelineMap.put("name", pipeName)
 						pipelineMap.put("branch", branch)
 						pipelineMap.put("ci_parent_url", ci_parent_url)
@@ -907,8 +908,8 @@ clean test"
                              context.string(name: 'email_list', value: entry.get("emailList")), \
                              context.string(name: 'retry_count', value: entry.get("retry_count")), \
                              context.string(name: 'BuildPriority', value: entry.get("priority")),
-							 context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-							 context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
+                             context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
+                             context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
 
 						wait: waitJob
 				} else {
@@ -922,8 +923,8 @@ clean test"
                              context.string(name: 'email_list', value: entry.get("emailList")),
                              context.string(name: 'retry_count', value: entry.get("retry_count")),
                              context.string(name: 'BuildPriority', value: entry.get("priority")),
-							 context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-							 context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
+                             context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
+                             context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
 
 						wait: waitJob
 				}
