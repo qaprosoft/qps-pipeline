@@ -106,6 +106,8 @@ public class TestJobFactory extends PipelineFactory {
 						configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
 						configure addExtensibleChoice('browser', 'gc_BROWSER', 'Select a browser to run tests against.', 'chrome')
 						configure addHiddenParameter('browser_version', '', '*')
+						configure addHiddenParameter('os', '', 'NULL')
+						configure addHiddenParameter('os_version', '', '*')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
 						booleanParam('enableVideo', enableVideo, 'Enable video recording')
