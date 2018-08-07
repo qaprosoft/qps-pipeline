@@ -179,7 +179,7 @@ class Runner extends Executor {
 		String branch = Configurator.get("branch")
 		String env = Configurator.get("env")
         //TODO: rename to devicePool
-		String device = Configurator.get("DEVICE")
+		String devicePool = Configurator.get("devicePool")
 		String browser = Configurator.get("browser")
 
 		//TODO: improve carina to detect browser_version on the fly
@@ -190,8 +190,8 @@ class Runner extends Executor {
 			if (!isParamEmpty("${CARINA_CORE_VERSION}")) {
 				currentBuild.displayName += "|" + "${CARINA_CORE_VERSION}"
 			}
-			if (!isParamEmpty(Configurator.get("device"))) {
-				currentBuild.displayName += "|${device}"
+			if (!isParamEmpty(devicePool)) {
+				currentBuild.displayName += "|${devicePool}"
 			}
 			if (!isParamEmpty(Configurator.get("browser"))) {
 				currentBuild.displayName += "|${browser}"
