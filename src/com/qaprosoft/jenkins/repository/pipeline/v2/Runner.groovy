@@ -730,7 +730,6 @@ clean test"
 						def osVersion = '*'
 
 						String browserInfo = supportedBrowser
-						context.println("supportedBrowser " + supportedBrowser)
 						if (supportedBrowser.contains("-")) {
 							def systemInfoArray = supportedBrowser.split("-")
 							String osInfo = systemInfoArray[0]
