@@ -26,7 +26,7 @@ public enum OS {
         this.version = version
     }
 
-    public static String getName(os) {
+    public static String getName(String os) {
         values().each { value ->
             if (value.os == os) {
                 return value.name
@@ -34,7 +34,7 @@ public enum OS {
         }
     }
 
-    public static String getVersion(os) {
+    public static String getVersion(String os) {
         values().each { value ->
             if (value.os == os) {
                 return value.version
