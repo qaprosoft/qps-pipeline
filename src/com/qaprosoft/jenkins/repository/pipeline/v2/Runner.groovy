@@ -9,6 +9,7 @@ import com.qaprosoft.zafira.ZafiraClient
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
+import com.qaprosoft.jenkins.repository.pipeline.v2.OS
 
 class Runner extends Executor {
 	//ci_run_id  param for unique test run identification
@@ -702,9 +703,6 @@ clean test"
 			currentBrowser = "NULL"
 		}
 
-        def browser = currentBrowser
-        def browserVersion = '*'
-
 		logLine += "	currentBrowser: ${currentBrowser};\n"
 		context.println(logLine)
 		
@@ -723,19 +721,27 @@ clean test"
 						continue;
 					}
 
-
 					for (def supportedBrowser : supportedBrowsers.split(",")) {
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
+						def browser = currentBrowser
+						def browserVersion = '*'
+						def os = 'NULL'
+						def osVersion = '*'
 
-                        if (supportedBrowser.contains(" ")) {
-                            def browserNameArray = supportedBrowser.split("\\s")
-                            browser = browserNameArray[0]
-                            browserVersion = browserNameArray[1]
-                        } else {
-                            browser = supportedBrowser
-                        }
-
+						String browserInfo = supportedBrowser
+						if (supportedBrowser.contains("-")) {
+							def systemInfoArray = supportedBrowser.split("-")
+							String osInfo = systemInfoArray[0]
+							os = OS.getName(osInfo)
+							osVersion = OS.getVersion(osInfo)
+							browserInfo = systemInfoArray[1]
+						}
+						def browserInfoArray = browserInfo.split(" ")
+						browser = browserInfoArray[0]
+						if (browserInfoArray.size() > 1) {
+							browserVersion = browserInfoArray[1]
+						}
 
                         // currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
 
@@ -761,20 +767,22 @@ clean test"
 						def retry_count = Configurator.get("retry_count")
 						def thread_count = Configurator.get("thread_count")
 
-                        pipelineMap.put("browser", browser)
-                        pipelineMap.put("browser_version", browserVersion)
-                        pipelineMap.put("name", pipeName)
-                        pipelineMap.put("branch", branch)
-                        pipelineMap.put("ci_parent_url", ci_parent_url)
-                        pipelineMap.put("ci_parent_build", ci_parent_build)
-                        pipelineMap.put("retry_count", retry_count)
-                        pipelineMap.put("thread_count", thread_count)
-                        pipelineMap.put("jobName", jobName)
-                        pipelineMap.put("environment", supportedEnv)
-                        pipelineMap.put("order", orderNum)
-                        pipelineMap.put("priority", priorityNum)
-                        pipelineMap.put("emailList", emailList.replace(", ", ","))
-                        pipelineMap.put("executionMode", executionMode.replace(", ", ","))
+						pipelineMap.put("browser", browser)
+						pipelineMap.put("browser_version", browserVersion)
+						pipelineMap.put("os", os)
+						pipelineMap.put("os_version", osVersion)
+						pipelineMap.put("name", pipeName)
+						pipelineMap.put("branch", branch)
+						pipelineMap.put("ci_parent_url", ci_parent_url)
+						pipelineMap.put("ci_parent_build", ci_parent_build)
+						pipelineMap.put("retry_count", retry_count)
+						pipelineMap.put("thread_count", thread_count)
+						pipelineMap.put("jobName", jobName)
+						pipelineMap.put("environment", supportedEnv)
+						pipelineMap.put("order", orderNum)
+						pipelineMap.put("priority", priorityNum)
+						pipelineMap.put("emailList", emailList.replace(", ", ","))
+						pipelineMap.put("executionMode", executionMode.replace(", ", ","))
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
 						//context.println("pipelines size1: " + listPipelines.size())
@@ -868,6 +876,8 @@ clean test"
                              context.string(name: 'env', value: entry.get("environment")), \
                              context.string(name: 'browser', value: entry.get("browser")), \
                              context.string(name: 'browser_version', value: entry.get("browser_version")), \
+                             context.string(name: 'os', value: entry.get("os")), \
+                             context.string(name: 'os_version', value: entry.get("os_version")), \
                              context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), \
                              context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), \
                              context.string(name: 'email_list', value: entry.get("emailList")), \
