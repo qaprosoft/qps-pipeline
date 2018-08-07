@@ -201,7 +201,6 @@ class Runner extends Executor {
 			}
 			currentBuild.description = "${suite}"
 			
-			// identify if it is mobile test using "device" param. Don't reuse node as it can be changed based on client needs 
 			if (isMobile()) {
 				//this is mobile test
 				this.prepareForMobile()
@@ -260,13 +259,7 @@ class Runner extends Executor {
 		Configurator.set("capabilities.appWaitDuration", "270000")
 		Configurator.set("capabilities.androidInstallTimeout", "270000")
 
-		customPrepareForAndroid()
 	}
-
-	protected void customPrepareForAndroid() {
-		//do nothing here
-	}
-
 
 	protected void prepareForiOS() {
 
@@ -281,11 +274,6 @@ class Runner extends Executor {
 
 		Configurator.set("capabilities.STF_ENABLED", "false")
 
-		customPrepareForiOS()
-	}
-
-	protected void customPrepareForiOS() {
-		//do nothing here
 	}
 
 	protected void downloadResources() {
