@@ -726,7 +726,7 @@ clean test"
 						continue;
 					}
 
-
+					context.println("SUPPORTED BROWSERS" + supportedBrowsers)
 					for (def supportedBrowser : supportedBrowsers.split(",")) {
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
