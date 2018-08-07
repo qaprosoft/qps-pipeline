@@ -877,6 +877,8 @@ clean test"
                              context.string(name: 'env', value: entry.get("environment")), \
                              context.string(name: 'browser', value: entry.get("browser")), \
                              context.string(name: 'browser_version', value: entry.get("browser_version")), \
+                             context.string(name: 'os', value: entry.get("os")), \
+                             context.string(name: 'os_version', value: entry.get("os_version")), \
                              context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), \
                              context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), \
                              context.string(name: 'email_list', value: entry.get("emailList")), \
