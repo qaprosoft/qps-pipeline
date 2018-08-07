@@ -27,18 +27,22 @@ public enum OS {
     }
 
     public static String getName(os) {
+        String name = ''
         values().each { value ->
             if (value.os == os) {
-                return value.name
+                name = value.name
             }
         }
+        return name
     }
 
     public static String getVersion(os) {
+        String version = ''
         values().each { value ->
             if (value.os == os) {
-                return value.version
+                version = value.version
             }
         }
+        return version
     }
 }
