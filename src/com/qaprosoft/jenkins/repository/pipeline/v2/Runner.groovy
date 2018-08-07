@@ -769,9 +769,9 @@ clean test"
 						def thread_count = Configurator.get("thread_count")
 
                         pipelineMap.put("browser", browser)
-                        pipelineMap.put("browser_version", osVersion)
+                        pipelineMap.put("browser_version", browserVersion)
 						pipelineMap.put("os", os)
-						pipelineMap.put("os_version", browserVersion)
+						pipelineMap.put("os_version", osVersion)
                         pipelineMap.put("name", pipeName)
                         pipelineMap.put("branch", branch)
                         pipelineMap.put("ci_parent_url", ci_parent_url)
