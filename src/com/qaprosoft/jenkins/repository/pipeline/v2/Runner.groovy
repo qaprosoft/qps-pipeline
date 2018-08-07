@@ -9,6 +9,7 @@ import com.qaprosoft.zafira.ZafiraClient
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
+import com.qaprosoft.jenkins.repository.pipeline.v2.OS
 
 class Runner extends Executor {
 	//ci_run_id  param for unique test run identification
@@ -704,6 +705,8 @@ clean test"
 
         def browser = currentBrowser
         def browserVersion = '*'
+		def os = 'NULL'
+		def osVersion = '*'
 
 		logLine += "	currentBrowser: ${currentBrowser};\n"
 		context.println(logLine)
@@ -727,15 +730,19 @@ clean test"
 					for (def supportedBrowser : supportedBrowsers.split(",")) {
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
-
-                        if (supportedBrowser.contains(" ")) {
-                            def browserNameArray = supportedBrowser.split("\\s")
-                            browser = browserNameArray[0]
-                            browserVersion = browserNameArray[1]
-                        } else {
-                            browser = supportedBrowser
-                        }
-
+						String browserInfo = supportedBrowser
+						if (supportedBrowser.contains("-")) {
+							def systemInfoArray = supportedBrowser.split("-")
+							String osInfo = systemInfoArray[0]
+							os = OS.getName(osInfo)
+							osVersion = OS.getVersione(osInfo)
+							browserInfo = systemInfoArray[1]
+						}
+						def browserInfoArray = browserInfo.split(" ")
+						browser = browserInfoArray[0]
+						if (browserInfoArray.size() > 1) {
+							browserVersion = browserInfoArray[1]
+						}
 
                         // currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
 
@@ -762,7 +769,9 @@ clean test"
 						def thread_count = Configurator.get("thread_count")
 
                         pipelineMap.put("browser", browser)
-                        pipelineMap.put("browser_version", browserVersion)
+                        pipelineMap.put("browser_version", osVersion)
+						pipelineMap.put("os", os)
+						pipelineMap.put("os_version", browserVersion)
                         pipelineMap.put("name", pipeName)
                         pipelineMap.put("branch", branch)
                         pipelineMap.put("ci_parent_url", ci_parent_url)

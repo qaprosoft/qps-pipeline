@@ -20,21 +20,25 @@ public enum OS {
     private final String name
     private final String version
 
-    OS(String os, String name, String version) {
+    OS(os, name, version) {
         this.os = os
         this.name = name
         this.version = version
     }
 
-    public String getOs() {
-        return os
+    public static String getName(os) {
+        values().each { value ->
+            if (value.os == os) {
+                return value.name
+            }
+        }
     }
 
-    public String getName() {
-        return name
-    }
-
-    public String getVersion() {
-        return version
+    public static String getVersion(os) {
+        values().each { value ->
+            if (value.os == os) {
+                return value.version
+            }
+        }
     }
 }
