@@ -5,7 +5,7 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class PipelineFactory extends JobFactory {
-	def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
+	def pipelineScript = ""
 	def suiteOwner = ""
 	
 	public PipelineFactory(folder, name, description) {
@@ -126,5 +126,5 @@ public class PipelineFactory extends JobFactory {
             }
         }
     }
-
+	
 }

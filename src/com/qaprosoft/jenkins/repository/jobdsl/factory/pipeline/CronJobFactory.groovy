@@ -13,9 +13,9 @@ public class CronJobFactory extends PipelineFactory {
     def sub_project
     def suitePath
 
-    public CronJobFactory(folder, cronJobName, project, sub_project, suitePath, jobDesc) {
-        this.pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
+    public CronJobFactory(folder, pipelineScript, cronJobName, project, sub_project, suitePath, jobDesc) {
         this.folder = folder
+		this.pipelineScript = pipelineScript
         this.description = jobDesc
         this.name = cronJobName
         this.project = project
