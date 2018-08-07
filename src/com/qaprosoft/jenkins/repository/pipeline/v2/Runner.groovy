@@ -735,7 +735,7 @@ clean test"
 							def systemInfoArray = supportedBrowser.split("-")
 							String osInfo = systemInfoArray[0]
 							os = OS.getName(osInfo)
-							osVersion = OS.getVersione(osInfo)
+							osVersion = OS.getVersion(osInfo)
 							browserInfo = systemInfoArray[1]
 						}
 						def browserInfoArray = browserInfo.split(" ")
