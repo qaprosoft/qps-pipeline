@@ -79,8 +79,15 @@ class Runner extends Executor {
 		}
 	}
 
+	protected void beforeRunJob() {
+		// do nothing
+	}
 
 	public void runJob() {
+		
+		//use this method to override any beforeRunJob logic
+		beforeRunJob()
+		
         uuid = getUUID()
         String nodeName = "master"
         String emailList = Configurator.get("email_list")
@@ -172,7 +179,7 @@ class Runner extends Executor {
 		String branch = Configurator.get("branch")
 		String env = Configurator.get("env")
         //TODO: rename to devicePool
-		String device = Configurator.get("DEVICE")
+		String devicePool = Configurator.get("devicePool")
 		String browser = Configurator.get("browser")
 
 		//TODO: improve carina to detect browser_version on the fly
@@ -183,8 +190,8 @@ class Runner extends Executor {
 			if (!isParamEmpty("${CARINA_CORE_VERSION}")) {
 				currentBuild.displayName += "|" + "${CARINA_CORE_VERSION}"
 			}
-			if (!isParamEmpty(Configurator.get("device"))) {
-				currentBuild.displayName += "|${device}"
+			if (!isParamEmpty(devicePool)) {
+				currentBuild.displayName += "|${devicePool}"
 			}
 			if (!isParamEmpty(Configurator.get("browser"))) {
 				currentBuild.displayName += "|${browser}"
@@ -194,7 +201,6 @@ class Runner extends Executor {
 			}
 			currentBuild.description = "${suite}"
 			
-			// identify if it is mobile test using "device" param. Don't reuse node as it can be changed based on client needs 
 			if (isMobile()) {
 				//this is mobile test
 				this.prepareForMobile()
@@ -233,7 +239,7 @@ class Runner extends Executor {
 		// ATTENTION! Obligatory remove device from the params otherwise
 		// hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
 		// Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
-    Configurator.remove("device")
+		Configurator.remove("device")
 
 		//TODO: move it to the global jenkins variable
 		Configurator.set("capabilities.newCommandTimeout", "180")
@@ -253,13 +259,7 @@ class Runner extends Executor {
 		Configurator.set("capabilities.appWaitDuration", "270000")
 		Configurator.set("capabilities.androidInstallTimeout", "270000")
 
-		customPrepareForAndroid()
 	}
-
-	protected void customPrepareForAndroid() {
-		//do nothing here
-	}
-
 
 	protected void prepareForiOS() {
 
@@ -274,11 +274,6 @@ class Runner extends Executor {
 
 		Configurator.set("capabilities.STF_ENABLED", "false")
 
-		customPrepareForiOS()
-	}
-
-	protected void customPrepareForiOS() {
-		//do nothing here
 	}
 
 	protected void downloadResources() {
