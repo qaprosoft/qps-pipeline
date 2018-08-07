@@ -703,11 +703,6 @@ clean test"
 			currentBrowser = "NULL"
 		}
 
-        def browser = currentBrowser
-        def browserVersion = '*'
-		def os = 'NULL'
-		def osVersion = '*'
-
 		logLine += "	currentBrowser: ${currentBrowser};\n"
 		context.println(logLine)
 		
@@ -729,6 +724,11 @@ clean test"
 					for (def supportedBrowser : supportedBrowsers.split(",")) {
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
+						def browser = currentBrowser
+						def browserVersion = '*'
+						def os = 'NULL'
+						def osVersion = '*'
+
 						String browserInfo = supportedBrowser
 						context.println("supportedBrowser " + supportedBrowser)
 						if (supportedBrowser.contains("-")) {
