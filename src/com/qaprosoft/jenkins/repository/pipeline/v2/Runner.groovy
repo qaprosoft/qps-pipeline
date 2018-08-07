@@ -730,6 +730,7 @@ clean test"
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
 						String browserInfo = supportedBrowser
+						context.println("supportedBrowser " + supportedBrowser)
 						if (supportedBrowser.contains("-")) {
 							def systemInfoArray = supportedBrowser.split("-")
 							String osInfo = systemInfoArray[0]
