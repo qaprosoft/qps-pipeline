@@ -84,6 +84,10 @@ class Runner extends Executor {
 	}
 
 	public void runJob() {
+		
+		//use this method to override any beforeRunJob logic
+		beforeRunJob()
+		
         uuid = getUUID()
         String nodeName = "master"
         String emailList = Configurator.get("email_list")
