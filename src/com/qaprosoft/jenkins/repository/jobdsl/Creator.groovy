@@ -12,9 +12,13 @@ println("factoryDataMap: " + prettyPrint)
 def factories = new HashMap(slurper.parseText(factoryDataMap))
 
 factories.each{
-	def factory = Class.forName(it.value.clazz)?.newInstance(this)
-	//println("before load: " + it.value.dump())
-	factory.load(it.value)
-	//println("factory: " + factory.dump())
-	factory.create()
+	try {
+		def factory = Class.forName(it.value.clazz)?.newInstance(this)
+		//println("before load: " + it.value.dump())
+		factory.load(it.value)
+		//println("factory: " + factory.dump())
+		factory.create()
+	} catch (Exception e) {
+		e.printStackTrace()
+	}
 }
