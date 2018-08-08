@@ -163,11 +163,12 @@ class Scanner extends Executor {
 							dslObjects.put(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 							
 							//cron job
-							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")) {
+							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null") 
+								&& !currentSuite.getParameter("jenkinsRegressionPipeline").toString().isEmpty()) {
 								def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
-                                    def cronDesc = "project: ${project}; type: cron"
+									def cronDesc = "project: ${project}; type: cron"
 									dslObjects.put(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
 								}
 							}
