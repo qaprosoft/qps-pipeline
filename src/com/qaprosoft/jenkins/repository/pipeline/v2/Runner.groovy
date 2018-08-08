@@ -921,7 +921,7 @@ clean test"
 		}
 	}
 	
-	private void startBrowserStackLocal(String uniqueBrowserInstance) {
+	protected void startBrowserStackLocal(String uniqueBrowserInstance) {
 		def browserStackUrl = "https://www.browserstack.com/browserstack-local/BrowserStackLocal"
 		def accessKey = Configurator.get("BROWSERSTACK_ACCESS_KEY")
 		if (context.isUnix()) {
