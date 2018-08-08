@@ -185,10 +185,13 @@ class Scanner extends Executor {
 				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
 				//TODO: test carefully auto-removal for jobs/views and configs
-				context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+				def pipelineJob = context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 					removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
 					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
                     ignoreExisting: ignoreExisting
+
+				println("PIPELINE DATA DUMP: " + pipelineJob.dump())
+
 			}
 		}
 	}
