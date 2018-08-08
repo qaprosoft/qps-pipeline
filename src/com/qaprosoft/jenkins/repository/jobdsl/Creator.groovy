@@ -19,13 +19,13 @@ factories.each{
 	//println("factory: " + factory.dump())
 	def pipelineJob = factory.create()
 
-    if (pipelineJob instanceof javaposse.jobdsl.dsl.jobs.WorkflowJob) {
-        println("PIPELINE DATA DUMP: " + pipelineJob.dump())
-        println("Definition: " + pipelineJob.getDefinition() )
-        println("Property: " + pipelineJob.getTriggersJobProperty()  )
-
-        if(pipelineJob.hasProperty('configureBlocks')){
-            println(pipelineJob.configureBlocks)
-        }
-    }
+//    if (pipelineJob instanceof javaposse.jobdsl.dsl.jobs.WorkflowJob) {
+//        println("PIPELINE DATA DUMP: " + pipelineJob.dump())
+//        println("Definition: " + pipelineJob.getDefinition() )
+//        println("Property: " + pipelineJob.getTriggersJobProperty()  )
+//
+//        if(pipelineJob.hasProperty('configureBlocks')){
+//            println(pipelineJob.configureBlocks)
+//        }
+//    }
 }
