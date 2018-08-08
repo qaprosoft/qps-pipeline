@@ -18,6 +18,7 @@ factories.each{
 	//println("factory: " + factory.dump())
 	def pipelineJob = factory.create()
 
-	println("PIPELINE DATA DUMP: " + pipelineJob.dump())
+    println("Job Classs: " + pipelineJob.getClass().getCanonicalName())
+    println("PIPELINE DATA DUMP: " + pipelineJob.dump())
 
 }
