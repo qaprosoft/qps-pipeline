@@ -48,7 +48,7 @@ class Runner extends Executor {
 			def jenkinsFile = ".jenkinsfile.json"
 
 			if (!context.fileExists("${jenkinsFile}")) {
-				context.println("no .jenkinsfile.json discovered! Scannr will use default qps-pipeline logic for project: ${project}")
+				context.println("no .jenkinsfile.json discovered! Scanner will use default qps-pipeline logic for project: ${project}")
 			}
 
 			def suiteFilter = "src/test/resources/**"
@@ -141,7 +141,7 @@ class Runner extends Executor {
 				} finally {
                     this.exportZafiraReport()
                     this.reportingResults()
-                    //TODO: send notification via email, slack, hipchat and whatever... based on subscrpition rules
+                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     this.sendTestRunResultsEmail(emailList, failureEmailList)
                     this.clean()
                 }
@@ -388,12 +388,27 @@ clean test"
 				goals += " install"
 			}
 			
+			//browserstack goals
+			
+			if (!isParamEmpty(Configurator.get("custom_capabilities"))) {
+				if (Configurator.get("custom_capabilities").toLowerCase().contains("browserstack")) {
+					def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configurator.get("suite") + "-" +
+							Configurator.get("browser") + "-" + Configurator.get("env") + "\""
+					uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
+					startBrowserStackLocal(uniqueBrowserInstance)
+					goals += " -Dcapabilities.project=" + Configurator.get("project")
+					goals += " -Dcapabilities.build=" + uniqueBrowserInstance
+					goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
+					goals += " -Dapp_version=browserStack"
+				}
+			}
+			
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
 
 			//context.echo "goals: ${goals}"
 
-			//TODO: adjust ZAFIRA_REPORT_FOLDER correclty
+			//TODO: adjust ZAFIRA_REPORT_FOLDER correctly
 			if (context.isUnix()) {
 				def suiteNameForUnix = Configurator.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
@@ -903,6 +918,28 @@ clean test"
 				context.emailext attachLog: true, body: "Unable to start job via cron! " + ex.getMessage(), recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "JOBSTART FAILURE: ${entry.get("jobName")}", to: "${email_list},${ADMIN_EMAILS}"
 			}
 
+		}
+	}
+	
+	private void startBrowserStackLocal(String uniqueBrowserInstance) {
+		def browserStackUrl = "https://www.browserstack.com/browserstack-local/BrowserStackLocal"
+		def accessKey = Configurator.get("BROWSERSTACK_ACCESS_KEY")
+		if (context.isUnix()) {
+			def browserStackLocation = "/var/tmp/BrowserStackLocal"
+			if (!context.fileExists(browserStackLocation)) {
+				context.sh "curl -sS " + browserStackUrl + "-linux-x64.zip > " + browserStackLocation + ".zip"
+				context.unzip dir: "/var/tmp", glob: "", zipFile: browserStackLocation + ".zip"
+				context.sh "chmod +x " + browserStackLocation
+			}
+			context.sh browserStackLocation + " --key " + accessKey + " --local-identifier " + uniqueBrowserInstance + " --force-local " + " &"
+		} else {
+			def browserStackLocation = "C:\\tmp\\BrowserStackLocal"
+			if (!context.fileExists(browserStackLocation + ".exe")) {
+				context.powershell(returnStdout: true, script: """[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStackLocation}.zip\'""")
+				context.unzip dir: "C:\\tmp", glob: "", zipFile: "${browserStackLocation}.zip"
+			}
+			context.powershell(returnStdout: true, script: "Start-Process -FilePath '${browserStackLocation}.exe' -ArgumentList '--key ${accessKey} --local-identifier ${uniqueBrowserInstance} --force-local'")
 		}
 	}
 }
