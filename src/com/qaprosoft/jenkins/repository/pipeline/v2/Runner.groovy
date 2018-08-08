@@ -709,6 +709,8 @@ clean test"
 		}
 
 
+		def overrideFields = currentSuite.getParameter("overrideFields").toString()
+		
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
@@ -798,6 +800,7 @@ clean test"
 						pipelineMap.put("priority", priorityNum)
 						pipelineMap.put("emailList", emailList.replace(", ", ","))
 						pipelineMap.put("executionMode", executionMode.replace(", ", ","))
+						pipelineMap.put("overrideFields", overrideFields)
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
 						//context.println("pipelines size1: " + listPipelines.size())
@@ -897,7 +900,9 @@ clean test"
                              context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), \
                              context.string(name: 'email_list', value: entry.get("emailList")), \
                              context.string(name: 'retry_count', value: entry.get("retry_count")), \
-                             context.string(name: 'BuildPriority', value: entry.get("priority")),],
+                             context.string(name: 'BuildPriority', value: entry.get("priority")),
+							 context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
+							 context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
 						wait: waitJob
 				} else {
 					context.build job: folderName + "/" + entry.get("jobName"),
@@ -909,7 +914,9 @@ clean test"
                              context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")),
                              context.string(name: 'email_list', value: entry.get("emailList")),
                              context.string(name: 'retry_count', value: entry.get("retry_count")),
-                             context.string(name: 'BuildPriority', value: entry.get("priority")),],
+                             context.string(name: 'BuildPriority', value: entry.get("priority")),
+							 context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
+							 context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
 						wait: waitJob
 				}
 			} catch (Exception ex) {
