@@ -16,5 +16,8 @@ factories.each{
 	//println("before load: " + it.value.dump())
 	factory.load(it.value)
 	//println("factory: " + factory.dump())
-	factory.create()
+	def pipelineJob = factory.create()
+
+	println("PIPELINE DATA DUMP: " + pipelineJob.dump())
+
 }
