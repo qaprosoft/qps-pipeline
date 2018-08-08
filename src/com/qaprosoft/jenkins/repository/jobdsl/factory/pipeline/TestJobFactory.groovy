@@ -38,7 +38,7 @@ public class TestJobFactory extends PipelineFactory {
 		XmlSuite currentSuite = suiteXml.get(0)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
-		println("name: " + name)
+		_dslFactory.println("name: " + name)
 		
 		def pipelineJob = super.create()
 		pipelineJob.with {
