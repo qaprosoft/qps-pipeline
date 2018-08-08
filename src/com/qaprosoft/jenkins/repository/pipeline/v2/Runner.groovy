@@ -804,7 +804,7 @@ clean test"
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
 						//context.println("pipelines size1: " + listPipelines.size())
-						listPipelines.add(pipelineMap)
+						registerPipeline(pipelineMap)
 						//context.println("pipelines size2: " + listPipelines.size())
 					}
 
@@ -812,6 +812,12 @@ clean test"
 			}
 		}
 	}
+	
+	protected def registerPipeline(pipelineMap) {
+		listPipelines.add(pipelineMap)
+	}
+
+
 
 	protected def executeStages(String folderName) {
 		//    for (Map entry : sortedPipeline) {
