@@ -21,7 +21,8 @@ factories.each{
 
     if (pipelineJob instanceof javaposse.jobdsl.dsl.jobs.WorkflowJob) {
         println("PIPELINE DATA DUMP: " + pipelineJob.dump())
-        println("Properties DUMP: " + pipelineJob.getProperties())
+        println("Definition: " + pipelineJob.getDefinition() )
+        println("Property: " + pipelineJob.getTriggersJobProperty()  )
 
         if(pipelineJob.hasProperty('configureBlocks')){
             println(pipelineJob.configureBlocks)
