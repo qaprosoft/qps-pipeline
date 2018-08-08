@@ -21,8 +21,10 @@ factories.each{
 
     if (pipelineJob instanceof javaposse.jobdsl.dsl.jobs.WorkflowJob) {
         println("PIPELINE DATA DUMP: " + pipelineJob.dump())
-        pipelineJob.configureBlocks.each { configureBlock ->
-            println("configuration params" + configureBlock.dump())
+        if(pipelineJob.configureBlock){
+            pipelineJob.configureBlocks.each { configureBlock ->
+                println("configuration params" + configureBlock.dump())
+            }
         }
     }
 }
