@@ -77,6 +77,8 @@ public class Configurator {
 		TIMEZONE("user.timezone", "UTC"),
 		
 		S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
+		
+		BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}"),
 
         private final String key;
         private final String value;
