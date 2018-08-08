@@ -189,6 +189,8 @@ class Scanner extends Executor {
 					removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
 					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
                     ignoreExisting: ignoreExisting
+
+                context.println("CONTEXT DUMP" + context.dump())
 			}
 		}
 	}
