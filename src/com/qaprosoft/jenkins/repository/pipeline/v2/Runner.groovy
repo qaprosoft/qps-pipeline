@@ -804,7 +804,7 @@ clean test"
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
 						//context.println("pipelines size1: " + listPipelines.size())
-						registerPipeline(pipelineMap)
+						registerPipeline(currentSuite, pipelineMap)
 						//context.println("pipelines size2: " + listPipelines.size())
 					}
 
@@ -813,7 +813,7 @@ clean test"
 		}
 	}
 	
-	protected def registerPipeline(pipelineMap) {
+	protected def registerPipeline(currentSuite, pipelineMap) {
 		listPipelines.add(pipelineMap)
 	}
 
