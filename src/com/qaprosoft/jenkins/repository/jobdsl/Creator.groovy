@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.repository.jobdsl
 // groovy script for initialization and execution all kind of jobdsl factories which are transfered from pipeline scanner script
 
 import groovy.json.*
+import javaposse.jobdsl.dsl.jobs.WorkflowJob
 
 def slurper = new JsonSlurper()
 
@@ -18,7 +19,7 @@ factories.each{
 	//println("factory: " + factory.dump())
 	def pipelineJob = factory.create()
 
-    println("Job Classs: " + pipelineJob.getClass().getCanonicalName())
-    println("PIPELINE DATA DUMP: " + pipelineJob.dump())
-
+    if (pipelineJob instanceof javaposse.jobdsl.dsl.jobs.WorkflowJob) {
+        println("PIPELINE DATA DUMP: " + pipelineJob.dump())
+    }
 }
