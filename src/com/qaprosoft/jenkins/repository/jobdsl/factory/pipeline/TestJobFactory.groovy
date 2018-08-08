@@ -228,6 +228,7 @@ public class TestJobFactory extends PipelineFactory {
 			}
 
 		}
+        println("PIPELINE DATA DUMP: " + pipelineJob.dump())
 		return pipelineJob
 	}
 
