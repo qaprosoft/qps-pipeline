@@ -30,6 +30,7 @@ public class DslFactory {
 	
 	public String getFullName() {
 		if (folder != null && !folder.isEmpty()) {
+			_dslFactory.println("full name: ${folder}/${name}")
 			return "${folder}/${name}"
 		} else {
 			return name
