@@ -403,12 +403,16 @@ clean test"
 				}
 			}
 
+			context.echo "goals!!!!: ${goals}"
 
 			context.println("OVERRIDE FIELDS" + Configurator.get("overrideFields"))
 			if (Configurator.get("overrideFields") == 'null') {
 				context.println("I AM HERE")
 				Configurator.set("overrideFields", '')
 			}
+
+			context.echo "goals????: ${goals}"
+
 
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
