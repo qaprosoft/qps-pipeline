@@ -356,6 +356,7 @@ clean test"
 				Configurator.set("ci_build_cause", "UPSTREAMTRIGGER")
 			}
 
+			context.println("OVERRIDE FIELDS" + Configurator.get("overrideFields"))
 			if (Configurator.get("overrideFields") == null) {
 				Configurator.set("overrideFields", '')
 			}
@@ -407,7 +408,6 @@ clean test"
 				}
 			}
 
-			context.echo "goals with vars: ${goals}"
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
 
