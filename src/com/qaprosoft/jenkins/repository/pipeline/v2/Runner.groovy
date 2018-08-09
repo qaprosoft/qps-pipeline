@@ -356,12 +356,6 @@ clean test"
 				Configurator.set("ci_build_cause", "UPSTREAMTRIGGER")
 			}
 
-			context.println("OVERRIDE FIELDS" + Configurator.get("overrideFields"))
-			if (Configurator.get("overrideFields") == 'null') {
-				context.println("I AM HERE")
-				Configurator.set("overrideFields", '')
-			}
-
 			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
 			//register all obligatory vars
@@ -407,6 +401,13 @@ clean test"
 					goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
 					goals += " -Dapp_version=browserStack"
 				}
+			}
+
+
+			context.println("OVERRIDE FIELDS" + Configurator.get("overrideFields"))
+			if (Configurator.get("overrideFields") == 'null') {
+				context.println("I AM HERE")
+				Configurator.set("overrideFields", '')
 			}
 
 			//append again overrideFields to make sure they are declared at the end
@@ -713,7 +714,6 @@ clean test"
 		if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
-
 
 		def overrideFields = currentSuite.getParameter("overrideFields").toString()
 		
