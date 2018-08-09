@@ -358,6 +358,7 @@ clean test"
 
 			context.println("OVERRIDE FIELDS" + Configurator.get("overrideFields"))
 			if (Configurator.get("overrideFields") == null) {
+				context.println("I AM HERE")
 				Configurator.set("overrideFields", '')
 			}
 
