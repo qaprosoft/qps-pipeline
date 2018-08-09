@@ -358,6 +358,8 @@ clean test"
 
 			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
+			context.echo "goals before modification: ${goals}"
+
 			//register all obligatory vars
 			Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 			
@@ -390,8 +392,6 @@ clean test"
 			
 			//browserstack goals
 
-			context.println("CAPABILITIES: " + Configurator.get("custom_capabilities"))
-			
 			if (!isParamEmpty(Configurator.get("custom_capabilities"))) {
 				if (Configurator.get("custom_capabilities").toLowerCase().contains("browserstack")) {
 					def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configurator.get("suite") + "-" +
