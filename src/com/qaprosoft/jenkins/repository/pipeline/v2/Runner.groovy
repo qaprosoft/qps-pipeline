@@ -390,7 +390,7 @@ clean test"
 			
 			//browserstack goals
 
-			context.println("CAPABILITIES: " + Configurator.get("custom_capabilities")))
+			context.println("CAPABILITIES: " + Configurator.get("custom_capabilities"))
 			
 			if (!isParamEmpty(Configurator.get("custom_capabilities"))) {
 				if (Configurator.get("custom_capabilities").toLowerCase().contains("browserstack")) {
