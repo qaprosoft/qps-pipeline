@@ -358,13 +358,15 @@ clean test"
 
 			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
-			context.echo "goals before modification: ${goals}"
-
 			//register all obligatory vars
 			Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
-			
+
+			context.echo "goals with vars: ${goals}"
+
 			//register all params after vars to be able to override
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+
+			context.echo "goals with params: ${goals}"
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
 
