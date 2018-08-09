@@ -406,10 +406,7 @@ clean test"
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
 
-
-			context.echo "goals????: ${goals}"
-
-            //context.echo "goals: ${goals}"
+			//context.echo "goals: ${goals}"
 
 			//TODO: adjust ZAFIRA_REPORT_FOLDER correctly
 			if (context.isUnix()) {
@@ -717,8 +714,6 @@ clean test"
 			overrideFields = ''
 		}
 
-		context.println("OVERRIDE FIELDS" + overrideFields)
-		
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
