@@ -39,6 +39,7 @@ class Runner extends Executor {
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
+			context.println("I  AM HERE: ")
 			scmClient.clone()
 
 			def WORKSPACE = this.getWorkspace()
