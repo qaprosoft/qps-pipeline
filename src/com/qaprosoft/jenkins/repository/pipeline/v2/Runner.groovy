@@ -403,10 +403,7 @@ clean test"
 					goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
 					goals += " -Dapp_version=browserStack"
 				}
-			} else {
-				Configurator.set("custom_capabilities", 'NULL')
 			}
-
 
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
@@ -894,6 +891,9 @@ clean test"
 			
 			def email_list = entry.get("email_list")
 			def ADMIN_EMAILS = Configurator.get("email_list")
+			if(Configurator.set("custom_capabilities" == null)) {
+				Configurator.set("custom_capabilities", 'NULL')
+			}
 
 			//context.println("propagate: " + propagateJob)
 			try {
