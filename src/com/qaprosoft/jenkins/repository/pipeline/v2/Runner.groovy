@@ -891,7 +891,7 @@ clean test"
 			
 			def email_list = entry.get("email_list")
 			def ADMIN_EMAILS = Configurator.get("email_list")
-			if(Configurator.get("custom_capabilities" == null)) {
+			if(Configurator.get("custom_capabilities") == null) {
 				Configurator.set("custom_capabilities", 'NULL')
 			}
 
