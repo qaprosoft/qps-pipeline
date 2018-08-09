@@ -713,6 +713,10 @@ clean test"
 
 		def overrideFields = currentSuite.getParameter("overrideFields").toString()
 
+		if (overrideFields.equals("null")) {
+			overrideFields = ''
+		}
+
 		context.println("OVERRIDE FIELDS" + overrideFields)
 		
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
