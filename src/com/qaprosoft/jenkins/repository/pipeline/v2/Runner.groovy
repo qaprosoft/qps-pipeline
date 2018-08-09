@@ -356,6 +356,10 @@ clean test"
 				Configurator.set("ci_build_cause", "UPSTREAMTRIGGER")
 			}
 
+			if (Configurator.get("overrideFields") == null) {
+				Configurator.set("overrideFields", '')
+			}
+
 			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
 			//register all obligatory vars
@@ -710,10 +714,7 @@ clean test"
 		}
 
 
-		def overrideFields = ''
-		if(currentSuite.getParameter("overrideFields").toString()) {
-			overrideFields = currentSuite.getParameter("overrideFields").toString()
-		}
+		def overrideFields = currentSuite.getParameter("overrideFields").toString()
 		
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
