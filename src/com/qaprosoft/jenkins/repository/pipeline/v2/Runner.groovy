@@ -845,8 +845,13 @@ clean test"
 				//interrupt pipeline/cron and return fail status to piepeline if any child job failed
 				propagateJob = true
 			}
+
 			if(entry.get("custom_capabilities") == null) {
 				entry.put("custom_capabilities", 'NULL')
+			}
+
+			if(entry.get("overrideFields") == null) {
+				entry.put("overrideFields", '')
 			}
 
 			curOrder = entry.get("order")
