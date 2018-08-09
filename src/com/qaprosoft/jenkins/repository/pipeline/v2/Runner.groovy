@@ -403,16 +403,6 @@ clean test"
 				}
 			}
 
-			context.echo "goals!!!!: ${goals}"
-
-			context.println("OVERRIDE FIELDS" + Configurator.get("overrideFields"))
-			if (Configurator.get("overrideFields") == 'null') {
-				context.println("I AM HERE")
-				Configurator.set("overrideFields", '')
-			}
-
-
-
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
 
@@ -722,6 +712,8 @@ clean test"
 		}
 
 		def overrideFields = currentSuite.getParameter("overrideFields").toString()
+
+		context.println("OVERRIDE FIELDS" + overrideFields)
 		
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
