@@ -8,13 +8,13 @@ public enum OS {
     WINDOWS_7("Windows 7", "windows", '7'),
     WINDOWS_XP("Windows XP", "windows", 'XP'),
 
-    OS_X_HIGH_SIERRA("OS X High Sierra", "OS X", "High Sierra"),
-    OS_X_SIERRA("OS X Sierra", "OS X", "Sierra"),
-    OS_X_YOSEMITE("OS X Yosemite", "OS X", "El Capitan"),
-    OS_X_MAVERICKS("OS X Mavericks", "OS X", "High Mavericks"),
-    OS_X_MOUNTAIN_LION("OS X Mountain Lion", "OS X", "Mountain Lion"),
-    OS_X_LION("OS X Lion", "OS X", "Lion"),
-    OS_X_SNOW_LEOPARD("OS X Snow Leopard", "OS X", "Snow Leopard")
+    OS_X_HIGH_SIERRA("OS X High Sierra", "osx", "High Sierra"),
+    OS_X_SIERRA("OS X Sierra", "osx", "Sierra"),
+    OS_X_YOSEMITE("OS X Yosemite", "osx", "El Capitan"),
+    OS_X_MAVERICKS("OS X Mavericks", "osx", "High Mavericks"),
+    OS_X_MOUNTAIN_LION("OS X Mountain Lion", "osx", "Mountain Lion"),
+    OS_X_LION("OS X Lion", "osx", "Lion"),
+    OS_X_SNOW_LEOPARD("OS X Snow Leopard", "osx", "Snow Leopard")
 
     private final String os
     private final String name
