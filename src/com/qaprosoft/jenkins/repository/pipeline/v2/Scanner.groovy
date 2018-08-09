@@ -191,7 +191,6 @@ class Scanner extends Executor {
 					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
                     ignoreExisting: ignoreExisting
 
-                context.println("CONTEXT DUMP" + context.dump())
 			}
 		}
 	}
