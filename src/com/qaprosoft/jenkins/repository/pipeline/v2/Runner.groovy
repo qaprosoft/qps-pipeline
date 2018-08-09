@@ -39,7 +39,6 @@ class Runner extends Executor {
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
-			context.println("I  AM HERE: ")
 			scmClient.clone()
 
 			def WORKSPACE = this.getWorkspace()
@@ -404,8 +403,11 @@ clean test"
 					goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
 					goals += " -Dapp_version=browserStack"
 				}
+			} else {
+				Configurator.set("custom_capabilities", 'NULL')
 			}
-			
+
+
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
 
