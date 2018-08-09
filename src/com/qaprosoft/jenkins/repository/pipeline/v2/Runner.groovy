@@ -403,10 +403,9 @@ clean test"
 				}
 			}
 
+			context.echo "goals with vars: ${goals}"
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
-
-            context.echo "goals with vars: ${goals}"
 
             //context.echo "goals: ${goals}"
 
