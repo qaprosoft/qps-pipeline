@@ -361,12 +361,8 @@ clean test"
 			//register all obligatory vars
 			Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
-			context.echo "goals with vars: ${goals}"
-
 			//register all params after vars to be able to override
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
-
-			context.echo "goals with params: ${goals}"
 
 			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
 
@@ -410,7 +406,9 @@ clean test"
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
 
-			//context.echo "goals: ${goals}"
+            context.echo "goals with vars: ${goals}"
+
+            //context.echo "goals: ${goals}"
 
 			//TODO: adjust ZAFIRA_REPORT_FOLDER correctly
 			if (context.isUnix()) {
