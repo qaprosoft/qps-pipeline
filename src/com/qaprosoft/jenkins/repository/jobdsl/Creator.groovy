@@ -18,7 +18,8 @@ factories.each{
 		factory.load(it.value)
 		println("factory: " + factory.dump())
 		def job = factory.create()
-        println("JOB: " + job.dump())
+        println("METHODS: " + job.metaClass.methods*.name.sort().unique())
+
 	} catch (Exception e) {
 		e.printStackTrace()
 	}
