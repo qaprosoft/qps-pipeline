@@ -29,7 +29,7 @@ factories.each{
 //
 //        job.parameters(closure)
 
-        println("JOB WITH NEW PARAMETER: " + job.dump())
+//        println("JOB WITH NEW PARAMETER: " + job.dump())
         println("PROPERTIES: " + job.getAllProperties())
 
 	} catch (Exception e) {
