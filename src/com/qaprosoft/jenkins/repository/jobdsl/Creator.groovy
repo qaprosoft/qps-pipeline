@@ -23,14 +23,6 @@ factories.each{
         methods.each { method ->
             println method
         }
-        if (job instanceof javaposse.jobdsl.dsl.jobs.WorkflowJob){
-            println("I AM INSIDE    ")
-
-
-            println("PARAMETERS: " + job.parameters() )
-        println("JOB WITH NEW PARAMETER: " + job.dump())
-
-        }
 
 	} catch (Exception e) {
 		e.printStackTrace()
