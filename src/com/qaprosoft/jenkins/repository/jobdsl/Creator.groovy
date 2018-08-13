@@ -23,14 +23,16 @@ factories.each{
         methods.each { method ->
             println method
         }
-//        Closure closure = parameters {
-//            booleanParam('my param', true, "I added custom parameter!")
-//        }
-//
-//        job.parameters(closure)
+        if (job instanceof javaposse.jobdsl.dsl.jobs.WorkflowJob){
+        Closure closure = parameters {
+            booleanParam('my param', true, "I added custom parameter!")
+        }
 
-//        println("JOB WITH NEW PARAMETER: " + job.dump())
-        println("PROPERTIES: " + job.getAllProperties())
+        job.parameters(closure)
+
+        println("JOB WITH NEW PARAMETER: " + job.dump())
+
+        }
 
 	} catch (Exception e) {
 		e.printStackTrace()
