@@ -21,16 +21,15 @@ factories.each{
 		factory.load(it.value)
 //		println("factory: " + factory.dump())
 		def job = factory.create()
-        println("JOB: " + job.dump())
-        def methods = job.metaClass.methods*.name.sort().unique()
-        println("METHODS: ")
-        methods.each { method ->
-            println method
-        }
-        println("FIELDS: " + job.metaClass.methods*.name.sort().unique())
-        job.parameters(closure)
-
-        println("JOB WITH NEW PARAMETER: " + job.dump())
+        println("FIELDS: " + job.dump())
+//        def methods = job.metaClass.methods*.name.sort().unique()
+//        println("METHODS: ")
+//        methods.each { method ->
+//            println method
+//        }
+//        job.parameters(closure)
+//
+//        println("JOB WITH NEW PARAMETER: " + job.dump())
 
 	} catch (Exception e) {
 		e.printStackTrace()
