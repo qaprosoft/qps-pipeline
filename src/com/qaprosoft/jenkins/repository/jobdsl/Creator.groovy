@@ -20,7 +20,16 @@ factories.each{
 		def job = factory.create()
         println("METHODS: " + job.metaClass.methods*.name.sort().unique())
 
+        Closure closure = parameters {
+            booleanParam('my param', true, "I added custom parameter!")
+        }
+
+        job.parameters(closure)
+
 	} catch (Exception e) {
 		e.printStackTrace()
 	}
 }
+
+
+
