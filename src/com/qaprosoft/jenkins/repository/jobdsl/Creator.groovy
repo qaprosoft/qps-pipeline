@@ -26,8 +26,8 @@ factories.each{
         if (job instanceof javaposse.jobdsl.dsl.jobs.WorkflowJob){
             println("I AM INSIDE    ")
 
-        job.parameters(booleanParam('my param', true, "I added custom parameter!"))
 
+            println("PARAMETERS: " + job.parameters() ))
         println("JOB WITH NEW PARAMETER: " + job.dump())
 
         }
