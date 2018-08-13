@@ -13,18 +13,24 @@ def factories = new HashMap(slurper.parseText(factoryDataMap))
 
 factories.each{
 	try {
-		def factory = Class.forName(it.value.clazz)?.newInstance(this)
-		//println("before load: " + it.value.dump())
-		factory.load(it.value)
-		println("factory: " + factory.dump())
-		def job = factory.create()
-        println("METHODS: " + job.metaClass.methods*.name.sort().unique())
-
         Closure closure = parameters {
             booleanParam('my param', true, "I added custom parameter!")
         }
-
+		def factory = Class.forName(it.value.clazz)?.newInstance(this)
+		//println("before load: " + it.value.dump())
+		factory.load(it.value)
+//		println("factory: " + factory.dump())
+		def job = factory.create()
+        println("JOB: " + job.dump())
+        def methods = job.metaClass.methods*.name.sort().unique()
+        println("METHODS: ")
+        methods.each { method ->
+            println method
+        }
+        println("FIELDS: " + job.metaClass.methods*.name.sort().unique())
         job.parameters(closure)
+
+        println("JOB WITH NEW PARAMETER: " + job.dump())
 
 	} catch (Exception e) {
 		e.printStackTrace()
