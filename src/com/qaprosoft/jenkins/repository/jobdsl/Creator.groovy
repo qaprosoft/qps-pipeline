@@ -23,14 +23,14 @@ factories.each{
         methods.each { method ->
             println method
         }
-        Closure closure = parameters {
-            booleanParam('my param', true, "I added custom parameter!")
-        }
-
-        job.parameters(closure)
+//        Closure closure = parameters {
+//            booleanParam('my param', true, "I added custom parameter!")
+//        }
+//
+//        job.parameters(closure)
 
         println("JOB WITH NEW PARAMETER: " + job.dump())
-        println("PROPERTIES: " + job.getProperties())
+        println("PROPERTIES: " + job.getAllProperties())
 
 	} catch (Exception e) {
 		e.printStackTrace()
