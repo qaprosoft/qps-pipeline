@@ -27,7 +27,7 @@ factories.each{
             println("I AM INSIDE    ")
 
 
-            println("PARAMETERS: " + job.parameters() ))
+            println("PARAMETERS: " + job.parameters() )
         println("JOB WITH NEW PARAMETER: " + job.dump())
 
         }
