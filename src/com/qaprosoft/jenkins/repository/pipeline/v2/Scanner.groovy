@@ -46,37 +46,12 @@ class Scanner extends Executor {
 
                 def changeLogSets = context.currentBuild.changeSets
                 context.println("DUMP: " + changeLogSets.dump())
-                getChangeString()
-                //getChangeLogSets(changeLogSets)
+                getChangeLogSets()
 				this.scan()
 				this.clean()
 			}
 		}
 	}
-
-
-    @NonCPS
-    def getChangeString() {
-        def MAX_MSG_LEN = 100
-        def changeString = ""
-
-        context.echo "Gathering SCM changes"
-        def changeLogSets = context.currentBuild.rawBuild.changeSets
-        for (int i = 0; i < changeLogSets.size(); i++) {
-            def entries = changeLogSets[i].items
-            for (int j = 0; j < entries.length; j++) {
-                def entry = entries[j]
-                def truncated_msg = entry.msg.take(MAX_MSG_LEN)
-                changeString += " - ${truncated_msg} [${entry.author}]\n"
-            }
-        }
-
-        if (!changeString) {
-            changeString = " - No new changes"
-        }
-        return changeString
-    }
-
 
 	protected void scan() {
 

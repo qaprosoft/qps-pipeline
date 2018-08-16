@@ -53,8 +53,8 @@ public abstract class Executor {
 	}
 
 	@NonCPS
-	protected void getChangeLogSets(changeLogSets) {
-		//def changeLogSets = context.currentBuild.changeSets
+	protected void getChangeLogSets() {
+		def changeLogSets = context.currentBuild.changeSets
 		context.println("CHANGESET: " + changeLogSets)
 		for (int i = 0; i < changeLogSets.size(); i++) {
 			def entries = changeLogSets[i].items
