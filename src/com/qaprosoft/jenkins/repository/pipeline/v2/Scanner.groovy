@@ -67,7 +67,7 @@ class Scanner extends Executor {
 
         for (int i = 0; i < changeLogSets.size(); i++) {
             context.echo "1111"
-            def entries = changeLogSets[i].changeSets
+            def entries = changeLogSets[i].changeSets.list
             context.println("DUMP: " + entries.dump())
             //context.echo entries
             for (int j = 0; j < entries.length; j++) {
