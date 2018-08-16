@@ -73,6 +73,8 @@ class Scanner extends Executor {
                 context.echo "1111"
                 for (entry in entries) {
                     context.println(entry)
+                    context.println(entry.getAffectedFiles())
+
                 }
                 context.echo "222"
 //                def entry = entries[j]
