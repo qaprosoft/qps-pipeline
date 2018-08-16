@@ -73,7 +73,7 @@ class Scanner extends Executor {
                 context.echo "1111"
                 for (entry in entries) {
                     context.println(entry)
-                    context.println(entry.getAffectedFiles().getPath() )
+                    context.println(entry.getPaths())
 
                 }
                 context.echo "222"
