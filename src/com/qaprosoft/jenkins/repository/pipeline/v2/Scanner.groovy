@@ -46,7 +46,7 @@ class Scanner extends Executor {
 				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 
                 getChangeString()
-                context.println("11: " + entries.dump())
+                context.println("11")
 				this.scan()
 				this.clean()
 			}
