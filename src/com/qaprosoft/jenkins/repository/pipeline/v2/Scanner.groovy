@@ -74,7 +74,11 @@ class Scanner extends Executor {
                 for (entry in entries) {
                     context.println(entry)
                     context.println(entry.getPaths())
+                    for (path in entry.getPaths()) {
+                        context.println(path.dump())
+                        //context.println(entry.getPaths())
 
+                    }
                 }
                 context.echo "222"
 //                def entry = entries[j]
