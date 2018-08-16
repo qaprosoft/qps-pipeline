@@ -43,7 +43,9 @@ class Scanner extends Executor {
 
 				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 
-                getChangeLogSets()
+                def changeLogSets = context.currentBuild.changeSets
+                context.println("I AM HERE")
+                getChangeLogSets(changeLogSets)
 				this.scan()
 				this.clean()
 			}
