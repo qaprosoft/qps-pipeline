@@ -15,6 +15,7 @@ import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.CronJobFactory
 
 import com.qaprosoft.jenkins.repository.jobdsl.factory.folder.FolderFactory
+import com.cloudbees.groovy.cps.NonCPS
 
 import groovy.json.JsonOutput
 
@@ -44,13 +45,38 @@ class Scanner extends Executor {
 				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 
                 def changeLogSets = context.currentBuild.changeSets
-                context.println("I AM HERE")
-                getChangeLogSets(changeLogSets)
+                context.println("DUMP: " + changeLogSets.dump())
+                getChangeString()
+                //getChangeLogSets(changeLogSets)
 				this.scan()
 				this.clean()
 			}
 		}
 	}
+
+
+    @NonCPS
+    def getChangeString() {
+        MAX_MSG_LEN = 100
+        def changeString = ""
+
+        context.echo "Gathering SCM changes"
+        def changeLogSets = context.currentBuild.rawBuild.changeSets
+        for (int i = 0; i < changeLogSets.size(); i++) {
+            def entries = changeLogSets[i].items
+            for (int j = 0; j < entries.length; j++) {
+                def entry = entries[j]
+                truncated_msg = entry.msg.take(MAX_MSG_LEN)
+                changeString += " - ${truncated_msg} [${entry.author}]\n"
+            }
+        }
+
+        if (!changeString) {
+            changeString = " - No new changes"
+        }
+        return changeString
+    }
+
 
 	protected void scan() {
 
