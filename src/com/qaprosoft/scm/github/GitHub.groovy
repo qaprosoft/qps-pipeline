@@ -45,10 +45,12 @@ class GitHub implements ISCM {
 				if (token_value != null) {
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
 					context.println "fork repo url: ${gitUrl}"
-					context.checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
+					def checkoutResult = context.checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
 							doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
 							submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
 							changelog: false, poll: false
+
+					context.println("CHECKOUT RESULT: " + checkoutResult)
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
 				}
