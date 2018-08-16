@@ -64,6 +64,7 @@ class Scanner extends Executor {
         context.echo "Gathering SCM changes"
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         for (int i = 0; i < changeLogSets.size(); i++) {
+            context.echo "1111"
             def entries = changeLogSets[i].items
             for (int j = 0; j < entries.length; j++) {
                 def entry = entries[j]
