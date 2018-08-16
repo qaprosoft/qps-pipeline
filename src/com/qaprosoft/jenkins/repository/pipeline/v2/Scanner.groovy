@@ -45,10 +45,8 @@ class Scanner extends Executor {
 
 				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 
-                def changeLogSets = context.currentBuild.rawBuild.changeSets
-                context.println("DUMP: " + changeLogSets.dump())
                 getChangeString()
-                //getChangeLogSets(changeLogSets)
+                context.println("11: " + entries.dump())
 				this.scan()
 				this.clean()
 			}
@@ -59,10 +57,7 @@ class Scanner extends Executor {
 
     @NonCPS
     def getChangeString() {
-        def MAX_MSG_LEN = 100
-        def changeString = ""
 
-        context.echo "Gathering SCM changes"
         def changeLogSets = context.currentBuild.rawBuild.changeSets
 
         for (int i = 0; i < changeLogSets.size(); i++) {
@@ -80,17 +75,8 @@ class Scanner extends Executor {
 
                     }
                 }
-                context.echo "222"
-//                def entry = entries[j]
-//                def truncated_msg = entry.msg.take(MAX_MSG_LEN)
-//                changeString += " - ${truncated_msg} [${entry.author}]\n"
-            }
+             }
         }
-
-        if (!changeString) {
-            changeString = " - No new changes"
-        }
-        return changeString
     }
 
 
