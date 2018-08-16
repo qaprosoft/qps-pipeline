@@ -16,18 +16,9 @@ factories.each{
 		def factory = Class.forName(it.value.clazz)?.newInstance(this)
 		//println("before load: " + it.value.dump())
 		factory.load(it.value)
-		def job = factory.create()
-        println("FIELDS: " + job.dump())
-        def methods = job.metaClass.methods*.name.sort().unique()
-        println("METHODS: ")
-        methods.each { method ->
-            println method
-        }
-
+		//println("factory: " + factory.dump())
+		factory.create()
 	} catch (Exception e) {
 		e.printStackTrace()
 	}
 }
-
-
-
