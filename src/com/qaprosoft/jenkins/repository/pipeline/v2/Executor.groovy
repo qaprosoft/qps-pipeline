@@ -54,7 +54,7 @@ public abstract class Executor {
 
 	@NonCPS
 	protected void getChangeLogSets() {
-		def changeLogSets = context.currentBuild.changeSets
+		def changeLogSets = context.currentBuild.rawBuild.changeSets
 		context.println("CHANGESET: " + changeLogSets)
 		for (int i = 0; i < changeLogSets.size(); i++) {
 			def entries = changeLogSets[i].items
@@ -71,7 +71,7 @@ public abstract class Executor {
 	}
 
 
-    /* Checks if current job started as rebuild */
+	/* Checks if current job started as rebuild */
     protected Boolean isRebuild(String jobName) {
         Boolean isRebuild = false
         /* Gets CauseActions of the job */
