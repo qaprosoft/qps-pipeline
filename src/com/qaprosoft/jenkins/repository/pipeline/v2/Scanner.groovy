@@ -34,6 +34,7 @@ class Scanner extends Executor {
 		scmClient = new GitHub(context)
  	}
 
+    @NonCPS
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
@@ -63,6 +64,7 @@ class Scanner extends Executor {
 
         context.echo "Gathering SCM changes"
         def changeLogSets = context.currentBuild.rawBuild.changeSets
+
         for (int i = 0; i < changeLogSets.size(); i++) {
             context.echo "1111"
             def entries = changeLogSets[i].items
