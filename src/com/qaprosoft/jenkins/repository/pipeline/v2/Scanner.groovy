@@ -34,7 +34,7 @@ class Scanner extends Executor {
 		scmClient = new GitHub(context)
  	}
 
-    @NonCPS
+
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
