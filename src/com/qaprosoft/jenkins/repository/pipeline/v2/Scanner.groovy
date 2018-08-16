@@ -66,11 +66,11 @@ class Scanner extends Executor {
         def changeLogSets = context.currentBuild.rawBuild.changeSets
 
         for (int i = 0; i < changeLogSets.size(); i++) {
-            context.echo "1111"
             def entries = changeLogSets[i].changeSets.list
             context.println("DUMP: " + entries.dump())
             //context.echo entries
-            for (int j = 0; j < entries.length; j++) {
+            for (int j = 0; j < entries.size(); j++) {
+                context.echo "1111"
                 def entry = entries[j]
                 def truncated_msg = entry.msg.take(MAX_MSG_LEN)
                 changeString += " - ${truncated_msg} [${entry.author}]\n"
