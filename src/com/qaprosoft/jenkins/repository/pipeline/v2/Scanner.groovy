@@ -74,6 +74,7 @@ class Scanner extends Executor {
                 for (entry in entries) {
                     context.println(entry)
                 }
+                context.echo "222"
 //                def entry = entries[j]
 //                def truncated_msg = entry.msg.take(MAX_MSG_LEN)
 //                changeString += " - ${truncated_msg} [${entry.author}]\n"
