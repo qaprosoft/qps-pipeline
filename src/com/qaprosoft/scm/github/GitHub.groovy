@@ -28,9 +28,9 @@ class GitHub implements ISCM {
 			context.println("forked_repo: " + fork)
 			if (!fork) {
 				def checkoutResult = context.checkout scm: [$class: 'GitSCM', branches: [[name: '${branch}']], \
-						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: false, timeout: 15]], \
+						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', depth: 2, noTags: true, reference: '', shallow: false, timeout: 15]], \
 						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
-						changelog: true, poll: true
+						changelog: true, poll: false
 				context.println("CHECKOUT RESULT: " + checkoutResult)
 			} else {
 				def token_name = 'token_' + "${userId}"
