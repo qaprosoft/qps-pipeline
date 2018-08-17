@@ -52,8 +52,9 @@ public abstract class Executor {
 		return content
 	}
 
+    /** Detects if any changes are present in files matching pattern  */
     @NonCPS
-    protected boolean executeFilter(pattern) {
+    protected boolean executeFilter(String pattern) {
         boolean changedFilesFound = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         for (changeLogSet in changeLogSets) {
@@ -69,7 +70,7 @@ public abstract class Executor {
         return changedFilesFound
     }
 
-    /* Checks if current job started as rebuild */
+    /** Checks if current job started as rebuild */
     protected Boolean isRebuild(String jobName) {
         Boolean isRebuild = false
         /* Gets CauseActions of the job */
@@ -83,7 +84,7 @@ public abstract class Executor {
         return isRebuild
     }
 
-    /* Determines BuildCause */
+    /** Determines BuildCause */
     protected String getBuildCause(String jobName) {
         String buildCause = null
         /* Gets CauseActions of the job */
