@@ -3,12 +3,18 @@ package com.qaprosoft.jenkins.repository.pipeline.v2
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.XmlSuite
 import com.qaprosoft.scm.github.GitHub
+import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
+import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
+
+import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
+
+import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.CronJobFactory
 
 import com.qaprosoft.jenkins.repository.jobdsl.factory.folder.FolderFactory
-import com.cloudbees.groovy.cps.NonCPS
 
 import groovy.json.JsonOutput
 
@@ -27,7 +33,6 @@ class Scanner extends Executor {
 		scmClient = new GitHub(context)
  	}
 
-
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
@@ -45,7 +50,6 @@ class Scanner extends Executor {
 			}
 		}
 	}
-
 
 	protected void scan() {
 
@@ -188,7 +192,6 @@ class Scanner extends Executor {
 					removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
 					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
                     ignoreExisting: ignoreExisting
-
 			}
 		}
 	}
