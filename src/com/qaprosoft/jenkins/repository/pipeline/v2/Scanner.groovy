@@ -59,20 +59,13 @@ class Scanner extends Executor {
     def getChangeString() {
 
         def changeLogSets = context.currentBuild.rawBuild.changeSets
-
-        for (int i = 0; i < changeLogSets.size(); i++) {
-            def entries = changeLogSets[i].changeSets.list
-            context.println("DUMP: " + entries.dump())
-            //context.echo entries
+        for (changeLogSet in changeLogSets) {
+            def entries = changeLogSet.getItems()
+//            def entries = changeLogSet.changeSets.list
             for (int j = 0; j < entries.size(); j++) {
-                context.echo "1111"
                 for (entry in entries) {
-                    context.println(entry)
-                    context.println(entry.getPaths())
                     for (path in entry.getPaths()) {
                         context.println(path.dump())
-                        //context.println(entry.getPaths())
-
                     }
                 }
              }
