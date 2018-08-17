@@ -62,7 +62,7 @@ class Scanner extends Executor {
             for (entry in changeLogSet.getItems()) {
                 context.println("ENTRY: " + entry.dump())
                 for (path in entry.getPaths()) {
-                    context.println(path.dump())
+                    context.println(path.getPath())
                 }
             }
         }
