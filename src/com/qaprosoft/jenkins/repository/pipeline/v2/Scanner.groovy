@@ -3,14 +3,7 @@ package com.qaprosoft.jenkins.repository.pipeline.v2
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.XmlSuite
 import com.qaprosoft.scm.github.GitHub
-import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
-import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
 import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
-import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
-
-import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
-
-import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.CronJobFactory
 
@@ -45,28 +38,13 @@ class Scanner extends Executor {
 
 				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 
-                getChangeString()
-                context.println("11")
-				this.scan()
-				this.clean()
+                if (executeFilter(".xml")) {
+                    this.scan()
+                    this.clean()
+                }
 			}
 		}
 	}
-
-
-
-    @NonCPS
-    def getChangeString() {
-        def changeLogSets = context.currentBuild.rawBuild.changeSets
-        for (changeLogSet in changeLogSets) {
-            for (entry in changeLogSet.getItems()) {
-                context.println("ENTRY: " + entry.dump())
-                for (path in entry.getPaths()) {
-                    context.println(path.getPath())
-                }
-            }
-        }
-    }
 
 
 	protected void scan() {
