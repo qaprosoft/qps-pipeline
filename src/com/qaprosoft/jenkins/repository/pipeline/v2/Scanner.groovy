@@ -57,20 +57,13 @@ class Scanner extends Executor {
 
     @NonCPS
     def getChangeString() {
-
         def changeLogSets = context.currentBuild.rawBuild.changeSets
-        context.println("CHANGESETS: " + changeLogSets.dump())
         for (changeLogSet in changeLogSets) {
-            def entries = changeLogSet.getItems()
-            context.println("GET ITEMS: " + entries.dump())
-//            def entries = changeLogSet.changeSets.list
-            for (int j = 0; j < entries.size(); j++) {
-                for (entry in entries) {
-                    for (path in entry.getPaths()) {
-                        context.println(path.dump())
-                    }
+            for (entry in changeLogSet.getItems()) {
+                for (path in entry.getPaths()) {
+                    context.println(path.dump())
                 }
-             }
+            }
         }
     }
 
