@@ -52,7 +52,24 @@ public abstract class Executor {
 		return content
 	}
 
-	/* Checks if current job started as rebuild */
+    @NonCPS
+    protected boolean executeFilter(pattern) {
+        boolean changedFilesFound = false
+        def changeLogSets = context.currentBuild.rawBuild.changeSets
+        for (changeLogSet in changeLogSets) {
+            for (entry in changeLogSet.getItems()) {
+                for (path in entry.getPaths()) {
+                    context.println(path.getPath())
+                    if (path.getPath().contains(pattern))
+                        changedFilesFound = true
+                    break
+                }
+            }
+        }
+        return changedFilesFound
+    }
+
+    /* Checks if current job started as rebuild */
     protected Boolean isRebuild(String jobName) {
         Boolean isRebuild = false
         /* Gets CauseActions of the job */
