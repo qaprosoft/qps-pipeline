@@ -59,6 +59,7 @@ class Scanner extends Executor {
     def getChangeString() {
 
         def changeLogSets = context.currentBuild.rawBuild.changeSets
+        context.println("CHANGESETS: " + changeLogSets.dump())
         for (changeLogSet in changeLogSets) {
             def entries = changeLogSet.getItems()
             context.println("GET ITEMS: " + entries.dump())
