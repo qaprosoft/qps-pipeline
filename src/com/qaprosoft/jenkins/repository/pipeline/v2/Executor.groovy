@@ -54,7 +54,7 @@ public abstract class Executor {
 
     /** Detects if any changes are present in files matching pattern  */
     @NonCPS
-    protected boolean executeFilter(String pattern) {
+    protected boolean isUpdated(String pattern) {
         boolean changedFilesFound = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         for (changeLogSet in changeLogSets) {
