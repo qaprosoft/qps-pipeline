@@ -44,7 +44,7 @@ class Scanner extends Executor {
 				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 
                 if (isUpdated(".xml")) {
-					//do not continue scanner if none of xml file was updated
+					context.println("do not continue scanner as none of suite was updated (*.xml)")
 					return
                 }
 				
