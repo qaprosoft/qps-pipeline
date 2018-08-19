@@ -360,7 +360,7 @@ clean test"
 
 			//register all obligatory vars
 			Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
-			
+
 			//register all params after vars to be able to override
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
@@ -389,7 +389,7 @@ clean test"
 			}
 			
 			//browserstack goals
-			
+
 			if (!isParamEmpty(Configurator.get("custom_capabilities"))) {
 				if (Configurator.get("custom_capabilities").toLowerCase().contains("browserstack")) {
 					def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configurator.get("suite") + "-" +
@@ -402,7 +402,7 @@ clean test"
 					goals += " -Dapp_version=browserStack"
 				}
 			}
-			
+
 			//append again overrideFields to make sure they are declared at the end
 			goals = goals + " " + Configurator.get("overrideFields")
 
@@ -708,9 +708,12 @@ clean test"
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
 
-
 		def overrideFields = currentSuite.getParameter("overrideFields").toString()
-		
+
+		if (overrideFields.equals("null")) {
+			overrideFields = ''
+		}
+
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
@@ -834,7 +837,7 @@ clean test"
 		for (Map entry : listPipelines) {
 			def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))
 			context.println("stageName: ${stageName}")
-			
+
 			boolean propagateJob = true
 			if (entry.get("executionMode").toString().contains("continue")) {
 				//do not interrupt pipeline/cron if any child job failed
@@ -843,6 +846,10 @@ clean test"
 			if (entry.get("executionMode").toString().contains("abort")) {
 				//interrupt pipeline/cron and return fail status to piepeline if any child job failed
 				propagateJob = true
+			}
+
+			if(entry.get("custom_capabilities") == null) {
+				entry.put("custom_capabilities", 'NULL')
 			}
 
 			curOrder = entry.get("order")
