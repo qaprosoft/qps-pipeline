@@ -43,8 +43,10 @@ class Scanner extends Executor {
 
 				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 
-				this.scan()
-				this.clean()
+                if (executeFilter(".xml")) {
+                    this.scan()
+                    this.clean()
+                }
 			}
 		}
 	}
