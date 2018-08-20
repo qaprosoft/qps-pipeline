@@ -783,31 +783,23 @@ clean test"
 						}
 						def retry_count = Configurator.get("retry_count")
 						def thread_count = Configurator.get("thread_count")
-
 						// put all not NULL args into the pipelineMap for execution
                         putNotNull(pipelineMap, "browser", browser)
                         putNotNull(pipelineMap, "browser_version", browserVersion)
                         putNotNull(pipelineMap, "os", os)
                         putNotNull(pipelineMap, "os_version", osVersion)
-
 						pipelineMap.put("name", pipeName)
 						pipelineMap.put("branch", branch)
 						pipelineMap.put("ci_parent_url", ci_parent_url)
 						pipelineMap.put("ci_parent_build", ci_parent_build)
 						pipelineMap.put("retry_count", retry_count)
-
                         putNotNull(pipelineMap, "thread_count", thread_count)
-
 						pipelineMap.put("jobName", jobName)
 						pipelineMap.put("env", supportedEnv)
 						pipelineMap.put("order", orderNum)
 						pipelineMap.put("BuildPriority", priorityNum)
-						
-                        putNotNull(pipelineMap, "thread_count", thread_count)
-
                         putNotNullWithSplit(pipelineMap, "emailList", emailList)
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-
                         putNotNull(pipelineMap, "overrideFields", overrideFields)
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
