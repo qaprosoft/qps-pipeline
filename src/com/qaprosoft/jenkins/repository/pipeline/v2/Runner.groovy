@@ -6,7 +6,10 @@ import org.testng.xml.XmlSuite;
 import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 
-import com.qaprosoft.scm.github.GitHub
+import com.qaprosoft.scm.github.GitHub;
+import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
+import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
+import com.qaprosoft.jenkins.repository.pipeline.v2.OS
 
 class Runner extends Executor {
 	//ci_run_id  param for unique test run identification
@@ -739,9 +742,9 @@ clean test"
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
 						def browser = currentBrowser
-						def browserVersion = '*'
-						def os = 'NULL'
-						def osVersion = '*'
+						def browserVersion = null
+						def os = null
+						def osVersion = null
 
 						String browserInfo = supportedBrowser
 						if (supportedBrowser.contains("-")) {
@@ -782,6 +785,19 @@ clean test"
 						def thread_count = Configurator.get("thread_count")
 
 						// put all not NULL args into the pipelineMap for execution
+						if (browser != null) {
+							pipelineMap.put("browser", browser)
+						}
+						if (browserVersion != null) {
+							pipelineMap.put("browser_version", browserVersion)
+						}
+
+						if (os != null) {
+							pipelineMap.put("os", os)
+						}
+						if (osVersion != null) {
+							pipelineMap.put("os_version", osVersion)
+						}
                         putNotNull(pipelineMap, "browser", browser)
                         putNotNull(pipelineMap, "browser_version", browserVersion)
                         putNotNull(pipelineMap, "os", os)
@@ -799,7 +815,7 @@ clean test"
 //						if (os_version != null) {
 //							pipelineMap.put("os_version", osVersion)
 //						}
-						
+
 						pipelineMap.put("name", pipeName)
 						pipelineMap.put("branch", branch)
 						pipelineMap.put("ci_parent_url", ci_parent_url)
@@ -816,6 +832,18 @@ clean test"
 						pipelineMap.put("env", supportedEnv)
 						pipelineMap.put("order", orderNum)
 						pipelineMap.put("BuildPriority", priorityNum)
+						
+						if (emailList != null) {
+							pipelineMap.put("email_list", emailList.replace(", ", ","))
+						}
+						
+						if (executionMode != null) {
+							pipelineMap.put("executionMode", executionMode.replace(", ", ","))
+						}
+						
+						if (overrideFields != null) {
+							pipelineMap.put("overrideFields", overrideFields)
+						}
 
                         putNotNull(pipelineMap, "thread_count", thread_count)
 
@@ -935,58 +963,13 @@ clean test"
 			for (param in entry) {
 				jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
 			}
-			context.println(jobParams.dump())
-			
-/*			params.add(context.string(name: 'branch', value: entry.get("branch")))
-			params.add(context.string(name: 'env', value: entry.get("environment")))
-			params.add(context.string(name: 'browser', value: entry.get("browser")))
-			params.add(context.string(name: 'browser_version', value: entry.get("browser_version")))
-			params.add(context.string(name: 'os', value: entry.get("os")))
-			params.add(context.string(name: 'os_version', value: entry.get("os_version")))
-			params.add(context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")))
-			params.add(context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")))
-			params.add(context.string(name: 'email_list', value: entry.get("emailList")))
-			params.add(context.string(name: 'retry_count', value: entry.get("retry_count")))
-			params.add(context.string(name: 'BuildPriority', value: entry.get("priority")))
-			params.add(context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")))
-			params.add(context.string(name: 'overrideFields', value: entry.get("overrideFields")))
-			 
-            def params1 = [context.string(name: 'branch', value: entry.get("branch")), \
-                             context.string(name: 'env', value: entry.get("environment")), \
-                             context.string(name: 'browser', value: entry.get("browser")), \
-                             context.string(name: 'browser_version', value: entry.get("browser_version")), \
-                             context.string(name: 'os', value: entry.get("os")), \
-                             context.string(name: 'os_version', value: entry.get("os_version")), \
-                             context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), \
-                             context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), \
-                             context.string(name: 'email_list', value: entry.get("emailList")), \
-                             context.string(name: 'retry_count', value: entry.get("retry_count")), \
-                             context.string(name: 'BuildPriority', value: entry.get("priority")),
-                           context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-                           context.string(name: 'overrideFields', value: entry.get("overrideFields")),]
-
-            def params2 = [context.string(name: 'branch', value: entry.get("branch")),
-                           context.string(name: 'env', value: entry.get("environment")),
-                           context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")),
-                           context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")),
-                           context.string(name: 'email_list', value: entry.get("emailList")),
-                           context.string(name: 'retry_count', value: entry.get("retry_count")),
-                           context.string(name: 'BuildPriority', value: entry.get("priority")),
-                           context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-                           context.string(name: 'overrideFields', value: entry.get("overrideFields")),]*/
+			//context.println(jobParams.dump())
             //context.println("propagate: " + propagateJob)
 			try {
-				if (!entry.get("browser").isEmpty()) {
-					context.build job: folderName + "/" + entry.get("jobName"),
-						propagate: propagateJob,
-						parameters: jobParams,
-						wait: waitJob
-				} else {
-					context.build job: folderName + "/" + entry.get("jobName"),
-						propagate: propagateJob,
-						parameters: jobParams,
-						wait: waitJob
-				}
+				context.build job: folderName + "/" + entry.get("jobName"),
+				propagate: propagateJob,
+				parameters: jobParams,
+				wait: waitJob
 			} catch (Exception ex) {
 				printStackTrace(ex)
 				
