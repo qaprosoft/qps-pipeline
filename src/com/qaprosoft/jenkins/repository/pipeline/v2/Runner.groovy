@@ -901,7 +901,7 @@ clean test"
 
 			List jobParams = []
 			for (param in entry) {
-				jobParams.add(context.string(name: param.getKey(), value: param.getKey()))
+				jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
 			}
 			context.println(jobParams.dump())
 			
