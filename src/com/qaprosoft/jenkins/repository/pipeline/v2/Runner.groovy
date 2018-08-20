@@ -818,13 +818,13 @@ clean test"
 	}
 
 
-    protected static void putNotNull(pipelineMap, key, value) {
+    protected void putNotNull(pipelineMap, key, value) {
         if (value != null) {
             pipelineMap.put(key, value)
         }
     }
 
-    protected static void putNotNullWithSplit(pipelineMap, key, value) {
+    protected void putNotNullWithSplit(pipelineMap, key, value) {
         if (value != null) {
             pipelineMap.put(key, value.replace(", ", ","))
         }
