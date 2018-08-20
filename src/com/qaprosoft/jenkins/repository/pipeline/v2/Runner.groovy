@@ -711,7 +711,7 @@ clean test"
 		//def overrideFields = currentSuite.getParameter("overrideFields").toString()
 		def overrideFields = Configurator.get("overrideFields")
 
-		if (overrideFields.equals("null")) {
+		if (overrideFields == null) {
 			overrideFields = ''
 		}
 		context.println("overrideFields: " + overrideFields)
