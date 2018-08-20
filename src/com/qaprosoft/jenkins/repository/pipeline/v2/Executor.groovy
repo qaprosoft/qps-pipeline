@@ -59,7 +59,6 @@ public abstract class Executor {
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         for (changeLogSet in changeLogSets) {
             for (entry in changeLogSet.getItems()) {
-                context.println("CHANGELOGSET: " + entry.dump())
                 for (path in entry.getPaths()) {
                     context.println(path.getPath())
                     if (path.getPath().contains(pattern))
