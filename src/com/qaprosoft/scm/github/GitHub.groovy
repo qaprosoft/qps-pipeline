@@ -30,7 +30,7 @@ class GitHub implements ISCM {
 				def info = context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
 						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
 						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
-						changelog: true, poll: false
+						changelog: false, poll: false
 				context.println("CHECKOUT RESULT DUMP: " + info.dump())
 			} else {
 				def token_name = 'token_' + "${userId}"
