@@ -72,13 +72,13 @@ class GitHub implements ISCM {
 					doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]], \
 					submoduleCfg: [], \
 					userRemoteConfigs: [[url: gitUrl]]], \
-				changelog: false, poll: false
+				changelog: true, poll: false
 			} else {
 				context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
 						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], \
 							[$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
 						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
-						changelog: false, poll: false
+						changelog: true, poll: false
 			}
 		}
 	}
