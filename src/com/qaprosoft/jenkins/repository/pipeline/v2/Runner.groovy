@@ -785,36 +785,23 @@ clean test"
 						def thread_count = Configurator.get("thread_count")
 
 						// put all not NULL args into the pipelineMap for execution
-						if (browser != null) {
-							pipelineMap.put("browser", browser)
-						}
-						if (browserVersion != null) {
-							pipelineMap.put("browser_version", browserVersion)
-						}
-
-						if (os != null) {
-							pipelineMap.put("os", os)
-						}
-						if (osVersion != null) {
-							pipelineMap.put("os_version", osVersion)
-						}
-                        putNotNull(pipelineMap, "browser", browser)
-                        putNotNull(pipelineMap, "browser_version", browserVersion)
-                        putNotNull(pipelineMap, "os", os)
-                        putNotNull(pipelineMap, "os_version", osVersion)
-//                        if (browser != null) {
+//						if (browser != null) {
 //							pipelineMap.put("browser", browser)
 //						}
-//						if (browser_version != null) {
+//						if (browserVersion != null) {
 //							pipelineMap.put("browser_version", browserVersion)
 //						}
 //
 //						if (os != null) {
 //							pipelineMap.put("os", os)
 //						}
-//						if (os_version != null) {
+//						if (osVersion != null) {
 //							pipelineMap.put("os_version", osVersion)
 //						}
+//                        putNotNull(pipelineMap, "browser", browser)
+                        putNotNull(pipelineMap, "browser_version", browserVersion)
+                        putNotNull(pipelineMap, "os", os)
+                        putNotNull(pipelineMap, "os_version", osVersion)
 
 						pipelineMap.put("name", pipeName)
 						pipelineMap.put("branch", branch)
@@ -834,7 +821,7 @@ clean test"
 						pipelineMap.put("BuildPriority", priorityNum)
 						
 						if (emailList != null) {
-							pipelineMap.put("email_list", emailList.replace(", ", ","))
+							pipelineMap.put("emailList", emailList.replace(", ", ","))
 						}
 						
 						if (executionMode != null) {
