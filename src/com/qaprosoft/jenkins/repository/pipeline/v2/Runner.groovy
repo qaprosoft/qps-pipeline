@@ -785,20 +785,7 @@ clean test"
 						def thread_count = Configurator.get("thread_count")
 
 						// put all not NULL args into the pipelineMap for execution
-//						if (browser != null) {
-//							pipelineMap.put("browser", browser)
-//						}
-//						if (browserVersion != null) {
-//							pipelineMap.put("browser_version", browserVersion)
-//						}
-//
-//						if (os != null) {
-//							pipelineMap.put("os", os)
-//						}
-//						if (osVersion != null) {
-//							pipelineMap.put("os_version", osVersion)
-//						}
-//                        putNotNull(pipelineMap, "browser", browser)
+                        putNotNull(pipelineMap, "browser", browser)
                         putNotNull(pipelineMap, "browser_version", browserVersion)
                         putNotNull(pipelineMap, "os", os)
                         putNotNull(pipelineMap, "os_version", osVersion)
@@ -811,45 +798,17 @@ clean test"
 
                         putNotNull(pipelineMap, "thread_count", thread_count)
 
-//                        if (thread_count != null) {
-//							pipelineMap.put("thread_count", thread_count)
-//						}
-						
 						pipelineMap.put("jobName", jobName)
 						pipelineMap.put("env", supportedEnv)
 						pipelineMap.put("order", orderNum)
 						pipelineMap.put("BuildPriority", priorityNum)
 						
-//						if (emailList != null) {
-//							pipelineMap.put("emailList", emailList.replace(", ", ","))
-//						}
-//
-//						if (executionMode != null) {
-//							pipelineMap.put("executionMode", executionMode.replace(", ", ","))
-//						}
-//
-//						if (overrideFields != null) {
-//							pipelineMap.put("overrideFields", overrideFields)
-//						}
-
                         putNotNull(pipelineMap, "thread_count", thread_count)
 
                         putNotNullWithSplit(pipelineMap, "emailList", emailList)
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
 
-//                        if (email_list != null) {
-//							pipelineMap.put("email_list", emailList.replace(", ", ","))
-//						}
-//
-//						if (executionMode != null) {
-//							pipelineMap.put("executionMode", executionMode.replace(", ", ","))
-//						}
-
                         putNotNull(pipelineMap, "overrideFields", overrideFields)
-
-//                        if (overrideFields != null) {
-//							pipelineMap.put("overrideFields", overrideFields)
-//						}
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
 						//context.println("pipelines size1: " + listPipelines.size())
