@@ -6,10 +6,7 @@ import org.testng.xml.XmlSuite;
 import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 
-import com.qaprosoft.scm.github.GitHub;
-import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
-import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
-import com.qaprosoft.jenkins.repository.pipeline.v2.OS
+import com.qaprosoft.scm.github.GitHub
 
 class Runner extends Executor {
 	//ci_run_id  param for unique test run identification
@@ -785,46 +782,59 @@ clean test"
 						def thread_count = Configurator.get("thread_count")
 
 						// put all not NULL args into the pipelineMap for execution
-						if (browser != null) {
-							pipelineMap.put("browser", browser)
-						}
-						if (browser_version != null) {
-							pipelineMap.put("browser_version", browserVersion)
-						}
-						
-						if (os != null) {
-							pipelineMap.put("os", os)
-						}
-						if (os_version != null) {
-							pipelineMap.put("os_version", osVersion)
-						}
+                        putNotNull(pipelineMap, "browser", browser)
+                        putNotNull(pipelineMap, "browser_version", browserVersion)
+                        putNotNull(pipelineMap, "os", os)
+                        putNotNull(pipelineMap, "os_version", osVersion)
+//                        if (browser != null) {
+//							pipelineMap.put("browser", browser)
+//						}
+//						if (browser_version != null) {
+//							pipelineMap.put("browser_version", browserVersion)
+//						}
+//
+//						if (os != null) {
+//							pipelineMap.put("os", os)
+//						}
+//						if (os_version != null) {
+//							pipelineMap.put("os_version", osVersion)
+//						}
 						
 						pipelineMap.put("name", pipeName)
 						pipelineMap.put("branch", branch)
 						pipelineMap.put("ci_parent_url", ci_parent_url)
 						pipelineMap.put("ci_parent_build", ci_parent_build)
 						pipelineMap.put("retry_count", retry_count)
-						
-						if (thread_count != null) {
-							pipelineMap.put("thread_count", thread_count)
-						}
+
+                        putNotNull(pipelineMap, "thread_count", thread_count)
+
+//                        if (thread_count != null) {
+//							pipelineMap.put("thread_count", thread_count)
+//						}
 						
 						pipelineMap.put("jobName", jobName)
 						pipelineMap.put("env", supportedEnv)
 						pipelineMap.put("order", orderNum)
 						pipelineMap.put("BuildPriority", priorityNum)
-						
-						if (email_list != null) {
-							pipelineMap.put("email_list", emailList.replace(", ", ","))
-						}
-						
-						if (executionMode != null) {
-							pipelineMap.put("executionMode", executionMode.replace(", ", ","))
-						}
-						
-						if (overrideFields != null) {
-							pipelineMap.put("overrideFields", overrideFields)
-						}
+
+                        putNotNull(pipelineMap, "thread_count", thread_count)
+
+                        putNotNullWithSplit(pipelineMap, "email_list", email_list)
+                        putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+
+//                        if (email_list != null) {
+//							pipelineMap.put("email_list", emailList.replace(", ", ","))
+//						}
+//
+//						if (executionMode != null) {
+//							pipelineMap.put("executionMode", executionMode.replace(", ", ","))
+//						}
+
+                        putNotNull(pipelineMap, "overrideFields", overrideFields)
+
+//                        if (overrideFields != null) {
+//							pipelineMap.put("overrideFields", overrideFields)
+//						}
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
 						//context.println("pipelines size1: " + listPipelines.size())
@@ -842,6 +852,17 @@ clean test"
 	}
 
 
+    protected static void putNotNull(pipelineMap, key, value) {
+        if (value != null) {
+            pipelineMap.put(key, value)
+        }
+    }
+
+    protected static void putNotNullWithSplit(pipelineMap, key, value) {
+        if (value != null) {
+            pipelineMap.put(key, value.replace(", ", ","))
+        }
+    }
 
 	protected def executeStages(String folderName) {
 		def mappedStages = [:]
