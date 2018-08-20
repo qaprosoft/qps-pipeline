@@ -112,6 +112,7 @@ public abstract class Executor {
 		
 		List<XmlSuite> suiteXml = xmlFile.parseToList()
 		XmlSuite currentSuite = suiteXml.get(0)
+        context.println("PARSED SUITE: " + currentSuite)
 		return currentSuite
 	}
 
