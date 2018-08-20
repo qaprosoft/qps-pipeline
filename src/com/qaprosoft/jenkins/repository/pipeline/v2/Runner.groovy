@@ -820,21 +820,21 @@ clean test"
 						pipelineMap.put("order", orderNum)
 						pipelineMap.put("BuildPriority", priorityNum)
 						
-						if (emailList != null) {
-							pipelineMap.put("emailList", emailList.replace(", ", ","))
-						}
-						
-						if (executionMode != null) {
-							pipelineMap.put("executionMode", executionMode.replace(", ", ","))
-						}
-						
-						if (overrideFields != null) {
-							pipelineMap.put("overrideFields", overrideFields)
-						}
+//						if (emailList != null) {
+//							pipelineMap.put("emailList", emailList.replace(", ", ","))
+//						}
+//
+//						if (executionMode != null) {
+//							pipelineMap.put("executionMode", executionMode.replace(", ", ","))
+//						}
+//
+//						if (overrideFields != null) {
+//							pipelineMap.put("overrideFields", overrideFields)
+//						}
 
                         putNotNull(pipelineMap, "thread_count", thread_count)
 
-                        putNotNullWithSplit(pipelineMap, "email_list", email_list)
+                        putNotNullWithSplit(pipelineMap, "emailList", email_list)
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
 
 //                        if (email_list != null) {
