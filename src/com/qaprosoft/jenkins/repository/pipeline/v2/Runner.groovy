@@ -711,11 +711,6 @@ clean test"
 		//def overrideFields = currentSuite.getParameter("overrideFields").toString()
 		def overrideFields = Configurator.get("overrideFields")
 
-		if (overrideFields == null) {
-			overrideFields = ''
-		}
-		context.println("overrideFields: " + overrideFields)
-
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
@@ -789,10 +784,21 @@ clean test"
 						def retry_count = Configurator.get("retry_count")
 						def thread_count = Configurator.get("thread_count")
 
-						pipelineMap.put("browser", browser)
-						pipelineMap.put("browser_version", browserVersion)
-						pipelineMap.put("os", os)
-						pipelineMap.put("os_version", osVersion)
+						// put all not NULL args into the pipelineMap for execution
+						if (browser != null) {
+							pipelineMap.put("browser", browser)
+						}
+						if (browser_version != null) {
+							pipelineMap.put("browser_version", browserVersion)
+						}
+						
+						if (os != null) {
+							pipelineMap.put("os", os)
+						}
+						if (os_version != null) {
+							pipelineMap.put("os_version", osVersion)
+						}
+						
 						pipelineMap.put("name", pipeName)
 						pipelineMap.put("branch", branch)
 						pipelineMap.put("ci_parent_url", ci_parent_url)
@@ -804,11 +810,18 @@ clean test"
 						}
 						
 						pipelineMap.put("jobName", jobName)
-						pipelineMap.put("environment", supportedEnv)
+						pipelineMap.put("env", supportedEnv)
 						pipelineMap.put("order", orderNum)
-						pipelineMap.put("priority", priorityNum)
-						pipelineMap.put("emailList", emailList.replace(", ", ","))
-						pipelineMap.put("executionMode", executionMode.replace(", ", ","))
+						pipelineMap.put("BuildPriority", priorityNum)
+						
+						if (email_list != null) {
+							pipelineMap.put("email_list", emailList.replace(", ", ","))
+						}
+						
+						if (executionMode != null) {
+							pipelineMap.put("executionMode", executionMode.replace(", ", ","))
+						}
+						
 						if (overrideFields != null) {
 							pipelineMap.put("overrideFields", overrideFields)
 						}
@@ -831,10 +844,6 @@ clean test"
 
 
 	protected def executeStages(String folderName) {
-		//    for (Map entry : sortedPipeline) {
-		//	buildOutStage(folderName, entry, false)
-		//    }
-
 		def mappedStages = [:]
 
 		boolean parallelMode = true
@@ -843,7 +852,7 @@ clean test"
 		String beginOrder = "0"
 		String curOrder = ""
 		for (Map entry : listPipelines) {
-			def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))
+			def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
 			context.println("stageName: ${stageName}")
 
 			boolean propagateJob = true
@@ -854,10 +863,6 @@ clean test"
 			if (entry.get("executionMode").toString().contains("abort")) {
 				//interrupt pipeline/cron and return fail status to piepeline if any child job failed
 				propagateJob = true
-			}
-
-			if(entry.get("custom_capabilities") == null) {
-				entry.put("custom_capabilities", 'NULL')
 			}
 
 			curOrder = entry.get("order")
@@ -898,7 +903,7 @@ clean test"
 	}
 	
 	protected def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propagateJob) {
-		context.stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))) {
+		context.stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))) {
 			//context.println("Dynamic Stage Created For: " + entry.get("jobName"))
 			//context.println("Checking EmailList: " + entry.get("emailList"))
 			
