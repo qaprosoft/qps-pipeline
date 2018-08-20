@@ -708,7 +708,8 @@ clean test"
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
 
-		def overrideFields = currentSuite.getParameter("overrideFields").toString()
+		//def overrideFields = currentSuite.getParameter("overrideFields").toString()
+		def overrideFields = Configurator.get("overrideFields")
 
 		if (overrideFields.equals("null")) {
 			overrideFields = ''
