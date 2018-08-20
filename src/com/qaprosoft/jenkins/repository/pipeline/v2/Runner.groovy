@@ -897,13 +897,7 @@ clean test"
 			def email_list = entry.get("email_list")
 			def ADMIN_EMAILS = Configurator.get("email_list")
 
-			//context.println("propagate: " + propagateJob)
-			try {
-				if (!entry.get("browser").isEmpty()) {
-					context.build job: folderName + "/" + entry.get("jobName"),
-						propagate: propagateJob,
-						parameters: \
-                            [context.string(name: 'branch', value: entry.get("branch")), \
+            def params1 = [context.string(name: 'branch', value: entry.get("branch")), \
                              context.string(name: 'env', value: entry.get("environment")), \
                              context.string(name: 'browser', value: entry.get("browser")), \
                              context.string(name: 'browser_version', value: entry.get("browser_version")), \
@@ -914,22 +908,29 @@ clean test"
                              context.string(name: 'email_list', value: entry.get("emailList")), \
                              context.string(name: 'retry_count', value: entry.get("retry_count")), \
                              context.string(name: 'BuildPriority', value: entry.get("priority")),
-							 context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-							 context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
+                           context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
+                           context.string(name: 'overrideFields', value: entry.get("overrideFields")),]
+
+            def params2 = [context.string(name: 'branch', value: entry.get("branch")),
+                           context.string(name: 'env', value: entry.get("environment")),
+                           context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")),
+                           context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")),
+                           context.string(name: 'email_list', value: entry.get("emailList")),
+                           context.string(name: 'retry_count', value: entry.get("retry_count")),
+                           context.string(name: 'BuildPriority', value: entry.get("priority")),
+                           context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
+                           context.string(name: 'overrideFields', value: entry.get("overrideFields")),]
+            //context.println("propagate: " + propagateJob)
+			try {
+				if (!entry.get("browser").isEmpty()) {
+					context.build job: folderName + "/" + entry.get("jobName"),
+						propagate: propagateJob,
+						parameters: params1,
 						wait: waitJob
 				} else {
 					context.build job: folderName + "/" + entry.get("jobName"),
 						propagate: propagateJob,
-						parameters: \
-                            [context.string(name: 'branch', value: entry.get("branch")),
-                             context.string(name: 'env', value: entry.get("environment")),
-                             context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")),
-                             context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")),
-                             context.string(name: 'email_list', value: entry.get("emailList")),
-                             context.string(name: 'retry_count', value: entry.get("retry_count")),
-                             context.string(name: 'BuildPriority', value: entry.get("priority")),
-							 context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-							 context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
+						parameters: params2,
 						wait: waitJob
 				}
 			} catch (Exception ex) {
