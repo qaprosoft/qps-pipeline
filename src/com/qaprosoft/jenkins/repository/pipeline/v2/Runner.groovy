@@ -708,11 +708,13 @@ clean test"
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
 
-		def overrideFields = currentSuite.getParameter("overrideFields").toString()
+		//def overrideFields = currentSuite.getParameter("overrideFields").toString()
+		def overrideFields = Configurator.get("overrideFields")
 
-		if (overrideFields.equals("null")) {
+		if (overrideFields == null) {
 			overrideFields = ''
 		}
+		context.println("overrideFields: " + overrideFields)
 
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
