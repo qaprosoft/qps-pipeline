@@ -404,7 +404,6 @@ clean test"
 			}
 
 			//append again overrideFields to make sure they are declared at the end
-
 			goals = goals + " " + Configurator.get("overrideFields")
 
 			//context.echo "goals: ${goals}"
@@ -710,8 +709,6 @@ clean test"
 		}
 
 		def overrideFields = currentSuite.getParameter("overrideFields").toString()
-
-		context.println("OVERRIDE FIELDS: " + overrideFields)
 
 		if (overrideFields.equals("null")) {
 			overrideFields = ''

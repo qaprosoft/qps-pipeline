@@ -27,8 +27,8 @@ class GitHub implements ISCM {
 			context.println("GIT_URL: " + gitUrl)
 			context.println("forked_repo: " + fork)
 			if (!fork) {
-				def info = context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
-						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: false, timeout: 15]], \
+				context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
+						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', depth: 2, noTags: true, reference: '', shallow: false, timeout: 15]], \
 						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
 						changelog: true, poll: false
 			} else {
@@ -46,7 +46,7 @@ class GitHub implements ISCM {
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
 					context.println "fork repo url: ${gitUrl}"
 					context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
-							doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption',noTags: true, reference: '', shallow: false, timeout: 15]], \
+							doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', depth: 2, noTags: true, reference: '', shallow: false, timeout: 15]], \
 							submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
 							changelog: true, poll: false
 				} else {
@@ -71,13 +71,13 @@ class GitHub implements ISCM {
 					doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]], \
 					submoduleCfg: [], \
 					userRemoteConfigs: [[url: gitUrl]]], \
-				changelog: true, poll: false
+				changelog: false, poll: false
 			} else {
 				context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
 						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], \
-							[$class: 'CloneOption', noTags: true, reference: '', shallow: false, timeout: 15]], \
+							[$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
 						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
-						changelog: true, poll: false
+						changelog: false, poll: false
 			}
 		}
 	}
