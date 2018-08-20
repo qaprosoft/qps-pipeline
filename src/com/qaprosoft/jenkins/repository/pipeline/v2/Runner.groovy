@@ -899,8 +899,13 @@ clean test"
 			def email_list = entry.get("email_list")
 			def ADMIN_EMAILS = Configurator.get("email_list")
 
-			List params = []
-			params.add(context.string(name: 'branch', value: entry.get("branch")))
+			List jobParams = []
+			for (param in entry) {
+				jobParams.add(context.string(name: param.getKey(), value: param.getKey()))
+			}
+			context.println(jobParams.dump())
+			
+/*			params.add(context.string(name: 'branch', value: entry.get("branch")))
 			params.add(context.string(name: 'env', value: entry.get("environment")))
 			params.add(context.string(name: 'browser', value: entry.get("browser")))
 			params.add(context.string(name: 'browser_version', value: entry.get("browser_version")))
@@ -936,18 +941,18 @@ clean test"
                            context.string(name: 'retry_count', value: entry.get("retry_count")),
                            context.string(name: 'BuildPriority', value: entry.get("priority")),
                            context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-                           context.string(name: 'overrideFields', value: entry.get("overrideFields")),]
+                           context.string(name: 'overrideFields', value: entry.get("overrideFields")),]*/
             //context.println("propagate: " + propagateJob)
 			try {
 				if (!entry.get("browser").isEmpty()) {
 					context.build job: folderName + "/" + entry.get("jobName"),
 						propagate: propagateJob,
-						parameters: params,
+						parameters: jobParams,
 						wait: waitJob
 				} else {
 					context.build job: folderName + "/" + entry.get("jobName"),
 						propagate: propagateJob,
-						parameters: params2,
+						parameters: jobParams,
 						wait: waitJob
 				}
 			} catch (Exception ex) {
