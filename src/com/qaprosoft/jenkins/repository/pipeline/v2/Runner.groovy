@@ -834,7 +834,7 @@ clean test"
 
                         putNotNull(pipelineMap, "thread_count", thread_count)
 
-                        putNotNullWithSplit(pipelineMap, "emailList", email_list)
+                        putNotNullWithSplit(pipelineMap, "emailList", emailList)
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
 
 //                        if (email_list != null) {
