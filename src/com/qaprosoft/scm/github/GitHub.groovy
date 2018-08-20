@@ -31,7 +31,6 @@ class GitHub implements ISCM {
 						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
 						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
 						changelog: true, poll: false
-				context.println("CHECKOUT RESULT DUMP: " + info.dump())
 			} else {
 				def token_name = 'token_' + "${userId}"
 				//context.println("token_name: ${token_name}")
