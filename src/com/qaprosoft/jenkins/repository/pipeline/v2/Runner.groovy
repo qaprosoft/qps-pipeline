@@ -788,14 +788,14 @@ clean test"
 						if (browser != null) {
 							pipelineMap.put("browser", browser)
 						}
-						if (browser_version != null) {
+						if (browserVersion != null) {
 							pipelineMap.put("browser_version", browserVersion)
 						}
 						
 						if (os != null) {
 							pipelineMap.put("os", os)
 						}
-						if (os_version != null) {
+						if (osVersion != null) {
 							pipelineMap.put("os_version", osVersion)
 						}
 						
@@ -814,7 +814,7 @@ clean test"
 						pipelineMap.put("order", orderNum)
 						pipelineMap.put("BuildPriority", priorityNum)
 						
-						if (email_list != null) {
+						if (emailList != null) {
 							pipelineMap.put("email_list", emailList.replace(", ", ","))
 						}
 						
