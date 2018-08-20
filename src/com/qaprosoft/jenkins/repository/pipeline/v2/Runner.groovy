@@ -798,14 +798,20 @@ clean test"
 						pipelineMap.put("ci_parent_url", ci_parent_url)
 						pipelineMap.put("ci_parent_build", ci_parent_build)
 						pipelineMap.put("retry_count", retry_count)
-						pipelineMap.put("thread_count", thread_count)
+						
+						if (thread_count != null) {
+							pipelineMap.put("thread_count", thread_count)
+						}
+						
 						pipelineMap.put("jobName", jobName)
 						pipelineMap.put("environment", supportedEnv)
 						pipelineMap.put("order", orderNum)
 						pipelineMap.put("priority", priorityNum)
 						pipelineMap.put("emailList", emailList.replace(", ", ","))
 						pipelineMap.put("executionMode", executionMode.replace(", ", ","))
-						pipelineMap.put("overrideFields", overrideFields)
+						if (overrideFields != null) {
+							pipelineMap.put("overrideFields", overrideFields)
+						}
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
 						//context.println("pipelines size1: " + listPipelines.size())
