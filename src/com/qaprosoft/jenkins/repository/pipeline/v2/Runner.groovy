@@ -914,20 +914,13 @@ clean test"
 			for (param in entry) {
 				jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
 			}
-			context.println(jobParams.dump())
+			//context.println(jobParams.dump())
             //context.println("propagate: " + propagateJob)
 			try {
-				if (!entry.get("browser").isEmpty()) {
-					context.build job: folderName + "/" + entry.get("jobName"),
-						propagate: propagateJob,
-						parameters: jobParams,
-						wait: waitJob
-				} else {
-					context.build job: folderName + "/" + entry.get("jobName"),
-						propagate: propagateJob,
-						parameters: jobParams,
-						wait: waitJob
-				}
+				context.build job: folderName + "/" + entry.get("jobName"),
+				propagate: propagateJob,
+				parameters: jobParams,
+				wait: waitJob
 			} catch (Exception ex) {
 				printStackTrace(ex)
 				
