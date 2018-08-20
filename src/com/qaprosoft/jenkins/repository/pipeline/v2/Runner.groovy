@@ -742,9 +742,9 @@ clean test"
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
 						def browser = currentBrowser
-						def browserVersion = '*'
-						def os = 'NULL'
-						def osVersion = '*'
+						def browserVersion = null
+						def os = null
+						def osVersion = null
 
 						String browserInfo = supportedBrowser
 						if (supportedBrowser.contains("-")) {
@@ -915,44 +915,6 @@ clean test"
 				jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
 			}
 			context.println(jobParams.dump())
-			
-/*			params.add(context.string(name: 'branch', value: entry.get("branch")))
-			params.add(context.string(name: 'env', value: entry.get("environment")))
-			params.add(context.string(name: 'browser', value: entry.get("browser")))
-			params.add(context.string(name: 'browser_version', value: entry.get("browser_version")))
-			params.add(context.string(name: 'os', value: entry.get("os")))
-			params.add(context.string(name: 'os_version', value: entry.get("os_version")))
-			params.add(context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")))
-			params.add(context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")))
-			params.add(context.string(name: 'email_list', value: entry.get("emailList")))
-			params.add(context.string(name: 'retry_count', value: entry.get("retry_count")))
-			params.add(context.string(name: 'BuildPriority', value: entry.get("priority")))
-			params.add(context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")))
-			params.add(context.string(name: 'overrideFields', value: entry.get("overrideFields")))
-			 
-            def params1 = [context.string(name: 'branch', value: entry.get("branch")), \
-                             context.string(name: 'env', value: entry.get("environment")), \
-                             context.string(name: 'browser', value: entry.get("browser")), \
-                             context.string(name: 'browser_version', value: entry.get("browser_version")), \
-                             context.string(name: 'os', value: entry.get("os")), \
-                             context.string(name: 'os_version', value: entry.get("os_version")), \
-                             context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), \
-                             context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), \
-                             context.string(name: 'email_list', value: entry.get("emailList")), \
-                             context.string(name: 'retry_count', value: entry.get("retry_count")), \
-                             context.string(name: 'BuildPriority', value: entry.get("priority")),
-                           context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-                           context.string(name: 'overrideFields', value: entry.get("overrideFields")),]
-
-            def params2 = [context.string(name: 'branch', value: entry.get("branch")),
-                           context.string(name: 'env', value: entry.get("environment")),
-                           context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")),
-                           context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")),
-                           context.string(name: 'email_list', value: entry.get("emailList")),
-                           context.string(name: 'retry_count', value: entry.get("retry_count")),
-                           context.string(name: 'BuildPriority', value: entry.get("priority")),
-                           context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-                           context.string(name: 'overrideFields', value: entry.get("overrideFields")),]*/
             //context.println("propagate: " + propagateJob)
 			try {
 				if (!entry.get("browser").isEmpty()) {
