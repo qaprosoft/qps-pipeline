@@ -66,13 +66,12 @@ public abstract class Executor {
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
             changeLogSet.getItems().each { entry ->
-                context.println("ENTRY: " + entry.getPaths())
                 entry.getPaths().each { path ->
                     context.println("PATH: " + path.getPath())
-//                    if (matchPath(path.getPath(), patternArray[0])) {
-//                        changedFilesFound = true
-//                        //break
-//                    }
+                    if (matchPath(path.getPath(), patternArray[0])) {
+                        changedFilesFound = true
+                        return
+                    }
                 }
             }
         }
