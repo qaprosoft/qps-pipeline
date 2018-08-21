@@ -78,7 +78,7 @@ public abstract class Executor {
 
     protected boolean matchPath(path, pattern) {
         boolean isMatch = false
-        pathObject = context.file(path);
+        Path pathObject = context.file(path);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
         context.println("PATH: " + pathObject.dump())
         context.println("PATTERN: " + pattern)
