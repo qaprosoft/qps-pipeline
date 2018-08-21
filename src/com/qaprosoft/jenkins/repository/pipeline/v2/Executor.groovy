@@ -64,7 +64,9 @@ public abstract class Executor {
         def patternArray = patterns.split(",")
         boolean changedFilesFound = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
+        context.println("changeLogSets: " + changeLogSets.dump())
         for (changeLogSet in changeLogSets) {
+            context.println("changeLogSet: " + changeLogSet.dump())
             for (entry in changeLogSet.getItems()) {
                 context.println("ENTRY: " + entry.dump())
                 for (path in entry.getAffectedFiles()) {
@@ -72,7 +74,7 @@ public abstract class Executor {
                     context.println("PATH: " + path.getPath())
                     if (matchPath(path.getPath(), patternArray[0])) {
                         changedFilesFound = true
-                        break
+                        //break
                     }
                 }
             }
