@@ -77,7 +77,7 @@ public abstract class Executor {
     protected boolean matchPath(String path, String pattern) {
         boolean isMatch = false
 
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher(path)
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + path)
         if (matcher.matches(pattern)) {
             context.println("PATH: " + path)
             isMatch = true
