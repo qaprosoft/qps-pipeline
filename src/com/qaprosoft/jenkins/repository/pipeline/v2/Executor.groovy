@@ -6,6 +6,10 @@ import org.testng.xml.XmlSuite;
 import com.cloudbees.groovy.cps.NonCPS
 
 import com.qaprosoft.scm.ISCM
+import sun.awt.CausedFocusEvent
+
+import java.nio.file.FileSystems
+import java.nio.file.PathMatcher
 
 public abstract class Executor {
 	//pipeline context to provide access to existing pipeline methods like echo, sh etc...
@@ -54,19 +58,31 @@ public abstract class Executor {
 
     /** Detects if any changes are present in files matching pattern  */
     @NonCPS
-    protected boolean isUpdated(String pattern) {
+    protected boolean isUpdated(String patterns) {
+        //def patternArray = patterns.split(",")
         boolean changedFilesFound = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         for (changeLogSet in changeLogSets) {
             for (entry in changeLogSet.getItems()) {
                 for (path in entry.getPaths()) {
-                    if (path.getPath().contains(pattern))
+                    if (matchPath(patterns))
                         changedFilesFound = true
                     break
                 }
             }
         }
         return changedFilesFound
+    }
+
+    protected boolean matchPath(String paths) {
+        boolean isMatch = false
+        FileSystem fs = FileSystems.getDefault();
+        PathMatcher matcher = fs.getPathMatcher("glob:" + glob)
+        if (matcher.matches(paths)) {
+            context.println("PATH: " + paths)
+            isMatch = true
+        }
+        return isMatch
     }
 
     /** Checks if current job started as rebuild */
