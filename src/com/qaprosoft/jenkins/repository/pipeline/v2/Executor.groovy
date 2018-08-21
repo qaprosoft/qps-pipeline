@@ -74,11 +74,11 @@ public abstract class Executor {
         return changedFilesFound
     }
 
-    protected boolean matchPath(String path, String pattern) {
+    protected boolean matchPath(path, pattern) {
         boolean isMatch = false
 
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + path)
-        if (matcher.matches(pattern)) {
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
+        if (matcher.matches(path)) {
             context.println("PATH: " + path)
             isMatch = true
         }
