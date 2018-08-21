@@ -77,16 +77,11 @@ public abstract class Executor {
     }
 
     protected boolean matchPath(path, pattern) {
-        boolean isMatch = false
         Path pathObject = Paths.get(path);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
-        context.println("PATH: " + pathObject.dump())
+        context.println("PATH: " + path)
         context.println("PATTERN: " + pattern)
-        if (matcher.matches(pathObject)) {
-            context.println("MATCHED: " + path)
-            isMatch = true
-        }
-        return isMatch
+        return matcher.matches(pathObject)
     }
 
     /** Checks if current job started as rebuild */
