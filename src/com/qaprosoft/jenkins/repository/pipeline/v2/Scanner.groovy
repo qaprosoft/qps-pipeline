@@ -45,7 +45,7 @@ class Scanner extends Executor {
 
                 def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
 
-                if (!isUpdated("**.xml") && ignoreExisting) {
+                if (!isUpdated("**.java,**.xml") && ignoreExisting) {
 					context.println("do not continue scanner as none of suite was updated (*.xml)")
 					return
                 }
