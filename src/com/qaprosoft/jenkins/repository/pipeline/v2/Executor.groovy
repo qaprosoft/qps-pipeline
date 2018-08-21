@@ -9,7 +9,9 @@ import com.qaprosoft.scm.ISCM
 import sun.awt.CausedFocusEvent
 
 import java.nio.file.FileSystems
+import java.nio.file.Path
 import java.nio.file.PathMatcher
+import java.nio.file.Paths
 
 public abstract class Executor {
 	//pipeline context to provide access to existing pipeline methods like echo, sh etc...
@@ -76,9 +78,9 @@ public abstract class Executor {
 
     protected boolean matchPath(path, pattern) {
         boolean isMatch = false
-
+        Path pathObject = Paths.get(path);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
-        if (matcher.matches(path)) {
+        if (matcher.matches(pathObject)) {
             context.println("PATH: " + path)
             isMatch = true
         }
