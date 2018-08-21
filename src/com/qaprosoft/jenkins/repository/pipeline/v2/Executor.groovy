@@ -69,7 +69,7 @@ public abstract class Executor {
             context.println("changeLogSet: " + changeLogSet.dump())
             for (entry in changeLogSet.getItems()) {
                 context.println("ENTRY: " + entry.dump())
-                context.println("AFFECTED FILES: " + entry.getAffectedFiles().dump())
+                context.println("AFFECTED FILES: " + entry.paths.dump())
                 entry.getAffectedFiles().each { path ->
                     context.println("PATH DUMP: " + path.dump())
                     context.println("PATH: " + path.getPath())
