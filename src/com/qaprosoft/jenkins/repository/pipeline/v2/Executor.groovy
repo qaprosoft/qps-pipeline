@@ -77,10 +77,18 @@ public abstract class Executor {
     }
 
     protected boolean matchPath(path, patterns) {
-        def globSyntaxPatterns = '{' + patterns + '}'
+        boolean matched = false
+        def patternArray = patterns.split(",")
         Path pathObject = Paths.get(path);
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + globSyntaxPatterns)
-        return matcher.matches(pathObject)
+        patternArray.each { pattern ->
+            PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
+            context.println("PATH" + path)
+            context.println("PATTERN" + pattern)
+            if (matcher.matches(pathObject)){
+                matched = true
+            }
+        }
+        return matched
     }
 
     /** Checks if current job started as rebuild */
