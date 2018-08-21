@@ -65,7 +65,7 @@ public abstract class Executor {
         boolean changedFilesFound = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
-            changeLogSet.getItems().each { entry ->
+            changeLogSet.getItems().getPaths().each { entry ->
                 context.println("ENTRY: " + entry.dump())
 //                entry.getPaths().each { path ->
 //                    context.println("PATH: " + path.getPath())
