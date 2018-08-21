@@ -70,9 +70,10 @@ public abstract class Executor {
                 for (path in entry.getAffectedFiles()) {
                     context.println("PATH DUMP: " + path.dump())
                     context.println("PATH: " + path.getPath())
-                    if (matchPath(path.getPath(), patternArray[0]))
+                    if (matchPath(path.getPath(), patternArray[0])) {
                         changedFilesFound = true
-                    break
+                        break
+                    }
                 }
             }
         }
