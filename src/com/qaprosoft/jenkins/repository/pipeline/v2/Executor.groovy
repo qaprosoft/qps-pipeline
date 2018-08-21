@@ -59,13 +59,13 @@ public abstract class Executor {
     /** Detects if any changes are present in files matching pattern  */
     @NonCPS
     protected boolean isUpdated(String patterns) {
-        //def patternArray = patterns.split(",")
+        def patternArray = patterns.split(",")
         boolean changedFilesFound = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         for (changeLogSet in changeLogSets) {
             for (entry in changeLogSet.getItems()) {
                 for (path in entry.getPaths()) {
-                    if (matchPath(patterns))
+                    if (matchPath(path, patternArray[0]))
                         changedFilesFound = true
                     break
                 }
@@ -74,12 +74,12 @@ public abstract class Executor {
         return changedFilesFound
     }
 
-    protected boolean matchPath(String paths) {
+    protected boolean matchPath(String path, String pattern) {
         boolean isMatch = false
 
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + glob)
-        if (matcher.matches(paths)) {
-            context.println("PATH: " + paths)
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher(path)
+        if (matcher.matches(pattern)) {
+            context.println("PATH: " + path)
             isMatch = true
         }
         return isMatch
