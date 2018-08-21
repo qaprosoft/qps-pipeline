@@ -67,6 +67,8 @@ public abstract class Executor {
         for (changeLogSet in changeLogSets) {
             for (entry in changeLogSet.getItems()) {
                 for (path in entry.getPaths()) {
+                    context.println("PATH: " + path.dump())
+                    context.println("PATH: " + path.getPath())
                     if (matchPath(path.getPath(), patternArray[0]))
                         changedFilesFound = true
                     break
