@@ -69,6 +69,7 @@ public abstract class Executor {
             context.println("changeLogSet: " + changeLogSet.dump())
             for (entry in changeLogSet.getItems()) {
                 context.println("ENTRY: " + entry.dump())
+                context.println("AFFECTED FILES: " + entry.getAffectedFiles().dump())
                 for (path in entry.getAffectedFiles()) {
                     context.println("PATH DUMP: " + path.dump())
                     context.println("PATH: " + path.getPath())
@@ -85,8 +86,6 @@ public abstract class Executor {
     protected boolean matchPath(path, pattern) {
         Path pathObject = Paths.get(path);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
-        context.println("PATH: " + path)
-        context.println("PATTERN: " + pattern)
         return matcher.matches(pathObject)
     }
 
