@@ -67,13 +67,13 @@ public abstract class Executor {
         changeLogSets.each { changeLogSet ->
             changeLogSet.getItems().each { entry ->
                 context.println("ENTRY: " + entry.getPaths())
-//                entry.getPaths().each { path ->
-//                    context.println("PATH: " + path.getPath())
+                entry.getPaths().each { path ->
+                    context.println("PATH: " + path.getPath())
 //                    if (matchPath(path.getPath(), patternArray[0])) {
 //                        changedFilesFound = true
 //                        //break
 //                    }
-//                }
+                }
             }
         }
         return changedFilesFound
