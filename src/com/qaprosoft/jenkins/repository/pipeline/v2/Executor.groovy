@@ -58,11 +58,8 @@ public abstract class Executor {
         boolean changedFilesFound = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         for (changeLogSet in changeLogSets) {
-            context.println("CHANGELOGSET DUMP" + changeLogSet.dump())
             for (entry in changeLogSet.getItems()) {
-                context.println("CHANGELOGSET ENTRY DUMP" + changeLogSet.dump())
                 for (path in entry.getPaths()) {
-                    context.println("PATH DUMP" + path.getPath())
                     if (path.getPath().contains(pattern))
                         changedFilesFound = true
                     break
