@@ -65,25 +65,30 @@ public abstract class Executor {
         for (changeLogSet in changeLogSets) {
             for (entry in changeLogSet.getItems()) {
                 for (path in entry.getPaths()) {
-                    if (matchPath(patterns))
-                        changedFilesFound = true
-                    break
+                    def fileSystem = path.getFileSystem()
+                    context.println("FILESYSTEM" + fileSystem.dump())
+
+//                    if (matchPath(patterns))
+//                        changedFilesFound = true
+//                    break
                 }
             }
         }
         return changedFilesFound
     }
 
-    protected boolean matchPath(String paths) {
-        boolean isMatch = false
-        FileSystem fs = FileSystems.getDefault();
-        PathMatcher matcher = fs.getPathMatcher("glob:" + glob)
-        if (matcher.matches(paths)) {
-            context.println("PATH: " + paths)
-            isMatch = true
-        }
-        return isMatch
-    }
+//    protected boolean matchPath(String paths) {
+//        boolean isMatch = false
+//
+//
+//        FileSystem fs = FileSystems.getDefault();
+//        PathMatcher matcher = fs.getPathMatcher("glob:" + glob)
+//        if (matcher.matches(paths)) {
+//            context.println("PATH: " + paths)
+//            isMatch = true
+//        }
+//        return isMatch
+//    }
 
     /** Checks if current job started as rebuild */
     protected Boolean isRebuild(String jobName) {
