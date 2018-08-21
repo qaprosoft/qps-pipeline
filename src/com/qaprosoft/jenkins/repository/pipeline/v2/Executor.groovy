@@ -80,7 +80,7 @@ public abstract class Executor {
         boolean isMatch = false
         Path pathObject = Paths.get(path);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
-        context.println("PATH: " + path)
+        context.println("PATH: " + pathObject.dump())
         context.println("PATTERN: " + pattern)
         if (matcher.matches(pathObject)) {
             context.println("MATCHED: " + path)
