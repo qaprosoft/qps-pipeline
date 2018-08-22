@@ -61,6 +61,7 @@ public abstract class Executor {
     /** Detects if any changes are present in files matching patterns  */
     @NonCPS
     protected boolean isUpdated(String patterns) {
+        def isUpdated = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
             /* Extracts GitChangeLogs from changeLogSet */
@@ -75,14 +76,15 @@ public abstract class Executor {
                         /* As only match is found stop search*/
                         if (matcher.matches(pathObject)){
                             context.println("1")
-                            return true
+                            isUpdated = true
+                            return
                         }
                     }
                 }
             }
         }
         context.println("2")
-        return false
+        return isUpdated
     }
 
     /** Checks if current job started as rebuild */
