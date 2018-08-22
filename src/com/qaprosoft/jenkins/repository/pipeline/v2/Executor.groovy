@@ -67,33 +67,21 @@ public abstract class Executor {
             changeLogSet.getItems().each { entry ->
                 entry.getPaths().each { path ->
                     context.println("PATH: " + path.getPath())
-                    boolean patternMatch = matchPath(path.getPath(), patterns)
-                    context.println("MATCH: " + patternMatch)
-//                    if (patternMatch) {
-//                        context.println("MATCH CLOSURE")
-//                        changedFilesFound = true
-//                        return
-//                    }
+                    Path pathObject = Paths.get(path.getPath())
+                    patterns.split(",").each { pattern ->
+                        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
+                        context.println("1")
+                        if (matcher.matches(pathObject)){
+                            context.println("2")
+                            changedFilesFound = true
+                        }
+                    }
+                    context.println("3")
                 }
+                context.println("4")
             }
         }
         return changedFilesFound
-    }
-
-    protected boolean matchPath(path, patterns) {
-        boolean matched = false
-        def patternArray = patterns.split(",")
-        Path pathObject = Paths.get(path);
-        patternArray.each { pattern ->
-            PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
-            context.println("1")
-            if (matcher.matches(pathObject)){
-                context.println("2")
-                matched = true
-            }
-        }
-        context.println("3")
-        return matched
     }
 
     /** Checks if current job started as rebuild */
