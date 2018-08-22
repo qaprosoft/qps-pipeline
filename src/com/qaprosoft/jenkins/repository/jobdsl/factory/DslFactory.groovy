@@ -49,5 +49,10 @@ public class DslFactory {
 		}
 		
 	}
+	
+	
+	public setClass(_clazz) {
+		clazz = _clazz
+	}
 
 }
