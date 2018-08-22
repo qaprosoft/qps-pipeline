@@ -458,7 +458,7 @@ clean test"
 		context.println("nodeLabel: " + nodeLabel)
 		if (!isParamEmpty(nodeLabel)) {
 			context.println("overriding default node to: " + nodeLabel)
-			params.put("node", nodeLabel)
+			Configurator.set("node", nodeLabel)
 		}
 
 		context.echo "node: " + Configurator.get("node")
