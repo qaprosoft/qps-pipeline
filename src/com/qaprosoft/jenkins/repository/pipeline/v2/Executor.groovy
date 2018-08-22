@@ -75,7 +75,6 @@ public abstract class Executor {
                         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
                         /* As only match is found stop search*/
                         if (matcher.matches(pathObject)){
-                            context.println("1")
                             isUpdated = true
                             return
                         }
@@ -83,7 +82,6 @@ public abstract class Executor {
                 }
             }
         }
-        context.println("2")
         return isUpdated
     }
 
