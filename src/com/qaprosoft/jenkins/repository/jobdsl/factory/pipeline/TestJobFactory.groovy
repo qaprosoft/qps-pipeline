@@ -223,7 +223,7 @@ public class TestJobFactory extends PipelineFactory {
 					}
 				}
 
-				customPipelineParams(currentSuite, suiteOwner)
+				customPipelineParams(jobType, currentSuite, suiteOwner)
 			}
 
 		}
@@ -243,7 +243,7 @@ public class TestJobFactory extends PipelineFactory {
 		return prepCustomFields
 	}
 
-	protected void customPipelineParams(org.testng.xml.XmlSuite currentSuite, String suiteOwner) {
+	protected void customPipelineParams(jobType, org.testng.xml.XmlSuite currentSuite, String suiteOwner) {
 		//do nothing here
 	}
 
