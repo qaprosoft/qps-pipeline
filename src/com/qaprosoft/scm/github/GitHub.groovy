@@ -33,7 +33,7 @@ class GitHub implements ISCM {
 						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', depth: 1, noTags: true, reference: '', shallow: false, timeout: 15]], \
 						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
 						changelog: true, poll: false]
-                def subfolderExtension = [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]]
+                def subfolderExtension = [[$class: 'RelativeTargetDirectory', relativeTargetDir: "subFolder"]]
                 checkoutParams.get("scm")["extensions"] = subfolderExtension
                 context.println("MODIFIED PARAMS: " + checkoutParams)
 
