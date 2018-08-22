@@ -67,11 +67,11 @@ public abstract class Executor {
             changeLogSet.getItems().each { entry ->
                 entry.getPaths().each { path ->
                     context.println("PATH" + path)
-                    if (matchPath(path.getPath(), patterns)) {
-                        context.println("MATCH CLOSURE")
-                        changedFilesFound = true
-                        return
-                    }
+//                    if (matchPath(path.getPath(), patterns)) {
+//                        context.println("MATCH CLOSURE")
+//                        changedFilesFound = true
+//                        return
+//                    }
                 }
             }
         }
@@ -84,13 +84,10 @@ public abstract class Executor {
         Path pathObject = Paths.get(path);
         patternArray.each { pattern ->
             PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
-            context.println("PATH: " + path)
-            context.println("PATTERN: " + pattern)
             if (matcher.matches(pathObject)){
                 matched = true
             }
         }
-        context.println("MATCHED" + matched)
         return matched
     }
 
