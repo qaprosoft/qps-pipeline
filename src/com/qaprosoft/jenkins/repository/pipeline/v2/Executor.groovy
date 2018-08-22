@@ -58,18 +58,22 @@ public abstract class Executor {
 		return content
 	}
 
-    /** Detects if any changes are present in files matching pattern  */
+    /** Detects if any changes are present in files matching patterns  */
     @NonCPS
     protected boolean isUpdated(String patterns) {
         boolean changedFilesFound = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
+            /* Extracts GitChangeLogs from changeLogSet */
             for (entry in changeLogSet.getItems()) {
+                /* Extracts paths to changed files */
                 for (path in entry.getPaths()) {
                     context.println("UPDATED: " + path.getPath())
                     Path pathObject = Paths.get(path.getPath())
+                    /* Checks whether any changed file matches one of patterns */
                     for (pattern in patterns.split(",")){
                         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
+                        /* As only match is found stop search*/
                         if (matcher.matches(pathObject)){
                             changedFilesFound = true
                             return
