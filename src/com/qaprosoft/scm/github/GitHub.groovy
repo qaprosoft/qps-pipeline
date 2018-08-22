@@ -10,8 +10,11 @@ class GitHub implements ISCM {
 		this.context = context
 	}
 
+    public def clone() {
+        clone(true)
+    }
 
-	public def clone() {
+	public def clone(isShallow) {
 		context.stage('Checkout GitHub Repository') {
 			context.println("GitHub->clone")
 
@@ -27,15 +30,12 @@ class GitHub implements ISCM {
 			context.println("GIT_URL: " + gitUrl)
 			context.println("forked_repo: " + fork)
 			if (!fork) {
-				context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
-						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', depth: 2, noTags: true, reference: '', shallow: true, timeout: 15]], \
-						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
-						changelog: true, poll: false
+				context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
 			} else {
+
 				def token_name = 'token_' + "${userId}"
-				//context.println("token_name: ${token_name}")
 				def token_value = Configurator.get(token_name)
-				//context.println("token_value: ${token_value}")
+
 				//if token_value contains ":" as delimiter then redefine build_user_id using the 1st part
 				if (token_value != null && token_value.contains(":")) {
 					def (tempUserId, tempToken) = token_value.tokenize( ':' )
@@ -45,10 +45,7 @@ class GitHub implements ISCM {
 				if (token_value != null) {
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
 					context.println "fork repo url: ${gitUrl}"
-					context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
-							doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', depth: 2, noTags: true, reference: '', shallow: true, timeout: 15]], \
-							submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
-							changelog: true, poll: false
+                    context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
 				}
@@ -59,28 +56,33 @@ class GitHub implements ISCM {
 			//TODO: init git_commit as well
 		}
 	}
-	
+
+
 	public def clone(gitUrl, branch, subFolder) {
 		context.stage('Checkout GitHub Repository') {
 			context.println("GitHub->clone")
-
 			context.println("GIT_URL: " + gitUrl)
 			context.println("branch: " + branch)
-			if (subFolder != null) {
-				context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
-					doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]], \
-					submoduleCfg: [], \
-					userRemoteConfigs: [[url: gitUrl]]], \
-				changelog: false, poll: false
-			} else {
-				context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
-						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], \
-							[$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
-						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
-						changelog: false, poll: false
-			}
+            context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false)
 		}
 	}
+
+    private def getCheckoutParams(gitUrl, branch, subFolder, shallow, changelog) {
+        def checkoutParams = [scm: [$class: 'GitSCM',
+                                    branches: [[name: branch]],
+                                    doGenerateSubmoduleConfigurations: false,
+                                    extensions: [[$class: 'CheckoutOption', timeout: 15],
+                                                 [$class: 'CloneOption', noTags: true, reference: '', shallow: shallow, timeout: 15]],
+                                    submoduleCfg: [],
+                                    userRemoteConfigs: [[url: gitUrl]]],
+                              changelog: changelog,
+                              poll: false]
+        if (subFolder != null) {
+            def subfolderExtension = [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]]
+            checkoutParams.get("scm")["extensions"] = subfolderExtension
+        }
+        return checkoutParams
+    }
 
     private boolean parseFork(fork) {
         boolean booleanFork = false

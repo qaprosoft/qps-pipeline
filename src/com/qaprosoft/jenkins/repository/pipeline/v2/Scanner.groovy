@@ -36,7 +36,7 @@ class Scanner extends Executor {
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
-				scmClient.clone()
+				scmClient.clone(false)
 
 				String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
 				String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
@@ -45,11 +45,11 @@ class Scanner extends Executor {
 
                 def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
 
-                if (!isUpdated(".xml") && ignoreExisting) {
-					context.println("do not continue scanner as none of suite was updated (*.xml)")
+                def filePattern = "**.xml"
+                if (!isUpdated(filePattern) && ignoreExisting) {
+					context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
 					return
                 }
-				
 				this.scan()
 				this.clean()
 			}
