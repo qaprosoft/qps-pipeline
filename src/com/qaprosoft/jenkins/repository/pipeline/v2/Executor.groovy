@@ -83,12 +83,13 @@ public abstract class Executor {
         Path pathObject = Paths.get(path);
         patternArray.each { pattern ->
             PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
-            context.println("PATH" + path)
-            context.println("PATTERN" + pattern)
+            context.println("PATH: " + path)
+            context.println("PATTERN: " + pattern)
             if (matcher.matches(pathObject)){
                 matched = true
             }
         }
+        context.println("MATCHED" + matched)
         return matched
     }
 
