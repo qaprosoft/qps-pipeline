@@ -66,8 +66,10 @@ public abstract class Executor {
         changeLogSets.each { changeLogSet ->
             changeLogSet.getItems().each { entry ->
                 entry.getPaths().each { path ->
-                    context.println("PATH" + path)
-//                    if (matchPath(path.getPath(), patterns)) {
+                    context.println("PATH: " + path.getPath())
+                    boolean patternMatch = matchPath(path.getPath(), patterns)
+                    context.println("MATCH: " + patternMatch)
+//                    if (patternMatch) {
 //                        context.println("MATCH CLOSURE")
 //                        changedFilesFound = true
 //                        return
