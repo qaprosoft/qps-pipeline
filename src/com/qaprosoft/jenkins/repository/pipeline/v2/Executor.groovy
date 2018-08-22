@@ -69,7 +69,7 @@ public abstract class Executor {
                     if (matchPath(path.getPath(), patterns)) {
                         context.println("MATCH CLOSURE")
                         changedFilesFound = true
-                        return
+//                        return
                     }
                 }
             }
