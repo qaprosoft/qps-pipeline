@@ -10,7 +10,11 @@ class GitHub implements ISCM {
 		this.context = context
 	}
 
-	public def clone() {
+    public def clone() {
+        clone(true)
+    }
+
+	public def clone(isShallow) {
 		context.stage('Checkout GitHub Repository') {
 			context.println("GitHub->clone")
 
@@ -26,7 +30,7 @@ class GitHub implements ISCM {
 			context.println("GIT_URL: " + gitUrl)
 			context.println("forked_repo: " + fork)
 			if (!fork) {
-				context.checkout getCheckoutParams(branch, false, gitUrl, true, null)
+				context.checkout getCheckoutParams(branch, isShallow, gitUrl, true, null)
 			} else {
 
 				def token_name = 'token_' + "${userId}"
@@ -41,7 +45,7 @@ class GitHub implements ISCM {
 				if (token_value != null) {
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
 					context.println "fork repo url: ${gitUrl}"
-                    context.checkout getCheckoutParams(branch, false, gitUrl, true, null)
+                    context.checkout getCheckoutParams(branch, isShallow, gitUrl, true, null)
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
 				}
