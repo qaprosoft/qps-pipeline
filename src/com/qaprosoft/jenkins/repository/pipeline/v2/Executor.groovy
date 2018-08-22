@@ -6,6 +6,12 @@ import org.testng.xml.XmlSuite;
 import com.cloudbees.groovy.cps.NonCPS
 
 import com.qaprosoft.scm.ISCM
+import sun.awt.CausedFocusEvent
+
+import java.nio.file.FileSystems
+import java.nio.file.Path
+import java.nio.file.PathMatcher
+import java.nio.file.Paths
 
 public abstract class Executor {
 	//pipeline context to provide access to existing pipeline methods like echo, sh etc...
@@ -52,22 +58,31 @@ public abstract class Executor {
 		return content
 	}
 
-    /** Detects if any changes are present in files matching pattern  */
+    /** Detects if any changes are present in files matching patterns  */
     @NonCPS
-    protected boolean isUpdated(String pattern) {
-        boolean changedFilesFound = false
+    protected boolean isUpdated(String patterns) {
+        def isUpdated = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
-        for (changeLogSet in changeLogSets) {
+        changeLogSets.each { changeLogSet ->
+            /* Extracts GitChangeLogs from changeLogSet */
             for (entry in changeLogSet.getItems()) {
+                /* Extracts paths to changed files */
                 for (path in entry.getPaths()) {
-                    context.println(path.getPath())
-                    if (path.getPath().contains(pattern))
-                        changedFilesFound = true
-                    break
+                    context.println("UPDATED: " + path.getPath())
+                    Path pathObject = Paths.get(path.getPath())
+                    /* Checks whether any changed file matches one of patterns */
+                    for (pattern in patterns.split(",")){
+                        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
+                        /* As only match is found stop search*/
+                        if (matcher.matches(pathObject)){
+                            isUpdated = true
+                            return
+                        }
+                    }
                 }
             }
         }
-        return changedFilesFound
+        return isUpdated
     }
 
     /** Checks if current job started as rebuild */

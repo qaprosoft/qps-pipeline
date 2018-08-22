@@ -711,11 +711,6 @@ clean test"
 		//def overrideFields = currentSuite.getParameter("overrideFields").toString()
 		def overrideFields = Configurator.get("overrideFields")
 
-		if (overrideFields == null) {
-			overrideFields = ''
-		}
-		context.println("overrideFields: " + overrideFields)
-
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
@@ -747,9 +742,9 @@ clean test"
 						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
 						// supportedBrowser - splitted single browser name from supportedBrowsers
 						def browser = currentBrowser
-						def browserVersion = '*'
-						def os = 'NULL'
-						def osVersion = '*'
+						def browserVersion = null
+						def os = null
+						def osVersion = null
 
 						String browserInfo = supportedBrowser
 						if (supportedBrowser.contains("-")) {
@@ -788,24 +783,24 @@ clean test"
 						}
 						def retry_count = Configurator.get("retry_count")
 						def thread_count = Configurator.get("thread_count")
-
-						pipelineMap.put("browser", browser)
-						pipelineMap.put("browser_version", browserVersion)
-						pipelineMap.put("os", os)
-						pipelineMap.put("os_version", osVersion)
+						// put all not NULL args into the pipelineMap for execution
+                        putNotNull(pipelineMap, "browser", browser)
+                        putNotNull(pipelineMap, "browser_version", browserVersion)
+                        putNotNull(pipelineMap, "os", os)
+                        putNotNull(pipelineMap, "os_version", osVersion)
 						pipelineMap.put("name", pipeName)
 						pipelineMap.put("branch", branch)
 						pipelineMap.put("ci_parent_url", ci_parent_url)
 						pipelineMap.put("ci_parent_build", ci_parent_build)
 						pipelineMap.put("retry_count", retry_count)
-						pipelineMap.put("thread_count", thread_count)
+                        putNotNull(pipelineMap, "thread_count", thread_count)
 						pipelineMap.put("jobName", jobName)
-						pipelineMap.put("environment", supportedEnv)
+						pipelineMap.put("env", supportedEnv)
 						pipelineMap.put("order", orderNum)
-						pipelineMap.put("priority", priorityNum)
-						pipelineMap.put("emailList", emailList.replace(", ", ","))
-						pipelineMap.put("executionMode", executionMode.replace(", ", ","))
-						pipelineMap.put("overrideFields", overrideFields)
+						pipelineMap.put("BuildPriority", priorityNum)
+                        putNotNullWithSplit(pipelineMap, "emailList", emailList)
+                        putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+                        putNotNull(pipelineMap, "overrideFields", overrideFields)
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
 						//context.println("pipelines size1: " + listPipelines.size())
@@ -823,12 +818,19 @@ clean test"
 	}
 
 
+    protected void putNotNull(pipelineMap, key, value) {
+        if (value != null) {
+            pipelineMap.put(key, value)
+        }
+    }
+
+    protected void putNotNullWithSplit(pipelineMap, key, value) {
+        if (value != null) {
+            pipelineMap.put(key, value.replace(", ", ","))
+        }
+    }
 
 	protected def executeStages(String folderName) {
-		//    for (Map entry : sortedPipeline) {
-		//	buildOutStage(folderName, entry, false)
-		//    }
-
 		def mappedStages = [:]
 
 		boolean parallelMode = true
@@ -837,7 +839,7 @@ clean test"
 		String beginOrder = "0"
 		String curOrder = ""
 		for (Map entry : listPipelines) {
-			def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))
+			def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
 			context.println("stageName: ${stageName}")
 
 			boolean propagateJob = true
@@ -848,10 +850,6 @@ clean test"
 			if (entry.get("executionMode").toString().contains("abort")) {
 				//interrupt pipeline/cron and return fail status to piepeline if any child job failed
 				propagateJob = true
-			}
-
-			if(entry.get("custom_capabilities") == null) {
-				entry.put("custom_capabilities", 'NULL')
 			}
 
 			curOrder = entry.get("order")
@@ -892,48 +890,24 @@ clean test"
 	}
 	
 	protected def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propagateJob) {
-		context.stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("environment"), entry.get("browser"))) {
+		context.stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))) {
 			//context.println("Dynamic Stage Created For: " + entry.get("jobName"))
 			//context.println("Checking EmailList: " + entry.get("emailList"))
 			
 			def email_list = entry.get("email_list")
 			def ADMIN_EMAILS = Configurator.get("email_list")
 
-			//context.println("propagate: " + propagateJob)
+			List jobParams = []
+			for (param in entry) {
+				jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
+			}
+			//context.println(jobParams.dump())
+            //context.println("propagate: " + propagateJob)
 			try {
-				if (!entry.get("browser").isEmpty()) {
-					context.build job: folderName + "/" + entry.get("jobName"),
-						propagate: propagateJob,
-						parameters: \
-                            [context.string(name: 'branch', value: entry.get("branch")), \
-                             context.string(name: 'env', value: entry.get("environment")), \
-                             context.string(name: 'browser', value: entry.get("browser")), \
-                             context.string(name: 'browser_version', value: entry.get("browser_version")), \
-                             context.string(name: 'os', value: entry.get("os")), \
-                             context.string(name: 'os_version', value: entry.get("os_version")), \
-                             context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")), \
-                             context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")), \
-                             context.string(name: 'email_list', value: entry.get("emailList")), \
-                             context.string(name: 'retry_count', value: entry.get("retry_count")), \
-                             context.string(name: 'BuildPriority', value: entry.get("priority")),
-							 context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-							 context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
-						wait: waitJob
-				} else {
-					context.build job: folderName + "/" + entry.get("jobName"),
-						propagate: propagateJob,
-						parameters: \
-                            [context.string(name: 'branch', value: entry.get("branch")),
-                             context.string(name: 'env', value: entry.get("environment")),
-                             context.string(name: 'ci_parent_url', value: entry.get("ci_parent_url")),
-                             context.string(name: 'ci_parent_build', value: entry.get("ci_parent_build")),
-                             context.string(name: 'email_list', value: entry.get("emailList")),
-                             context.string(name: 'retry_count', value: entry.get("retry_count")),
-                             context.string(name: 'BuildPriority', value: entry.get("priority")),
-							 context.string(name: 'custom_capabilities', value: entry.get("custom_capabilities")),
-							 context.string(name: 'overrideFields', value: entry.get("overrideFields")),],
-						wait: waitJob
-				}
+				context.build job: folderName + "/" + entry.get("jobName"),
+				propagate: propagateJob,
+				parameters: jobParams,
+				wait: waitJob
 			} catch (Exception ex) {
 				printStackTrace(ex)
 				
