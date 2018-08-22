@@ -44,12 +44,11 @@ class Scanner extends Executor {
 				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 
                 def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
-
-                if (!isUpdated("**.java,**.xml") && ignoreExisting) {
-					context.println("do not continue scanner as none of suite was updated (*.xml)")
+                def filePattern = "**.xml"
+                if (!isUpdated(filePattern) && ignoreExisting) {
+					context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
 					return
                 }
-				
 				this.scan()
 				this.clean()
 			}
