@@ -64,16 +64,16 @@ public abstract class Executor {
         boolean changedFilesFound = false
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
-            changeLogSet.getItems().each { entry ->
-                entry.getPaths().each { path ->
+            for (entry in changeLogSet.getItems()) {
+                for (path in entry.getPaths()) {
                     context.println("PATH: " + path.getPath())
                     Path pathObject = Paths.get(path.getPath())
-                    patterns.split(",").each { pattern ->
+                    for (pattern in patterns.split(",")){
                         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
                         if (matcher.matches(pathObject)){
                             context.println("2")
                             changedFilesFound = true
-                            return
+                            break
                         }
                     }
                 }
