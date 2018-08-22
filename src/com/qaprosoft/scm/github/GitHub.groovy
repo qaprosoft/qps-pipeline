@@ -33,7 +33,7 @@ class GitHub implements ISCM {
 						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', depth: 1, noTags: true, reference: '', shallow: false, timeout: 15]], \
 						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
 						changelog: true, poll: false]
-                context.println("SCM DUMP: " + checkoutParams.get("scm"))
+                context.println("EXTENSIONS DUMP: " + checkoutParams.get("scm")["extensions"])
                 context.println("CHECKOUT  DUMP: " + checkoutParams.dump())
 				context.checkout checkoutParams
 			} else {
