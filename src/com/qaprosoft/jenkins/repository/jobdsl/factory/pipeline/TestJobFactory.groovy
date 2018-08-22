@@ -31,7 +31,7 @@ public class TestJobFactory extends PipelineFactory {
 	def create() {
 		//TODO: try to move it under Configurator which is hard due to the unsupported NonCPS in jobdsl files
 		
-		_dslFactory.println(_dslFactory.dump)
+		_dslFactory.println(_dslFactory.dump())
         def selenium = "http://selenium-hub:4444"
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
