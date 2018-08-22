@@ -66,12 +66,11 @@ public abstract class Executor {
         changeLogSets.each { changeLogSet ->
             for (entry in changeLogSet.getItems()) {
                 for (path in entry.getPaths()) {
-                    context.println("PATH: " + path.getPath())
+                    context.println("UPDATED: " + path.getPath())
                     Path pathObject = Paths.get(path.getPath())
                     for (pattern in patterns.split(",")){
                         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
                         if (matcher.matches(pathObject)){
-                            context.println("2")
                             changedFilesFound = true
                             return
                         }
