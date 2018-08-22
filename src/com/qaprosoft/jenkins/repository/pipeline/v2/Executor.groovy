@@ -74,12 +74,14 @@ public abstract class Executor {
                         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
                         /* As only match is found stop search*/
                         if (matcher.matches(pathObject)){
+                            context.println("1")
                             return true
                         }
                     }
                 }
             }
         }
+        context.println("2")
         return false
     }
 
