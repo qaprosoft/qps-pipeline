@@ -33,6 +33,7 @@ public class TestJobFactory extends PipelineFactory {
 		
 		_dslFactory.println(_dslFactory.dump())
         def selenium = "http://selenium-hub:4444"
+		selenium = Configurator.get("QPS_HUB")
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 		
