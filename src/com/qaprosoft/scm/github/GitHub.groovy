@@ -54,15 +54,25 @@ class GitHub implements ISCM {
 		}
 	}
 
-    public static def getCheckoutParams(branch, shallow, gitUrl, changelog, subFolder) {
+
+	public def clone(gitUrl, branch, subFolder) {
+		context.stage('Checkout GitHub Repository') {
+			context.println("GitHub->clone")
+			context.println("GIT_URL: " + gitUrl)
+			context.println("branch: " + branch)
+            context.checkout getCheckoutParams(branch, true, gitUrl, false, subFolder)
+		}
+	}
+
+    private def getCheckoutParams(branch, shallow, gitUrl, changelog, subFolder) {
         def checkoutParams = [scm: [$class: 'GitSCM',
                                     branches: [[name: branch]],
                                     doGenerateSubmoduleConfigurations: false,
                                     extensions: [[$class: 'CheckoutOption', timeout: 15],
                                                  [$class: 'CloneOption', noTags: true, reference: '', shallow: shallow, timeout: 15]],
-						            submoduleCfg: [],
+                                    submoduleCfg: [],
                                     userRemoteConfigs: [[url: gitUrl]]],
-						      changelog: changelog,
+                              changelog: changelog,
                               poll: false]
         if (subFolder != null) {
             def subfolderExtension = [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]]
@@ -70,20 +80,6 @@ class GitHub implements ISCM {
         }
         return checkoutParams
     }
-
-	public def clone(gitUrl, branch, subFolder) {
-		context.stage('Checkout GitHub Repository') {
-			context.println("GitHub->clone")
-
-			context.println("GIT_URL: " + gitUrl)
-			context.println("branch: " + branch)
-			if (subFolder != null) {
-                context.checkout getCheckoutParams(branch, null, gitUrl, false, subFolder)
-			} else {
-                context.checkout getCheckoutParams(branch, true, gitUrl, false, subFolder)
-			}
-		}
-	}
 
     private boolean parseFork(fork) {
         boolean booleanFork = false
