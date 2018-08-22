@@ -74,7 +74,7 @@ class Scanner extends Executor {
 
 			def jobFolder = Configurator.get("folder")
 
-			dslObjects.put(jobFolder, new FolderFactory(jobFolder, ""))
+			registerObject(jobFolder, new FolderFactory(jobFolder, ""))
 
 			def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
@@ -129,8 +129,8 @@ class Scanner extends Executor {
 				context.println("testngFolder: " + testngFolder)
 
 				// VIEWS
-				dslObjects.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
-				dslObjects.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
+				registerObject("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
+				registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 				
 				//TODO: create default personalized view here
 
@@ -160,14 +160,14 @@ class Scanner extends Executor {
 							}
 							
 							// put standard views factory into the map
-							dslObjects.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
-							dslObjects.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
+							registerObject(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
+							registerObject(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
 							//pipeline job
 							//TODO: review each argument to TestJobFactory and think about removal
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                             def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
-							dslObjects.put(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+							registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 							
 							//cron job
 							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null") 
@@ -176,7 +176,7 @@ class Scanner extends Executor {
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
 									def cronDesc = "project: ${project}; type: cron"
-									dslObjects.put(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
+									registerObject(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
 								}
 							}
 						}
@@ -217,6 +217,8 @@ class Scanner extends Executor {
 		return cronPipelineScript
 	}
 	
-	
+	protected void registerObject(name, object) {
+		dslObjects.put(name, object)
+	}
 	
 }
