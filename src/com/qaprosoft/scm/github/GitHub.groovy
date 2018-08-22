@@ -30,7 +30,7 @@ class GitHub implements ISCM {
 			context.println("GIT_URL: " + gitUrl)
 			context.println("forked_repo: " + fork)
 			if (!fork) {
-				context.checkout getCheckoutParams(branch, isShallow, gitUrl, true, null)
+				context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
 			} else {
 
 				def token_name = 'token_' + "${userId}"
@@ -45,7 +45,7 @@ class GitHub implements ISCM {
 				if (token_value != null) {
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
 					context.println "fork repo url: ${gitUrl}"
-                    context.checkout getCheckoutParams(branch, isShallow, gitUrl, true, null)
+                    context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
 				}
@@ -63,11 +63,11 @@ class GitHub implements ISCM {
 			context.println("GitHub->clone")
 			context.println("GIT_URL: " + gitUrl)
 			context.println("branch: " + branch)
-            context.checkout getCheckoutParams(branch, true, gitUrl, false, subFolder)
+            context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false)
 		}
 	}
 
-    private def getCheckoutParams(branch, shallow, gitUrl, changelog, subFolder) {
+    private def getCheckoutParams(gitUrl, branch, subFolder, shallow, changelog) {
         def checkoutParams = [scm: [$class: 'GitSCM',
                                     branches: [[name: branch]],
                                     doGenerateSubmoduleConfigurations: false,
