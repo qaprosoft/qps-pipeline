@@ -27,18 +27,9 @@ class GitHub implements ISCM {
 			context.println("GIT_URL: " + gitUrl)
 			context.println("forked_repo: " + fork)
 			if (!fork) {
-
-
-                def checkoutParams = [scm: [$class: 'GitSCM', branches: [[name: branch]], \
-						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', depth: 1, noTags: true, reference: '', shallow: false, timeout: 15]], \
-						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
-						changelog: true, poll: false]
-                def subfolderExtension = [[$class: 'RelativeTargetDirectory', relativeTargetDir: "subFolder"]]
-                checkoutParams.get("scm")["extensions"] = subfolderExtension
-                context.println("MODIFIED PARAMS: " + checkoutParams)
-
-				context.checkout checkoutParams
+				context.checkout getCheckoutParams(branch, false, gitUrl, true, null)
 			} else {
+
 				def token_name = 'token_' + "${userId}"
 				def token_value = Configurator.get(token_name)
 
@@ -51,10 +42,7 @@ class GitHub implements ISCM {
 				if (token_value != null) {
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
 					context.println "fork repo url: ${gitUrl}"
-					context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
-							doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], [$class: 'CloneOption', depth: 2, noTags: true, reference: '', shallow: true, timeout: 15]], \
-							submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
-							changelog: true, poll: false
+                    context.checkout getCheckoutParams(branch, false, gitUrl, true, null)
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
 				}
@@ -66,27 +54,19 @@ class GitHub implements ISCM {
 		}
 	}
 
-    public def setCheckoutParams(branch, depth, shallow, gitUrl, changelog, subFolder) {
+    public static def getCheckoutParams(branch, shallow, gitUrl, changelog, subFolder) {
         def checkoutParams = [scm: [$class: 'GitSCM',
                                     branches: [[name: branch]],
                                     doGenerateSubmoduleConfigurations: false,
                                     extensions: [[$class: 'CheckoutOption', timeout: 15],
-                                                 [$class: 'CloneOption', depth: depth, noTags: true, reference: '', shallow: shallow, timeout: 15]],
+                                                 [$class: 'CloneOption', noTags: true, reference: '', shallow: shallow, timeout: 15]],
 						            submoduleCfg: [],
                                     userRemoteConfigs: [[url: gitUrl]]],
 						      changelog: changelog,
                               poll: false]
         if (subFolder != null) {
             def subfolderExtension = [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]]
-            checkoutParams.put("extensions", subfolderExtension)
-//            checkoutParams = [scm: [$class: 'GitSCM',
-//                                    branches: [[name: branch]],
-//                                    doGenerateSubmoduleConfigurations: false,
-//                                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]],
-//                                    submoduleCfg: [],
-//                                    userRemoteConfigs: [[url: gitUrl]]],
-//                              changelog: changelog,
-//                              poll: false]
+            checkoutParams.get("scm")["extensions"] = subfolderExtension
         }
         return checkoutParams
     }
@@ -98,17 +78,9 @@ class GitHub implements ISCM {
 			context.println("GIT_URL: " + gitUrl)
 			context.println("branch: " + branch)
 			if (subFolder != null) {
-				context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
-					doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]], \
-					submoduleCfg: [], \
-					userRemoteConfigs: [[url: gitUrl]]], \
-				changelog: false, poll: false
+                context.checkout getCheckoutParams(branch, null, gitUrl, false, subFolder)
 			} else {
-				context.checkout scm: [$class: 'GitSCM', branches: [[name: branch]], \
-						doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 15], \
-							[$class: 'CloneOption', noTags: true, reference: '', shallow: true, timeout: 15]], \
-						submoduleCfg: [], userRemoteConfigs: [[url: gitUrl]]], \
-						changelog: false, poll: false
+                context.checkout getCheckoutParams(branch, true, gitUrl, false, subFolder)
 			}
 		}
 	}
