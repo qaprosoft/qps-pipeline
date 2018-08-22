@@ -70,16 +70,13 @@ public abstract class Executor {
                     Path pathObject = Paths.get(path.getPath())
                     patterns.split(",").each { pattern ->
                         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
-                        context.println("1")
                         if (matcher.matches(pathObject)){
                             context.println("2")
                             changedFilesFound = true
                             return
                         }
                     }
-                    context.println("3")
                 }
-                context.println("4")
             }
         }
         return changedFilesFound
