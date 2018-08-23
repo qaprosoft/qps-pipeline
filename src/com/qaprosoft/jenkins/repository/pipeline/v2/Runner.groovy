@@ -630,13 +630,13 @@ clean test"
 	protected void publishTestNgReports(String pattern, String reportName) {
 		def reports = context.findFiles(glob: "${pattern}")
 		for (int i = 0; i < reports.length; i++) {
-			def reportDir = new File(reports[i].path).getPath()
+			def reportDir = new File(reports[i].path).getParentFile()
 			context.echo "Report File Found, Publishing ${reports[i].path}"
 			def reportIndex = ""
 			if (i > 0) {
 				reportIndex = "_" + i
 			}
-            context.publishHTML getReportParameters(reportDir, reports[i].name, reportName + reportIndex)
+            context.publishHTML getReportParameters("${reportDir}", reports[i].name, reportName + reportIndex)
 		}
 	}
 
@@ -645,9 +645,9 @@ clean test"
 		def files = context.findFiles(glob: "${pattern}")
 		if(files.length == 1) {
 			def reportFile = files[0]
-			def reportDir = new File(reportFile.path).getPath()
+			def reportDir = new File(reportFile.path).getParentFile()
 			context.echo "Report File Found, Publishing ${reportFile.path}"
-            context.publishHTML getReportParameters(reportDir, reportFile.name, reportName)
+            context.publishHTML getReportParameters("${reportDir}", reportFile.name, reportName)
 			return true
 		} else if (files.length > 1) {
 			context.echo "ERROR: too many report file discovered! count: ${files.length}"
