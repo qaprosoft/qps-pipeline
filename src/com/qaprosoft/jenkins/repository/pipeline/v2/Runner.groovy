@@ -39,6 +39,7 @@ class Runner extends Executor {
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
+            context.println("FOLDER NAME: " + getFolderName())
             folderName = getFolderName()
             scmClient.clone()
 
@@ -86,7 +87,7 @@ class Runner extends Executor {
 	}
 
     protected def getFolderName() {
-        def array = context.pwd().split("/")
+        def array = this.getWorkspace().split("/")
         return array[array.length - 2];
     }
 
