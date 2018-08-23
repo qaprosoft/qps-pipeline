@@ -13,9 +13,6 @@ def factories = new HashMap(slurper.parseText(factoryDataMap))
 
 factories.each{
 	try {
-		if ("com.disney.jenkins.repository.jobdsl.factory.pipeline.DisneyTestJobFactory".equals(it.value.clazz)) {
-			println("BINGO! Disney is here: " + it.value.clazz)
-		}
 		def factory = Class.forName(it.value.clazz)?.newInstance(this)
 		println("before load: " + it.value.dump())
 		factory.load(it.value)
