@@ -648,7 +648,7 @@ clean test"
 			def reportDir = new File(reports[i].path).getParentFile().getPath()
 			context.println "Report File Found, Publishing " + reports[i].path
 			def reportIndex = ""
-			if (i = 0) {
+			if (i == 0) {
 				reportIndex = "_" + i
 			}
             context.println "REPORT INDEX" + reportIndex
