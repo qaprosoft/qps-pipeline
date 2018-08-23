@@ -591,7 +591,6 @@ clean test"
 	protected void reportingResults() {
 		context.stage('Results') {
 			publishReport('**/reports/qa/emailable-report.html', "${etafReport}")
-			
 			publishReport('**/artifacts/**', 'eTAF_Artifacts')
 			
 			publishTestNgReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
@@ -631,7 +630,7 @@ clean test"
 	protected void publishTestNgReports(String pattern, String reportName) {
 		def reports = context.findFiles(glob: "${pattern}")
 		for (int i = 0; i < reports.length; i++) {
-			def reportDir = new File(reports[i].path).getParentFile()
+			def reportDir = new File(reports[i].path).getPath()
 			context.echo "Report File Found, Publishing ${reports[i].path}"
 			def reportIndex = ""
 			if (i > 0) {
@@ -646,7 +645,7 @@ clean test"
 		def files = context.findFiles(glob: "${pattern}")
 		if(files.length == 1) {
 			def reportFile = files[0]
-			def reportDir = new File(reportFile.path).getParentFile()
+			def reportDir = new File(reportFile.path).getPath()
 			context.echo "Report File Found, Publishing ${reportFile.path}"
             context.publishHTML getReportParameters(reportDir, reportFile.name, reportName)
 			return true
@@ -812,10 +811,7 @@ clean test"
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                         putNotNull(pipelineMap, "overrideFields", overrideFields)
 
-						//context.println("initialized ${filePath} suite to pipeline run...")
-						//context.println("pipelines size1: " + listPipelines.size())
 						registerPipeline(currentSuite, pipelineMap)
-						//context.println("pipelines size2: " + listPipelines.size())
 					}
 
 				}
