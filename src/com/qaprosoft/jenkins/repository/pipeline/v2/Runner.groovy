@@ -608,7 +608,7 @@ clean test"
 			publishReports('**/reports/qa/emailable-report.html', "${etafReport}", false)
 			publishReports('**/artifacts/**', 'eTAF_Artifacts', false)
 
-            publishTestNgReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
+            publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report', true)
             publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report', true)
 
 		}
@@ -648,7 +648,7 @@ clean test"
 			def reportDir = new File(reports[i].path).getParentFile().getPath()
 			context.println "Report File Found, Publishing " + reports[i].path
 			def reportIndex = ""
-			if (i == 0) {
+			if (i > 0) {
 				reportIndex = "_" + i
 			}
             context.println "REPORT INDEX" + reportIndex
@@ -661,7 +661,7 @@ clean test"
         for (int i = 0; i < reports.length; i++) {
             def reportDir = new File(reports[i].path).getParentFile().getPath()
             context.println "Report File Found, Publishing " + reports[i].path
-            if (isTestNg && i > 0){
+            if (isTestNg && i == 0){
                 def reportIndex = "_" + i
                 reportName = reportName + reportIndex
                 context.println "REPORT NAME" + reportName
