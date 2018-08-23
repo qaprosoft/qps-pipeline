@@ -91,7 +91,8 @@ class Runner extends Executor {
     }
 
     protected def parseFolderName() {
-        def array = this.getWorkspace().split("/jobs")
+        def array = this.getWorkspace().split("jobs/")
+        context.println "ARRAY" + array
         def folderName = ''
         for(def i=1; i<array.size(); i++){
             folderName + array[i]
