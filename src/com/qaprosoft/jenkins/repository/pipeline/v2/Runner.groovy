@@ -72,6 +72,8 @@ class Runner extends Executor {
 
 					listPipelines = sortPipelineList(listPipelines)
 
+                    setFolderName(parseFolderName())
+
 					this.executeStages(folderName)
 				} else {
 					context.println("No Test Suites Found to Scan...")
@@ -83,6 +85,19 @@ class Runner extends Executor {
 	protected void beforeRunJob() {
 		// do nothing
 	}
+
+    protected void setFolderName(folderName){
+        this.folderName = folderName
+    }
+
+    protected def parseFolderName() {
+        def array = this.getWorkspace().split("jobs/")
+        def folderName = ""
+        for (def i = 1; i < array.size() - 1; i++){
+            folderName  = folderName + array[i]
+        }
+        return folderName.replaceAll(".\$","")
+    }
 
 	public void runJob() {
 		context.println("Runner->runJob")
@@ -593,7 +608,6 @@ clean test"
 	protected void reportingResults() {
 		context.stage('Results') {
 			publishReport('**/reports/qa/emailable-report.html', "${etafReport}")
-			
 			publishReport('**/artifacts/**', 'eTAF_Artifacts')
 			
 			publishTestNgReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
@@ -633,13 +647,13 @@ clean test"
 	protected void publishTestNgReports(String pattern, String reportName) {
 		def reports = context.findFiles(glob: "${pattern}")
 		for (int i = 0; i < reports.length; i++) {
-			def reportDir = new File(reports[i].path).getParentFile()
+			def reportDir = new File(reports[i].path).getParentFile().getPath()
 			context.echo "Report File Found, Publishing ${reports[i].path}"
 			def reportIndex = ""
 			if (i > 0) {
 				reportIndex = "_" + i
 			}
-			context.publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${reportDir}", reportFiles: "${reports[i].name}", reportName: "${reportName}${reportIndex}"])
+            context.publishHTML getReportParameters(reportDir, reports[i].name, reportName + reportIndex)
 		}
 	}
 
@@ -648,19 +662,29 @@ clean test"
 		def files = context.findFiles(glob: "${pattern}")
 		if(files.length == 1) {
 			def reportFile = files[0]
-			def reportDir = new File(reportFile.path).getParentFile()
+			def reportDir = new File(reportFile.path).getParentFile().getPath()
 			context.echo "Report File Found, Publishing ${reportFile.path}"
-			context.publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${reportDir}", reportFiles: "${reportFile.name}", reportName: "${reportName}"])
-			return true;
+            context.publishHTML getReportParameters(reportDir, reportFile.name, reportName)
+			return true
 		} else if (files.length > 1) {
 			context.echo "ERROR: too many report file discovered! count: ${files.length}"
-			return false;
+			return false
 		} else {
 			context.echo "No report file discovered: ${reportName}"
-			return false;
+			return false
 		}
 	}
-	
+
+    protected def getReportParameters(reportDir, reportFiles, reportName) {
+        def reportParameters = [allowMissing: false,
+                                alwaysLinkToLastBuild: false,
+                                keepAll: true,
+                                reportDir: reportDir,
+                                reportFiles: reportFiles,
+                                reportName: reportName]
+        return reportParameters
+    }
+
 	@NonCPS
 	protected def sortPipelineList(List pipelinesList) {
 		context.println("Finished Dynamic Mapping: " + pipelinesList.dump())
@@ -805,9 +829,7 @@ clean test"
                         putNotNull(pipelineMap, "overrideFields", overrideFields)
 
 						//context.println("initialized ${filePath} suite to pipeline run...")
-						//context.println("pipelines size1: " + listPipelines.size())
 						registerPipeline(currentSuite, pipelineMap)
-						//context.println("pipelines size2: " + listPipelines.size())
 					}
 
 				}
