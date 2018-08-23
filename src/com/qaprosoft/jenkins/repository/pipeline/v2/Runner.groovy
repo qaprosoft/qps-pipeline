@@ -91,8 +91,12 @@ class Runner extends Executor {
     }
 
     protected def parseFolderName() {
-        def array = this.getWorkspace().split("/")
-        return array[array.length - 4];
+        def array = this.getWorkspace().split("/jobs")
+        def folderName = ''
+        for(i=1; i<array.size(); i++){
+            folderName + array[i]
+        }
+        return folderName
     }
 
 	public void runJob() {
