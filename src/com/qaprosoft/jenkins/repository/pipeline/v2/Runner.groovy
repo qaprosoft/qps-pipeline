@@ -646,7 +646,7 @@ clean test"
 		def reports = context.findFiles(glob: "${pattern}")
 		for (int i = 0; i < reports.length; i++) {
 			def reportDir = new File(reports[i].path).getParentFile().getPath()
-			context.echo "Report File Found, Publishing ${reports[i].path}"
+			context.println "Report File Found, Publishing " + reports[i].path
 			def reportIndex = ""
 			if (i > 0) {
 				reportIndex = "_" + i
@@ -656,17 +656,15 @@ clean test"
 	}
 
 
-	protected boolean publishReport(String pattern, String reportName) {
+	protected void publishReport(String pattern, String reportName) {
 		def files = context.findFiles(glob: "${pattern}")
         if (files.length == 0){
             context.println "No report file discovered: " + reportName
-            return false
         } else {
             files.each { reportFile ->
                 def reportDir = new File(reportFile.path).getParentFile().getPath()
-                context.echo "Report File Found, Publishing ${reportFile.path}"
+                context.println "Report File Found, Publishing " + reportFile.path
                 context.publishHTML getReportParameters(reportDir, reportFile.name, reportName)
-                return true
             }
         }
 	}
