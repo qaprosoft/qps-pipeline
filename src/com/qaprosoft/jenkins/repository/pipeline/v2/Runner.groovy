@@ -660,10 +660,10 @@ clean test"
         for (int i = 0; i < reports.length; i++) {
             def reportDir = new File(reports[i].path).getParentFile().getPath()
             context.println "Report File Found, Publishing " + reports[i].path
-            def reportIndex = ""
             if (isTestNg && i > 0){
-                reportIndex = "_" + i
+                def reportIndex = "_" + i
                 reportName = reportName + reportIndex
+                context.println "REPORT NAME" + reportName
             }
             context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
         }
