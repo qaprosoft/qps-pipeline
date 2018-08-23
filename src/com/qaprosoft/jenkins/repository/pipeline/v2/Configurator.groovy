@@ -117,8 +117,12 @@ public class Configurator {
 			if (envVars.get(enumValue.getKey()) != null) {
 				vars.put(enumValue.getKey(), envVars.get(enumValue.getKey()))
 			}
-			
 		}
+		
+		//register into the Configurator.vars personal token of the current user
+		def userId = Configurator.get("BUILD_USER_ID")
+		def token_name = 'token_' + "${userId}"
+		Configurator.put(token_name, envVars.get(token_name))
 
         if (context.env.getEnvironment().get("JENKINS_URL").contains("https")) {
             vars.put("screen_record_host", "https://\${QPS_HOST}/video/%s.mp4")
