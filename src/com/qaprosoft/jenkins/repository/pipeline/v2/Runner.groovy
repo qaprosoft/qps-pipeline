@@ -605,11 +605,11 @@ clean test"
 	
 	protected void reportingResults() {
 		context.stage('Results') {
-			publishReport('**/reports/qa/emailable-report.html', "${etafReport}")
-			publishReport('**/artifacts/**', 'eTAF_Artifacts')
-			
-			publishTestNgReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
-			publishTestNgReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
+			publishReports('**/reports/qa/emailable-report.html', "${etafReport}", false)
+			publishReports('**/artifacts/**', 'eTAF_Artifacts', false)
+
+            publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report', true)
+            publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report', true)
 
 		}
 	}
@@ -655,6 +655,19 @@ clean test"
 		}
 	}
 
+    protected void publishReports(String pattern, String reportName, boolean isTestNg) {
+        def reports = context.findFiles(glob: "${pattern}")
+        for (int i = 0; i < reports.length; i++) {
+            def reportDir = new File(reports[i].path).getParentFile().getPath()
+            context.println "Report File Found, Publishing " + reports[i].path
+            def reportIndex = ""
+            if (isTestNg && i > 0){
+                reportIndex = "_" + i
+                reportName = reportName + reportIndex
+            }
+            context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
+        }
+    }
 
 	protected void publishReport(String pattern, String reportName) {
 		def files = context.findFiles(glob: "${pattern}")
