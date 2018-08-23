@@ -214,7 +214,7 @@ class Runner extends Executor {
 		return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
 	}
 	
-	protected void prepareForMobile(params) {
+	protected void prepareForMobile() {
 		def devicePool = Configurator.get("devicePool")
 		def defaultPool = Configurator.get("DefaultPool")
 		def platform = Configurator.get("platform")
