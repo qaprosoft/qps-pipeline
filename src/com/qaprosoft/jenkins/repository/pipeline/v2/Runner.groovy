@@ -85,7 +85,7 @@ class Runner extends Executor {
 	}
 
 	public void runJob() {
-		
+		context.println("Runner->runJob")
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
 		
