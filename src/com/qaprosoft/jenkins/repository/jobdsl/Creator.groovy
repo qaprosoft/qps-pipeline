@@ -17,7 +17,6 @@ factories.each{
 			println("BINGO! Disney is here: " + it.value.clazz)
 		}
 		def factory = Class.forName(it.value.clazz)?.newInstance(this)
-		//def factory = Class.forName(it.value.getClass())?.newInstance(this)
 		println("before load: " + it.value.dump())
 		factory.load(it.value)
 		println("factory: " + factory.dump())

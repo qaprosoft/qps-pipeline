@@ -54,10 +54,5 @@ public class DslFactory {
 	public setClass(_clazz) {
 		clazz = _clazz
 	}
-	
-	public String getClass() {
-		return clazz
-	}
-
 
 }
