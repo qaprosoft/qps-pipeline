@@ -36,11 +36,12 @@ class Runner extends Executor {
 	}
 	
 	public void runCron() {
-        context.println("DIRECTORY" + context.pwd())
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
-			scmClient.clone()
+            context.println("DIRECTORY" + context.pwd())
+
+            scmClient.clone()
 
 			def WORKSPACE = this.getWorkspace()
 			context.println("WORKSPACE: " + WORKSPACE)
