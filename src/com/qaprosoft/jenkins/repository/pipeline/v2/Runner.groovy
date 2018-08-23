@@ -643,14 +643,13 @@ clean test"
 	}
 
     protected void publishReports(String pattern, String reportName) {
-        def reports = context.findFiles(glob: "${pattern}")
+        def reports = context.findFiles(glob: pattern)
         for (int i = 0; i < reports.length; i++) {
             def reportDir = new File(reports[i].path).getParentFile().getPath()
             context.println "Report File Found, Publishing " + reports[i].path
             if (i > 0){
                 def reportIndex = "_" + i
                 reportName = reportName + reportIndex
-                context.println "REPORT NAME" + reportName
             }
             context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
         }
