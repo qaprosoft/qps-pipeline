@@ -72,6 +72,8 @@ class Runner extends Executor {
 
 					listPipelines = sortPipelineList(listPipelines)
 
+                    setFolderName(parseFolderName())
+
 					this.executeStages(folderName)
 				} else {
 					context.println("No Test Suites Found to Scan...")
@@ -88,7 +90,7 @@ class Runner extends Executor {
         this.folderName = folderName
     }
 
-    protected def getFolderName() {
+    protected def parseFolderName() {
         def array = this.getWorkspace().split("/")
         return array[array.length - 4];
     }
