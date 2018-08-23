@@ -97,7 +97,7 @@ class Runner extends Executor {
             folderName  = folderName + array[i]
         }
         context.println "FOLDER NAME" + folderName
-        folderName.replaceAll(".\$","")
+        folderName.replaceAll("/\\\\z","")
         return folderName
     }
 
