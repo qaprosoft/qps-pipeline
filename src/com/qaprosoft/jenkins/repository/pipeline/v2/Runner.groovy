@@ -651,6 +651,7 @@ clean test"
 			if (i > 0) {
 				reportIndex = "_" + i
 			}
+            context.println "REPORT INDEX" + reportIndex
             context.publishHTML getReportParameters(reportDir, reports[i].name, reportName + reportIndex)
 		}
 	}
