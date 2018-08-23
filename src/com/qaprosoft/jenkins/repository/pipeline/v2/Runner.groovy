@@ -215,6 +215,7 @@ class Runner extends Executor {
 	}
 	
 	protected void prepareForMobile() {
+		context.println("Runner->prepareForMobile")
 		def devicePool = Configurator.get("devicePool")
 		def defaultPool = Configurator.get("DefaultPool")
 		def platform = Configurator.get("platform")
@@ -249,6 +250,7 @@ class Runner extends Executor {
 	}
 
 	protected void prepareForAndroid() {
+		context.println("Runner->prepareForAndroid")
 		Configurator.set("mobile_app_clear_cache", "true")
 
 		Configurator.set("capabilities.platformName", "ANDROID")
@@ -263,7 +265,7 @@ class Runner extends Executor {
 	}
 
 	protected void prepareForiOS() {
-
+		context.println("Runner->prepareForiOS")
 		Configurator.set("capabilities.platform", "IOS")
 		Configurator.set("capabilities.platformName", "IOS")
 		Configurator.set("capabilities.deviceName", "*")
