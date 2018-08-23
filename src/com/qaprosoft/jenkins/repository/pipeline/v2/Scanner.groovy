@@ -27,6 +27,7 @@ class Scanner extends Executor {
 	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
 	
 	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy"
+	protected def additionalClasspath = "qps-pipeline/src"
 
     public Scanner(context) {
 		super(context)
@@ -200,7 +201,7 @@ class Scanner extends Executor {
 
 				context.println("creatorTarget: " + creatorTarget)
 				//TODO: test carefully auto-removal for jobs/views and configs
-				context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+				context.jobDsl additionalClasspath: "${additionalClasspath}", \
 					removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
 					targets: "${creatorTarget}", \
                     ignoreExisting: ignoreExisting
@@ -228,7 +229,9 @@ class Scanner extends Executor {
 		dslObjects.put(name, object)
 	}
 	
-	protected void setCreatorTarget(target) {
-		this.creatorTarget = target
+	protected void setDslSettings(additionalClasspath, targets) {
+		this.additionalClasspath = additionalClasspath
+		this.creatorTarget = targets
 	}
+	
 }
