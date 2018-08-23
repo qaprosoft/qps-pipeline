@@ -198,6 +198,7 @@ class Scanner extends Executor {
 				// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
+				context.println("creatorTarget: " + creatorTarget)
 				//TODO: test carefully auto-removal for jobs/views and configs
 				context.jobDsl additionalClasspath: 'qps-pipeline/src', \
 					removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
