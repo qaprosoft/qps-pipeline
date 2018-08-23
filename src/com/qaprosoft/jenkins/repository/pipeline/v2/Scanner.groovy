@@ -201,10 +201,12 @@ class Scanner extends Executor {
 
 				context.println("creatorTarget: " + creatorTarget)
 				//TODO: test carefully auto-removal for jobs/views and configs
-				context.jobDsl additionalClasspath: "${additionalClasspath}", \
-					removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
-					targets: "${creatorTarget}", \
-                    ignoreExisting: ignoreExisting
+				context.jobDsl additionalClasspath: additionalClasspath,
+                        removedConfigFilesAction: removedConfigFilesAction,
+                        removedJobAction: removedJobAction,
+                        removedViewAction: removedViewAction,
+                        targets: creatorTarget,
+                        ignoreExisting: ignoreExisting
 			}
 		}
 	}
