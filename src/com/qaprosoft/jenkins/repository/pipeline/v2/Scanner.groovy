@@ -53,7 +53,7 @@ class Scanner extends Executor {
 		}
 	}
 
-	def clone() {
+	protected void clone() {
 		scmClient.clone(false)
 
 		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
@@ -227,4 +227,7 @@ class Scanner extends Executor {
 		dslObjects.put(name, object)
 	}
 	
+	protected void setCreatorTarget(target) {
+		this.creatorTarget = target
+	}
 }
