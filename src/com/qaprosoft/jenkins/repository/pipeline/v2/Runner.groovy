@@ -94,11 +94,10 @@ class Runner extends Executor {
         def array = this.getWorkspace().split("jobs/")
         context.println "ARRAY" + array
         def folderName = ""
-        for(def i=1; i<array.size(); i++){
+        for(def i = 1; i < array.size(); i++){
             folderName  = folderName + array[i]
-            context.println "FOLDER NAME" + folderName
         }
-        return folderName
+        return folderName.split("/workspace")[0]
     }
 
 	public void runJob() {
