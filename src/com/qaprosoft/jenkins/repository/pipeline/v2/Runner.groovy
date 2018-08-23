@@ -88,7 +88,7 @@ class Runner extends Executor {
 
     protected def getFolderName() {
         def array = this.getWorkspace().split("/")
-        return array[array.length - 2];
+        return array[array.length - 4];
     }
 
 	public void runJob() {
