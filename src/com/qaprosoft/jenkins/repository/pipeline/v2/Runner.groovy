@@ -96,6 +96,7 @@ class Runner extends Executor {
         for(def i = 1; i < array.size() - 1; i++){
             folderName  = folderName + array[i]
         }
+        context.println "FOLDER NAME" + folderName
         folderName.replaceAll(".\$","")
         return folderName
     }
