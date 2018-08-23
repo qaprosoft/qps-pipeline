@@ -95,7 +95,7 @@ class Runner extends Executor {
         context.println "ARRAY" + array
         def folderName = ''
         for(def i=1; i<array.size(); i++){
-            folderName + array[i]
+            folderName.concat(array[i])
             context.println "FOLDER NAME" + folderName
         }
         return folderName
