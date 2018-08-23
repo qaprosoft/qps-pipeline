@@ -608,7 +608,7 @@ clean test"
 			publishReports('**/reports/qa/emailable-report.html', "${etafReport}", false)
 			publishReports('**/artifacts/**', 'eTAF_Artifacts', false)
 
-            publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report', true)
+            publishTestNgReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report', true)
 
 		}
