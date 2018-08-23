@@ -34,7 +34,10 @@ class GitHub implements ISCM {
 			} else {
 
 				def token_name = 'token_' + "${userId}"
-				def token_value = Configurator.get(token_name)
+				context.println("token_name: " + token_name)
+				
+				//register into the Configurator.vars personal token of the current user
+				def token_value = context.env.getEnvironment().get(token_name)
 
 				//if token_value contains ":" as delimiter then redefine build_user_id using the 1st part
 				if (token_value != null && token_value.contains(":")) {
