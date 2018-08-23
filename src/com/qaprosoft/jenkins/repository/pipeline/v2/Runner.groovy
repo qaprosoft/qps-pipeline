@@ -637,7 +637,12 @@ clean test"
 			if (i > 0) {
 				reportIndex = "_" + i
 			}
-			context.publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${reportDir}", reportFiles: "${reports[i].name}", reportName: "${reportName}${reportIndex}"])
+			context.publishHTML allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: reportDir,
+                    reportFiles: reports[i].name,
+                    reportName: reportName + reportIndex
 		}
 	}
 
@@ -648,7 +653,12 @@ clean test"
 			def reportFile = files[0]
 			def reportDir = new File(reportFile.path).getParentFile()
 			context.echo "Report File Found, Publishing ${reportFile.path}"
-			context.publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${reportDir}", reportFiles: "${reportFile.name}", reportName: "${reportName}"])
+			context.publishHTML allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: reportDir,
+                    reportFiles: reportFile.name,
+                    reportName: reportName
 			return true;
 		} else if (files.length > 1) {
 			context.echo "ERROR: too many report file discovered! count: ${files.length}"
