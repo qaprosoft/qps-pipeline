@@ -25,6 +25,9 @@ class Scanner extends Executor {
 	
 	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
 	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
+	
+	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy"
+	protected def additionalClasspath = "qps-pipeline/src"
 
     public Scanner(context) {
 		super(context)
@@ -36,12 +39,7 @@ class Scanner extends Executor {
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
-				scmClient.clone(false)
-
-				String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
-				String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
-
-				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+				this.prepare()
 
                 def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
 
@@ -56,6 +54,15 @@ class Scanner extends Executor {
 		}
 	}
 
+	protected void prepare() {
+		scmClient.clone(false)
+
+		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
+		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
+
+		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+	}
+	
 	protected void scan() {
 
 		context.stage("Scan Repository") {
@@ -74,7 +81,7 @@ class Scanner extends Executor {
 
 			def jobFolder = Configurator.get("folder")
 
-			dslObjects.put(jobFolder, new FolderFactory(jobFolder, ""))
+			registerObject(jobFolder, new FolderFactory(jobFolder, ""))
 
 			def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
@@ -129,8 +136,8 @@ class Scanner extends Executor {
 				context.println("testngFolder: " + testngFolder)
 
 				// VIEWS
-				dslObjects.put("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
-				dslObjects.put(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
+				registerObject("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
+				registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 				
 				//TODO: create default personalized view here
 
@@ -160,14 +167,14 @@ class Scanner extends Executor {
 							}
 							
 							// put standard views factory into the map
-							dslObjects.put(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
-							dslObjects.put(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
+							registerObject(zafira_project, new ListViewFactory(jobFolder, zafira_project, ".*${zafira_project}.*"))
+							registerObject(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 		
 							//pipeline job
 							//TODO: review each argument to TestJobFactory and think about removal
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                             def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
-							dslObjects.put(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+							registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 							
 							//cron job
 							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null") 
@@ -176,7 +183,7 @@ class Scanner extends Executor {
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
 									def cronDesc = "project: ${project}; type: cron"
-									dslObjects.put(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
+									registerObject(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
 								}
 							}
 						}
@@ -192,10 +199,11 @@ class Scanner extends Executor {
 				// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
+				context.println("creatorTarget: " + creatorTarget)
 				//TODO: test carefully auto-removal for jobs/views and configs
-				context.jobDsl additionalClasspath: 'qps-pipeline/src', \
+				context.jobDsl additionalClasspath: "${additionalClasspath}", \
 					removedConfigFilesAction: "${removedConfigFilesAction}", removedJobAction: "${removedJobAction}", removedViewAction: "${removedViewAction}", \
-					targets: 'qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy', \
+					targets: "${creatorTarget}", \
                     ignoreExisting: ignoreExisting
 			}
 		}
@@ -217,6 +225,13 @@ class Scanner extends Executor {
 		return cronPipelineScript
 	}
 	
+	protected void registerObject(name, object) {
+		dslObjects.put(name, object)
+	}
 	
+	protected void setDslSettings(additionalClasspath, targets) {
+		this.additionalClasspath = additionalClasspath
+		this.creatorTarget = targets
+	}
 	
 }
