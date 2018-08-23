@@ -119,12 +119,6 @@ public class Configurator {
 			}
 		}
 		
-		context.println(envVars.dump())
-		//register into the Configurator.vars personal token of the current user
-		def userId = envVars.get("BUILD_USER_ID")
-		def token_name = 'token_' + "${userId}"
-		Configurator.put(token_name, envVars.get(token_name))
-
         if (context.env.getEnvironment().get("JENKINS_URL").contains("https")) {
             vars.put("screen_record_host", "https://\${QPS_HOST}/video/%s.mp4")
             vars.put("vnc_protocol", "wss")
