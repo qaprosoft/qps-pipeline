@@ -38,7 +38,7 @@ class Scanner extends Executor {
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
-				this.clone()
+				this.prepare()
 
                 def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
 
@@ -53,7 +53,7 @@ class Scanner extends Executor {
 		}
 	}
 
-	protected void clone() {
+	protected void prepare() {
 		scmClient.clone(false)
 
 		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
