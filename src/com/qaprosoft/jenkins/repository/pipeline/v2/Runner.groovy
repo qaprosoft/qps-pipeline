@@ -36,7 +36,7 @@ class Runner extends Executor {
 	}
 	
 	public void runCron() {
-        context.println("DIRECTORY" + context.pwd)
+        context.println("DIRECTORY" + context.pwd())
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
