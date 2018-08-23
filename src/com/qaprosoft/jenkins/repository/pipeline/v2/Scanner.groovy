@@ -26,8 +26,6 @@ class Scanner extends Executor {
 	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
 	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
 	
-	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy"
-
     public Scanner(context) {
 		super(context)
 		this.context = context
@@ -38,7 +36,12 @@ class Scanner extends Executor {
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
-				this.clone()
+				scmClient.clone(false)
+
+				String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
+				String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
+
+				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 
                 def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
 
@@ -51,15 +54,6 @@ class Scanner extends Executor {
 				this.clean()
 			}
 		}
-	}
-
-	def clone() {
-		scmClient.clone(false)
-
-		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
-		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
-
-		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 	}
 	
 	protected void scan() {
