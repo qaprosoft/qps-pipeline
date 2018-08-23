@@ -41,7 +41,7 @@ class Runner extends Executor {
 		context.node(nodeName) {
             context.println("DIRECTORY" + context.pwd())
             context.println("CONTEXT DUMP" + context.dump())
-            context.println("BINDING DUMP" + context.binding.dump())
+            context.println("BINDING DUMP" + context.binding.getVariables().dump())
 
             scmClient.clone()
 
