@@ -58,6 +58,7 @@ class Scanner extends Executor {
 		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
 
 		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+		return
 	}
 	
 	protected void scan() {
