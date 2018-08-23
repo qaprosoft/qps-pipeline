@@ -656,13 +656,13 @@ clean test"
 	protected void publishTestNgReports(String pattern, String reportName) {
 		def reports = context.findFiles(glob: "${pattern}")
 		for (int i = 0; i < reports.length; i++) {
-			def reportDir = new File(reports[i].path).getParentFile()
+			def reportDir = new File(reports[i].path).getParentFile().getPath()
 			context.echo "Report File Found, Publishing ${reports[i].path}"
 			def reportIndex = ""
 			if (i > 0) {
 				reportIndex = "_" + i
 			}
-			context.publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${reportDir}", reportFiles: "${reports[i].name}", reportName: "${reportName}${reportIndex}"])
+            context.publishHTML getReportParameters(reportDir, reports[i].name, reportName + reportIndex)
 		}
 	}
 
@@ -671,16 +671,16 @@ clean test"
 		def files = context.findFiles(glob: "${pattern}")
 		if(files.length == 1) {
 			def reportFile = files[0]
-			def reportDir = new File(reportFile.path).getParentFile()
+			def reportDir = new File(reportFile.path).getParentFile().getPath()
 			context.echo "Report File Found, Publishing ${reportFile.path}"
-			context.publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: "${reportDir}", reportFiles: "${reportFile.name}", reportName: "${reportName}"])
-			return true;
+            context.publishHTML getReportParameters(reportDir, reportFile.name, reportName)
+			return true
 		} else if (files.length > 1) {
 			context.echo "ERROR: too many report file discovered! count: ${files.length}"
-			return false;
+			return false
 		} else {
 			context.echo "No report file discovered: ${reportName}"
-			return false;
+			return false
 		}
 	}
 
