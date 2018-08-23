@@ -22,6 +22,6 @@ factories.each{
 		println("factory after load: " + factory.dump())
 		factory.create()
 	} catch (Exception e) {
-		e.printStackTrace()
+		println(e.printStackTrace())
 	}
 }
