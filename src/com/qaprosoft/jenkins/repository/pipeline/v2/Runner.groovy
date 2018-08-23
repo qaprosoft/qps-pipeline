@@ -658,19 +658,17 @@ clean test"
 
 	protected boolean publishReport(String pattern, String reportName) {
 		def files = context.findFiles(glob: "${pattern}")
-		if(files.length == 1) {
-			def reportFile = files[0]
-			def reportDir = new File(reportFile.path).getParentFile().getPath()
-			context.echo "Report File Found, Publishing ${reportFile.path}"
-            context.publishHTML getReportParameters(reportDir, reportFile.name, reportName)
-			return true
-		} else if (files.length > 1) {
-			context.echo "ERROR: too many report file discovered! count: ${files.length}"
-			return false
-		} else {
-			context.echo "No report file discovered: ${reportName}"
-			return false
-		}
+        if (files.length == 0){
+            context.println "No report file discovered: " + reportName
+            return false
+        } else {
+            files.each { reportFile ->
+                def reportDir = new File(reportFile.path).getParentFile().getPath()
+                context.echo "Report File Found, Publishing ${reportFile.path}"
+                context.publishHTML getReportParameters(reportDir, reportFile.name, reportName)
+                return true
+            }
+        }
 	}
 
     protected def getReportParameters(reportDir, reportFiles, reportName) {
