@@ -36,12 +36,7 @@ class Scanner extends Executor {
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
-				scmClient.clone(false)
-
-				String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
-				String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
-
-				scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+				this.clone()
 
                 def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
 
@@ -56,6 +51,15 @@ class Scanner extends Executor {
 		}
 	}
 
+	protected void clone() {
+		scmClient.clone(false)
+
+		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
+		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
+
+		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+	}
+	
 	protected void scan() {
 
 		context.stage("Scan Repository") {
