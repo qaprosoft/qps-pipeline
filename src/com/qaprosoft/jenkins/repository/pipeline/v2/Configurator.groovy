@@ -120,7 +120,7 @@ public class Configurator {
 		}
 		
 		//register into the Configurator.vars personal token of the current user
-		def userId = Configurator.get("BUILD_USER_ID")
+		def userId = envVars.get("BUILD_USER_ID")
 		def token_name = 'token_' + "${userId}"
 		Configurator.put(token_name, envVars.get(token_name))
 
