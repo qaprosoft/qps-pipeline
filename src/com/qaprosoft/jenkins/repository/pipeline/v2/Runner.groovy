@@ -93,7 +93,7 @@ class Runner extends Executor {
     protected def parseFolderName() {
         def array = this.getWorkspace().split("jobs/")
         def folderName = ""
-        for(def i = 1; i < array.size() - 1; i++){
+        for (def i = 1; i < array.size() - 1; i++){
             folderName  = folderName + array[i]
         }
         folderName = folderName.replaceAll(".\$","")
