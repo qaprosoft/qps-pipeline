@@ -605,11 +605,11 @@ clean test"
 	
 	protected void reportingResults() {
 		context.stage('Results') {
-			publishReports('**/reports/qa/emailable-report.html', "${etafReport}", false)
-			publishReports('**/artifacts/**', 'eTAF_Artifacts', false)
+			publishReports('**/reports/qa/emailable-report.html', "${etafReport}")
+			publishReports('**/artifacts/**', 'eTAF_Artifacts')
 
-            publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report', true)
-            publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report', true)
+            publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
+            publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
 
 		}
 	}
@@ -642,6 +642,20 @@ clean test"
 		}
 	}
 
+    protected void publishReports(String pattern, String reportName) {
+        def reports = context.findFiles(glob: "${pattern}")
+        for (int i = 0; i < reports.length; i++) {
+            def reportDir = new File(reports[i].path).getParentFile().getPath()
+            context.println "Report File Found, Publishing " + reports[i].path
+            if (i > 0){
+                def reportIndex = "_" + i
+                reportName = reportName + reportIndex
+                context.println "REPORT NAME" + reportName
+            }
+            context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
+        }
+    }
+
 	protected void publishTestNgReports(String pattern, String reportName) {
 		def reports = context.findFiles(glob: "${pattern}")
 		for (int i = 0; i < reports.length; i++) {
@@ -655,20 +669,6 @@ clean test"
             context.publishHTML getReportParameters(reportDir, reports[i].name, reportName + reportIndex)
 		}
 	}
-
-    protected void publishReports(String pattern, String reportName, boolean isTestNg) {
-        def reports = context.findFiles(glob: "${pattern}")
-        for (int i = 0; i < reports.length; i++) {
-            def reportDir = new File(reports[i].path).getParentFile().getPath()
-            context.println "Report File Found, Publishing " + reports[i].path
-            if (isTestNg && i == 0){
-                def reportIndex = "_" + i
-                reportName = reportName + reportIndex
-                context.println "REPORT NAME" + reportName
-            }
-            context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
-        }
-    }
 
 	protected void publishReport(String pattern, String reportName) {
 		def files = context.findFiles(glob: "${pattern}")
