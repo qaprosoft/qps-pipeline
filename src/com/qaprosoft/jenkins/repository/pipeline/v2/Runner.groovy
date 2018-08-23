@@ -818,6 +818,7 @@ clean test"
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                         putNotNull(pipelineMap, "overrideFields", overrideFields)
 
+						//context.println("initialized ${filePath} suite to pipeline run...")
 						registerPipeline(currentSuite, pipelineMap)
 					}
 
