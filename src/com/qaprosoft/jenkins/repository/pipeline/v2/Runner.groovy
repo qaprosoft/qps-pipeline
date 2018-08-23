@@ -41,6 +41,11 @@ class Runner extends Executor {
 		context.node(nodeName) {
             context.println("DIRECTORY" + context.pwd())
             context.println("CONTEXT DUMP" + context.dump())
+            context.println("EXECUTION DUMP" + context.execution.dump())
+            context.println("BINDING DUMP" + context.binding.dump())
+
+
+
             scmClient.clone()
 
 			def WORKSPACE = this.getWorkspace()
