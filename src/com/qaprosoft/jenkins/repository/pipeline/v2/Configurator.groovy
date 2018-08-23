@@ -77,6 +77,7 @@ public class Configurator {
 		TIMEZONE("user.timezone", "UTC"),
 		
 		S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
+		HOCKEYAPP_LOCAL_STORAGE("hockeyapp_local_storage", "/opt/apk"),
 		
 		BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}"),
 
@@ -116,9 +117,8 @@ public class Configurator {
 			if (envVars.get(enumValue.getKey()) != null) {
 				vars.put(enumValue.getKey(), envVars.get(enumValue.getKey()))
 			}
-			
 		}
-
+		
         if (context.env.getEnvironment().get("JENKINS_URL").contains("https")) {
             vars.put("screen_record_host", "https://\${QPS_HOST}/video/%s.mp4")
             vars.put("vnc_protocol", "wss")

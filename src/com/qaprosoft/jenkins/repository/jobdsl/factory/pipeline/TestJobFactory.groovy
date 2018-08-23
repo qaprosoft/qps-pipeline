@@ -29,8 +29,9 @@ public class TestJobFactory extends PipelineFactory {
 	}
 	
 	def create() {
-		//TODO: try to move it under Configurator which is hard due to the unsupported NonCPS in jobdsl files
-        def selenium = "http://selenium-hub:4444"
+		_dslFactory.println("TestJobFactory->create")
+		
+		def selenium = _dslFactory.binding.variables.QPS_HUB
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 		
@@ -223,10 +224,7 @@ public class TestJobFactory extends PipelineFactory {
 						}
 					}
 				}
-
-				customPipelineParams(currentSuite, suiteOwner)
 			}
-
 		}
 		return pipelineJob
 	}
@@ -242,10 +240,6 @@ public class TestJobFactory extends PipelineFactory {
 		}
 
 		return prepCustomFields
-	}
-
-	protected void customPipelineParams(org.testng.xml.XmlSuite currentSuite, String suiteOwner) {
-		//do nothing here
 	}
 
 }
