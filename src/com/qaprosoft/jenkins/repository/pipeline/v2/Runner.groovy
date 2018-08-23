@@ -605,12 +605,10 @@ clean test"
 	
 	protected void reportingResults() {
 		context.stage('Results') {
-			publishReports('**/reports/qa/emailable-report.html', "${etafReport}")
-			publishReports('**/artifacts/**', 'eTAF_Artifacts')
-
+            publishReports('**/reports/qa/emailable-report.html', "${etafReport}")
+            publishReports('**/artifacts/**', 'eTAF_Artifacts')
             publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
-
 		}
 	}
 	
