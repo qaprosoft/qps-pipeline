@@ -1,7 +1,7 @@
 package com.qaprosoft.scm.github
 
 import com.qaprosoft.scm.ISCM
-import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
+import com.qaprosoft.jenkins.pipeline.Configurator
 
 class GitHub implements ISCM {
 	private def context;

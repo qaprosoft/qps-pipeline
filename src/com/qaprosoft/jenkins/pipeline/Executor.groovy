@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.repository.pipeline.v2
+package com.qaprosoft.jenkins.pipeline
 
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser;
@@ -6,7 +6,6 @@ import org.testng.xml.XmlSuite;
 import com.cloudbees.groovy.cps.NonCPS
 
 import com.qaprosoft.scm.ISCM
-import sun.awt.CausedFocusEvent
 
 import java.nio.file.FileSystems
 import java.nio.file.Path
