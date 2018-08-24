@@ -32,7 +32,6 @@ class GitHub implements ISCM {
 			context.println("forked_repo: " + fork)
 			if (!fork) {
                 scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
-                context.println "CHECKOUT: " + checkoutData
 			} else {
 
 				def token_name = 'token_' + "${userId}"
