@@ -43,8 +43,8 @@ public class TestJobFactory extends PipelineFactory {
 		def pipelineJob = super.create()
 		pipelineJob.with {
 
-			println "ANDROID DEVICE LIST" + ProxyInfo.getDevicesList(selenium, 'ANDROID')
-			println "Ios DEVICE LIST" + ProxyInfo.getDevicesList(selenium, 'iOS')
+			_dslFactory.println "ANDROID DEVICE LIST" + ProxyInfo.getDevicesList(selenium, 'ANDROID')
+			_dslFactory.println "Ios DEVICE LIST" + ProxyInfo.getDevicesList(selenium, 'iOS')
 
 			def scheduling = currentSuite.getParameter("scheduling")
 			if (scheduling != null) {
@@ -96,7 +96,7 @@ public class TestJobFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-				println("jobType: " + jobType)
+				_dslFactory.println("jobType: " + jobType)
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -199,12 +199,12 @@ public class TestJobFactory extends PipelineFactory {
 
 				def paramsMap = [:]
 				paramsMap = currentSuite.getAllParameters()
-				println("paramsMap: " + paramsMap)
+				_dslFactory.println("paramsMap: " + paramsMap)
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-					println("param: " + param)
+					_dslFactory.println("param: " + param)
 					def delimitor = "::"
 					if (param.key.contains(delimitor)) {
 						def (type, name, desc) = param.key.split(delimitor)
