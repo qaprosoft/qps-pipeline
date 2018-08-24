@@ -17,6 +17,7 @@ class ProxyInfo {
 
 		try {
             if (deviceList.length == 0) {
+                println "1"
                 def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
                 json.each {
                     if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
@@ -24,13 +25,15 @@ class ProxyInfo {
                         deviceList.add(it.configuration.capabilities.browserName[0]);
                     }
                 }
+                println  "DEVICE LIST" + baseDeviceList + deviceList.sort()
             }
 		} catch (Exception e) {
+            println "2"
 			//TODO: find a way to write message in static methods
 			println(e.getMessage())
 		}
 
-        println  "DEVICE LIST" + baseDeviceList + deviceList.sort()
+        println "3"
 		return baseDeviceList + deviceList.sort()
 	}
 }
