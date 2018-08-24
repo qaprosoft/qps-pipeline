@@ -16,7 +16,7 @@ class ProxyInfo {
 		def proxyInfoUrl = selenium + "/grid/admin/ProxyInfo"
 
 		try {
-            if (deviceList.length != 0) {
+            if (deviceList.length == 0) {
                 def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
                 json.each {
                     if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
