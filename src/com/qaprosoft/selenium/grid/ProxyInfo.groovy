@@ -10,13 +10,13 @@ class ProxyInfo {
 	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
 	public static List<String> getDevicesList(String selenium, String platform) {
 
-        println("CALL")
+        echo ("CALL")
 
         //TODO: reuse selenium host/port/protocol from env jobVars
 		def proxyInfoUrl = selenium + "/grid/admin/ProxyInfo"
 
 		try {
-            if (deviceList.length == 0) {
+            if (deviceList.size() == 0) {
                 println "1"
                 def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
                 json.each {
