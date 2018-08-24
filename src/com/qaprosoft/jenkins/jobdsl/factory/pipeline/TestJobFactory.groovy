@@ -30,7 +30,8 @@ public class TestJobFactory extends PipelineFactory {
 	
 	def create() {
 		_dslFactory.println("TestJobFactory->create")
-		
+		println "ANDROID DEVICE LIST" + ProxyInfo.getDevicesList(selenium, 'ANDROID')
+		println "Ios DEVICE LIST" + ProxyInfo.getDevicesList(selenium, 'iOS')
 		def selenium = _dslFactory.binding.variables.QPS_HUB
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
