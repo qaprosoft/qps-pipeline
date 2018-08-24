@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.repository.pipeline.v2
+package com.qaprosoft.jenkins.pipeline
 
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.XmlSuite;
@@ -6,10 +6,7 @@ import org.testng.xml.XmlSuite;
 import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 
-import com.qaprosoft.scm.github.GitHub;
-import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
-import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
-import com.qaprosoft.jenkins.repository.pipeline.v2.OS
+import com.qaprosoft.scm.github.GitHub
 
 class Runner extends Executor {
 	//ci_run_id  param for unique test run identification
