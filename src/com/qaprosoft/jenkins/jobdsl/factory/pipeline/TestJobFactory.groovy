@@ -43,9 +43,6 @@ public class TestJobFactory extends PipelineFactory {
 		def pipelineJob = super.create()
 		pipelineJob.with {
 
-			_dslFactory.println "ANDROID DEVICE LIST" + ProxyInfo.getDevicesList(selenium, 'ANDROID')
-			_dslFactory.println "Ios DEVICE LIST" + ProxyInfo.getDevicesList(selenium, 'iOS')
-
 			def scheduling = currentSuite.getParameter("scheduling")
 			if (scheduling != null) {
 				triggers { cron(scheduling) }
