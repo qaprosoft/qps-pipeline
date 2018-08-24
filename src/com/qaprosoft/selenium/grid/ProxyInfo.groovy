@@ -10,7 +10,7 @@ class ProxyInfo {
 	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
 	public static List<String> getDevicesList(String selenium, String platform) {
 
-		println("SELENIUM" + selenium)
+        println("CALL")
 
         //TODO: reuse selenium host/port/protocol from env jobVars
 		def proxyInfoUrl = selenium + "/grid/admin/ProxyInfo"
