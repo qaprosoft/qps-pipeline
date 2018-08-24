@@ -58,9 +58,6 @@ class GitHub implements ISCM {
 			Configurator.set("git_url", gitUrl)
 			Configurator.set("scm_url", gitUrl)
             Configurator.set("git_commit", scmVars.GIT_COMMIT)
-
-            context.println("GIT_COMMIT" + Configurator.get("git_commit"))
-			//TODO: init git_commit as well
 		}
 	}
 
