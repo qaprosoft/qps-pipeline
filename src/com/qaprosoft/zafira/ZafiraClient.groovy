@@ -2,7 +2,7 @@ package com.qaprosoft.zafira
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
+import com.qaprosoft.jenkins.pipeline.Configurator
 
 class ZafiraClient {
 

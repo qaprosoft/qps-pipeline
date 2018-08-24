@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline
+package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 @Grab('org.testng:testng:6.8.8')
 
