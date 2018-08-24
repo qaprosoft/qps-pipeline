@@ -26,11 +26,12 @@ class GitHub implements ISCM {
 			def GITHUB_HOST = Configurator.get(Configurator.Parameter.GITHUB_HOST)
 
 			def gitUrl = Configurator.resolveVars("${GITHUB_SSH_URL}/${project}")
+            def scmVars = [:]
 
 			context.println("GIT_URL: " + gitUrl)
 			context.println("forked_repo: " + fork)
 			if (!fork) {
-                def checkoutData = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
+                scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
                 context.println "CHECKOUT: " + checkoutData
 			} else {
 
@@ -49,7 +50,7 @@ class GitHub implements ISCM {
 				if (token_value != null) {
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
 					context.println "fork repo url: ${gitUrl}"
-                    context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
+                    scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
 				}
@@ -57,6 +58,9 @@ class GitHub implements ISCM {
 			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			Configurator.set("git_url", gitUrl)
 			Configurator.set("scm_url", gitUrl)
+            Configurator.set("git_commit", scmVars.GIT_COMMIT)
+
+            context.println("GIT_COMMIT" + Configurator.get("git_commit"))
 			//TODO: init git_commit as well
 		}
 	}
