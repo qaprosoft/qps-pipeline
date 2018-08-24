@@ -19,7 +19,7 @@ class Scanner extends Executor {
 	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runJob()"
 	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runCron()"
 	
-	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy"
+	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Creator.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
 
     public Scanner(context) {
