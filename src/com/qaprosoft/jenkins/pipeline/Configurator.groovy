@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.repository.pipeline.v2
+package com.qaprosoft.jenkins.pipeline
 
 public class Configurator {
 

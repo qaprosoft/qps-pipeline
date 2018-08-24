@@ -1,20 +1,13 @@
-package com.qaprosoft.jenkins.repository.pipeline.v2
+package com.qaprosoft.jenkins.pipeline
 
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.XmlSuite
 import com.qaprosoft.scm.github.GitHub
-import com.qaprosoft.jenkins.repository.pipeline.v2.Executor
-import com.qaprosoft.jenkins.repository.pipeline.v2.Configurator
-import com.qaprosoft.jenkins.repository.jobdsl.factory.view.ListViewFactory
-import com.qaprosoft.jenkins.repository.jobdsl.factory.view.CategorizedViewFactory
+import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 
-import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
-
-import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.PipelineFactory
-import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.TestJobFactory
-import com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline.CronJobFactory
-
-import com.qaprosoft.jenkins.repository.jobdsl.factory.folder.FolderFactory
+import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 
 import groovy.json.JsonOutput
 
@@ -23,8 +16,8 @@ class Scanner extends Executor {
 	
 	protected Map dslObjects = [:]
 	
-	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runJob()"
-	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.repository.pipeline.v2.Runner;\nnew Runner(this).runCron()"
+	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runJob()"
+	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runCron()"
 	
 	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/repository/jobdsl/Creator.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
