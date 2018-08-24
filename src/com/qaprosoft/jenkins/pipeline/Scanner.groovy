@@ -22,19 +22,19 @@ class Scanner extends Executor {
 	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Creator.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
 
+    protected boolean ignoreExisting = true
+
     public Scanner(context) {
 		super(context)
 		this.context = context
-		
 		scmClient = new GitHub(context)
+        ignoreExisting  = Configurator.get("ignoreExisting").toBoolean()
  	}
 
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
-				this.prepare()
-
-                def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
+                this.prepare()
 
                 def filePattern = "**.xml"
                 if (!isUpdated(filePattern) && ignoreExisting) {
@@ -48,7 +48,12 @@ class Scanner extends Executor {
 	}
 
 	protected void prepare() {
-		scmClient.clone(false)
+
+        if (ignoreExisting) {
+            scmClient.clone(false)
+        } else {
+            scmClient.clone(true)
+        }
 
 		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
