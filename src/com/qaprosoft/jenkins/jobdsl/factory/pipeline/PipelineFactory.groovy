@@ -1,6 +1,6 @@
-package com.qaprosoft.jenkins.repository.jobdsl.factory.pipeline
+package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-import com.qaprosoft.jenkins.repository.jobdsl.factory.job.JobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
