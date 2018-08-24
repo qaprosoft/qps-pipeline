@@ -22,13 +22,13 @@ class Scanner extends Executor {
 	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Creator.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
 
-    protected boolean ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
+    protected boolean ignoreExisting = true
 
     public Scanner(context) {
 		super(context)
 		this.context = context
-		
 		scmClient = new GitHub(context)
+        ignoreExisting  = Configurator.get("ignoreExisting").toBoolean()
  	}
 
     public void scanRepository() {
@@ -48,6 +48,7 @@ class Scanner extends Executor {
 	}
 
 	protected void prepare() {
+
         if (ignoreExisting) {
             scmClient.clone(false)
         } else {
