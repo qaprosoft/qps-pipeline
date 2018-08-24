@@ -17,11 +17,11 @@ class Runner extends Executor {
 	//using constructor it will be possible to redefine this folder on pipeline/jobdsl level
 	protected def folderName = "Automation"
 	
-	// with new Zafirta implementation it could be static and finalfor any project
-	protected static final String ZAFIRA_REPORT_FOLDER = "./reports/qa"
 	protected static final String etafReport = "eTAF_Report"
 	//TODO: /api/test/runs/{id}/export should use encoded url value as well
 	protected static final String etafReportEncoded = "eTAF_5fReport"
+	
+	protected static String etafReportFolder = "./reports/qa"
 	
 	//CRON related vars
 	protected def listPipelines = []
@@ -342,7 +342,7 @@ class Runner extends Executor {
 -Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
 -Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
 -Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
--Dzafira_report_folder=\"${ZAFIRA_REPORT_FOLDER}\" \
+-Dzafira_report_folder=\"${etafReportFolder}\" \
 -Dreport_url=\"$JOB_URL$BUILD_NUMBER/${etafReportEncoded}\" \
 -Dgit_branch=$BRANCH \
 -Dgit_commit=${Configurator.get("GIT_COMMIT")} \
@@ -422,7 +422,7 @@ clean test"
 
 			//context.echo "goals: ${goals}"
 
-			//TODO: adjust ZAFIRA_REPORT_FOLDER correctly
+			//TODO: adjust etafReportFolder correctly
 			if (context.isUnix()) {
 				def suiteNameForUnix = Configurator.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
@@ -615,7 +615,7 @@ clean test"
 		//replace existing local emailable-report.html by Zafira content
 		def zafiraReport = zc.exportZafiraReport(uuid)
 		if (!zafiraReport.isEmpty()) {
-			context.writeFile file: "${ZAFIRA_REPORT_FOLDER}/emailable-report.html", text: zafiraReport
+			context.writeFile file: "${etafReportFolder}/emailable-report.html", text: zafiraReport
 		}
 		
 		//TODO: think about method renaming because in additions it also could redefin job status in Jenkins.
@@ -938,5 +938,9 @@ Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStac
 			}
 			context.powershell(returnStdout: true, script: "Start-Process -FilePath '${browserStackLocation}.exe' -ArgumentList '--key ${accessKey} --local-identifier ${uniqueBrowserInstance} --force-local'")
 		}
+	}
+	
+	protected void setZafiraReportFolder(folder) {
+		etafReportFolder = folder
 	}
 }
