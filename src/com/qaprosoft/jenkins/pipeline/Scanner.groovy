@@ -49,9 +49,9 @@ class Scanner extends Executor {
 
 	protected void prepare(ignoreExisting) {
         if (ignoreExisting) {
-            scmClient.clone(true)
-        } else {
             scmClient.clone(false)
+        } else {
+            scmClient.clone(true)
         }
 
 		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
