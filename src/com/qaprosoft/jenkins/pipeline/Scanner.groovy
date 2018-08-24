@@ -224,9 +224,11 @@ class Scanner extends Executor {
 		dslObjects.put(name, object)
 	}
 	
-	protected void setDslSettings(additionalClasspath, targets) {
-		this.additionalClasspath = additionalClasspath
+	protected void setDslTargets(targets) {
 		this.creatorTarget = targets
 	}
-	
+
+	protected void setDslClasspath(additionalClasspath) {
+		this.additionalClasspath = additionalClasspath
+	}
 }
