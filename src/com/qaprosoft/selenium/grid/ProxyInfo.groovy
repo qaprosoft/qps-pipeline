@@ -30,6 +30,7 @@ class ProxyInfo {
 			println(e.getMessage())
 		}
 
+        println  "DEVICE LIST" + baseDeviceList + deviceList.sort()
 		return baseDeviceList + deviceList.sort()
 	}
 }
