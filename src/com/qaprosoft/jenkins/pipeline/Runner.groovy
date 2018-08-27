@@ -16,13 +16,13 @@ class Runner extends Executor {
 	
 	//using constructor it will be possible to redefine this folder on pipeline/jobdsl level
 	protected def folderName = "Automation"
-	
+
 	protected static final String etafReport = "eTAF_Report"
 	//TODO: /api/test/runs/{id}/export should use encoded url value as well
 	protected static final String etafReportEncoded = "eTAF_5fReport"
 	
 	protected static String etafReportFolder = "./reports/qa"
-	
+
 	//CRON related vars
 	protected def listPipelines = []
 	
@@ -94,7 +94,7 @@ class Runner extends Executor {
 			// /var/jenkins_home/workspace/Automation/<JOB_NAME>
 			return "Automation"
 		}
-		
+
         def folderName = ""
         for (def i = 1; i < array.size() - 1; i++){
             folderName  = folderName + array[i]
@@ -321,60 +321,36 @@ class Runner extends Executor {
 	protected void build() {
 		context.stage('Run Test Suite') {
 
-			def POM_FILE = getSubProjectFolder() + "/pom.xml"
-
-			def BRANCH = Configurator.get("branch")
-            def BUILD_USER_ID = Configurator.get("BUILD_USER_ID")
-            def BUILD_USER_FIRST_NAME = Configurator.get("BUILD_USER_FIRST_NAME")
-            def BUILD_USER_LAST_NAME = Configurator.get("BUILD_USER_LAST_NAME")
-            def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
-			
-			def JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
-			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-			Configurator.set("ci_url", JOB_URL)
-			Configurator.set("ci_build", BUILD_NUMBER)
-			
-            //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
-			Configurator.set("git_branch", BRANCH)
-			Configurator.set("scm_branch", BRANCH)
-
+			def pomFile = getSubProjectFolder() + "/pom.xml"
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
--f ${POM_FILE} \
--Dmaven.test.failure.ignore=true \
--Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
--Dselenium_host=${Configurator.get(Configurator.Parameter.SELENIUM_URL)} \
--Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
--Dzafira_enabled=true \
--Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
--Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
--Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
--Dzafira_report_folder=\"${etafReportFolder}\" \
--Dreport_url=\"$JOB_URL$BUILD_NUMBER/${etafReportEncoded}\" \
--Dgit_branch=$BRANCH \
--Dgit_commit=${Configurator.get("GIT_COMMIT")} \
--Dgit_url=${Configurator.get("git_url")} \
--Dci_url=\"${JOB_URL}\" \
--Dci_build=\"${BUILD_NUMBER}\" \
--Dci_user_id=\"$BUILD_USER_ID\" \
--Dci_user_first_name=\"$BUILD_USER_FIRST_NAME\" \
--Dci_user_last_name=\"$BUILD_USER_LAST_NAME\" \
--Dci_user_email=\"$BUILD_USER_EMAIL\" \
--Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
-clean test"
+                                            -f ${pomFile} \
+                                            -Dmaven.test.failure.ignore=true \
+                                            -Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
+                                            -Dselenium_host=${Configurator.get(Configurator.Parameter.SELENIUM_URL)} \
+                                            -Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
+                                            -Dzafira_enabled=true \
+                                            -Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
+                                            -Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
+                                            -Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
+                                            -Dzafira_report_folder=\"${etafReportFolder}\" \
+                                            -Dreport_url=\"${Configurator.get(Configurator.Parameter.JOB_URL)}${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}/${etafReportEncoded}\" \
+                                            -Dgit_branch=${Configurator.get("branch")} \
+                                            -Dgit_commit=${Configurator.get("scm_commit")} \
+                                            -Dgit_url=${Configurator.get("scm_url")} \
+                                            -Dci_url=${Configurator.get(Configurator.Parameter.JOB_URL)} \
+                                            -Dci_build=${Configurator.get(Configurator.Parameter.BUILD_NUMBER)} \
+                                            -Dci_user_id=${Configurator.get("BUILD_USER_ID")} \
+                                            -Dci_user_first_name=${Configurator.get("BUILD_USER_FIRST_NAME")} \
+                                            -Dci_user_last_name=${Configurator.get("BUILD_USER_LAST_NAME")} \
+                                            -Dci_user_email=${Configurator.get("BUILD_USER_EMAIL")} \
+                                            -Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
+                                            clean test"
 
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
 			Configurator.set("zafira_enabled", zc.isAvailable().toString())
-			
-
-
-			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
-
-			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
-			if (!Configurator.get("ci_parent_url").isEmpty() && !Configurator.get("ci_parent_build").isEmpty()) {
-				Configurator.set("ci_build_cause", "UPSTREAMTRIGGER")
-			}
+            Configurator.set("ci_build_cause", getBuildCause(Configurator.get(Configurator.Parameter.JOB_NAME)))
 
 			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
@@ -384,35 +360,17 @@ clean test"
 			//register all params after vars to be able to override
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
-			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
+            goals = enableVideoStreaming(Configurator.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
+            goals = parseBooleanSafely("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
+            goals = parseBooleanSafely(Configurator.get(Configurator.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
+            goals = parseBooleanSafely("debug", "Enabling remote debug...", mavenDebug, goals)
+            goals = parseBooleanSafely("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
-			if (Configurator.get("node").equalsIgnoreCase("web") || Configurator.get("node").equalsIgnoreCase("android")) {
-				goals += " -Dcapabilities.enableVNC=true "
-			}
-
-			if (Configurator.get("enableVideo") && Configurator.get("enableVideo").toBoolean()) {
-				goals += " -Dcapabilities.enableVideo=true "
-			}
-
-			if (Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()) {
-				goals += " jacoco:instrument "
-			}
-
-			if (Configurator.get("debug") && Configurator.get("debug").toBoolean()) {
-				context.echo "Enabling remote debug..."
-				goals += mavenDebug
-			}
-			
-			if (Configurator.get("deploy_to_local_repo") && Configurator.get("deploy_to_local_repo").toBoolean()) {
-				context.echo "Enabling deployment of tests jar to local repo."
-				goals += " install"
-			}
-			
 			//browserstack goals
 
 			if (!isParamEmpty(Configurator.get("custom_capabilities"))) {
 				if (Configurator.get("custom_capabilities").toLowerCase().contains("browserstack")) {
-					def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configurator.get("suite") + "-" +
+					def uniqueBrowserInstance = "\"#${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}-" + Configurator.get("suite") + "-" +
 							Configurator.get("browser") + "-" + Configurator.get("env") + "\""
 					uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
 					startBrowserStackLocal(uniqueBrowserInstance)
@@ -442,14 +400,28 @@ clean test"
 		}
 	}
 
+    private def enableVideoStreaming(node, message, capability, goals) {
+        if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {
+            context.println message
+            goals += capability
+        }
+        return goals
+    }
+
+    private def parseBooleanSafely(parameter, message, capability, goals) {
+        if (Configurator.get(parameter) && Configurator.get(parameter).toBoolean()) {
+            context.println message
+            goals += capability
+        }
+        return goals
+    }
+
 	protected String chooseNode() {
-		def platform = Configurator.get("platform")
-		def browser = Configurator.get("browser")
 
         Configurator.set("node", "master") //master is default node to execute job
 
 		//TODO: handle browserstack etc integration here?
-		switch(platform.toLowerCase()) {
+		switch(Configurator.get("platform").toLowerCase()) {
 			case "api":
 				context.println("Suite Type: API")
 				Configurator.set("node", "api")
@@ -465,7 +437,7 @@ clean test"
 				Configurator.set("node", "ios")
 				break;
 			default:
-				if ("NULL".equals(browser)) {
+				if ("NULL".equals(Configurator.get("browser"))) {
 					context.println("Suite Type: Default")
 					Configurator.set("node", "master")
 				} else {
@@ -481,7 +453,7 @@ clean test"
 			Configurator.set("node", nodeLabel)
 		}
 
-		context.echo "node: " + Configurator.get("node")
+		context.println "node: " + Configurator.get("node")
 		return Configurator.get("node")
 	}
 
@@ -503,9 +475,6 @@ clean test"
 		String JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
 		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 		String JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
-		String ADMIN_EMAILS = Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
-
-		String email_list = Configurator.get("email_list")
 
 		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
 		def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
@@ -535,8 +504,9 @@ clean test"
 					${etafReport}: ${JOB_URL}${BUILD_NUMBER}/${etafReportEncoded}<br>
 					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
 
+        def to = Configurator.get("email_list") + "," + Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
 		//TODO: enable emailing but seems like it should be moved to the notification code
-		context.emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list},${ADMIN_EMAILS}"
+        context.emailext getEmailParams(body, subject, to)
 		return failureReason
 	}
 
@@ -659,11 +629,11 @@ clean test"
                 def reportIndex = "_" + i
                 reportName = reportName + reportIndex
             }
-            context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
+            context.publishHTML getReportParams(reportDir, reports[i].name, reportName )
         }
     }
 
-    protected def getReportParameters(reportDir, reportFiles, reportName) {
+    protected def getReportParams(reportDir, reportFiles, reportName) {
         def reportParameters = [allowMissing: false,
                                 alwaysLinkToLastBuild: false,
                                 keepAll: true,
@@ -905,9 +875,6 @@ clean test"
 		context.stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))) {
 			//context.println("Dynamic Stage Created For: " + entry.get("jobName"))
 			//context.println("Checking EmailList: " + entry.get("emailList"))
-			
-			def email_list = entry.get("email_list")
-			def ADMIN_EMAILS = Configurator.get("email_list")
 
 			List jobParams = []
 			for (param in entry) {
@@ -921,14 +888,27 @@ clean test"
 				parameters: jobParams,
 				wait: waitJob
 			} catch (Exception ex) {
-				printStackTrace(ex)
-				
-				context.emailext attachLog: true, body: "Unable to start job via cron! " + ex.getMessage(), recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "JOBSTART FAILURE: ${entry.get("jobName")}", to: "${email_list},${ADMIN_EMAILS}"
-			}
+                printStackTrace(ex)
 
-		}
+                def body = "Unable to start job via cron! " + ex.getMessage()
+                def subject = "JOBSTART FAILURE: " + entry.get("jobName")
+                def to = entry.get("email_list") + "," + Configurator.get("email_list")
+
+                context.emailext getEmailParams(body, subject, to)
+            }
+        }
 	}
-	
+
+    private def getEmailParams(body, subject, to) {
+        def params = [attachLog: true,
+                      body: body,
+                      recipientProviders: [[$class: 'DevelopersRecipientProvider'],
+                                           [$class: 'RequesterRecipientProvider']],
+                      subject: subject,
+                      to: to]
+        return params
+    }
+
 	protected void startBrowserStackLocal(String uniqueBrowserInstance) {
 		def browserStackUrl = "https://www.browserstack.com/browserstack-local/BrowserStackLocal"
 		def accessKey = Configurator.get("BROWSERSTACK_ACCESS_KEY")
@@ -950,7 +930,7 @@ Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStac
 			context.powershell(returnStdout: true, script: "Start-Process -FilePath '${browserStackLocation}.exe' -ArgumentList '--key ${accessKey} --local-identifier ${uniqueBrowserInstance} --force-local'")
 		}
 	}
-	
+
 	protected void setZafiraReportFolder(folder) {
 		etafReportFolder = folder
 	}
