@@ -62,7 +62,7 @@ class ZafiraClient {
 	        httpMode: 'POST', \
 	        requestBody: "{\"jobName\": \"${Configurator.get(Configurator.Parameter.JOB_BASE_NAME)}\", \
                        \"buildNumber\": \"${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}\", \
-                       \"branch\": \"${Configurator.get("scm_branch")}\", \
+                       \"branch\": \"${Configurator.get("branch")}\", \
                        \"env\": \"${Configurator.get("env")}\", \"ciRunId\": \"${uuid}\", \
                        \"ciParentUrl\": \"${Configurator.get("ci_parent_url")}\", \
                        \"ciParentBuild\": \"${Configurator.get("ci_parent_build")}\"}", \

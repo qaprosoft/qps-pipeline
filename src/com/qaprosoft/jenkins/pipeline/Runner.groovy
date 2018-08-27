@@ -328,7 +328,7 @@ class Runner extends Executor {
                                             -Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
                                             -Dzafira_report_folder=\"${ZAFIRA_REPORT_FOLDER}\" \
                                             -Dreport_url=\"${Configurator.get(Configurator.Parameter.JOB_URL)}${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}/${etafReportEncoded}\" \
-                                            -Dgit_branch=${Configurator.get("scm_branch")} \
+                                            -Dgit_branch=${Configurator.get("branch")} \
                                             -Dgit_commit=${Configurator.get("scm_commit")} \
                                             -Dgit_url=${Configurator.get("scm_url")} \
                                             -Dci_url=${Configurator.get(Configurator.Parameter.JOB_URL)} \
