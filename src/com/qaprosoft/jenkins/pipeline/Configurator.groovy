@@ -33,18 +33,18 @@ public class Configurator {
         //vars
         CARINA_CORE_VERSION("CARINA_CORE_VERSION", "5.2.5.119"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
-		//to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
-		//the biggest problem is that AWS key can't be located in public repositories
-		JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
-		JACOCO_ENABLE("JACOCO_ENABLE", "false"),
-		JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
+        //to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
+        //the biggest problem is that AWS key can't be located in public repositories
+        JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
+        JACOCO_ENABLE("JACOCO_ENABLE", "false"),
+        JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
 
         QPS_PIPELINE_PRIVATE_GIT_BRANCH("QPS_PIPELINE_PRIVATE_GIT_BRANCH", mustOverride),
         QPS_PIPELINE_PRIVATE_GIT_URL("QPS_PIPELINE_PRIVATE_GIT_URL", mustOverride),
-		QPS_PIPELINE_GIT_BRANCH("QPS_PIPELINE_GIT_BRANCH", mustOverride),
-		QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", "git@github.com:qaprosoft/qps-pipeline.git"),
-		ADMIN_EMAILS("ADMIN_EMAILS", mustOverride),
-		
+        QPS_PIPELINE_GIT_BRANCH("QPS_PIPELINE_GIT_BRANCH", mustOverride),
+        QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", "git@github.com:qaprosoft/qps-pipeline.git"),
+        ADMIN_EMAILS("ADMIN_EMAILS", mustOverride),
+
         GITHUB_HOST("GITHUB_HOST", "github.com"),
         GITHUB_API_URL("GITHUB_API_URL", "https://api.\${GITHUB_HOST}/"),
         GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft"),
@@ -61,27 +61,27 @@ public class Configurator {
 
         ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
-		
+
         JOB_URL("JOB_URL", mustOverride),
         JOB_NAME("JOB_NAME", mustOverride),
         JOB_BASE_NAME("JOB_BASE_NAME", mustOverride),
         BUILD_NUMBER("BUILD_NUMBER", mustOverride),
-		
+
         SCREEN_RECORD_FTP("screen_record_ftp", "ftp://\${QPS_HOST}/%s.mp4"),
-		SCREEN_RECORD_HOST("screen_record_host", "http://\${QPS_HOST}/video/%s.mp4"),
-		SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
-		SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
-		
-		VNC_PROTOCOL("vnc_protocol", "ws"),
-		VNC_HOST("vnc_host", "\${QPS_HOST}"),
-		VNC_PORT("vnc_port", "80"),
-		
-		TIMEZONE("user.timezone", "UTC"),
-		
-		S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
-		HOCKEYAPP_LOCAL_STORAGE("hockeyapp_local_storage", "/opt/apk"),
-		
-		BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}"),
+        SCREEN_RECORD_HOST("screen_record_host", "http://\${QPS_HOST}/video/%s.mp4"),
+        SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
+        SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
+
+        VNC_PROTOCOL("vnc_protocol", "ws"),
+        VNC_HOST("vnc_host", "\${QPS_HOST}"),
+        VNC_PORT("vnc_port", "80"),
+
+        TIMEZONE("user.timezone", "UTC"),
+
+        S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
+        HOCKEYAPP_LOCAL_STORAGE("hockeyapp_local_storage", "/opt/apk"),
+
+        BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}"),
 
         private final String key;
         private final String value;
