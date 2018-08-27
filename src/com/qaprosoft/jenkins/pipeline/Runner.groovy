@@ -650,7 +650,7 @@ clean test"
         for (int i = 0; i < reports.length; i++) {
 			def parentFile = new File(reports[i].path).getParentFile()
 			if (parentFile == null) {
-				context.println "ERROR! Parent report f is null! for " + reports[i].path
+				context.println "ERROR! Parent report is null! for " + reports[i].path
 				continue
 			}
             def reportDir = parentFile.getPath()
@@ -913,7 +913,7 @@ clean test"
 			for (param in entry) {
 				jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
 			}
-			//context.println(jobParams.dump())
+			context.println(jobParams.dump())
             //context.println("propagate: " + propagateJob)
 			try {
 				context.build job: folderName + "/" + entry.get("jobName"),
