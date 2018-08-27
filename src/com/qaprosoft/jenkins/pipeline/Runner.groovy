@@ -476,8 +476,6 @@ class Runner extends Executor {
 		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 		String JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
 
-		String email_list = Configurator.get("email_list")
-
 		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
 		def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 
