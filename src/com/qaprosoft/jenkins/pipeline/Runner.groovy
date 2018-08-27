@@ -501,7 +501,7 @@ class Runner extends Executor {
         def to = Configurator.get("email_list") + "," + Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
 		//TODO: enable emailing but seems like it should be moved to the notification code
 
-        context.prinln "TO EMAILS: " + to
+        context.println "TO EMAILS: " + to
         context.emailext getEmailParams(body, subject, to)
 
 		return failureReason
