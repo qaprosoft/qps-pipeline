@@ -706,7 +706,7 @@ clean test"
 
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
-		def currentEnv = getCurrentEnv(currentSuite)
+		def currentEnv = getCronEnv(currentSuite)
 			
 		def pipelineJobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 
@@ -826,7 +826,7 @@ clean test"
 		}
 	}
 	
-	protected def getCurrentEnv(currentSuite) {
+	protected def getCronEnv(currentSuite) {
 		//currentSuite is need to override action in private pipelines
 		return Configurator.get("env")
 	}
