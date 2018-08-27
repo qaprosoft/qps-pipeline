@@ -746,7 +746,7 @@ clean test"
 
 				for (def supportedEnv : supportedEnvs.split(",")) {
 					//context.println("supportedEnv: " + supportedEnv)
-					if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
+					if (!currentEnv.contains(supportedEnv) || currentEnv.toString().equals("null")) {
 						//context.println("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
 						//launch test only if current suite support cron regression execution for current env
 						continue;
