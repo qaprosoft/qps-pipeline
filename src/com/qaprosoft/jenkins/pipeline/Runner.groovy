@@ -436,7 +436,7 @@ clean test"
 			} else {
 				def suiteNameForWindows = Configurator.get("suite").replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
-				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows}"
+				context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
 			}
 
 		}
