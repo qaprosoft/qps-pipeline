@@ -197,6 +197,7 @@ class Runner extends Executor {
 		//TODO: improve carina to detect browser_version on the fly
 		String browser_version = Configurator.get("browser_version")
 
+        context.println "BRANCH: " + Configurator.get("scm_branch")
 		context.stage('Preparation') {
 			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${Configurator.get("scm_branch")}"
 			if (!isParamEmpty("${CARINA_CORE_VERSION}")) {
@@ -625,11 +626,11 @@ class Runner extends Executor {
                 def reportIndex = "_" + i
                 reportName = reportName + reportIndex
             }
-            context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
+            context.publishHTML getReportParams(reportDir, reports[i].name, reportName )
         }
     }
 
-    protected def getReportParameters(reportDir, reportFiles, reportName) {
+    protected def getReportParams(reportDir, reportFiles, reportName) {
         def reportParameters = [allowMissing: false,
                                 alwaysLinkToLastBuild: false,
                                 keepAll: true,
