@@ -16,13 +16,13 @@ class Runner extends Executor {
 	
 	//using constructor it will be possible to redefine this folder on pipeline/jobdsl level
 	protected def folderName = "Automation"
-	
-	// with new Zafirta implementation it could be static and finalfor any project
-	protected static final String ZAFIRA_REPORT_FOLDER = "./reports/qa"
+
 	protected static final String etafReport = "eTAF_Report"
 	//TODO: /api/test/runs/{id}/export should use encoded url value as well
 	protected static final String etafReportEncoded = "eTAF_5fReport"
 	
+	protected static String etafReportFolder = "./reports/qa"
+
 	//CRON related vars
 	protected def listPipelines = []
 	
@@ -89,6 +89,12 @@ class Runner extends Executor {
 
     protected def parseFolderName() {
         def array = this.getWorkspace().split("jobs/")
+		if (array.size() == 1) {
+			//TODO: find a way howto revoke workspace dir customization as it influence on folderName resolving:
+			// /var/jenkins_home/workspace/Automation/<JOB_NAME>
+			return "Automation"
+		}
+
         def folderName = ""
         for (def i = 1; i < array.size() - 1; i++){
             folderName  = folderName + array[i]
@@ -326,7 +332,7 @@ class Runner extends Executor {
                                             -Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
                                             -Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
                                             -Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-                                            -Dzafira_report_folder=\"${ZAFIRA_REPORT_FOLDER}\" \
+                                            -Dzafira_report_folder=\"${etafReportFolder}\" \
                                             -Dreport_url=\"${Configurator.get(Configurator.Parameter.JOB_URL)}${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}/${etafReportEncoded}\" \
                                             -Dgit_branch=${Configurator.get("branch")} \
                                             -Dgit_commit=${Configurator.get("scm_commit")} \
@@ -380,7 +386,7 @@ class Runner extends Executor {
 
 			//context.echo "goals: ${goals}"
 
-			//TODO: adjust ZAFIRA_REPORT_FOLDER correctly
+			//TODO: adjust etafReportFolder correctly
 			if (context.isUnix()) {
 				def suiteNameForUnix = Configurator.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
@@ -388,7 +394,7 @@ class Runner extends Executor {
 			} else {
 				def suiteNameForWindows = Configurator.get("suite").replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
-				context.bat "mvn -B -U ${mvnBaseGoals} -Dsuite=${suiteNameForWindows}"
+				context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
 			}
 
 		}
@@ -585,7 +591,7 @@ class Runner extends Executor {
 		//replace existing local emailable-report.html by Zafira content
 		def zafiraReport = zc.exportZafiraReport(uuid)
 		if (!zafiraReport.isEmpty()) {
-			context.writeFile file: "${ZAFIRA_REPORT_FOLDER}/emailable-report.html", text: zafiraReport
+			context.writeFile file: "${etafReportFolder}/emailable-report.html", text: zafiraReport
 		}
 		
 		//TODO: think about method renaming because in additions it also could redefin job status in Jenkins.
@@ -612,7 +618,12 @@ class Runner extends Executor {
     protected void publishReports(String pattern, String reportName) {
         def reports = context.findFiles(glob: pattern)
         for (int i = 0; i < reports.length; i++) {
-            def reportDir = new File(reports[i].path).getParentFile().getPath()
+			def parentFile = new File(reports[i].path).getParentFile()
+			if (parentFile == null) {
+				context.println "ERROR! Parent report is null! for " + reports[i].path
+				continue
+			}
+            def reportDir = parentFile.getPath()
             context.println "Report File Found, Publishing " + reports[i].path
             if (i > 0){
                 def reportIndex = "_" + i
@@ -790,7 +801,7 @@ class Runner extends Executor {
 
 
     protected void putNotNull(pipelineMap, key, value) {
-        if (value != null) {
+        if (value != null && !value.equalsIgnoreCase("null")) {
             pipelineMap.put(key, value)
         }
     }
@@ -864,12 +875,12 @@ class Runner extends Executor {
 		context.stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))) {
 			//context.println("Dynamic Stage Created For: " + entry.get("jobName"))
 			//context.println("Checking EmailList: " + entry.get("emailList"))
-			
+
 			List jobParams = []
 			for (param in entry) {
 				jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
 			}
-
+			context.println(jobParams.dump())
             //context.println("propagate: " + propagateJob)
 			try {
 				context.build job: folderName + "/" + entry.get("jobName"),
@@ -918,5 +929,9 @@ Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStac
 			}
 			context.powershell(returnStdout: true, script: "Start-Process -FilePath '${browserStackLocation}.exe' -ArgumentList '--key ${accessKey} --local-identifier ${uniqueBrowserInstance} --force-local'")
 		}
+	}
+
+	protected void setZafiraReportFolder(folder) {
+		etafReportFolder = folder
 	}
 }

@@ -27,9 +27,13 @@ class GitHub implements ISCM {
 
 			def gitUrl = Configurator.resolveVars("${GITHUB_SSH_URL}/${project}")
             def scmVars = [:]
+			if (project.equals("carina-demo")) {
+				//sample public carina-demo project should be cloned using https only!
+				gitUrl = "https://github.com/qaprosoft/carina-demo.git"
+			}
 
 			context.println("GIT_URL: " + gitUrl)
-			context.println("forked_repo: " + fork)
+			//context.println("forked_repo: " + fork)
 			if (!fork) {
                 scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
 			} else {
