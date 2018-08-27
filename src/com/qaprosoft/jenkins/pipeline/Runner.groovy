@@ -706,7 +706,8 @@ clean test"
 
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
-		def currentEnv = Configurator.get("env")
+		def currentEnv = getCurrentEnv(currentSuite)
+			
 		def pipelineJobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 
 		// override suite email_list from params if defined
@@ -825,6 +826,11 @@ clean test"
 		}
 	}
 	
+	protected def getCurrentEnv(currentSuite) {
+		//currentSuite is need to override action in private pipelines
+		return Configurator.get("env")
+	}
+
 	protected def registerPipeline(currentSuite, pipelineMap) {
 		listPipelines.add(pipelineMap)
 	}
