@@ -347,12 +347,7 @@ class Runner extends Executor {
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
 			Configurator.set("zafira_enabled", zc.isAvailable().toString())
-			
-			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
-
             Configurator.set("ci_build_cause", getBuildCause(Configurator.get(Configurator.Parameter.JOB_NAME)))
-
-            context.println "Build cause: " + Configurator.get("ci_build_cause")
 
 			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
