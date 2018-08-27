@@ -189,7 +189,6 @@ class Runner extends Executor {
 		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 		String CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
 		String suite = Configurator.get("suite")
-		String branch = Configurator.get("scm_branch")
 		String env = Configurator.get("env")
         //TODO: rename to devicePool
 		String devicePool = Configurator.get("devicePool")
@@ -199,7 +198,7 @@ class Runner extends Executor {
 		String browser_version = Configurator.get("browser_version")
 
 		context.stage('Preparation') {
-			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${branch}"
+			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${Configurator.get("scm_branch")}"
 			if (!isParamEmpty("${CARINA_CORE_VERSION}")) {
 				currentBuild.displayName += "|" + "${CARINA_CORE_VERSION}"
 			}
@@ -315,9 +314,6 @@ class Runner extends Executor {
 	protected void build() {
 		context.stage('Run Test Suite') {
 
-			Configurator.set("ci_url", Configurator.get(Configurator.Parameter.JOB_URL))
-			Configurator.set("ci_build", Configurator.get(Configurator.Parameter.BUILD_NUMBER))
-
 			def pomFile = getSubProjectFolder() + "/pom.xml"
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
                                             -f ${pomFile} \
@@ -357,30 +353,12 @@ class Runner extends Executor {
 			//register all params after vars to be able to override
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
-			//TODO: make sure that jobdsl adds for UI tests boolean args: "capabilities.enableVNC and capabilities.enableVideo"
+            goals = enableVideoStreaming(Configurator.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
+            goals = parseBooleanSafely("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
+            goals = parseBooleanSafely(Configurator.get(Configurator.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
+            goals = parseBooleanSafely("debug", "Enabling remote debug...", mavenDebug, goals)
+            goals = parseBooleanSafely("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
-			if (Configurator.get("node").equalsIgnoreCase("web") || Configurator.get("node").equalsIgnoreCase("android")) {
-				goals += " -Dcapabilities.enableVNC=true "
-			}
-
-			if (Configurator.get("enableVideo") && Configurator.get("enableVideo").toBoolean()) {
-				goals += " -Dcapabilities.enableVideo=true "
-			}
-
-			if (Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()) {
-				goals += " jacoco:instrument "
-			}
-
-			if (Configurator.get("debug") && Configurator.get("debug").toBoolean()) {
-				context.echo "Enabling remote debug..."
-				goals += mavenDebug
-			}
-			
-			if (Configurator.get("deploy_to_local_repo") && Configurator.get("deploy_to_local_repo").toBoolean()) {
-				context.echo "Enabling deployment of tests jar to local repo."
-				goals += " install"
-			}
-			
 			//browserstack goals
 
 			if (!isParamEmpty(Configurator.get("custom_capabilities"))) {
@@ -415,14 +393,28 @@ class Runner extends Executor {
 		}
 	}
 
+    private def enableVideoStreaming(node, message, capability, goals) {
+        if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {
+            context.println message
+            goals += capability
+        }
+        return goals
+    }
+
+    private def parseBooleanSafely(parameter, message, capability, goals) {
+        if (Configurator.get(parameter) && Configurator.get(parameter).toBoolean()) {
+            context.println message
+            goals += capability
+        }
+        return goals
+    }
+
 	protected String chooseNode() {
-		def platform = Configurator.get("platform")
-		def browser = Configurator.get("browser")
 
         Configurator.set("node", "master") //master is default node to execute job
 
 		//TODO: handle browserstack etc integration here?
-		switch(platform.toLowerCase()) {
+		switch(Configurator.get("platform").toLowerCase()) {
 			case "api":
 				context.println("Suite Type: API")
 				Configurator.set("node", "api")
@@ -438,7 +430,7 @@ class Runner extends Executor {
 				Configurator.set("node", "ios")
 				break;
 			default:
-				if ("NULL".equals(browser)) {
+				if ("NULL".equals(Configurator.get("browser"))) {
 					context.println("Suite Type: Default")
 					Configurator.set("node", "master")
 				} else {
@@ -454,7 +446,7 @@ class Runner extends Executor {
 			Configurator.set("node", nodeLabel)
 		}
 
-		context.echo "node: " + Configurator.get("node")
+		context.println "node: " + Configurator.get("node")
 		return Configurator.get("node")
 	}
 
@@ -473,43 +465,46 @@ class Runner extends Executor {
 		currentBuild.result = 'FAILURE'
 		def failureReason = "undefined failure"
 
-		String JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
-		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-		String JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
-		String ADMIN_EMAILS = Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
+		String buildNumber = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+		String jobName = Configurator.get(Configurator.Parameter.JOB_NAME)
+        String jobBuild = Configurator.get(Configurator.Parameter.JOB_URL) + buildNumber
 
-		String email_list = Configurator.get("email_list")
-
-		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
-		def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuild}</p>"
+		def subject = "UNRECOGNIZED FAILURE: ${jobName} - Build # ${buildNumber}!"
 
 		if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
 			failureReason = "COMPILATION ERROR"
-			bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}</p>"
-			subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+			bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuild}</p>"
+			subject = "COMPILATION FAILURE: ${jobName} - Build # ${buildNumber}!"
 		} else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
 			failureReason = "BUILD FAILURE"
-			bodyHeader = "<p>Unable to execute tests due to the build failure. ${JOB_URL}${BUILD_NUMBER}</p>"
-			subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+			bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuild}</p>"
+			subject = "BUILD FAILURE: ${jobName} - Build # ${buildNumber}!"
 		} else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
 			currentBuild.result = 'ABORTED'
 			failureReason = "Aborted by " + getAbortCause(currentBuild)
-			bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${JOB_URL}${BUILD_NUMBER}</p>"
-			subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+			bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${jobBuild}</p>"
+			subject = "ABORTED: ${jobName} - Build # ${buildNumber}!"
 		} else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
 			currentBuild.result = 'ABORTED'
 			failureReason = "Aborted by timeout"
-			bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${JOB_URL}${BUILD_NUMBER}</p>"
-			subject = "TIMED OUT: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+			bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuild}</p>"
+			subject = "TIMED OUT: ${jobName} - Build # ${buildNumber}!"
 		}
 
 
-		def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
-					${etafReport}: ${JOB_URL}${BUILD_NUMBER}/${etafReportEncoded}<br>
-					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
+		def body = bodyHeader + """<br>Rebuild: ${jobBuild}/rebuild/parameterized<br>
+					${etafReport}: ${jobBuild}/${etafReportEncoded}<br>
+					Console: ${jobBuild}/console"""
 
 		//TODO: enable emailing but seems like it should be moved to the notification code
-		context.emailext attachLog: true, body: "${body}", recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "${subject}", to: "${email_list},${ADMIN_EMAILS}"
+		context.emailext attachLog: true,
+                body: "${body}",
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'],
+                                     [$class: 'RequesterRecipientProvider']],
+                subject: "${subject}",
+                to: "${Configurator.get("email_list")},${Configurator.get(Configurator.Parameter.ADMIN_EMAILS)}"
+
 		return failureReason
 	}
 
@@ -754,7 +749,6 @@ class Runner extends Executor {
 
 						def pipelineMap = [:]
 
-						def branch = Configurator.get("scm_branch")
 						def ci_parent_url = Configurator.get("ci_parent_url")
 						if (ci_parent_url.isEmpty()) {
 							ci_parent_url = Configurator.get(Configurator.Parameter.JOB_URL)
@@ -771,7 +765,7 @@ class Runner extends Executor {
                         putNotNull(pipelineMap, "os", os)
                         putNotNull(pipelineMap, "os_version", osVersion)
 						pipelineMap.put("name", pipeName)
-						pipelineMap.put("branch", branch)
+						pipelineMap.put("branch", Configurator.get("scm_branch"))
 						pipelineMap.put("ci_parent_url", ci_parent_url)
 						pipelineMap.put("ci_parent_build", ci_parent_build)
 						pipelineMap.put("retry_count", retry_count)
