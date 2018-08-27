@@ -831,7 +831,7 @@ clean test"
 
 
     protected void putNotNull(pipelineMap, key, value) {
-        if (value != null) {
+        if (value != null && !value.equalsIgnoreCase("null")) {
             pipelineMap.put(key, value)
         }
     }
