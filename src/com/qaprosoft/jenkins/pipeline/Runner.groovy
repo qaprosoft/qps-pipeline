@@ -472,37 +472,39 @@ class Runner extends Executor {
 		currentBuild.result = 'FAILURE'
 		def failureReason = "undefined failure"
 
-		String buildNumber = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-		String jobName = Configurator.get(Configurator.Parameter.JOB_NAME)
-        String jobBuild = Configurator.get(Configurator.Parameter.JOB_URL) + buildNumber
+		String JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
+		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+		String JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
 
-		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuild}</p>"
-		def subject = "UNRECOGNIZED FAILURE: ${jobName} - Build # ${buildNumber}!"
+		String email_list = Configurator.get("email_list")
+
+		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
+		def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 
 		if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
 			failureReason = "COMPILATION ERROR"
-			bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuild}</p>"
-			subject = "COMPILATION FAILURE: ${jobName} - Build # ${buildNumber}!"
+			bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}</p>"
+			subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 		} else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
 			failureReason = "BUILD FAILURE"
-			bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuild}</p>"
-			subject = "BUILD FAILURE: ${jobName} - Build # ${buildNumber}!"
+			bodyHeader = "<p>Unable to execute tests due to the build failure. ${JOB_URL}${BUILD_NUMBER}</p>"
+			subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 		} else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
 			currentBuild.result = 'ABORTED'
 			failureReason = "Aborted by " + getAbortCause(currentBuild)
-			bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${jobBuild}</p>"
-			subject = "ABORTED: ${jobName} - Build # ${buildNumber}!"
+			bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${JOB_URL}${BUILD_NUMBER}</p>"
+			subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 		} else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
 			currentBuild.result = 'ABORTED'
 			failureReason = "Aborted by timeout"
-			bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuild}</p>"
-			subject = "TIMED OUT: ${jobName} - Build # ${buildNumber}!"
+			bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${JOB_URL}${BUILD_NUMBER}</p>"
+			subject = "TIMED OUT: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
 		}
 
 
-		def body = bodyHeader + """<br>Rebuild: ${jobBuild}/rebuild/parameterized<br>
-					${etafReport}: ${jobBuild}/${etafReportEncoded}<br>
-					Console: ${jobBuild}/console"""
+		def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
+					${etafReport}: ${JOB_URL}${BUILD_NUMBER}/${etafReportEncoded}<br>
+					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
 
         def to = Configurator.get("email_list") + "," + Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
 		//TODO: enable emailing but seems like it should be moved to the notification code
@@ -888,14 +890,14 @@ class Runner extends Executor {
 				parameters: jobParams,
 				wait: waitJob
 			} catch (Exception ex) {
-				printStackTrace(ex)
+                printStackTrace(ex)
 
                 def body = "Unable to start job via cron! " + ex.getMessage()
                 def subject = "JOBSTART FAILURE: " + entry.get("jobName")
                 def to = entry.get("email_list") + "," + Configurator.get("email_list")
 
                 context.emailext getEmailParams(body, subject, to)
-			}
+            }
         }
 	}
 
