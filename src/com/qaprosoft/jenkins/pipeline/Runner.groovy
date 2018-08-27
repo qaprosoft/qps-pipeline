@@ -769,7 +769,7 @@ class Runner extends Executor {
                         putNotNull(pipelineMap, "os", os)
                         putNotNull(pipelineMap, "os_version", osVersion)
 						pipelineMap.put("name", pipeName)
-						pipelineMap.put("branch", Configurator.get("scm_branch"))
+						pipelineMap.put("branch", Configurator.get("branch"))
 						pipelineMap.put("ci_parent_url", ci_parent_url)
 						pipelineMap.put("ci_parent_build", ci_parent_build)
 						pipelineMap.put("retry_count", retry_count)
