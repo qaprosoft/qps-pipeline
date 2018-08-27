@@ -38,7 +38,9 @@ public class Configurator {
 		JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
 		JACOCO_ENABLE("JACOCO_ENABLE", "false"),
 		JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
-	
+
+        QPS_PIPELINE_PRIVATE_GIT_BRANCH("QPS_PIPELINE_PRIVATE_GIT_BRANCH", mustOverride),
+        QPS_PIPELINE_PRIVATE_GIT_URL("QPS_PIPELINE_PRIVATE_GIT_URL", mustOverride),
 		QPS_PIPELINE_GIT_BRANCH("QPS_PIPELINE_GIT_BRANCH", mustOverride),
 		QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", "git@github.com:qaprosoft/qps-pipeline.git"),
 		ADMIN_EMAILS("ADMIN_EMAILS", mustOverride),
