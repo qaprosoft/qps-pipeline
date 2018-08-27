@@ -500,10 +500,7 @@ class Runner extends Executor {
 
         def to = Configurator.get("email_list") + "," + Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
 		//TODO: enable emailing but seems like it should be moved to the notification code
-
-        context.println "TO EMAILS: " + to
         context.emailext getEmailParams(body, subject, to)
-
 		return failureReason
 	}
 
@@ -748,6 +745,7 @@ class Runner extends Executor {
 
 						def pipelineMap = [:]
 
+						def branch = Configurator.get("branch")
 						def ci_parent_url = Configurator.get("ci_parent_url")
 						if (ci_parent_url.isEmpty()) {
 							ci_parent_url = Configurator.get(Configurator.Parameter.JOB_URL)
@@ -764,7 +762,7 @@ class Runner extends Executor {
                         putNotNull(pipelineMap, "os", os)
                         putNotNull(pipelineMap, "os_version", osVersion)
 						pipelineMap.put("name", pipeName)
-						pipelineMap.put("branch", Configurator.get("branch"))
+						pipelineMap.put("branch", branch)
 						pipelineMap.put("ci_parent_url", ci_parent_url)
 						pipelineMap.put("ci_parent_build", ci_parent_build)
 						pipelineMap.put("retry_count", retry_count)
