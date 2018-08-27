@@ -500,13 +500,8 @@ class Runner extends Executor {
 
         def to = Configurator.get("email_list") + "," + Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
 		//TODO: enable emailing but seems like it should be moved to the notification code
-//		context.emailext attachLog: true,
-//                body: "${body}",
-//                recipientProviders: [[$class: 'DevelopersRecipientProvider'],
-//                                     [$class: 'RequesterRecipientProvider']],
-//                subject: "${subject}",
-//                to: "${Configurator.get("email_list")},${Configurator.get(Configurator.Parameter.ADMIN_EMAILS)}"
 
+        context.prinln "TO EMAILS: " + to
         context.emailext getEmailParams(body, subject, to)
 
 		return failureReason
@@ -891,13 +886,6 @@ class Runner extends Executor {
                 def to = entry.get("email_list") + "," + Configurator.get("email_list")
 
                 context.emailext getEmailParams(body, subject, to)
-//				context.emailext attachLog: true,
-//                        body: "Unable to start job via cron! " + ex.getMessage(),
-//                        recipientProviders: [[$class: 'DevelopersRecipientProvider'],
-//                                             [$class: 'RequesterRecipientProvider']],
-//                        subject: "JOBSTART FAILURE: ${entry.get("jobName")}",
-//                        to: "${entry.get("email_list")},${Configurator.get("email_list")}"
-
 			}
         }
 	}
