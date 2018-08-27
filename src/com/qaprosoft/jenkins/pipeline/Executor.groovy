@@ -7,7 +7,6 @@ import org.testng.xml.XmlSuite;
 import com.cloudbees.groovy.cps.NonCPS
 
 import com.qaprosoft.scm.ISCM
-import sun.awt.CausedFocusEvent
 
 import java.nio.file.FileSystems
 import java.nio.file.Path
