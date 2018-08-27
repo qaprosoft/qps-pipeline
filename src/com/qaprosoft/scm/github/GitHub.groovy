@@ -54,6 +54,8 @@ class GitHub implements ISCM {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
 				}
 			}
+
+            context.println "SCM VARS: " + scmVars.dump()
 			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
 			Configurator.set("scm_url", scmVars.GIT_URL)
             Configurator.set("scm_branch", scmVars.GIT_BRANCH)
