@@ -1,11 +1,13 @@
 package com.qaprosoft.jenkins.pipeline
 
+import groovy.json.JsonSlurperClassic
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import com.cloudbees.groovy.cps.NonCPS
 
 import com.qaprosoft.scm.ISCM
+import sun.awt.CausedFocusEvent
 
 import java.nio.file.FileSystems
 import java.nio.file.Path
@@ -53,7 +55,7 @@ public abstract class Executor {
 
 	protected Object parseJSON(String path) {
 		def inputFile = new File(path)
-		def content = new groovy.json.JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
+		def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
 		return content
 	}
 
