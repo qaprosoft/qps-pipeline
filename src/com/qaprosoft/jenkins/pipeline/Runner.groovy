@@ -197,9 +197,8 @@ class Runner extends Executor {
 		//TODO: improve carina to detect browser_version on the fly
 		String browser_version = Configurator.get("browser_version")
 
-        context.println "BRANCH: " + Configurator.get("scm_branch")
 		context.stage('Preparation') {
-			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${Configurator.get("scm_branch")}"
+			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${Configurator.get("branch")}"
 			if (!isParamEmpty("${CARINA_CORE_VERSION}")) {
 				currentBuild.displayName += "|" + "${CARINA_CORE_VERSION}"
 			}
