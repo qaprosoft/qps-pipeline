@@ -355,6 +355,8 @@ class Runner extends Executor {
 				Configurator.set("ci_build_cause", "UPSTREAMTRIGGER")
 			}
 
+            context.println "Build cause: " + Configurator.get("ci_build_cause")
+
 			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
 			//register all obligatory vars
