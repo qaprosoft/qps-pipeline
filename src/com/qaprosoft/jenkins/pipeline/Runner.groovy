@@ -189,6 +189,7 @@ class Runner extends Executor {
 		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 		String CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
 		String suite = Configurator.get("suite")
+		String branch = Configurator.get("branch")
 		String env = Configurator.get("env")
         //TODO: rename to devicePool
 		String devicePool = Configurator.get("devicePool")
@@ -198,7 +199,7 @@ class Runner extends Executor {
 		String browser_version = Configurator.get("browser_version")
 
 		context.stage('Preparation') {
-			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${Configurator.get("branch")}"
+			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${branch}"
 			if (!isParamEmpty("${CARINA_CORE_VERSION}")) {
 				currentBuild.displayName += "|" + "${CARINA_CORE_VERSION}"
 			}
