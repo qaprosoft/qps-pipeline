@@ -89,6 +89,12 @@ class Runner extends Executor {
 
     protected def parseFolderName() {
         def array = this.getWorkspace().split("jobs/")
+		if (array.size() == 1) {
+			//TODO: find a way howto revoke workspace dir customization as it influence on folderName resolving:
+			// /var/jenkins_home/workspace/Automation/<JOB_NAME>
+			return "Automation"
+		}
+		
         def folderName = ""
         for (def i = 1; i < array.size() - 1; i++){
             folderName  = folderName + array[i]
