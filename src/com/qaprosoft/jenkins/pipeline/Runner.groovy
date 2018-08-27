@@ -497,13 +497,16 @@ class Runner extends Executor {
 					${etafReport}: ${jobBuild}/${etafReportEncoded}<br>
 					Console: ${jobBuild}/console"""
 
+        def to = Configurator.get("email_list") + "," + Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
 		//TODO: enable emailing but seems like it should be moved to the notification code
-		context.emailext attachLog: true,
-                body: "${body}",
-                recipientProviders: [[$class: 'DevelopersRecipientProvider'],
-                                     [$class: 'RequesterRecipientProvider']],
-                subject: "${subject}",
-                to: "${Configurator.get("email_list")},${Configurator.get(Configurator.Parameter.ADMIN_EMAILS)}"
+//		context.emailext attachLog: true,
+//                body: "${body}",
+//                recipientProviders: [[$class: 'DevelopersRecipientProvider'],
+//                                     [$class: 'RequesterRecipientProvider']],
+//                subject: "${subject}",
+//                to: "${Configurator.get("email_list")},${Configurator.get(Configurator.Parameter.ADMIN_EMAILS)}"
+
+        context.emailext getEmailParams(body, subject, to)
 
 		return failureReason
 	}
@@ -868,14 +871,11 @@ class Runner extends Executor {
 			//context.println("Dynamic Stage Created For: " + entry.get("jobName"))
 			//context.println("Checking EmailList: " + entry.get("emailList"))
 			
-			def email_list = entry.get("email_list")
-			def ADMIN_EMAILS = Configurator.get("email_list")
-
 			List jobParams = []
 			for (param in entry) {
 				jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
 			}
-			//context.println(jobParams.dump())
+
             //context.println("propagate: " + propagateJob)
 			try {
 				context.build job: folderName + "/" + entry.get("jobName"),
@@ -884,13 +884,33 @@ class Runner extends Executor {
 				wait: waitJob
 			} catch (Exception ex) {
 				printStackTrace(ex)
-				
-				context.emailext attachLog: true, body: "Unable to start job via cron! " + ex.getMessage(), recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], subject: "JOBSTART FAILURE: ${entry.get("jobName")}", to: "${email_list},${ADMIN_EMAILS}"
-			}
 
-		}
+                def body = "Unable to start job via cron! " + ex.getMessage()
+                def subject = "JOBSTART FAILURE: " + entry.get("jobName")
+                def to = entry.get("email_list") + "," + Configurator.get("email_list")
+
+                context.emailext getEmailParams(body, subject, to)
+//				context.emailext attachLog: true,
+//                        body: "Unable to start job via cron! " + ex.getMessage(),
+//                        recipientProviders: [[$class: 'DevelopersRecipientProvider'],
+//                                             [$class: 'RequesterRecipientProvider']],
+//                        subject: "JOBSTART FAILURE: ${entry.get("jobName")}",
+//                        to: "${entry.get("email_list")},${Configurator.get("email_list")}"
+
+			}
+        }
 	}
-	
+
+    private def getEmailParams(body, subject, to) {
+        def params = [attachLog: true,
+                      body: body,
+                      recipientProviders: [[$class: 'DevelopersRecipientProvider'],
+                                           [$class: 'RequesterRecipientProvider']],
+                      subject: subject,
+                      to: to]
+        return params
+    }
+
 	protected void startBrowserStackLocal(String uniqueBrowserInstance) {
 		def browserStackUrl = "https://www.browserstack.com/browserstack-local/BrowserStackLocal"
 		def accessKey = Configurator.get("BROWSERSTACK_ACCESS_KEY")
