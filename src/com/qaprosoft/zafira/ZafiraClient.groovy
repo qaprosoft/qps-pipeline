@@ -34,8 +34,7 @@ class ZafiraClient {
 			return ""
 		}
 		context.println("accessToken: ${accessToken}")
-		def response = context.httpRequest \
-	    	contentType: 'APPLICATION_JSON', \
+		def response = context.httpRequest contentType: 'APPLICATION_JSON', \
 			httpMode: 'POST', \
 			requestBody: "{\"refreshToken\": \"${accessToken}\"}", \
 			url: this.serviceURL + "/api/auth/refresh"
@@ -59,7 +58,7 @@ class ZafiraClient {
 		String jobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 		String buildNumber = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 
-		String branch = Configurator.get("branch")
+		String branch = Configurator.get("scm_branch")
 		String _env = Configurator.get("env")
 
 		String ciParentUrl = Configurator.get("ci_parent_url")
