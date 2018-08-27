@@ -59,8 +59,8 @@ class GitHub implements ISCM {
 				}
 			}
 
-			//TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
-			Configurator.set("scm_url", scmVars.GIT_URL)
+            //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
+            Configurator.set("scm_url", scmVars.GIT_URL)
             Configurator.set("scm_branch", branch)
             Configurator.set("scm_commit", scmVars.GIT_COMMIT)
         }
