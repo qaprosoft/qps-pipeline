@@ -189,7 +189,7 @@ class Runner extends Executor {
 		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 		String CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
 		String suite = Configurator.get("suite")
-		String branch = Configurator.get("branch")
+		String branch = Configurator.get("scm_branch")
 		String env = Configurator.get("env")
         //TODO: rename to devicePool
 		String devicePool = Configurator.get("devicePool")
@@ -315,54 +315,39 @@ class Runner extends Executor {
 	protected void build() {
 		context.stage('Run Test Suite') {
 
-			def POM_FILE = getSubProjectFolder() + "/pom.xml"
+			Configurator.set("ci_url", Configurator.get(Configurator.Parameter.JOB_URL))
+			Configurator.set("ci_build", Configurator.get(Configurator.Parameter.BUILD_NUMBER))
 
-			def BRANCH = Configurator.get("branch")
-            def BUILD_USER_ID = Configurator.get("BUILD_USER_ID")
-            def BUILD_USER_FIRST_NAME = Configurator.get("BUILD_USER_FIRST_NAME")
-            def BUILD_USER_LAST_NAME = Configurator.get("BUILD_USER_LAST_NAME")
-            def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
-			
-			def JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
-			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-			Configurator.set("ci_url", JOB_URL)
-			Configurator.set("ci_build", BUILD_NUMBER)
-			
-            //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
-			Configurator.set("git_branch", BRANCH)
-			Configurator.set("scm_branch", BRANCH)
-
+			def pomFile = getSubProjectFolder() + "/pom.xml"
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
--f ${POM_FILE} \
--Dmaven.test.failure.ignore=true \
--Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
--Dselenium_host=${Configurator.get(Configurator.Parameter.SELENIUM_URL)} \
--Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
--Dzafira_enabled=true \
--Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
--Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
--Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
--Dzafira_report_folder=\"${ZAFIRA_REPORT_FOLDER}\" \
--Dreport_url=\"$JOB_URL$BUILD_NUMBER/${etafReportEncoded}\" \
--Dgit_branch=$BRANCH \
--Dgit_commit=${Configurator.get("GIT_COMMIT")} \
--Dgit_url=${Configurator.get("git_url")} \
--Dci_url=\"${JOB_URL}\" \
--Dci_build=\"${BUILD_NUMBER}\" \
--Dci_user_id=\"$BUILD_USER_ID\" \
--Dci_user_first_name=\"$BUILD_USER_FIRST_NAME\" \
--Dci_user_last_name=\"$BUILD_USER_LAST_NAME\" \
--Dci_user_email=\"$BUILD_USER_EMAIL\" \
--Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
-clean test"
+                                            -f ${pomFile} \
+                                            -Dmaven.test.failure.ignore=true \
+                                            -Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
+                                            -Dselenium_host=${Configurator.get(Configurator.Parameter.SELENIUM_URL)} \
+                                            -Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
+                                            -Dzafira_enabled=true \
+                                            -Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
+                                            -Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
+                                            -Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
+                                            -Dzafira_report_folder=\"${ZAFIRA_REPORT_FOLDER}\" \
+                                            -Dreport_url=\"${Configurator.get(Configurator.Parameter.JOB_URL)}${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}/${etafReportEncoded}\" \
+                                            -Dgit_branch=${Configurator.get("scm_branch")} \
+                                            -Dgit_commit=${Configurator.get("scm_commit")} \
+                                            -Dgit_url=${Configurator.get("scm_url")} \
+                                            -Dci_url=${Configurator.get(Configurator.Parameter.JOB_URL)} \
+                                            -Dci_build=${Configurator.get(Configurator.Parameter.BUILD_NUMBER)} \
+                                            -Dci_user_id=${Configurator.get("BUILD_USER_ID")} \
+                                            -Dci_user_first_name=${Configurator.get("BUILD_USER_FIRST_NAME")} \
+                                            -Dci_user_last_name=${Configurator.get("BUILD_USER_LAST_NAME")} \
+                                            -Dci_user_email=${Configurator.get("BUILD_USER_EMAIL")} \
+                                            -Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
+                                            clean test"
 
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
 			Configurator.set("zafira_enabled", zc.isAvailable().toString())
 			
-
-
 			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
 
 			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
@@ -406,7 +391,7 @@ clean test"
 
 			if (!isParamEmpty(Configurator.get("custom_capabilities"))) {
 				if (Configurator.get("custom_capabilities").toLowerCase().contains("browserstack")) {
-					def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configurator.get("suite") + "-" +
+					def uniqueBrowserInstance = "\"#${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}-" + Configurator.get("suite") + "-" +
 							Configurator.get("browser") + "-" + Configurator.get("env") + "\""
 					uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
 					startBrowserStackLocal(uniqueBrowserInstance)
@@ -775,7 +760,7 @@ clean test"
 
 						def pipelineMap = [:]
 
-						def branch = Configurator.get("branch")
+						def branch = Configurator.get("scm_branch")
 						def ci_parent_url = Configurator.get("ci_parent_url")
 						if (ci_parent_url.isEmpty()) {
 							ci_parent_url = Configurator.get(Configurator.Parameter.JOB_URL)
