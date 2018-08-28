@@ -34,8 +34,7 @@ class ZafiraClient {
 			return ""
 		}
 		context.println("accessToken: ${accessToken}")
-		def response = context.httpRequest \
-	    	contentType: 'APPLICATION_JSON', \
+		def response = context.httpRequest contentType: 'APPLICATION_JSON', \
 			httpMode: 'POST', \
 			requestBody: "{\"refreshToken\": \"${accessToken}\"}", \
 			url: this.serviceURL + "/api/auth/refresh"
