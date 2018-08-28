@@ -90,7 +90,7 @@ class Runner extends Executor {
     protected def parseFolderName() {
 		def folderName = ""
 		def workspace = this.getWorkspace();
-		if (workspace.contais("jobs/")) {
+		if (workspace.contains("jobs/")) {
 			def array = workspace.split("jobs/")
 			for (def i = 1; i < array.size() - 1; i++){
 				folderName  = folderName + array[i]
