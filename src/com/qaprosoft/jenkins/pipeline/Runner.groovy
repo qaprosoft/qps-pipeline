@@ -340,6 +340,7 @@ class Runner extends Executor {
 			Configurator.set("scm_branch", BRANCH)
 
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
+-Detaf.carina.core.version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
 -f ${POM_FILE} \
 -Dmaven.test.failure.ignore=true \
 -Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
