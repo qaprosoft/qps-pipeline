@@ -692,7 +692,8 @@ clean test"
 			context.println("ERROR! Unable to find suite: " + filePath)
 			return
 		} catch (Exception e) {
-			context.println("ERROR! Unable to parse suite: " + filePath, e)
+			context.println("ERROR! Unable to parse suite: " + filePath)
+			context.println(e.printStackTrace())
 			return
 		}
 
