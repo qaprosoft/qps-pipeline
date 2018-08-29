@@ -88,18 +88,20 @@ class Runner extends Executor {
     }
 
     protected def parseFolderName() {
-        def array = this.getWorkspace().split("jobs/")
-		if (array.size() == 1) {
-			//TODO: find a way howto revoke workspace dir customization as it influence on folderName resolving:
-			// /var/jenkins_home/workspace/Automation/<JOB_NAME>
-			return "Automation"
+	def folderName = ""
+	def workspace = this.getWorkspace();
+	if (workspace.contains("jobs/")) {
+		def array = workspace.split("jobs/")
+		for (def i = 1; i < array.size() - 1; i++){
+			folderName  = folderName + array[i]
 		}
-		
-        def folderName = ""
-        for (def i = 1; i < array.size() - 1; i++){
-            folderName  = folderName + array[i]
-        }
-        return folderName.replaceAll(".\$","")
+		folderName = folderName.replaceAll(".\$","")
+	} else {
+		def array = workspace.split("/")
+		folderName = array[array.size() - 2]
+	}
+
+        return folderName
     }
 
 	public void runJob() {
@@ -708,7 +710,7 @@ clean test"
 
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
-		def currentEnv = Configurator.get("env")
+		def currentEnv = getCronEnv(currentSuite)
 		def pipelineJobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 
 		// override suite email_list from params if defined
@@ -748,7 +750,7 @@ clean test"
 
 				for (def supportedEnv : supportedEnvs.split(",")) {
 					//context.println("supportedEnv: " + supportedEnv)
-					if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
+					if (!currentEnv.contains(supportedEnv) || currentEnv.toString().equals("null")) {
 						//context.println("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
 						//launch test only if current suite support cron regression execution for current env
 						continue;
@@ -825,6 +827,11 @@ clean test"
 				}
 			}
 		}
+	}
+
+	protected def getCronEnv(currentSuite) {
+		//currentSuite is need to override action in private pipelines
+		return Configurator.get("env")
 	}
 	
 	protected def registerPipeline(currentSuite, pipelineMap) {
