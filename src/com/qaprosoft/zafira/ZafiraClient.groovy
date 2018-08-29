@@ -55,20 +55,17 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return
 		}
-		String jobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
-		String buildNumber = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-
-		String branch = Configurator.get("branch")
-		String _env = Configurator.get("env")
-
-		String ciParentUrl = Configurator.get("ci_parent_url")
-		String ciParentBuild = Configurator.get("ci_parent_build")
 
         def response = context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${token}"]], \
-	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'POST', \
-	    requestBody: "{\"jobName\": \"${jobName}\", \"buildNumber\": \"${buildNumber}\", \"branch\": \"${branch}\", \"env\": \"${_env}\", \"ciRunId\": \"${uuid}\", \"ciParentUrl\": \"${ciParentUrl}\", \"ciParentBuild\": \"${ciParentBuild}\"}", \
+	        contentType: 'APPLICATION_JSON', \
+	        httpMode: 'POST', \
+	        requestBody: "{\"jobName\": \"${Configurator.get(Configurator.Parameter.JOB_BASE_NAME)}\", \
+                       \"buildNumber\": \"${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}\", \
+                       \"branch\": \"${Configurator.get("branch")}\", \
+                       \"env\": \"${Configurator.get("env")}\", \"ciRunId\": \"${uuid}\", \
+                       \"ciParentUrl\": \"${Configurator.get("ci_parent_url")}\", \
+                       \"ciParentBuild\": \"${Configurator.get("ci_parent_build")}\"}", \
             url: this.serviceURL + "/api/tests/runs/queue"
 			
         String formattedJSON = JsonOutput.prettyPrint(response.content)
@@ -79,21 +76,17 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return
 		}
-		String upstreamJobId = Configurator.get("ci_job_id")
-		String upstreamJobBuildNumber = Configurator.get("ci_parent_build")
-		String scmUrl = Configurator.get("scm_url")
-		String ciUserId = Configurator.get("ci_user_id")
-		String hashcode = Configurator.get("hashcode")
-		String doRebuild = Configurator.get("doRebuild")
-		String rerunFailures = Configurator.get("rerunFailures")
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization',   \
-              value: "${token}"]],   \
-	      contentType: 'APPLICATION_JSON',   \
-	      httpMode: 'POST',   \
-	      requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobId\": \"${upstreamJobId}\", \"upstreamJobBuildNumber\": \"${upstreamJobBuildNumber}\", " +
-				"\"scmUrl\": \"${scmUrl}\", \"hashcode\": \"${hashcode}\"}",   \
-                  url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}",   \
+            value: "${token}"]],   \
+	        contentType: 'APPLICATION_JSON',   \
+	        httpMode: 'POST',   \
+	        requestBody: "{\"owner\": \"${Configurator.get("ci_user_id")}\", \
+                           \"upstreamJobId\": \"${Configurator.get("ci_job_id")}\", \
+                           \"upstreamJobBuildNumber\": \"${Configurator.get("ci_parent_build")}\", \
+                           \"scmUrl\": \"${Configurator.get("scm_url")}\", \
+                           \"hashcode\": \"${Configurator.get("hashcode")}\"}",   \
+                  url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configurator.get("doRebuild")}&rerunFailures=${Configurator.get("rerunFailures")}",   \
                   timeout: 300000
 
 		def responseJson = new JsonSlurper().parseText(response.content)
