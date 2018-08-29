@@ -135,7 +135,7 @@ class Scanner extends Executor {
 
 				// VIEWS
 				registerObject("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
-				registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
+				//registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 				
 				//TODO: create default personalized view here
 
@@ -189,7 +189,8 @@ class Scanner extends Executor {
 					} catch (FileNotFoundException e) {
 						context.echo("ERROR! Unable to find suite: " + suite.path)
 					} catch (Exception e) {
-						context.echo("ERROR! Unable to parse suite: " + suite.path, e)
+						context.echo("ERROR! Unable to parse suite: " + suite.path)
+						context.println(e.printStackTrace())
 					}
 					
 				}

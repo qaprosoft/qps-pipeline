@@ -88,11 +88,17 @@ class Runner extends Executor {
     }
 
     protected def parseFolderName() {
-        def array = this.getWorkspace().split("jobs/")
-		if (array.size() == 1) {
-			//TODO: find a way howto revoke workspace dir customization as it influence on folderName resolving:
-			// /var/jenkins_home/workspace/Automation/<JOB_NAME>
-			return "Automation"
+		def folderName = ""
+		def workspace = this.getWorkspace();
+		if (workspace.contains("jobs/")) {
+			def array = workspace.split("jobs/")
+			for (def i = 1; i < array.size() - 1; i++){
+				folderName  = folderName + array[i]
+			}
+			folderName = folderName.replaceAll(".\$","")
+		} else {
+			def array = workspace.split("/")
+			folderName = array[array.size() - 2]
 		}
 
         def folderName = ""
@@ -323,6 +329,7 @@ class Runner extends Executor {
 
 			def pomFile = getSubProjectFolder() + "/pom.xml"
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
+                                            -Detaf.carina.core.version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \                                            
                                             -f ${pomFile} \
                                             -Dmaven.test.failure.ignore=true \
                                             -Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
@@ -661,7 +668,8 @@ class Runner extends Executor {
 			context.println("ERROR! Unable to find suite: " + filePath)
 			return
 		} catch (Exception e) {
-			context.println("ERROR! Unable to parse suite: " + filePath, e)
+			context.println("ERROR! Unable to parse suite: " + filePath)
+			context.println(e.printStackTrace())
 			return
 		}
 
@@ -676,7 +684,8 @@ class Runner extends Executor {
 
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
-		def currentEnv = Configurator.get("env")
+		def currentEnv = getCronEnv(currentSuite)
+			
 		def pipelineJobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 
 		// override suite email_list from params if defined
@@ -716,7 +725,7 @@ class Runner extends Executor {
 
 				for (def supportedEnv : supportedEnvs.split(",")) {
 					//context.println("supportedEnv: " + supportedEnv)
-					if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
+					if (!currentEnv.contains(supportedEnv) || currentEnv.toString().equals("null")) {
 						//context.println("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
 						//launch test only if current suite support cron regression execution for current env
 						continue;
@@ -795,6 +804,11 @@ class Runner extends Executor {
 		}
 	}
 	
+	protected def getCronEnv(currentSuite) {
+		//currentSuite is need to override action in private pipelines
+		return Configurator.get("env")
+	}
+
 	protected def registerPipeline(currentSuite, pipelineMap) {
 		listPipelines.add(pipelineMap)
 	}

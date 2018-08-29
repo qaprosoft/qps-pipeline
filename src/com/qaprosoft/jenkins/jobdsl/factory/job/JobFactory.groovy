@@ -5,7 +5,7 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class JobFactory extends DslFactory {
-	def logRotator = 100
+	def logRotator = 30
 	
 	public JobFactory(folder, name, description) {
 		super(folder, name, description)
