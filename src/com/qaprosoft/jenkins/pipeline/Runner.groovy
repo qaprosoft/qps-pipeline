@@ -412,18 +412,15 @@ clean test"
 			}
 			
 			//browserstack goals
-
-			if (!isParamEmpty(Configurator.get("custom_capabilities"))) {
-				if (Configurator.get("custom_capabilities").toLowerCase().contains("browserstack")) {
-					def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configurator.get("suite") + "-" +
-							Configurator.get("browser") + "-" + Configurator.get("env") + "\""
-					uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
-					startBrowserStackLocal(uniqueBrowserInstance)
-					goals += " -Dcapabilities.project=" + Configurator.get("project")
-					goals += " -Dcapabilities.build=" + uniqueBrowserInstance
-					goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
-					goals += " -Dapp_version=browserStack"
-				}
+			if (isBrowserStackRun()) {
+				def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configurator.get("suite") + "-" +
+						Configurator.get("browser") + "-" + Configurator.get("env") + "\""
+				uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
+				startBrowserStackLocal(uniqueBrowserInstance)
+				goals += " -Dcapabilities.project=" + Configurator.get("project")
+				goals += " -Dcapabilities.build=" + uniqueBrowserInstance
+				goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
+				goals += " -Dapp_version=browserStack"
 			}
 
 			//append again overrideFields to make sure they are declared at the end
@@ -962,5 +959,16 @@ Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStac
 	
 	protected void setZafiraReportFolder(folder) {
 		etafReportFolder = folder
+	}
+	
+	protected boolean isBrowserStackRun() {
+		boolean res = false
+		def customCapabilities = Configurator.get("custom_capabilities")
+		if (!isParamEmpty(customCapabilities)) {
+			if (customCapabilities.toLowerCase().contains("browserstack")) {
+				res = true
+			}
+		}
+		return res
 	}
 }
