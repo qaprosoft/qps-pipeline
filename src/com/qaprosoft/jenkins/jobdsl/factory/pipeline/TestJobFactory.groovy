@@ -74,7 +74,7 @@ public class TestJobFactory extends PipelineFactory {
 					defaultMobilePool = "ANY"
 				}
 
-				def autoScreenshot = true
+				def autoScreenshot = false
 				if (currentSuite.getParameter("jenkinsAutoScreenshot") != null) {
 					autoScreenshot = currentSuite.getParameter("jenkinsAutoScreenshot").toBoolean()
 				}
@@ -84,7 +84,7 @@ public class TestJobFactory extends PipelineFactory {
 					keepAllScreenshots = currentSuite.getParameter("jenkinsKeepAllScreenshots").toBoolean()
 				}
 				
-				def enableVideo = false
+				def enableVideo = true
 				if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
 					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
 				}
@@ -133,7 +133,8 @@ public class TestJobFactory extends PipelineFactory {
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVideo', enableVideo, 'Enable video recording')
+						//TODO: enable video as only issue with Appiym and xrecord utility is fixed
+						//booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'iOS')
 						break;
