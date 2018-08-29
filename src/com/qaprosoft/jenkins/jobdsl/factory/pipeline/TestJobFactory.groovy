@@ -74,7 +74,7 @@ public class TestJobFactory extends PipelineFactory {
 					defaultMobilePool = "ANY"
 				}
 
-				def autoScreenshot = true
+				def autoScreenshot = false
 				if (currentSuite.getParameter("jenkinsAutoScreenshot") != null) {
 					autoScreenshot = currentSuite.getParameter("jenkinsAutoScreenshot").toBoolean()
 				}
@@ -84,7 +84,7 @@ public class TestJobFactory extends PipelineFactory {
 					keepAllScreenshots = currentSuite.getParameter("jenkinsKeepAllScreenshots").toBoolean()
 				}
 				
-				def enableVideo = false
+				def enableVideo = true
 				if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
 					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
 				}
@@ -114,7 +114,7 @@ public class TestJobFactory extends PipelineFactory {
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
-                        _dslFactory.println("SELENIUM: " + selenium)
+						_dslFactory.println("SELENIUM: " + selenium)
 						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
@@ -133,7 +133,8 @@ public class TestJobFactory extends PipelineFactory {
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
-						booleanParam('enableVideo', enableVideo, 'Enable video recording')
+						//TODO: enable video as only issue with Appiym and xrecord utility is fixed
+						//booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'iOS')
 						break;
