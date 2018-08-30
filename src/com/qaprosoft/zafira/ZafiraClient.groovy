@@ -41,6 +41,7 @@ class ZafiraClient {
 		for(header in requestParams.get("customHeaders")) {
 			context.println "ITERATING"
 			if(header.name == "Authorization"){
+                context.println "INSIDE"
 				header.value == authToken
 				break
 			}
