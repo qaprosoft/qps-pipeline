@@ -10,7 +10,7 @@ class ZafiraClient {
 	private String refreshToken
 	private String authToken
 	private def context
-	private boolean isAvailable
+	private boolean isAvailable = true
 	private boolean developMode
 
 	public ZafiraClient(context) {
