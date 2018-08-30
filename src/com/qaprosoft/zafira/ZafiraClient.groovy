@@ -57,6 +57,7 @@ class ZafiraClient {
 		if (!isAvailable) {
 			return
 		}
+		context.println "QUEUE METHOD"
 		String jobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 		String buildNumber = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 
