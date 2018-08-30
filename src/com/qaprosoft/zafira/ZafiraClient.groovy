@@ -54,7 +54,7 @@ class ZafiraClient {
 	}
 
 	public void queueZafiraTestRun(String uuid) {
-		context.println "QUEUE METHOD"
+		context.println "isAvailable" + isAvailable
 		if (!isAvailable) {
 			return
 		}
