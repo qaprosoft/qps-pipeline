@@ -68,16 +68,11 @@ class ZafiraClient {
 	/** Generates authToken using refreshToken*/
 	protected void getZafiraAuthToken(String refreshToken) {
 		//context.println "refreshToken: " + refreshToken
-		def parameters = [contentType: 'APPLICATION_JSON',
-						  httpMode: 'POST',
-						  requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
-						  url: this.serviceURL + "/api/auth/refresh"]
+		def response = context.httpRequest contentType: 'APPLICATION_JSON',
+				httpMode: 'POST',
+				requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
+				url: this.serviceURL + "/api/auth/refresh"
 
-		def response = sendRequest(parameters)
-		response = checkStatus(response, parameters)
-		if (response == 401) {
-			return
-		}
 		// reread new accessToken and auth type
 		def properties = (Map) new JsonSlurper().parseText(response.getContent())
 
