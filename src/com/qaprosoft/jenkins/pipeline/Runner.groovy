@@ -362,10 +362,8 @@ clean test"
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
-			Configurator.set("zafira_enabled", !developMode)
+			Configurator.set("zafira_enabled", String.valueOf(!developMode))
 			
-
-
 			//TODO: determine correctly ci_build_cause (HUMAN, TIMER/SCHEDULE or UPSTREAM_JOB using jenkins pipeline functionality
 
 			//for now register only UPSTREAM_JOB cause when ci_parent_url and ci_parent_build not empty
