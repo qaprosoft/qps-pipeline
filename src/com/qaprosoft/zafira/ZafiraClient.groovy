@@ -33,6 +33,7 @@ class ZafiraClient {
 		return isAvailable
 	}
 
+	@NonCPS
 	public void getZafiraAuthToken(String refreshToken) {
 		if (developMode) {
 			return
