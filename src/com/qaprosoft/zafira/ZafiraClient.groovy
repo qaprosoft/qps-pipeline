@@ -31,7 +31,7 @@ class ZafiraClient {
 		getAuthToken()
 		replaceToken(requestParams)
 		def response = null
-		/** Catches exeptions in every http call*/
+		/** Catches exceptions in every http call */
 		try {
 			response = context.httpRequest requestParams
 		} catch (Exception ex) {

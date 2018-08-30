@@ -115,12 +115,8 @@ class Runner extends Executor {
 
         //TODO: remove master node assignment
 		context.node(nodeName) {
-			try {
-                zc.queueZafiraTestRun(uuid)
-			} catch (Exception ex) {
-				printStackTrace(ex)
-			}
-			nodeName = chooseNode()
+            zc.queueZafiraTestRun(uuid)
+            nodeName = chooseNode()
 		}
 
 		context.node(nodeName) {
@@ -163,11 +159,7 @@ class Runner extends Executor {
 
     public void rerunJobs(){
         context.stage('Rerun Tests'){
-            try {
-                zc.smartRerun()
-            } catch (Exception ex) {
-                printStackTrace(ex)
-            }
+            zc.smartRerun()
         }
     }
 
