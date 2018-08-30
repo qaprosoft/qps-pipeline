@@ -53,7 +53,7 @@ class ZafiraClient {
 	}
 
 	protected def checkStatus(response, parameters) {
-		if(response == null) {
+		if(response.status == 401) {
 			authToken = null
 			response = sendRequest(parameters)
 		}
@@ -99,7 +99,7 @@ class ZafiraClient {
 
 		def response = sendRequest(parameters)
 		response = checkStatus(response, parameters)
-		if (response == null) {
+		if (response == 401) {
 			return
 		}
         String formattedJSON = JsonOutput.prettyPrint(response.content)
@@ -119,12 +119,13 @@ class ZafiraClient {
                                         \"upstreamJobBuildNumber\": \"${Configurator.get("ci_parent_build")}\", \
                                         \"scmUrl\": \"${Configurator.get("scm_url")}\", \
                                         \"hashcode\": \"${Configurator.get("hashcode")}\"}",
-						 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configurator.get("doRebuild")}&rerunFailures=${Configurator.get("rerunFailures")}",
+						  validResponseCodes: "200:401",
+						  url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configurator.get("doRebuild")}&rerunFailures=${Configurator.get("rerunFailures")}",
 						 timeout: 300000]
 
 		def response = sendRequest(parameters)
 		response = checkStatus(response, parameters)
-		if (response == null) {
+		if (response == 401) {
 			return
 		}
 
@@ -143,7 +144,8 @@ class ZafiraClient {
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
                           requestBody: "{\"comment\": \"${comment}\"}",
-                          url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
+						  validResponseCodes: "200:401",
+						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
 
         def response = sendRequest(parameters)
 		checkStatus(response, parameters)
@@ -158,6 +160,7 @@ class ZafiraClient {
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
 						  requestBody: "{\"recipients\": \"${emailList}\"}",
+						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
 		def response = sendRequest(parameters)
 		checkStatus(response, parameters)
@@ -171,11 +174,12 @@ class ZafiraClient {
 										   value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
+						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
 
 		def response = sendRequest(parameters)
 		response = checkStatus(response, parameters)
-		if (response == null) {
+		if (response == 401) {
 			return ""
 		}
 		//context.println("exportZafiraReport response: ${response.content}")
