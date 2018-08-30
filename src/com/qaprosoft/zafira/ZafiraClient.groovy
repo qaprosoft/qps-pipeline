@@ -43,19 +43,17 @@ class ZafiraClient {
 	protected def sendRequest(requestParams) {
 		getAuthToken()
         replaceToken(requestParams)
-		def status = 402
+		def response = null
 		try {
-			def response = context.httpRequest requestParams
-			status = response.status
+			response = context.httpRequest requestParams
 		} catch (Exception ex) {
 			printStackTrace(ex)
 		}
-		context.println "STATUS: " + status
-		return status
+		return response
 	}
 
 	protected def checkStatus(response, parameters) {
-		if(response.status == 401) {
+		if(response == null) {
 			authToken = null
 			response = sendRequest(parameters)
 		}
@@ -98,11 +96,10 @@ class ZafiraClient {
                                          \"ciParentBuild\": \"${Configurator.get("ci_parent_build")}\"}",
 						  url: this.serviceURL + "/api/tests/runs/queue"]
 
-		def status = sendRequest(parameters)
-		if(status == 401) {
-			context.println "I AM HERE"
-			authToken = null
-			response = sendRequest(parameters)
+		def response = sendRequest(parameters)
+		response = checkStatus(response, parameters)
+		if (response == null) {
+			return
 		}
         String formattedJSON = JsonOutput.prettyPrint(response.content)
         context.println("Queued TestRun: ${formattedJSON}")
@@ -125,9 +122,9 @@ class ZafiraClient {
 						 timeout: 300000]
 
 		def response = sendRequest(parameters)
-		if(response.status == 401) {
-			authToken = null
-			response = sendRequest(parameters)
+		response = checkStatus(response, parameters)
+		if (response == null) {
+			return
 		}
 
 		def responseJson = new JsonSlurper().parseText(response.content)
@@ -148,10 +145,7 @@ class ZafiraClient {
                           url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
 
         def response = sendRequest(parameters)
-        if(response.status == 401) {
-            authToken = null
-            response = sendRequest(parameters)
-        }
+		checkStatus(response, parameters)
 	}
 
     public void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
@@ -165,10 +159,7 @@ class ZafiraClient {
 						  requestBody: "{\"recipients\": \"${emailList}\"}",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
 		def response = sendRequest(parameters)
-		if(response.status == 401) {
-			authToken = null
-			response = sendRequest(parameters)
-		}
+		checkStatus(response, parameters)
     }
 
 	public String exportZafiraReport(String uuid) {
@@ -182,16 +173,15 @@ class ZafiraClient {
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
 
 		def response = sendRequest(parameters)
-		if(response.status == 401) {
-			authToken = null
-			response = sendRequest(parameters)
+		response = checkStatus(response, parameters)
+		if (response == null) {
+			return ""
 		}
 		//context.println("exportZafiraReport response: ${response.content}")
 		return response.content
 	}
 
 	protected void printStackTrace(Exception ex) {
-		context.println("DUMP: " + ex.dump())
 		context.println("exception: " + ex.getMessage())
 		context.println("exception class: " + ex.getClass().getName())
 		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
