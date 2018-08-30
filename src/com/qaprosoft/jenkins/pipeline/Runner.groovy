@@ -123,8 +123,7 @@ class Runner extends Executor {
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
-				zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, DEVELOP)
-				def token = zc.getZafiraAuthToken(ZAFIRA_ACCESS_TOKEN)
+				zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, ZAFIRA_ACCESS_TOKEN, DEVELOP)
                 zc.queueZafiraTestRun(uuid)
 			} catch (Exception ex) {
 				printStackTrace(ex)
@@ -180,8 +179,8 @@ class Runner extends Executor {
         }
         context.stage('Rerun Tests'){
             try {
-                zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, DEVELOP)
-                def token = zc.getZafiraAuthToken(ZAFIRA_ACCESS_TOKEN)
+                zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, ZAFIRA_ACCESS_TOKEN, DEVELOP)
+                zc.getZafiraAuthToken(ZAFIRA_ACCESS_TOKEN)
                 zc.smartRerun()
             } catch (Exception ex) {
                 printStackTrace(ex)

@@ -7,49 +7,45 @@ import com.qaprosoft.jenkins.pipeline.Configurator
 class ZafiraClient {
 
 	private String serviceURL
-	private String token
+	private String refreshToken
+	private String authToken
 	private def context
 	private boolean isAvailable
+	private boolean developMode
 
-	public ZafiraClient(context, String url, Boolean developMode) {
+	public ZafiraClient(context, String url, String refreshToken, Boolean developMode) {
 		this.context = context
 		this.serviceURL = url
 		context.println("zafiraUrl: ${serviceURL}")
-		
-		if (developMode) {
-			isAvailable = false
-		} else {
-  			//TODO: execute ping call to zafira "/api/status"
-            isAvailable = true
-		}
-
+		this.developMode = developMode
+		this.refreshToken = refreshToken
+		getZafiraAuthToken(refreshToken)
 	}
 	
 	public boolean isAvailable() {
-		return this.isAvailable
+		boolean isAvailable = false
+
+		isAvailable
 	}
 
-	public String getZafiraAuthToken(String accessToken) {
-		if (!isAvailable) {
-			return ""
+	public void getZafiraAuthToken(String refreshToken) {
+		if (developMode) {
+			return
 		}
-		context.println("accessToken: ${accessToken}")
-		def response = context.httpRequest \
-	    	contentType: 'APPLICATION_JSON', \
+		context.println "refreshToken: " + refreshToken
+		def response = context.httpRequest contentType: 'APPLICATION_JSON', \
 			httpMode: 'POST', \
-			requestBody: "{\"refreshToken\": \"${accessToken}\"}", \
+			requestBody: "{\"refreshToken\": \"${refreshToken}\"}", \
 			url: this.serviceURL + "/api/auth/refresh"
 
 		// reread new accessToken and auth type
 		def properties = (Map) new JsonSlurper().parseText(response.getContent())
-
 		//new accessToken in response is authToken
-		def authToken = properties.get("accessToken")
+		def accessToken = properties.get("accessToken")
 		def type = properties.get("type")
 
-		this.token = "${type} ${authToken}"
-		//context.println("${this.token}")
-		return this.token
+		this.authToken = "${type} ${accessToken}"
+		//context.println("${this.authToken}")
 	}
 
 	public void queueZafiraTestRun(String uuid) {
@@ -66,7 +62,7 @@ class ZafiraClient {
 		String ciParentBuild = Configurator.get("ci_parent_build")
 
         def response = context.httpRequest customHeaders: [[name: 'Authorization', \
-            value: "${token}"]], \
+            value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
 	    requestBody: "{\"jobName\": \"${jobName}\", \"buildNumber\": \"${buildNumber}\", \"branch\": \"${branch}\", \"env\": \"${_env}\", \"ciRunId\": \"${uuid}\", \"ciParentUrl\": \"${ciParentUrl}\", \"ciParentBuild\": \"${ciParentBuild}\"}", \
@@ -89,7 +85,7 @@ class ZafiraClient {
 		String rerunFailures = Configurator.get("rerunFailures")
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization',   \
-              value: "${token}"]],   \
+              value: "${authToken}"]],   \
 	      contentType: 'APPLICATION_JSON',   \
 	      httpMode: 'POST',   \
 	      requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobId\": \"${upstreamJobId}\", \"upstreamJobBuildNumber\": \"${upstreamJobBuildNumber}\", " +
@@ -109,7 +105,7 @@ class ZafiraClient {
 		}
 
 		context.httpRequest customHeaders: [[name: 'Authorization', \
-            value: "${token}"]], \
+            value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
 	    httpMode: 'POST', \
 	    requestBody: "{\"comment\": \"${comment}\"}", \
@@ -123,7 +119,7 @@ class ZafiraClient {
         }
 
         context.httpRequest customHeaders: [[name: 'Authorization',  \
-             value: "${token}"]],  \
+             value: "${authToken}"]],  \
 	     contentType: 'APPLICATION_JSON',  \
 	     httpMode: 'POST',  \
 	     requestBody: "{\"recipients\": \"${emailList}\"}",  \
@@ -136,7 +132,7 @@ class ZafiraClient {
 		}
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization', \
-			value: "${token}"]], \
+			value: "${authToken}"]], \
 		contentType: 'APPLICATION_JSON', \
 		httpMode: 'GET', \
 			url: this.serviceURL + "/api/tests/runs/${uuid}/export"
