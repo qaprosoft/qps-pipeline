@@ -101,7 +101,7 @@ class ZafiraClient {
                   url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}",   \
                   timeout: 300000
 
-		def responseJson = new JsonSlurper().parseText(response.content)
+		def responseJson = new JsonSlurperClassic().parseText(response.content)
 
 		context.println("Results : ${responseJson.size()}")
 		context.println("Tests for rerun : ${responseJson}")
