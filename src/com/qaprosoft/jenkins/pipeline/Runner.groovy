@@ -113,17 +113,12 @@ class Runner extends Executor {
         String nodeName = "master"
         String emailList = Configurator.get("email_list")
         String failureEmailList = Configurator.get("failure_email_list")
-        String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
-        String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        boolean DEVELOP = false
-        if (Configurator.get("develop")) {
-            DEVELOP = Configurator.get("develop").toBoolean()
-        }
+
         //TODO: remove master node assignment
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
-				zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, ZAFIRA_ACCESS_TOKEN, DEVELOP)
+				zc = new ZafiraClient(context)
                 zc.queueZafiraTestRun(uuid)
 			} catch (Exception ex) {
 				printStackTrace(ex)
@@ -170,22 +165,14 @@ class Runner extends Executor {
 	}
 
     public void rerunJobs(){
-
-        String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
-        String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        boolean DEVELOP = false
-        if (Configurator.get("develop")) {
-            DEVELOP = Configurator.get("develop").toBoolean()
-        }
         context.stage('Rerun Tests'){
             try {
-                zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, ZAFIRA_ACCESS_TOKEN, DEVELOP)
-                zc.getZafiraAuthToken(ZAFIRA_ACCESS_TOKEN)
+                zc = new ZafiraClient(context)
                 zc.smartRerun()
             } catch (Exception ex) {
                 printStackTrace(ex)
             }
-        }x
+        }
     }
 
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
