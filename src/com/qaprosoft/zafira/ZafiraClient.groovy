@@ -19,68 +19,11 @@ class ZafiraClient {
 
 	@NonCPS
 	/** Inits ZafiraClient using values which are present in Configurator */
-	protected void initZafiraClient() {
+	public void initZafiraClient() {
 		this.serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
 		context.println "zafiraUrl: " + serviceURL
 		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 		developMode = Configurator.get("develop") ? Configurator.get("develop").toBoolean() : false
-	}
-
-    /** Checks if auth token exists and if it doesn't generates it anew using refreshToken */
-	protected def sendRequest(requestParams) {
-		getAuthToken()
-		replaceToken(requestParams)
-		def response = null
-		/** Catches exceptions in every http call */
-		try {
-			response = context.httpRequest requestParams
-		} catch (Exception ex) {
-			printStackTrace(ex)
-		}
-		return response
-	}
-
-	protected def getAuthToken() {
-		if(authToken == null){
-			getZafiraAuthToken(refreshToken)
-		}
-	}
-
-	/** Replaces token value just in case it was incorrect before requestParams were passed to the sendRequest method */
-    protected def replaceToken(requestParams) {
-        for (header in requestParams.get("customHeaders")) {
-            if(header.name == "Authorization"){
-                header.value = authToken
-                break
-            }
-        }
-    }
-
-    /** Checks if response got an exception (null in this case) or unauthorized response (401) */
-	protected def checkStatus(response, parameters) {
-		if(response != null && response.status == 401) {
-			authToken = null
-			response = sendRequest(parameters)
-		}
-		return response
-	}
-
-	/** Generates authToken using refreshToken*/
-	protected void getZafiraAuthToken(String refreshToken) {
-		//context.println "refreshToken: " + refreshToken
-		def response = context.httpRequest contentType: 'APPLICATION_JSON',
-				httpMode: 'POST',
-				requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
-				url: this.serviceURL + "/api/auth/refresh"
-
-		// reread new accessToken and auth type
-		def properties = (Map) new JsonSlurper().parseText(response.getContent())
-
-		//new accessToken in response is authToken
-		def accessToken = properties.get("accessToken")
-		def type = properties.get("type")
-
-		authToken = type + " " + accessToken
 	}
 
 	public void queueZafiraTestRun(String uuid) {
@@ -196,5 +139,60 @@ class ZafiraClient {
 		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
 	}
 
+	/** Checks if auth token exists and if it doesn't generates it anew using refreshToken */
+	protected def sendRequest(requestParams) {
+		getAuthToken()
+		replaceToken(requestParams)
+		def response = null
+		/** Catches exceptions in every http call */
+		try {
+			response = context.httpRequest requestParams
+		} catch (Exception ex) {
+			printStackTrace(ex)
+		}
+		return response
+	}
 
+	protected def getAuthToken() {
+		if(authToken == null){
+			getZafiraAuthToken(refreshToken)
+		}
+	}
+
+	/** Replaces token value just in case it was incorrect before requestParams were passed to the sendRequest method */
+	protected def replaceToken(requestParams) {
+		for (header in requestParams.get("customHeaders")) {
+			if(header.name == "Authorization"){
+				header.value = authToken
+				break
+			}
+		}
+	}
+
+	/** Checks if response got an exception (null in this case) or unauthorized response (401) */
+	protected def checkStatus(response, parameters) {
+		if(response != null && response.status == 401) {
+			authToken = null
+			response = sendRequest(parameters)
+		}
+		return response
+	}
+
+	/** Generates authToken using refreshToken*/
+	protected void getZafiraAuthToken(String refreshToken) {
+		//context.println "refreshToken: " + refreshToken
+		def response = context.httpRequest contentType: 'APPLICATION_JSON',
+				httpMode: 'POST',
+				requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
+				url: this.serviceURL + "/api/auth/refresh"
+
+		// reread new accessToken and auth type
+		def properties = (Map) new JsonSlurper().parseText(response.getContent())
+
+		//new accessToken in response is authToken
+		def accessToken = properties.get("accessToken")
+		def type = properties.get("type")
+
+		authToken = type + " " + accessToken
+	}
 }
