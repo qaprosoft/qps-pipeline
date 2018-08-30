@@ -1,7 +1,7 @@
 package com.qaprosoft.zafira
 
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurperClassic
+import groovy.json.JsonSlurper
 import com.qaprosoft.jenkins.pipeline.Configurator
 
 class ZafiraClient {
@@ -24,16 +24,18 @@ class ZafiraClient {
 		context.println "zafiraUrl: " + serviceURL
 		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 		this.developMode = Configurator.get("develop") ? Configurator.get("develop").toBoolean() : false
-		getZafiraAuthToken(refreshToken)
+	}
+
+	protected void getAccess() {
+		if(!this.authToken){
+			getZafiraAuthToken(refreshToken)
+		}
 	}
 
 	public boolean isAvailable() {
-		this.isAvailable = true
-
 		return isAvailable
 	}
 
-	@NonCPS
 	public void getZafiraAuthToken(String refreshToken) {
 		if (developMode) {
 			return
@@ -45,9 +47,8 @@ class ZafiraClient {
 			url: this.serviceURL + "/api/auth/refresh"
 
 		// reread new accessToken and auth type
-		def properties = (Map) new JsonSlurperClassic().parseText(response.getContent())
+		def properties = (Map) new JsonSlurper().parseText(response.getContent())
 
-		context.printl "MAP"
 		//new accessToken in response is authToken
 		def accessToken = properties.get("accessToken")
 		def type = properties.get("type")
@@ -57,9 +58,10 @@ class ZafiraClient {
 	}
 
 	public void queueZafiraTestRun(String uuid) {
-		if (!isAvailable) {
+		if (developMode) {
 			return
 		}
+		getAccess()
 		String jobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 		String buildNumber = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 
@@ -81,9 +83,10 @@ class ZafiraClient {
     }
 
 	public void smartRerun() {
-		if (!isAvailable) {
+		if (developMode) {
 			return
 		}
+		getAccess()
 		String upstreamJobId = Configurator.get("ci_job_id")
 		String upstreamJobBuildNumber = Configurator.get("ci_parent_build")
 		String scmUrl = Configurator.get("scm_url")
@@ -101,17 +104,17 @@ class ZafiraClient {
                   url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}",   \
                   timeout: 300000
 
-		def responseJson = new JsonSlurperClassic().parseText(response.content)
+		def responseJson = new JsonSlurper().parseText(response.content)
 
 		context.println("Results : ${responseJson.size()}")
 		context.println("Tests for rerun : ${responseJson}")
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
-		if (!isAvailable) {
+		if (developMode) {
 			return 
 		}
-
+		getAccess()
 		context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
@@ -122,9 +125,10 @@ class ZafiraClient {
 	}
 
     void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
-        if (!isAvailable) {
-            return
-        }
+		if (developMode) {
+			return
+		}
+		getAccess()
 
         context.httpRequest customHeaders: [[name: 'Authorization',  \
              value: "${authToken}"]],  \
@@ -135,9 +139,10 @@ class ZafiraClient {
     }
 
 	public String exportZafiraReport(String uuid) {
-		if (!isAvailable) {
+		if (developMode) {
 			return ""
 		}
+		getAccess()
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization', \
 			value: "${authToken}"]], \
