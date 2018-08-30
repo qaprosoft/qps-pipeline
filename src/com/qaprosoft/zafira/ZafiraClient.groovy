@@ -57,7 +57,7 @@ class ZafiraClient {
 		def type = properties.get("type")
 
 		authToken = type + " " + accessToken
-		//context.println("${authToken}")
+		context.println "AUTH TOKEN: " + authToken
 	}
 
 	public void queueZafiraTestRun(String uuid) {
