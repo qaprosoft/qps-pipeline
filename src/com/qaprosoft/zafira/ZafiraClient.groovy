@@ -13,19 +13,23 @@ class ZafiraClient {
 	private boolean isAvailable
 	private boolean developMode
 
-	public ZafiraClient(context, String url, String refreshToken, Boolean developMode) {
+	public ZafiraClient(context) {
 		this.context = context
-		this.serviceURL = url
-		context.println("zafiraUrl: ${serviceURL}")
-		this.developMode = developMode
-		this.refreshToken = refreshToken
+		initZafiraClient()
+	}
+
+	protected void initZafiraClient() {
+		this.serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
+		context.println "zafiraUrl: " + serviceURL
+		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+		this.developMode = Configurator.get("develop") ? Configurator.get("develop").toBoolean() : false
 		getZafiraAuthToken(refreshToken)
 	}
-	
-	public boolean isAvailable() {
-		boolean isAvailable = false
 
-		isAvailable
+	public boolean isAvailable() {
+		boolean isAvailable = true
+
+		return isAvailable
 	}
 
 	public void getZafiraAuthToken(String refreshToken) {
@@ -44,7 +48,7 @@ class ZafiraClient {
 		def accessToken = properties.get("accessToken")
 		def type = properties.get("type")
 
-		this.authToken = "${type} ${accessToken}"
+		this.authToken = type + " " + accessToken
 		//context.println("${this.authToken}")
 	}
 
