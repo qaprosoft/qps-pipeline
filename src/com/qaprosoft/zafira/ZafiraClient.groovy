@@ -24,29 +24,24 @@ class ZafiraClient {
 		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 	}
 
-	protected def getAccess() {
+	protected def getAuthToken() {
 		if(authToken == null){
 			getZafiraAuthToken(refreshToken)
 		}
 	}
 
-	public boolean isAvailable() {
-		return isAvailable
-	}
+    protected def replaceToken(requestParams) {
+        for (header in requestParams.get("customHeaders")) {
+            if(header.name == "Authorization"){
+                header.value = authToken
+                break
+            }
+        }
+    }
 
 	protected def sendRequest(requestParams) {
-		context.println "request params: " + requestParams.dump()
-		getAccess()
-		context.println "AUTH: " + authToken
-		for(header in requestParams.get("customHeaders")) {
-			context.println "ITERATING"
-			if(header.name == "Authorization"){
-                context.println "INSIDE"
-				header.value = authToken
-				break
-			}
-		}
-		context.println "request params: " + requestParams.dump()
+		getAuthToken()
+        replaceToken(requestParams)
 		def response = context.httpRequest requestParams
 		return response
 	}
@@ -96,7 +91,7 @@ class ZafiraClient {
     }
 
 	public void smartRerun() {
-		getAccess()
+		getAuthToken()
 		String upstreamJobId = Configurator.get("ci_job_id")
 		String upstreamJobBuildNumber = Configurator.get("ci_parent_build")
 		String scmUrl = Configurator.get("scm_url")
@@ -121,7 +116,7 @@ class ZafiraClient {
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
-		getAccess()
+		getAuthToken()
 		context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
 	    contentType: 'APPLICATION_JSON', \
@@ -132,7 +127,7 @@ class ZafiraClient {
 	}
 
     void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
-		getAccess()
+		getAuthToken()
 
         context.httpRequest customHeaders: [[name: 'Authorization',  \
              value: "${authToken}"]],  \
@@ -144,7 +139,7 @@ class ZafiraClient {
 
 	public String exportZafiraReport(String uuid) {
 
-		getAccess()
+		getAuthToken()
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization', \
 			value: "${authToken}"]], \
