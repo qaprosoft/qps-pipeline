@@ -42,7 +42,7 @@ class ZafiraClient {
 			context.println "ITERATING"
 			if(header.name == "Authorization"){
                 context.println "INSIDE"
-				header.value == authToken
+				header.value = authToken
 				break
 			}
 		}
