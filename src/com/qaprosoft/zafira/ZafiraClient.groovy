@@ -34,7 +34,7 @@ class ZafiraClient {
     protected def replaceToken(requestParams) {
         for (header in requestParams.get("customHeaders")) {
             if(header.name == "Authorization"){
-                header.value = authToken
+                header.value = authToken + "l"
                 break
             }
         }
