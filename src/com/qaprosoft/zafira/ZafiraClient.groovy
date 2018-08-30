@@ -44,6 +44,7 @@ class ZafiraClient {
 		getAuthToken()
         replaceToken(requestParams)
 		def response = context.httpRequest requestParams
+		context.println "RESPONSE: " + response.dump()
 		return response
 	}
 
