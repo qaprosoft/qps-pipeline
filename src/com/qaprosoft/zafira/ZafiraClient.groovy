@@ -43,7 +43,12 @@ class ZafiraClient {
 	protected def sendRequest(requestParams) {
 		getAuthToken()
         replaceToken(requestParams)
-		def response = context.httpRequest requestParams
+		def response
+		try {
+			response = context.httpRequest requestParams
+		} catch (Exception ex) {
+			printStackTrace(ex)
+		}
 		context.println "RESPONSE: " + response.dump()
 		return response
 	}
@@ -183,4 +188,12 @@ class ZafiraClient {
 		//context.println("exportZafiraReport response: ${response.content}")
 		return response.content
 	}
+
+	protected void printStackTrace(Exception ex) {
+		context.println("exception: " + ex.getMessage())
+		context.println("exception class: " + ex.getClass().getName())
+		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
+	}
+
+
 }
