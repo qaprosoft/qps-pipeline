@@ -37,6 +37,7 @@ class ZafiraClient {
 	protected def sendRequest(requestParams) {
 		context.println "request params: " + requestParams.dump()
 		getAccess()
+		context.println "AUTH: " + authToken
 		for(header in requestParams.get("customHeaders")) {
 			context.println "ITERATING"
 			if(header.name == "Authorization"){
