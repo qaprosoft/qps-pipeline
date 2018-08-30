@@ -117,7 +117,6 @@ class Runner extends Executor {
 
         //TODO: remove master node assignment
 		context.node(nodeName) {
-			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
                 zc.queueZafiraTestRun(uuid)
 			} catch (Exception ex) {

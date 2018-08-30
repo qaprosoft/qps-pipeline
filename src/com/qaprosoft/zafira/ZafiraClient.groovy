@@ -27,13 +27,26 @@ class ZafiraClient {
 	}
 
 	protected void getAccess() {
-		if(!this.authToken){
+		if(!this.authToken || getAccessStatus() == 401){
 			getZafiraAuthToken(refreshToken)
 		}
 	}
 
 	public boolean isAvailable() {
 		return isAvailable
+	}
+
+	public def getAccessStatus(String refreshToken) {
+		if (developMode) {
+			return
+		}
+		def response = context.httpRequest customHeaders: [[name: 'Authorization',
+															value: "${authToken}"]],
+				contentType: 'APPLICATION_JSON',
+				httpMode: 'GET',
+				url: this.serviceURL + "/api/auth/access"
+
+		return response.status
 	}
 
 	public void getZafiraAuthToken(String refreshToken) {
