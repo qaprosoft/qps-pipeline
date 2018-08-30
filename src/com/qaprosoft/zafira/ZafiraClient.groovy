@@ -1,7 +1,7 @@
 package com.qaprosoft.zafira
 
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
+import groovy.json.JsonSlurperClassic
 import com.qaprosoft.jenkins.pipeline.Configurator
 
 class ZafiraClient {
@@ -45,7 +45,7 @@ class ZafiraClient {
 			url: this.serviceURL + "/api/auth/refresh"
 
 		// reread new accessToken and auth type
-		def properties = parseText(response.getContent())
+		def properties = (Map) new JsonSlurperClassic().parseText(response.getContent())
 
 		context.printl "MAP"
 		//new accessToken in response is authToken
@@ -55,11 +55,6 @@ class ZafiraClient {
 		this.authToken = type + " " + accessToken
 		//context.println("${this.authToken}")
 	}
-
-    @NonCPS
-    def parseText(txt){
-        return new JsonSlurper().parseText(txt)
-    }
 
 	public void queueZafiraTestRun(String uuid) {
 		if (!isAvailable) {
