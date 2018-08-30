@@ -44,11 +44,16 @@ class ZafiraClient {
 			requestBody: "{\"refreshToken\": \"${refreshToken}\"}", \
 			url: this.serviceURL + "/api/auth/refresh"
 
+
+		def lazyMap = new JsonSlurper().parseText(jsonString)
+
+		// JsonSlurper returns a non-serializable LazyMap, so copy it into a regular map before returning
+		def m = [:]
+		m.putAll(new JsonSlurper().parseText(response.getContent()))
 		// reread new accessToken and auth type
-		def properties = (Map) new JsonSlurper().parseText(response.getContent())
 		//new accessToken in response is authToken
-		def accessToken = properties.get("accessToken")
-		def type = properties.get("type")
+		def accessToken = m.get("accessToken")
+		def type = m.get("type")
 
 		this.authToken = type + " " + accessToken
 		//context.println("${this.authToken}")
