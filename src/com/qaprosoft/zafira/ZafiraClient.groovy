@@ -63,7 +63,6 @@ class ZafiraClient {
 		def type = properties.get("type")
 
 		authToken = type + " " + accessToken
-		context.println "AUTH TOKEN: " + authToken
 	}
 
 	public void queueZafiraTestRun(String uuid) {
@@ -80,8 +79,8 @@ class ZafiraClient {
                                          \"ciParentUrl\": \"${Configurator.get("ci_parent_url")}\", \
                                          \"ciParentBuild\": \"${Configurator.get("ci_parent_build")}\"}",
 						  url: this.serviceURL + "/api/tests/runs/queue"]
-		//parameters.get("customHeaders")["name"]
-        def response = sendRequest(parameters)
+
+		def response = sendRequest(parameters)
 		if(response.status == 401) {
 			authToken = null
 			response = sendRequest(parameters)
@@ -91,23 +90,24 @@ class ZafiraClient {
     }
 
 	public void smartRerun() {
-		getAuthToken()
-		String upstreamJobId = Configurator.get("ci_job_id")
-		String upstreamJobBuildNumber = Configurator.get("ci_parent_build")
-		String scmUrl = Configurator.get("scm_url")
-		String ciUserId = Configurator.get("ci_user_id")
-		String hashcode = Configurator.get("hashcode")
-		String doRebuild = Configurator.get("doRebuild")
-		String rerunFailures = Configurator.get("rerunFailures")
 
-		def response = context.httpRequest customHeaders: [[name: 'Authorization',   \
-              value: "${authToken}"]],   \
-	      contentType: 'APPLICATION_JSON',   \
-	      httpMode: 'POST',   \
-	      requestBody: "{\"owner\": \"${ciUserId}\", \"upstreamJobId\": \"${upstreamJobId}\", \"upstreamJobBuildNumber\": \"${upstreamJobBuildNumber}\", " +
-				"\"scmUrl\": \"${scmUrl}\", \"hashcode\": \"${hashcode}\"}",   \
-                  url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${doRebuild}&rerunFailures=${rerunFailures}",   \
-                  timeout: 300000
+		def parameters = [customHeaders: [[name: 'Authorization',
+										  value: "${authToken}"]],
+						 contentType: 'APPLICATION_JSON',
+						 httpMode: 'POST',
+						 requestBody: "{\"owner\": \"${Configurator.get("ci_user_id")}\", \
+                                        \"upstreamJobId\": \"${Configurator.get("ci_job_id")}\", \
+                                        \"upstreamJobBuildNumber\": \"${Configurator.get("ci_parent_build")}\", \
+                                        \"scmUrl\": \"${Configurator.get("scm_url")}\", \
+                                        \"hashcode\": \"${Configurator.get("hashcode")}\"}",
+						 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configurator.get("doRebuild")}&rerunFailures=${Configurator.get("rerunFailures")}",
+						 timeout: 300000]
+
+		def response = sendRequest(parameters)
+		if(response.status == 401) {
+			authToken = null
+			response = sendRequest(parameters)
+		}
 
 		def responseJson = new JsonSlurper().parseText(response.content)
 
