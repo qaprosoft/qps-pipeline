@@ -95,11 +95,13 @@ class ZafiraClient {
 										  value: "${authToken}"]],
 						 contentType: 'APPLICATION_JSON',
 						 httpMode: 'POST',
-						 requestBody: "{\"owner\": \"${Configurator.get("ci_user_id")}\", \"upstreamJobId\": \"${Configurator.get("ci_job_id")}\", \"upstreamJobBuildNumber\": \"${Configurator.get("ci_parent_build")}\", \"scmUrl\": \"${Configurator.get("scm_url")}\", \"hashcode\": \"${Configurator.get("hashcode")}\"}",
+						 requestBody: "{\"owner\": \"${Configurator.get("ci_user_id")}\", \
+                                        \"upstreamJobId\": \"${Configurator.get("ci_job_id")}\", \
+                                        \"upstreamJobBuildNumber\": \"${Configurator.get("ci_parent_build")}\", \
+                                        \"scmUrl\": \"${Configurator.get("scm_url")}\", \
+                                        \"hashcode\": \"${Configurator.get("hashcode")}\"}",
 						 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configurator.get("doRebuild")}&rerunFailures=${Configurator.get("rerunFailures")}",
 						 timeout: 300000]
-
-		context.println "request body: " + parameters.get("requestBody")
 
 		def response = sendRequest(parameters)
 		if(response.status == 401) {
