@@ -48,6 +48,7 @@ class ZafiraClient {
 		def accessToken = properties.get("accessToken")
 		def type = properties.get("type")
 
+		context.println "accessToken: " + accessToken
 		this.authToken = type + " " + accessToken
 		//context.println("${this.authToken}")
 	}
