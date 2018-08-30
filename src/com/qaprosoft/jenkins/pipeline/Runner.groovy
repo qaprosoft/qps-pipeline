@@ -120,7 +120,9 @@ class Runner extends Executor {
 			try {
 				zc = new ZafiraClient(context)
                 zc.initZafiraClient()
+                context.println "BEFORE QUEUE METHOD"
                 zc.queueZafiraTestRun(uuid)
+                context.println "AFTER QUEUE METHOD"
 			} catch (Exception ex) {
 				printStackTrace(ex)
 			}
