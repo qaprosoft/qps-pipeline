@@ -8,7 +8,7 @@ class ZafiraClient {
 
 	private String serviceURL
 	private String refreshToken
-	private String authToken
+	private static String authToken
 	private def context
 	private boolean isAvailable = true
 
@@ -25,7 +25,7 @@ class ZafiraClient {
 	}
 
 	protected void getAccess() {
-		if(!this.authToken || getAccessStatus() == 401){
+		if(authToken == null){
 			getZafiraAuthToken(refreshToken)
 		}
 	}
@@ -34,23 +34,20 @@ class ZafiraClient {
 		return isAvailable
 	}
 
-	protected def getAccessStatus() {
-		def response = context.httpRequest customHeaders: [[name: 'Authorization',
-															value: "${authToken}"]],
-				contentType: 'APPLICATION_JSON',
-				httpMode: 'GET',
-				url: this.serviceURL + "/api/auth/access"
-
-		return response.status
+	protected def sendRequest(requestParams) {
+		getAccess()
+		def response = context.httpRequest requestParams
+		return response
 	}
 
 	public void getZafiraAuthToken(String refreshToken) {
 
 		context.println "refreshToken: " + refreshToken
-		def response = context.httpRequest contentType: 'APPLICATION_JSON', \
-			httpMode: 'POST', \
-			requestBody: "{\"refreshToken\": \"${refreshToken}\"}", \
-			url: this.serviceURL + "/api/auth/refresh"
+
+		def response = context.httpRequest contentType: 'APPLICATION_JSON',
+				httpMode: 'POST',
+				requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
+				url: this.serviceURL + "/api/auth/refresh"
 
 		// reread new accessToken and auth type
 		def properties = (Map) new JsonSlurper().parseText(response.getContent())
@@ -59,28 +56,30 @@ class ZafiraClient {
 		def accessToken = properties.get("accessToken")
 		def type = properties.get("type")
 
-		this.authToken = type + " " + accessToken
-		//context.println("${this.authToken}")
+		authToken = type + " " + accessToken
+		//context.println("${authToken}")
 	}
 
 	public void queueZafiraTestRun(String uuid) {
-		getAccess()
-		String jobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
-		String buildNumber = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 
-		String branch = Configurator.get("branch")
-		String _env = Configurator.get("env")
+		def parameters = [customHeaders: [[name: 'Authorization',
+										   value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'POST',
+						  requestBody: "{\"jobName\": \"${Configurator.get(Configurator.Parameter.JOB_BASE_NAME)}\", \
+                                         \"buildNumber\": \"${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}\", \
+                                         \"branch\": \"${Configurator.get("branch")}\", \
+                                         \"env\": \"${Configurator.get("env")}\", \
+                                         \"ciRunId\": \"${uuid}\", \
+                                         \"ciParentUrl\": \"${Configurator.get("ci_parent_url")}\", \
+                                         \"ciParentBuild\": \"${Configurator.get("ci_parent_build")}\"}",
+						  url: this.serviceURL + "/api/tests/runs/queue"]
 
-		String ciParentUrl = Configurator.get("ci_parent_url")
-		String ciParentBuild = Configurator.get("ci_parent_build")
-
-        def response = context.httpRequest customHeaders: [[name: 'Authorization', \
-            value: "${authToken}"]], \
-	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'POST', \
-	    requestBody: "{\"jobName\": \"${jobName}\", \"buildNumber\": \"${buildNumber}\", \"branch\": \"${branch}\", \"env\": \"${_env}\", \"ciRunId\": \"${uuid}\", \"ciParentUrl\": \"${ciParentUrl}\", \"ciParentBuild\": \"${ciParentBuild}\"}", \
-            url: this.serviceURL + "/api/tests/runs/queue"
-			
+        def response = sendRequest(parameters)
+		if(response.status == 401) {
+			authToken = null
+			response = sendRequest(parameters)
+		}
         String formattedJSON = JsonOutput.prettyPrint(response.content)
         context.println("Queued TestRun: ${formattedJSON}")
     }
