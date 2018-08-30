@@ -24,10 +24,15 @@ class ZafiraClient {
 		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 	}
 
-	protected void getAccess() {
+	protected void getAccess(requestParams) {
 		if(authToken == null){
 			getZafiraAuthToken(refreshToken)
-//			requestParams.get
+			for(header in requestParams.get("customHeaders")) {
+				if(header.name == "Authorization"){
+					header.value == authToken
+					break
+				}
+			}
 		}
 	}
 
@@ -36,8 +41,8 @@ class ZafiraClient {
 	}
 
 	protected def sendRequest(requestParams) {
-		context.println "request params: " + requestParams.get("customHeaders").dump()
-		getAccess()
+		context.println "request params: " + requestParams.dump()
+		getAccess(requestParams)
 		context.println "request params: " + requestParams.dump()
 		def response = context.httpRequest requestParams
 		return response
