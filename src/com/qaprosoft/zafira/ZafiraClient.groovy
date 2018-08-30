@@ -23,7 +23,7 @@ class ZafiraClient {
 		context.println "zafiraUrl: " + serviceURL
 		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 		this.developMode = Configurator.get("develop") ? Configurator.get("develop").toBoolean() : false
-		getZafiraAuthToken(refreshToken)
+		getZafiraAuthToken(this.refreshToken)
 	}
 
 	public boolean isAvailable() {
