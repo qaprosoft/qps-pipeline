@@ -15,9 +15,10 @@ class ZafiraClient {
 
 	public ZafiraClient(context) {
 		this.context = context
+		initZafiraClient()
 	}
 
-
+	@NonCPS
 	public void initZafiraClient() {
 		this.serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
 		context.println "zafiraUrl: " + serviceURL
@@ -48,13 +49,11 @@ class ZafiraClient {
 		def accessToken = properties.get("accessToken")
 		def type = properties.get("type")
 
-		context.println "accessToken: " + accessToken
 		this.authToken = type + " " + accessToken
 		//context.println("${this.authToken}")
 	}
 
 	public void queueZafiraTestRun(String uuid) {
-		context.println "isAvailable" + isAvailable
 		if (!isAvailable) {
 			return
 		}
