@@ -8,8 +8,8 @@ class ZafiraClient {
 
 	private String serviceURL
 	private String refreshToken
-	private boolean developMode
 	private String authToken
+	private boolean developMode
 	private def context
 
 	public ZafiraClient(context) {
@@ -18,11 +18,26 @@ class ZafiraClient {
 	}
 
 	@NonCPS
+	/** Inits ZafiraClient using values which are present in Configurator */
 	protected void initZafiraClient() {
 		this.serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
 		context.println "zafiraUrl: " + serviceURL
 		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 		developMode = Configurator.get("develop") ? Configurator.get("develop").toBoolean() : false
+	}
+
+    /** Checks if auth token exists and if it doesn't generates it anew using refreshToken */
+	protected def sendRequest(requestParams) {
+		getAuthToken()
+		replaceToken(requestParams)
+		def response = null
+		/** Catches exeptions in every http call*/
+		try {
+			response = context.httpRequest requestParams
+		} catch (Exception ex) {
+			printStackTrace(ex)
+		}
+		return response
 	}
 
 	protected def getAuthToken() {
@@ -31,6 +46,7 @@ class ZafiraClient {
 		}
 	}
 
+	/** Replaces token value just in case it was incorrect before requestParams were passed to the sendRequest method */
     protected def replaceToken(requestParams) {
         for (header in requestParams.get("customHeaders")) {
             if(header.name == "Authorization"){
@@ -40,30 +56,18 @@ class ZafiraClient {
         }
     }
 
-	protected def sendRequest(requestParams) {
-		getAuthToken()
-        replaceToken(requestParams)
-		def response = null
-		try {
-			response = context.httpRequest requestParams
-		} catch (Exception ex) {
-			printStackTrace(ex)
-		}
-		return response
-	}
-
+    /** Checks if response got an exception (null in this case) or unauthorized response (401) */
 	protected def checkStatus(response, parameters) {
-		if(response.status == 401) {
+		if(response != null && response.status == 401) {
 			authToken = null
 			response = sendRequest(parameters)
 		}
 		return response
 	}
 
+	/** Generates authToken using refreshToken*/
 	protected void getZafiraAuthToken(String refreshToken) {
-
-		context.println "refreshToken: " + refreshToken
-
+		//context.println "refreshToken: " + refreshToken
 		def response = context.httpRequest contentType: 'APPLICATION_JSON',
 				httpMode: 'POST',
 				requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
