@@ -36,7 +36,7 @@ class ZafiraClient {
 		return isAvailable
 	}
 
-	public def getAccessStatus(String refreshToken) {
+	protected def getAccessStatus() {
 		if (developMode) {
 			return
 		}
