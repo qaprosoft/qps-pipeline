@@ -27,6 +27,7 @@ class ZafiraClient {
 	protected void getAccess() {
 		if(authToken == null){
 			getZafiraAuthToken(refreshToken)
+//			requestParams.get
 		}
 	}
 
@@ -35,6 +36,7 @@ class ZafiraClient {
 	}
 
 	protected def sendRequest(requestParams) {
+		context.println "request params: " + requestParams.get("customHeaders").dump()
 		getAccess()
 		context.println "request params: " + requestParams.dump()
 		def response = context.httpRequest requestParams
@@ -75,7 +77,7 @@ class ZafiraClient {
                                          \"ciParentUrl\": \"${Configurator.get("ci_parent_url")}\", \
                                          \"ciParentBuild\": \"${Configurator.get("ci_parent_build")}\"}",
 						  url: this.serviceURL + "/api/tests/runs/queue"]
-
+		//parameters.get("customHeaders")["name"]
         def response = sendRequest(parameters)
 		if(response.status == 401) {
 			authToken = null
