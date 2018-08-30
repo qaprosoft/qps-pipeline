@@ -50,7 +50,7 @@ class ZafiraClient {
 		} catch (Exception ex) {
 			printStackTrace(ex)
 		}
-		context.println "RESPONSE: " + response.dump()
+		context.println "STATUS: " + status
 		return status
 	}
 
