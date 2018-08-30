@@ -103,7 +103,9 @@ class ZafiraClient {
 						 url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configurator.get("doRebuild")}&rerunFailures=${Configurator.get("rerunFailures")}",
 						 timeout: 300000]
 
-		context.println "REQUEST BODY: " + parameters.get("requestBody").dump()
+		parameters.get("requestBody").each { parameter ->
+			context.println parameter
+		}
 		def response = sendRequest(parameters)
 		if(response.status == 401) {
 			authToken = null
