@@ -116,37 +116,47 @@ class ZafiraClient {
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
-		getAuthToken()
-		context.httpRequest customHeaders: [[name: 'Authorization', \
-            value: "${authToken}"]], \
-	    contentType: 'APPLICATION_JSON', \
-	    httpMode: 'POST', \
-	    requestBody: "{\"comment\": \"${comment}\"}", \
-            url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"
 
+        def parameters = [customHeaders: [[name: 'Authorization',
+                                           value: "${authToken}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'POST',
+                          requestBody: "{\"comment\": \"${comment}\"}",
+                          url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
+
+        def response = sendRequest(parameters)
+        if(response.status == 401) {
+            authToken = null
+            response = sendRequest(parameters)
+        }
 	}
 
-    void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
-		getAuthToken()
-
-        context.httpRequest customHeaders: [[name: 'Authorization',  \
-             value: "${authToken}"]],  \
-	     contentType: 'APPLICATION_JSON',  \
-	     httpMode: 'POST',  \
-	     requestBody: "{\"recipients\": \"${emailList}\"}",  \
-             url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"
+    public void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
+		def parameters = [customHeaders: [[name: 'Authorization',
+										   value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'POST',
+						  requestBody: "{\"recipients\": \"${emailList}\"}",
+						  url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
+		def response = sendRequest(parameters)
+		if(response.status == 401) {
+			authToken = null
+			response = sendRequest(parameters)
+		}
     }
 
 	public String exportZafiraReport(String uuid) {
+		def parameters = [customHeaders: [[name: 'Authorization',
+										   value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'GET',
+						  url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
 
-		getAuthToken()
-
-		def response = context.httpRequest customHeaders: [[name: 'Authorization', \
-			value: "${authToken}"]], \
-		contentType: 'APPLICATION_JSON', \
-		httpMode: 'GET', \
-			url: this.serviceURL + "/api/tests/runs/${uuid}/export"
-			
+		def response = sendRequest(parameters)
+		if(response.status == 401) {
+			authToken = null
+			response = sendRequest(parameters)
+		}
 		//context.println("exportZafiraReport response: ${response.content}")
 		return response.content
 	}
