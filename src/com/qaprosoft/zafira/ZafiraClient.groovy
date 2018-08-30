@@ -15,10 +15,10 @@ class ZafiraClient {
 
 	public ZafiraClient(context) {
 		this.context = context
-		initZafiraClient()
 	}
 
-	protected void initZafiraClient() {
+
+	public void initZafiraClient() {
 		this.serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
 		context.println "zafiraUrl: " + serviceURL
 		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
