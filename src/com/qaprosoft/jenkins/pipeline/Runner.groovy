@@ -114,8 +114,6 @@ class Runner extends Executor {
 		
         uuid = getUUID()
         String nodeName = "master"
-        String emailList = Configurator.get("email_list")
-        String failureEmailList = Configurator.get("failure_email_list")
 
         //TODO: remove master node assignment
 		context.node(nodeName) {
@@ -158,13 +156,13 @@ class Runner extends Executor {
                     }
 					throw ex
 				} finally {
-                    this.exportZafiraReport()
+                    if(!developMode) {
+                        this.exportZafiraReport()
+                        this.sendTestRunResultsEmail()
+                    }
                     this.reportingResults()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    if(!developMode) {
-                        this.sendTestRunResultsEmail(emailList, failureEmailList)
-                        this.clean()
-                    }
+                    this.clean()
                 }
 			}
 		}
@@ -628,8 +626,11 @@ clean test"
 		}
 	}
 
-	protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
-		if (emailList != null && !emailList.isEmpty()) {
+	protected void sendTestRunResultsEmail() {
+        String emailList = Configurator.get("email_list")
+        String failureEmailList = Configurator.get("failure_email_list")
+
+        if (emailList != null && !emailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, emailList, "all")
 		}
 		if (isFailure(context.currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
