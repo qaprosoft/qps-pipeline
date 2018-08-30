@@ -191,6 +191,7 @@ class ZafiraClient {
 	}
 
 	protected void printStackTrace(Exception ex) {
+		context.println("DUMP: " + ex.dump())
 		context.println("exception: " + ex.getMessage())
 		context.println("exception class: " + ex.getClass().getName())
 		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
