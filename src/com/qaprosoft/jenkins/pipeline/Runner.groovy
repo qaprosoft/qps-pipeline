@@ -119,6 +119,7 @@ class Runner extends Executor {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
 				zc = new ZafiraClient(context)
+                zc.initZafiraClient()
                 zc.queueZafiraTestRun(uuid)
 			} catch (Exception ex) {
 				printStackTrace(ex)
@@ -168,6 +169,7 @@ class Runner extends Executor {
         context.stage('Rerun Tests'){
             try {
                 zc = new ZafiraClient(context)
+                zc.initZafiraClient()
                 zc.smartRerun()
             } catch (Exception ex) {
                 printStackTrace(ex)
