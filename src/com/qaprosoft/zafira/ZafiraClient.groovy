@@ -36,6 +36,7 @@ class ZafiraClient {
 
 	protected def sendRequest(requestParams) {
 		getAccess()
+		context.println "request params: " + requestParams.dump()
 		def response = context.httpRequest requestParams
 		return response
 	}
