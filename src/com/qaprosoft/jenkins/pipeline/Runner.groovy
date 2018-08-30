@@ -118,6 +118,7 @@ class Runner extends Executor {
 		context.node(nodeName) {
 			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
 			try {
+                context.println "QUEUE BLOCK"
 				zc = new ZafiraClient(context)
                 zc.initZafiraClient()
                 zc.queueZafiraTestRun(uuid)
