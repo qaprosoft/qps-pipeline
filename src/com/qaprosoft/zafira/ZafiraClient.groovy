@@ -8,9 +8,9 @@ class ZafiraClient {
 
 	private String serviceURL
 	private String refreshToken
-	private static String authToken
+	private boolean developMode
+	private String authToken
 	private def context
-	private boolean isAvailable = true
 
 	public ZafiraClient(context) {
 		this.context = context
@@ -18,10 +18,11 @@ class ZafiraClient {
 	}
 
 	@NonCPS
-	public void initZafiraClient() {
+	protected void initZafiraClient() {
 		this.serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
 		context.println "zafiraUrl: " + serviceURL
 		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+		developMode = Configurator.get("develop") ? Configurator.get("develop").toBoolean() : false
 	}
 
 	protected def getAuthToken() {
@@ -33,7 +34,7 @@ class ZafiraClient {
     protected def replaceToken(requestParams) {
         for (header in requestParams.get("customHeaders")) {
             if(header.name == "Authorization"){
-                header.value = authToken
+                header.value = authToken + "w"
                 break
             }
         }
@@ -46,7 +47,15 @@ class ZafiraClient {
 		return response
 	}
 
-	public void getZafiraAuthToken(String refreshToken) {
+	protected def checkStatus(response, parameters) {
+		if(response.status == 401) {
+			authToken = null
+			response = sendRequest(parameters)
+		}
+		return response
+	}
+
+	protected void getZafiraAuthToken(String refreshToken) {
 
 		context.println "refreshToken: " + refreshToken
 
@@ -66,7 +75,9 @@ class ZafiraClient {
 	}
 
 	public void queueZafiraTestRun(String uuid) {
-
+		if(developMode){
+			return
+		}
 		def parameters = [customHeaders: [[name: 'Authorization',
 										   value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
@@ -82,6 +93,7 @@ class ZafiraClient {
 
 		def response = sendRequest(parameters)
 		if(response.status == 401) {
+			context.println "I AM HERE"
 			authToken = null
 			response = sendRequest(parameters)
 		}
@@ -90,7 +102,9 @@ class ZafiraClient {
     }
 
 	public void smartRerun() {
-
+		if(developMode){
+			return
+		}
 		def parameters = [customHeaders: [[name: 'Authorization',
 										  value: "${authToken}"]],
 						 contentType: 'APPLICATION_JSON',
@@ -116,7 +130,9 @@ class ZafiraClient {
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
-
+		if(developMode){
+			return
+		}
         def parameters = [customHeaders: [[name: 'Authorization',
                                            value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
@@ -132,6 +148,9 @@ class ZafiraClient {
 	}
 
     public void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
+		if(developMode){
+			return
+		}
 		def parameters = [customHeaders: [[name: 'Authorization',
 										   value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
@@ -146,6 +165,9 @@ class ZafiraClient {
     }
 
 	public String exportZafiraReport(String uuid) {
+		if(developMode){
+			return ""
+		}
 		def parameters = [customHeaders: [[name: 'Authorization',
 										   value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
