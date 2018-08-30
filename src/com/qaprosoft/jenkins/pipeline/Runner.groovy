@@ -185,7 +185,7 @@ class Runner extends Executor {
             } catch (Exception ex) {
                 printStackTrace(ex)
             }
-        }
+        }x
     }
 
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
