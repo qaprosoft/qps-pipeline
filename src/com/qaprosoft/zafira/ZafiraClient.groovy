@@ -94,6 +94,7 @@ class ZafiraClient {
                                          \"ciRunId\": \"${uuid}\", \
                                          \"ciParentUrl\": \"${Configurator.get("ci_parent_url")}\", \
                                          \"ciParentBuild\": \"${Configurator.get("ci_parent_build")}\"}",
+						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/queue"]
 
 		def response = sendRequest(parameters)
