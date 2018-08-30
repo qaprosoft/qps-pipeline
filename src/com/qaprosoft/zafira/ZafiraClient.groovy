@@ -11,7 +11,6 @@ class ZafiraClient {
 	private String authToken
 	private def context
 	private boolean isAvailable = true
-	private boolean developMode
 
 	public ZafiraClient(context) {
 		this.context = context
@@ -23,7 +22,6 @@ class ZafiraClient {
 		this.serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
 		context.println "zafiraUrl: " + serviceURL
 		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-		this.developMode = Configurator.get("develop") ? Configurator.get("develop").toBoolean() : false
 	}
 
 	protected void getAccess() {
@@ -37,9 +35,6 @@ class ZafiraClient {
 	}
 
 	protected def getAccessStatus() {
-		if (developMode) {
-			return
-		}
 		def response = context.httpRequest customHeaders: [[name: 'Authorization',
 															value: "${authToken}"]],
 				contentType: 'APPLICATION_JSON',
@@ -50,9 +45,7 @@ class ZafiraClient {
 	}
 
 	public void getZafiraAuthToken(String refreshToken) {
-		if (developMode) {
-			return
-		}
+
 		context.println "refreshToken: " + refreshToken
 		def response = context.httpRequest contentType: 'APPLICATION_JSON', \
 			httpMode: 'POST', \
@@ -71,9 +64,6 @@ class ZafiraClient {
 	}
 
 	public void queueZafiraTestRun(String uuid) {
-		if (developMode) {
-			return
-		}
 		getAccess()
 		String jobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 		String buildNumber = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
@@ -96,9 +86,6 @@ class ZafiraClient {
     }
 
 	public void smartRerun() {
-		if (developMode) {
-			return
-		}
 		getAccess()
 		String upstreamJobId = Configurator.get("ci_job_id")
 		String upstreamJobBuildNumber = Configurator.get("ci_parent_build")
@@ -124,9 +111,6 @@ class ZafiraClient {
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
-		if (developMode) {
-			return 
-		}
 		getAccess()
 		context.httpRequest customHeaders: [[name: 'Authorization', \
             value: "${authToken}"]], \
@@ -138,9 +122,6 @@ class ZafiraClient {
 	}
 
     void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
-		if (developMode) {
-			return
-		}
 		getAccess()
 
         context.httpRequest customHeaders: [[name: 'Authorization',  \
@@ -152,9 +133,7 @@ class ZafiraClient {
     }
 
 	public String exportZafiraReport(String uuid) {
-		if (developMode) {
-			return ""
-		}
+
 		getAccess()
 
 		def response = context.httpRequest customHeaders: [[name: 'Authorization', \

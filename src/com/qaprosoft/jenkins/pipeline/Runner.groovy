@@ -13,7 +13,8 @@ class Runner extends Executor {
 	protected def uuid
 	
 	protected def zc
-	
+
+    protected def developMode
 	//using constructor it will be possible to redefine this folder on pipeline/jobdsl level
 	protected def folderName = "Automation"
 	
@@ -31,6 +32,7 @@ class Runner extends Executor {
 		super(context)
 		scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
+        developMode = Configurator.get("develop") ? Configurator.get("develop").toBoolean() : false
 	}
 	
 	public void runCron() {
@@ -118,7 +120,9 @@ class Runner extends Executor {
         //TODO: remove master node assignment
 		context.node(nodeName) {
 			try {
-                zc.queueZafiraTestRun(uuid)
+                if(!developMode) {
+                    zc.queueZafiraTestRun(uuid)
+                }
 			} catch (Exception ex) {
 				printStackTrace(ex)
 			}
@@ -149,14 +153,18 @@ class Runner extends Executor {
 					String failureReason = getFailure(context.currentBuild)
 					context.echo "failureReason: ${failureReason}"
 					//explicitly execute abort to resolve anomalies with in_progress tests...
-					zc.abortZafiraTestRun(uuid, failureReason)
+                    if(!developMode) {
+                        zc.abortZafiraTestRun(uuid, failureReason)
+                    }
 					throw ex
 				} finally {
                     this.exportZafiraReport()
                     this.reportingResults()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    this.sendTestRunResultsEmail(emailList, failureEmailList)
-                    this.clean()
+                    if(!developMode) {
+                        this.sendTestRunResultsEmail(emailList, failureEmailList)
+                        this.clean()
+                    }
                 }
 			}
 		}
@@ -166,7 +174,9 @@ class Runner extends Executor {
     public void rerunJobs(){
         context.stage('Rerun Tests'){
             try {
-                zc.smartRerun()
+                if(!developMode) {
+                    zc.smartRerun()
+                }
             } catch (Exception ex) {
                 printStackTrace(ex)
             }
@@ -352,7 +362,7 @@ clean test"
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
-			Configurator.set("zafira_enabled", zc.isAvailable().toString())
+			Configurator.set("zafira_enabled", !developMode)
 			
 
 
