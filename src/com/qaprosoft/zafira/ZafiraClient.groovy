@@ -43,14 +43,15 @@ class ZafiraClient {
 	protected def sendRequest(requestParams) {
 		getAuthToken()
         replaceToken(requestParams)
-		def response
+		def status = 402
 		try {
-			response = context.httpRequest requestParams
+			def response = context.httpRequest requestParams
+			status = response.status
 		} catch (Exception ex) {
 			printStackTrace(ex)
 		}
 		context.println "RESPONSE: " + response.dump()
-		return response
+		return status
 	}
 
 	protected def checkStatus(response, parameters) {
@@ -97,8 +98,8 @@ class ZafiraClient {
                                          \"ciParentBuild\": \"${Configurator.get("ci_parent_build")}\"}",
 						  url: this.serviceURL + "/api/tests/runs/queue"]
 
-		def response = sendRequest(parameters)
-		if(response.status == 401) {
+		def status = sendRequest(parameters)
+		if(status == 401) {
 			context.println "I AM HERE"
 			authToken = null
 			response = sendRequest(parameters)
