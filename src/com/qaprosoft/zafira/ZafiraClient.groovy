@@ -45,7 +45,7 @@ class ZafiraClient {
 			url: this.serviceURL + "/api/auth/refresh"
 
 		// reread new accessToken and auth type
-		def properties = (Map) new JsonSlurper().parseText(response.getContent())
+		def properties = parseText(response.getContent())
 
 		context.printl "MAP"
 		//new accessToken in response is authToken
@@ -55,6 +55,11 @@ class ZafiraClient {
 		this.authToken = type + " " + accessToken
 		//context.println("${this.authToken}")
 	}
+
+    @NonCPS
+    def parseText(txt){
+        return new JsonSlurper().parseText(txt)
+    }
 
 	public void queueZafiraTestRun(String uuid) {
 		if (!isAvailable) {
