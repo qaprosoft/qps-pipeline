@@ -30,6 +30,7 @@ class Runner extends Executor {
 	public Runner(context) {
 		super(context)
 		scmClient = new GitHub(context)
+        zc = new ZafiraClient(context)
 	}
 	
 	public void runCron() {
