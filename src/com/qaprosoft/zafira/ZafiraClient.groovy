@@ -7,13 +7,11 @@ import com.qaprosoft.jenkins.pipeline.Configurator
 class ZafiraClient {
 
 	private String serviceURL
-	private String refreshToken
-	private String authToken
-	private long tokenExpTime
-	private boolean developMode
+	private String token
 	private def context
+	private boolean isAvailable
 
-	public ZafiraClient(context) {
+	public ZafiraClient(context, String url, Boolean developMode) {
 		this.context = context
 		serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
 		refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
