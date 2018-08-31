@@ -71,6 +71,7 @@ class ZafiraClient {
 		if(!response){
 			return
 		}
+    
 		def responseJson = new JsonSlurper().parseText(response.content)
 		context.println("Results : ${responseJson.size()}")
 		context.println("Tests for rerun : ${responseJson}")
