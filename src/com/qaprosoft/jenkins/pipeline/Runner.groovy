@@ -100,7 +100,7 @@ class Runner extends Executor {
 			def array = workspace.split("/")
 			folderName = array[array.size() - 2]
 		}
-        return folderName.replaceAll(".\$","")
+        return folderName
     }
 
 	public void runJob() {
