@@ -8,11 +8,17 @@ public class ListViewFactory extends DslFactory {
 	def folder
 	def name
 	def descFilter
+	def nameFilter
 	
 	public ListViewFactory(folder, name, descFilter) {
+		this(folder, name, descFilter, "")
+	}
+	
+	public ListViewFactory(folder, name, descFilter, nameFilter) {
 		this.folder = folder
 		this.name = name
 		this.descFilter = descFilter
+		this.nameFilter = nameFilter
 	}
 	
 	def create() {
@@ -29,12 +35,23 @@ public class ListViewFactory extends DslFactory {
 				buildButton()
 			}
 
+			//TODO: reorganize constructor to be able to provide RegexMatchValue
 			if (!"${descFilter}".isEmpty()) {
 				jobFilters {
 					regex {
 						matchType(MatchType.INCLUDE_MATCHED)
 						matchValue(RegexMatchValue.DESCRIPTION)
 						regex("${descFilter}")
+					}
+				}
+			}
+			
+			if (!"${nameFilter}".isEmpty()) {
+				jobFilters {
+					regex {
+						matchType(MatchType.INCLUDE_MATCHED)
+						matchValue(RegexMatchValue.NAME)
+						regex("${nameFilter}")
 					}
 				}
 			}
