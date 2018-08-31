@@ -372,7 +372,7 @@ class Runner extends Executor {
 		}
 	}
 
-    private def enableVideoStreaming(node, message, capability, goals) {
+    protected def enableVideoStreaming(node, message, capability, goals) {
         if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {
             context.println message
             goals += capability
@@ -380,7 +380,7 @@ class Runner extends Executor {
         return goals
     }
 
-    private def parseBooleanSafely(parameter, message, capability, goals) {
+    protected def parseBooleanSafely(parameter, message, capability, goals) {
         if (Configurator.get(parameter) && Configurator.get(parameter).toBoolean()) {
             context.println message
             goals += capability
@@ -880,7 +880,7 @@ class Runner extends Executor {
         }
 	}
 
-    private def getEmailParams(body, subject, to) {
+    protected def getEmailParams(body, subject, to) {
         def params = [attachLog: true,
                       body: body,
                       recipientProviders: [[$class: 'DevelopersRecipientProvider'],
