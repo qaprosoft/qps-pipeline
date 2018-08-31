@@ -88,18 +88,19 @@ class Runner extends Executor {
     }
 
     protected def parseFolderName() {
-		def folderName = ""
-		def workspace = this.getWorkspace();
-		if (workspace.contains("jobs/")) {
-			def array = workspace.split("jobs/")
-			for (def i = 1; i < array.size() - 1; i++){
-				folderName  = folderName + array[i]
-			}
-			folderName = folderName.replaceAll(".\$","")
-		} else {
-			def array = workspace.split("/")
-			folderName = array[array.size() - 2]
+	def folderName = ""
+	def workspace = this.getWorkspace();
+	if (workspace.contains("jobs/")) {
+		def array = workspace.split("jobs/")
+		for (def i = 1; i < array.size() - 1; i++){
+			folderName  = folderName + array[i]
 		}
+		folderName = folderName.replaceAll(".\$","")
+	} else {
+		def array = workspace.split("/")
+		folderName = array[array.size() - 2]
+	}
+
         return folderName
     }
 
@@ -652,7 +653,6 @@ class Runner extends Executor {
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
 		def currentEnv = getCronEnv(currentSuite)
-
 		def pipelineJobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 
 		// override suite email_list from params if defined
