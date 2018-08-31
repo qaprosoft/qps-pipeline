@@ -187,9 +187,9 @@ class Scanner extends Executor {
 						}
 						
 					} catch (FileNotFoundException e) {
-						context.echo("ERROR! Unable to find suite: " + suite.path)
+						context.println("ERROR! Unable to find suite: " + suite.path)
 					} catch (Exception e) {
-						context.echo("ERROR! Unable to parse suite: " + suite.path)
+						context.println("ERROR! Unable to parse suite: " + suite.path)
 						context.println(e.printStackTrace())
 					}
 					
