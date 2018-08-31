@@ -916,4 +916,15 @@ Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStac
 	protected void setZafiraReportFolder(folder) {
 		etafReportFolder = folder
 	}
+
+	protected boolean isBrowserStackRun() {
+		boolean res = false
+		def customCapabilities = Configurator.get("custom_capabilities")
+		if (!isParamEmpty(customCapabilities)) {
+			if (customCapabilities.toLowerCase().contains("browserstack")) {
+				res = true
+			}
+		}
+		return res
+	}
 }
