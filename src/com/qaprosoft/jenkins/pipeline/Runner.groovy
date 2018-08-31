@@ -100,10 +100,6 @@ class Runner extends Executor {
 			def array = workspace.split("/")
 			folderName = array[array.size() - 2]
 		}
-
-        for (def i = 1; i < array.size() - 1; i++){
-            folderName  = folderName + array[i]
-        }
         return folderName.replaceAll(".\$","")
     }
 
