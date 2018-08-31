@@ -158,7 +158,7 @@ class ZafiraClient {
 		def response = sendRequest(parameters)
 		def properties = (Map) new JsonSlurper().parseText(response.getContent())
 		authToken = properties.get("type") + " " + properties.get("accessToken")
-		tokenExpTime = System.currentTimeMillis() + 1 * 60 * 1000
+		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
 	}
 
 	protected void printStackTrace(Exception ex) {
