@@ -9,26 +9,23 @@ class ZafiraClient {
 	private String serviceURL
 	private String refreshToken
 	private String authToken
+	private long tokenExpTime
 	private boolean developMode
 	private def context
 
 	public ZafiraClient(context) {
 		this.context = context
-		initZafiraClient()
-	}
-
-	@NonCPS
-	/** Inits ZafiraClient using values which are present in Configurator */
-	public void initZafiraClient() {
-		this.serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
-		context.println "zafiraUrl: " + serviceURL
-		this.refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+		serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
+		refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
 		developMode = Configurator.get("develop") ? Configurator.get("develop").toBoolean() : false
 	}
 
 	public void queueZafiraTestRun(String uuid) {
 		if(developMode){
 			return
+		}
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
 		}
 		def parameters = [customHeaders: [[name: 'Authorization',
 										   value: "${authToken}"]],
@@ -45,8 +42,7 @@ class ZafiraClient {
 						  url: this.serviceURL + "/api/tests/runs/queue"]
 
 		def response = sendRequest(parameters)
-		response = checkStatus(response, parameters)
-		if (response == 401) {
+		if(!response){
 			return
 		}
         String formattedJSON = JsonOutput.prettyPrint(response.content)
@@ -56,6 +52,9 @@ class ZafiraClient {
 	public void smartRerun() {
 		if(developMode){
 			return
+		}
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
 		}
 		def parameters = [customHeaders: [[name: 'Authorization',
 										  value: "${authToken}"]],
@@ -71,13 +70,10 @@ class ZafiraClient {
 						 timeout: 300000]
 
 		def response = sendRequest(parameters)
-		response = checkStatus(response, parameters)
-		if (response == 401) {
+		if(!response){
 			return
 		}
-
 		def responseJson = new JsonSlurper().parseText(response.content)
-
 		context.println("Results : ${responseJson.size()}")
 		context.println("Tests for rerun : ${responseJson}")
 	}
@@ -85,6 +81,9 @@ class ZafiraClient {
 	public void abortZafiraTestRun(String uuid, String comment) {
 		if(developMode){
 			return
+		}
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
 		}
         def parameters = [customHeaders: [[name: 'Authorization',
                                            value: "${authToken}"]],
@@ -94,13 +93,15 @@ class ZafiraClient {
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
 
-        def response = sendRequest(parameters)
-		checkStatus(response, parameters)
+        sendRequest(parameters)
 	}
 
     public void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
 		if(developMode){
 			return
+		}
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
 		}
 		def parameters = [customHeaders: [[name: 'Authorization',
 										   value: "${authToken}"]],
@@ -109,8 +110,7 @@ class ZafiraClient {
 						  requestBody: "{\"recipients\": \"${emailList}\"}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
-		def response = sendRequest(parameters)
-		checkStatus(response, parameters)
+		sendRequest(parameters)
     }
 
 	public String exportZafiraReport(String uuid) {
@@ -125,24 +125,15 @@ class ZafiraClient {
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
 
 		def response = sendRequest(parameters)
-		response = checkStatus(response, parameters)
-		if (response == 401) {
+		if(!response){
 			return ""
 		}
 		//context.println("exportZafiraReport response: ${response.content}")
 		return response.content
 	}
 
-	protected void printStackTrace(Exception ex) {
-		context.println("exception: " + ex.getMessage())
-		context.println("exception class: " + ex.getClass().getName())
-		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
-	}
-
-	/** Checks if auth token exists and if it doesn't generates it anew using refreshToken */
+	/** Sends httpRequest using passed parameters */
 	protected def sendRequest(requestParams) {
-		getAuthToken()
-		replaceToken(requestParams)
 		def response = null
 		/** Catches exceptions in every http call */
 		try {
@@ -153,46 +144,26 @@ class ZafiraClient {
 		return response
 	}
 
-	protected def getAuthToken() {
-		if(authToken == null){
-			getZafiraAuthToken(refreshToken)
-		}
-	}
-
-	/** Replaces token value just in case it was incorrect before requestParams were passed to the sendRequest method */
-	protected def replaceToken(requestParams) {
-		for (header in requestParams.get("customHeaders")) {
-			if(header.name == "Authorization"){
-				header.value = authToken
-				break
-			}
-		}
-	}
-
-	/** Checks if response got an exception (null in this case) or unauthorized response (401) */
-	protected def checkStatus(response, parameters) {
-		if(response != null && response.status == 401) {
-			authToken = null
-			response = sendRequest(parameters)
-		}
-		return response
+	protected boolean isTokenExpired() {
+		return authToken == null || System.currentTimeMillis() > tokenExpTime
 	}
 
 	/** Generates authToken using refreshToken*/
 	protected void getZafiraAuthToken(String refreshToken) {
 		//context.println "refreshToken: " + refreshToken
-		def response = context.httpRequest contentType: 'APPLICATION_JSON',
-				httpMode: 'POST',
-				requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
-				url: this.serviceURL + "/api/auth/refresh"
-
-		// reread new accessToken and auth type
+		def parameters = [contentType: 'APPLICATION_JSON',
+						  httpMode: 'POST',
+						  requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
+						  url: this.serviceURL + "/api/auth/refresh"]
+		def response = sendRequest(parameters)
 		def properties = (Map) new JsonSlurper().parseText(response.getContent())
+		authToken = properties.get("type") + " " + properties.get("accessToken")
+		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
+	}
 
-		//new accessToken in response is authToken
-		def accessToken = properties.get("accessToken")
-		def type = properties.get("type")
-
-		authToken = type + " " + accessToken
+	protected void printStackTrace(Exception ex) {
+		context.println("exception: " + ex.getMessage())
+		context.println("exception class: " + ex.getClass().getName())
+		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
 	}
 }
