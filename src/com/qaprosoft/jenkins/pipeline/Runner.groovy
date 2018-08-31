@@ -13,7 +13,7 @@ class Runner extends Executor {
 	protected def uuid
 	
 	protected def zc
-	
+
 	//using constructor it will be possible to redefine this folder on pipeline/jobdsl level
 	protected def folderName = "Automation"
 
@@ -100,12 +100,7 @@ class Runner extends Executor {
 			def array = workspace.split("/")
 			folderName = array[array.size() - 2]
 		}
-
-        def folderName = ""
-        for (def i = 1; i < array.size() - 1; i++){
-            folderName  = folderName + array[i]
-        }
-        return folderName.replaceAll(".\$","")
+        return folderName
     }
 
 	public void runJob() {
@@ -115,25 +110,11 @@ class Runner extends Executor {
 		
         uuid = getUUID()
         String nodeName = "master"
-        String emailList = Configurator.get("email_list")
-        String failureEmailList = Configurator.get("failure_email_list")
-        String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
-        String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        boolean DEVELOP = false
-        if (Configurator.get("develop")) {
-            DEVELOP = Configurator.get("develop").toBoolean()
-        }
+
         //TODO: remove master node assignment
 		context.node(nodeName) {
-			// init ZafiraClient to register queued run and abort it at the end of the run pipeline
-			try {
-				zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, DEVELOP)
-				def token = zc.getZafiraAuthToken(ZAFIRA_ACCESS_TOKEN)
-                zc.queueZafiraTestRun(uuid)
-			} catch (Exception ex) {
-				printStackTrace(ex)
-			}
-			nodeName = chooseNode()
+            zc.queueZafiraTestRun(uuid)
+            nodeName = chooseNode()
 		}
 
 		context.node(nodeName) {
@@ -160,13 +141,13 @@ class Runner extends Executor {
 					String failureReason = getFailure(context.currentBuild)
 					context.echo "failureReason: ${failureReason}"
 					//explicitly execute abort to resolve anomalies with in_progress tests...
-					zc.abortZafiraTestRun(uuid, failureReason)
+                    zc.abortZafiraTestRun(uuid, failureReason)
 					throw ex
 				} finally {
                     this.exportZafiraReport()
+                    this.sendTestRunResultsEmail()
                     this.reportingResults()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    this.sendTestRunResultsEmail(emailList, failureEmailList)
                     this.clean()
                 }
 			}
@@ -175,21 +156,8 @@ class Runner extends Executor {
 	}
 
     public void rerunJobs(){
-
-        String ZAFIRA_SERVICE_URL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
-        String ZAFIRA_ACCESS_TOKEN = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-        boolean DEVELOP = false
-        if (Configurator.get("develop")) {
-            DEVELOP = Configurator.get("develop").toBoolean()
-        }
         context.stage('Rerun Tests'){
-            try {
-                zc = new ZafiraClient(context, ZAFIRA_SERVICE_URL, DEVELOP)
-                def token = zc.getZafiraAuthToken(ZAFIRA_ACCESS_TOKEN)
-                zc.smartRerun()
-            } catch (Exception ex) {
-                printStackTrace(ex)
-            }
+            zc.smartRerun()
         }
     }
 
@@ -329,7 +297,7 @@ class Runner extends Executor {
 
 			def pomFile = getSubProjectFolder() + "/pom.xml"
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
-                                            -Detaf.carina.core.version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \                                            
+                                            -Detaf.carina.core.version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
                                             -f ${pomFile} \
                                             -Dmaven.test.failure.ignore=true \
                                             -Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
@@ -356,8 +324,7 @@ class Runner extends Executor {
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
-			Configurator.set("zafira_enabled", zc.isAvailable().toString())
-            Configurator.set("ci_build_cause", getBuildCause(Configurator.get(Configurator.Parameter.JOB_NAME)))
+      Configurator.set("ci_build_cause", getBuildCause(Configurator.get(Configurator.Parameter.JOB_NAME)))
 
 			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
@@ -374,18 +341,15 @@ class Runner extends Executor {
             goals = parseBooleanSafely("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
 			//browserstack goals
-
-			if (!isParamEmpty(Configurator.get("custom_capabilities"))) {
-				if (Configurator.get("custom_capabilities").toLowerCase().contains("browserstack")) {
-					def uniqueBrowserInstance = "\"#${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}-" + Configurator.get("suite") + "-" +
-							Configurator.get("browser") + "-" + Configurator.get("env") + "\""
-					uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
-					startBrowserStackLocal(uniqueBrowserInstance)
-					goals += " -Dcapabilities.project=" + Configurator.get("project")
-					goals += " -Dcapabilities.build=" + uniqueBrowserInstance
-					goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
-					goals += " -Dapp_version=browserStack"
-				}
+			if (isBrowserStackRun()) {
+				def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configurator.get("suite") + "-" +
+						Configurator.get("browser") + "-" + Configurator.get("env") + "\""
+				uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
+				startBrowserStackLocal(uniqueBrowserInstance)
+				goals += " -Dcapabilities.project=" + Configurator.get("project")
+				goals += " -Dcapabilities.build=" + uniqueBrowserInstance
+				goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
+				goals += " -Dapp_version=browserStack"
 			}
 
 			//append again overrideFields to make sure they are declared at the end
@@ -613,8 +577,11 @@ class Runner extends Executor {
 		}
 	}
 
-	protected void sendTestRunResultsEmail(String emailList, String failureEmailList) {
-		if (emailList != null && !emailList.isEmpty()) {
+	protected void sendTestRunResultsEmail() {
+        String emailList = Configurator.get("email_list")
+        String failureEmailList = Configurator.get("failure_email_list")
+
+        if (emailList != null && !emailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, emailList, "all")
 		}
 		if (isFailure(context.currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
@@ -685,7 +652,7 @@ class Runner extends Executor {
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
 		def currentEnv = getCronEnv(currentSuite)
-			
+
 		def pipelineJobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 
 		// override suite email_list from params if defined
@@ -803,7 +770,7 @@ class Runner extends Executor {
 			}
 		}
 	}
-	
+
 	protected def getCronEnv(currentSuite) {
 		//currentSuite is need to override action in private pipelines
 		return Configurator.get("env")
