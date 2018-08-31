@@ -605,11 +605,11 @@ class Runner extends Executor {
                 def reportIndex = "_" + i
                 reportName = reportName + reportIndex
             }
-            context.publishHTML getReportParams(reportDir, reports[i].name, reportName )
+            context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
         }
     }
 
-    protected def getReportParams(reportDir, reportFiles, reportName) {
+    protected def getReportParameters(reportDir, reportFiles, reportName) {
         def reportParameters = [allowMissing: false,
                                 alwaysLinkToLastBuild: false,
                                 keepAll: true,
