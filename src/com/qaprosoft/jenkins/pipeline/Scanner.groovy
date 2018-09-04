@@ -36,7 +36,7 @@ class Scanner extends Executor {
                     this.prepare(false)
                     this.ignoreExisting = true
                     def filePattern = "**.xml"
-                    if (isUpdated(filePattern)) {
+                    if (!isUpdated(filePattern)) {
                         context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
                         return
                     }
