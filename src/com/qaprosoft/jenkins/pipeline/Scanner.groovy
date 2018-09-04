@@ -20,7 +20,7 @@ class Scanner extends Executor {
 	
 	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Creator.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
-
+    //TODO: investigate if we need to redefine this psrameter
     protected boolean ignoreExisting = false
 
     public Scanner(context) {
@@ -34,7 +34,6 @@ class Scanner extends Executor {
             context.timestamps {
                 if(!Configurator.get("firstScan").toBoolean() && Configurator.get("onlyUpdated").toBoolean()){
                     this.prepare(false)
-                    this.ignoreExisting = true
                     def filePattern = "**.xml"
                     if (!isUpdated(filePattern)) {
                         context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
