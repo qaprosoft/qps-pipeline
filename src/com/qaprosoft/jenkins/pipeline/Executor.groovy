@@ -60,8 +60,8 @@ public abstract class Executor {
 
     /** Detects if any changes are present in files matching patterns  */
     @NonCPS
-    protected boolean isUpdated(String patterns) {
-        def isUpdated = false
+    protected def getUpdatedPaths(String patterns) {
+        List updatedFiles = new ArrayList()
         def changeLogSets = context.currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
             /* Extracts GitChangeLogs from changeLogSet */
@@ -75,14 +75,13 @@ public abstract class Executor {
                         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
                         /* As only match is found stop search*/
                         if (matcher.matches(pathObject)){
-                            isUpdated = true
-                            return
+                            updatedFiles.add(path.getPath())
                         }
                     }
                 }
             }
         }
-        return isUpdated
+        return updatedFiles
     }
 
     /** Checks if current job started as rebuild */
