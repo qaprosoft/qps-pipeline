@@ -22,7 +22,6 @@ class Scanner extends Executor {
 	protected def additionalClasspath = "qps-pipeline/src"
 
     protected boolean ignoreExisting = false
-    protected List updatedPaths = new ArrayList()
 
     public Scanner(context) {
 		super(context)
@@ -32,24 +31,22 @@ class Scanner extends Executor {
 
     public void scanRepository() {
 		context.node('master') {
-			context.timestamps {
-
+            context.timestamps {
                 if(!Configurator.get("firstScan").toBoolean() && Configurator.get("onlyUpdated").toBoolean()){
                     this.prepare(false)
                     this.ignoreExisting = true
                     def filePattern = "**.xml"
-                    updatedPaths = getUpdatedPaths(filePattern)
-                    if (updatedPaths.size() == 0) {
+                    if (isUpdated(filePattern)) {
                         context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
                         return
                     }
                 } else {
                     this.prepare(true)
                 }
-				this.scan()
-				this.clean()
-			}
-		}
+                this.scan()
+                this.clean()
+            }
+        }
 	}
 
 	protected void prepare(isShallowClone) {
@@ -169,14 +166,8 @@ class Scanner extends Executor {
 							//TODO: review each argument to TestJobFactory and think about removal
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                             def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
-                            context.println "SUITE PATH BEFORE CHECK" + suite.path
-                            if(updatedPaths.size() == 0 || isUpdated(suite.path)) {
-                                context.println "CURRENT SUITE" + currentSuite
-                                context.println "SUITE PATH AFTER CHECK" + suite.path
+							registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 
-                                context.println "INSIDE JOB"
-                                registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
-                            }
 							//cron job
 							if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null") 
 								&& !currentSuite.getParameter("jenkinsRegressionPipeline").toString().isEmpty()) {
@@ -184,10 +175,7 @@ class Scanner extends Executor {
 								for (def cronJobName : cronJobNames.split(",")) {
 									cronJobName = cronJobName.trim()
 									def cronDesc = "project: ${project}; type: cron"
-                                    if(updatedPaths.size() == 0 || isUpdated(suite.path)) {
-                                        context.println "INSIDE CRON"
-                                        registerObject(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
-                                    }
+									registerObject(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
 								}
 							}
 						}
@@ -235,18 +223,6 @@ class Scanner extends Executor {
 	protected void registerObject(name, object) {
 		dslObjects.put(name, object)
 	}
-
-    protected boolean isUpdated(path) {
-        def isUpdated = false
-        for (def updatedPath in updatedPaths){
-            context.println "UPDATED PATH: " + updatedPath
-            context.println "PATH: " + path
-            if (updatedPath.equals(path)) {
-                isUpdated = true
-            }
-        }
-        return isUpdated
-    }
 
 	protected void setDslTargets(targets) {
 		this.creatorTarget = targets
