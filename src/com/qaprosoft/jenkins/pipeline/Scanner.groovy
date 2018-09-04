@@ -170,6 +170,7 @@ class Scanner extends Executor {
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                             def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
                             if(updatedPaths.size() == 0 || isUpdated(suite.path)) {
+                                context.println "INSIDE JOB"
                                 registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
                             }
 							//cron job
@@ -180,6 +181,7 @@ class Scanner extends Executor {
 									cronJobName = cronJobName.trim()
 									def cronDesc = "project: ${project}; type: cron"
                                     if(updatedPaths.size() == 0 || isUpdated(suite.path)) {
+                                        context.println "INSIDE CRON"
                                         registerObject(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
                                     }
 								}
@@ -233,7 +235,9 @@ class Scanner extends Executor {
     protected boolean isUpdated(path) {
         def isUpdated = false
         for (def updatedPath in updatedPaths){
-            if (updatedPath == path) {
+            context.println "UPDATED PATH: " + updatedPath
+            context.println "PATH: " + path
+            if (updatedPath.equals(path)) {
                 isUpdated = true
             }
         }
