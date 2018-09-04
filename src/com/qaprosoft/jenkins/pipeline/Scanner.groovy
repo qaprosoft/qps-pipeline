@@ -24,10 +24,10 @@ class Scanner extends Executor {
     protected boolean ignoreExisting = false
 
     public Scanner(context) {
-		super(context)
-		this.context = context
-		scmClient = new GitHub(context)
- 	}
+        super(context)
+        this.context = context
+        scmClient = new GitHub(context)
+    }
 
     public void scanRepository() {
 		context.node('master') {
