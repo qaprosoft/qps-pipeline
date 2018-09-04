@@ -169,7 +169,11 @@ class Scanner extends Executor {
 							//TODO: review each argument to TestJobFactory and think about removal
 							//TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                             def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
+                            context.println "SUITE PATH BEFORE CHECK" + suite.path
                             if(updatedPaths.size() == 0 || isUpdated(suite.path)) {
+                                context.println "CURRENT SUITE" + currentSuite
+                                context.println "SUITE PATH AFTER CHECK" + suite.path
+
                                 context.println "INSIDE JOB"
                                 registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
                             }
