@@ -190,7 +190,6 @@ public class TestJobFactory extends PipelineFactory {
 					choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
 				}
 				
-				booleanParam('develop', false, 'Check to execute test without registration to Zafira')
 				booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
 				def customFields = getCustomFields(currentSuite)
 				configure addHiddenParameter('overrideFields', '' , customFields)

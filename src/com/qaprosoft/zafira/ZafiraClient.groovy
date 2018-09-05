@@ -10,20 +10,15 @@ class ZafiraClient {
 	private String refreshToken
 	private String authToken
 	private long tokenExpTime
-	private boolean developMode
 	private def context
 
 	public ZafiraClient(context) {
 		this.context = context
 		serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
 		refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
-		developMode = Configurator.get("develop") ? Configurator.get("develop").toBoolean() : false
 	}
 
 	public void queueZafiraTestRun(String uuid) {
-		if(developMode){
-			return
-		}
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -50,9 +45,6 @@ class ZafiraClient {
     }
 
 	public void smartRerun() {
-		if(developMode){
-			return
-		}
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -80,9 +72,6 @@ class ZafiraClient {
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
-		if(developMode){
-			return
-		}
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -98,9 +87,6 @@ class ZafiraClient {
 	}
 
     public void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
-		if(developMode){
-			return
-		}
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -115,9 +101,6 @@ class ZafiraClient {
     }
 
 	public String exportZafiraReport(String uuid) {
-		if(developMode){
-			return ""
-		}
 		def parameters = [customHeaders: [[name: 'Authorization',
 										   value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
