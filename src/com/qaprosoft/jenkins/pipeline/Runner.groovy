@@ -337,10 +337,10 @@ class Runner extends Executor {
             Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
             goals = enableVideoStreaming(Configurator.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
-            goals = parseBooleanSafely("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
-            goals = parseBooleanSafely(Configurator.get(Configurator.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
-            goals = parseBooleanSafely("debug", "Enabling remote debug...", mavenDebug, goals)
-            goals = parseBooleanSafely("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
+            goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
+            goals = addOptionalParameter(Configurator.get(Configurator.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
+            goals = addOptionalParameter("debug", "Enabling remote debug...", mavenDebug, goals)
+            goals = addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
 			//browserstack goals
 			if (isBrowserStackRun()) {
@@ -381,7 +381,7 @@ class Runner extends Executor {
         return goals
     }
 
-    protected def parseBooleanSafely(parameter, message, capability, goals) {
+    protected def addOptionalParameter(parameter, message, capability, goals) {
         if (Configurator.get(parameter) && Configurator.get(parameter).toBoolean()) {
             context.println message
             goals += capability
