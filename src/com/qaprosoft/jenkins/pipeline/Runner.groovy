@@ -653,7 +653,7 @@ class Runner extends Executor {
 
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
-		def currentEnv = getCronEnv(currentSuite)
+		def currentEnvs = getCronEnv(currentSuite)
 		def pipelineJobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
 
 		// override suite email_list from params if defined
@@ -673,7 +673,7 @@ class Runner extends Executor {
 		def overrideFields = Configurator.get("overrideFields")
 
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
-		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv: ${currentEnv};\n	supportedBrowsers: ${supportedBrowsers};\n"
+		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
 		def currentBrowser = Configurator.get("browser")
 
@@ -691,82 +691,85 @@ class Runner extends Executor {
 					continue;
 				}
 
-				for (def supportedEnv : supportedEnvs.split(",")) {
-					//context.println("supportedEnv: " + supportedEnv)
-					if (!currentEnv.contains(supportedEnv) || currentEnv.toString().equals("null")) {
-						//context.println("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
-						//launch test only if current suite support cron regression execution for current env
-						continue;
-					}
-
-					for (def supportedBrowser : supportedBrowsers.split(",")) {
-						// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
-						// supportedBrowser - splitted single browser name from supportedBrowsers
-						def browser = currentBrowser
-						def browserVersion = null
-						def os = null
-						def osVersion = null
-
-						String browserInfo = supportedBrowser
-						if (supportedBrowser.contains("-")) {
-							def systemInfoArray = supportedBrowser.split("-")
-							String osInfo = systemInfoArray[0]
-							os = OS.getName(osInfo)
-							osVersion = OS.getVersion(osInfo)
-							browserInfo = systemInfoArray[1]
-						}
-						def browserInfoArray = browserInfo.split(" ")
-						browser = browserInfoArray[0]
-						if (browserInfoArray.size() > 1) {
-							browserVersion = browserInfoArray[1]
-						}
-
-                        // currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
-
-						//context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
-						if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
-							//context.println("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
+				
+				for (def currentEnv : currentEnvs.split(",")) {
+					for (def supportedEnv : supportedEnvs.split(",")) {
+						//context.println("supportedEnv: " + supportedEnv)
+						if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
+							//context.println("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
+							//launch test only if current suite support cron regression execution for current env
 							continue;
 						}
-						
-						//context.println("adding ${filePath} suite to pipeline run...")
-
-						def pipelineMap = [:]
-
-						def branch = Configurator.get("branch")
-						def ci_parent_url = Configurator.get("ci_parent_url")
-						if (ci_parent_url.isEmpty()) {
-							ci_parent_url = Configurator.get(Configurator.Parameter.JOB_URL)
+	
+						for (def supportedBrowser : supportedBrowsers.split(",")) {
+							// supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
+							// supportedBrowser - splitted single browser name from supportedBrowsers
+							def browser = currentBrowser
+							def browserVersion = null
+							def os = null
+							def osVersion = null
+	
+							String browserInfo = supportedBrowser
+							if (supportedBrowser.contains("-")) {
+								def systemInfoArray = supportedBrowser.split("-")
+								String osInfo = systemInfoArray[0]
+								os = OS.getName(osInfo)
+								osVersion = OS.getVersion(osInfo)
+								browserInfo = systemInfoArray[1]
+							}
+							def browserInfoArray = browserInfo.split(" ")
+							browser = browserInfoArray[0]
+							if (browserInfoArray.size() > 1) {
+								browserVersion = browserInfoArray[1]
+							}
+	
+	                        // currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
+	
+							//context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
+							if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
+								//context.println("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
+								continue;
+							}
+							
+							//context.println("adding ${filePath} suite to pipeline run...")
+	
+							def pipelineMap = [:]
+	
+							def branch = Configurator.get("branch")
+							def ci_parent_url = Configurator.get("ci_parent_url")
+							if (ci_parent_url.isEmpty()) {
+								ci_parent_url = Configurator.get(Configurator.Parameter.JOB_URL)
+							}
+							def ci_parent_build = Configurator.get("ci_parent_build")
+							if (ci_parent_build.isEmpty()) {
+								ci_parent_build = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+							}
+							def retry_count = Configurator.get("retry_count")
+							def thread_count = Configurator.get("thread_count")
+							// put all not NULL args into the pipelineMap for execution
+	                        putNotNull(pipelineMap, "browser", browser)
+	                        putNotNull(pipelineMap, "browser_version", browserVersion)
+	                        putNotNull(pipelineMap, "os", os)
+	                        putNotNull(pipelineMap, "os_version", osVersion)
+							pipelineMap.put("name", pipeName)
+							pipelineMap.put("branch", branch)
+							pipelineMap.put("ci_parent_url", ci_parent_url)
+							pipelineMap.put("ci_parent_build", ci_parent_build)
+							pipelineMap.put("retry_count", retry_count)
+	                        putNotNull(pipelineMap, "thread_count", thread_count)
+							pipelineMap.put("jobName", jobName)
+							pipelineMap.put("env", supportedEnv)
+							pipelineMap.put("order", orderNum)
+							pipelineMap.put("BuildPriority", priorityNum)
+	                        putNotNullWithSplit(pipelineMap, "emailList", emailList)
+	                        putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+	                        putNotNull(pipelineMap, "overrideFields", overrideFields)
+	
+							//context.println("initialized ${filePath} suite to pipeline run...")
+							registerPipeline(currentSuite, pipelineMap)
 						}
-						def ci_parent_build = Configurator.get("ci_parent_build")
-						if (ci_parent_build.isEmpty()) {
-							ci_parent_build = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-						}
-						def retry_count = Configurator.get("retry_count")
-						def thread_count = Configurator.get("thread_count")
-						// put all not NULL args into the pipelineMap for execution
-                        putNotNull(pipelineMap, "browser", browser)
-                        putNotNull(pipelineMap, "browser_version", browserVersion)
-                        putNotNull(pipelineMap, "os", os)
-                        putNotNull(pipelineMap, "os_version", osVersion)
-						pipelineMap.put("name", pipeName)
-						pipelineMap.put("branch", branch)
-						pipelineMap.put("ci_parent_url", ci_parent_url)
-						pipelineMap.put("ci_parent_build", ci_parent_build)
-						pipelineMap.put("retry_count", retry_count)
-                        putNotNull(pipelineMap, "thread_count", thread_count)
-						pipelineMap.put("jobName", jobName)
-						pipelineMap.put("env", supportedEnv)
-						pipelineMap.put("order", orderNum)
-						pipelineMap.put("BuildPriority", priorityNum)
-                        putNotNullWithSplit(pipelineMap, "emailList", emailList)
-                        putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-                        putNotNull(pipelineMap, "overrideFields", overrideFields)
-
-						//context.println("initialized ${filePath} suite to pipeline run...")
-						registerPipeline(currentSuite, pipelineMap)
+	
 					}
-
 				}
 			}
 		}
