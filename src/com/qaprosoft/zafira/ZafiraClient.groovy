@@ -41,7 +41,7 @@ class ZafiraClient {
 			return
 		}
         String formattedJSON = JsonOutput.prettyPrint(response.content)
-        context.println("Queued TestRun: ${formattedJSON}")
+        context.println "Queued TestRun: " + formattedJSON
     }
 
 	public void smartRerun() {
@@ -67,8 +67,8 @@ class ZafiraClient {
 		}
     
 		def responseJson = new JsonSlurper().parseText(response.content)
-		context.println("Results : ${responseJson.size()}")
-		context.println("Tests for rerun : ${responseJson}")
+		context.println "Results : " + responseJson.size()
+		context.println "Tests for rerun: " + responseJson
 	}
 
 	public void abortZafiraTestRun(String uuid, String comment) {
@@ -112,7 +112,7 @@ class ZafiraClient {
 		if(!response){
 			return ""
 		}
-		//context.println("exportZafiraReport response: ${response.content}")
+		//context.println "exportZafiraReport response: " + response.content
 		return response.content
 	}
 
@@ -146,8 +146,8 @@ class ZafiraClient {
 	}
 
 	protected void printStackTrace(Exception ex) {
-		context.println("exception: " + ex.getMessage())
-		context.println("exception class: " + ex.getClass().getName())
-		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
+		context.println "exception: " + ex.getMessage()
+		context.println "exception class: " + ex.getClass().getName()
+		context.println "stacktrace: " + Arrays.toString(ex.getStackTrace())
 	}
 }
