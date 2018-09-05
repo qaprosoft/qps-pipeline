@@ -22,8 +22,7 @@ class ZafiraClient {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
-		def parameters = [customHeaders: [[name: 'Authorization',
-										   value: "${authToken}"]],
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
 						  requestBody: "{\"jobName\": \"${Configurator.get(Configurator.Parameter.JOB_BASE_NAME)}\", \
@@ -48,8 +47,7 @@ class ZafiraClient {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
-		def parameters = [customHeaders: [[name: 'Authorization',
-										  value: "${authToken}"]],
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						 contentType: 'APPLICATION_JSON',
 						 httpMode: 'POST',
 						 requestBody: "{\"owner\": \"${Configurator.get("ci_user_id")}\", \
@@ -75,8 +73,7 @@ class ZafiraClient {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
-        def parameters = [customHeaders: [[name: 'Authorization',
-                                           value: "${authToken}"]],
+        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
                           requestBody: "{\"comment\": \"${comment}\"}",
@@ -90,8 +87,7 @@ class ZafiraClient {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
-		def parameters = [customHeaders: [[name: 'Authorization',
-										   value: "${authToken}"]],
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
 						  requestBody: "{\"recipients\": \"${emailList}\"}",
@@ -101,8 +97,7 @@ class ZafiraClient {
     }
 
 	public String exportZafiraReport(String uuid) {
-		def parameters = [customHeaders: [[name: 'Authorization',
-										   value: "${authToken}"]],
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
 						  validResponseCodes: "200:401",
