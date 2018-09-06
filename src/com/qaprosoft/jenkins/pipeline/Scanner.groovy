@@ -35,14 +35,14 @@ class Scanner extends Executor {
                 this.prepare(!Configurator.get("onlyUpdated").toBoolean())
 
                 def filePattern = "**.xml"
-                if (!isUpdated(filePattern) && Configurator.get("onlyUpdated").toBoolean()) {
+                if (!isUpdated(filePattern) && !Configurator.get("firstScan").toBoolean()) {
 					context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
 					return
                 }
-				this.scan()
-				this.clean()
-			}
-		}
+                this.scan()
+                this.clean()
+            }
+        }
 	}
 
 	protected void prepare(isShallowClone) {
