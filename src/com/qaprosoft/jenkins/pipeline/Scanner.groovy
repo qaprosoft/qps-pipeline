@@ -32,7 +32,7 @@ class Scanner extends Executor {
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
-                this.prepare(!Configurator.get("onlyUpdated").toBoolean())
+                this.prepare()
 
                 def filePattern = "**.xml"
                 if (!isUpdated(filePattern) && Configurator.get("onlyUpdated").toBoolean()) {
@@ -45,8 +45,14 @@ class Scanner extends Executor {
         }
 	}
 
-	protected void prepare(isShallowClone) {
-        scmClient.clone(isShallowClone)
+	protected void prepare() {
+
+        if (Configurator.get("onlyUpdated").toBoolean()) {
+            scmClient.clone(false)
+        } else {
+            scmClient.clone(true)
+        }
+
 		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
 		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
