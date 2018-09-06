@@ -24,7 +24,7 @@ public class TestJobFactory extends PipelineFactory {
 		this.sub_project = sub_project
 		this.zafira_project = zafira_project
 		this.suitePath = suitePath
-		
+
 		this.suiteName = suiteName
 	}
 	

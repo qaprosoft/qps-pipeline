@@ -31,16 +31,13 @@ class Scanner extends Executor {
 
     public void scanRepository() {
 		context.node('master') {
-            context.timestamps {
-                if(!Configurator.get("firstScan").toBoolean() && Configurator.get("onlyUpdated").toBoolean()){
-                    this.prepare(false)
-                    def filePattern = "**.xml"
-                    if (!isUpdated(filePattern)) {
-                        context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
-                        return
-                    }
-                } else {
-                    this.prepare(true)
+			context.timestamps {
+                this.prepare()
+
+                def filePattern = "**.xml"
+                if (!isUpdated(filePattern) && Configurator.get("onlyUpdated").toBoolean()) {
+					context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
+					return
                 }
                 this.scan()
                 this.clean()
@@ -48,13 +45,14 @@ class Scanner extends Executor {
         }
 	}
 
-	protected void prepare(isShallowClone) {
-        scmClient.clone(isShallowClone)
+	protected void prepare() {
+
+        scmClient.clone(!Configurator.get("onlyUpdated").toBoolean())
 		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
 		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 	}
-	
+
 	protected void scan() {
 
 		context.stage("Scan Repository") {
@@ -136,7 +134,7 @@ class Scanner extends Executor {
 				def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
 				for (File suite : suites) {
 					if (!suite.path.endsWith(".xml")) {
-						continue;
+						continue
 					}
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
