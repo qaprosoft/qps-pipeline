@@ -94,8 +94,8 @@ public class TestJobFactory extends PipelineFactory {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
 
-				def proxyInfoData = ProxyInfo.getProxyInfoData(selenium)
-				_dslFactory.println "PROXY INFO DATA: " + proxyInfoData
+//				def proxyInfoData = ProxyInfo.getProxyInfoData(selenium)
+//				_dslFactory.println "PROXY INFO DATA: " + proxyInfoData
 
 				_dslFactory.println "jobType: " + jobType
 				switch(jobType.toLowerCase()) {
