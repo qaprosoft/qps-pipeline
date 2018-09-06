@@ -20,36 +20,40 @@ class Scanner extends Executor {
 	
 	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Creator.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
-    //TODO: investigate if we need to redefine this psrameter
-    protected boolean ignoreExisting = false
+
+    protected boolean ignoreExisting = true
 
     public Scanner(context) {
-        super(context)
-        this.context = context
-        scmClient = new GitHub(context)
-    }
+		super(context)
+		this.context = context
+		scmClient = new GitHub(context)
+        ignoreExisting  = Configurator.get("ignoreExisting").toBoolean()
+ 	}
 
     public void scanRepository() {
 		context.node('master') {
-            context.timestamps {
-                if(!Configurator.get("firstScan").toBoolean() && Configurator.get("onlyUpdated").toBoolean()){
-                    this.prepare(false)
-                    def filePattern = "**.xml"
-                    if (!isUpdated(filePattern)) {
-                        context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
-                        return
-                    }
-                } else {
-                    this.prepare(true)
+			context.timestamps {
+                this.prepare()
+
+                def filePattern = "**.xml"
+                if (!isUpdated(filePattern) && ignoreExisting) {
+					context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
+					return
                 }
-                this.scan()
-                this.clean()
-            }
-        }
+				this.scan()
+				this.clean()
+			}
+		}
 	}
 
-	protected void prepare(isShallowClone) {
-        scmClient.clone(isShallowClone)
+	protected void prepare() {
+
+        if (ignoreExisting) {
+            scmClient.clone(false)
+        } else {
+            scmClient.clone(true)
+        }
+
 		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
 		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
@@ -63,6 +67,7 @@ class Scanner extends Executor {
 			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
+			def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
 			def removedConfigFilesAction = Configurator.get("removedConfigFilesAction")
 			def removedJobAction = Configurator.get("removedJobAction")
 			def removedViewAction = Configurator.get("removedViewAction")
