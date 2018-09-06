@@ -93,7 +93,11 @@ public class TestJobFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-				_dslFactory.println("jobType: " + jobType)
+
+				def proxyInfoData = ProxyInfo.getProxyInfoData(selenium)
+				_dslFactory.println "PROXY INFO DATA: " + proxyInfoData
+
+				_dslFactory.println "jobType: " + jobType
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
