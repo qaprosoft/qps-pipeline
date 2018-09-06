@@ -35,7 +35,7 @@ class Scanner extends Executor {
                 this.prepare(!Configurator.get("onlyUpdated").toBoolean())
 
                 def filePattern = "**.xml"
-                if (!isUpdated(filePattern) && !Configurator.get("firstScan").toBoolean()) {
+                if (!isUpdated(filePattern)) {
 					context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
 					return
                 }
