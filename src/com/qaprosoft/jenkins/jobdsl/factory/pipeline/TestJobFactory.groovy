@@ -14,6 +14,7 @@ public class TestJobFactory extends PipelineFactory {
 	def zafira_project
 	def suitePath
 	def suiteName
+	def proxyInfo
 	
 	public TestJobFactory(folder, pipelineScript, project, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
 		this.folder = folder
@@ -24,8 +25,8 @@ public class TestJobFactory extends PipelineFactory {
 		this.sub_project = sub_project
 		this.zafira_project = zafira_project
 		this.suitePath = suitePath
-		
 		this.suiteName = suiteName
+		this.proxyInfo  = new ProxyInfo(_dslFactory)
 	}
 	
 	def create() {
@@ -94,7 +95,7 @@ public class TestJobFactory extends PipelineFactory {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
 
-				def proxyInfoData = ProxyInfo.getProxyInfoData(selenium)
+				def proxyInfoData = proxyInfo.getProxyInfoData(selenium)
 				_dslFactory.println "PROXY INFO DATA: " + proxyInfoData
 
 				_dslFactory.println "jobType: " + jobType
@@ -119,7 +120,7 @@ public class TestJobFactory extends PipelineFactory {
 						break;
 					case ~/^.*android.*$/:
 						_dslFactory.println("SELENIUM: " + selenium)
-						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('devicePool', proxyInfo.getDevicesList(selenium, 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
@@ -131,7 +132,7 @@ public class TestJobFactory extends PipelineFactory {
 						break;
 					case ~/^.*ios.*$/:
 						//TODO:  Need to adjust this for virtual as well.
-						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('devicePool', proxyInfo.getDevicesList(selenium, 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
