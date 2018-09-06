@@ -33,8 +33,11 @@ class Scanner extends Executor {
 		context.node('master') {
 			context.timestamps {
                 this.prepare(!Configurator.get("onlyUpdated").toBoolean())
-                if(!isFileUpdated("**.xml")) {
-                    return
+
+                def filePattern = "**.xml"
+                if (Configurator.get("onlyUpdated").toBoolean() && !isUpdated(filePattern)) {
+					context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
+					return
                 }
                 this.scan()
                 this.clean()
@@ -49,16 +52,7 @@ class Scanner extends Executor {
 		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 	}
 
-    protected boolean isFileUpdated(filePattern) {
-        boolean updated = true
-        if (Configurator.get("onlyUpdated").toBoolean() && !isUpdated(filePattern)) {
-            context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
-            updated = false
-        }
-        return updated
-    }
-
-    protected void scan() {
+	protected void scan() {
 
 		context.stage("Scan Repository") {
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
