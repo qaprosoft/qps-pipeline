@@ -67,7 +67,6 @@ class Scanner extends Executor {
 			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
-			def ignoreExisting = Configurator.get("ignoreExisting").toBoolean()
 			def removedConfigFilesAction = Configurator.get("removedConfigFilesAction")
 			def removedJobAction = Configurator.get("removedJobAction")
 			def removedViewAction = Configurator.get("removedViewAction")
@@ -141,7 +140,7 @@ class Scanner extends Executor {
 				def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
 				for (File suite : suites) {
 					if (!suite.path.endsWith(".xml")) {
-						continue;
+						continue
 					}
 					context.println("suite: " + suite.path)
 					def suiteOwner = "anonymous"
