@@ -31,8 +31,8 @@ class ProxyInfo {
 		return baseDeviceList + deviceList.sort()
 	}
 
-    public static def getProxyInfoData(String selenium){
-        def proxyInfoUrl = selenium + "/grid/admin/ProxyInfo"
-        return new JsonSlurper().parse(proxyInfoUrl.toURL())
-    }
+//    public static def getProxyInfoData(String selenium){
+//        def proxyInfoUrl = selenium + "/grid/admin/ProxyInfo"
+//        return new JsonSlurper().parse(proxyInfoUrl.toURL())
+//    }
 }
