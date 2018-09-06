@@ -4,11 +4,17 @@ import groovy.json.JsonSlurper;
 
 class ProxyInfo {
 
+    def dslFactory
+
+    ProxyInfo(_dslFactory) {
+        dslFactory = _dslFactory
+    }
+
     def private static platformDeviceListMap = ["android":[], "ios":[]]
     def private static baseDeviceList = ["DefaultPool", "ANY"]
 
 	//TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
-	public static List<String> getDevicesList(String selenium, String platform) {
+	public List<String> getDevicesList(String selenium, String platform) {
 
         //TODO: reuse selenium host/port/protocol from env jobVars
             def proxyInfoUrl = selenium + "/grid/admin/ProxyInfo"
@@ -31,7 +37,7 @@ class ProxyInfo {
 		return baseDeviceList + deviceList.sort()
 	}
 
-    public static def getProxyInfoData(String selenium){
+    public def getProxyInfoData(String selenium){
         def proxyInfoUrl = selenium + "/grid/admin/ProxyInfo"
         return new JsonSlurper().parse(proxyInfoUrl.toURL())
     }
