@@ -330,6 +330,10 @@ class Runner extends Executor {
             def BUILD_USER_FIRST_NAME = Configurator.get("BUILD_USER_FIRST_NAME")
             def BUILD_USER_LAST_NAME = Configurator.get("BUILD_USER_LAST_NAME")
             def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
+			if (BUILD_USER_EMAIL == null) {
+				//override "null" value by empty to be able to register in cloud version of Zafira
+				BUILD_USER_EMAIL = ""
+			}
 			
 			def JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
