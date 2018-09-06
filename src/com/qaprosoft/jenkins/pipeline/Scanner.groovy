@@ -20,15 +20,14 @@ class Scanner extends Executor {
 	
 	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Creator.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
-
-    protected boolean ignoreExisting = true
+    //TODO: investigate if we need to redefine this psrameter
+    protected boolean ignoreExisting = false
 
     public Scanner(context) {
-		super(context)
-		this.context = context
-		scmClient = new GitHub(context)
-        ignoreExisting  = Configurator.get("ignoreExisting").toBoolean()
- 	}
+        super(context)
+        this.context = context
+        scmClient = new GitHub(context)
+    }
 
     public void scanRepository() {
 		context.node('master') {
@@ -36,7 +35,7 @@ class Scanner extends Executor {
                 this.prepare()
 
                 def filePattern = "**.xml"
-                if (!isUpdated(filePattern) && ignoreExisting) {
+                if (!isUpdated(filePattern) && Configurator.get("onlyUpdated").toBoolean()) {
 					context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
 					return
                 }
@@ -48,7 +47,7 @@ class Scanner extends Executor {
 
 	protected void prepare() {
 
-        if (ignoreExisting) {
+        if (Configurator.get("onlyUpdated").toBoolean()) {
             scmClient.clone(false)
         } else {
             scmClient.clone(true)
