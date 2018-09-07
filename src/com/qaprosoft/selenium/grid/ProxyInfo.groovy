@@ -26,17 +26,18 @@ class ProxyInfo {
 		try {
             if (deviceList.size() == 0) {
                 def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
-
-                dslFactory.println "DUMP: " + json.dump()
+                if (json.size() == 0) {
+                    deviceList.add('')
+                }
                 String prettyJson = new JsonBuilder(json).toPrettyString()
                 dslFactory.println "JSON: " + prettyJson
                 json.each {
                     if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
 //                        dslFactory.println "platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0]
                         deviceList.add(it.configuration.capabilities.browserName[0])
-                        platformDeviceListMap.put(platform.toLowerCase(), deviceList)
                     }
                 }
+                platformDeviceListMap.put(platform.toLowerCase(), deviceList)
             }
 		} catch (Exception e) {
             dslFactory.println e.getMessage()
