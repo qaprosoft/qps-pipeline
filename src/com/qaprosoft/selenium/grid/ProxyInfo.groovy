@@ -21,11 +21,10 @@ class ProxyInfo {
 		try {
             if (deviceList.size() == 0) {
                 def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
-                String prettyJson = new JsonBuilder(json).toPrettyString()
                 json.each {
                     if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
                         dslFactory.println "platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0]
-                        deviceList.add(it.configuration.capabilities.browserName[0])
+                        deviceList.add(it.configuration.capabilities.browserName[0]);
                     }
                 }
                 platformDeviceListMap.put(platform.toLowerCase(), deviceList)
