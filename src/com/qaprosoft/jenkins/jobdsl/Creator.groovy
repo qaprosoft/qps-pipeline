@@ -8,17 +8,17 @@ def slurper = new JsonSlurper()
 
 String factoryDataMap = readFileFromWorkspace("factories.json")
 def prettyPrint = JsonOutput.prettyPrint(factoryDataMap)
-println("factoryDataMap: " + prettyPrint)
+println "factoryDataMap: " + prettyPrint
 def factories = new HashMap(slurper.parseText(factoryDataMap))
 
 factories.each{
 	try {
 		def factory = Class.forName(it.value.clazz)?.newInstance(this)
-		//println("before load: " + it.value.dump())
+		//println "before load: " + it.value.dump()
 		factory.load(it.value)
-		//println("factory after load: " + factory.dump())
+		//println "factory after load: " + factory.dump()
 		factory.create()
 	} catch (Exception e) {
-		println(e.dump())
+		println e.dump()
 	}
 }
