@@ -1,6 +1,5 @@
 package com.qaprosoft.selenium.grid
 
-import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper;
 
 class ProxyInfo {
@@ -16,9 +15,9 @@ class ProxyInfo {
     }
 
     //TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
-	public def getDevicesList(String platform) {
+    public def getDevicesList(String platform) {
         def deviceList = platformDeviceListMap.get(platform.toLowerCase())
-		try {
+        try {
             if (deviceList.size() == 0) {
                 def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
                 json.each {
@@ -29,9 +28,9 @@ class ProxyInfo {
                 }
                 platformDeviceListMap.put(platform.toLowerCase(), deviceList)
             }
-		} catch (Exception e) {
+        } catch (Exception e) {
             dslFactory.println e.getMessage()
-		}
-		return baseDeviceList + deviceList.sort()
-	}
+        }
+        return baseDeviceList + deviceList.sort()
+    }
 }
