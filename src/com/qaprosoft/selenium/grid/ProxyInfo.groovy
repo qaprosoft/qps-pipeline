@@ -26,6 +26,8 @@ class ProxyInfo {
 		try {
             if (deviceList.size() == 0) {
                 def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
+
+                dslFactory.println "DUMP: " + json.dump()
                 String prettyJson = new JsonBuilder(json).toPrettyString()
                 dslFactory.println "JSON: " + prettyJson
                 json.each {
