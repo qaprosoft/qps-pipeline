@@ -198,10 +198,10 @@ public class TestJobFactory extends PipelineFactory {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-					_dslFactory.println "param: " + param
-					def delimitor = "::"
-					if (param.key.contains(delimitor)) {
-						def (type, name, desc) = param.key.split(delimitor)
+//					_dslFactory.println "param: " + param
+					def delimiter = "::"
+					if (param.key.contains(delimiter)) {
+						def (type, name, desc) = param.key.split(delimiter)
 						switch(type.toLowerCase()) {
 							case "hiddenparam":
 								configure addHiddenParameter(name, desc, param.value)
