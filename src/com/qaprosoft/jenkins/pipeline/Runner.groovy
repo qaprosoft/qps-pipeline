@@ -297,7 +297,7 @@ class Runner extends Executor {
 	protected void build() {
 		context.stage('Run Test Suite') {
 
-			def pomFile = getSubProjectFolder() + "/pom.xml"
+            def pomFile = getSubProjectFolder() + "/pom.xml"
             def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
             if (BUILD_USER_EMAIL == null) {
                 //override "null" value by empty to be able to register in cloud version of Zafira
