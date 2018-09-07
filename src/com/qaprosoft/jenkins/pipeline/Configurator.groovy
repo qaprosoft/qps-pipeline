@@ -70,6 +70,8 @@ public class Configurator {
 		SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
 		SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
 		
+		S3_SAVE_SCREENSHOTS_V2("s3_save_screenshots_v2", "true"),
+		
 		VNC_PROTOCOL("vnc_protocol", "ws"),
 		VNC_HOST("vnc_host", "\${QPS_HOST}"),
 		VNC_PORT("vnc_port", "80"),

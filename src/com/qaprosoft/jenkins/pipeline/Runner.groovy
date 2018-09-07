@@ -305,6 +305,7 @@ class Runner extends Executor {
             }
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
                                             -Detaf.carina.core.version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
+											-Ds3_save_screenshots_v2=${Configurator.get(Configurator.Parameter.S3_SAVE_SCREENSHOTS_V2)} \
                                             -f ${pomFile} \
                                             -Dmaven.test.failure.ignore=true \
                                             -Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
