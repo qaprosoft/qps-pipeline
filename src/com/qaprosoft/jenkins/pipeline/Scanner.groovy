@@ -33,10 +33,8 @@ class Scanner extends Executor {
 		context.node('master') {
 			context.timestamps {
                 this.prepare()
-
-                def filePattern = "**.xml"
-                if (!isUpdated(filePattern) && Configurator.get("onlyUpdated").toBoolean()) {
-					context.println("do not continue scanner as none of suite was updated (" + filePattern + ")")
+                if (!isUpdated("**.xml") && Configurator.get("onlyUpdated").toBoolean()) {
+					context.println("do not continue scanner as none of suite was updated ( *.xml )")
 					return
                 }
                 this.scan()
