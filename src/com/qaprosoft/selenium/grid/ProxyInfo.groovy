@@ -4,10 +4,10 @@ import groovy.json.JsonSlurper;
 
 class ProxyInfo {
 
-    def dslFactory
-    def proxyInfoUrl
-    def private platformDeviceListMap = ["android":[], "ios":[]]
-    def private baseDeviceList = ["DefaultPool", "ANY"]
+    private def dslFactory
+    private String proxyInfoUrl
+    private def platformDeviceListMap = ["android":[], "ios":[]]
+    private def baseDeviceList = ["DefaultPool", "ANY"]
 
     ProxyInfo(dslFactory) {
         this.dslFactory = dslFactory
@@ -15,7 +15,7 @@ class ProxyInfo {
     }
 
     //TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
-	public  List<String> getDevicesList(String platform) {
+	public def getDevicesList(String platform) {
 
         //TODO: reuse selenium host/port/protocol from env jobVars
         def deviceList = platformDeviceListMap.get(platform.toLowerCase())
@@ -23,15 +23,16 @@ class ProxyInfo {
 		try {
             if (deviceList.size() == 0) {
                 def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
+                dslFactory.println "JSON: " + json
                 json.each {
                     if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
-                        dslFactory.println("platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0])
+                        dslFactory.println "platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0]
                         deviceList.add(it.configuration.capabilities.browserName[0]);
                     }
                 }
             }
 		} catch (Exception e) {
-            dslFactory.println(e.getMessage())
+            dslFactory.println e.getMessage()
 		}
 		return baseDeviceList + deviceList.sort()
 	}
