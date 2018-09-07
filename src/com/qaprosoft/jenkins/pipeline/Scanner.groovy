@@ -44,7 +44,6 @@ class Scanner extends Executor {
 	}
 
 	protected void prepare() {
-
         scmClient.clone(!Configurator.get("onlyUpdated").toBoolean())
 		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
