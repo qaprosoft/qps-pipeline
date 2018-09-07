@@ -1,5 +1,6 @@
 package com.qaprosoft.selenium.grid
 
+import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper;
 
@@ -23,9 +24,9 @@ class ProxyInfo {
 
 		try {
             if (deviceList.size() == 0) {
-                String json = new JsonSlurper().parse(proxyInfoUrl.toURL())
-                def prettyPrint = JsonOutput.prettyPrint(json)
-                dslFactory.println "JSON: " + prettyPrint
+                def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
+                String prettyJson = new JsonBuilder(json).toPrettyString()
+                dslFactory.println "JSON: " + prettyJson
                 json.each {
                     if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
                         dslFactory.println "platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0]
