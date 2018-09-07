@@ -298,6 +298,11 @@ class Runner extends Executor {
 		context.stage('Run Test Suite') {
 
 			def pomFile = getSubProjectFolder() + "/pom.xml"
+            def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
+            if (BUILD_USER_EMAIL == null) {
+                //override "null" value by empty to be able to register in cloud version of Zafira
+                BUILD_USER_EMAIL = ""
+            }
 			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
                                             -Detaf.carina.core.version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
                                             -f ${pomFile} \
@@ -319,7 +324,7 @@ class Runner extends Executor {
                                             -Dci_user_id=${Configurator.get("BUILD_USER_ID")} \
                                             -Dci_user_first_name=${Configurator.get("BUILD_USER_FIRST_NAME")} \
                                             -Dci_user_last_name=${Configurator.get("BUILD_USER_LAST_NAME")} \
-                                            -Dci_user_email=${Configurator.get("BUILD_USER_EMAIL")} \
+                                            -Dci_user_email=${BUILD_USER_EMAIL} \
                                             -Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
                                             clean test"
 
@@ -477,8 +482,10 @@ class Runner extends Executor {
 					${etafReport}: ${JOB_URL}${BUILD_NUMBER}/${etafReportEncoded}<br>
 					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
 
-        def to = Configurator.get("email_list") + "," + Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
-		//TODO: enable emailing but seems like it should be moved to the notification code
+//        def to = Configurator.get("email_list") + "," + Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
+        def to = Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
+
+        //TODO: enable emailing but seems like it should be moved to the notification code
         context.emailext getEmailParams(body, subject, to)
 		return failureReason
 	}
@@ -929,5 +936,9 @@ Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStac
 			}
 		}
 		return res
+	}
+
+	protected def overrideRecipients(emailList) {
+		return emailList
 	}
 }
