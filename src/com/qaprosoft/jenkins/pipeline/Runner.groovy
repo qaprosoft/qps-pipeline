@@ -155,6 +155,7 @@ class Runner extends Executor {
 					printStackTrace(ex)
 					String failureReason = getFailure(context.currentBuild)
 					context.echo "failureReason: ${failureReason}"
+					emailList = overrideRecipients(emailList)
 					//explicitly execute abort to resolve anomalies with in_progress tests...
 					zc.abortZafiraTestRun(uuid, failureReason)
 					throw ex
@@ -978,5 +979,9 @@ Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStac
 			}
 		}
 		return res
+	}
+	
+	protected def overrideRecipients(emailList) {
+		return emailList
 	}
 }
