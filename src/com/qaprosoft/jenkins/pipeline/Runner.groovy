@@ -588,6 +588,7 @@ class Runner extends Executor {
 
 	protected void sendTestRunResultsEmail() {
         String emailList = Configurator.get("email_list")
+        emailList = overrideRecipients(emailList)
         String failureEmailList = Configurator.get("failure_email_list")
 
         if (emailList != null && !emailList.isEmpty()) {
