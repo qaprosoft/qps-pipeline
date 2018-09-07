@@ -21,6 +21,7 @@ class ProxyInfo {
         dslFactory.println "MY MAP: " + platformDeviceListMap
         //TODO: reuse selenium host/port/protocol from env jobVars
         def deviceList = platformDeviceListMap.get(platform.toLowerCase())
+        dslFactory.println "SIZE: " + deviceList.size()
 
 		try {
             if (deviceList.size() == 0) {
