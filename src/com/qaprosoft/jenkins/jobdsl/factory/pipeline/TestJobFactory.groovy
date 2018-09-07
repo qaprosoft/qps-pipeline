@@ -19,18 +19,16 @@ public class TestJobFactory extends PipelineFactory {
 		this.folder = folder
         this.description = jobDesc
 		this.pipelineScript = pipelineScript
-
 		this.project = project
 		this.sub_project = sub_project
 		this.zafira_project = zafira_project
 		this.suitePath = suitePath
-
 		this.suiteName = suiteName
 	}
 	
 	def create() {
-		_dslFactory.println("TestJobFactory->create")
-		def selenium = _dslFactory.binding.variables.QPS_HUB
+		_dslFactory.println "TestJobFactory->create"
+		def proxyInfo = new ProxyInfo(_dslFactory)
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 		
@@ -38,7 +36,7 @@ public class TestJobFactory extends PipelineFactory {
 		XmlSuite currentSuite = suiteXml.get(0)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
-		_dslFactory.println("name: " + name)
+		_dslFactory.println "name: " + name
 		
 		def pipelineJob = super.create()
 		pipelineJob.with {
@@ -93,7 +91,7 @@ public class TestJobFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-				_dslFactory.println("jobType: " + jobType)
+				_dslFactory.println "jobType: " + jobType
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -114,8 +112,7 @@ public class TestJobFactory extends PipelineFactory {
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
-						_dslFactory.println("SELENIUM: " + selenium)
-						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('devicePool', proxyInfo.getDevicesList('ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
@@ -127,7 +124,7 @@ public class TestJobFactory extends PipelineFactory {
 						break;
 					case ~/^.*ios.*$/:
 						//TODO:  Need to adjust this for virtual as well.
-						choiceParam('devicePool', ProxyInfo.getDevicesList(selenium, 'iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('devicePool', proxyInfo.getDevicesList('iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
@@ -196,15 +193,15 @@ public class TestJobFactory extends PipelineFactory {
 
 				def paramsMap = [:]
 				paramsMap = currentSuite.getAllParameters()
-				_dslFactory.println("paramsMap: " + paramsMap)
+				_dslFactory.println "paramsMap: " + paramsMap
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-					_dslFactory.println("param: " + param)
-					def delimitor = "::"
-					if (param.key.contains(delimitor)) {
-						def (type, name, desc) = param.key.split(delimitor)
+//					_dslFactory.println "param: " + param
+					def delimiter = "::"
+					if (param.key.contains(delimiter)) {
+						def (type, name, desc) = param.key.split(delimiter)
 						switch(type.toLowerCase()) {
 							case "hiddenparam":
 								configure addHiddenParameter(name, desc, param.value)
