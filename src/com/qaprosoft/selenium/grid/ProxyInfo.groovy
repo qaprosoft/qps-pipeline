@@ -7,9 +7,8 @@ class ProxyInfo {
 
     private def dslFactory
     private String proxyInfoUrl
-    private def platformDeviceListMap = ["android":[], "ios":[]]
+    private static def platformDeviceListMap = ["android":[], "ios":[]]
     private def baseDeviceList = ["DefaultPool", "ANY"]
-    private def deviceList = []
 
     ProxyInfo(dslFactory) {
         this.dslFactory = dslFactory
@@ -18,8 +17,10 @@ class ProxyInfo {
 
     //TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
 	public def getDevicesList(String platform) {
+
         //TODO: reuse selenium host/port/protocol from env jobVars
-        deviceList = platformDeviceListMap.get(platform.toLowerCase())
+        def deviceList = platformDeviceListMap.get(platform.toLowerCase())
+
 		try {
             if (deviceList.size() == 0) {
                 def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
@@ -28,7 +29,8 @@ class ProxyInfo {
                 json.each {
                     if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
 //                        dslFactory.println "platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0]
-                        deviceList.add(it.configuration.capabilities.browserName[0]);
+                        deviceList.add(it.configuration.capabilities.browserName[0])
+                        platformDeviceListMap.put(platform.toLowerCase(), deviceList)
                     }
                 }
             }
