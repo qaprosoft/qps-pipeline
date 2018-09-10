@@ -60,7 +60,7 @@ class Repository extends Executor {
 	protected void verify() {
         context.node("master") {
             context.stage("Repository->verify") {
-                scmClient.clone(Configurator.get("ghprbAuthorRepoGitUrl"), Configurator.get("sha1"), ".")
+                scmClient.clonePR()
                 def goals = "clean compile test-compile \
                      -f pom.xml -Dmaven.test.failure.ignore=true \
                      -Dcom.qaprosoft.carina-core.version=${ Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)}"
