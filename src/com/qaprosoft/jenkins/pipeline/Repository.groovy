@@ -57,18 +57,17 @@ class Repository extends Executor {
 	}
 
 	protected void verify() {
-		context.println("Repository->verify")
-
-        def goals = "clean compile test-compile \
+        context.stage("Repository->verify") {
+            def goals = "clean compile test-compile \
                      -f pom.xml -Dmaven.test.failure.ignore=true \
                      -Dcom.qaprosoft.carina-core.version=${ Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)}"
 
-        if (context.isUnix()) {
-            context.sh "'mvn' -B ${goals}"
-        } else {
-            context.bat "mvn -B ${goals}"
+            if (context.isUnix()) {
+                context.sh "'mvn' -B ${goals}"
+            } else {
+                context.bat "mvn -B ${goals}"
+            }
         }
-
     }
 	
 	protected void compile() {
