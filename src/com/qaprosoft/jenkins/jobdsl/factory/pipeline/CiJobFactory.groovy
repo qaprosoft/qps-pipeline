@@ -25,7 +25,7 @@ public class CiJobFactory extends PipelineFactory {
                     triggers {
                         githubPush()
                         ghprbTrigger {
-                            gitHubAuthId("${_dslFactory.binding.variables.QPS_HUB} : ${folder} - PR Checker")
+                            gitHubAuthId("${_dslFactory.binding.variables.QPS_HUB} : ${folder}-token")
                             adminlist('')
                             useGitHubHooks(true)
                             triggerPhrase('')
