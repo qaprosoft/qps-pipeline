@@ -33,6 +33,9 @@ class Repository extends Executor {
 			case "SCMPUSHTRIGGER":
 				onUpdate()
                 break
+            case "SCMGHPRBTRIGGER":
+                onPullRequest()
+                break
             default: throw new RuntimeException("Unrecognized build cause")
 		}
 		//global runner after each GitHub Webhook trigger
