@@ -33,26 +33,20 @@ public class PipelineFactory extends JobFactory {
 			logRotator { numToKeep logRotator }
 			
 			authenticationToken('ciStart')
-			
-			try {
-				properties {
-					durabilityHint { hint("PERFORMANCE_OPTIMIZED") }
-				}
-			} catch (Exception e) {
-				context.println("Unable to specify performance_optimized mode!")
-			}
+
+            properties {
+                disableResume()
+                durabilityHint { hint("PERFORMANCE_OPTIMIZED") }
+                if (!suiteOwner.isEmpty()) {
+                    ownership { primaryOwnerId(suiteOwner) }
+                }
+            }
 
 			/** Git Stuff **/
 			definition {
 				cps {
 					script(pipelineScript)
 					sandbox()
-				}
-			}
-
-			if (!suiteOwner.isEmpty()) {
-				properties {
-					ownership { primaryOwnerId(suiteOwner) }
 				}
 			}
 
