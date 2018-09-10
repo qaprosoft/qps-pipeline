@@ -105,7 +105,7 @@ public abstract class Executor {
         /* Gets CauseActions of the job */
         context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
             action ->
-                context.println "DUMP" + action.dump()
+//                context.println "DUMP" + action.dump()
                 /* Searches UpstreamCause among CauseActions and checks if it is not the same job as current(the other way it was rebuild) */
                 if (action.findCause(hudson.model.Cause.UpstreamCause.class)
                         && (jobName != action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())) {
@@ -115,9 +115,12 @@ public abstract class Executor {
                 else if (action.findCause(hudson.triggers.TimerTrigger$TimerTriggerCause.class)) {
                     buildCause = "TIMERTRIGGER"
                 }
-                /* Searches TimerTriggerCause among CauseActions */
+                /* Searches GitHubPushCause among CauseActions */
                 else if (action.findCause(com.cloudbees.jenkins.GitHubPushCause.class)) {
                     buildCause = "SCMPUSHTRIGGER"
+                }
+                else if (action.findCause(org.jenkinsci.plugins.ghprb.GhprbCause.class)) {
+                    buildCause = "SCMGHPRBTRIGGER"
                 }
                 else {
                     buildCause = "MANUALTRIGGER"
