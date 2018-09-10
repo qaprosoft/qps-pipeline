@@ -35,7 +35,7 @@ class GitHub implements ISCM {
 			context.println("GIT_URL: " + gitUrl)
 			//context.println("forked_repo: " + fork)
 			if (!fork) {
-                scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
+                scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '')
 			} else {
 
 				def token_name = 'token_' + "${userId}"
@@ -53,7 +53,7 @@ class GitHub implements ISCM {
 				if (token_value != null) {
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
 					context.println "fork repo url: ${gitUrl}"
-                    scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true)
+                    scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '')
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
 				}
@@ -72,18 +72,29 @@ class GitHub implements ISCM {
 			context.println("GitHub->clone")
 			context.println("GIT_URL: " + gitUrl)
 			context.println("branch: " + branch)
-            context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false)
+            context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false, '')
 		}
 	}
 
-    private def getCheckoutParams(gitUrl, branch, subFolder, shallow, changelog) {
+	public def clonePR(){
+		context.stage('Checkout GitHub Repository') {
+			def gitUrl = Configurator.get("ghprbAuthorRepoGitUrl")
+			def branch  = Configurator.get("sha1")
+			context.println("GitHub->clonePR")
+			context.println("GIT_URL: " + gitUrl)
+			context.println("branch: " + branch)
+			context.checkout getCheckoutParams(gitUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*')
+		}
+	}
+
+    private def getCheckoutParams(gitUrl, branch, subFolder, shallow, changelog, refspecValue) {
         def checkoutParams = [scm: [$class: 'GitSCM',
                                     branches: [[name: branch]],
                                     doGenerateSubmoduleConfigurations: false,
                                     extensions: [[$class: 'CheckoutOption', timeout: 15],
                                                  [$class: 'CloneOption', noTags: true, reference: '', shallow: shallow, timeout: 15]],
                                     submoduleCfg: [],
-                                    userRemoteConfigs: [[url: gitUrl]]],
+                                    userRemoteConfigs: [[url: gitUrl, refspec: refspecValue]]],
                               changelog: changelog,
                               poll: false]
         if (subFolder != null) {
