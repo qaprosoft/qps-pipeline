@@ -25,18 +25,22 @@ class Scanner extends Executor {
 	protected def additionalClasspath = "qps-pipeline/src"
     //TODO: investigate if we need to redefine this psrameter
     protected boolean ignoreExisting = false
+	
+	protected boolean onlyUpdated = false
 
     public Scanner(context) {
         super(context)
         this.context = context
         scmClient = new GitHub(context)
+		
+		onlyUpdated = Configurator.get("onlyUpdated").toBoolean()
     }
 
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
                 this.prepare()
-                if (!isUpdated("**.xml") && Configurator.get("onlyUpdated").toBoolean()) {
+                if (!isUpdated("**.xml") && onlyUpdated) {
 					context.println("do not continue scanner as none of suite was updated ( *.xml )")
 					return
                 }
@@ -47,7 +51,7 @@ class Scanner extends Executor {
 	}
 
 	protected void prepare() {
-        scmClient.clone(!Configurator.get("onlyUpdated").toBoolean())
+        scmClient.clone(!onlyUpdated)
 		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
 		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
