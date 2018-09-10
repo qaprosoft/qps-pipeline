@@ -16,16 +16,14 @@ public class CiJobFactory extends PipelineFactory {
 
         def pipelineJob = super.create()
 
-        _dslFactory.println "QPS_HUB " + _dslFactory.binding.variables.dump()
-
-
         pipelineJob.with {
             properties {
                 pipelineTriggers {
                     triggers {
                         githubPush()
                         ghprbTrigger {
-                            gitHubAuthId("${_dslFactory.binding.variables.QPS_HUB} : ${folder}-token")
+                            //TODO: find a way to get token name and organization names
+//                            gitHubAuthId("${_dslFactory.binding.variables.GITHUB_API_URL} : ${folder}-token")
                             adminlist('')
                             useGitHubHooks(true)
                             triggerPhrase('')
@@ -34,7 +32,7 @@ public class CiJobFactory extends PipelineFactory {
                             displayBuildErrorsOnDownstreamBuilds(false)
                             cron('H/5 * * * *')
                             whitelist('')
-                            orgslist("${_dslFactory.binding.variables.GITHUB_ORGANIZATION}")
+//                            orgslist("${_dslFactory.binding.variables.GITHUB_ORGANIZATION}")
                             blackListLabels('')
                             whiteListLabels('')
                             allowMembersOfWhitelistedOrgsAsAdmin(false)
