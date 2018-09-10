@@ -57,6 +57,8 @@ class Scanner extends Executor {
 		context.stage("Scan Repository") {
 			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
 			def project = Configurator.get("project")
+			def jobFolder = Configurator.get("project")
+			
 			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
@@ -67,7 +69,7 @@ class Scanner extends Executor {
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
 
-			def jobFolder = Configurator.get("folder")
+			
 
 			registerObject(jobFolder, new FolderFactory(jobFolder, ""))
 			

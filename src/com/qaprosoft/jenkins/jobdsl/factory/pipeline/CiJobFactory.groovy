@@ -23,7 +23,6 @@ public class CiJobFactory extends PipelineFactory {
 				stringParam('project', this.name, 'Your GitHub repository for scanning')
 				//TODO: analyze howto support several gc_GIT_BRACH basing on project
 				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", "master")
-				stringParam('folder', this.name, 'Folder in Jenkins where all jobs/views etc will be generated')
 				booleanParam('onlyUpdated', true, '	If chosen, scan will be performed only in case of any change in *.xml suites.')
 				
 				choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
