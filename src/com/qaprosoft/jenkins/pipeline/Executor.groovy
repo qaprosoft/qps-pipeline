@@ -115,9 +115,14 @@ public abstract class Executor {
                 else if (action.findCause(hudson.triggers.TimerTrigger$TimerTriggerCause.class)) {
                     buildCause = "TIMERTRIGGER"
                 }
+                /* Searches TimerTriggerCause among CauseActions */
+                else if (action.findCause(com.cloudbees.jenkins.GitHubPushCause.class)) {
+                    buildCause = "SCMPUSHTRIGGER"
+                }
                 else {
                     buildCause = "MANUALTRIGGER"
                 }
+
         }
         return buildCause
     }
