@@ -25,6 +25,11 @@ class Repository extends Executor {
 
 	public void update() {
 		context.println("Repository->update")
+		
+		String build_cause = getBuildCause(Configurator.get(Configurator.Parameter.JOB_NAME))
+		context.println("build_cause: " = build_cause)
+		
+		
 		//global runner after each GitHub Webhook trigger
 		// try to define trigger reason and execute appropriate event handler, for example
 		// if it was triggered by SCM_TRIGGER and pull request checker then onPullrequest should be executed
