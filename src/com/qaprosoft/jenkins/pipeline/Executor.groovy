@@ -27,13 +27,13 @@ public abstract class Executor {
 	public Executor(context) {
 		this.context = context
 	}
-	
+
 	protected clean() {
 		context.stage('Wipe out Workspace') {
 			context.deleteDir()
 		}
 	}
-	
+
 	protected void printStackTrace(Exception ex) {
 		context.println("exception: " + ex.getMessage())
 		context.println("exception class: " + ex.getClass().getName())
@@ -43,7 +43,7 @@ public abstract class Executor {
 	protected String getWorkspace() {
 		return context.pwd()
 	}
-	
+
 	protected String getBuildUser() {
 		try {
 			return context.currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
@@ -105,6 +105,7 @@ public abstract class Executor {
         /* Gets CauseActions of the job */
         context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
             action ->
+                context.println "DUMP" + action.dump()
                 /* Searches UpstreamCause among CauseActions and checks if it is not the same job as current(the other way it was rebuild) */
                 if (action.findCause(hudson.model.Cause.UpstreamCause.class)
                         && (jobName != action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())) {
@@ -124,7 +125,7 @@ public abstract class Executor {
 	XmlSuite parseSuite(String path) {
 		def xmlFile = new Parser(path)
 		xmlFile.setLoadClasses(false)
-		
+
 		List<XmlSuite> suiteXml = xmlFile.parseToList()
 		XmlSuite currentSuite = suiteXml.get(0)
 		return currentSuite
