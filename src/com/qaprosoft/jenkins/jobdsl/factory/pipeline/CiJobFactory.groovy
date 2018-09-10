@@ -22,8 +22,7 @@ public class CiJobFactory extends PipelineFactory {
                     triggers {
                         githubPush()
                         ghprbTrigger {
-                            //TODO: find a way to get token name and organization names
-//                            gitHubAuthId("${_dslFactory.binding.variables.GITHUB_API_URL} : ${folder}-token")
+                            gitHubAuthId(getGitHubAuthId(folder))
                             adminlist('')
                             useGitHubHooks(true)
                             triggerPhrase('')
@@ -32,7 +31,7 @@ public class CiJobFactory extends PipelineFactory {
                             displayBuildErrorsOnDownstreamBuilds(false)
                             cron('H/5 * * * *')
                             whitelist('')
-//                            orgslist("${_dslFactory.binding.variables.GITHUB_ORGANIZATION}")
+                            orgslist(getOrganization())
                             blackListLabels('')
                             whiteListLabels('')
                             allowMembersOfWhitelistedOrgsAsAdmin(false)
@@ -67,4 +66,11 @@ public class CiJobFactory extends PipelineFactory {
         return pipelineJob
     }
 
+    protected def getOrganization() {
+        return 'qaprosoft'
+    }
+
+    protected def getGitHubAuthId(project) {
+        return "https://api.github.com : ${project}-token"
+    }
 }
