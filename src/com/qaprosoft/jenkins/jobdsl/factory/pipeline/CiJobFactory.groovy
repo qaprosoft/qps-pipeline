@@ -22,7 +22,7 @@ public class CiJobFactory extends PipelineFactory {
                     triggers {
                         githubPush()
                         ghprbTrigger {
-                            gitHubAuthId("${dslFactory.binding.variables.QPS_HUB} : ${folder} - PR Checker")
+                            gitHubAuthId("${_dslFactory.binding.variables.QPS_HUB} : ${folder} - PR Checker")
                             adminlist('')
                             useGitHubHooks(true)
                             triggerPhrase('')
@@ -31,7 +31,7 @@ public class CiJobFactory extends PipelineFactory {
                             displayBuildErrorsOnDownstreamBuilds(false)
                             cron('H/5 * * * *')
                             whitelist('')
-                            orgslist("${dslFactory.binding.variables.GITHUB_ORGANIZATION}")
+                            orgslist("${_dslFactory.binding.variables.GITHUB_ORGANIZATION}")
                             blackListLabels('')
                             whiteListLabels('')
                             allowMembersOfWhitelistedOrgsAsAdmin(false)
