@@ -36,17 +36,18 @@ public class PipelineFactory extends JobFactory {
 
             properties {
                 disableResume()
-
                 if (!suiteOwner.isEmpty()) {
                     ownership { primaryOwnerId(suiteOwner) }
                 }
-
-                try {
-                    durabilityHint { hint("PERFORMANCE_OPTIMIZED") }
-                } catch (Exception e) {
-                    context.println("Unable to specify performance_optimized mode!")
-                }
             }
+
+			try {
+				properties {
+					durabilityHint { hint("PERFORMANCE_OPTIMIZED") }
+				}
+			} catch (Exception e) {
+				context.println("Unable to specify performance_optimized mode!")
+			}
 
 			/** Git Stuff **/
 			definition {
