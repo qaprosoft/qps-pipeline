@@ -6,7 +6,7 @@ class Repository extends Executor {
 
 	protected Scanner scanner;
 
-	public Scanner(context) {
+	public Repository(context) {
 		super(context)
 		this.context = context
 
