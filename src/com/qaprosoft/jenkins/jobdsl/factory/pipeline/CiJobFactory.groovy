@@ -17,6 +17,13 @@ public class CiJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
 
         pipelineJob.with {
+            properties {
+                pipelineTriggers {
+                    triggers {
+                        githubPush()
+                    }
+                }
+            }
 
 			//TODO: think about other parameters to support DevOps CI operations
             parameters {
