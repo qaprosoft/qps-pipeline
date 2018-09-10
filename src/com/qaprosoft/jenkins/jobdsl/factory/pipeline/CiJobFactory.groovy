@@ -21,6 +21,31 @@ public class CiJobFactory extends PipelineFactory {
                 pipelineTriggers {
                     triggers {
                         githubPush()
+                        ghprbTrigger {
+                            gitHubAuthId("${dslFactory.binding.variables.QPS_HUB} : ${folder} - PR Checker")
+                            adminlist('')
+                            useGitHubHooks(true)
+                            triggerPhrase('')
+                            autoCloseFailedPullRequests(false)
+                            skipBuildPhrase('.*\\[skip\\W+ci\\].*')
+                            displayBuildErrorsOnDownstreamBuilds(false)
+                            cron('H/5 * * * *')
+                            whitelist('')
+                            orgslist("${dslFactory.binding.variables.GITHUB_ORGANIZATION}")
+                            blackListLabels('')
+                            whiteListLabels('')
+                            allowMembersOfWhitelistedOrgsAsAdmin(false)
+                            permitAll(true)
+                            buildDescTemplate('')
+                            blackListCommitAuthor('')
+                            includedRegions('')
+                            excludedRegions('')
+                            onlyTriggerPhrase(false)
+                            commentFilePath('')
+                            msgSuccess('')
+                            msgFailure('')
+                            commitStatusContext('')
+                        }
                     }
                 }
             }
