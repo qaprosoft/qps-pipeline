@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.pipeline.Scanner;
+import com.qaprosoft.jenkins.pipeline.Scanner
+import com.qaprosoft.scm.github.GitHub;
 
 class Repository extends Executor {
 
@@ -9,7 +10,7 @@ class Repository extends Executor {
 	public Repository(context) {
 		super(context)
 		this.context = context
-
+        scmClient = new GitHub(context)
 		scanner = new Scanner(context);
 	}
 
@@ -59,6 +60,7 @@ class Repository extends Executor {
 	protected void verify() {
         context.node("master") {
             context.stage("Repository->verify") {
+                scmClient.clone(Configurator.get("ghprbAuthorRepoGitUrl"), Configurator.get("sha1"), ".")
                 def goals = "clean compile test-compile \
                      -f pom.xml -Dmaven.test.failure.ignore=true \
                      -Dcom.qaprosoft.carina-core.version=${ Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)}"
