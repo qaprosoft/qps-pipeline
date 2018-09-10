@@ -4,6 +4,7 @@ package com.qaprosoft.jenkins.pipeline
 import org.testng.xml.XmlSuite
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CiJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
