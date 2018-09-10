@@ -17,6 +17,7 @@ class Scanner extends Executor {
 	protected Map dslObjects = [:]
 	
 	protected def ciScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).update()"
+	
 	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runJob()"
 	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runCron()"
 	
@@ -77,6 +78,12 @@ class Scanner extends Executor {
 			registerObject("management", new ListViewFactory(jobFolder, 'MANAGEMENT', '.*management.*'))
 			registerObject(project, new CiJobFactory(jobFolder, getCiScript(), project, "management project: ${project};"))
 			
+			def jenkinsFileOrigin = "Jenkinsfile"
+			if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
+				// this is the repo with already available pipeline script in Jenkinsfile
+				// just create a job 
+			}
+
 
 			def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {

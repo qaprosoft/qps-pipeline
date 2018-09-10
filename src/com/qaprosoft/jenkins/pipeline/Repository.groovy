@@ -32,16 +32,17 @@ class Repository extends Executor {
 
 		switch (build_cause) {
 			case "SCMPUSHTRIGGER":
+			case "MANUALTRIGGER":
 				onUpdate()
                 break
             case "SCMGHPRBTRIGGER":
                 onPullRequest()
                 break
-            default: throw new RuntimeException("Unrecognized build cause")
+            default: 
+				throw new RuntimeException("Unrecognized build cause")
+				break
 		}
-		//global runner after each GitHub Webhook trigger
-		// try to define trigger reason and execute appropriate event handler, for example
-		// if it was triggered by SCM_TRIGGER and pull request checker then onPullrequest should be executed
+		
 	}
 
 	//Events
