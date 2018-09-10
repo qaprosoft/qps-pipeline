@@ -17,7 +17,13 @@ public class CiJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
 
         pipelineJob.with {
-
+            properties {
+                githubPush()
+//                ghprbTrigger {
+//                    adminlist()
+//
+//                }
+            }
 			//TODO: think about other parameters to support DevOps CI operations
             parameters {
 				stringParam('project', this.name, 'Your GitHub repository for scanning')
