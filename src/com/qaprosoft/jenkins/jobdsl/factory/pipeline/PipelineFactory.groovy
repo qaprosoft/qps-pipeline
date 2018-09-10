@@ -40,6 +40,7 @@ public class PipelineFactory extends JobFactory {
                 if (!suiteOwner.isEmpty()) {
                     ownership { primaryOwnerId(suiteOwner) }
                 }
+                githubPush()
             }
 
 			/** Git Stuff **/
