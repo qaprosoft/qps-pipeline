@@ -33,7 +33,14 @@ public class PipelineFactory extends JobFactory {
 			logRotator { numToKeep logRotator }
 			
 			authenticationToken('ciStart')
-			
+
+            properties {
+                disableResume()
+                if (!suiteOwner.isEmpty()) {
+                    ownership { primaryOwnerId(suiteOwner) }
+                }
+            }
+
 			try {
 				properties {
 					durabilityHint { hint("PERFORMANCE_OPTIMIZED") }
@@ -47,12 +54,6 @@ public class PipelineFactory extends JobFactory {
 				cps {
 					script(pipelineScript)
 					sandbox()
-				}
-			}
-
-			if (!suiteOwner.isEmpty()) {
-				properties {
-					ownership { primaryOwnerId(suiteOwner) }
 				}
 			}
 
