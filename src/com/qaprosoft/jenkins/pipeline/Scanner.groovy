@@ -15,6 +15,7 @@ class Scanner extends Executor {
 	
 	protected Map dslObjects = [:]
 	
+	protected def ciScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).update()"
 	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runJob()"
 	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runCron()"
 	
@@ -68,6 +69,11 @@ class Scanner extends Executor {
 			def jobFolder = Configurator.get("folder")
 
 			registerObject(jobFolder, new FolderFactory(jobFolder, ""))
+			
+			// Support DEV related CI workflow
+			registerObject("management", new ListViewFactory(jobFolder, 'MANAGEMENT', '.*management.*'))
+			registerObject(project, new CiJobFactory(jobFolder, getCiScript(), project, "management project: ${project};"))
+			
 
 			def jenkinsFile = ".jenkinsfile.json"
 			if (!context.fileExists("${workspace}/${jenkinsFile}")) {
@@ -198,6 +204,14 @@ class Scanner extends Executor {
 		}
 	}
 
+	protected void setCiScript(script) {
+		this.ciScript = script
+	}
+	
+	protected String getCiScript() {
+		return ciScript
+	}
+	
 	protected void setPipelineScript(script) {
 		this.pipelineScript = script
 	}
