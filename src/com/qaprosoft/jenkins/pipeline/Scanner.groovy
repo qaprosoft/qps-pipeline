@@ -76,7 +76,7 @@ class Scanner extends Executor {
 			
 			// Support DEV related CI workflow
 			registerObject("management", new ListViewFactory(jobFolder, 'MANAGEMENT', '.*management.*'))
-			registerObject(project, new CiJobFactory(jobFolder, getCiScript(), project, "management project: ${project};"))
+			registerObject(project, new CiJobFactory(jobFolder, getCiScript(), "_trigger-" + project, "management project: ${project};"))
 			
 			def jenkinsFileOrigin = "Jenkinsfile"
 			if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
