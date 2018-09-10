@@ -24,8 +24,8 @@ class Repository extends Executor {
 		scanner.scanRepository() //uncheck onlyUpdated here for execution
 	}
 
-	public void update() {
-		context.println("Repository->update")
+	public void trigger() {
+		context.println("Repository->trigger")
 		
 		String build_cause = getBuildCause(Configurator.get(Configurator.Parameter.JOB_NAME))
 		context.println("build_cause: " + build_cause)

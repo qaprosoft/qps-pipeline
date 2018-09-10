@@ -16,7 +16,7 @@ class Scanner extends Executor {
 	
 	protected Map dslObjects = [:]
 	
-	protected def ciScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).update()"
+	protected def ciScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).trigger()"
 	
 	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runJob()"
 	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runCron()"
