@@ -16,7 +16,7 @@ public class CiJobFactory extends PipelineFactory {
 
         def pipelineJob = super.create()
 
-        _dslFactory.println "QPS_HUB " + _dslFactory.binding.variables.QPS_HUB
+        _dslFactory.println "QPS_HUB " + _dslFactory.binding.variables.dump()
 
 
         pipelineJob.with {
