@@ -85,15 +85,12 @@ class Scanner extends Executor {
 
 			// TODO: move folder and main trigger job creation onto the createRepository method
 			def folder = new FolderFactory(jobFolder, "")
-			context.println("folder: " + folder.dump())
-			registerObject(jobFolder, new FolderFactory(jobFolder, ""))
+			registerObject("project_folder", new FolderFactory(jobFolder, ""))
 
 			// Support DEV related CI workflow
-			registerObject("trigger", new ListViewFactory(jobFolder, 'TRIGGER', '.*trigger.*'))
-			registerObject(project, new TriggerJobFactory(jobFolder, getTriggerScript(), "_trigger-" + project, "trigger project: ${project};", project))
+			registerObject("trigger_view", new ListViewFactory(jobFolder, 'TRIGGER', '.*trigger.*'))
+			registerObject("trigger_job", new TriggerJobFactory(jobFolder, getTriggerScript(), "_trigger-" + project, "trigger project: ${project};", project))
 
-			context.println("dslObjects: " + dslObjects.dump())
-			
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
