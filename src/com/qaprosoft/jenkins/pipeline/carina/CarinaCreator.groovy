@@ -56,7 +56,7 @@ class CarinaCreator extends Creator {
 			// produce snapshot build if ghprbPullTitle contains 'build-snapshot'
 			
             if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
-				executeMavenGoals("versions:set -DnewVersion=${Configuration.get("CARINA_RELEASE")}.${Configuration.get("BUILD_NUMBER")}-SNAPSHOT")
+				executeMavenGoals("versions:set -DnewVersion=${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT")
 				executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
             }
             //email notification
