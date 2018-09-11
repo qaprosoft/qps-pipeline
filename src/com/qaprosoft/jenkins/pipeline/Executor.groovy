@@ -167,4 +167,11 @@ public abstract class Executor {
 		return currentSuite
 	}
 
+	protected def void executeMavenGoals(goals){
+		if (context.isUnix()) {
+			context.sh "'mvn' -B ${goals}"
+		} else {
+			context.bat "mvn -B ${goals}"
+		}
+	}
 }
