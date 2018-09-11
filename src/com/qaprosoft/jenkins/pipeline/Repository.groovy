@@ -11,7 +11,7 @@ class Repository extends Executor {
 		super(context)
 		this.context = context
         scmClient = new GitHub(context)
-		scanner = new Scanner(context);
+		scanner = new Scanner(context, false, "DELETE", "DELETE", "DELETE");
 	}
 
 	public void create() {
