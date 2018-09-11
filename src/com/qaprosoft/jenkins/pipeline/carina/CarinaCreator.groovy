@@ -55,7 +55,7 @@ class CarinaCreator extends Creator {
 			//TODO: implement below code
 			// produce snapshot build if ghprbPullTitle contains 'build-snapshot'
 			
-			def GPG_TOKEN = Configurator.get('GPG_TOKEN')
+			def GPG_TOKEN = Configuration.get('GPG_TOKEN')
             if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
 				executeMavenGoals("versions:set -DnewVersion=${Configuration.get("CARINA_RELEASE")}.${Configuration.get("BUILD_NUMBER")}-SNAPSHOT")
 				executeMavenGoals("-Dgpg.passphrase=${GPG_TOKEN} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
