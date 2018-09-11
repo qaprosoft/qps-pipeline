@@ -103,7 +103,7 @@ class GitHub implements ISCM {
                                     extensions: [[$class: 'CheckoutOption', timeout: 15],
                                                  [$class: 'CloneOption', noTags: true, reference: '', shallow: shallow, timeout: 15]],
                                     submoduleCfg: [],
-                                    userRemoteConfigs: [[url: gitUrl, refspec: refspecValue, credentialsIdL credentialsIdValue]]],
+                                    userRemoteConfigs: [[url: gitUrl, refspec: refspecValue, credentialsId: credentialsIdValue]]],
                               changelog: changelog,
                               poll: false]
         if (subFolder != null) {
