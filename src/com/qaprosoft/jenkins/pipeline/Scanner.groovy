@@ -89,7 +89,7 @@ class Scanner extends Executor {
 
 			// Support DEV related CI workflow
 			registerObject("trigger_view", new ListViewFactory(jobFolder, 'TRIGGER', '.*trigger.*'))
-			registerObject("trigger_job", new TriggerJobFactory(jobFolder, getTriggerScript(), "_trigger-" + project, "trigger project: ${project};", project))
+			registerObject("project_folder", new TriggerJobFactory(jobFolder, getTriggerScript(), "_trigger-" + project, "trigger project: ${project};", project))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -280,6 +280,9 @@ class Scanner extends Executor {
 	}
 	
 	protected void registerObject(name, object) {
+		if (dslObjects.containsKey(name)) {
+			context.println("WARNING! key '" + name + "' already defined and will be replaced by: " + object.dump())
+		}
 		dslObjects.put(name, object)
 	}
 
