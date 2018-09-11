@@ -16,7 +16,7 @@ class Scanner extends Executor {
 	
 	protected Map dslObjects = [:]
 	
-	protected def ciScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).trigger()"
+	protected def triggerScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).trigger()"
 	
 	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runJob()"
 	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runCron()"
@@ -80,7 +80,7 @@ class Scanner extends Executor {
 			
 			// Support DEV related CI workflow
 			registerObject("trigger", new ListViewFactory(jobFolder, 'TRIGGER', '.*trigger.*'))
-			registerObject(project, new TriggerJobFactory(jobFolder, getCiScript(), "_trigger-" + project, "trigger project: ${project};", project))
+			registerObject(project, new TriggerJobFactory(jobFolder, getTriggerScript(), "_trigger-" + project, "trigger project: ${project};", project))
 			
 			def jenkinsFileOrigin = "Jenkinsfile"
 			if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
@@ -218,12 +218,12 @@ class Scanner extends Executor {
 		}
 	}
 
-	protected void setCiScript(script) {
-		this.ciScript = script
+	protected void setTriggerScript(script) {
+		this.triggerScript = script
 	}
 	
-	protected String getCiScript() {
-		return ciScript
+	protected String getTriggerScript() {
+		return triggerScript
 	}
 	
 	protected void setPipelineScript(script) {
