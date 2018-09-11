@@ -84,6 +84,8 @@ class Scanner extends Executor {
 
 
 			// TODO: move folder and main trigger job creation onto the createRepository method
+			def folder = new FolderFactory(jobFolder, "")
+			context.println("folder: " + folder.dump())
 			registerObject(jobFolder, new FolderFactory(jobFolder, ""))
 
 			// Support DEV related CI workflow
