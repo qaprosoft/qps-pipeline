@@ -28,14 +28,13 @@ class Repository extends Executor {
 		context.build job: newJob,
 		propagate: false,
 		parameters: [
-			string(name: 'branch', value: Configurator.get("branch")),
-			string(name: 'project', value: project),
-			booleanParam(name: 'onlyUpdated', value: false),
-			string(name: 'removedConfigFilesAction', value: 'DELETE'),
-			string(name: 'removedJobAction', value: 'DELETE'),
-			string(name: 'removedViewAction', value: 'DELETE'),
+			context.string(name: 'branch', value: Configurator.get("branch")),
+			context.string(name: 'project', value: project),
+			context.booleanParam(name: 'onlyUpdated', value: false),
+			context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
+			context.string(name: 'removedJobAction', value: 'DELETE'),
+			context.string(name: 'removedViewAction', value: 'DELETE'),
 		]
-
 	}
 
 	public void trigger() {
