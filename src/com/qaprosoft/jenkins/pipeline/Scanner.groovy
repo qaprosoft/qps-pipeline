@@ -97,9 +97,9 @@ class Scanner extends Executor {
 			context.println("factoryTarget: " + factoryTarget)
 
 			context.jobDsl additionalClasspath: additionalClasspath,
-			removedConfigFilesAction: 'DELETE',
-			removedJobAction: 'DELETE',
-			removedViewAction: 'DELETE',
+			removedConfigFilesAction: 'IGNORE',
+			removedJobAction: 'IGNORE',
+			removedViewAction: 'IGNORE',
 			targets: factoryTarget,
 			ignoreExisting: false
 			
