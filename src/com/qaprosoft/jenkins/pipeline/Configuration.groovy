@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
-public class Configurator {
+public class Configuration {
 
     private def context
 	
@@ -12,7 +12,7 @@ public class Configurator {
 	protected static Map vars = [:]
 	
 	
-    public Configurator(context) {
+    public Configuration(context) {
         this.context = context
         this.loadContext()
 		

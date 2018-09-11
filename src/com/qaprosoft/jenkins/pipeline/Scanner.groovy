@@ -31,8 +31,8 @@ class Scanner extends Executor {
         this.context = context
         scmClient = new GitHub(context)
 		
-		if (Configurator.get("onlyUpdated") != null) {
-			onlyUpdated = Configurator.get("onlyUpdated").toBoolean()
+		if (Configuration.get("onlyUpdated") != null) {
+			onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
 		}
     }
 
@@ -63,19 +63,19 @@ class Scanner extends Executor {
 
 	protected void prepare() {
         scmClient.clone(!onlyUpdated)
-		String QPS_PIPELINE_GIT_URL = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_URL)
-		String QPS_PIPELINE_GIT_BRANCH = Configurator.get(Configurator.Parameter.QPS_PIPELINE_GIT_BRANCH)
+		String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
+		String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
 		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 	}
 
 	protected void create() {
 
 		context.stage("Scan Repository") {
-			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-			def project = Configurator.get("project")
-			def jobFolder = Configurator.get("project")
+			def BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+			def project = Configuration.get("project")
+			def jobFolder = Configuration.get("project")
 
-			def branch = Configurator.get("branch")
+			def branch = Configuration.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
 			def workspace = getWorkspace()
@@ -109,19 +109,19 @@ class Scanner extends Executor {
 	protected void scan() {
 
 		context.stage("Scan Repository") {
-			def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-			def project = Configurator.get("project")
-			def jobFolder = Configurator.get("project")
+			def BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+			def project = Configuration.get("project")
+			def jobFolder = Configuration.get("project")
 
-			def branch = Configurator.get("branch")
+			def branch = Configuration.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
 
-			def removedConfigFilesAction = Configurator.get("removedConfigFilesAction")
-			def removedJobAction = Configurator.get("removedJobAction")
-			def removedViewAction = Configurator.get("removedViewAction")
+			def removedConfigFilesAction = Configuration.get("removedConfigFilesAction")
+			def removedJobAction = Configuration.get("removedJobAction")
+			def removedViewAction = Configuration.get("removedViewAction")
 
 
 			// TODO: move folder and main trigger job creation onto the createRepository method

@@ -1,7 +1,7 @@
 package com.qaprosoft.scm.github
 
 import com.qaprosoft.scm.ISCM
-import com.qaprosoft.jenkins.pipeline.Configurator
+import com.qaprosoft.jenkins.pipeline.Configuration
 
 class GitHub implements ISCM {
 	private def context;
@@ -18,14 +18,14 @@ class GitHub implements ISCM {
 		context.stage('Checkout GitHub Repository') {
 			context.println("GitHub->clone")
 
-			def fork = parseFork(Configurator.get("fork"))
-            def branch = Configurator.get("branch")
-			def project = Configurator.get("project")
-            def userId = Configurator.get("BUILD_USER_ID")
-			def GITHUB_SSH_URL = Configurator.get(Configurator.Parameter.GITHUB_SSH_URL)
-			def GITHUB_HOST = Configurator.get(Configurator.Parameter.GITHUB_HOST)
+			def fork = parseFork(Configuration.get("fork"))
+            def branch = Configuration.get("branch")
+			def project = Configuration.get("project")
+            def userId = Configuration.get("BUILD_USER_ID")
+			def GITHUB_SSH_URL = Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)
+			def GITHUB_HOST = Configuration.get(Configuration.Parameter.GITHUB_HOST)
 
-			def gitUrl = Configurator.resolveVars("${GITHUB_SSH_URL}/${project}")
+			def gitUrl = Configuration.resolveVars("${GITHUB_SSH_URL}/${project}")
             def scmVars = [:]
 			if (project.equals("carina-demo")) {
 				//sample public carina-demo project should be cloned using https only!
@@ -41,7 +41,7 @@ class GitHub implements ISCM {
 				def token_name = 'token_' + "${userId}"
 				context.println("token_name: " + token_name)
 				
-				//register into the Configurator.vars personal token of the current user
+				//register into the Configuration.vars personal token of the current user
 				def token_value = context.env.getEnvironment().get(token_name)
 
 				//if token_value contains ":" as delimiter then redefine build_user_id using the 1st part
@@ -60,9 +60,9 @@ class GitHub implements ISCM {
 			}
 
             //TODO: remove git_branch after update ZafiraListener: https://github.com/qaprosoft/zafira/issues/760
-            Configurator.set("scm_url", scmVars.GIT_URL)
-            Configurator.set("scm_branch", branch)
-            Configurator.set("scm_commit", scmVars.GIT_COMMIT)
+            Configuration.set("scm_url", scmVars.GIT_URL)
+            Configuration.set("scm_branch", branch)
+            Configuration.set("scm_commit", scmVars.GIT_COMMIT)
         }
 	}
 
@@ -78,8 +78,8 @@ class GitHub implements ISCM {
 
 	public def clonePR(){
 		context.stage('Checkout GitHub Repository') {
-			def gitUrl = Configurator.get("ghprbAuthorRepoGitUrl")
-			def branch  = Configurator.get("sha1")
+			def gitUrl = Configuration.get("ghprbAuthorRepoGitUrl")
+			def branch  = Configuration.get("sha1")
 			context.println("GitHub->clonePR")
 			context.println("GIT_URL: " + gitUrl)
 			context.println("branch: " + branch)

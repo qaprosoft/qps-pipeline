@@ -41,8 +41,8 @@ class Runner extends Executor {
 
 			def WORKSPACE = this.getWorkspace()
 			context.println("WORKSPACE: " + WORKSPACE)
-			def project = Configurator.get("project")
-			def sub_project = Configurator.get("sub_project")
+			def project = Configuration.get("project")
+			def sub_project = Configuration.get("sub_project")
 			def jenkinsFile = ".jenkinsfile.json"
 
 			if (!context.fileExists("${jenkinsFile}")) {
@@ -129,7 +129,7 @@ class Runner extends Executor {
 
 						this.downloadResources()
 
-						def timeoutValue = Configurator.get(Configurator.Parameter.JOB_MAX_RUN_TIME)
+						def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
 						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
 							  this.build()
 						}
@@ -166,19 +166,19 @@ class Runner extends Executor {
 	//TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
 	protected void prepare(currentBuild) {
 
-        Configurator.set("BUILD_USER_ID", getBuildUser())
+        Configuration.set("BUILD_USER_ID", getBuildUser())
 		
-		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-		String CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
-		String suite = Configurator.get("suite")
-		String branch = Configurator.get("branch")
-		String env = Configurator.get("env")
+		String BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+		String CARINA_CORE_VERSION = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
+		String suite = Configuration.get("suite")
+		String branch = Configuration.get("branch")
+		String env = Configuration.get("env")
         //TODO: rename to devicePool
-		String devicePool = Configurator.get("devicePool")
-		String browser = Configurator.get("browser")
+		String devicePool = Configuration.get("devicePool")
+		String browser = Configuration.get("browser")
 
 		//TODO: improve carina to detect browser_version on the fly
-		String browser_version = Configurator.get("browser_version")
+		String browser_version = Configuration.get("browser_version")
 
 		context.stage('Preparation') {
 			currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${branch}"
@@ -188,10 +188,10 @@ class Runner extends Executor {
 			if (!isParamEmpty(devicePool)) {
 				currentBuild.displayName += "|${devicePool}"
 			}
-			if (!isParamEmpty(Configurator.get("browser"))) {
+			if (!isParamEmpty(Configuration.get("browser"))) {
 				currentBuild.displayName += "|${browser}"
 			}
-			if (!isParamEmpty(Configurator.get("browser_version"))) {
+			if (!isParamEmpty(Configuration.get("browser_version"))) {
 				currentBuild.displayName += "|${browser_version}"
 			}
 			currentBuild.description = "${suite}"
@@ -204,15 +204,15 @@ class Runner extends Executor {
 	}
 
 	protected boolean isMobile() {
-		def platform = Configurator.get("platform")
+		def platform = Configuration.get("platform")
 		return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
 	}
 	
 	protected void prepareForMobile() {
 		context.println("Runner->prepareForMobile")
-		def devicePool = Configurator.get("devicePool")
-		def defaultPool = Configurator.get("DefaultPool")
-		def platform = Configurator.get("platform")
+		def devicePool = Configuration.get("devicePool")
+		def defaultPool = Configuration.get("DefaultPool")
+		def platform = Configuration.get("platform")
 
 		if (platform.equalsIgnoreCase("android")) {
 			prepareForAndroid()
@@ -224,59 +224,59 @@ class Runner extends Executor {
 
 		//geeral mobile capabilities
 		//TODO: find valid way for naming this global "MOBILE" quota
-		Configurator.set("capabilities.deviceName", "QPS-HUB")
+		Configuration.set("capabilities.deviceName", "QPS-HUB")
 		if ("DefaultPool".equalsIgnoreCase(devicePool)) {
 			//reuse list of devices from hidden parameter DefaultPool
-			Configurator.set("capabilities.devicePool", defaultPool)
+			Configuration.set("capabilities.devicePool", defaultPool)
 		} else {
-			Configurator.set("capabilities.devicePool", devicePool)
+			Configuration.set("capabilities.devicePool", devicePool)
 		}
 		
 		// ATTENTION! Obligatory remove device from the params otherwise
 		// hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
 		// Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
-		Configurator.remove("device")
+		Configuration.remove("device")
 
 		//TODO: move it to the global jenkins variable
-		Configurator.set("capabilities.newCommandTimeout", "180")
-		Configurator.set("java.awt.headless", "true")
+		Configuration.set("capabilities.newCommandTimeout", "180")
+		Configuration.set("java.awt.headless", "true")
 
 	}
 
 	protected void prepareForAndroid() {
 		context.println("Runner->prepareForAndroid")
-		Configurator.set("mobile_app_clear_cache", "true")
+		Configuration.set("mobile_app_clear_cache", "true")
 
-		Configurator.set("capabilities.platformName", "ANDROID")
+		Configuration.set("capabilities.platformName", "ANDROID")
 
-		Configurator.set("capabilities.autoGrantPermissions", "true")
-		Configurator.set("capabilities.noSign", "true")
-		Configurator.set("capabilities.STF_ENABLED", "true")
+		Configuration.set("capabilities.autoGrantPermissions", "true")
+		Configuration.set("capabilities.noSign", "true")
+		Configuration.set("capabilities.STF_ENABLED", "true")
 
-		Configurator.set("capabilities.appWaitDuration", "270000")
-		Configurator.set("capabilities.androidInstallTimeout", "270000")
+		Configuration.set("capabilities.appWaitDuration", "270000")
+		Configuration.set("capabilities.androidInstallTimeout", "270000")
 
 	}
 
 	protected void prepareForiOS() {
 		context.println("Runner->prepareForiOS")
-		Configurator.set("capabilities.platform", "IOS")
-		Configurator.set("capabilities.platformName", "IOS")
-		Configurator.set("capabilities.deviceName", "*")
+		Configuration.set("capabilities.platform", "IOS")
+		Configuration.set("capabilities.platformName", "IOS")
+		Configuration.set("capabilities.deviceName", "*")
 
-		Configurator.set("capabilities.appPackage", "")
-		Configurator.set("capabilities.appActivity", "")
+		Configuration.set("capabilities.appPackage", "")
+		Configuration.set("capabilities.appActivity", "")
 
-		Configurator.set("capabilities.autoAcceptAlerts", "true")
+		Configuration.set("capabilities.autoAcceptAlerts", "true")
 
-		Configurator.set("capabilities.STF_ENABLED", "false")
+		Configuration.set("capabilities.STF_ENABLED", "false")
 
 	}
 
 	protected void downloadResources() {
 		//DO NOTHING as of now
 
-/*		def CARINA_CORE_VERSION = Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)
+/*		def CARINA_CORE_VERSION = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
 		context.stage("Download Resources") {
 		def pomFile = getSubProjectFolder() + "/pom.xml"
 		context.echo "pomFile: " + pomFile
@@ -298,80 +298,80 @@ class Runner extends Executor {
 		context.stage('Run Test Suite') {
 
             def pomFile = getSubProjectFolder() + "/pom.xml"
-            def BUILD_USER_EMAIL = Configurator.get("BUILD_USER_EMAIL")
+            def BUILD_USER_EMAIL = Configuration.get("BUILD_USER_EMAIL")
             if (BUILD_USER_EMAIL == null) {
                 //override "null" value by empty to be able to register in cloud version of Zafira
                 BUILD_USER_EMAIL = ""
             }
-			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
-                                            -Detaf.carina.core.version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)} \
-											-Ds3_save_screenshots_v2=${Configurator.get(Configurator.Parameter.S3_SAVE_SCREENSHOTS_V2)} \
+			def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+                                            -Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+											-Ds3_save_screenshots_v2=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS_V2)} \
                                             -f ${pomFile} \
                                             -Dmaven.test.failure.ignore=true \
-                                            -Dcore_log_level=${Configurator.get(Configurator.Parameter.CORE_LOG_LEVEL)} \
-                                            -Dselenium_host=${Configurator.get(Configurator.Parameter.SELENIUM_URL)} \
+                                            -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
+                                            -Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
                                             -Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
                                             -Dzafira_enabled=true \
-                                            -Dzafira_rerun_failures=${Configurator.get("rerun_failures")} \
-                                            -Dzafira_service_url=${Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)} \
-                                            -Dzafira_access_token=${Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)} \
+                                            -Dzafira_rerun_failures=${Configuration.get("rerun_failures")} \
+                                            -Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
+                                            -Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
                                             -Dzafira_report_folder=\"${etafReportFolder}\" \
-                                            -Dreport_url=\"${Configurator.get(Configurator.Parameter.JOB_URL)}${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}/${etafReportEncoded}\" \
-                                            -Dgit_branch=${Configurator.get("branch")} \
-                                            -Dgit_commit=${Configurator.get("scm_commit")} \
-                                            -Dgit_url=${Configurator.get("scm_url")} \
-                                            -Dci_url=${Configurator.get(Configurator.Parameter.JOB_URL)} \
-                                            -Dci_build=${Configurator.get(Configurator.Parameter.BUILD_NUMBER)} \
-                                            -Dci_user_id=${Configurator.get("BUILD_USER_ID")} \
-                                            -Dci_user_first_name=${Configurator.get("BUILD_USER_FIRST_NAME")} \
-                                            -Dci_user_last_name=${Configurator.get("BUILD_USER_LAST_NAME")} \
+                                            -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/${etafReportEncoded}\" \
+                                            -Dgit_branch=${Configuration.get("branch")} \
+                                            -Dgit_commit=${Configuration.get("scm_commit")} \
+                                            -Dgit_url=${Configuration.get("scm_url")} \
+                                            -Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
+                                            -Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+                                            -Dci_user_id=${Configuration.get("BUILD_USER_ID")} \
+                                            -Dci_user_first_name=${Configuration.get("BUILD_USER_FIRST_NAME")} \
+                                            -Dci_user_last_name=${Configuration.get("BUILD_USER_LAST_NAME")} \
                                             -Dci_user_email=${BUILD_USER_EMAIL} \
-                                            -Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
+                                            -Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
                                             clean test"
 
 			//TODO: move 8000 port into the global var
 			def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
-			Configurator.set("ci_build_cause", getBuildCause(Configurator.get(Configurator.Parameter.JOB_NAME)))
+			Configuration.set("ci_build_cause", getBuildCause(Configuration.get(Configuration.Parameter.JOB_NAME)))
 
-			def goals = Configurator.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
+			def goals = Configuration.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
 			//register all obligatory vars
-			Configurator.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+			Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
 			//register all params after vars to be able to override
-            Configurator.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+            Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
-            goals = enableVideoStreaming(Configurator.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
+            goals = enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
             goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
-            goals = addOptionalParameter(Configurator.get(Configurator.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
+            goals = addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
             goals = addOptionalParameter("debug", "Enabling remote debug...", mavenDebug, goals)
             goals = addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
 			//browserstack goals
 			if (isBrowserStackRun()) {
-				def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configurator.get("suite") + "-" +
-						Configurator.get("browser") + "-" + Configurator.get("env") + "\""
+				def uniqueBrowserInstance = "\"#${BUILD_NUMBER}-" + Configuration.get("suite") + "-" +
+						Configuration.get("browser") + "-" + Configuration.get("env") + "\""
 				uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
 				startBrowserStackLocal(uniqueBrowserInstance)
-				goals += " -Dcapabilities.project=" + Configurator.get("project")
+				goals += " -Dcapabilities.project=" + Configuration.get("project")
 				goals += " -Dcapabilities.build=" + uniqueBrowserInstance
 				goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
 				goals += " -Dapp_version=browserStack"
 			}
 
 			//append again overrideFields to make sure they are declared at the end
-			goals = goals + " " + Configurator.get("overrideFields")
+			goals = goals + " " + Configuration.get("overrideFields")
 
 			//context.echo "goals: ${goals}"
 
 			//TODO: adjust etafReportFolder correctly
 			if (context.isUnix()) {
-				def suiteNameForUnix = Configurator.get("suite").replace("\\", "/")
+				def suiteNameForUnix = Configuration.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
 				context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix}"
 			} else {
-				def suiteNameForWindows = Configurator.get("suite").replace("/", "\\")
+				def suiteNameForWindows = Configuration.get("suite").replace("/", "\\")
 				context.echo "Suite for Windows: ${suiteNameForWindows}"
 				context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
 			}
@@ -388,7 +388,7 @@ class Runner extends Executor {
     }
 
     protected def addOptionalParameter(parameter, message, capability, goals) {
-        if (Configurator.get(parameter) && Configurator.get(parameter).toBoolean()) {
+        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
             context.println message
             goals += capability
         }
@@ -397,47 +397,47 @@ class Runner extends Executor {
 
 	protected String chooseNode() {
 
-        Configurator.set("node", "master") //master is default node to execute job
+        Configuration.set("node", "master") //master is default node to execute job
 
 		//TODO: handle browserstack etc integration here?
-		switch(Configurator.get("platform").toLowerCase()) {
+		switch(Configuration.get("platform").toLowerCase()) {
 			case "api":
 				context.println("Suite Type: API")
-				Configurator.set("node", "api")
-				Configurator.set("browser", "NULL")
+				Configuration.set("node", "api")
+				Configuration.set("browser", "NULL")
 				break;
 			case "android":
 				context.println("Suite Type: ANDROID")
-				Configurator.set("node", "android")
+				Configuration.set("node", "android")
 				break;
 			case "ios":
 				//TODO: Need to improve this to be able to handle where emulator vs. physical tests should be run.
 				context.println("Suite Type: iOS")
-				Configurator.set("node", "ios")
+				Configuration.set("node", "ios")
 				break;
 			default:
-				if ("NULL".equals(Configurator.get("browser"))) {
+				if ("NULL".equals(Configuration.get("browser"))) {
 					context.println("Suite Type: Default")
-					Configurator.set("node", "master")
+					Configuration.set("node", "master")
 				} else {
 					context.println("Suite Type: Web")
-					Configurator.set("node", "web")
+					Configuration.set("node", "web")
 				}
 		}
 		
-		def nodeLabel = Configurator.get("node_label")
+		def nodeLabel = Configuration.get("node_label")
 		context.println("nodeLabel: " + nodeLabel)
 		if (!isParamEmpty(nodeLabel)) {
 			context.println("overriding default node to: " + nodeLabel)
-			Configurator.set("node", nodeLabel)
+			Configuration.set("node", nodeLabel)
 		}
 
-		context.println "node: " + Configurator.get("node")
-		return Configurator.get("node")
+		context.println "node: " + Configuration.get("node")
+		return Configuration.get("node")
 	}
 
 	protected String getUUID() {
-		def ci_run_id = Configurator.get("ci_run_id")
+		def ci_run_id = Configuration.get("ci_run_id")
 		context.echo "uuid from jobParams: " + ci_run_id
 		if (ci_run_id == null || ci_run_id.isEmpty()) {
 				ci_run_id = randomUUID() as String
@@ -451,9 +451,9 @@ class Runner extends Executor {
 		currentBuild.result = 'FAILURE'
 		def failureReason = "undefined failure"
 
-		String JOB_URL = Configurator.get(Configurator.Parameter.JOB_URL)
-		String BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
-		String JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
+		String JOB_URL = Configuration.get(Configuration.Parameter.JOB_URL)
+		String BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+		String JOB_NAME = Configuration.get(Configuration.Parameter.JOB_NAME)
 
 		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
 		def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
@@ -483,8 +483,8 @@ class Runner extends Executor {
 					${etafReport}: ${JOB_URL}${BUILD_NUMBER}/${etafReportEncoded}<br>
 					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
 
-//        def to = Configurator.get("email_list") + "," + Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
-        def to = Configurator.get(Configurator.Parameter.ADMIN_EMAILS)
+//        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+        def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         //TODO: enable emailing but seems like it should be moved to the notification code
         context.emailext getEmailParams(body, subject, to)
 		return failureReason
@@ -529,23 +529,23 @@ class Runner extends Executor {
 	protected String getSubProjectFolder() {
 		//specify current dir as subProject folder by default
 		def subProjectFolder = "."
-		if (!isParamEmpty(Configurator.get("sub_project"))) {
-			subProjectFolder = "./" + Configurator.get("sub_project")
+		if (!isParamEmpty(Configuration.get("sub_project"))) {
+			subProjectFolder = "./" + Configuration.get("sub_project")
 		}
 		return subProjectFolder
 	}
 
 	//TODO: move into valid jacoco related package
 	protected void publishJacocoReport() {
-		def JACOCO_ENABLE = Configurator.get(Configurator.Parameter.JACOCO_ENABLE).toBoolean()
+		def JACOCO_ENABLE = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
 		if (!JACOCO_ENABLE) {
 			context.println("do not publish any content to AWS S3 if integration is disabled")
 			return
 		}
 
-		def JACOCO_BUCKET = Configurator.get(Configurator.Parameter.JACOCO_BUCKET)
-		def JOB_NAME = Configurator.get(Configurator.Parameter.JOB_NAME)
-		def BUILD_NUMBER = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+		def JACOCO_BUCKET = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+		def JOB_NAME = Configuration.get(Configuration.Parameter.JOB_NAME)
+		def BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
 
 		def files = context.findFiles(glob: '**/jacoco.exec')
 		if(files.length == 1) {
@@ -587,9 +587,9 @@ class Runner extends Executor {
 	}
 
 	protected void sendTestRunResultsEmail() {
-        String emailList = Configurator.get("email_list")
+        String emailList = Configuration.get("email_list")
         emailList = overrideRecipients(emailList)
-        String failureEmailList = Configurator.get("failure_email_list")
+        String failureEmailList = Configuration.get("failure_email_list")
 
         if (emailList != null && !emailList.isEmpty()) {
 			zc.sendTestRunResultsEmail(uuid, emailList, "all")
@@ -662,28 +662,28 @@ class Runner extends Executor {
 		def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		
 		def currentEnvs = getCronEnv(currentSuite)
-		def pipelineJobName = Configurator.get(Configurator.Parameter.JOB_BASE_NAME)
+		def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
 
 		// override suite email_list from params if defined
 		def emailList = currentSuite.getParameter("jenkinsEmail").toString()
-		def paramEmailList = Configurator.get("email_list")
+		def paramEmailList = Configuration.get("email_list")
 		if (paramEmailList != null && !paramEmailList.isEmpty()) {
 			emailList = paramEmailList
 		}
 		
 		def priorityNum = "5"
-		def curPriorityNum = Configurator.get("BuildPriority")
+		def curPriorityNum = Configuration.get("BuildPriority")
 		if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
 			priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
 		}
 
 		//def overrideFields = currentSuite.getParameter("overrideFields").toString()
-		def overrideFields = Configurator.get("overrideFields")
+		def overrideFields = Configuration.get("overrideFields")
 
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
 		String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
 		
-		def currentBrowser = Configurator.get("browser")
+		def currentBrowser = Configuration.get("browser")
 
 		if (currentBrowser == null || currentBrowser.isEmpty()) {
 			currentBrowser = "NULL"
@@ -743,17 +743,17 @@ class Runner extends Executor {
 	
 							def pipelineMap = [:]
 	
-							def branch = Configurator.get("branch")
-							def ci_parent_url = Configurator.get("ci_parent_url")
+							def branch = Configuration.get("branch")
+							def ci_parent_url = Configuration.get("ci_parent_url")
 							if (ci_parent_url.isEmpty()) {
-								ci_parent_url = Configurator.get(Configurator.Parameter.JOB_URL)
+								ci_parent_url = Configuration.get(Configuration.Parameter.JOB_URL)
 							}
-							def ci_parent_build = Configurator.get("ci_parent_build")
+							def ci_parent_build = Configuration.get("ci_parent_build")
 							if (ci_parent_build.isEmpty()) {
-								ci_parent_build = Configurator.get(Configurator.Parameter.BUILD_NUMBER)
+								ci_parent_build = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
 							}
-							def retry_count = Configurator.get("retry_count")
-							def thread_count = Configurator.get("thread_count")
+							def retry_count = Configuration.get("retry_count")
+							def thread_count = Configuration.get("thread_count")
 							// put all not NULL args into the pipelineMap for execution
 	                        putNotNull(pipelineMap, "browser", browser)
 	                        putNotNull(pipelineMap, "browser_version", browserVersion)
@@ -785,7 +785,7 @@ class Runner extends Executor {
 
 	protected def getCronEnv(currentSuite) {
 		//currentSuite is need to override action in private pipelines
-		return Configurator.get("env")
+		return Configuration.get("env")
 	}
 
 	protected def registerPipeline(currentSuite, pipelineMap) {
@@ -885,7 +885,7 @@ class Runner extends Executor {
 
                 def body = "Unable to start job via cron! " + ex.getMessage()
                 def subject = "JOBSTART FAILURE: " + entry.get("jobName")
-                def to = entry.get("email_list") + "," + Configurator.get("email_list")
+                def to = entry.get("email_list") + "," + Configuration.get("email_list")
 
                 context.emailext getEmailParams(body, subject, to)
             }
@@ -904,7 +904,7 @@ class Runner extends Executor {
 
 	protected void startBrowserStackLocal(String uniqueBrowserInstance) {
 		def browserStackUrl = "https://www.browserstack.com/browserstack-local/BrowserStackLocal"
-		def accessKey = Configurator.get("BROWSERSTACK_ACCESS_KEY")
+		def accessKey = Configuration.get("BROWSERSTACK_ACCESS_KEY")
 		if (context.isUnix()) {
 			def browserStackLocation = "/var/tmp/BrowserStackLocal"
 			if (!context.fileExists(browserStackLocation)) {
@@ -930,7 +930,7 @@ Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStac
 
 	protected boolean isBrowserStackRun() {
 		boolean res = false
-		def customCapabilities = Configurator.get("custom_capabilities")
+		def customCapabilities = Configuration.get("custom_capabilities")
 		if (!isParamEmpty(customCapabilities)) {
 			if (customCapabilities.toLowerCase().contains("browserstack")) {
 				res = true

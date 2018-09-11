@@ -2,7 +2,7 @@ package com.qaprosoft.zafira
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import com.qaprosoft.jenkins.pipeline.Configurator
+import com.qaprosoft.jenkins.pipeline.Configuration
 
 class ZafiraClient {
 
@@ -14,8 +14,8 @@ class ZafiraClient {
 
 	public ZafiraClient(context) {
 		this.context = context
-		serviceURL = Configurator.get(Configurator.Parameter.ZAFIRA_SERVICE_URL)
-		refreshToken = Configurator.get(Configurator.Parameter.ZAFIRA_ACCESS_TOKEN)
+		serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
+		refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
 	}
 
 	public void queueZafiraTestRun(String uuid) {
@@ -25,13 +25,13 @@ class ZafiraClient {
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
-						  requestBody: "{\"jobName\": \"${Configurator.get(Configurator.Parameter.JOB_BASE_NAME)}\", \
-                                         \"buildNumber\": \"${Configurator.get(Configurator.Parameter.BUILD_NUMBER)}\", \
-                                         \"branch\": \"${Configurator.get("branch")}\", \
-                                         \"env\": \"${Configurator.get("env")}\", \
+						  requestBody: "{\"jobName\": \"${Configuration.get(Configuration.Parameter.JOB_BASE_NAME)}\", \
+                                         \"buildNumber\": \"${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}\", \
+                                         \"branch\": \"${Configuration.get("branch")}\", \
+                                         \"env\": \"${Configuration.get("env")}\", \
                                          \"ciRunId\": \"${uuid}\", \
-                                         \"ciParentUrl\": \"${Configurator.get("ci_parent_url")}\", \
-                                         \"ciParentBuild\": \"${Configurator.get("ci_parent_build")}\"}",
+                                         \"ciParentUrl\": \"${Configuration.get("ci_parent_url")}\", \
+                                         \"ciParentBuild\": \"${Configuration.get("ci_parent_build")}\"}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/queue"]
 
@@ -50,13 +50,13 @@ class ZafiraClient {
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						 contentType: 'APPLICATION_JSON',
 						 httpMode: 'POST',
-						 requestBody: "{\"owner\": \"${Configurator.get("ci_user_id")}\", \
-                                        \"upstreamJobId\": \"${Configurator.get("ci_job_id")}\", \
-                                        \"upstreamJobBuildNumber\": \"${Configurator.get("ci_parent_build")}\", \
-                                        \"scmUrl\": \"${Configurator.get("scm_url")}\", \
-                                        \"hashcode\": \"${Configurator.get("hashcode")}\"}",
+						 requestBody: "{\"owner\": \"${Configuration.get("ci_user_id")}\", \
+                                        \"upstreamJobId\": \"${Configuration.get("ci_job_id")}\", \
+                                        \"upstreamJobBuildNumber\": \"${Configuration.get("ci_parent_build")}\", \
+                                        \"scmUrl\": \"${Configuration.get("scm_url")}\", \
+                                        \"hashcode\": \"${Configuration.get("hashcode")}\"}",
 						  validResponseCodes: "200:401",
-						  url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configurator.get("doRebuild")}&rerunFailures=${Configurator.get("rerunFailures")}",
+						  url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
 						 timeout: 300000]
 
 		def response = sendRequest(parameters)
