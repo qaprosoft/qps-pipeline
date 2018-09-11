@@ -43,7 +43,10 @@ class Scanner extends Executor {
     }
 
 	public Scanner(context, onlyUpdated, removedConfigFilesAction, removedJobAction, removedViewAction) {
-		this(context)
+		// do not use this(context) as it require extra job parameters
+        super(context)
+        this.context = context
+        scmClient = new GitHub(context)
 		
 		this.onlyUpdated = onlyUpdated
 		this.removedConfigFilesAction = removedConfigFilesAction
