@@ -40,9 +40,17 @@ class Scanner extends Executor {
 		removedConfigFilesAction = Configurator.get("removedConfigFilesAction")
 		removedJobAction = Configurator.get("removedJobAction")
 		removedViewAction = Configurator.get("removedViewAction")
-
     }
 
+	public Scanner(context, onlyUpdated, removedConfigFilesAction, removedJobAction, removedViewAction) {
+		this(context)
+		
+		this.onlyUpdated = onlyUpdated
+		this.removedConfigFilesAction = removedConfigFilesAction
+		this.removedJobAction = removedJobAction
+		this.removedViewAction = removedViewAction
+	}
+	
     public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
