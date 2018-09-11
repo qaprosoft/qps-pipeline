@@ -38,14 +38,17 @@ class CarinaCreator extends Creator {
 			context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', passwordVariable:'PASSWORD', usernameVariable:'USER')]) {
 			   nicePasswordBro = context.env.getEnvironment().get("PASSWORD")
 			   context.echo "${nicePasswordBro}" // password is masked
-			   context.echo context.env.getEnvironment().get("PASSWORD")
+			   context.echo context.env.getEnvironment().dump()
 			}
 			context.echo nicePasswordBro
 			
 			context.environment {
 				GPG_TOKEN = context.credentials("gpg_token")
-				context.println("GPG: ${GPG_TOKEN_PSW}" )
+				context.echo context.env.getEnvironment().dump()
+				context.println("GPG: " + context.env.getEnvironment().get("GPG_TOKEN_PSW") )
 			}
+			context.echo context.env.getEnvironment().dump()
+			context.println("GPG2: " + context.env.getEnvironment().get("GPG_TOKEN_PSW") )
 			
             if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
 				executeMavenGoals("versions:set -DnewVersion=${Configuration.get("CARINA_RELEASE")}.${Configuration.get("BUILD_NUMBER")}-SNAPSHOT")
