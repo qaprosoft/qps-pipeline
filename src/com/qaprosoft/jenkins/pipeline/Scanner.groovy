@@ -27,6 +27,9 @@ class Scanner extends Executor {
     protected boolean ignoreExisting = false
 	
 	protected boolean onlyUpdated = false
+	protected def removedConfigFilesAction = "IGNORE"
+	protected def removedJobAction = "IGNORE"
+	protected def removedViewAction = "IGNORE"
 
     public Scanner(context) {
         super(context)
@@ -34,6 +37,10 @@ class Scanner extends Executor {
         scmClient = new GitHub(context)
 		
 		onlyUpdated = Configurator.get("onlyUpdated").toBoolean()
+		removedConfigFilesAction = Configurator.get("removedConfigFilesAction")
+		removedJobAction = Configurator.get("removedJobAction")
+		removedViewAction = Configurator.get("removedViewAction")
+
     }
 
     public void scanRepository() {
@@ -66,10 +73,6 @@ class Scanner extends Executor {
 			
 			def branch = Configurator.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
-
-			def removedConfigFilesAction = Configurator.get("removedConfigFilesAction")
-			def removedJobAction = Configurator.get("removedJobAction")
-			def removedViewAction = Configurator.get("removedViewAction")
 
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
