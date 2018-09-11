@@ -4,6 +4,7 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class TriggerJobFactory extends PipelineFactory {
+	protected def project
 
     public TriggerJobFactory(folder, pipelineScript, jobName, jobDesc, project) {
         this.folder = folder
