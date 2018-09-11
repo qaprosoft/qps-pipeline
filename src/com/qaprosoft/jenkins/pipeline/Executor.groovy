@@ -58,6 +58,34 @@ public abstract class Executor {
 		return content
 	}
 
+    protected void publishReports(String pattern, String reportName) {
+        def reports = context.findFiles(glob: pattern)
+        for (int i = 0; i < reports.length; i++) {
+            def parentFile = new File(reports[i].path).getParentFile()
+            if (parentFile == null) {
+                context.println "ERROR! Parent report is null! for " + reports[i].path
+                continue
+            }
+            def reportDir = parentFile.getPath()
+            context.println "Report File Found, Publishing " + reports[i].path
+            if (i > 0){
+                def reportIndex = "_" + i
+                reportName = reportName + reportIndex
+            }
+            context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
+        }
+    }
+
+    protected def getReportParameters(reportDir, reportFiles, reportName) {
+        def reportParameters = [allowMissing: false,
+                                alwaysLinkToLastBuild: false,
+                                keepAll: true,
+                                reportDir: reportDir,
+                                reportFiles: reportFiles,
+                                reportName: reportName]
+        return reportParameters
+    }
+
     /** Detects if any changes are present in files matching patterns  */
     @NonCPS
     protected boolean isUpdated(String patterns) {

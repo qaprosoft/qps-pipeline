@@ -36,9 +36,9 @@ class CarinaCreator extends Creator {
 				context.bat "mvn -B ${goals}"
 			}
 		}
-		
+        publishReports("**/target/surefire-reports/junitreports/*.xml", "JUnit report")
+
 		//TODO: publish cobertura report
-		
 		//TODO: send email about unit testing results
 	}
 
