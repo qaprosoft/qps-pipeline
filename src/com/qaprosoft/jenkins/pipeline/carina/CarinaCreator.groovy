@@ -36,9 +36,9 @@ class CarinaCreator extends Creator {
             // produce snapshot build if ghprbPullTitle contains 'build-snapshot'
 			def nicePasswordBro;
 			context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', passwordVariable:'PASSWORD', usernameVariable:'USER')]) {
-			   nicePasswordBro = "${PASSWORD}"
-			   context.echo "${PASSWORD}" // password is masked
+			   nicePasswordBro = "${password}"
 			   context.echo "${password}" // password is masked
+			   context.echo context.env.getEnvironment().get("PASSWORD")
 			}
 			context.echo nicePasswordBro
 			
