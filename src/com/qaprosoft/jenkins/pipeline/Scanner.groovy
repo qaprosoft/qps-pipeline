@@ -281,7 +281,9 @@ class Scanner extends Executor {
 	
 	protected void registerObject(name, object) {
 		if (dslObjects.containsKey(name)) {
-			context.println("WARNING! key '" + name + "' already defined and will be replaced by: " + object.dump())
+			context.println("WARNING! key '" + name + "' already defined and will be replaced!")
+			context.println("old item: " + dslObjects.get(name).dump())
+			context.println("new item: " + object.dump())
 		}
 		dslObjects.put(name, object)
 	}
