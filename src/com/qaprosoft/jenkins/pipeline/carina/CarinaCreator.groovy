@@ -36,6 +36,17 @@ class CarinaCreator extends Creator {
 				context.bat "mvn -B ${goals}"
 			}
             context.junit '**/target/surefire-reports/junitreports/*.xml'
+
+			//TODo: implement below code			
+			// produce snapshot build if ghprbPullTitle contains 'build-snapshot'
+			if (Configurator.get("ghprbPullTitle").contains("build-snapshot")) {
+				def CARINA_RELEASE = Configurator.get("CARINA_RELEASE")
+				def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
+				//mvn versions:set -DnewVersion=${CARINA_RELEASE}.${BUILD_NUMBER}-SNAPSHOT
+				//mvn -Dgpg.passphrase=Configurator.get("GPG_PASSWORD") -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc
+			}
+			
+			//email notification
 		}
 
 		//TODO: publish cobertura report
