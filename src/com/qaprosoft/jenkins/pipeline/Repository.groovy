@@ -70,10 +70,10 @@ class Repository extends Executor {
 
 	protected void onPullRequest() {
 		context.println("Repository->onPullRequest")
-		verify()
+		verifyPR()
 	}
 
-	protected void verify() {
+	protected void verifyPR() {
 		context.node("master") {
 			context.stage("Repository->verify") {
 				scmClient.clonePR()
