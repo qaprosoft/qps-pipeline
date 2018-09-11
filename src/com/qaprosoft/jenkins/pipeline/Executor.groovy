@@ -21,7 +21,7 @@ public abstract class Executor {
 
 	protected ISCM scmClient
 
-	protected Configurator configurator = new Configurator(context)
+	protected Configuration configuration = new Configuration(context)
 
 
 	public Executor(context) {

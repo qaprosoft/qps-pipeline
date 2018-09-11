@@ -22,13 +22,13 @@ class Creator extends Executor {
 		scanner.createRepository()
 
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
-		def project = Configurator.get("project")
+		def project = Configuration.get("project")
 		def newJob = project + "/" + "_trigger-" + project
 
 		context.build job: newJob,
 		propagate: false,
 		parameters: [
-			context.string(name: 'branch', value: Configurator.get("branch")),
+			context.string(name: 'branch', value: Configuration.get("branch")),
 			context.string(name: 'project', value: project),
 			context.booleanParam(name: 'onlyUpdated', value: false),
 			context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
@@ -40,7 +40,7 @@ class Creator extends Executor {
 	public void trigger() {
 		context.println("Creator->trigger")
 
-		String build_cause = getBuildCause(Configurator.get(Configurator.Parameter.JOB_NAME))
+		String build_cause = getBuildCause(Configuration.get(Configuration.Parameter.JOB_NAME))
 		context.println("build_cause: " + build_cause)
 
 		switch (build_cause) {
@@ -73,7 +73,7 @@ class Creator extends Executor {
 			scmClient.clonePR()
 			def goals = "clean compile test-compile \
                      -f pom.xml -Dmaven.test.failure.ignore=true \
-                     -Dcom.qaprosoft.carina-core.version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)}"
+                     -Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
 
 			if (context.isUnix()) {
 				context.sh "'mvn' -B ${goals}"
