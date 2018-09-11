@@ -65,13 +65,4 @@ class CarinaCreator extends Creator {
         //TODO: send email about unit testing results
     }
 
-    def void executeMavenGoals(goals){
-        if (context.isUnix()) {
-            context.sh "'mvn' -B ${goals}"
-        } else {
-            context.bat "mvn -B ${goals}"
-        }
-
-    }
-
 }
