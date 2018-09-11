@@ -5,27 +5,26 @@ import com.qaprosoft.scm.github.GitHub;
 
 class Repository extends Executor {
 
+	protected Scanner scanner
+
 	public Repository(context) {
 		super(context)
 		this.context = context
-        scmClient = new GitHub(context)
-		
+
+		scmClient = new GitHub(context)
+		scanner = new Scanner(context)
 	}
 
 	public void create() {
 		context.println("Repository->create")
-		// Create folder/views/jobs based on repo content
 
-		// 1. Create pr_checker/merger job for concrete repo
-		// 2. launch scanner for each merge/push operation
-
-		Scanner scanner = new Scanner(context, false, "DELETE", "DELETE", "DELETE");
-		scanner.scanRepository() //uncheck onlyUpdated here for execution
+		scanner.createRepository() //uncheck onlyUpdated here for execution
+		//TODO: execute new _trigger-<project> to regenerate other views/jobs/etc
 	}
 
 	public void trigger() {
 		context.println("Repository->trigger")
-		
+
 		String build_cause = getBuildCause(Configurator.get(Configurator.Parameter.JOB_NAME))
 		context.println("build_cause: " + build_cause)
 
@@ -33,15 +32,14 @@ class Repository extends Executor {
 			case "SCMPUSHTRIGGER":
 			case "MANUALTRIGGER":
 				onUpdate()
-                break
-            case "SCMGHPRBTRIGGER":
-                onPullRequest()
-                break
-            default: 
+				break
+			case "SCMGHPRBTRIGGER":
+				onPullRequest()
+				break
+			default:
 				throw new RuntimeException("Unrecognized build cause")
 				break
 		}
-		
 	}
 
 	//Events
@@ -50,7 +48,7 @@ class Repository extends Executor {
 		// handle each push/merge operation
 		// execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
 		Scanner scanner = new Scanner(context);
-		scanner.scanRepository()
+		scanner.updateRepository()
 	}
 
 	protected void onPullRequest() {
@@ -59,22 +57,22 @@ class Repository extends Executor {
 	}
 
 	protected void verify() {
-        context.node("master") {
-            context.stage("Repository->verify") {
-                scmClient.clonePR()
-                def goals = "clean compile test-compile \
+		context.node("master") {
+			context.stage("Repository->verify") {
+				scmClient.clonePR()
+				def goals = "clean compile test-compile \
                      -f pom.xml -Dmaven.test.failure.ignore=true \
                      -Dcom.qaprosoft.carina-core.version=${ Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)}"
 
-                if (context.isUnix()) {
-                    context.sh "'mvn' -B ${goals}"
-                } else {
-                    context.bat "mvn -B ${goals}"
-                }
-            }
-        }
-    }
-	
+				if (context.isUnix()) {
+					context.sh "'mvn' -B ${goals}"
+				} else {
+					context.bat "mvn -B ${goals}"
+				}
+			}
+		}
+	}
+
 	protected void compile() {
 		context.println("Repository->compile")
 	}
