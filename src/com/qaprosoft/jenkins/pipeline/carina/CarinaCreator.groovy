@@ -29,7 +29,7 @@ class CarinaCreator extends Creator {
         context.node("master") {
             scmClient.clonePR()
             def goals = "-Dcobertura.report.format=xml cobertura:cobertura clean test javadoc:javadoc"
-            //executeMavenGoals(goals)
+            executeMavenGoals(goals)
             context.junit '**/target/surefire-reports/junitreports/*.xml'
             context.step([$class: 'CoberturaPublisher',
                   autoUpdateHealth: false,
