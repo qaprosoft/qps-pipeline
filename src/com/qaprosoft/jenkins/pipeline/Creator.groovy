@@ -82,20 +82,4 @@ class Creator extends Executor {
 			}
 		}
 	}
-
-
-	protected void compile() {
-		context.println("Creator->compile")
-	}
-
-	protected void deploy() {
-		context.println("Creator->deploy")
-	}
-
-	protected void test() {
-		context.println("Creator->test")
-	}
-
-
-
 }
