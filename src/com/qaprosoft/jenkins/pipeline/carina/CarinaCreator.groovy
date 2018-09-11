@@ -34,8 +34,8 @@ class CarinaCreator extends Creator {
 
             //TODO: implement below code
             // produce snapshot build if ghprbPullTitle contains 'build-snapshot'
-			environment {
-				GPG_TOKEN = credentials("gpg_token")
+			context.environment {
+				GPG_TOKEN = context.credentials("gpg_token")
 			}
 			
 			context.println("GPG: ${GPG_TOKEN}" )
