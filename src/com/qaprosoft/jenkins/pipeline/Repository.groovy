@@ -18,8 +18,24 @@ class Repository extends Executor {
 	public void create() {
 		context.println("Repository->create")
 
-		scanner.createRepository() //uncheck onlyUpdated here for execution
-		//TODO: execute new _trigger-<project> to regenerate other views/jobs/etc
+		//create only high level management jobs. for now it is only _trigger_<project-name>
+		scanner.createRepository()
+
+		// execute new _trigger-<project> to regenerate other views/jobs/etc
+		def project = Configurator.get("project")
+		def newJob = project + "/" + "_trigger-" + project
+
+		context.build job: newJob,
+		propagate: false,
+		parameters: [
+			string(name: 'branch', value: Configurator.get("branch")),
+			string(name: 'project', value: project),
+			booleanParam(name: 'onlyUpdated', value: false),
+			string(name: 'removedConfigFilesAction', value: 'DELETE'),
+			string(name: 'removedJobAction', value: 'DELETE'),
+			string(name: 'removedViewAction', value: 'DELETE'),
+		]
+
 	}
 
 	public void trigger() {

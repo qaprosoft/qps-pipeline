@@ -102,7 +102,7 @@ class Scanner extends Executor {
 			removedViewAction: 'DELETE',
 			targets: creatorTarget,
 			ignoreExisting: false
-
+			
 		}
 	}
 			
