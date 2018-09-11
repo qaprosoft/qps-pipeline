@@ -24,10 +24,14 @@ class Scanner extends Executor {
 	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Creator.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
 	
+	def onlyUpdated = false
+	
     public Scanner(context) {
         super(context)
         this.context = context
         scmClient = new GitHub(context)
+		
+		onlyUpdated = Configurator.get("onlyUpdated").toBoolean()
     }
 
 	
@@ -113,7 +117,6 @@ class Scanner extends Executor {
 			def workspace = getWorkspace()
 			context.println("WORKSPACE: ${workspace}")
 
-			def onlyUpdated = Configurator.get("onlyUpdated").toBoolean()
 			def removedConfigFilesAction = Configurator.get("removedConfigFilesAction")
 			def removedJobAction = Configurator.get("removedJobAction")
 			def removedViewAction = Configurator.get("removedViewAction")
