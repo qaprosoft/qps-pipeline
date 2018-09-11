@@ -29,24 +29,16 @@ class CarinaCreator extends Creator {
 		context.node("master") {
 			scmClient.clonePR()
 			def goals = "-Dcobertura.report.format=xml cobertura:cobertura clean test javadoc:javadoc"
-
-			if (context.isUnix()) {
-				context.sh "'mvn' -B ${goals}"
-			} else {
-				context.bat "mvn -B ${goals}"
-			}
+            executeMavenGoals(goals)
             context.junit '**/target/surefire-reports/junitreports/*.xml'
 
-			//TODo: implement below code			
+			//TODO: implement below code
 			// produce snapshot build if ghprbPullTitle contains 'build-snapshot'
-			if (Configurator.get("ghprbPullTitle").contains("build-snapshot")) {
-				def CARINA_RELEASE = Configurator.get("CARINA_RELEASE")
-				def BUILD_NUMBER = Configurator.get("BUILD_NUMBER")
-				//mvn versions:set -DnewVersion=${CARINA_RELEASE}.${BUILD_NUMBER}-SNAPSHOT
-				//mvn -Dgpg.passphrase=Configurator.get("GPG_PASSWORD") -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc
+			if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
+                executeMavenGoals("mvn versions:set -DnewVersion=${Configuration.get("CARINA_RELEASE")}.${Configuration.get("BUILD_NUMBER")}-SNAPSHOT")
+                executeMavenGoals("mvn -Dgpg.passphrase=${Configuration.get("GPG_PASSWORD")} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
 			}
-			
-			//email notification
+   			//email notification
 		}
 
 		//TODO: publish cobertura report
