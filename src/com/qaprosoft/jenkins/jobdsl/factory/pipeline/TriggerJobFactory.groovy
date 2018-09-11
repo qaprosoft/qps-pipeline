@@ -20,10 +20,11 @@ public class TriggerJobFactory extends PipelineFactory {
 
         pipelineJob.with {
             properties {
+                githubProjectUrl('https://github.com/qaprosoft/carina/')
                 pipelineTriggers {
                     triggers {
                         githubPush()
-                        ghprbTrigger {
+                            ghprbTrigger {
                             gitHubAuthId(getGitHubAuthId(folder))
                             adminlist('')
                             useGitHubHooks(true)
