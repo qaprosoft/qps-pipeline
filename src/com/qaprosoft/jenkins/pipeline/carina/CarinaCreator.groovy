@@ -30,8 +30,17 @@ class CarinaCreator extends Creator {
             scmClient.clonePR()
             def goals = "-Dcobertura.report.format=xml cobertura:cobertura clean test javadoc:javadoc"
             //executeMavenGoals(goals)
-            //context.junit '**/target/surefire-reports/junitreports/*.xml'
-
+            context.junit '**/target/surefire-reports/junitreports/*.xml'
+            context.step([$class: 'CoberturaPublisher',
+                  autoUpdateHealth: false,
+                  autoUpdateStability: false,
+                  coberturaReportFile: '**/target/site/cobertura/coverage.xm',
+                  failUnhealthy: false,
+                  failUnstable: false,
+                  maxNumberOfBuilds: 0,
+                  onlyStable: false,
+                  sourceEncoding: 'ASCII',
+                  zoomCoverageChart: false])
 			//TODO: investigate howto use creds functionality in jenkins 
 
 /*			def nicePasswordBro;
