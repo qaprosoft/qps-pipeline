@@ -46,6 +46,8 @@ class Repository extends Executor {
 		switch (build_cause) {
 			case "SCMPUSHTRIGGER":
 			case "MANUALTRIGGER":
+			case "UPSTREAMTRIGGER":
+			case "TIMERTRIGGER":
 				onUpdate()
 				break
 			case "SCMGHPRBTRIGGER":
