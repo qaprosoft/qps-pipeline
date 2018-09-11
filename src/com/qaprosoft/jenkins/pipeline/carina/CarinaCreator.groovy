@@ -38,10 +38,10 @@ class CarinaCreator extends Creator {
 				GPG_TOKEN = context.credentials("gpg_token")
 			}
 			
-			context.println("GPG: ${GPG_TOKEN}" )
+			context.println("GPG: ${GPG_PSW}" )
             if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
 				executeMavenGoals("versions:set -DnewVersion=${Configuration.get("CARINA_RELEASE")}.${Configuration.get("BUILD_NUMBER")}-SNAPSHOT")
-				executeMavenGoals("-Dgpg.passphrase=${GPG_TOKEN} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+				executeMavenGoals("-Dgpg.passphrase=${GPG_PSW} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
 				
 /*                context.withCredentials([context.usernamePassword(credentialsId: 'gpg_token', passwordVariable: 'TOKEN')]) {
                     context.println "TOKEN: " + TOKEN
