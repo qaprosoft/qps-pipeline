@@ -54,7 +54,7 @@ class Repository extends Executor {
 				onPullRequest()
 				break
 			default:
-				throw new RuntimeException("Unrecognized build cause")
+				throw new RuntimeException("Unrecognized build cause: " + build_cause)
 				break
 		}
 	}
@@ -64,31 +64,25 @@ class Repository extends Executor {
 		context.println("Repository->onUpdate")
 		// handle each push/merge operation
 		// execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
-		Scanner scanner = new Scanner(context);
 		scanner.updateRepository()
 	}
 
 	protected void onPullRequest() {
 		context.println("Repository->onPullRequest")
-		verifyPR()
-	}
-
-	protected void verifyPR() {
 		context.node("master") {
-			context.stage("Repository->verify") {
-				scmClient.clonePR()
-				def goals = "clean compile test-compile \
+			scmClient.clonePR()
+			def goals = "clean compile test-compile \
                      -f pom.xml -Dmaven.test.failure.ignore=true \
-                     -Dcom.qaprosoft.carina-core.version=${ Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)}"
+                     -Dcom.qaprosoft.carina-core.version=${Configurator.get(Configurator.Parameter.CARINA_CORE_VERSION)}"
 
-				if (context.isUnix()) {
-					context.sh "'mvn' -B ${goals}"
-				} else {
-					context.bat "mvn -B ${goals}"
-				}
+			if (context.isUnix()) {
+				context.sh "'mvn' -B ${goals}"
+			} else {
+				context.bat "mvn -B ${goals}"
 			}
 		}
 	}
+
 
 	protected void compile() {
 		context.println("Repository->compile")
