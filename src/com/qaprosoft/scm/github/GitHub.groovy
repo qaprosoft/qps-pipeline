@@ -96,7 +96,7 @@ class GitHub implements ISCM {
 		}
 	}
 
-    private def getCheckoutParams(gitUrl, branch, subFolder, shallow, changelog, refspecValue, credentialsId) {
+    private def getCheckoutParams(gitUrl, branch, subFolder, shallow, changelog, refspecValue, credentialsIdValue) {
         def checkoutParams = [scm: [$class: 'GitSCM',
                                     branches: [[name: branch]],
                                     doGenerateSubmoduleConfigurations: false,
