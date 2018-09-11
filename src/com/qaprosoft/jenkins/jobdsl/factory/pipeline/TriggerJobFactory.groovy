@@ -3,13 +3,14 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class CiJobFactory extends PipelineFactory {
+public class TriggerJobFactory extends PipelineFactory {
 
-    public CiJobFactory(folder, pipelineScript, jobName, jobDesc) {
+    public TriggerJobFactory(folder, pipelineScript, jobName, jobDesc, project) {
         this.folder = folder
 		this.pipelineScript = pipelineScript
 		this.name = jobName
         this.description = jobDesc
+		this.project = project
     }
 
     def create() {
@@ -52,7 +53,7 @@ public class CiJobFactory extends PipelineFactory {
 
 			//TODO: think about other parameters to support DevOps CI operations
             parameters {
-				stringParam('project', this.name, 'Your GitHub repository for scanning')
+				stringParam('project', this.project, 'Your GitHub repository for scanning')
 				//TODO: analyze howto support several gc_GIT_BRACH basing on project
 				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", "master")
 				booleanParam('onlyUpdated', true, '	If chosen, scan will be performed only in case of any change in *.xml suites.')
