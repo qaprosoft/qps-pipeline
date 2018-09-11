@@ -27,9 +27,15 @@ class GitHub implements ISCM {
 
 			def gitUrl = Configuration.resolveVars("${GITHUB_SSH_URL}/${project}")
             def scmVars = [:]
+			
+			//TODO: investigate how we can remove such harcoded https repo urls
 			if (project.equals("carina-demo")) {
 				//sample public carina-demo project should be cloned using https only!
 				gitUrl = "https://github.com/qaprosoft/carina-demo.git"
+			}
+			if (project.equals("carina")) {
+				//sample public carina project should be cloned using https only!
+				gitUrl = "https://github.com/qaprosoft/carina.git"
 			}
 
 			context.println("GIT_URL: " + gitUrl)
