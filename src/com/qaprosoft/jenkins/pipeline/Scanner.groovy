@@ -31,7 +31,9 @@ class Scanner extends Executor {
         this.context = context
         scmClient = new GitHub(context)
 		
-		onlyUpdated = Configurator.get("onlyUpdated").toBoolean()
+		if (Configurator.get("onlyUpdated") != null) {
+			onlyUpdated = Configurator.get("onlyUpdated").toBoolean()
+		}
     }
 
 	
