@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline
+package com.qaprosoft.jenkins.pipeline.browserstack
 
 public enum OS {
 
