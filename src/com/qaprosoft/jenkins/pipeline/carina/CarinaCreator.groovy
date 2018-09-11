@@ -23,8 +23,9 @@ class CarinaCreator extends Creator {
 		context.println("TODO: implement snapshot build generation and emailing build number...")
 	}
 
+	@Override
 	protected void onPullRequest() {
-		context.println("CSarinaCreator->onPullRequest")
+		context.println("CarinaCreator->onPullRequest")
 		context.node("master") {
 			scmClient.clonePR()
 			def goals = "-Dcobertura.report.format=xml cobertura:cobertura clean test javadoc:javadoc"
