@@ -16,12 +16,12 @@ class Scanner extends Executor {
 	
 	protected Map dslObjects = [:]
 	
-	protected def triggerScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).trigger()"
+	protected def triggerScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Creator;\nnew Creator(this).trigger()"
 	
 	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runJob()"
 	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runCron()"
 	
-	protected def creatorTarget = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Creator.groovy"
+	protected def factoryTarget = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
 	
 	def onlyUpdated = false
@@ -94,13 +94,13 @@ class Scanner extends Executor {
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
-			context.println("creatorTarget: " + creatorTarget)
+			context.println("factoryTarget: " + factoryTarget)
 
 			context.jobDsl additionalClasspath: additionalClasspath,
 			removedConfigFilesAction: 'DELETE',
 			removedJobAction: 'DELETE',
 			removedViewAction: 'DELETE',
-			targets: creatorTarget,
+			targets: factoryTarget,
 			ignoreExisting: false
 			
 		}
@@ -243,13 +243,13 @@ class Scanner extends Executor {
 				// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
-				context.println("creatorTarget: " + creatorTarget)
+				context.println("factoryTarget: " + factoryTarget)
 				//TODO: test carefully auto-removal for jobs/views and configs
 				context.jobDsl additionalClasspath: additionalClasspath,
 				removedConfigFilesAction: removedConfigFilesAction,
 				removedJobAction: removedJobAction,
 				removedViewAction: removedViewAction,
-				targets: creatorTarget,
+				targets: factoryTarget,
 				ignoreExisting: false
 			}
 		}
@@ -289,7 +289,7 @@ class Scanner extends Executor {
 	}
 
 	protected void setDslTargets(targets) {
-		this.creatorTarget = targets
+		this.factoryTarget = targets
 	}
 
 	protected void setDslClasspath(additionalClasspath) {

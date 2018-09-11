@@ -3,11 +3,11 @@ package com.qaprosoft.jenkins.pipeline
 import com.qaprosoft.jenkins.pipeline.Scanner
 import com.qaprosoft.scm.github.GitHub;
 
-class Repository extends Executor {
+class Creator extends Executor {
 
 	protected Scanner scanner
 
-	public Repository(context) {
+	public Creator(context) {
 		super(context)
 		this.context = context
 
@@ -16,7 +16,7 @@ class Repository extends Executor {
 	}
 
 	public void create() {
-		context.println("Repository->create")
+		context.println("Creator->create")
 
 		//create only high level management jobs. for now it is only _trigger_<project-name>
 		scanner.createRepository()
@@ -38,7 +38,7 @@ class Repository extends Executor {
 	}
 
 	public void trigger() {
-		context.println("Repository->trigger")
+		context.println("Creator->trigger")
 
 		String build_cause = getBuildCause(Configurator.get(Configurator.Parameter.JOB_NAME))
 		context.println("build_cause: " + build_cause)
@@ -61,14 +61,14 @@ class Repository extends Executor {
 
 	//Events
 	protected void onUpdate() {
-		context.println("Repository->onUpdate")
+		context.println("Creator->onUpdate")
 		// handle each push/merge operation
 		// execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
 		scanner.updateRepository()
 	}
 
 	protected void onPullRequest() {
-		context.println("Repository->onPullRequest")
+		context.println("Creator->onPullRequest")
 		context.node("master") {
 			scmClient.clonePR()
 			def goals = "clean compile test-compile \
@@ -85,15 +85,15 @@ class Repository extends Executor {
 
 
 	protected void compile() {
-		context.println("Repository->compile")
+		context.println("Creator->compile")
 	}
 
 	protected void deploy() {
-		context.println("Repository->deploy")
+		context.println("Creator->deploy")
 	}
 
 	protected void test() {
-		context.println("Repository->test")
+		context.println("Creator->test")
 	}
 
 
