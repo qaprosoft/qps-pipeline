@@ -5,13 +5,11 @@ import com.qaprosoft.scm.github.GitHub;
 
 class Repository extends Executor {
 
-	protected Scanner scanner;
-
 	public Repository(context) {
 		super(context)
 		this.context = context
         scmClient = new GitHub(context)
-		scanner = new Scanner(context, false, "DELETE", "DELETE", "DELETE");
+		
 	}
 
 	public void create() {
@@ -21,6 +19,7 @@ class Repository extends Executor {
 		// 1. Create pr_checker/merger job for concrete repo
 		// 2. launch scanner for each merge/push operation
 
+		Scanner scanner = new Scanner(context, false, "DELETE", "DELETE", "DELETE");
 		scanner.scanRepository() //uncheck onlyUpdated here for execution
 	}
 
@@ -50,6 +49,7 @@ class Repository extends Executor {
 		context.println("Repository->onUpdate")
 		// handle each push/merge operation
 		// execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
+		Scanner scanner = new Scanner(context);
 		scanner.scanRepository()
 	}
 
