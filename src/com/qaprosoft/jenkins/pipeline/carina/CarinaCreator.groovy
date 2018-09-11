@@ -32,9 +32,9 @@ class CarinaCreator extends Creator {
             //executeMavenGoals(goals)
             //context.junit '**/target/surefire-reports/junitreports/*.xml'
 
-            //TODO: implement below code
-            // produce snapshot build if ghprbPullTitle contains 'build-snapshot'
-			def nicePasswordBro;
+			//TODO: investigate howto use creds functionality in jenkins 
+
+/*			def nicePasswordBro;
 			context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', passwordVariable:'PASSWORD', usernameVariable:'USER')]) {
 			   nicePasswordBro = context.env.getEnvironment().get("PASSWORD")
 			   context.echo "${nicePasswordBro}" // password is masked
@@ -49,19 +49,17 @@ class CarinaCreator extends Creator {
 			}
 			context.echo context.env.getEnvironment().dump()
 			context.println("GPG2: " + context.env.getEnvironment().get("GPG_TOKEN_PSW") )
+
+			*/
+
+			//TODO: implement below code
+			// produce snapshot build if ghprbPullTitle contains 'build-snapshot'
 			
+			def GPG_TOKEN = Configurator.get('GPG_TOKEN')
             if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
 				executeMavenGoals("versions:set -DnewVersion=${Configuration.get("CARINA_RELEASE")}.${Configuration.get("BUILD_NUMBER")}-SNAPSHOT")
-				executeMavenGoals("-Dgpg.passphrase=${GPG_TOKEN_PSW} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-				
-/*                context.withCredentials([context.usernamePassword(credentialsId: 'gpg_token', passwordVariable: 'TOKEN')]) {
-                    context.println "TOKEN: " + TOKEN
-                    executeMavenGoals("versions:set -DnewVersion=${Configuration.get("CARINA_RELEASE")}.${Configuration.get("BUILD_NUMBER")}-SNAPSHOT")
-                    executeMavenGoals("-Dgpg.passphrase=${TOKEN} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-                }
-                context.withCredentials([context.string(credentialsId: 'gpg_token', variable: 'TOKEN')]) {
-                }
-*/            }
+				executeMavenGoals("-Dgpg.passphrase=${GPG_TOKEN} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+            }
             //email notification
         }
         //TODO: publish cobertura report
