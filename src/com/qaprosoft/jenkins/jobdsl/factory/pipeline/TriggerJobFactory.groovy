@@ -20,7 +20,7 @@ public class TriggerJobFactory extends PipelineFactory {
 
         pipelineJob.with {
 			scm {
-				_dslFactory.git {
+				git {
 					branch("master")
 					remote {
 						url("https://github.com/qaprosoft/carina-demo")
