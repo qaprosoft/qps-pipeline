@@ -113,7 +113,6 @@ class Runner extends Executor {
 
 
         context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            context.sh 'echo $PASSWORD'
             context.echo "${context.env.USERNAME}"
         }
 
