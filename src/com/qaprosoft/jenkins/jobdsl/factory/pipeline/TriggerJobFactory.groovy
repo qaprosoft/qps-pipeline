@@ -49,19 +49,28 @@ public class TriggerJobFactory extends PipelineFactory {
                             msgFailure('')
                             commitStatusContext('')
                         }
-                    }
-                }
-                publishers {
-                    ghprbPullRequestMerge {
-                        onlyAdminsMerge(false)
-                        disallowOwnCode(false)
-                        mergeComment('Auto merge based on successful Pull Request validation: ${BUILD_URL}')
-                        failOnNonMerge(true)
-                        deleteOnMerge(false)
-                        allowMergeWithoutTriggerPhrase(false)
+                        ghprbPullRequestMerge {
+                            onlyAdminsMerge(false)
+                            disallowOwnCode(false)
+                            mergeComment('Auto merge based on successful Pull Request validation: ${BUILD_URL}')
+                            failOnNonMerge(true)
+                            deleteOnMerge(false)
+                            allowMergeWithoutTriggerPhrase(false)
 
+                        }
                     }
                 }
+//                publishers {
+//                    ghprbPullRequestMerge {
+//                        onlyAdminsMerge(false)
+//                        disallowOwnCode(false)
+//                        mergeComment('Auto merge based on successful Pull Request validation: ${BUILD_URL}')
+//                        failOnNonMerge(true)
+//                        deleteOnMerge(false)
+//                        allowMergeWithoutTriggerPhrase(false)
+//
+//                    }
+//                }
             }
 
 
