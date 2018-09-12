@@ -43,10 +43,6 @@ class CarinaCreator extends Creator {
                   zoomCoverageChart: false])
 			//TODO: investigate howto use creds functionality in jenkins
 
-            context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-                context.echo "USERNAME: ${context.env.USERNAME}"
-                context.echo "PASSWORD: ${context.env.PASSWORD}"
-            }
 
             //TODO: implement below code
 			// produce snapshot build if ghprbPullTitle contains 'build-snapshot'
@@ -54,7 +50,11 @@ class CarinaCreator extends Creator {
             if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
 				executeMavenGoals("versions:set -DnewVersion=${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT")
 //				executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-                executeMavenGoals("-Dgpg.passphrase=${context.env.PASSWORD} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+                context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+                    context.echo "USERNAME: ${context.env.USERNAME}"
+                    context.echo "PASSWORD: ${context.env.PASSWORD}"
+                    executeMavenGoals("-Dgpg.passphrase=${context.env.PASSWORD} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+                }
             }
             //email notification
         }

@@ -67,7 +67,6 @@ public class TriggerJobFactory extends PipelineFactory {
             }
 
         }
-        _dslFactory.println "JOB DUMP: " + pipelineJob.dump()
         return pipelineJob
     }
 
