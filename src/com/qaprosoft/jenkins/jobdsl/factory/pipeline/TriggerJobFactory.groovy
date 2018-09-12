@@ -22,17 +22,14 @@ public class TriggerJobFactory extends PipelineFactory {
 			scm {
                 git {
                     remote {
-                        url("https://github.com/qaprosoft/carina-demo")
-                    }
-                    remote {
-                        url("https://github.com/qaprosoft/carina-demo")
+                        url("https://github.com/ModiusOpenData/modius-src/")
                         refspec("+refs/pull/*:refs/remotes/origin/pr/*")
                     }
                 }
 			}
 
             properties {
-                githubProjectUrl('https://github.com/qaprosoft/carina/')
+                githubProjectUrl('https://github.com/ModiusOpenData/modius-src/')
                 pipelineTriggers {
                     triggers {
                         githubPush()
@@ -83,7 +80,7 @@ public class TriggerJobFactory extends PipelineFactory {
     }
 
     protected def getOrganization() {
-        return 'qaprosoft'
+        return 'ModiusOpenData'
     }
 
     protected def getGitHubAuthId(project) {
