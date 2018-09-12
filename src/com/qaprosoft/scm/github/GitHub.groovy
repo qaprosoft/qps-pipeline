@@ -84,7 +84,7 @@ class GitHub implements ISCM {
 
 	public def clonePR(){
 		context.stage('Checkout GitHub Repository') {
-			def gitUrl = Configuration.get("ghprbAuthorRepoGitUrl")
+			def gitUrl = "https://github.com/ModiusOpenData/modius-src.git"
 			def branch  = Configuration.get("sha1")
 			def credentialsId = Configuration.get("ghprbCredentialsId")
 			
