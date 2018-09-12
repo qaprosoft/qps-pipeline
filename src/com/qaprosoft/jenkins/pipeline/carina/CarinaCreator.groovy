@@ -26,6 +26,10 @@ class CarinaCreator extends Creator {
     @Override
     protected void onPullRequest() {
         context.println("CarinaCreator->onPullRequest")
+        context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            context.echo "USERNAME: ${context.env.USERNAME}"
+            context.echo "PASSWORD: ${context.env.PASSWORD}"
+        }
         context.node("master") {
             scmClient.clonePR()
             def goals = "-Dcobertura.report.format=xml cobertura:cobertura clean test javadoc:javadoc"
