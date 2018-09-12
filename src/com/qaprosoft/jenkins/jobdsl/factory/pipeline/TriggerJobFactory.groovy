@@ -19,6 +19,10 @@ public class TriggerJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
 
         pipelineJob.with {
+			scm {
+				git("https://github.com/qaprosoft/carina-demo", "master", null)
+			}
+			
             properties {
                 pipelineTriggers {
                     triggers {
