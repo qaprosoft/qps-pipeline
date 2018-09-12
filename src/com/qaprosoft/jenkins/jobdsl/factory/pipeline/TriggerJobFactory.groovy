@@ -24,6 +24,7 @@ public class TriggerJobFactory extends PipelineFactory {
 			}
 			
             properties {
+                githubProjectUrl('https://github.com/qaprosoft/carina/')
                 pipelineTriggers {
                     triggers {
                         githubPush()
@@ -54,6 +55,7 @@ public class TriggerJobFactory extends PipelineFactory {
                         }
                     }
                 }
+
             }
 
 			//TODO: think about other parameters to support DevOps CI operations
