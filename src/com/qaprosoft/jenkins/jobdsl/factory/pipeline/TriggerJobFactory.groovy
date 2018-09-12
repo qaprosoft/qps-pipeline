@@ -19,8 +19,18 @@ public class TriggerJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
 
         pipelineJob.with {
+			scm {
+				git {
+					branch("master")
+					remote {
+						url("https://github.com/qaprosoft/carina-demo")
+                        refspec('+refs/pull/*:refs/remotes/origin/pr/* +refs/heads/*:refs/remotes/origin/*')
+					}
+				}
+			}
+
             properties {
-                githubProjectUrl("https://github.com/qaprosoft/${project}/")
+                githubProjectUrl('https://github.com/qaprosoft/carina/')
                 pipelineTriggers {
                     triggers {
                         githubPush()
@@ -52,16 +62,6 @@ public class TriggerJobFactory extends PipelineFactory {
                     }
                 }
 
-            }
-
-            git {
-                remote {
-//                    credentials(String credentials)
-                    github("qaprosoft/${project}", 'https', 'github.com')
-                    name(project)
-                    refspec("+refs/pull/*:refs/remotes/origin/pr/* +refs/heads/*:refs/remotes/origin/*")
-//                    url("https://github.com/qaprosoft/${project}/")
-                }
             }
 
 			//TODO: think about other parameters to support DevOps CI operations
