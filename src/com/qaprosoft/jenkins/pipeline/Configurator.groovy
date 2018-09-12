@@ -69,6 +69,8 @@ public class Configurator {
 		SCREEN_RECORD_HOST("screen_record_host", "http://\${QPS_HOST}/video/%s.mp4"),
 		SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
 		SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
+		SCREEN_RECORD_DURATION("screen_record_duration", "1800"),
+		
 		
 		VNC_PROTOCOL("vnc_protocol", "ws"),
 		VNC_HOST("vnc_host", "\${QPS_HOST}"),
