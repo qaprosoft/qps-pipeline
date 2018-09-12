@@ -111,20 +111,6 @@ class Runner extends Executor {
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
 
-
-        context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            context.echo "USERNAME: ${context.env.USERNAME}"
-            context.echo "PASSWORD: ${context.env.PASSWORD}"
-        }
-
-//        context.environment {
-//            GPG_TOKEN = context.credentials("gpg_token")
-//            context.echo context.env.getEnvironment().dump()
-//            context.println("GPG: " + context.env.getEnvironment().get("GPG_TOKEN_PSW") )
-//        }
-//        context.echo context.env.getEnvironment().dump()
-//        context.println("GPG2: " + context.env.getEnvironment().get("GPG_TOKEN_PSW") )
-
         uuid = getUUID()
         String nodeName = "master"
 

@@ -41,32 +41,20 @@ class CarinaCreator extends Creator {
                   onlyStable: false,
                   sourceEncoding: 'ASCII',
                   zoomCoverageChart: false])
-			//TODO: investigate howto use creds functionality in jenkins 
+			//TODO: investigate howto use creds functionality in jenkins
 
-/*			def nicePasswordBro;
-			context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', passwordVariable:'PASSWORD', usernameVariable:'USER')]) {
-			   nicePasswordBro = context.env.getEnvironment().get("PASSWORD")
-			   context.echo "${nicePasswordBro}" // password is masked
-			   context.echo context.env.getEnvironment().dump()
-			}
-			context.echo nicePasswordBro
-			
-			context.environment {
-				GPG_TOKEN = context.credentials("gpg_token")
-				context.echo context.env.getEnvironment().dump()
-				context.println("GPG: " + context.env.getEnvironment().get("GPG_TOKEN_PSW") )
-			}
-			context.echo context.env.getEnvironment().dump()
-			context.println("GPG2: " + context.env.getEnvironment().get("GPG_TOKEN_PSW") )
+            context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+                context.echo "USERNAME: ${context.env.USERNAME}"
+                context.echo "PASSWORD: ${context.env.PASSWORD}"
+            }
 
-			*/
-
-			//TODO: implement below code
+            //TODO: implement below code
 			// produce snapshot build if ghprbPullTitle contains 'build-snapshot'
 			
             if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
 				executeMavenGoals("versions:set -DnewVersion=${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT")
-				executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+//				executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+                executeMavenGoals("-Dgpg.passphrase=${context.env.PASSWORD} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
             }
             //email notification
         }
