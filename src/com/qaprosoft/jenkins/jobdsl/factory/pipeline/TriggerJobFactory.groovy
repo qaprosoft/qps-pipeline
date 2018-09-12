@@ -24,7 +24,7 @@ public class TriggerJobFactory extends PipelineFactory {
                 pipelineTriggers {
                     triggers {
                         githubPush()
-                            ghprbTrigger {
+                        ghprbTrigger {
                             gitHubAuthId(getGitHubAuthId(folder))
                             adminlist('')
                             useGitHubHooks(true)
@@ -51,18 +51,19 @@ public class TriggerJobFactory extends PipelineFactory {
                         }
                     }
                 }
-            }
-            publishers {
-                ghprbPullRequestMerge {
-                    onlyAdminsMerge(false)
-                    disallowOwnCode(false)
-                    mergeComment('Auto merge based on successful Pull Request validation: ${BUILD_URL}')
-                    failOnNonMerge(true)
-                    deleteOnMerge(false)
-                    allowMergeWithoutTriggerPhrase(false)
+                publishers {
+                    ghprbPullRequestMerge {
+                        onlyAdminsMerge(false)
+                        disallowOwnCode(false)
+                        mergeComment('Auto merge based on successful Pull Request validation: ${BUILD_URL}')
+                        failOnNonMerge(true)
+                        deleteOnMerge(false)
+                        allowMergeWithoutTriggerPhrase(false)
 
+                    }
                 }
             }
+
 
 			//TODO: think about other parameters to support DevOps CI operations
             parameters {
