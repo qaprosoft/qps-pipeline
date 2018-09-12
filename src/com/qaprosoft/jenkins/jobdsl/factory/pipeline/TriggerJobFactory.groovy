@@ -50,29 +50,21 @@ public class TriggerJobFactory extends PipelineFactory {
                             commitStatusContext('')
                         }
                     }
-                    ghprbPullRequestMerge {
-                        onlyAdminsMerge(false)
-                        disallowOwnCode(false)
-                        mergeComment('Auto merge based on successful Pull Request validation: ${BUILD_URL}')
-                        failOnNonMerge(true)
-                        deleteOnMerge(false)
-                        allowMergeWithoutTriggerPhrase(false)
-
-                    }
                 }
-//                publishers {
-//                    ghprbPullRequestMerge {
-//                        onlyAdminsMerge(false)
-//                        disallowOwnCode(false)
-//                        mergeComment('Auto merge based on successful Pull Request validation: ${BUILD_URL}')
-//                        failOnNonMerge(true)
-//                        deleteOnMerge(false)
-//                        allowMergeWithoutTriggerPhrase(false)
-//
-//                    }
-//                }
+
             }
 
+            publishers {
+                ghprbPullRequestMerge {
+                    onlyAdminsMerge(false)
+                    disallowOwnCode(false)
+                    mergeComment('Auto merge based on successful Pull Request validation: ${BUILD_URL}')
+                    failOnNonMerge(true)
+                    deleteOnMerge(false)
+                    allowMergeWithoutTriggerPhrase(false)
+
+                }
+            }
 
 			//TODO: think about other parameters to support DevOps CI operations
             parameters {
@@ -87,6 +79,7 @@ public class TriggerJobFactory extends PipelineFactory {
             }
 
         }
+        _dslFactory.println "JOB DUMP: " + pipelineJob.dump()
         return pipelineJob
     }
 
