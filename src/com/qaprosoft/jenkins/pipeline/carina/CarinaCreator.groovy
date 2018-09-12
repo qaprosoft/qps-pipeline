@@ -51,16 +51,17 @@ class CarinaCreator extends Creator {
             //TODO: implement below code
 			// produce snapshot build if ghprbPullTitle contains 'build-snapshot'
 			
-            if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
-				executeMavenGoals("versions:set -DnewVersion=${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT")
-//				executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-                context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-                    context.echo "USERNAME: ${context.env.USERNAME}"
-                    context.echo "PASSWORD: ${context.env.PASSWORD}"
-                    executeMavenGoals("-Dgpg.passphrase=${context.env.PASSWORD} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-                }
-            }
+
             //email notification
+        }
+        if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
+            executeMavenGoals("versions:set -DnewVersion=${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT")
+//				executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+            context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+                context.echo "USERNAME: ${context.env.USERNAME}"
+                context.echo "PASSWORD: ${context.env.PASSWORD}"
+                executeMavenGoals("-Dgpg.passphrase=${context.env.PASSWORD} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+            }
         }
         //TODO: publish cobertura report
         //TODO: send email about unit testing results
