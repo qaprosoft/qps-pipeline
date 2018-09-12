@@ -20,7 +20,7 @@ public class TriggerJobFactory extends PipelineFactory {
 
         pipelineJob.with {
             properties {
-                githubProjectUrl('https://github.com/qaprosoft/carina/')
+                githubProjectUrl("https://github.com/qaprosoft/${project}/")
                 pipelineTriggers {
                     triggers {
                         githubPush()
@@ -52,6 +52,16 @@ public class TriggerJobFactory extends PipelineFactory {
                     }
                 }
 
+            }
+
+            git {
+                remote {
+//                    credentials(String credentials)
+                    github("qaprosoft/${project}", 'https', 'github.com')
+                    name(project)
+                    refspec("+refs/pull/*:refs/remotes/origin/pr/* +refs/heads/*:refs/remotes/origin/*")
+//                    url("https://github.com/qaprosoft/${project}/")
+                }
             }
 
 			//TODO: think about other parameters to support DevOps CI operations
