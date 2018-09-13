@@ -1,31 +1,26 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.pipeline.Creator
-import com.qaprosoft.jenkins.pipeline.Scanner
-import com.qaprosoft.scm.github.GitHub;
+import com.qaprosoft.jenkins.pipeline.Runner
 
-class CarinaCreator extends Creator {
+class CarinaRunner extends Runner {
 
-    public CarinaCreator(context) {
+    public CarinaRunner(context) {
         super(context)
         this.context = context
-
-        scmClient = new GitHub(context)
-        scanner = new Scanner(context)
     }
 
     //Events
     @Override
-    protected void onUpdate() {
-        context.println("CarinaCreator->onUpdate")
+    public void onPush() {
+        context.println("CarinaRunner->onPush")
         // handle each push/merge operation
         // execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
         context.println("TODO: implement snapshot build generation and emailing build number...")
     }
 
     @Override
-    protected void onPullRequest() {
-        context.println("CarinaCreator->onPullRequest")
+    public void onPullRequest() {
+        context.println("CarinaRunner->onPullRequest")
 
         context.node("master") {
             scmClient.clonePR()
