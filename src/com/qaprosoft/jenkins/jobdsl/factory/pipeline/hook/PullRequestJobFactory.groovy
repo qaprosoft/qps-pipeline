@@ -19,12 +19,10 @@ public class PullRequestJobFactory extends PipelineFactory {
 	}
 
 	def create() {
-		_dslFactory.println "DUMP: " + _dslFactory.binding.variables
 		def pipelineJob = super.create()
 
 		pipelineJob.with {
 			properties {
-				//TODO: calculate valid https project URL. OBLIGATORY without .git at the end 
 				githubProjectUrl(scmProjectUrl)
 				//TODO: test with removed "cron('H/5 * * * *')"
 				pipelineTriggers {
@@ -57,7 +55,6 @@ public class PullRequestJobFactory extends PipelineFactory {
 					}
 				}
 			}
-
 		}
 		return pipelineJob
 	}
