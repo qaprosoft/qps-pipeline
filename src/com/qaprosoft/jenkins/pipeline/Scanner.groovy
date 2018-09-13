@@ -257,21 +257,21 @@ class Scanner extends Executor {
 		this.pipelineLibrary = pipelineLibrary
 		this.runnerClass = runnerClass
 	}
-	
+
 	protected String getOnPullRequestScript() {
-		return "@Library(\'${library}\')\nimport ${clazz};\nnew ${clazz}(this).onPullRequest()"
+		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).onPullRequest()"
 	}
 	
 	protected String getOnPushScript() {
-		return "@Library(\'${library}\')\nimport ${clazz};\nnew ${clazz}(this).onPush()"
+		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).onPush()"
 	}
 	
 	protected String getPipelineScript() {
-		return "@Library(\'${library}\')\nimport ${clazz};\nnew ${clazz}(this).runJob()"
+		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runJob()"
 	}
 	
 	protected String getCronPipelineScript() {
-		return "@Library(\'${library}\')\nimport ${clazz};\nnew ${clazz}(this).runCron()"
+		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runCron()"
 	}
 	
 	protected void registerObject(name, object) {
