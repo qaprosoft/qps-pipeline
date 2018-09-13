@@ -88,7 +88,7 @@ class Scanner extends Executor {
 			// Support DEV related CI workflow
 			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', '.*system.*'))
 			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, "system: onPullRequest ", project))
-			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushRequestScript(), "onPush-" + project, "system: onPush", project))
+			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, "system: onPush", project))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -126,7 +126,7 @@ class Scanner extends Executor {
 			//TODO: analyze if we need 3 below calls
 			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', '.*system.*'))
 			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, "system: onPullRequest ", project))
-			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushRequestScript(), "onPush-" + project, "system: onPush", project))
+			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, "system: onPush", project))
 
 			def jenkinsFileOrigin = "Jenkinsfile"
 			if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
