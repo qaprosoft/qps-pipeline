@@ -16,13 +16,13 @@ class Creator extends Executor {
 		//TODO: parametrize Scanner using FQDN classname
 		//TODO: create new IScanner interface as we do for scmClient (maybe inside executor!)
 		scanner = new Scanner(context)
-		scanner.setPipelineLibrary(Configuration.get("pipelineLibrary"), Configuration.get("runnerClass"))
 	}
 
 	public void create() {
 		context.println("Creator->create")
 
-		//create only high level management jobs. for now it is only _trigger_<project-name>
+		//create only high level management jobs.
+		scanner.setPipelineLibrary(Configuration.get("pipelineLibrary"), Configuration.get("runnerClass"))
 		scanner.createRepository()
 
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
