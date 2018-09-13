@@ -86,12 +86,11 @@ class GitHub implements ISCM {
 		context.stage('Checkout GitHub Repository') {
 			def branch  = Configuration.get("sha1")
 			def credentialsId = Configuration.get("ghprbCredentialsId")
-            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
+            getSshUrl()
 			context.println("GitHub->clonePR")
 			context.println("GIT_URL: " + gitUrl)
 			context.println("branch: " + branch)
-			
-			context.checkout getCheckoutParams(gitUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
+			context.checkout getCheckoutParams(gitSshUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
 		}
 	}
 
@@ -118,5 +117,11 @@ class GitHub implements ISCM {
             booleanFork = fork.toBoolean()
         }
         return booleanFork
+    }
+
+    private String getSshUrl() {
+        def ghprbGhRepositoryArray = Configuration.get("ghprbGhRepository").split("/")
+        def gitHubOrganization = Configuration.get("ghprbGhRepository")[ghprbGhRepositoryArray.size() - 1]
+        gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${gitHubOrganization}")
     }
 }
