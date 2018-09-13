@@ -24,6 +24,13 @@ public class PullRequestJobFactory extends PipelineFactory {
 			parameters {
 				stringParam('project', project, 'Your GitHub repository for scanning')
 			}
+			scm {
+				git {
+					remote {
+						url(scmProjectUrl)
+					}
+				}
+			}
 			properties {
 				githubProjectUrl(scmProjectUrl)
 				//TODO: test with removed "cron('H/5 * * * *')"
