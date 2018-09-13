@@ -16,7 +16,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 	}
 
 	def create() {
-
+		_dslFactory.println "DUMP: " + _dslFactory.binding.variables
 		def pipelineJob = super.create()
 
 		pipelineJob.with {
@@ -61,7 +61,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 	}
 
 	protected def getOrganization() {
-		return 'ModiusOpenData'
+		return 'qaprosoft'
 	}
 
 	protected def getGitHubAuthId(project) {
