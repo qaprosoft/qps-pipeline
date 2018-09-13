@@ -89,7 +89,7 @@ class GitHub implements ISCM {
 		context.stage('Checkout GitHub Repository') {
 			def branch  = Configuration.get("sha1")
 			def credentialsId = Configuration.get("ghprbCredentialsId")
-			
+			context.println "I AM HERE: " + gitSshUrl
 			context.println("GitHub->clonePR")
 			context.println("GIT_URL: " + gitSshUrl)
 			context.println("branch: " + branch)
