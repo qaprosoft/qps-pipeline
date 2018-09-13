@@ -6,23 +6,10 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 class GitHub implements ISCM {
 
     private def context
-    private def gitHtmlUrl
     private def gitSshUrl
 
 	public GitHub(context) {
 		this.context = context
-        gitHtmlUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
-        gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
-        //TODO: investigate how we can remove such harcoded https repo urls
-        if (Configuration.get("project").equals("carina-demo")) {
-            //sample public carina-demo project should be cloned using https only!
-            gitSshUrl = "https://github.com/qaprosoft/carina-demo.git"
-        }
-        if (Configuration.get("project").equals("carina")) {
-            //sample public carina project should be cloned using https only!
-            gitSshUrl = "https://github.com/qaprosoft/carina.git"
-        }
-
     }
 
     public def clone() {
@@ -37,8 +24,18 @@ class GitHub implements ISCM {
             def branch = Configuration.get("branch")
             def project = Configuration.get("project")
             def userId = Configuration.get("BUILD_USER_ID")
-            def gitUrl = gitSshUrl
+            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
             def scmVars = [:]
+
+			//TODO: investigate how we can remove such harcoded https repo urls
+			if (project.equals("carina-demo")) {
+				//sample public carina-demo project should be cloned using https only!
+				gitUrl = "https://github.com/qaprosoft/carina-demo.git"
+			}
+			if (project.equals("carina")) {
+				//sample public carina project should be cloned using https only!
+				gitUrl = "https://github.com/qaprosoft/carina.git"
+			}
 
 			context.println("GIT_URL: " + gitUrl)
 			//context.println("forked_repo: " + fork)
@@ -89,12 +86,12 @@ class GitHub implements ISCM {
 		context.stage('Checkout GitHub Repository') {
 			def branch  = Configuration.get("sha1")
 			def credentialsId = Configuration.get("ghprbCredentialsId")
-			context.println "I AM HERE: " + gitSshUrl
+            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
 			context.println("GitHub->clonePR")
-			context.println("GIT_URL: " + gitSshUrl)
+			context.println("GIT_URL: " + gitUrl)
 			context.println("branch: " + branch)
 			
-			context.checkout getCheckoutParams(gitSshUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
+			context.checkout getCheckoutParams(gitUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
 		}
 	}
 
