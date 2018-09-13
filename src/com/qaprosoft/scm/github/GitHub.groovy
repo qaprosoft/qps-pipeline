@@ -5,7 +5,7 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 
 class GitHub implements ISCM {
 
-	private def context
+    private def context
     private def gitHtmlUrl
     private def gitSshUrl
 
@@ -33,12 +33,11 @@ class GitHub implements ISCM {
 		context.stage('Checkout GitHub Repository') {
 			context.println("GitHub->clone")
 
-			def fork = parseFork(Configuration.get("fork"))
+            def fork = parseFork(Configuration.get("fork"))
             def branch = Configuration.get("branch")
-			def project = Configuration.get("project")
+            def project = Configuration.get("project")
             def userId = Configuration.get("BUILD_USER_ID")
-
-			def gitUrl = gitSshUrl
+            def gitUrl = gitSshUrl
             def scmVars = [:]
 
 			context.println("GIT_URL: " + gitUrl)
@@ -61,8 +60,8 @@ class GitHub implements ISCM {
 				}
                 if (token_value != null) {
                     def GITHUB_HOST = Configuration.get(Configuration.Parameter.GITHUB_HOST)
-					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
-					context.println "fork repo url: ${gitUrl}"
+                    gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
+                    context.println "fork repo url: ${gitUrl}"
                     scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', '')
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")

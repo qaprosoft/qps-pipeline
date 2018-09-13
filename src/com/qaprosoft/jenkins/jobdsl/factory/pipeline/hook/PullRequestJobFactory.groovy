@@ -6,7 +6,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 @InheritConstructors
 public class PullRequestJobFactory extends PipelineFactory {
 
-	def project
+    def project
     def scmProjectUrl
 
 	public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, project, scmProjectUrl) {
