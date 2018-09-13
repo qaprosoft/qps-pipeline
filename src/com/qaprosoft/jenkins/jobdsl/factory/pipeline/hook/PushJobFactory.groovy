@@ -1,12 +1,12 @@
-package com.qaprosoft.jenkins.jobdsl.factory.pipeline
+package com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook
 
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class TriggerJobFactory extends PipelineFactory {
+public class PushJobFactory extends PipelineFactory {
 	def project
 
-	public TriggerJobFactory(folder, pipelineScript, jobName, jobDesc, project) {
+	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, project) {
 		this.folder = folder
 		this.pipelineScript = pipelineScript
 		this.name = jobName
@@ -20,34 +20,10 @@ public class TriggerJobFactory extends PipelineFactory {
 
 		pipelineJob.with {
 			properties {
+				//TODO: add SCM artifacts
 				pipelineTriggers {
 					triggers {
 						githubPush()
-						ghprbTrigger {
-							gitHubAuthId(getGitHubAuthId(folder))
-							adminlist('')
-							useGitHubHooks(true)
-							triggerPhrase('')
-							autoCloseFailedPullRequests(false)
-							skipBuildPhrase('.*\\[skip\\W+ci\\].*')
-							displayBuildErrorsOnDownstreamBuilds(false)
-							cron('H/5 * * * *')
-							whitelist('')
-							orgslist(getOrganization())
-							blackListLabels('')
-							whiteListLabels('')
-							allowMembersOfWhitelistedOrgsAsAdmin(false)
-							permitAll(true)
-							buildDescTemplate('')
-							blackListCommitAuthor('')
-							includedRegions('')
-							excludedRegions('')
-							onlyTriggerPhrase(false)
-							commentFilePath('')
-							msgSuccess('')
-							msgFailure('')
-							commitStatusContext('')
-						}
 					}
 				}
 			}
@@ -69,10 +45,11 @@ public class TriggerJobFactory extends PipelineFactory {
 	}
 
 	protected def getOrganization() {
-		return 'ModiusOpenData'
+		return 'qaprosoft'
 	}
 
 	protected def getGitHubAuthId(project) {
+		//TODO: get API GitHub URL from binding
 		return "https://api.github.com : ${project}-token"
 	}
 }
