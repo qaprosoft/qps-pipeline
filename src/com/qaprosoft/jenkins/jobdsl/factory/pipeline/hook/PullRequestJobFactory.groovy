@@ -6,14 +6,17 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 
 @InheritConstructors
 public class PullRequestJobFactory extends PipelineFactory {
-	def project
 
-	public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, project) {
+	def project
+    def scmProjectUrl
+
+	public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, project, scmProjectUrl) {
 		this.folder = folder
 		this.pipelineScript = pipelineScript
 		this.name = jobName
 		this.description = jobDesc
 		this.project = project
+        this.scmProjectUrl = scmProjectUrl
 	}
 
 	def create() {
@@ -23,7 +26,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 		pipelineJob.with {
 			properties {
 				//TODO: calculate valid https project URL. OBLIGATORY without .git at the end 
-				githubProjectUrl(Configuration.resolveVars("${GITHUB_HTML_URL}/${project}"))
+				githubProjectUrl(scmProjectUrl)
 				//TODO: test with removed "cron('H/5 * * * *')"
 				pipelineTriggers {
 					triggers {

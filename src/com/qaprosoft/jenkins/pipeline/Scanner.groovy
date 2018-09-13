@@ -86,8 +86,9 @@ class Scanner extends Executor {
 			registerObject("project_folder", new FolderFactory(jobFolder, ""))
 
 			// Support DEV related CI workflow
+            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
 			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', '.*system.*'))
-			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, "system: onPullRequest ", project))
+			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, "system: onPullRequest ", project, gitUrl))
 			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, "system: onPush", project))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
@@ -123,10 +124,7 @@ class Scanner extends Executor {
 			def removedViewAction = Configuration.get("removedViewAction")
 
 			// Support DEV related CI workflow
-			//TODO: analyze if we need 3 below calls
-			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', '.*system.*'))
-			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, "system: onPullRequest ", project))
-			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, "system: onPush", project))
+			//TODO: analyze if we need 3 system object declarations
 
 			def jenkinsFileOrigin = "Jenkinsfile"
 			if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
