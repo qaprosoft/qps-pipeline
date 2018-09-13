@@ -88,7 +88,10 @@ class Scanner extends Executor {
 			// Support DEV related CI workflow
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
 			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', '.*system.*'))
-			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, "system: onPullRequest ", project, gitUrl))
+            def pullRequestJobDescription = "To finish GitHub WebHook setup please follow the steps below:\nGo to your GitHub repository.\nClick \"Settings\" tab.\nClick \"Webhooks\" menu option.\n" +
+                    "Click \"Add webhook\" button.\nType http://your-jenkins-domain.com/ghprbhook/ into \"Payload URL\" field. Pay attention to the difference with the original web hook URL we obtained above!!!\n" +
+                    "Select x-www-form-urlencoded in \"Content Type\" field.\nTick \"Let me select individual events.\" option and tick Pull request option.\nClick \"Add webhook\" button."
+			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, pullRequestJobDescription, project, gitUrl))
 			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, "system: onPush", project))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
