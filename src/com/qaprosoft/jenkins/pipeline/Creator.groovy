@@ -13,7 +13,8 @@ class Creator extends Executor {
 
 		scmClient = new GitHub(context)
 		
-		//TODO: parametrize Scanner FQDN classname
+		//TODO: parametrize Scanner using FQDN classname
+		//TODO: create new IScanner interface as we do for scmClient (maybe inside executor!)
 		scanner = new Scanner(context)
 	}
 
