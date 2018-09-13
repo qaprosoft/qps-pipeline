@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook
 
+import com.qaprosoft.jenkins.pipeline.Configuration
 import groovy.transform.InheritConstructors
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 
@@ -22,8 +23,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 		pipelineJob.with {
 			properties {
 				//TODO: calculate valid https project URL. OBLIGATORY without .git at the end 
-				//githubProjectUrl('https://github.com/qaprosoft/carina/')
-				
+				githubProjectUrl(Configuration.resolveVars("${GITHUB_HTML_URL}/${project}"))
 				//TODO: test with removed "cron('H/5 * * * *')"
 				pipelineTriggers {
 					triggers {
