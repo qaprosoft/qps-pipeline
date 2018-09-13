@@ -78,7 +78,7 @@ class GitHub implements ISCM {
 			context.println("GitHub->clone")
 			context.println("GIT_URL: " + gitUrl)
 			context.println("branch: " + branch)
-            context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false, '', '')
+            context.checkout getCheckoutParams(gitSshUrl, branch, subFolder, true, false, '', '')
 		}
 	}
 
@@ -122,6 +122,7 @@ class GitHub implements ISCM {
     private String getSshUrl() {
         def ghprbGhRepositoryArray = Configuration.get("ghprbGhRepository").split("/")
         def gitHubOrganization = Configuration.get("ghprbGhRepository")[ghprbGhRepositoryArray.size() - 1]
+        context.println "URL: " + gitSshUrl
         gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${gitHubOrganization}")
     }
 }
