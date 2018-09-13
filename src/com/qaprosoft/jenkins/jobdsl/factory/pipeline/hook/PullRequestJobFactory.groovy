@@ -5,25 +5,34 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 
 @InheritConstructors
 public class PullRequestJobFactory extends PipelineFactory {
-	def project
 
-	public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, project) {
-		this.folder = folder
-		this.pipelineScript = pipelineScript
-		this.name = jobName
-		this.description = jobDesc
-		this.project = project
-	}
+    def project
+    def scmProjectUrl
+
+    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, project, scmProjectUrl) {
+        this.folder = folder
+        this.pipelineScript = pipelineScript
+        this.name = jobName
+        this.description = jobDesc
+        this.project = project
+        this.scmProjectUrl = scmProjectUrl
+    }
 
 	def create() {
-
 		def pipelineJob = super.create()
-
 		pipelineJob.with {
+            parameters {
+                stringParam('project', project, 'Your GitHub repository for scanning')
+            }
+            scm {
+                git {
+                    remote {
+                        url(scmProjectUrl)
+                    }
+                }
+            }
 			properties {
-				//TODO: calculate valid https project URL. OBLIGATORY without .git at the end 
-				//githubProjectUrl('https://github.com/qaprosoft/carina/')
-				
+				githubProjectUrl(scmProjectUrl)
 				//TODO: test with removed "cron('H/5 * * * *')"
 				pipelineTriggers {
 					triggers {
@@ -61,7 +70,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 	}
 
 	protected def getOrganization() {
-		return 'ModiusOpenData'
+		return 'qaprosoft'
 	}
 
 	protected def getGitHubAuthId(project) {

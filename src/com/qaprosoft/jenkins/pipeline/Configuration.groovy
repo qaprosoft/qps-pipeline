@@ -180,6 +180,7 @@ public class Configuration {
 	 * String cmd 
 	 * return String cmd
 	 */
+    @NonCPS
 	public static String resolveVars(String cmd) {
 		return cmd.replaceAll('\\$\\{[^\\{\\}]*\\}') { m -> get(m.substring(2, m.size() - 1)) }
 	}
