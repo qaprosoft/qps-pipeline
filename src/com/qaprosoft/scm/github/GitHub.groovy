@@ -78,7 +78,7 @@ class GitHub implements ISCM {
 			context.println("GitHub->clone")
 			context.println("GIT_URL: " + gitUrl)
 			context.println("branch: " + branch)
-            context.checkout getCheckoutParams(gitSshUrl, branch, subFolder, true, false, '', '')
+            context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false, '', '')
 		}
 	}
 
