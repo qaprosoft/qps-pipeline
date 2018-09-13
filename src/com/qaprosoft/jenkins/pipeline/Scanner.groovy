@@ -258,7 +258,7 @@ class Scanner extends Executor {
 		this.runnerClass = runnerClass
 	}
 	
-	protected String getOnPullRequestScript(library, clazz) {
+	protected String getOnPullRequestScript() {
 		return "@Library(\'${library}\')\nimport ${clazz};\nnew ${clazz}(this).onPullRequest()"
 	}
 	
