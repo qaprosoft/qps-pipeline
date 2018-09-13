@@ -259,6 +259,7 @@ class Scanner extends Executor {
 	}
 
 	protected String getOnPullRequestScript() {
+		context.println("@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).onPullRequest()")
 		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).onPullRequest()"
 	}
 	
