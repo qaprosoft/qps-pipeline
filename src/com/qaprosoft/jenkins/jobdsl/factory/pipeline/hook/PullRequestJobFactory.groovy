@@ -21,16 +21,16 @@ public class PullRequestJobFactory extends PipelineFactory {
 	def create() {
 		def pipelineJob = super.create()
 		pipelineJob.with {
-			parameters {
-				stringParam('project', project, 'Your GitHub repository for scanning')
-			}
-			scm {
-				git {
-					remote {
-						url(scmProjectUrl)
-					}
-				}
-			}
+            parameters {
+                stringParam('project', project, 'Your GitHub repository for scanning')
+            }
+            scm {
+                git {
+                    remote {
+                        url(scmProjectUrl)
+                    }
+                }
+            }
 			properties {
 				githubProjectUrl(scmProjectUrl)
 				//TODO: test with removed "cron('H/5 * * * *')"
