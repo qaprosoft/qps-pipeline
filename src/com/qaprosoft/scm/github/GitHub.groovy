@@ -119,10 +119,12 @@ class GitHub implements ISCM {
         return booleanFork
     }
 
-    private String getSshUrl() {
+    private void getSshUrl() {
         def ghprbGhRepositoryArray = Configuration.get("ghprbGhRepository").split("/")
+        context.println "ghprbGhRepositoryArray: " + ghprbGhRepositoryArray
         def gitHubOrganization = Configuration.get("ghprbGhRepository")[ghprbGhRepositoryArray.size() - 1]
-        context.println "URL: " + gitSshUrl
+        context.println "gitHubOrganization: " + gitHubOrganization
         gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${gitHubOrganization}")
+        context.println "URL: " + gitSshUrl
     }
 }
