@@ -86,9 +86,21 @@ class Scanner extends Executor {
 			registerObject("project_folder", new FolderFactory(jobFolder, ""))
 
 			// Support DEV related CI workflow
+            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
+
 			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', '.*system.*'))
-			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, "system: onPullRequest ", project))
-			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, "system: onPush", project))
+
+            def pullRequestJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
+                    "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/ghprbhook/ into \"Payload URL\" field\n" +
+                    "- Select x-www-form-urlencoded in \"Content Type\" field\n- Tick \"Let me select individual events\" option and tick \"Pull request\" option\n- Click \"Add webhook\" button"
+
+			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, pullRequestJobDescription, project, gitUrl))
+
+            def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
+                    "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
+                    "- Select application/json in \"Content Type\" field\n- Tick \"Just the push event.\" option\n- Click \"Add webhook\" button"
+
+            registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, pushJobDescription, project))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -123,10 +135,7 @@ class Scanner extends Executor {
 			def removedViewAction = Configuration.get("removedViewAction")
 
 			// Support DEV related CI workflow
-			//TODO: analyze if we need 3 below calls
-			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', '.*system.*'))
-			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, "system: onPullRequest ", project))
-			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, "system: onPush", project))
+			//TODO: analyze if we need 3 system object declarations
 
 			def jenkinsFileOrigin = "Jenkinsfile"
 			if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
