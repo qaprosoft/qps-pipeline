@@ -39,6 +39,8 @@ class Runner extends Executor {
 	public void onPush() {
 		context.println("Runner->onPush")
 		// handle each push/merge operation
+		//TODO: create new IScanner interface as we do for scmClient (maybe inside executor!)
+		scanner = new Scanner(context)
 		scanner.updateRepository()
 	}
 
