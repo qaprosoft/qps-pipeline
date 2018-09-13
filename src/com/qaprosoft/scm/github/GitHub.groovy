@@ -6,10 +6,23 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 class GitHub implements ISCM {
 
     private def context
+    private def gitHtmlUrl
     private def gitSshUrl
 
 	public GitHub(context) {
 		this.context = context
+        gitHtmlUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
+        gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
+        //TODO: investigate how we can remove such harcoded https repo urls
+        if (Configuration.get("project").equals("carina-demo")) {
+            //sample public carina-demo project should be cloned using https only!
+            gitSshUrl = "https://github.com/qaprosoft/carina-demo.git"
+        }
+        if (Configuration.get("project").equals("carina")) {
+            //sample public carina project should be cloned using https only!
+            gitSshUrl = "https://github.com/qaprosoft/carina.git"
+        }
+
     }
 
     public def clone() {
@@ -24,18 +37,8 @@ class GitHub implements ISCM {
             def branch = Configuration.get("branch")
             def project = Configuration.get("project")
             def userId = Configuration.get("BUILD_USER_ID")
-            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
+            def gitUrl = gitSshUrl
             def scmVars = [:]
-
-			//TODO: investigate how we can remove such harcoded https repo urls
-			if (project.equals("carina-demo")) {
-				//sample public carina-demo project should be cloned using https only!
-				gitUrl = "https://github.com/qaprosoft/carina-demo.git"
-			}
-			if (project.equals("carina")) {
-				//sample public carina project should be cloned using https only!
-				gitUrl = "https://github.com/qaprosoft/carina.git"
-			}
 
 			context.println("GIT_URL: " + gitUrl)
 			//context.println("forked_repo: " + fork)
@@ -57,8 +60,8 @@ class GitHub implements ISCM {
 				}
                 if (token_value != null) {
                     def GITHUB_HOST = Configuration.get(Configuration.Parameter.GITHUB_HOST)
-                    gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
-                    context.println "fork repo url: ${gitUrl}"
+					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
+					context.println "fork repo url: ${gitUrl}"
                     scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', '')
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
@@ -86,10 +89,11 @@ class GitHub implements ISCM {
 		context.stage('Checkout GitHub Repository') {
 			def branch  = Configuration.get("sha1")
 			def credentialsId = Configuration.get("ghprbCredentialsId")
-            getSshUrl()
+
 			context.println("GitHub->clonePR")
-			context.println("GIT_URL: " + gitUrl)
+			context.println("GIT_URL: " + gitSshUrl)
 			context.println("branch: " + branch)
+
 			context.checkout getCheckoutParams(gitSshUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
 		}
 	}
@@ -117,14 +121,5 @@ class GitHub implements ISCM {
             booleanFork = fork.toBoolean()
         }
         return booleanFork
-    }
-
-    private void getSshUrl() {
-        String[] ghprbGhRepositoryArray = Configuration.get("ghprbGhRepository").split("/")
-        context.println "ghprbGhRepositoryArray: " + ghprbGhRepositoryArray
-        def gitHubOrganization = Configuration.get("ghprbGhRepository").getAt(ghprbGhRepositoryArray.size() - 1)
-        context.println "gitHubOrganization: " + gitHubOrganization
-        gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${gitHubOrganization}")
-        context.println "URL: " + gitSshUrl
     }
 }
