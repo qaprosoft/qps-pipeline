@@ -120,9 +120,9 @@ class GitHub implements ISCM {
     }
 
     private void getSshUrl() {
-        def ghprbGhRepositoryArray = Configuration.get("ghprbGhRepository").split("/")
+        String[] ghprbGhRepositoryArray = Configuration.get("ghprbGhRepository").split("/")
         context.println "ghprbGhRepositoryArray: " + ghprbGhRepositoryArray
-        def gitHubOrganization = Configuration.get("ghprbGhRepository")[ghprbGhRepositoryArray.size() - 1]
+        def gitHubOrganization = Configuration.get("ghprbGhRepository").getAt(gitHubOrganization.size() - 1)
         context.println "gitHubOrganization: " + gitHubOrganization
         gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${gitHubOrganization}")
         context.println "URL: " + gitSshUrl
