@@ -122,13 +122,11 @@ class Scanner extends Executor {
 			def removedJobAction = Configuration.get("removedJobAction")
 			def removedViewAction = Configuration.get("removedViewAction")
 
-
-			// TODO: move folder and main trigger job creation onto the createRepository method
-			registerObject(jobFolder, new FolderFactory(jobFolder, ""))
-
 			// Support DEV related CI workflow
-			registerObject("trigger", new ListViewFactory(jobFolder, 'TRIGGER', '.*trigger.*'))
-			registerObject(project, new TriggerJobFactory(jobFolder, getTriggerScript(), "_trigger-" + project, "trigger project: ${project};", project))
+			//TODO: analyze if we need 3 below calls
+			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', '.*system.*'))
+			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, "system: onPullRequest ", project))
+			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushRequestScript(), "onPush-" + project, "system: onPush", project))
 
 			def jenkinsFileOrigin = "Jenkinsfile"
 			if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
