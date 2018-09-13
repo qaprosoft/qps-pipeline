@@ -30,7 +30,11 @@ class CarinaCreator extends Creator {
         context.node("master") {
             scmClient.clonePR()
 
-            context.jsunit '**/target/surefire-reports/junitreports/*.xml'
+			executeMavenGoals("-U clean process-resources process-test-resources -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+			
+            context.junit '**/target/surefire-reports/junitreports/*.xml'
+			
+			//TODO: test&fix cobertura report publishing
             context.step([$class: 'CoberturaPublisher',
                   autoUpdateHealth: false,
                   autoUpdateStability: false,
@@ -47,17 +51,15 @@ class CarinaCreator extends Creator {
 			
             if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
 				executeMavenGoals("versions:set -DnewVersion=${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT")
-//				executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-                context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-//                    context.echo "USERNAME: ${context.env.USERNAME}"
-//                    context.echo "PASSWORD: ${context.env.PASSWORD}"
+				executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+/*                context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+                    context.echo "USERNAME: ${context.env.USERNAME}"
+                    context.echo "PASSWORD: ${context.env.PASSWORD}"
                     executeMavenGoals("-Dgpg.passphrase=${context.env.PASSWORD} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
                 }
-            }
-            //email notification
+*/
+			}
+            //TODO: email notification
         }
-        //TODO: publish cobertura report
-        //TODO: send email about unit testing results
     }
-
 }

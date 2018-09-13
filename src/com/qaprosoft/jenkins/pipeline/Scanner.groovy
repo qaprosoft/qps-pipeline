@@ -4,7 +4,8 @@ package com.qaprosoft.jenkins.pipeline
 import org.testng.xml.XmlSuite
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TriggerJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
@@ -16,10 +17,8 @@ class Scanner extends Executor {
 	
 	protected Map dslObjects = [:]
 	
-	protected def triggerScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Creator;\nnew Creator(this).trigger()"
-	
-	protected def pipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runJob()"
-	protected def cronPipelineScript = "@Library('QPS-Pipeline')\nimport com.qaprosoft.jenkins.pipeline.Runner;\nnew Runner(this).runCron()"
+	protected def pipelineLibrary = "QPS-Pipeline"
+	protected def runnerClass = "com.qaprosoft.jenkins.pipeline.Runner"
 	
 	protected def factoryTarget = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
@@ -36,6 +35,15 @@ class Scanner extends Executor {
 		}
     }
 
+	public void createRepository() {
+		context.node('master') {
+			context.timestamps {
+				this.prepare()
+				this.create()
+				this.clean()
+			}
+		}
+	}
 	
     public void updateRepository() {
 		context.node('master') {
@@ -51,16 +59,6 @@ class Scanner extends Executor {
         }
 	}
 	
-	public void createRepository() {
-		context.node('master') {
-			context.timestamps {
-				this.prepare()
-				this.create()
-				this.clean()
-			}
-		}
-	}
-
 	protected void prepare() {
         scmClient.clone(!onlyUpdated)
 		String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
@@ -88,8 +86,9 @@ class Scanner extends Executor {
 			registerObject("project_folder", new FolderFactory(jobFolder, ""))
 
 			// Support DEV related CI workflow
-			registerObject("trigger_view", new ListViewFactory(jobFolder, 'TRIGGER', '.*trigger.*'))
-			registerObject("trigger_job", new TriggerJobFactory(jobFolder, getTriggerScript(), "_trigger-" + project, "trigger project: ${project};", project))
+			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', '.*system.*'))
+			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, "system: onPullRequest ", project))
+			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushRequestScript(), "onPush-" + project, "system: onPush", project))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -254,29 +253,27 @@ class Scanner extends Executor {
 			}
 		}
 	}
-
-	protected void setTriggerScript(script) {
-		this.triggerScript = script
+	
+	//TODO: find valid way to override and remember custom scanner/runner etc class
+	protected void setLibrary(pipelineLibrary, runnerClass) {
+		this.pipelineLibrary = pipelineLibrary
+		this.runnerClass = runnerClass
 	}
 	
-	protected String getTriggerScript() {
-		return triggerScript
+	protected String getOnPullRequestScript(library, clazz) {
+		return "@Library(\'${library}\')\nimport ${clazz};\nnew ${clazz}(this).onPullRequest()"
 	}
 	
-	protected void setPipelineScript(script) {
-		this.pipelineScript = script
+	protected String getOnPushScript() {
+		return "@Library(\'${library}\')\nimport ${clazz};\nnew ${clazz}(this).onPush()"
 	}
 	
 	protected String getPipelineScript() {
-		return pipelineScript
-	}
-	
-	protected void setCronPipelineScript(script) {
-		this.cronPipelineScript = script
+		return "@Library(\'${library}\')\nimport ${clazz};\nnew ${clazz}(this).runJob()"
 	}
 	
 	protected String getCronPipelineScript() {
-		return cronPipelineScript
+		return "@Library(\'${library}\')\nimport ${clazz};\nnew ${clazz}(this).runCron()"
 	}
 	
 	protected void registerObject(name, object) {

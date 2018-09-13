@@ -12,6 +12,8 @@ class Creator extends Executor {
 		this.context = context
 
 		scmClient = new GitHub(context)
+		
+		//TODO: parametrize Scanner FQDN classname
 		scanner = new Scanner(context)
 	}
 
@@ -23,7 +25,7 @@ class Creator extends Executor {
 
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
 		def project = Configuration.get("project")
-		def newJob = project + "/" + "_trigger-" + project
+		def newJob = project + "/" + "onPush-" + project
 
 		context.build job: newJob,
 		propagate: false,
@@ -37,49 +39,4 @@ class Creator extends Executor {
 		]
 	}
 
-	public void trigger() {
-		context.println("Creator->trigger")
-
-		String build_cause = getBuildCause(Configuration.get(Configuration.Parameter.JOB_NAME))
-		context.println("build_cause: " + build_cause)
-
-		switch (build_cause) {
-			case "SCMPUSHTRIGGER":
-			case "MANUALTRIGGER":
-			case "UPSTREAMTRIGGER":
-			case "TIMERTRIGGER":
-				onUpdate()
-				break
-			case "SCMGHPRBTRIGGER":
-				onPullRequest()
-				break
-			default:
-				throw new RuntimeException("Unrecognized build cause: " + build_cause)
-				break
-		}
-	}
-
-	//Events
-	protected void onUpdate() {
-		context.println("Creator->onUpdate")
-		// handle each push/merge operation
-		// execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
-		scanner.updateRepository()
-	}
-
-	protected void onPullRequest() {
-		context.println("Creator->onPullRequest")
-		context.node("master") {
-			scmClient.clonePR()
-			def goals = "clean compile test-compile \
-                     -f pom.xml -Dmaven.test.failure.ignore=true \
-                     -Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
-
-			if (context.isUnix()) {
-				context.sh "'mvn' -B ${goals}"
-			} else {
-				context.bat "mvn -B ${goals}"
-			}
-		}
-	}
 }
