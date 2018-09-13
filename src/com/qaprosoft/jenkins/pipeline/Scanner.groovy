@@ -253,7 +253,7 @@ class Scanner extends Executor {
 	}
 	
 	//TODO: find valid way to override and remember custom scanner/runner etc class
-	protected void setLibrary(pipelineLibrary, runnerClass) {
+	public void setPipelineLibrary(pipelineLibrary, runnerClass) {
 		this.pipelineLibrary = pipelineLibrary
 		this.runnerClass = runnerClass
 	}

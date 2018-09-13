@@ -16,6 +16,7 @@ class Creator extends Executor {
 		//TODO: parametrize Scanner using FQDN classname
 		//TODO: create new IScanner interface as we do for scmClient (maybe inside executor!)
 		scanner = new Scanner(context)
+		scanner.setPipelineLibrary(Configuration.get("pipelineLibrary"), Configuration.get("runnerClass"))
 	}
 
 	public void create() {
@@ -27,7 +28,7 @@ class Creator extends Executor {
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
 		def project = Configuration.get("project")
 		def newJob = project + "/" + "onPush-" + project
-
+		
 		context.build job: newJob,
 		propagate: false,
 		parameters: [
