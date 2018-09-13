@@ -9,14 +9,14 @@ public class PullRequestJobFactory extends PipelineFactory {
     def project
     def scmProjectUrl
 
-	public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, project, scmProjectUrl) {
-		this.folder = folder
-		this.pipelineScript = pipelineScript
-		this.name = jobName
-		this.description = jobDesc
-		this.project = project
+    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, project, scmProjectUrl) {
+        this.folder = folder
+        this.pipelineScript = pipelineScript
+        this.name = jobName
+        this.description = jobDesc
+        this.project = project
         this.scmProjectUrl = scmProjectUrl
-	}
+    }
 
 	def create() {
 		def pipelineJob = super.create()
