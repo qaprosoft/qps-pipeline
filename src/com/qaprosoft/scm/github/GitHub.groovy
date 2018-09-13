@@ -40,7 +40,6 @@ class GitHub implements ISCM {
 
 			def gitUrl = gitSshUrl
             def scmVars = [:]
-			
 
 			context.println("GIT_URL: " + gitUrl)
 			//context.println("forked_repo: " + fork)
