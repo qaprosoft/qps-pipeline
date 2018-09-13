@@ -14,11 +14,11 @@ class GitHub implements ISCM {
         gitHtmlUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
         gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
         //TODO: investigate how we can remove such harcoded https repo urls
-        if (project.equals("carina-demo")) {
+        if (Configuration.get("project").equals("carina-demo")) {
             //sample public carina-demo project should be cloned using https only!
             gitSshUrl = "https://github.com/qaprosoft/carina-demo.git"
         }
-        if (project.equals("carina")) {
+        if (Configuration.get("project").equals("carina")) {
             //sample public carina project should be cloned using https only!
             gitSshUrl = "https://github.com/qaprosoft/carina.git"
         }
