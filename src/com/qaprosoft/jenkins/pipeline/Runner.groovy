@@ -53,7 +53,11 @@ class Runner extends Executor {
 					 -Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
 
             executeMavenGoals(goals)
-            mergePR()
+            performSonarQubeScan()
+            //TODO: investigate whether we need this piece of code
+//            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
+//                mergePR()
+//            }
         }
     }
 
@@ -71,6 +75,28 @@ class Runner extends Executor {
             context.println("curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge")
             //context.sh "curl -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge?access_token=${context.env.PASSWORD}"
             context.sh "curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge"
+        }
+    }
+
+    public void performSonarQubeScan(){
+
+        context.stage('SonarQube analysis') {
+            context.withSonarQubeEnv('sonar-demo') {
+                context.sh "mvn clean package sonar:sonar -DskipTests \
+                 -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
+                 -Dsonar.analysis.mode=preview  \
+                 -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
+                 -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+                 -Dsonar.projectKey=${Configuration.get("project")} \
+                 -Dsonar.projectName=${Configuration.get("project")} \
+                 -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+                 -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
+                 -Dsonar.sources=./src/main"
+//                 -Dsonar.tests=. \
+//                 -Dsonar.test.inclusions=**/*Test*/** \
+//                 -Dsonar.exclusions=**/*Test*/**"
+
+            }
         }
     }
 
