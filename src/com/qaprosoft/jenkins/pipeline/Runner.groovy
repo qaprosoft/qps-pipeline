@@ -89,10 +89,9 @@ class Runner extends Executor {
                  -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
                  -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
                  -Dsonar.sources=. \
-				 -Dsonar.exclusions=**/target/**"
-//                 -Dsonar.tests=. \
-//                 -Dsonar.test.inclusions=**/*Test*/** \
-//                 -Dsonar.exclusions=**/*Test*/**"
+				 -Dsonar.tests=. \
+				 -Dsonar.inclusions=**/src/main/java/** \
+				 -Dsonar.test.inclusions=**/src/test/java/**"
 
             }
         }
