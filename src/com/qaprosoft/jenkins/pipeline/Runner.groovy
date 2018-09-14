@@ -703,6 +703,12 @@ clean test"
 		}
 
 		def jobName = currentSuite.getParameter("jenkinsJobName").toString()
+		def jobCreated = currentSuite.getParameter("jenkinsJobCreation")
+		if (jobCreated != null && !jobCreated.toBoolean()) {
+			//no need to proceed as jenkinsJobCreation=false
+			continue
+		}
+		
 		def supportedPipelines = currentSuite.getParameter("jenkinsRegressionPipeline").toString() 
 		def orderNum = currentSuite.getParameter("jenkinsJobExecutionOrder").toString()
 		if (orderNum.equals("null")) {
