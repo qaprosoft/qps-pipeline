@@ -82,7 +82,7 @@ class Runner extends Executor {
 
         context.stage('SonarQube analysis') {
             context.withSonarQubeEnv('sonar-demo') {
-                context.sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:5.1:sonar \
+                context.sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.3.0.603:sonar \
                  -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                  -Dsonar.analysis.mode=preview  \
                  -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
