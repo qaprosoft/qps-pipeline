@@ -5,14 +5,17 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 
 @InheritConstructors
 public class PushJobFactory extends PipelineFactory {
-	def project
 
-	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, project) {
+	def project
+    def scmProjectUrl
+
+	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, project, scmProjectUrl) {
 		this.folder = folder
 		this.pipelineScript = pipelineScript
 		this.name = jobName
 		this.description = jobDesc
 		this.project = project
+        this.scmProjectUrl = scmProjectUrl
 	}
 
 	def create() {
@@ -22,6 +25,7 @@ public class PushJobFactory extends PipelineFactory {
 		pipelineJob.with {
 			properties {
 				//TODO: add SCM artifacts
+				githubProjectUrl(scmProjectUrl)
 				pipelineTriggers {
 					triggers {
 						githubPush()
