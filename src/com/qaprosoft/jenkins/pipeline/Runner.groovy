@@ -19,7 +19,6 @@ class Runner extends Executor {
 	protected def folderName = "Automation"
 
 	protected static final String zafiraReport = "ZafiraReport"
-	protected static String zafiraReportFolder = "." //no need to point to reports/qa anymore.
 
 	//CRON related vars
 	protected def listPipelines = []
@@ -379,7 +378,6 @@ class Runner extends Executor {
                                             -Dzafira_rerun_failures=${Configuration.get("rerun_failures")} \
                                             -Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
                                             -Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-                                            -Dzafira_report_folder=\"${zafiraReportFolder}\" \
                                             -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/${zafiraReport}\" \
                                             -Dgit_branch=${Configuration.get("branch")} \
                                             -Dgit_commit=${Configuration.get("scm_commit")} \
@@ -623,7 +621,7 @@ class Runner extends Executor {
 	
 	protected void reportingResults() {
 		context.stage('Results') {
-            publishReports('**//zafira-report.html', "${zafiraReport}")
+            publishReports('**/zafira-report.html', "${zafiraReport}")
             publishReports('**/artifacts/**', 'eTAF_Artifacts')
             publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
@@ -634,7 +632,7 @@ class Runner extends Executor {
 		//replace existing local emailable-report.html by Zafira content
 		def zafiraReport = zc.exportZafiraReport(uuid)
 		if (!zafiraReport.isEmpty()) {
-			context.writeFile file: "${zafiraReportFolder}/zafira-report.html", text: zafiraReport
+			context.writeFile file: "zafira-report.html", text: zafiraReport
 		}
 		
 		//TODO: think about method renaming because in additions it also could redefin job status in Jenkins.
