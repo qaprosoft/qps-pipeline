@@ -80,7 +80,14 @@ class Runner extends Executor {
 
     public void performSonarQubeScan(){
 
-        def sonarqubeScannerHome = context.tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+//        def scannerHome = context.tool 'SonarQube Scanner 2.8'
+//        context.withEnv(["PATH=/usr/bin: ..."]) {
+//            context.withSonarQubeEnv('sonar-demo') {
+//                context.sh "${scannerHome}/bin/sonar-scanner"
+//            }
+//        }
+
+        def sonarqubeScannerHome = context.tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
         context.sh "${sonarqubeScannerHome}/bin/sonar-scanner -e \
                  -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                  -Dsonar.analysis.mode=preview  \
