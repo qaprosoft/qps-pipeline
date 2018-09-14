@@ -79,6 +79,12 @@ class Runner extends Executor {
     }
 
     public void performSonarQubeScan(){
+        context.println "GITHUB_API_URL: " + Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")
+        context.println "ghprbPullId: " + Configuration.get("ghprbPullId")
+        context.println "ghprbGhRepository: " + Configuration.get("ghprbGhRepository")
+        context.println "project: " + Configuration.get("project")
+        context.println "BUILD_NUMBER: " + Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+        context.println "GITHUB_OAUTH_TOKEN: " + Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)
 
         context.stage('SonarQube analysis') {
             context.withSonarQubeEnv('sonar-demo') {
@@ -94,17 +100,6 @@ class Runner extends Executor {
                  -Dsonar.sources=."
             }
         }
-//        def sonarqubeScannerHome = context.tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-//        context.sh "${sonarqubeScannerHome}/bin/sonar-scanner -e \
-//                 -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-//                 -Dsonar.analysis.mode=preview  \
-//                 -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-//                 -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-//                 -Dsonar.projectKey=${Configuration.get("project")} \
-//                 -Dsonar.projectName=${Configuration.get("project")} \
-//                 -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-//                 -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-//                 -Dsonar.sources=."
     }
 
     public void runCron() {
