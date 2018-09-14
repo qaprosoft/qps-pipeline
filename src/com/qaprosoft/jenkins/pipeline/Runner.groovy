@@ -54,9 +54,9 @@ class Runner extends Executor {
 
             executeMavenGoals(goals)
             //TODO: investigate whether we need this piece of code
-            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
-                mergePR()
-            }
+//            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
+//                mergePR()
+//            }
         }
     }
 
