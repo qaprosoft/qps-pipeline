@@ -53,7 +53,10 @@ class Runner extends Executor {
 					 -Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
 
             executeMavenGoals(goals)
-            mergePR()
+            //TODO: investigate whether we need this piece of code
+            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
+                mergePR()
+            }
         }
     }
 
