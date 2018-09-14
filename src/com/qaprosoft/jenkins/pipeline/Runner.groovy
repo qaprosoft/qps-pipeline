@@ -19,7 +19,7 @@ class Runner extends Executor {
 	protected def folderName = "Automation"
 
 	protected static final String zafiraReport = "ZafiraReport"
-	protected static String zafiraReportFolder = "./" //no need to point to reports/qa anymore.
+	protected static String zafiraReportFolder = "." //no need to point to reports/qa anymore.
 
 	//CRON related vars
 	protected def listPipelines = []
