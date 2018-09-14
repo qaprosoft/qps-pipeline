@@ -631,6 +631,7 @@ class Runner extends Executor {
 	protected void exportZafiraReport() {
 		//replace existing local emailable-report.html by Zafira content
 		def zafiraReport = zc.exportZafiraReport(uuid)
+		context.println(zafiraReport)
 		if (!zafiraReport.isEmpty()) {
 			context.writeFile file: "zafira-report.html", text: zafiraReport
 		}
