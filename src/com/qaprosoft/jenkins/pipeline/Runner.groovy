@@ -621,7 +621,7 @@ class Runner extends Executor {
 	
 	protected void reportingResults() {
 		context.stage('Results') {
-            publishReports('**/zafira-report.html', "${zafiraReport}")
+            publishReports('**/zafira/report.html', "${zafiraReport}")
             publishReports('**/artifacts/**', 'eTAF_Artifacts')
             publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
@@ -633,7 +633,7 @@ class Runner extends Executor {
 		def zafiraReport = zc.exportZafiraReport(uuid)
 		//context.println(zafiraReport)
 		if (!zafiraReport.isEmpty()) {
-			context.writeFile file: getWorkspace() + "/zafira-report.html", text: zafiraReport
+			context.writeFile file: getWorkspace() + "/zafira/report.html", text: zafiraReport
 		}
 		
 		context.sh "ls -la " + getWorkspace()
