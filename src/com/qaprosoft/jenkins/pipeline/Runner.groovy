@@ -18,11 +18,8 @@ class Runner extends Executor {
 	//using constructor it will be possible to redefine this folder on pipeline/jobdsl level
 	protected def folderName = "Automation"
 
-	protected static final String etafReport = "eTAF_Report"
-	//TODO: /api/test/runs/{id}/export should use encoded url value as well
-	protected static final String etafReportEncoded = "eTAF_5fReport"
-	
-	protected static String etafReportFolder = "./reports/qa"
+	protected static final String zafiraReport = "ZafiraReport"
+	protected static String zafiraReportFolder = "./" //no need to point to reports/qa anymore.
 
 	//CRON related vars
 	protected def listPipelines = []
@@ -382,8 +379,8 @@ class Runner extends Executor {
                                             -Dzafira_rerun_failures=${Configuration.get("rerun_failures")} \
                                             -Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
                                             -Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-                                            -Dzafira_report_folder=\"${etafReportFolder}\" \
-                                            -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/${etafReportEncoded}\" \
+                                            -Dzafira_report_folder=\"${zafiraReportFolder}\" \
+                                            -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/${zafiraReport}\" \
                                             -Dgit_branch=${Configuration.get("branch")} \
                                             -Dgit_commit=${Configuration.get("scm_commit")} \
                                             -Dgit_url=${Configuration.get("scm_url")} \
@@ -432,7 +429,6 @@ class Runner extends Executor {
 
 			//context.echo "goals: ${goals}"
 
-			//TODO: adjust etafReportFolder correctly
 			if (context.isUnix()) {
 				def suiteNameForUnix = Configuration.get("suite").replace("\\", "/")
 				context.echo "Suite for Unix: ${suiteNameForUnix}"
@@ -547,7 +543,7 @@ class Runner extends Executor {
 
 
 		def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
-					${etafReport}: ${JOB_URL}${BUILD_NUMBER}/${etafReportEncoded}<br>
+					${zafiraReport}: ${JOB_URL}${BUILD_NUMBER}/${zafiraReport}<br>
 					Console: ${JOB_URL}${BUILD_NUMBER}/console"""
 
 //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
@@ -627,7 +623,7 @@ class Runner extends Executor {
 	
 	protected void reportingResults() {
 		context.stage('Results') {
-            publishReports('**/reports/qa/emailable-report.html', "${etafReport}")
+            publishReports('**//zafira-report.html', "${zafiraReport}")
             publishReports('**/artifacts/**', 'eTAF_Artifacts')
             publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
@@ -638,7 +634,7 @@ class Runner extends Executor {
 		//replace existing local emailable-report.html by Zafira content
 		def zafiraReport = zc.exportZafiraReport(uuid)
 		if (!zafiraReport.isEmpty()) {
-			context.writeFile file: "${etafReportFolder}/emailable-report.html", text: zafiraReport
+			context.writeFile file: "${zafiraReportFolder}/zafira-report.html", text: zafiraReport
 		}
 		
 		//TODO: think about method renaming because in additions it also could redefin job status in Jenkins.
@@ -961,10 +957,6 @@ Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStac
 			}
 			context.powershell(returnStdout: true, script: "Start-Process -FilePath '${browserStackLocation}.exe' -ArgumentList '--key ${accessKey} --local-identifier ${uniqueBrowserInstance} --force-local'")
 		}
-	}
-
-	protected void setZafiraReportFolder(folder) {
-		etafReportFolder = folder
 	}
 
 	protected boolean isBrowserStackRun() {
