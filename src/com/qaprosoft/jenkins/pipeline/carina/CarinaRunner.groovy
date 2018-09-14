@@ -26,20 +26,8 @@ class CarinaRunner extends Runner {
             scmClient.clonePR()
 
 			executeMavenGoals("-U clean process-resources process-test-resources -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-			
-            context.junit '**/target/surefire-reports/junitreports/*.xml'
-			
-			//TODO: test&fix cobertura report publishing
-            context.step([$class: 'CoberturaPublisher',
-                  autoUpdateHealth: false,
-                  autoUpdateStability: false,
-                  coberturaReportFile: '**/target/site/cobertura/coverage.xml',
-                  failUnhealthy: false,
-                  failUnstable: false,
-                  maxNumberOfBuilds: 0,
-                  onlyStable: false,
-                  sourceEncoding: 'ASCII',
-                  zoomCoverageChart: false])
+
+            publishUnitTestResults()
 
             //TODO: implement below code
 			// produce snapshot build if ghprbPullTitle contains 'build-snapshot'
