@@ -80,15 +80,9 @@ class Runner extends Executor {
 
     public void performSonarQubeScan(){
 
-//        def scannerHome = context.tool 'SonarQube Scanner 2.8'
-//        context.withEnv(["PATH=/usr/bin: ..."]) {
-//            context.withSonarQubeEnv('sonar-demo') {
-//                context.sh "${scannerHome}/bin/sonar-scanner"
-//            }
-//        }
-
-        def sonarqubeScannerHome = context.tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-        context.sh "${sonarqubeScannerHome}/bin/sonar-scanner -e \
+        context.stage('SonarQube analysis') {
+            context.withSonarQubeEnv('sonar-demo') {
+                context.sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.3.0.603:sonar \
                  -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                  -Dsonar.analysis.mode=preview  \
                  -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
@@ -98,6 +92,19 @@ class Runner extends Executor {
                  -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
                  -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
                  -Dsonar.sources=."
+            }
+        }
+//        def sonarqubeScannerHome = context.tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+//        context.sh "${sonarqubeScannerHome}/bin/sonar-scanner -e \
+//                 -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
+//                 -Dsonar.analysis.mode=preview  \
+//                 -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
+//                 -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+//                 -Dsonar.projectKey=${Configuration.get("project")} \
+//                 -Dsonar.projectName=${Configuration.get("project")} \
+//                 -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+//                 -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
+//                 -Dsonar.sources=."
     }
 
     public void runCron() {
