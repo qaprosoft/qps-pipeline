@@ -84,7 +84,7 @@ class Runner extends Executor {
         context.println "ghprbGhRepository: " + Configuration.get("ghprbGhRepository")
         context.println "project: " + Configuration.get("project")
         context.println "BUILD_NUMBER: " + Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        context.println "GITHUB_OAUTH_TOKEN: " + Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)
+        context.println "GITHUB_OAUTH_TOKEN: " + Configuration.resolveVars(Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN))
 
         context.stage('SonarQube analysis') {
             context.withSonarQubeEnv('sonar-demo') {
@@ -96,7 +96,7 @@ class Runner extends Executor {
                  -Dsonar.projectKey=${Configuration.get("project")} \
                  -Dsonar.projectName=${Configuration.get("project")} \
                  -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-                 -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
+                 -Dsonar.github.oauth=${Configuration.resolveVars(Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN))} \
                  -Dsonar.sources=."
             }
         }
