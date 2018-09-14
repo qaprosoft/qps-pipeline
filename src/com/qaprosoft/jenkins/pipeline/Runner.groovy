@@ -85,7 +85,7 @@ class Runner extends Executor {
         context.println "project: " + Configuration.get("project")
         context.println "BUILD_NUMBER: " + Configuration.get(Configuration.Parameter.BUILD_NUMBER)
         context.println "GITHUB_OAUTH_TOKEN: " + Configuration.resolveVars(Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN))
-        context.println context.env.dump()
+        context.println context.env.getEnvironment().dump()
 
         context.stage('SonarQube analysis') {
             context.withSonarQubeEnv('sonar-demo') {
