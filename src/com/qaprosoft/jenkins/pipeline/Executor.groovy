@@ -58,6 +58,23 @@ public abstract class Executor {
 		return content
 	}
 
+    public void publishUnitTestResults() {
+
+        //publish junit/cobertura reports
+
+        context.junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+        context.step([$class: 'CoberturaPublisher',
+                      autoUpdateHealth: false,
+                      autoUpdateStability: false,
+                      coberturaReportFile: '**/target/site/cobertura/coverage.xml',
+                      failUnhealthy: false,
+                      failUnstable: false,
+                      maxNumberOfBuilds: 0,
+                      onlyStable: false,
+                      sourceEncoding: 'ASCII',
+                      zoomCoverageChart: false])
+    }
+
     protected void publishReports(String pattern, String reportName) {
         def reports = context.findFiles(glob: pattern)
         for (int i = 0; i < reports.length; i++) {
