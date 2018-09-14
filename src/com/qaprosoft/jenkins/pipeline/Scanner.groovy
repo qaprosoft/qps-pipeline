@@ -92,7 +92,7 @@ class Scanner extends Executor {
 
             def pullRequestJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/ghprbhook/ into \"Payload URL\" field\n" +
-                    "- Select x-www-form-urlencoded in \"Content Type\" field\n- Tick \"Let me select individual events\" option and tick \"Pull request\" option\n- Click \"Add webhook\" button"
+                    "- Select x-www-form-urlencoded in \"Content Type\" field\n- Tick \"Let me select individual events\" and tick \"Pull request\" and \"Issue comments\" options only\n- Click \"Add webhook\" button"
 
 			registerObject("pull_request_job", new PullRequestJobFactory(jobFolder, getOnPullRequestScript(), "onPullRequest-" + project, pullRequestJobDescription, project, gitUrl))
 
