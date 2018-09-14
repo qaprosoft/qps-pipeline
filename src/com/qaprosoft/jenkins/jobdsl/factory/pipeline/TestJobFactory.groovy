@@ -95,7 +95,6 @@ public class TestJobFactory extends PipelineFactory {
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
-						configure addHiddenParameter("keep_all_screenshots", '', 'false')
 						configure addHiddenParameter('platform', '', 'API')
 						break;
 					case ~/^.*web.*$/:
@@ -107,7 +106,6 @@ public class TestJobFactory extends PipelineFactory {
 						configure addHiddenParameter('os', '', 'NULL')
 						configure addHiddenParameter('os_version', '', '*')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
 						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('platform', '', '*')
 						break;
@@ -117,7 +115,6 @@ public class TestJobFactory extends PipelineFactory {
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
 						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'ANDROID')
@@ -129,7 +126,6 @@ public class TestJobFactory extends PipelineFactory {
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
 						//TODO: enable video as only issue with Appiym and xrecord utility is fixed
 						//booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
@@ -137,7 +133,6 @@ public class TestJobFactory extends PipelineFactory {
 						break;
 					default:
 						booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
-						booleanParam('keep_all_screenshots', false, 'Keep screenshots even if the tests pass')
 						configure addHiddenParameter('platform', '', '*')
 						break;
 				}
