@@ -631,17 +631,19 @@ class Runner extends Executor {
 	protected void exportZafiraReport() {
 		//replace existing local emailable-report.html by Zafira content
 		def zafiraReport = zc.exportZafiraReport(uuid)
-		context.println(zafiraReport)
+		//context.println(zafiraReport)
 		if (!zafiraReport.isEmpty()) {
-			context.writeFile file: "zafira-report.html", text: zafiraReport
+			context.writeFile file: getWorkspace() + "/zafira-report.html", text: zafiraReport
 		}
 		
-		//TODO: think about method renaming because in additions it also could redefin job status in Jenkins.
+		context.sh "ls -la " + getWorkspace()
+		
+		//TODO: think about method renaming because in additions it also could redefine job status in Jenkins.
 		// or move below code into another method
 		
 		// set job status based on zafira report
 		if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
-			context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
+			//context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
 			context.currentBuild.result = 'FAILURE'
 		} else if (zafiraReport.contains("SKIP_ALL:")) {
 			context.currentBuild.result = 'UNSTABLE'
