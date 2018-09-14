@@ -57,6 +57,7 @@ class Runner extends Executor {
         }
     }
 
+	//TODO: move to GitHub and iSCM
     private void mergePR(){
         //merge pull request
         def org = Configuration.get("GITHUB_ORGANIZATION")
@@ -74,7 +75,7 @@ class Runner extends Executor {
         }
     }
 
-    public void performSonarQubeScan(){
+    protected void performSonarQubeScan(){
 
         context.stage('SonarQube analysis') {
             context.withSonarQubeEnv('sonar-demo') {
@@ -87,7 +88,7 @@ class Runner extends Executor {
                  -Dsonar.projectName=${Configuration.get("project")} \
                  -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
                  -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-                 -Dsonar.sources=./src/main"
+                 -Dsonar.sources=."
 //                 -Dsonar.tests=. \
 //                 -Dsonar.test.inclusions=**/*Test*/** \
 //                 -Dsonar.exclusions=**/*Test*/**"
