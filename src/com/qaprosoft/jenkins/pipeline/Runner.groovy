@@ -52,7 +52,7 @@ class Runner extends Executor {
 					 -f pom.xml -Dmaven.test.failure.ignore=true \
 					 -Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
 
-            //executeMavenGoals(goals)
+            executeMavenGoals(goals)
             performSonarQubeScan()
             //TODO: investigate whether we need this piece of code
 //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
@@ -91,7 +91,7 @@ class Runner extends Executor {
                  -Dsonar.projectName=${Configuration.get("project")} \
                  -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
                  -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-                 -Dsonar.sources=."
+                 -Dsonar.sources=./src/main"
 //                 -Dsonar.tests=. \
 //                 -Dsonar.test.inclusions=**/*Test*/** \
 //                 -Dsonar.exclusions=**/*Test*/**"
