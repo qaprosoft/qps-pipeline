@@ -77,6 +77,7 @@ class Runner extends Executor {
 
     protected void performSonarQubeScan(){
 
+		//TODO: find a way to get somehow 2 below hardcoded string values
         context.stage('SonarQube analysis') {
             context.withSonarQubeEnv('sonar-demo') {
                 context.sh "mvn clean package sonar:sonar -DskipTests \
