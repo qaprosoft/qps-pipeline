@@ -52,11 +52,29 @@ class Runner extends Executor {
 					 -f pom.xml -Dmaven.test.failure.ignore=true \
 					 -Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
 
-			executeMavenGoals(goals)
-		}
-	}
-	
-	public void runCron() {
+            executeMavenGoals(goals)
+            mergePR()
+        }
+    }
+
+    private void mergePR(){
+        //merge pull request
+        def org = Configuration.get("GITHUB_ORGANIZATION")
+        def project = Configuration.get("project")
+        def ghprbPullId = Configuration.get("ghprbPullId")
+
+        def ghprbCredentialsId = Configuration.get("ghprbCredentialsId")
+        context.println("ghprbCredentialsId: " + ghprbCredentialsId)
+        context.withCredentials([context.usernamePassword(credentialsId: "${ghprbCredentialsId}", usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            context.echo "USERNAME: ${context.env.USERNAME}"
+            context.echo "PASSWORD: ${context.env.PASSWORD}"
+            context.println("curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge")
+            //context.sh "curl -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge?access_token=${context.env.PASSWORD}"
+            context.sh "curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge"
+        }
+    }
+
+    public void runCron() {
 		def nodeName = "master"
 		//TODO: remove master node assignment
 		context.node(nodeName) {
