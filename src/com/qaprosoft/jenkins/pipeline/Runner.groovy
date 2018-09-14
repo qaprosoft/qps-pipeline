@@ -654,7 +654,7 @@ class Runner extends Executor {
 		def jobCreated = currentSuite.getParameter("jenkinsJobCreation")
 		if (jobCreated != null && !jobCreated.toBoolean()) {
 			//no need to proceed as jenkinsJobCreation=false
-			continue
+			return
 		}
 		
 		def supportedPipelines = currentSuite.getParameter("jenkinsRegressionPipeline").toString() 
