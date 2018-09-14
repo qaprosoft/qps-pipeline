@@ -82,7 +82,7 @@ class Runner extends Executor {
 
         context.stage('SonarQube analysis') {
             context.withSonarQubeEnv('sonar-demo') {
-                context.sh "mvn package sonar:sonar \
+                context.sh "mvn package sonar:sonar -DskipTests \
                  -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                  -Dsonar.analysis.mode=preview  \
                  -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
