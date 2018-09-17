@@ -6,8 +6,7 @@ import org.testng.xml.XmlSuite;
 import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
-import jenkins.model.*
-import hudson.plugins.sonar.*
+
 import com.qaprosoft.scm.github.GitHub
 
 class Runner extends Executor {
@@ -31,6 +30,7 @@ class Runner extends Executor {
         zc = new ZafiraClient(context)
 	}
 	
+
 	//Events
 	public void onPush() {
 		context.println("Runner->onPush")
@@ -59,7 +59,7 @@ class Runner extends Executor {
 
     protected void performSonarQubeScan(){
         def sonarQubeEnv = ''
-        Jenkins.instance.getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
+        Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
             sonarQubeEnv = installation.getName()
         }
         if(sonarQubeEnv.isEmpty()){
@@ -159,7 +159,7 @@ class Runner extends Executor {
         return folderName
     }
 
-	public void runJob() {
+    public void runJob() {
 		context.println("Runner->runJob")
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
@@ -174,8 +174,7 @@ class Runner extends Executor {
 		}
 
 		context.node(nodeName) {
-
-            context.wrap([$class: 'BuildUser']) {
+			context.wrap([$class: 'BuildUser']) {
 				try {
 					context.timestamps {
 
@@ -209,7 +208,18 @@ class Runner extends Executor {
                 }
 			}
 		}
+
 	}
+
+    protected def getHostAddresses() {
+        def hosts = []
+        for(ifs in NetworkInterface.getNetworkInterfaces()){
+            for(address in ifs.getInetAddresses()){
+                hosts.add(address.getHostAddress())
+            }
+        }
+        return hosts
+    }
 
     public void rerunJobs(){
         context.stage('Rerun Tests'){
