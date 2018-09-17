@@ -61,9 +61,7 @@ public abstract class Executor {
 	}
 
     public void publishUnitTestResults() {
-
         //publish junit/cobertura reports
-
         context.junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
         context.step([$class: 'CoberturaPublisher',
                       autoUpdateHealth: false,
