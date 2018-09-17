@@ -7,6 +7,7 @@ import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 import jenkins.model.*
+import hudson.model.*
 import hudson.plugins.sonar.*
 import com.qaprosoft.scm.github.GitHub
 
@@ -159,6 +160,7 @@ class Runner extends Executor {
         return folderName
     }
 
+
 	public void runJob() {
 		context.println("Runner->runJob")
 		//use this method to override any beforeRunJob logic
@@ -185,11 +187,13 @@ class Runner extends Executor {
             for(ifs in NetworkInterface.getNetworkInterfaces()){
                 for(address in ifs.getInetAddresses()){
                     context.println "Host Address: " + address.getHostAddress()
-                    context.println "Address: " + address.getAddress()
                 }
                 context.println "HOST: " + ifs.dump()
             }
 
+            Hudson.instance.slaves.each {
+                slaves << it.name
+            }
 //            context.wrap([$class: 'BuildUser']) {
 //				try {
 //					context.timestamps {
