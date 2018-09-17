@@ -184,7 +184,8 @@ class Runner extends Executor {
             hostName = NetworkInterface.getNetworkInterfaces()
             for(ifs in NetworkInterface.getNetworkInterfaces()){
                 for(address in ifs.getInetAddresses()){
-                    context.println "Address: " + address.dump()
+                    context.println "Host Address: " + address.getHostAddress()
+                    context.println "Address: " + address.getAddress()
                 }
                 context.println "HOST: " + ifs.dump()
             }
