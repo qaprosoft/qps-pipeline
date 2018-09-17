@@ -6,6 +6,7 @@ import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import com.cloudbees.groovy.cps.NonCPS
 
+import com.qaprosoft.jenkins.pipeline.scanner.IScanner
 import com.qaprosoft.scm.ISCM
 
 import java.nio.file.FileSystems
@@ -20,6 +21,7 @@ public abstract class Executor {
 	//list of job parameters as a map
 
 	protected ISCM scmClient
+	protected IScanner scanner
 
 	protected Configuration configuration = new Configuration(context)
 
