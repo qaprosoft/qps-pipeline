@@ -160,8 +160,16 @@ class Runner extends Executor {
         return folderName
     }
 
+    @NonCPS
+    def getSlaves() {
+        def slaves = []
+        hudson.model.Hudson.instance.slaves.each {
+            slaves << it.name
+        }
+        return slaves
+    }
 
-	public void runJob() {
+    public void runJob() {
 		context.println("Runner->runJob")
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
@@ -174,6 +182,7 @@ class Runner extends Executor {
             zc.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
 		}
+
 
 		context.node(nodeName) {
             context.println "ENV: " + context.env.dump()
@@ -196,7 +205,7 @@ class Runner extends Executor {
             }
 
             Hudson.instance.slaves.each {
-                context.node(it) {
+                context.node(it.name) {
                     context.sh "hostname"
                 }
             }
