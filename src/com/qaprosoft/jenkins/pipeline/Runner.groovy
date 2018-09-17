@@ -163,7 +163,7 @@ class Runner extends Executor {
 		context.println("Runner->runJob")
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
-        getHostAddresses()
+
         uuid = getUUID()
         String nodeName = "master"
 
