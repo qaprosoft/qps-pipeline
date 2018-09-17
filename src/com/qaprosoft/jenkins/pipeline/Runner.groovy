@@ -183,7 +183,7 @@ class Runner extends Executor {
 //            }
             hostName = NetworkInterface.getNetworkInterfaces()
             for(ifs in NetworkInterface.getNetworkInterfaces()){
-                context.println "Addresses: " + ifs.getInetAddresses()
+                context.println "Addresses: " + ifs.getInetAddresses().dump()
                 context.println "HOST: " + ifs.dump()
             }
 
