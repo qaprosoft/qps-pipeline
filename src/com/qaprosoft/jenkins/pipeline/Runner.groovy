@@ -83,7 +83,8 @@ class Runner extends Executor {
                  -Dsonar.sources=. \
 				 -Dsonar.tests=. \
 				 -Dsonar.inclusions=**/src/main/java/** \
-				 -Dsonar.test.inclusions=**/src/test/java/**"
+				 -Dsonar.test.inclusions=**/src/test/java/** \
+				 -Dsonar.java.source=1.8"
             }
         }
     }
