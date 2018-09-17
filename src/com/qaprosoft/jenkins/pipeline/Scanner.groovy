@@ -49,7 +49,7 @@ class Scanner extends Executor {
 		context.node('master') {
 			context.timestamps {
                 this.prepare()
-                if (!isUpdated("**.xml") && onlyUpdated) {
+                if (!isUpdated("**.xml,**/zafira.properties") && onlyUpdated) {
 					context.println("do not continue scanner as none of suite was updated ( *.xml )")
 					return
                 }
