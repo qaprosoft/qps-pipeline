@@ -174,6 +174,7 @@ class Runner extends Executor {
 		}
 
 		context.node(nodeName) {
+            context.println "ENV: " + context.env.dump()
             def hostName = Jenkins.getInstance().getComputer(context.env[nodeName]).getHostName()
             context.println "HOST: " + hostName
             context.wrap([$class: 'BuildUser']) {
