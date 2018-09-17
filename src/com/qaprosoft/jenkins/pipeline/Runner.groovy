@@ -10,6 +10,8 @@ import com.qaprosoft.jenkins.pipeline.browserstack.OS
 
 import com.qaprosoft.scm.github.GitHub
 
+import hudson.plugins.sonar.SonarGlobalConfiguration
+
 class Runner extends Executor {
 	//ci_run_id  param for unique test run identification
 	protected def uuid
