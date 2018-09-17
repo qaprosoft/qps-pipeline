@@ -194,6 +194,12 @@ class Runner extends Executor {
             Hudson.instance.slaves.each { slave ->
                 context.println "SLAVE: " + slave.dump()
             }
+
+            Hudson.instance.slaves.each {
+                context.node(it) {
+                    context.sh "hostname"
+                }
+            }
 //            context.wrap([$class: 'BuildUser']) {
 //				try {
 //					context.timestamps {
