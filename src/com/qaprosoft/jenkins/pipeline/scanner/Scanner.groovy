@@ -3,6 +3,8 @@ package com.qaprosoft.jenkins.pipeline.scanner
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.XmlSuite
 import com.qaprosoft.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.Executor
+
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
@@ -12,7 +14,6 @@ import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 
 import groovy.json.JsonOutput
 
-@InheritConstructors
 class Scanner extends Executor implements IScanner {
 	
 	protected Map dslObjects = [:]
