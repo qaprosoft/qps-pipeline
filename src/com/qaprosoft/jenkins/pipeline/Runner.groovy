@@ -30,7 +30,6 @@ class Runner extends Executor {
         zc = new ZafiraClient(context)
 	}
 	
-
 	//Events
 	public void onPush() {
 		context.println("Runner->onPush")
@@ -158,6 +157,7 @@ class Runner extends Executor {
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
 
+        context.println "ENV DUMP: " + context.env.dump()
         uuid = getUUID()
         String nodeName = "master"
 
