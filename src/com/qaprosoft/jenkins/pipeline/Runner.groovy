@@ -157,7 +157,7 @@ class Runner extends Executor {
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
 
-        context.println "ENV DUMP: " + context.env.dump()
+        context.println "ENV DUMP: " + context.env.getEnvironment().dump()
         uuid = getUUID()
         String nodeName = "master"
 
