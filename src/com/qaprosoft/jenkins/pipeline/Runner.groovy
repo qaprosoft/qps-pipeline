@@ -51,29 +51,12 @@ class Runner extends Executor {
             executeMavenGoals(goals)
             performSonarQubeScan()
             //TODO: investigate whether we need this piece of code
-//            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
-//                mergePR()
-//            }
+            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
+                scmClient.mergePR()
+            }
         }
     }
 
-	//TODO: move to GitHub and iSCM
-    private void mergePR(){
-        //merge pull request
-        def org = Configuration.get("GITHUB_ORGANIZATION")
-        def project = Configuration.get("project")
-        def ghprbPullId = Configuration.get("ghprbPullId")
-
-        def ghprbCredentialsId = Configuration.get("ghprbCredentialsId")
-        context.println("ghprbCredentialsId: " + ghprbCredentialsId)
-        context.withCredentials([context.usernamePassword(credentialsId: "${ghprbCredentialsId}", usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            context.echo "USERNAME: ${context.env.USERNAME}"
-            context.echo "PASSWORD: ${context.env.PASSWORD}"
-            context.println("curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge")
-            //context.sh "curl -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge?access_token=${context.env.PASSWORD}"
-            context.sh "curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge"
-        }
-    }
 
     protected void performSonarQubeScan(){
 

@@ -9,4 +9,6 @@ public interface ISCM {
 	public def clone(isShallow)
 
     public def clone(gitUrl, branch, subFolder)
+
+	public void mergePR()
 }
