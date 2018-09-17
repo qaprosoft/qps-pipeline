@@ -636,8 +636,6 @@ class Runner extends Executor {
 			context.writeFile file: getWorkspace() + "/zafira/report.html", text: zafiraReport
 		}
 		
-		context.sh "ls -la " + getWorkspace()
-		
 		//TODO: think about method renaming because in additions it also could redefine job status in Jenkins.
 		// or move below code into another method
 		
