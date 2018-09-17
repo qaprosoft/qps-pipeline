@@ -160,15 +160,6 @@ class Runner extends Executor {
         return folderName
     }
 
-    @NonCPS
-    def getSlaves() {
-        def slaves = []
-        hudson.model.Hudson.instance.slaves.each {
-            slaves << it.name
-        }
-        return slaves
-    }
-
     public void runJob() {
 		context.println("Runner->runJob")
 		//use this method to override any beforeRunJob logic
@@ -185,33 +176,11 @@ class Runner extends Executor {
 
 
 		context.node(nodeName) {
-            context.println "ENV: " + context.env.dump()
-            def hostName = ''
-            //if(context.env.env.size() > 0){
-//                hostName = Jenkins.getInstance().getComputer(context.env[nodeName]).getHostName()
-//            } else {
-//                hostName = Jenkins.getInstance().getComputer('').getHostName()
-//            }
-            hostName = NetworkInterface.getNetworkInterfaces()
-            for(ifs in NetworkInterface.getNetworkInterfaces()){
-                for(address in ifs.getInetAddresses()){
-                    context.println "Host Address: " + address.getHostAddress()
-                }
-                context.println "HOST: " + ifs.dump()
+            getHostAddresses().each { host ->
+                context.println "HOST: " + host
             }
 
-            Hudson.instance.slaves.each { slave ->
-                context.println "SLAVE: " + slave.dump()
-            }
 
-            Hudson.instance.slaves.each {
-                context.node(it.name) {
-                    context.sh "hostname"
-                }
-            }
-
-            context.println "ifconfig"
-            context.println "ifconfig".execute().text
 //            context.wrap([$class: 'BuildUser']) {
 //				try {
 //					context.timestamps {
@@ -247,6 +216,17 @@ class Runner extends Executor {
 //			}
 		}
 	}
+
+    protected def getHostAddresses() {
+        def hosts = []
+        for(ifs in NetworkInterface.getNetworkInterfaces()){
+            for(address in ifs.getInetAddresses()){
+                hosts.add(address)
+                //context.println "Host Address: " + address.getHostAddress()
+            }
+        }
+        return hosts
+    }
 
     public void rerunJobs(){
         context.stage('Rerun Tests'){
