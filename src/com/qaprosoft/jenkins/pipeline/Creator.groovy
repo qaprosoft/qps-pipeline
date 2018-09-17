@@ -10,10 +10,10 @@ class Creator extends Executor {
 		this.context = context
 
 		scmClient = new GitHub(context)
-		scanner = new Scanner(context)
 	}
 
 	public void create() {
+		scanner = new Scanner(context)
 		context.println("Creator->create")
 
 		//create only high level management jobs.
