@@ -4,6 +4,6 @@ public interface IScanner {
 
 	public void createRepository()
 
-	public def updateRepository()
+	public void updateRepository()
 }
 
