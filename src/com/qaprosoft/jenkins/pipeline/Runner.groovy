@@ -6,9 +6,7 @@ import org.testng.xml.XmlSuite;
 import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
-import jenkins.model.*
-import hudson.model.*
-import hudson.plugins.sonar.*
+
 import com.qaprosoft.scm.github.GitHub
 
 class Runner extends Executor {
@@ -165,7 +163,7 @@ class Runner extends Executor {
 		context.println("Runner->runJob")
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
-
+        getHostAddresses()
         uuid = getUUID()
         String nodeName = "master"
 
