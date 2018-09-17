@@ -176,7 +176,7 @@ class Runner extends Executor {
 		context.node(nodeName) {
             context.println "ENV: " + context.env.dump()
             def hostName = ''
-            if(context.env.size() > 0){
+            if(context.env.env.size() > 0){
                 hostName = Jenkins.getInstance().getComputer(context.env[nodeName]).getHostName()
             } else {
                 hostName = Jenkins.getInstance().getComputer('').getHostName()
