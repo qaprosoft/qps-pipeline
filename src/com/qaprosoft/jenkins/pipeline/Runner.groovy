@@ -169,7 +169,10 @@ class Runner extends Executor {
 
 		context.node(nodeName) {
             def sonarDesc = Jenkins.instance.getDescriptorByType(SonarGlobalConfiguration.class)
-            context.println "SONAR: " + sonarDesc.dump()
+            sonarDesc.getInstallations().each { inst ->
+                context.println "SONAR: " + inst.dump()
+            }
+
 //            context.wrap([$class: 'BuildUser']) {
 //				try {
 //					context.timestamps {
