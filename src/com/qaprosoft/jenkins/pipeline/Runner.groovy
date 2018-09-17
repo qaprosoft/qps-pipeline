@@ -5,6 +5,7 @@ import org.testng.xml.XmlSuite;
 
 import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
+import com.qaprosoft.jenkins.pipeline.scanner.Scanner
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 
 import com.qaprosoft.scm.github.GitHub
@@ -27,6 +28,7 @@ class Runner extends Executor {
 	public Runner(context) {
 		super(context)
 		scmClient = new GitHub(context)
+		IScanner scanner = new Scanner(context)
         zc = new ZafiraClient(context)
 	}
 	
@@ -35,8 +37,6 @@ class Runner extends Executor {
 	public void onPush() {
 		context.println("Runner->onPush")
 		// handle each push/merge operation
-		//TODO: create new IScanner interface as we do for scmClient (maybe inside executor!)
-		Scanner scanner = new Scanner(context)
 		scanner.updateRepository()
 	}
 
@@ -82,7 +82,6 @@ class Runner extends Executor {
 				 -Dsonar.tests=. \
 				 -Dsonar.inclusions=**/src/main/java/** \
 				 -Dsonar.test.inclusions=**/src/test/java/**"
-
             }
         }
     }

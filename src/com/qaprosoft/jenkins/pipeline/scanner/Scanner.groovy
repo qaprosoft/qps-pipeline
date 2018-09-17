@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline
+package com.qaprosoft.jenkins.pipeline.scanner
 
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.XmlSuite
@@ -13,7 +13,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import groovy.json.JsonOutput
 
 
-class Scanner extends Executor {
+class Scanner extends Executor implements IScanner {
 	
 	protected Map dslObjects = [:]
 	
@@ -139,6 +139,7 @@ class Scanner extends Executor {
 
 			def jenkinsFileOrigin = "Jenkinsfile"
 			if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
+				//TODO: figure our howto work with Jenkinsfile
 				// this is the repo with already available pipeline script in Jenkinsfile
 				// just create a job
 			}
