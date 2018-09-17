@@ -165,7 +165,7 @@ class Runner extends Executor {
 		context.println("Runner->runJob")
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
-        getHostAddresses()
+
         uuid = getUUID()
         String nodeName = "master"
 
@@ -217,8 +217,7 @@ class Runner extends Executor {
         def hosts = []
         for(ifs in NetworkInterface.getNetworkInterfaces()){
             for(address in ifs.getInetAddresses()){
-                hosts.add(address)
-                context.println "Host Address: " + address.getHostAddress()
+                hosts.add(address.getHostAddress())
             }
         }
         return hosts
