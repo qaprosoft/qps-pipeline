@@ -209,6 +209,9 @@ class Runner extends Executor {
                     context.sh "hostname"
                 }
             }
+
+            context.println "ifconfig"
+            context.println "ifconfig".execute().text
 //            context.wrap([$class: 'BuildUser']) {
 //				try {
 //					context.timestamps {
