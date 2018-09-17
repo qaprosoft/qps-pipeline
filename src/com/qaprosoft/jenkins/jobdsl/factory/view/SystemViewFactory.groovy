@@ -6,9 +6,6 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class SystemViewFactory extends DslFactory {
 
-	def folder
-	def name
-
 	def create() {
 		//TODO: reuse getFullName
 		def view = _dslFactory.listView("${folder}/${name}")
