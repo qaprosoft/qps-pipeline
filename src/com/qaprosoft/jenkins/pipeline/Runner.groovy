@@ -32,6 +32,7 @@ class Runner extends Executor {
         zc = new ZafiraClient(context)
 	}
 	
+
 	//Events
 	public void onPush() {
 		context.println("Runner->onPush")
@@ -164,7 +165,7 @@ class Runner extends Executor {
 		context.println("Runner->runJob")
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
-
+        getHostAddresses()
         uuid = getUUID()
         String nodeName = "master"
 
@@ -174,47 +175,42 @@ class Runner extends Executor {
             nodeName = chooseNode()
 		}
 
-
 		context.node(nodeName) {
-            getHostAddresses().each { host ->
-                context.println "HOST: " + host
-            }
+			context.wrap([$class: 'BuildUser']) {
+				try {
+					context.timestamps {
 
+						this.prepare(context.currentBuild)
+						scmClient.clone()
 
-//            context.wrap([$class: 'BuildUser']) {
-//				try {
-//					context.timestamps {
-//
-//						this.prepare(context.currentBuild)
-//						scmClient.clone()
-//
-//						this.downloadResources()
-//
-//						def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
-//						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
-//							  this.build()
-//						}
-//
-//						//TODO: think about seperate stage for uploading jacoco reports
-//						this.publishJacocoReport()
-//					}
-//
-//				} catch (Exception ex) {
-//					printStackTrace(ex)
-//					String failureReason = getFailure(context.currentBuild)
-//					context.echo "failureReason: ${failureReason}"
-//					//explicitly execute abort to resolve anomalies with in_progress tests...
-//                    zc.abortZafiraTestRun(uuid, failureReason)
-//					throw ex
-//				} finally {
-//                    this.exportZafiraReport()
-//                    this.sendTestRunResultsEmail()
-//                    this.reportingResults()
-//                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-//                    this.clean()
-//                }
-//			}
+						this.downloadResources()
+
+						def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
+						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
+							  this.build()
+						}
+
+						//TODO: think about seperate stage for uploading jacoco reports
+						this.publishJacocoReport()
+					}
+
+				} catch (Exception ex) {
+					printStackTrace(ex)
+					String failureReason = getFailure(context.currentBuild)
+					context.echo "failureReason: ${failureReason}"
+					//explicitly execute abort to resolve anomalies with in_progress tests...
+                    zc.abortZafiraTestRun(uuid, failureReason)
+					throw ex
+				} finally {
+                    this.exportZafiraReport()
+                    this.sendTestRunResultsEmail()
+                    this.reportingResults()
+                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
+                    this.clean()
+                }
+			}
 		}
+
 	}
 
     protected def getHostAddresses() {
@@ -222,7 +218,7 @@ class Runner extends Executor {
         for(ifs in NetworkInterface.getNetworkInterfaces()){
             for(address in ifs.getInetAddresses()){
                 hosts.add(address)
-                //context.println "Host Address: " + address.getHostAddress()
+                context.println "Host Address: " + address.getHostAddress()
             }
         }
         return hosts
