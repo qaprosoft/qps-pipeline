@@ -57,7 +57,6 @@ class Runner extends Executor {
         }
     }
 
-
     protected void performSonarQubeScan(){
         def sonarQubeEnv = ''
         Jenkins.instance.getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
