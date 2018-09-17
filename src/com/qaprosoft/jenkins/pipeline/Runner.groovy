@@ -166,7 +166,8 @@ class Runner extends Executor {
 
         uuid = getUUID()
         String nodeName = "master"
-
+        def hostName =Jenkins.getInstance().getComputer(context.env[nodeName]).getHostName()
+        context.println "HOST: " + hostName
         //TODO: remove master node assignment
 		context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
