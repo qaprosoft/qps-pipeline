@@ -26,7 +26,7 @@ class CarinaRunner extends Runner {
             scmClient.clonePR()
 
 			executeMavenGoals("-U clean process-resources process-test-resources")
-			executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+			executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura javadoc:javadoc clean test")
 
             publishUnitTestResults()
 
