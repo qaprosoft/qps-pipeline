@@ -64,7 +64,7 @@ class Runner extends Executor {
             sonarQubeEnv = installation.getName()
         }
         if(sonarQubeEnv.isEmpty()){
-            context.println "There is no SonarQube server configured. Please, configure Jenkins for sonar scanning."
+            context.println "There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan."
             return
         }
 		//TODO: find a way to get somehow 2 below hardcoded string values
