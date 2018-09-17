@@ -28,7 +28,7 @@ class Runner extends Executor {
 	public Runner(context) {
 		super(context)
 		scmClient = new GitHub(context)
-		IScanner scanner = new Scanner(context)
+		scanner = new Scanner(context)
         zc = new ZafiraClient(context)
 	}
 	
