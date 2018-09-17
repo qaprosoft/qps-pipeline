@@ -59,7 +59,7 @@ class Runner extends Executor {
 
     protected void performSonarQubeScan(){
         def sonarQubeEnv = ''
-        Jenkins.instance.getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
+        Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
             sonarQubeEnv = installation.getName()
         }
         if(sonarQubeEnv.isEmpty()){
@@ -166,8 +166,7 @@ class Runner extends Executor {
 
         uuid = getUUID()
         String nodeName = "master"
-        def hostName = Jenkins.instance.getComputer(context.env[nodeName]).getHostName()
-        context.println "HOST: " + hostName
+
         //TODO: remove master node assignment
 		context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
@@ -175,7 +174,8 @@ class Runner extends Executor {
 		}
 
 		context.node(nodeName) {
-
+            def hostName = Jenkins.getInstance().getComputer(context.env[nodeName]).getHostName()
+            context.println "HOST: " + hostName
             context.wrap([$class: 'BuildUser']) {
 				try {
 					context.timestamps {
