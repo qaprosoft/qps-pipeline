@@ -1,20 +1,15 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.pipeline.Scanner
+import com.qaprosoft.jenkins.pipeline.scanner.Scanner
 import com.qaprosoft.scm.github.GitHub;
 
 class Creator extends Executor {
-
-	protected Scanner scanner
 
 	public Creator(context) {
 		super(context)
 		this.context = context
 
 		scmClient = new GitHub(context)
-		
-		//TODO: parametrize Scanner using FQDN classname
-		//TODO: create new IScanner interface as we do for scmClient (maybe inside executor!)
 		scanner = new Scanner(context)
 	}
 
