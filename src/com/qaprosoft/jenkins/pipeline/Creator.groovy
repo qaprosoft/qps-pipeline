@@ -10,10 +10,11 @@ class Creator extends Executor {
 		this.context = context
 
 		scmClient = new GitHub(context)
+		//Creator always should use default qps inplementation of Scanner for original create operation
+		scanner = new Scanner(context)
 	}
 
 	public void create() {
-		scanner = new Scanner(context)
 		context.println("Creator->create")
 
 		//create only high level management jobs.
