@@ -83,12 +83,12 @@ public class Configuration {
 		
 		BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}"),
 
-        private final String key;
-        private final String value;
+        private final String key
+        private final String value
 
         Parameter(String key, String value) {
-            this.key = key;
-            this.value = value;
+            this.key = key
+            this.value = value
         }
 
         @NonCPS
@@ -98,7 +98,7 @@ public class Configuration {
 
         @NonCPS
         public String getValue() {
-            return value;
+            return value
         }
 
     }
@@ -149,13 +149,13 @@ public class Configuration {
 
     @NonCPS
     public static String get(Parameter param) {
-		return get(param.getKey());
+		return get(param.getKey())
     }
 	
 	@NonCPS
 	public static String get(String paramName) {
 		if (params.get(paramName) != null) {
-			return params.get(paramName);
+			return params.get(paramName)
 		}
 		return vars.get(paramName)
 	}

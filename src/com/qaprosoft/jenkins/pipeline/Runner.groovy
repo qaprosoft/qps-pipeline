@@ -168,7 +168,7 @@ class Runner extends Executor {
 
 		context.node(nodeName) {
             context.println "ENV DUMP: " + context.env.getEnvironment().dump()
-
+            context.println "BUILD DUMP: " + context.currentBuild.rawBuild
 //            context.wrap([$class: 'BuildUser']) {
 //				try {
 //					context.timestamps {
