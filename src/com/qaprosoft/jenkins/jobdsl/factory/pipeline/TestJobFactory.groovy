@@ -128,7 +128,8 @@ public class TestJobFactory extends PipelineFactory {
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
-						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+						//TODO: hardcode auto_screenshots=true for iOS until we fix video recording
+						booleanParam('auto_screenshot', true, 'Generate screenshots automatically during the test')
 						booleanParam('keep_all_screenshots', keepAllScreenshots, 'Keep screenshots even if the tests pass')
 						//TODO: enable video as only issue with Appiym and xrecord utility is fixed
 						//booleanParam('enableVideo', enableVideo, 'Enable video recording')
