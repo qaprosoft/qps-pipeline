@@ -10,5 +10,5 @@ public interface ISCM {
 
     public def clone(gitUrl, branch, subFolder)
 
-	public void mergePR()
+	public def mergePR()
 }
