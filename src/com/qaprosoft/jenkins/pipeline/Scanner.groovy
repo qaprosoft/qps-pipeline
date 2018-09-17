@@ -49,7 +49,7 @@ class Scanner extends Executor {
 		context.node('master') {
 			context.timestamps {
                 this.prepare()
-                if (!isUpdated("**.xml") && onlyUpdated) {
+                if (!isUpdated("**.xml,**/zafira.properties") && onlyUpdated) {
 					context.println("do not continue scanner as none of suite was updated ( *.xml )")
 					return
                 }
@@ -88,7 +88,7 @@ class Scanner extends Executor {
 			// Support DEV related CI workflow
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
 
-			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', '.*system.*'))
+			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
 
             def pullRequestJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/ghprbhook/ into \"Payload URL\" field\n" +
