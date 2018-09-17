@@ -181,8 +181,11 @@ class Runner extends Executor {
 //            } else {
 //                hostName = Jenkins.getInstance().getComputer('').getHostName()
 //            }
-            hostName = NetworkInterface.getNetworkInterfaces().getDisplayName()
-            context.println "HOST: " + hostName
+            hostName = NetworkInterface.getNetworkInterfaces()
+            for(ifs in NetworkInterface.getNetworkInterfaces()){
+                context.println "HOST: " + ifs.dump()
+            }
+
             context.wrap([$class: 'BuildUser']) {
 				try {
 					context.timestamps {
