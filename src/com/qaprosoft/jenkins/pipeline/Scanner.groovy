@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.jobdsl.factory.view.SystemViewFactory
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.XmlSuite
 import com.qaprosoft.scm.github.GitHub
@@ -89,7 +88,7 @@ class Scanner extends Executor {
 			// Support DEV related CI workflow
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
 
-			registerObject("hooks_view", new SystemViewFactory(jobFolder, 'SYSTEM', ''))
+			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
 
             def pullRequestJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/ghprbhook/ into \"Payload URL\" field\n" +
