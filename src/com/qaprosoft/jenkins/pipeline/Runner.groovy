@@ -169,39 +169,39 @@ class Runner extends Executor {
 		context.node(nodeName) {
             context.println "ENV DUMP: " + context.env.getEnvironment().dump()
 
-            context.wrap([$class: 'BuildUser']) {
-				try {
-					context.timestamps {
-
-						this.prepare(context.currentBuild)
-						scmClient.clone()
-
-						this.downloadResources()
-
-						def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
-						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
-							  this.build()
-						}
-
-						//TODO: think about seperate stage for uploading jacoco reports
-						this.publishJacocoReport()
-					}
-					
-				} catch (Exception ex) {
-					printStackTrace(ex)
-					String failureReason = getFailure(context.currentBuild)
-					context.echo "failureReason: ${failureReason}"
-					//explicitly execute abort to resolve anomalies with in_progress tests...
-                    zc.abortZafiraTestRun(uuid, failureReason)
-					throw ex
-				} finally {
-                    this.exportZafiraReport()
-                    this.sendTestRunResultsEmail()
-                    this.reportingResults()
-                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    this.clean()
-                }
-			}
+//            context.wrap([$class: 'BuildUser']) {
+//				try {
+//					context.timestamps {
+//
+//						this.prepare(context.currentBuild)
+//						scmClient.clone()
+//
+//						this.downloadResources()
+//
+//						def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
+//						context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
+//							  this.build()
+//						}
+//
+//						//TODO: think about seperate stage for uploading jacoco reports
+//						this.publishJacocoReport()
+//					}
+//
+//				} catch (Exception ex) {
+//					printStackTrace(ex)
+//					String failureReason = getFailure(context.currentBuild)
+//					context.echo "failureReason: ${failureReason}"
+//					//explicitly execute abort to resolve anomalies with in_progress tests...
+//                    zc.abortZafiraTestRun(uuid, failureReason)
+//					throw ex
+//				} finally {
+//                    this.exportZafiraReport()
+//                    this.sendTestRunResultsEmail()
+//                    this.reportingResults()
+//                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
+//                    this.clean()
+//                }
+//			}
 		}
 
 	}
