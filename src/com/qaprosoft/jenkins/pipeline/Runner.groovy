@@ -157,7 +157,6 @@ class Runner extends Executor {
 		//use this method to override any beforeRunJob logic
 		beforeRunJob()
 
-        context.println "ENV DUMP: " + context.env.getEnvironment().dump()
         uuid = getUUID()
         String nodeName = "master"
 
@@ -168,7 +167,9 @@ class Runner extends Executor {
 		}
 
 		context.node(nodeName) {
-			context.wrap([$class: 'BuildUser']) {
+            context.println "ENV DUMP: " + context.env.getEnvironment().dump()
+
+            context.wrap([$class: 'BuildUser']) {
 				try {
 					context.timestamps {
 
