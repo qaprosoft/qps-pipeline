@@ -7,6 +7,7 @@ import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 import jenkins.model.*
+import hudson.plugins.sonar.*
 import com.qaprosoft.scm.github.GitHub
 
 class Runner extends Executor {
@@ -167,7 +168,7 @@ class Runner extends Executor {
 		}
 
 		context.node(nodeName) {
-            def sonarDesc = Jenkins.instance.getDescriptorByType(SonarGlobalConfiguration)
+            def sonarDesc = Jenkins.instance.getDescriptorByType(SonarGlobalConfiguration.class)
             context.println "SONAR: " + sonarDesc
 //            context.wrap([$class: 'BuildUser']) {
 //				try {
