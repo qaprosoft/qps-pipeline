@@ -59,10 +59,17 @@ class Runner extends Executor {
 
 
     protected void performSonarQubeScan(){
-
+        def sonarQubeEnv = ''
+        Jenkins.instance.getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
+            sonarQubeEnv = installation.getName()
+        }
+        if(sonarQubeEnv.isEmpty()){
+            context.println "There is no SonarQube server configured. Please, configure Jenkins for sonar scanning."
+            return
+        }
 		//TODO: find a way to get somehow 2 below hardcoded string values
         context.stage('SonarQube analysis') {
-            context.withSonarQubeEnv('sonar-demo') {
+            context.withSonarQubeEnv(sonarQubeEnv) {
                 context.sh "mvn clean package sonar:sonar -DskipTests \
                  -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                  -Dsonar.analysis.mode=preview  \
@@ -168,10 +175,7 @@ class Runner extends Executor {
 		}
 
 		context.node(nodeName) {
-            def sonarDesc = Jenkins.instance.getDescriptorByType(SonarGlobalConfiguration.class)
-            sonarDesc.getInstallations().each { inst ->
-                context.println "SONAR: " + inst.dump()
-            }
+
 
 //            context.wrap([$class: 'BuildUser']) {
 //				try {
