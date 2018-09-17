@@ -12,8 +12,8 @@ import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 
 import groovy.json.JsonOutput
 
-
-class Scanner extends Executor {
+@InheritConstructors
+class Scanner extends Executor implements IScanner {
 	
 	protected Map dslObjects = [:]
 	
