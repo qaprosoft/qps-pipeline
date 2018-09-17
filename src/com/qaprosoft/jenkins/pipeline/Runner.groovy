@@ -51,9 +51,9 @@ class Runner extends Executor {
             executeMavenGoals(goals)
             performSonarQubeScan()
             //TODO: investigate whether we need this piece of code
-            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
-                scmClient.mergePR()
-            }
+//            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
+//                scmClient.mergePR()
+//            }
         }
     }
 
