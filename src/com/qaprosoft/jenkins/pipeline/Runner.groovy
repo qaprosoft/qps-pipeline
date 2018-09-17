@@ -179,9 +179,9 @@ class Runner extends Executor {
             //if(context.env.env.size() > 0){
 //                hostName = Jenkins.getInstance().getComputer(context.env[nodeName]).getHostName()
 //            } else {
-                hostName = Jenkins.getInstance().getComputer('').getHostName()
+//                hostName = Jenkins.getInstance().getComputer('').getHostName()
 //            }
-
+            hostName = InetAddress.localHost.hostAddress
             context.println "HOST: " + hostName
             context.wrap([$class: 'BuildUser']) {
 				try {
