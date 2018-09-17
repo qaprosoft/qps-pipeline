@@ -27,7 +27,7 @@ class CarinaRunner extends Runner {
 
 			executeMavenGoals("-U clean process-resources process-test-resources")
 			//TODO: think about using deploy to produce snapshot build for PR as well
-			executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura javadoc:javadoc clean test")
+			executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean test")
 
 			context.sh("find . -name \"*cobertura*\"")
 			context.sh("find . -name coverage.xml")
