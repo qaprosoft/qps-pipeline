@@ -26,8 +26,8 @@ class CarinaRunner extends Runner {
             scmClient.clonePR()
 
 			executeMavenGoals("-U process-resources process-test-resources -Dcobertura.report.format=xml clean install cobertura:cobertura")
-
             publishUnitTestResults()
+			performSonarQubeScan()
 
 			// produce snapshot build if ghprbPullTitle contains 'build-snapshot'
             if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
