@@ -6,7 +6,8 @@ import org.testng.xml.XmlSuite;
 import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
-
+import jenkins.model.*
+import hudson.plugins.sonar.*
 import com.qaprosoft.scm.github.GitHub
 
 class Runner extends Executor {
@@ -30,7 +31,6 @@ class Runner extends Executor {
         zc = new ZafiraClient(context)
 	}
 	
-
 	//Events
 	public void onPush() {
 		context.println("Runner->onPush")
@@ -57,12 +57,18 @@ class Runner extends Executor {
         }
     }
 
-
     protected void performSonarQubeScan(){
-
+        def sonarQubeEnv = ''
+        Jenkins.instance.getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
+            sonarQubeEnv = installation.getName()
+        }
+        if(sonarQubeEnv.isEmpty()){
+            context.println "There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan."
+            return
+        }
 		//TODO: find a way to get somehow 2 below hardcoded string values
         context.stage('SonarQube analysis') {
-            context.withSonarQubeEnv('sonar-demo') {
+            context.withSonarQubeEnv(sonarQubeEnv) {
                 context.sh "mvn clean package sonar:sonar -DskipTests \
                  -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                  -Dsonar.analysis.mode=preview  \
@@ -168,7 +174,8 @@ class Runner extends Executor {
 		}
 
 		context.node(nodeName) {
-			context.wrap([$class: 'BuildUser']) {
+
+            context.wrap([$class: 'BuildUser']) {
 				try {
 					context.timestamps {
 
@@ -185,7 +192,7 @@ class Runner extends Executor {
 						//TODO: think about seperate stage for uploading jacoco reports
 						this.publishJacocoReport()
 					}
-					
+
 				} catch (Exception ex) {
 					printStackTrace(ex)
 					String failureReason = getFailure(context.currentBuild)
@@ -202,7 +209,6 @@ class Runner extends Executor {
                 }
 			}
 		}
-
 	}
 
     public void rerunJobs(){
