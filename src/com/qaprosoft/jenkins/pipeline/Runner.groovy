@@ -46,12 +46,18 @@ class Runner extends Executor {
 		context.println("Runner->onPullRequest")
 		context.node("master") {
 			scmClient.clonePR()
-			def goals = "clean compile test-compile \
-					 -f pom.xml -Dmaven.test.failure.ignore=true \
-					 -Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
-
-            executeMavenGoals(goals)
-            performSonarQubeScan()
+			
+			context.stage('Maven Compile') {
+				def goals = "clean compile test-compile \
+						 -f pom.xml -Dmaven.test.failure.ignore=true \
+						 -Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
+	
+	            executeMavenGoals(goals)
+			}
+			context.stage('Sonar Scanner') {
+				performSonarQubeScan()
+			}
+			
             //TODO: investigate whether we need this piece of code
 //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
 //                scmClient.mergePR()
