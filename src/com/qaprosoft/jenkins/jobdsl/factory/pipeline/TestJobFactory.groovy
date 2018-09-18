@@ -72,7 +72,7 @@ public class TestJobFactory extends PipelineFactory {
 					defaultMobilePool = "ANY"
 				}
 
-				def autoScreenshot = false
+				def autoScreenshot = true
 				if (currentSuite.getParameter("jenkinsAutoScreenshot") != null) {
 					autoScreenshot = currentSuite.getParameter("jenkinsAutoScreenshot").toBoolean()
 				}
