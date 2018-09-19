@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.scanner
+package com.qaprosoft.jenkins.pipeline
 
 public interface IScanner {
 
