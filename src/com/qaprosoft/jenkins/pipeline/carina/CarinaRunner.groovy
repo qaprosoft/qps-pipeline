@@ -6,11 +6,12 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 class CarinaRunner extends Runner{
-	protected def context
+
+    def scanner
 
     public CarinaRunner(context) {
         super(context)
-        this.context = context
+        scanner = new CarinaScanner(context)
     }
 
     @Override
