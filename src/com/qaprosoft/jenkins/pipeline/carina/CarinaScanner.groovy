@@ -2,6 +2,9 @@ package com.qaprosoft.jenkins.pipeline.carina
 
 import com.qaprosoft.jenkins.pipeline.IScanner
 
+import groovy.transform.InheritConstructors
+
+@InheritConstructors
 class CarinaScanner implements IScanner {
 
 	protected def context
