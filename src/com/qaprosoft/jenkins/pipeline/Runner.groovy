@@ -1,9 +1,8 @@
 package com.qaprosoft.jenkins.pipeline
 
-import groovy.transform.InheritConstructors
-
-@InheritConstructors
-class Runner extends Executor {
+class Runner {
+	protected def context
+	
 	public Runner(context) {
 		super(context)
 	}
@@ -11,11 +10,9 @@ class Runner extends Executor {
 	//Events
 	public void onPush() {
 		context.println("Runner->onPush")
-		// handle each push/merge operation
 	}
 
 	public void onPullRequest() {
 		context.println("Runner->onPullRequest")
-
     }
 }
