@@ -1,14 +1,10 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.pipeline.Configuration
-import com.cloudbees.groovy.cps.NonCPS
 
-public class Runner {
-	protected def context
-	protected Configuration configuration = new Configuration(context)
+public class Runner extends Executor {
 	
 	public Runner(context) {
-		this.context = context
+		super(context)
 	}
 	
 	//Events
