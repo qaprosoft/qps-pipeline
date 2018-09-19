@@ -71,11 +71,6 @@ class Creator {
 			def branch = Configuration.get("branch")
 			context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
-			def workspace = getWorkspace()
-			context.println("WORKSPACE: ${workspace}")
-
-
-
 			// TODO: move folder and main trigger job creation onto the createRepository method
 			def folder = new FolderFactory(jobFolder, "")
 			registerObject("project_folder", new FolderFactory(jobFolder, ""))
