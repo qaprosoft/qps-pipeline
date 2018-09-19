@@ -59,7 +59,7 @@ class Creator {
 	
 	
 	private void prepare() {
-		scmClient.clone(!onlyUpdated)
+		scmClient.clone(true) //do shallow clone during repo registration
 		String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
 		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
