@@ -4,11 +4,10 @@ import com.cloudbees.groovy.cps.NonCPS
 
 public class Runner {
 	protected def context
-	protected Configuration configuration
+	protected Configuration configuration = new Configuration(context)
 	
 	public Runner(context) {
 		this.context = context
-		this.configuration = new Configuration(context)
 	}
 	
 	//Events
