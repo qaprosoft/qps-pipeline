@@ -9,8 +9,7 @@ class CarinaScanner implements IScanner {
 	def context
 	
     public CarinaScanner(context) {
-        super(context)
-		
+		this.context = context
     }
 
 	public void scanRepository() {
