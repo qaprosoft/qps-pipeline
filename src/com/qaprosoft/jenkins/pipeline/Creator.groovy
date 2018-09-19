@@ -40,7 +40,6 @@ class Creator {
 			context.timestamps {
 				prepare()
 				create()
-				clean()
 			}
 		}
 		
@@ -136,4 +135,5 @@ class Creator {
 		}
 		dslObjects.put(name, object)
 	}
+	
 }
