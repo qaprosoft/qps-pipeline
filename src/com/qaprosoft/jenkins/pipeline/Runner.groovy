@@ -1,5 +1,8 @@
 package com.qaprosoft.jenkins.pipeline
 
+import groovy.transform.InheritConstructors
+
+@InheritConstructors
 public class Runner {
 	protected def context
 	
