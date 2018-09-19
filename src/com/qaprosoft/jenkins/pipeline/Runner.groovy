@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
+import com.qaprosoft.scm.github.GitHub
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
@@ -8,8 +9,6 @@ public class Runner extends Executor {
 	public Runner(context) {
 		super(context)
 		scmClient = new GitHub(context)
-		scanner = new Scanner(context)
-
 	}
 	
 	//Events
