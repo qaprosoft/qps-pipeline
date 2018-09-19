@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
-class abstract Runner {
+public class abstract Runner {
 	protected def context
 	
 	public Runner(context) {
