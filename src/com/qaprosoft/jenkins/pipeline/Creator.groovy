@@ -2,6 +2,13 @@ package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.jenkins.pipeline.scanner.Scanner
 import com.qaprosoft.scm.github.GitHub;
+
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
+
+import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
+import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
+
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
