@@ -33,12 +33,18 @@ class Creator {
 		//create only high level management jobs.
 		context.node('master') {
 			context.timestamps {
-				this.prepare()
-				this.create()
-				this.clean()
+				context.stage("Preparing...") {
+					prepare()
+				}
+				context.stage("Creating...") {
+					create()
+				}
+				context.stage("Cleaning...") {
+					clean()
+				}
 			}
 		}
-
+		
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
 		def project = Configuration.get("project")
 		def newJob = project + "/" + "onPush-" + project
