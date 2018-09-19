@@ -6,7 +6,6 @@ import org.testng.xml.XmlSuite;
 import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
 import com.qaprosoft.jenkins.pipeline.Scanner
-import com.qaprosoft.jenkins.pipeline.impl.Scanner
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 
 import com.qaprosoft.scm.github.GitHub
