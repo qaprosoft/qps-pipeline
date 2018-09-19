@@ -9,7 +9,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 
-class Creator extends {
+class Creator {
 	protected Map dslObjects = [:]
 
 	public Creator(context) {
