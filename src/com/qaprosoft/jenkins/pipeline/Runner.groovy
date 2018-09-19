@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
+import com.qaprosoft.jenkins.pipeline.Configuration
 import com.cloudbees.groovy.cps.NonCPS
 
 public class Runner {
@@ -12,10 +13,14 @@ public class Runner {
 	
 	//Events
 	public void onPush() {
-		context.println("Runner->onPush")
+		context.stage("Runner->onPush") {
+			context.println("Runner->onPush")
+		}
 	}
 
 	public void onPullRequest() {
-		context.println("Runner->onPullRequest")
+		context.stage("Runner->onPullRequest") {
+			context.println("Runner->onPullRequest")
+		}
     }
 }
