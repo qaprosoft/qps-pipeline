@@ -6,13 +6,11 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 class CarinaScanner extends Scanner {
 
-	protected Map dslObjects = [:]
-
-	protected def pipelineLibrary = "QPS-Pipeline"
-	protected def runnerClass = "com.qaprosoft.jenkins.pipeline.carina.CarinaRunner"
-
     public CarinaScanner(context) {
         super(context)
+		
+		pipelineLibrary = "QPS-Pipeline"
+		runnerClass = "com.qaprosoft.jenkins.pipeline.carina.CarinaRunner"
     }
 
 	public void createRepository() {
