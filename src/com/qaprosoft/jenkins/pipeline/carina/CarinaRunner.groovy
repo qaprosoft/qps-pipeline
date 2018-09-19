@@ -1,5 +1,8 @@
 package com.qaprosoft.jenkins.pipeline.carina
 
+import groovy.transform.InheritConstructors
+
+@InheritConstructors
 class CarinaRunner {
 	protected def context
 
