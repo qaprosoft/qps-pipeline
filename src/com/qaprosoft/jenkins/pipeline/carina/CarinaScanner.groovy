@@ -14,7 +14,7 @@ class CarinaScanner extends Scanner {
     }
 
 
-	@Override
+	//@Override
 	public void scanRepository() {
 		context.println("CarinaScanner->scanRepository")
 	}
