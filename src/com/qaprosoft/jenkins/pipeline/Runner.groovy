@@ -4,14 +4,16 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class Runner extends Executor {
+	protected def uuid
 	
 	public Runner(context) {
 		super(context)
+		uuid = "qwe"
 	}
 	
 	//Events
 	public void onPush() {
-		context.println("core: " + Configuration.get("CARINA_CORE_VERSION"))
+		context.println(uuid)
 		context.stage("Runner->onPush") {
 			context.println("Runner->onPush")
 		}
