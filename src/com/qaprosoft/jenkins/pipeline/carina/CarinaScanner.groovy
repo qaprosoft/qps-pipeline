@@ -1,10 +1,10 @@
 package com.qaprosoft.jenkins.pipeline.carina
 
-import com.qaprosoft.jenkins.pipeline.scanner.Scanner
+import com.qaprosoft.jenkins.pipeline.scanner.IScanner
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-class CarinaScanner extends Scanner {
+class CarinaScanner implements IScanner {
 
     public CarinaScanner(context) {
         super(context)
@@ -14,4 +14,7 @@ class CarinaScanner extends Scanner {
     }
 
 
+	public void scanRepository() {
+		context.println("CarinaScanner->scanRepository")
+	}
 }
