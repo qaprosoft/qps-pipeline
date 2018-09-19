@@ -1,6 +1,8 @@
 package com.qaprosoft.jenkins.pipeline
 
+import groovy.transform.InheritConstructors
 
+@InheritConstructors
 public class Runner extends Executor {
 	
 	public Runner(context) {
