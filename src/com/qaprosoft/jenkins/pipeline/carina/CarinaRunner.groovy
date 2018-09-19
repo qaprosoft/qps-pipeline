@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.pipeline.carina
 
-@InheritConstructors
 class CarinaRunner {
 	protected def context
 
