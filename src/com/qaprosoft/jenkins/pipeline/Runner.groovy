@@ -4,7 +4,7 @@ class Runner {
 	protected def context
 	
 	public Runner(context) {
-		super(context)
+		this.context = context
 	}
 	
 	//Events
