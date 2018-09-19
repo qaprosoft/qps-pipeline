@@ -13,28 +13,5 @@ class CarinaScanner extends Scanner {
 		runnerClass = "com.qaprosoft.jenkins.pipeline.carina.CarinaRunner"
     }
 
-	public void createRepository() {
-		context.node('master') {
-			context.timestamps {
-				this.prepare()
-				this.create()
-				this.clean()
-			}
-		}
-	}
-	
-    public void updateRepository() {
-		context.node('master') {
-			context.timestamps {
-                this.prepare()
-                if (!isUpdated("**.xml,**/zafira.properties") && onlyUpdated) {
-					context.println("do not continue scanner as none of suite was updated ( *.xml )")
-					return
-                }
-                this.scan()
-                this.clean()
-            }
-        }
-	}
 
 }
