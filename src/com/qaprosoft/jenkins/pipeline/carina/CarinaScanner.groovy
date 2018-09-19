@@ -10,6 +10,7 @@ class CarinaScanner implements IScanner {
 	protected def context
 	
     public CarinaScanner(context) {
+		super(context)
 		this.context = context
     }
 
