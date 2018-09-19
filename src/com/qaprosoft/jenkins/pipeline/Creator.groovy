@@ -19,6 +19,9 @@ class Creator {
 	def context
 	protected ISCM scmClient
 	protected Configuration configuration = new Configuration(context)
+	
+	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
+	protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
 	protected Map dslObjects = [:]
 
@@ -98,13 +101,12 @@ class Creator {
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
-			context.println("factoryTarget: " + factoryTarget)
 
-			context.jobDsl additionalClasspath: additionalClasspath,
+			context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
 			removedConfigFilesAction: 'IGNORE',
 			removedJobAction: 'IGNORE',
 			removedViewAction: 'IGNORE',
-			targets: factoryTarget,
+			targets: FACTORY_TARGET,
 			ignoreExisting: false
 
 		}
