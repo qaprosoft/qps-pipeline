@@ -1,8 +1,5 @@
 package com.qaprosoft.jenkins.pipeline
 
-
-
-@InheritConstructors
 public class Runner {
 	protected def context
 	
