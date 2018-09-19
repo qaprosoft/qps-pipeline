@@ -5,6 +5,7 @@ import org.testng.xml.XmlSuite;
 
 import static java.util.UUID.randomUUID
 import com.qaprosoft.zafira.ZafiraClient
+import com.qaprosoft.jenkins.pipeline.IScanner
 import com.qaprosoft.jenkins.pipeline.impl.Scanner
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 
@@ -15,6 +16,8 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 class Runner extends Executor {
+	protected IScanner scanner
+	
 	//ci_run_id  param for unique test run identification
 	protected def uuid
 	
