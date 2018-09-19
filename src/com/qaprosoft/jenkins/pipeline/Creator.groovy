@@ -11,11 +11,10 @@ import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 
 class Creator {
 	protected Map dslObjects = [:]
+	def context
 
 	public Creator(context) {
-		super(context)
 		this.context = context
-
 		scmClient = new GitHub(context)
 	}
 
