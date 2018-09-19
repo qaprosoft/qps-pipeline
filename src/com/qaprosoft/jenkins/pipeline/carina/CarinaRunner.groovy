@@ -11,12 +11,12 @@ class CarinaRunner extends Runner {
 
     public CarinaRunner(context) {
         super(context)
-		context.println(scanner.dump())
     }
 
 	@Override
 	public void onPush() {
 		context.println("CarinaRunner->onPush")
+		context.println(scanner.dump())
 		//scanner = new CarinaScanner(context)
 		scanner.scanRepository()
 		// handle each push/merge operation
