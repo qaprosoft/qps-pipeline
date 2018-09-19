@@ -5,7 +5,7 @@ import com.qaprosoft.jenkins.pipeline.Runner
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-class CarinaRunner extends Runner{
+class CarinaRunner extends Runner {
 
     def scanner
 

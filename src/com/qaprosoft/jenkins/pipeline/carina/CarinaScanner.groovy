@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.carina
 
-import com.qaprosoft.jenkins.pipeline.scanner.Scanner
+import com.qaprosoft.jenkins.pipeline.impl.Scanner
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
