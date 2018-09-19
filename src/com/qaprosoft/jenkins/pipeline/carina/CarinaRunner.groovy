@@ -16,6 +16,7 @@ class CarinaRunner extends Runner {
         // handle each push/merge operation
         // execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
         context.println("TODO: implement snapshot build generation and emailing build number...")
+		super.onPush()
     }
 
     @Override
