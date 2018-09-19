@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.pipeline
 public abstract class Runner2 {
 	protected def context
 	
-	public Runner(context) {
+	public Runner2(context) {
 		this.context = context
 	}
 	
