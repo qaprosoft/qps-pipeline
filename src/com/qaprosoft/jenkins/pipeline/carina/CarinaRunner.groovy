@@ -1,14 +1,14 @@
 package com.qaprosoft.jenkins.pipeline.carina
+import com.qaprosoft.jenkins.pipeline.Runner
 
-class CarinaRunner {
-//	protected def context
-//
-//    public CarinaRunner(context) {
-//        this.context = context
-//    }
+class CarinaRunner extends Runner {
+
+    public CarinaRunner(context) {
+        super(context)
+    }
 
 	public void onPush() {
-//		context.println("CarinaRunner->onPush")
+		context.println("CarinaRunner->onPush")
 		//scanner.scanRepository()
 		// handle each push/merge operation
 		// execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
@@ -16,6 +16,6 @@ class CarinaRunner {
 	}
 	
 	public void onPullRequest() {
-//		context.println("CarinaRunner->onPullRequest")
+		context.println("CarinaRunner->onPullRequest")
 	}
 }
