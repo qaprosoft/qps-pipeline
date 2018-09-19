@@ -11,14 +11,12 @@ class CarinaRunner extends Runner {
 
     public CarinaRunner(context) {
         super(context)
-		scanner = new CarinaScanner()
-		//scanner = new CarinaScanner(context)
+		scanner = new CarinaScanner(context)
     }
 
 	@Override
 	public void onPush() {
 		context.println("CarinaRunner->onPush")
-		context.println(scanner.dump())
 		scanner.scanRepository()
 		// handle each push/merge operation
 		// execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
