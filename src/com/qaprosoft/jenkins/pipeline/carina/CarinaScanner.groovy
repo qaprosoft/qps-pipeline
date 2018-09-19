@@ -1,20 +1,19 @@
 package com.qaprosoft.jenkins.pipeline.carina
 
-import com.qaprosoft.jenkins.pipeline.impl.Scanner
+import com.qaprosoft.jenkins.pipeline.IScanner
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-class CarinaScanner extends Scanner {
+class CarinaScanner implements IScanner {
 
+	def context
+	
     public CarinaScanner(context) {
         super(context)
 		
-		pipelineLibrary = "QPS-Pipeline"
-		runnerClass = "com.qaprosoft.jenkins.pipeline.carina.CarinaRunner"
     }
 
-
-//	public void scanRepository() {
-//		context.println("CarinaScanner->scanRepository")
-//	}
+	public void scanRepository() {
+		context.println("CarinaScanner->scanRepository")
+	}
 }
