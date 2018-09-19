@@ -13,6 +13,8 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 
+import hudson.FilePath
+
 class Creator {
 	def context
 	protected ISCM scmClient
@@ -33,15 +35,9 @@ class Creator {
 		//create only high level management jobs.
 		context.node('master') {
 			context.timestamps {
-				context.stage("Preparing...") {
-					prepare()
-				}
-				context.stage("Creating...") {
-					create()
-				}
-				context.stage("Cleaning...") {
-					clean()
-				}
+				prepare()
+				create()
+				clean()
 			}
 		}
 		
