@@ -1,6 +1,8 @@
 package com.qaprosoft.jenkins.pipeline
 
 import groovy.json.JsonSlurperClassic
+import groovy.json.JsonOutput
+
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub;
