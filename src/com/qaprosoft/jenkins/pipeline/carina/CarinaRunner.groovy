@@ -19,9 +19,4 @@ class CarinaRunner extends Runner {
 		context.println("TODO: implement snapshot build generation and emailing build number...")
 	}
 	
-	@Override
-	public void onPullRequest() {
-		context.println("CarinaRunner->onPullRequest")
-	}
-	
 }
