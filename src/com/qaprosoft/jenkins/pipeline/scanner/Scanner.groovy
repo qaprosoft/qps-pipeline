@@ -35,7 +35,7 @@ class Scanner extends Executor implements IScanner {
 		}
     }
 
-    public void updateRepository() {
+    public void scanRepository() {
 		context.node('master') {
 			context.timestamps {
                 this.prepare()
