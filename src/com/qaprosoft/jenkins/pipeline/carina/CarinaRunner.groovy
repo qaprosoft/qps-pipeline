@@ -23,4 +23,9 @@ class CarinaRunner extends Runner {
 		// execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
 		context.println("TODO: implement snapshot build generation and emailing build number...")
 	}
+	
+	@Override
+	public void onPullRequest() {
+		context.println("CarinaRunner->onPullRequest")
+	}
 }
