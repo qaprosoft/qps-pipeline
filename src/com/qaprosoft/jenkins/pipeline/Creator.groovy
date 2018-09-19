@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.pipeline.scanner.Scanner
+import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.github.GitHub;
 
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
@@ -12,6 +12,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
+//TODO: do we need Executor here? What about executor static calls intead?
 class Creator extends Executor {
 
 	public Creator(context) {
@@ -19,22 +20,26 @@ class Creator extends Executor {
 		this.context = context
 
 		scmClient = new GitHub(context)
-		//Creator always should use default qps inplementation of Scanner for original create operation
-		scanner = new Scanner(context)
 	}
 
-	public void create() {
-		context.println("Creator->create")
+	public void registerRepository() {
+		context.println("Creator->registerRepository")
 
 		//create only high level management jobs.
-		this.createRepository()
+		context.node('master') {
+			context.timestamps {
+				this.prepare()
+				this.create()
+				this.clean()
+			}
+		}
 
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
 		def project = Configuration.get("project")
 		def newJob = project + "/" + "onPush-" + project
 		
 		context.build job: newJob,
-		propagate: false,
+		propagate: true,
 		parameters: [
 			context.string(name: 'branch', value: Configuration.get("branch")),
 			context.string(name: 'project', value: project),
@@ -46,17 +51,7 @@ class Creator extends Executor {
 	}
 	
 	
-	private void createRepository() {
-		context.node('master') {
-			context.timestamps {
-				this.prepare()
-				this.create()
-				this.clean()
-			}
-		}
-	}
-
-	private void prepare() {
+	private void clone() {
 		scmClient.clone(!onlyUpdated)
 		String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
@@ -64,9 +59,9 @@ class Creator extends Executor {
 	}
 
 
-	protected void create() {
+	private void create() {
 
-		context.stage("Scan Repository") {
+		context.stage("Create Repository") {
 			def BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
 			def project = Configuration.get("project")
 			def jobFolder = Configuration.get("project")
@@ -114,14 +109,14 @@ class Creator extends Executor {
 	}
 
 	
-	protected String getOnPullRequestScript() {
+	private String getOnPullRequestScript() {
 		def pipelineLibrary = Configuration.get("pipelineLibrary")
 		def runnerClass = Configuration.get("runnerClass")
 
 		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).onPullRequest()"
 	}
 	
-	protected String getOnPushScript() {
+	private String getOnPushScript() {
 		def pipelineLibrary = Configuration.get("pipelineLibrary")
 		def runnerClass = Configuration.get("runnerClass")
 

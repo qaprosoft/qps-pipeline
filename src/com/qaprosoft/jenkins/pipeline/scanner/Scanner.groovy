@@ -7,8 +7,6 @@ import com.qaprosoft.jenkins.pipeline.Executor
 import com.qaprosoft.jenkins.pipeline.Configuration
 
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
