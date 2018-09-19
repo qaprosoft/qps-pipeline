@@ -1,11 +1,14 @@
 package com.qaprosoft.jenkins.pipeline
 
+
+
 public class Runner {
 	protected def context
-	protected Configuration configuration = new Configuration(context)
+	protected Configuration configuration
 	
 	public Runner(context) {
 		this.context = context
+		configuration = new Configuration(context)
 	}
 	
 	//Events
