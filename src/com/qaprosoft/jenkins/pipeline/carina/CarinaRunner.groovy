@@ -8,8 +8,4 @@ class CarinaRunner extends Runner {
         super(context)
     }
 	
-	public void onPush() {
-	}
-	
-
 }
