@@ -11,7 +11,7 @@ class CarinaRunner extends Runner {
 
     public CarinaRunner(context) {
         super(context)
-		scanner = new CarinaScanner(null)
+		scanner = new CarinaScanner(context)
     }
 
 	@Override
