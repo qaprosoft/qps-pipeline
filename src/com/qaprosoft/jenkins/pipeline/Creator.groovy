@@ -2,7 +2,9 @@ package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.jenkins.pipeline.scanner.Scanner
 import com.qaprosoft.scm.github.GitHub;
+import groovy.transform.InheritConstructors
 
+@InheritConstructors
 class Creator extends Executor {
 
 	public Creator(context) {
