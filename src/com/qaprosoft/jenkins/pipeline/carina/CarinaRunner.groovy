@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.pipeline.carina
 
-import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.Runner
 
 import groovy.transform.InheritConstructors
@@ -12,7 +11,7 @@ class CarinaRunner extends Runner {
         super(context)
     }
 
-	@Override
+/*	@Override
 	public void onPush() {
 		context.println("CarinaRunner->onPush")
 		// handle each push/merge operation
@@ -23,5 +22,5 @@ class CarinaRunner extends Runner {
 	@Override
 	public void onPullRequest() {
 		context.println("CarinaRunner->onPullRequest")
-	}
+	}*/
 }
