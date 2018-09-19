@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.impl
+package com.qaprosoft.jenkins.pipeline
 
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.XmlSuite
@@ -6,7 +6,6 @@ import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.Executor
 import com.qaprosoft.jenkins.pipeline.Configuration
 
-import com.qaprosoft.jenkins.pipeline.IScanner
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
@@ -14,7 +13,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 
 import groovy.json.JsonOutput
 
-class Scanner extends Executor implements IScanner {
+class Scanner extends Executor {
 	
 	protected Map dslObjects = [:]
 	
