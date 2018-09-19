@@ -6,6 +6,5 @@ public interface IScanner {
 
 	public void updateRepository()
 	
-	public void setPipelineLibrary(pipelineLibrary, runnerClass)
 }
 

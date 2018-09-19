@@ -262,12 +262,6 @@ class Scanner extends Executor implements IScanner {
 		}
 	}
 	
-	//TODO: find valid way to override and remember custom scanner/runner etc class
-	public void setPipelineLibrary(pipelineLibrary, runnerClass) {
-		this.pipelineLibrary = pipelineLibrary
-		this.runnerClass = runnerClass
-	}
-
 	protected String getOnPullRequestScript() {
 		context.println("@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).onPullRequest()")
 		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).onPullRequest()"
