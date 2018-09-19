@@ -10,8 +10,11 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 
 class Creator {
-	protected Map dslObjects = [:]
 	def context
+	protected ISCM scmClient
+	protected Configuration configuration = new Configuration(context)
+
+	protected Map dslObjects = [:]
 
 	public Creator(context) {
 		this.context = context
