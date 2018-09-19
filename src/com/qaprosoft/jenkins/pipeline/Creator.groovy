@@ -20,7 +20,6 @@ class Creator extends Executor {
 		context.println("Creator->create")
 
 		//create only high level management jobs.
-		scanner.setPipelineLibrary(Configuration.get("pipelineLibrary"), Configuration.get("runnerClass"))
 		scanner.createRepository()
 
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
