@@ -9,11 +9,8 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 
-import groovy.transform.InheritConstructors
-
-@InheritConstructors
-//TODO: do we need Executor here? What about executor static calls intead?
-class Creator extends Executor {
+class Creator extends {
+	protected Map dslObjects = [:]
 
 	public Creator(context) {
 		super(context)
@@ -51,7 +48,7 @@ class Creator extends Executor {
 	}
 	
 	
-	private void clone() {
+	private void prepare() {
 		scmClient.clone(!onlyUpdated)
 		String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
@@ -124,4 +121,12 @@ class Creator extends Executor {
 	}
 
 
+	private void registerObject(name, object) {
+		if (dslObjects.containsKey(name)) {
+			context.println("WARNING! key '" + name + "' already defined and will be replaced!")
+			context.println("old item: " + dslObjects.get(name).dump())
+			context.println("new item: " + object.dump())
+		}
+		dslObjects.put(name, object)
+	}
 }
