@@ -1,10 +1,10 @@
 package com.qaprosoft.jenkins.pipeline.carina
-import com.qaprosoft.jenkins.pipeline.Runner
+import com.qaprosoft.jenkins.pipeline.Runner2
 
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class CarinaRunner extends Runner {
+public class CarinaRunner extends Runner2 {
 
     public CarinaRunner(context) {
         super(context)
