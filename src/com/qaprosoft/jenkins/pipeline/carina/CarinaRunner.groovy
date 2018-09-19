@@ -8,8 +8,6 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 class CarinaRunner extends Runner {
 
-    def scanner
-
     public CarinaRunner(context) {
         super(context)
         scanner = new CarinaScanner(context)
