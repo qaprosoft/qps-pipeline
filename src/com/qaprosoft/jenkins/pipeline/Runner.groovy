@@ -1,9 +1,9 @@
 package com.qaprosoft.jenkins.pipeline
 
-public abstract class Runner2 {
+public abstract class Runner {
 	protected def context
 	
-	public Runner2(context) {
+	public Runner(context) {
 		this.context = context
 	}
 	
