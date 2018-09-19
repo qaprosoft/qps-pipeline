@@ -11,6 +11,7 @@ public class Runner extends Executor {
 	
 	//Events
 	public void onPush() {
+		context.println("core: " + Configuration.get("CARINA_CORE_VERSION"))
 		context.stage("Runner->onPush") {
 			context.println("Runner->onPush")
 		}
