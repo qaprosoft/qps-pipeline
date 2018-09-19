@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.carina
 
+import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.Runner
 
 class CarinaRunner extends Runner {
