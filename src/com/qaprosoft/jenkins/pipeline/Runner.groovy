@@ -41,7 +41,7 @@ class Runner extends Executor {
 	public void onPush() {
 		context.println("Runner->onPush")
 		// handle each push/merge operation
-		scanner.updateRepository()
+		scanner.scanRepository()
 	}
 
 	public void onPullRequest() {
