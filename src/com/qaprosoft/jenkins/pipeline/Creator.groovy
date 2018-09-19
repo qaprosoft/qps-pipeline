@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub;
 
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
@@ -18,6 +19,8 @@ class Creator {
 
 	public Creator(context) {
 		this.context = context
+		
+		//TODO: howto register repository not at github?
 		scmClient = new GitHub(context)
 	}
 
