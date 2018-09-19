@@ -6,7 +6,7 @@ import groovy.transform.InheritConstructors
 public class Runner {
 //	protected def context
 	
-	public Runner(context) {
+	public Runner() {
 //		this.context = context
 	}
 	
