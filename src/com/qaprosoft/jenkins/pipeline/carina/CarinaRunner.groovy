@@ -10,6 +10,7 @@ public class CarinaRunner extends Runner2 {
         super(context)
     }
 
+	@Override
 	public void onPush() {
 		context.println("CarinaRunner->onPush")
 		//scanner.scanRepository()
@@ -18,6 +19,7 @@ public class CarinaRunner extends Runner2 {
 //		context.println("TODO: implement snapshot build generation and emailing build number...")
 	}
 	
+	@Override
 	public void onPullRequest() {
 		context.println("CarinaRunner->onPullRequest")
 	}
