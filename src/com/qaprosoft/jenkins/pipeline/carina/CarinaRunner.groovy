@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.pipeline.carina
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.Runner
 
-//import com.qaprosoft.jenkins.pipeline.carina.CarinaScanner
+import com.qaprosoft.jenkins.pipeline.carina.CarinaScanner
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
