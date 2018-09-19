@@ -3,6 +3,11 @@ package com.qaprosoft.jenkins.pipeline
 import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
 
+import java.nio.file.FileSystems
+import java.nio.file.Path
+import java.nio.file.PathMatcher
+import java.nio.file.Paths
+
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub;
