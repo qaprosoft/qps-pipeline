@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline
+package com.qaprosoft.jenkins.pipeline.impl
 
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser;
