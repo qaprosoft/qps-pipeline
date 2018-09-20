@@ -33,6 +33,12 @@ public class QARunner extends AbstractRunner {
 	protected def runnerClass = "com.qaprosoft.jenkins.pipeline.impl.QARunner"
 
 	protected def onlyUpdated = false
+	protected def JobType jobType = JobType.JOB
+	
+	public enum JobType {
+		JOB("JOB"),
+		CRON("CRON")
+	}
 	
 	public QARunner(context) {
 		super(context)
@@ -41,8 +47,27 @@ public class QARunner extends AbstractRunner {
 		if (Configuration.get("onlyUpdated") != null) {
 			onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
 		}
-
 	}
+	
+	public QARunner(context, jobType) {
+		this (context)
+		this.jobType = jobType
+	}
+	
+	//Methods
+	public void build() {
+		context.node("master") {
+			context.println("QARunner->build")
+			if (jobType.equals(JobType.JOB)) {
+				runJob()
+			}
+			if (jobType.equals(JobType.CRON)) {
+				runCron()
+			}
+			//TODO: identify if it is job or cron and execute appropriate protected method
+		}
+	}
+
 
 	//Events
 	public void onPush() {
@@ -355,4 +380,10 @@ public class QARunner extends AbstractRunner {
 		this.additionalClasspath = additionalClasspath
 	}
 
+	protected void runJob() {
+		context.println("QARunner->runJob")
+	}
+	protected void runCron() {
+		context.println("QARunner->runCron")
+	}
 }
