@@ -380,7 +380,7 @@ public class QARunner extends AbstractRunner {
 	}
 	
 	protected String getCronPipelineScript() {
-		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
 	}
 
 	protected void registerObject(name, object) {
