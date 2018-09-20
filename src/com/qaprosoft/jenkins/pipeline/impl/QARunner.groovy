@@ -533,6 +533,14 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    protected String getBuildUser() {
+        try {
+            return context.currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
+        } catch (Exception e) {
+            return ""
+        }
+    }
+
     protected void prepareForMobile() {
         context.println("Runner->prepareForMobile")
         def devicePool = Configuration.get("devicePool")
