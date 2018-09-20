@@ -102,15 +102,14 @@ class Repository {
 			context.node('master') {
 				// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+
+				context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
+				removedConfigFilesAction: 'IGNORE',
+				removedJobAction: 'IGNORE',
+				removedViewAction: 'IGNORE',
+				targets: FACTORY_TARGET,
+				ignoreExisting: false
 			}
-
-
-			context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
-			removedConfigFilesAction: 'IGNORE',
-			removedJobAction: 'IGNORE',
-			removedViewAction: 'IGNORE',
-			targets: FACTORY_TARGET,
-			ignoreExisting: false
 
 		}
 	}
