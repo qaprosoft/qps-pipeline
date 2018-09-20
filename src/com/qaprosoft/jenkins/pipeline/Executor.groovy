@@ -42,4 +42,9 @@ public class Executor {
         return reportParameters
     }
 
+    static boolean isMobile() {
+        def platform = Configuration.get("platform")
+        return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
+    }
+
 }
