@@ -931,6 +931,12 @@ clean test"
 			def ADMIN_EMAILS = Configurator.get("email_list")
 
 			List jobParams = []
+
+			//add current buiold params from cron
+			for (param in Configurator.getParams()) {
+				jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
+			}
+			
 			for (param in entry) {
 				jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
 			}
