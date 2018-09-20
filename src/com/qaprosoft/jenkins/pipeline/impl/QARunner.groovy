@@ -29,10 +29,16 @@ public class QARunner extends AbstractRunner {
 	protected def pipelineLibrary = "QPS-Pipeline"
 	protected def runnerClass = "com.qaprosoft.jenkins.pipeline.impl.QARunner"
 
+	def onlyUpdated = false
 	
 	public QARunner(context) {
 		super(context)
 		scmClient = new GitHub(context)
+
+		if (Configuration.get("onlyUpdated") != null) {
+			onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
+		}
+
 	}
 
 	//Events
@@ -41,7 +47,6 @@ public class QARunner extends AbstractRunner {
 			context.timestamps {
 				context.println("QARunner->onPush")
 				prepare()
-				boolean onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
 				if (!isUpdated("**.xml,**/zafira.properties") && onlyUpdated) {
 					context.println("do not continue scanner as none of suite was updated ( *.xml )")
 					return
@@ -77,7 +82,6 @@ public class QARunner extends AbstractRunner {
 	}
 	
 	protected void prepare() {
-		boolean onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
 		scmClient.clone(!onlyUpdated)
 		String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
