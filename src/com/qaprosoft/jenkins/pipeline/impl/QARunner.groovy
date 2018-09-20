@@ -13,6 +13,9 @@ import java.nio.file.Path
 import java.nio.file.PathMatcher
 import java.nio.file.Paths
 
+//[VD] do not remove this important import!
+import com.qaprosoft.jenkins.pipeline.Configuration
+
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
@@ -29,7 +32,7 @@ public class QARunner extends AbstractRunner {
 	protected def pipelineLibrary = "QPS-Pipeline"
 	protected def runnerClass = "com.qaprosoft.jenkins.pipeline.impl.QARunner"
 
-	def onlyUpdated = false
+	protected def onlyUpdated = false
 	
 	public QARunner(context) {
 		super(context)
