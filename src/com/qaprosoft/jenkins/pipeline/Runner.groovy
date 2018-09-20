@@ -561,6 +561,7 @@ class Runner extends Executor {
 	protected void reportingResults() {
 		context.stage('Results') {
             publishReports('**/reports/qa/emailable-report.html', "${etafReport}")
+			publishReports('**/zafira/zafira-report.html', "ZafiraReport")
             publishReports('**/artifacts/**', 'eTAF_Artifacts')
             publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
@@ -571,7 +572,7 @@ class Runner extends Executor {
 		//replace existing local emailable-report.html by Zafira content
 		def zafiraReport = zc.exportZafiraReport(uuid)
 		if (!zafiraReport.isEmpty()) {
-			context.writeFile file: "${etafReportFolder}/emailable-report.html", text: zafiraReport
+			context.writeFile file: "./zafira/zafira-report.html", text: zafiraReport
 		}
 		
 		//TODO: think about method renaming because in additions it also could redefin job status in Jenkins.
