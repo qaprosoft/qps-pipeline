@@ -6,7 +6,7 @@ import com.qaprosoft.scm.github.GitHub;
 
 public class Runner implements IRunner {
 	public Runner(context) {
-		super(context)
+		this.context = context
 		scmClient = new GitHub(context)
 	}
 
