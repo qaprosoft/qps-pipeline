@@ -10,14 +10,18 @@ public class Runner {
 	
 	//Events
 	public void onPush() {
-		context.stage("Runner->onPush") {
-			context.println("Runner->onPush")
+		context.node("master") {
+			context.stage("Runner->onPush") {
+				context.println("Runner->onPush")
+			}
 		}
 	}
 
 	public void onPullRequest() {
-		context.stage("Runner->onPullRequest") {
-			context.println("Runner->onPullRequest")
+		context.node("master") {
+			context.stage("Runner->onPullRequest") {
+				context.println("Runner->onPullRequest")
+			}
 		}
     }
 }
