@@ -650,7 +650,7 @@ public class QARunner extends AbstractRunner {
             //TODO: move 8000 port into the global var
             def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
-            Configuration.set("ci_build_cause", Executor.getBuildCause(Configuration.get(Configuration.Parameter.JOB_NAME)), context)
+            Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), context))
 
             def goals = Configuration.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
