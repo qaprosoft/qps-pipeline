@@ -8,7 +8,7 @@ import com.qaprosoft.jenkins.pipeline.AbstractRunner
 public class Runner extends AbstractRunner {
 	
 	public Runner(context) {
-		this.context = context
+		super(context)
 		scmClient = new GitHub(context)
 	}
 

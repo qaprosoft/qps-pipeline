@@ -10,6 +10,10 @@ public abstract class AbstractRunner {
 	
 	//this is very important line which should be declared only as a class member!
 	protected Configuration configuration = new Configuration(context)
+	
+	public AbstractRunner(context) {
+		this.context = context
+	}
 
 	//Events
 	abstract public void onPush()
