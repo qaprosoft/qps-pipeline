@@ -403,6 +403,7 @@ public class QARunner extends AbstractRunner {
         beforeRunJob()
 
         uuid = Executor.getUUID()
+        context.println "UUID: " + uuid
         String nodeName = "master"
 
         //TODO: remove master node assignment
