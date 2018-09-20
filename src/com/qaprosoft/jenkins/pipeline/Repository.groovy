@@ -99,8 +99,10 @@ class Repository {
 
 			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, pushJobDescription, project, gitUrl))
 
-			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+			context.node('master') {
+				// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
+				context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+			}
 
 
 			context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
