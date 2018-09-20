@@ -789,6 +789,7 @@ public class QARunner extends AbstractRunner {
         return failureReason
     }
 
+    //TODO: investigate whether null assignments are necessary
     protected String getAbortCause(currentBuild)
     {
         def causee = ''
@@ -911,6 +912,7 @@ public class QARunner extends AbstractRunner {
                     }
 
                     listPipelines = sortPipelineList(listPipelines)
+                    //TODO: think about class level variable folderName
                     executeStages(parseFolderName())
                 } else {
                     context.println("No Test Suites Found to Scan...")
