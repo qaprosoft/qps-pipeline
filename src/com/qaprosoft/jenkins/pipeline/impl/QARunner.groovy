@@ -424,7 +424,7 @@ public class QARunner extends AbstractRunner {
 
                         def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
                         context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
-                            this.build()
+                            buildJob()
                         }
 
                         //TODO: think about seperate stage for uploading jacoco reports
@@ -612,6 +612,112 @@ public class QARunner extends AbstractRunner {
 			}
 		}
 */	}
+
+    protected void buildJob() {
+        context.stage('Run Test Suite') {
+
+            def pomFile = Executor.getSubProjectFolder() + "/pom.xml"
+            def BUILD_USER_EMAIL = Configuration.get("BUILD_USER_EMAIL")
+            if (BUILD_USER_EMAIL == null) {
+                //override "null" value by empty to be able to register in cloud version of Zafira
+                BUILD_USER_EMAIL = ""
+            }
+            def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+					-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+			-Ds3_save_screenshots_v2=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS_V2)} \
+			-f ${pomFile} \
+			-Dmaven.test.failure.ignore=true \
+			-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
+			-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
+			-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
+			-Dzafira_enabled=true \
+			-Dzafira_rerun_failures=${Configuration.get("rerun_failures")} \
+			-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
+			-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
+			-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/${zafiraReport}\" \
+					-Dgit_branch=${Configuration.get("branch")} \
+			-Dgit_commit=${Configuration.get("scm_commit")} \
+			-Dgit_url=${Configuration.get("scm_url")} \
+			-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
+			-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+			-Dci_user_id=${Configuration.get("BUILD_USER_ID")} \
+			-Dci_user_first_name=${Configuration.get("BUILD_USER_FIRST_NAME")} \
+			-Dci_user_last_name=${Configuration.get("BUILD_USER_LAST_NAME")} \
+			-Dci_user_email=${BUILD_USER_EMAIL} \
+			-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
+			clean test"
+
+            //TODO: move 8000 port into the global var
+            def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
+
+            Configuration.set("ci_build_cause", Executor.getBuildCause(Configuration.get(Configuration.Parameter.JOB_NAME)), context)
+
+            def goals = Configuration.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
+
+            //register all obligatory vars
+            Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+
+            //register all params after vars to be able to override
+            Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+
+            goals = Executor.enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
+            goals = Executor.addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
+            goals = Executor.addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
+            goals = Executor.addOptionalParameter("debug", "Enabling remote debug...", mavenDebug, goals)
+            goals = Executor.addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
+
+            //browserstack goals
+            if (Executor.isBrowserStackRun()) {
+                def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
+                        Configuration.get("browser") + "-" + Configuration.get("env") + "\""
+                uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
+                startBrowserStackLocal(uniqueBrowserInstance)
+                goals += " -Dcapabilities.project=" + Configuration.get("project")
+                goals += " -Dcapabilities.build=" + uniqueBrowserInstance
+                goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
+                goals += " -Dapp_version=browserStack"
+            }
+
+            //append again overrideFields to make sure they are declared at the end
+            goals = goals + " " + Configuration.get("overrideFields")
+
+            //context.echo "goals: ${goals}"
+
+            if (context.isUnix()) {
+                def suiteNameForUnix = Configuration.get("suite").replace("\\", "/")
+                context.echo "Suite for Unix: ${suiteNameForUnix}"
+                context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix}"
+            } else {
+                def suiteNameForWindows = Configuration.get("suite").replace("/", "\\")
+                context.echo "Suite for Windows: ${suiteNameForWindows}"
+                context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
+            }
+
+        }
+    }
+
+    protected void startBrowserStackLocal(String uniqueBrowserInstance) {
+        def browserStackUrl = "https://www.browserstack.com/browserstack-local/BrowserStackLocal"
+        def accessKey = Configuration.get("BROWSERSTACK_ACCESS_KEY")
+        if (context.isUnix()) {
+            def browserStackLocation = "/var/tmp/BrowserStackLocal"
+            if (!context.fileExists(browserStackLocation)) {
+                context.sh "curl -sS " + browserStackUrl + "-linux-x64.zip > " + browserStackLocation + ".zip"
+                context.unzip dir: "/var/tmp", glob: "", zipFile: browserStackLocation + ".zip"
+                context.sh "chmod +x " + browserStackLocation
+            }
+            context.sh browserStackLocation + " --key " + accessKey + " --local-identifier " + uniqueBrowserInstance + " --force-local " + " &"
+        } else {
+            def browserStackLocation = "C:\\tmp\\BrowserStackLocal"
+            if (!context.fileExists(browserStackLocation + ".exe")) {
+                context.powershell(returnStdout: true, script: """[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+				Invoke-WebRequest -Uri \'${browserStackUrl}-win32.zip\' -OutFile \'${browserStackLocation}.zip\'""")
+                context.unzip dir: "C:\\tmp", glob: "", zipFile: "${browserStackLocation}.zip"
+            }
+            context.powershell(returnStdout: true, script: "Start-Process -FilePath '${browserStackLocation}.exe' -ArgumentList '--key ${accessKey} --local-identifier ${uniqueBrowserInstance} --force-local'")
+        }
+    }
+
 
     //TODO: move into valid jacoco related package
     protected void publishJacocoReport() {

@@ -64,5 +64,59 @@ public class Executor {
         return value == null || value.isEmpty() || value.equals("NULL")
     }
 
+    /** Determines BuildCause */
+    static String getBuildCause(jobName, context) {
+        String buildCause = null
+        /* Gets CauseActions of the job */
+        context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
+            action ->
+//                context.println "DUMP" + action.dump()
+                /* Searches UpstreamCause among CauseActions and checks if it is not the same job as current(the other way it was rebuild) */
+                if (action.findCause(hudson.model.Cause.UpstreamCause.class)
+                        && (jobName != action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())) {
+                    buildCause = "UPSTREAMTRIGGER"
+                }
+                /* Searches TimerTriggerCause among CauseActions */
+                else if (action.findCause(hudson.triggers.TimerTrigger$TimerTriggerCause.class)) {
+                    buildCause = "TIMERTRIGGER"
+                }
+                /* Searches GitHubPushCause among CauseActions */
+                else if (action.findCause(com.cloudbees.jenkins.GitHubPushCause.class)) {
+                    buildCause = "SCMPUSHTRIGGER"
+                }
+                else if (action.findCause(org.jenkinsci.plugins.ghprb.GhprbCause.class)) {
+                    buildCause = "SCMGHPRBTRIGGER"
+                }
+                else {
+                    buildCause = "MANUALTRIGGER"
+                }
 
+        }
+        return buildCause
+    }
+
+    static def enableVideoStreaming(node, message, capability, goals) {
+        if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {
+            goals += capability
+        }
+        return goals
+    }
+
+    static def addOptionalParameter(parameter, message, capability, goals) {
+        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
+            goals += capability
+        }
+        return goals
+    }
+
+    static boolean isBrowserStackRun() {
+        boolean res = false
+        def customCapabilities = Configuration.get("custom_capabilities")
+        if (!isParamEmpty(customCapabilities)) {
+            if (customCapabilities.toLowerCase().contains("browserstack")) {
+                res = true
+            }
+        }
+        return res
+    }
 }
