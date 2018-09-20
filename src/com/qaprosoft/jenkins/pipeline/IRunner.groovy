@@ -9,12 +9,6 @@ trait IRunner {
 	protected ISCM scmClient
 	protected Configuration configuration = new Configuration(context)
 
-	public IRunner(context) {
-		this.context = context
-		scmClient = new GitHub(context)
-	}
-
 	abstract void onPush()
 	abstract void onPullRequest()
-	
 }

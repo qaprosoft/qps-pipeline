@@ -7,6 +7,7 @@ import com.qaprosoft.scm.github.GitHub;
 public class Runner implements IRunner {
 	public Runner(context) {
 		super(context)
+		scmClient = new GitHub(context)
 	}
 
 	//Events
