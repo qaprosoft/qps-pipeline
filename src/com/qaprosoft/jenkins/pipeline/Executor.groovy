@@ -119,4 +119,27 @@ public class Executor {
         }
         return res
     }
+
+    static def getHostAddresses() {
+        def hosts = []
+        for(ifs in NetworkInterface.getNetworkInterfaces()){
+            for(address in ifs.getInetAddresses()){
+                hosts.add(address.getHostAddress())
+            }
+        }
+        return hosts
+    }
+
+    static void putNotNull(map, key, value) {
+        if (value != null && !value.equalsIgnoreCase("null")) {
+            map.put(key, value)
+        }
+    }
+
+    static void putNotNullWithSplit(map, key, value) {
+        if (value != null) {
+            map.put(key, value.replace(", ", ","))
+        }
+    }
+
 }
