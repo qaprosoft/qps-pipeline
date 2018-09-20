@@ -41,7 +41,7 @@ public class QARunner extends AbstractRunner {
     //CRON related vars
     protected def listPipelines = []
 
-    protected def JobType jobType = JobType.CRON
+    protected def JobType jobType = JobType.JOB
 	
 	public enum JobType {
 		JOB("JOB"),
