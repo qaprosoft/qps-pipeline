@@ -40,7 +40,7 @@ public class QARunner extends AbstractRunner {
 					return
 				}
 				//TODO: implement repository scan and QA jobs recreation
-				this.scan()
+				scan()
 				clean()
 			}
 		}
