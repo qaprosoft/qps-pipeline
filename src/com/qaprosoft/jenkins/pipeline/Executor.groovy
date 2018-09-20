@@ -12,10 +12,6 @@ public class Executor {
 		return ci_run_id
 	}
 
-    static boolean isParamEmpty(String value) {
-        return value == null || value.isEmpty() || value.equals("NULL")
-    }
-
     static def getEmailParams(body, subject, to) {
         def params = [attachLog: true,
                       body: body,
@@ -46,5 +42,27 @@ public class Executor {
         def platform = Configuration.get("platform")
         return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
     }
+
+    static boolean isFailure(currentBuild) {
+        boolean failure = false
+        if (currentBuild.result) {
+            failure = "FAILURE".equals(currentBuild.result.name)
+        }
+        return failure
+    }
+
+    static String getSubProjectFolder() {
+        //specify current dir as subProject folder by default
+        def subProjectFolder = "."
+        if (!isParamEmpty(Configuration.get("sub_project"))) {
+            subProjectFolder = "./" + Configuration.get("sub_project")
+        }
+        return subProjectFolder
+    }
+
+    static boolean isParamEmpty(String value) {
+        return value == null || value.isEmpty() || value.equals("NULL")
+    }
+
 
 }

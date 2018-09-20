@@ -601,7 +601,7 @@ public class QARunner extends AbstractRunner {
 
 /*		def CARINA_CORE_VERSION = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
 		context.stage("Download Resources") {
-		def pomFile = getSubProjectFolder() + "/pom.xml"
+		def pomFile = Executor.getSubProjectFolder() + "/pom.xml"
 		context.echo "pomFile: " + pomFile
 			if (context.isUnix()) {
 				context.sh "'mvn' -B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION"
@@ -707,7 +707,7 @@ public class QARunner extends AbstractRunner {
         if (emailList != null && !emailList.isEmpty()) {
             zc.sendTestRunResultsEmail(uuid, emailList, "all")
         }
-        if (isFailure(context.currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
+        if (Executor.isFailure(context.currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
             zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures")
         }
     }
