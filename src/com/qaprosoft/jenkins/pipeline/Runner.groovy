@@ -935,7 +935,7 @@ clean test"
 			//add current buiold params from cron
 			for (param in Configurator.getParams()) {
 				if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
-					jobParams.add(context.boolean(name: param.getKey(), value: param.getValue()))
+					jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
 				} else {
 					jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
 				}
