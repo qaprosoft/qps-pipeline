@@ -20,7 +20,7 @@ public class Runner {
 	public void onPush() {
 		context.node("master") {
 			//TODO: incorporate onlyUpdated
-			boolean shadowClone = Configuration.get("onlyUpdated").toBoolean()
+			boolean shadowClone = !Configuration.get("onlyUpdated").toBoolean()
 			context.println("shadowClone: " + shadowClone)
 			scmClient.clone(shadowClone)
 			context.println("Runner->onPush")
