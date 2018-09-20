@@ -13,7 +13,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 
-import hudson.FilePath
+//import hudson.FilePath
 
 class Repository {
 	def context
