@@ -41,7 +41,7 @@ public class QARunner extends AbstractRunner {
 		
 		private final String type
 
-		Parameter(String type) {
+		JobType(String type) {
 			this.type = type
 		}
 
