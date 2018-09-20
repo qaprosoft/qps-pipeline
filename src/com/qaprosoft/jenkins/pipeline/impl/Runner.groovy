@@ -47,6 +47,16 @@ public class Runner extends AbstractRunner {
 			//            }
 		}
 	}
+
+	//Methods	
+	public void build() {
+		context.node("master") {
+			context.println("Runner->build")
+			throw new RuntimeException("Not implemented yet!")
+			//TODO: implement Jenkinsfile pipeline execution from the repo
+		}
+	}
+
 	
 	protected def void executeMavenGoals(goals){
 		if (context.isUnix()) {
