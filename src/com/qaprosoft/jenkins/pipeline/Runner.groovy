@@ -17,14 +17,16 @@ public class Runner {
 	//Events
 	public void onPush() {
 		context.node("master") {
-			//scmClient.clone(true)
-			context.stage("Runner->onPush") { context.println("Runner->onPush") }
+			//TODO: incorporate onlyUpdated
+			scmClient.clone()
+			context.println("Runner->onPush")
 		}
 	}
 
 	public void onPullRequest() {
 		context.node("master") {
-			context.stage("Runner->onPullRequest") { context.println("Runner->onPullRequest") }
+			scmClient.clonePR()
+			context.println("Runner->onPullRequest")
 		}
 	}
 }
