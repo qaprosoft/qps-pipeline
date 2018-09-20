@@ -23,7 +23,6 @@ import com.qaprosoft.jenkins.pipeline.AbstractRunner
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
-import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.scm.github.GitHub;
 
 
@@ -42,7 +41,7 @@ public class QARunner extends AbstractRunner {
     //CRON related vars
     protected def listPipelines = []
 
-    protected def JobType jobType = JobType.JOB
+    protected def JobType jobType = JobType.CRON
 	
 	public enum JobType {
 		JOB("JOB"),
