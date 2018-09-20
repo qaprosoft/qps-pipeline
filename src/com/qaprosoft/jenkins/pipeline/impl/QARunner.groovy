@@ -512,16 +512,16 @@ public class QARunner extends AbstractRunner {
 
         context.stage('Preparation') {
             currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${branch}"
-            if (!isParamEmpty("${CARINA_CORE_VERSION}")) {
+            if (!Executor.isParamEmpty("${CARINA_CORE_VERSION}")) {
                 currentBuild.displayName += "|" + "${CARINA_CORE_VERSION}"
             }
-            if (!isParamEmpty(devicePool)) {
+            if (!Executor.isParamEmpty(devicePool)) {
                 currentBuild.displayName += "|${devicePool}"
             }
-            if (!isParamEmpty(Configuration.get("browser"))) {
+            if (!Executor.isParamEmpty(Configuration.get("browser"))) {
                 currentBuild.displayName += "|${browser}"
             }
-            if (!isParamEmpty(Configuration.get("browser_version"))) {
+            if (!Executor.isParamEmpty(Configuration.get("browser_version"))) {
                 currentBuild.displayName += "|${browser_version}"
             }
             currentBuild.description = "${suite}"
