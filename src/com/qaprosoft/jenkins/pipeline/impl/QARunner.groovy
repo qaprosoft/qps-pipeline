@@ -301,6 +301,12 @@ public class QARunner extends AbstractRunner {
 		return context.pwd()
 	}
 
+	protected Object parseJSON(String path) {
+		def inputFile = new File(path)
+		def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
+		return content
+	}
+
 	protected XmlSuite parseSuite(String path) {
 		def xmlFile = new Parser(path)
 		xmlFile.setLoadClasses(false)
