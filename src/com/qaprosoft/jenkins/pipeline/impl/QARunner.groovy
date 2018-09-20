@@ -38,6 +38,17 @@ public class QARunner extends AbstractRunner {
 	public enum JobType {
 		JOB("JOB"),
 		CRON("CRON")
+		
+		private final String type
+
+		Parameter(String type) {
+			this.type = type
+		}
+
+		@NonCPS
+		public String getType() {
+			return type
+		}
 	}
 	
 	public QARunner(context) {
