@@ -6,9 +6,10 @@ import com.qaprosoft.scm.github.GitHub;
 
 import com.cloudbees.groovy.cps.NonCPS
 
-public class Runner implements IRunner {
+class Runner implements IRunner {
 	public Runner(context) {
 		this.context = context
+		configuration = new Configuration(context)
 		scmClient = new GitHub(context)
 	}
 
