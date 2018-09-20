@@ -4,6 +4,8 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub;
 
+import com.cloudbees.groovy.cps.NonCPS
+
 public class Runner implements IRunner {
 	public Runner(context) {
 		this.context = context
