@@ -4,14 +4,9 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub;
 
-public class Runner {
-	protected def context
-	protected ISCM scmClient
-	protected Configuration configuration = new Configuration(context)
-
+public class Runner implements IRunner {
 	public Runner(context) {
-		this.context = context
-		scmClient = new GitHub(context)
+		super(context)
 	}
 
 	//Events
