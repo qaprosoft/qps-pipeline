@@ -38,9 +38,9 @@ class Repository {
 		//create only high level management jobs.
 		context.node('master') {
 			context.timestamps {
-				prepare()
-				create()
-				clean()
+				this.prepare()
+				this.create()
+				this.clean()
 			}
 		}
 
