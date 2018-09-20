@@ -85,6 +85,7 @@ class Repository {
 			registerObject("project_folder", new FolderFactory(jobFolder, ""))
 
 			// Support DEV related CI workflow
+			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
 			def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
 
 			registerObject("hooks_view", new ListViewFactory(jobFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
