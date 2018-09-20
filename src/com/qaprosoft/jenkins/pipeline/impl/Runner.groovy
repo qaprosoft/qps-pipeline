@@ -3,6 +3,9 @@ package com.qaprosoft.jenkins.pipeline.impl
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
 
+//[VD] do not remove this important import!
+import com.qaprosoft.jenkins.pipeline.Configuration
+
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
 public class Runner extends AbstractRunner {
