@@ -1,5 +1,9 @@
 package com.qaprosoft.jenkins.pipeline
 
+import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.scm.ISCM
+import com.qaprosoft.scm.github.GitHub;
+
 public class Runner {
 	protected def context
 	protected ISCM scmClient
