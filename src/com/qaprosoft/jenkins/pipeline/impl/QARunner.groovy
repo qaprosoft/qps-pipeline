@@ -22,6 +22,11 @@ import com.qaprosoft.jenkins.pipeline.AbstractRunner
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
 public class QARunner extends AbstractRunner {
+	protected Map dslObjects = [:]
+	
+	protected def pipelineLibrary = "QPS-Pipeline"
+	protected def runnerClass = "com.qaprosoft.jenkins.pipeline.impl.QARunner"
+
 	
 	public QARunner(context) {
 		super(context)
@@ -316,6 +321,14 @@ public class QARunner extends AbstractRunner {
 		return currentSuite
 	}
 
+	protected String getPipelineScript() {
+		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runJob()"
+	}
+	
+	protected String getCronPipelineScript() {
+		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runCron()"
+	}
+
 	protected void registerObject(name, object) {
 		if (dslObjects.containsKey(name)) {
 			context.println("WARNING! key '" + name + "' already defined and will be replaced!")
@@ -323,6 +336,14 @@ public class QARunner extends AbstractRunner {
 			context.println("new item: " + object.dump())
 		}
 		dslObjects.put(name, object)
+	}
+
+	protected void setDslTargets(targets) {
+		this.factoryTarget = targets
+	}
+
+	protected void setDslClasspath(additionalClasspath) {
+		this.additionalClasspath = additionalClasspath
 	}
 
 }
