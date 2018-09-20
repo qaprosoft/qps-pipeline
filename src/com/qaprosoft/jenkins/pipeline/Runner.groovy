@@ -17,7 +17,7 @@ public class Runner {
 	//Events
 	public void onPush() {
 		context.node("master") {
-			scmClient.clone(true)
+			//scmClient.clone(true)
 			context.stage("Runner->onPush") { context.println("Runner->onPush") }
 		}
 	}
