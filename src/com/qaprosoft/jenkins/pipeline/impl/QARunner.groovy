@@ -416,10 +416,10 @@ public class QARunner extends AbstractRunner {
                 try {
                     context.timestamps {
 
-                        this.prepare(context.currentBuild)
+                        prepareBuild(context.currentBuild)
                         scmClient.clone()
 
-                        this.downloadResources()
+                        downloadResources()
 
                         def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
                         context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
@@ -491,6 +491,101 @@ public class QARunner extends AbstractRunner {
 
         context.println "node: " + Configuration.get("node")
         return Configuration.get("node")
+    }
+
+    //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
+    protected void prepareBuild(currentBuild) {
+
+        Configuration.set("BUILD_USER_ID", getBuildUser())
+
+        String BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+        String CARINA_CORE_VERSION = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
+        String suite = Configuration.get("suite")
+        String branch = Configuration.get("branch")
+        String env = Configuration.get("env")
+        //TODO: rename to devicePool
+        String devicePool = Configuration.get("devicePool")
+        String browser = Configuration.get("browser")
+
+        //TODO: improve carina to detect browser_version on the fly
+        String browser_version = Configuration.get("browser_version")
+
+        context.stage('Preparation') {
+            currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${branch}"
+            if (!isParamEmpty("${CARINA_CORE_VERSION}")) {
+                currentBuild.displayName += "|" + "${CARINA_CORE_VERSION}"
+            }
+            if (!isParamEmpty(devicePool)) {
+                currentBuild.displayName += "|${devicePool}"
+            }
+            if (!isParamEmpty(Configuration.get("browser"))) {
+                currentBuild.displayName += "|${browser}"
+            }
+            if (!isParamEmpty(Configuration.get("browser_version"))) {
+                currentBuild.displayName += "|${browser_version}"
+            }
+            currentBuild.description = "${suite}"
+
+            if (Executor.isMobile()) {
+                //this is mobile test
+                prepareForMobile()
+            }
+        }
+    }
+
+    protected void prepareForMobile() {
+        context.println("Runner->prepareForMobile")
+        def devicePool = Configuration.get("devicePool")
+        def defaultPool = Configuration.get("DefaultPool")
+        def platform = Configuration.get("platform")
+
+        if (platform.equalsIgnoreCase("android")) {
+            prepareForAndroid()
+        } else if (platform.equalsIgnoreCase("ios")) {
+            prepareForiOS()
+        } else {
+            context.echo "Unable to identify mobile platform: ${platform}"
+        }
+
+        //general mobile capabilities
+        //TODO: find valid way for naming this global "MOBILE" quota
+        Configuration.set("capabilities.deviceName", "QPS-HUB")
+        if ("DefaultPool".equalsIgnoreCase(devicePool)) {
+            //reuse list of devices from hidden parameter DefaultPool
+            Configuration.set("capabilities.devicePool", defaultPool)
+        } else {
+            Configuration.set("capabilities.devicePool", devicePool)
+        }
+        // ATTENTION! Obligatory remove device from the params otherwise
+        // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
+        // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
+        Configuration.remove("device")
+        //TODO: move it to the global jenkins variable
+        Configuration.set("capabilities.newCommandTimeout", "180")
+        Configuration.set("java.awt.headless", "true")
+
+    }
+
+    protected void prepareForAndroid() {
+        context.println("Runner->prepareForAndroid")
+        Configuration.set("mobile_app_clear_cache", "true")
+        Configuration.set("capabilities.platformName", "ANDROID")
+        Configuration.set("capabilities.autoGrantPermissions", "true")
+        Configuration.set("capabilities.noSign", "true")
+        Configuration.set("capabilities.STF_ENABLED", "true")
+        Configuration.set("capabilities.appWaitDuration", "270000")
+        Configuration.set("capabilities.androidInstallTimeout", "270000")
+    }
+
+    protected void prepareForiOS() {
+        context.println("Runner->prepareForiOS")
+        Configuration.set("capabilities.platform", "IOS")
+        Configuration.set("capabilities.platformName", "IOS")
+        Configuration.set("capabilities.deviceName", "*")
+        Configuration.set("capabilities.appPackage", "")
+        Configuration.set("capabilities.appActivity", "")
+        Configuration.set("capabilities.autoAcceptAlerts", "true")
+        Configuration.set("capabilities.STF_ENABLED", "false")
     }
 
     protected void downloadResources() {
