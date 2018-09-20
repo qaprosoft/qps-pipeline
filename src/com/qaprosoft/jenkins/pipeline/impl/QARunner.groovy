@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.pipeline.impl
 
+import com.qaprosoft.jenkins.pipeline.Executor
+import com.qaprosoft.zafira.ZafiraClient
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
@@ -26,13 +28,16 @@ import com.qaprosoft.scm.github.GitHub;
 
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
+
 public class QARunner extends AbstractRunner {
 	protected Map dslObjects = [:]
 	
 	protected def pipelineLibrary = "QPS-Pipeline"
 	protected def runnerClass = "com.qaprosoft.jenkins.pipeline.impl.QARunner"
-
+    protected static final String zafiraReport = "ZafiraReport"
 	protected def onlyUpdated = false
+    protected def uuid
+    protected def zc
 	protected def JobType jobType = JobType.JOB
 	
 	public enum JobType {
@@ -54,7 +59,7 @@ public class QARunner extends AbstractRunner {
 	public QARunner(context) {
 		super(context)
 		scmClient = new GitHub(context)
-
+        zc = new ZafiraClient(context)
 		if (Configuration.get("onlyUpdated") != null) {
 			onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
 		}
@@ -290,9 +295,10 @@ public class QARunner extends AbstractRunner {
 		
 							} catch (FileNotFoundException e) {
 								context.println("ERROR! Unable to find suite: " + suite.path)
+                                Executor.printStackTrace(context, e)
 							} catch (Exception e) {
 								context.println("ERROR! Unable to parse suite: " + suite.path)
-								printStackTrace(e)
+                                Executor.printStackTrace(context, e)
 							}
 		
 						}
@@ -351,7 +357,7 @@ public class QARunner extends AbstractRunner {
 		return context.pwd()
 	}
 
-	protected Object parseJSON(String path) {
+	public static Object parseJSON(String path) {
 		def inputFile = new File(path)
 		def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
 		return content
@@ -367,11 +373,11 @@ public class QARunner extends AbstractRunner {
 	}
 
 	protected String getPipelineScript() {
-		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runJob()"
+		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
 	}
 	
 	protected String getCronPipelineScript() {
-		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runCron()"
+		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
 	}
 
 	protected void registerObject(name, object) {
@@ -393,8 +399,249 @@ public class QARunner extends AbstractRunner {
 
 	protected void runJob() {
 		context.println("QARunner->runJob")
+        //use this method to override any beforeRunJob logic
+        beforeRunJob()
+
+        uuid = Executor.getUUID()
+        String nodeName = "master"
+
+        //TODO: remove master node assignment
+        context.node(nodeName) {
+            zc.queueZafiraTestRun(uuid)
+            nodeName = chooseNode()
+        }
+
+        context.node(nodeName) {
+            context.wrap([$class: 'BuildUser']) {
+                try {
+                    context.timestamps {
+
+                        this.prepare(context.currentBuild)
+                        scmClient.clone()
+
+                        this.downloadResources()
+
+                        def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
+                        context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
+                            this.build()
+                        }
+
+                        //TODO: think about seperate stage for uploading jacoco reports
+                        this.publishJacocoReport()
+                    }
+
+                } catch (Exception ex) {
+                    Executor.printStackTrace(context, ex)
+                    String failureReason = getFailure(context.currentBuild)
+                    context.echo "failureReason: ${failureReason}"
+                    //explicitly execute abort to resolve anomalies with in_progress tests...
+                    zc.abortZafiraTestRun(uuid, failureReason)
+                    throw ex
+                } finally {
+                    this.exportZafiraReport()
+                    this.sendTestRunResultsEmail()
+                    this.reportingResults()
+                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
+                    this.clean()
+                }
+            }
+        }
 	}
-	protected void runCron() {
+
+    protected void beforeRunJob() {
+        // do nothing
+    }
+
+    protected String chooseNode() {
+
+        Configuration.set("node", "master") //master is default node to execute job
+
+        //TODO: handle browserstack etc integration here?
+        switch(Configuration.get("platform").toLowerCase()) {
+            case "api":
+                context.println("Suite Type: API")
+                Configuration.set("node", "api")
+                Configuration.set("browser", "NULL")
+                break;
+            case "android":
+                context.println("Suite Type: ANDROID")
+                Configuration.set("node", "android")
+                break;
+            case "ios":
+                //TODO: Need to improve this to be able to handle where emulator vs. physical tests should be run.
+                context.println("Suite Type: iOS")
+                Configuration.set("node", "ios")
+                break;
+            default:
+                if ("NULL".equals(Configuration.get("browser"))) {
+                    context.println("Suite Type: Default")
+                    Configuration.set("node", "master")
+                } else {
+                    context.println("Suite Type: Web")
+                    Configuration.set("node", "web")
+                }
+        }
+
+        def nodeLabel = Configuration.get("node_label")
+        context.println("nodeLabel: " + nodeLabel)
+        if (!Executor.isParamEmpty(nodeLabel)) {
+            context.println("overriding default node to: " + nodeLabel)
+            Configuration.set("node", nodeLabel)
+        }
+
+        context.println "node: " + Configuration.get("node")
+        return Configuration.get("node")
+    }
+
+    protected void downloadResources() {
+        //DO NOTHING as of now
+
+/*		def CARINA_CORE_VERSION = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
+		context.stage("Download Resources") {
+		def pomFile = getSubProjectFolder() + "/pom.xml"
+		context.echo "pomFile: " + pomFile
+			if (context.isUnix()) {
+				context.sh "'mvn' -B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION"
+			} else {
+				//TODO: verify that forward slash is ok for windows nodes.
+				context.bat(/"mvn" -B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION/)
+			}
+		}
+*/	}
+
+    //TODO: move into valid jacoco related package
+    protected void publishJacocoReport() {
+        def JACOCO_ENABLE = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+        if (!JACOCO_ENABLE) {
+            context.println("do not publish any content to AWS S3 if integration is disabled")
+            return
+        }
+
+        def JACOCO_BUCKET = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+        def JOB_NAME = Configuration.get(Configuration.Parameter.JOB_NAME)
+        def BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+
+        def files = context.findFiles(glob: '**/jacoco.exec')
+        if(files.length == 1) {
+            context.archiveArtifacts artifacts: '**/jacoco.exec', fingerprint: true, allowEmptyArchive: true
+            // https://github.com/jenkinsci/pipeline-aws-plugin#s3upload
+            //TODO: move region 'us-west-1' into the global var 'JACOCO_REGION'
+            context.withAWS(region: 'us-west-1',credentials:'aws-jacoco-token') {
+                context.s3Upload(bucket:"$JACOCO_BUCKET", path:"$JOB_NAME/$BUILD_NUMBER/jacoco-it.exec", includePathPattern:'**/jacoco.exec')
+            }
+        }
+    }
+
+     protected String getFailure(currentBuild) {
+        //TODO: move string constants into object/enum if possible
+        currentBuild.result = 'FAILURE'
+        def failureReason = "undefined failure"
+
+        String JOB_URL = Configuration.get(Configuration.Parameter.JOB_URL)
+        String BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+        String JOB_NAME = Configuration.get(Configuration.Parameter.JOB_NAME)
+
+        def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
+        def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+
+        if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
+            failureReason = "COMPILATION ERROR"
+            bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
+            failureReason = "BUILD FAILURE"
+            bodyHeader = "<p>Unable to execute tests due to the build failure. ${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
+            currentBuild.result = 'ABORTED'
+            failureReason = "Aborted by " + getAbortCause(currentBuild)
+            bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
+            currentBuild.result = 'ABORTED'
+            failureReason = "Aborted by timeout"
+            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${JOB_URL}${BUILD_NUMBER}</p>"
+            subject = "TIMED OUT: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        }
+
+
+        def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
+		${zafiraReport}: ${JOB_URL}${BUILD_NUMBER}/${zafiraReport}<br>
+				Console: ${JOB_URL}${BUILD_NUMBER}/console"""
+
+        //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+        def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+        //TODO: enable emailing but seems like it should be moved to the notification code
+        context.emailext Executor.getEmailParams(body, subject, to)
+        return failureReason
+    }
+
+    protected void exportZafiraReport() {
+        //replace existing local emailable-report.html by Zafira content
+        def zafiraReport = zc.exportZafiraReport(uuid)
+        //context.println(zafiraReport)
+        if (!zafiraReport.isEmpty()) {
+            context.writeFile file: getWorkspace() + "/zafira/report.html", text: zafiraReport
+        }
+
+        //TODO: think about method renaming because in additions it also could redefine job status in Jenkins.
+        // or move below code into another method
+
+        // set job status based on zafira report
+        if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
+            //context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
+            context.currentBuild.result = 'FAILURE'
+        } else if (zafiraReport.contains("SKIP_ALL:")) {
+            context.currentBuild.result = 'UNSTABLE'
+        }
+    }
+
+    protected void sendTestRunResultsEmail() {
+        String emailList = Configuration.get("email_list")
+        emailList = overrideRecipients(emailList)
+        String failureEmailList = Configuration.get("failure_email_list")
+
+        if (emailList != null && !emailList.isEmpty()) {
+            zc.sendTestRunResultsEmail(uuid, emailList, "all")
+        }
+        if (isFailure(context.currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
+            zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures")
+        }
+    }
+
+    protected def overrideRecipients(emailList) {
+        return emailList
+    }
+
+    protected void reportingResults() {
+        context.stage('Results') {
+            publishReports('**/zafira/report.html', "${zafiraReport}")
+            publishReports('**/artifacts/**', 'eTAF_Artifacts')
+            publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
+            publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
+        }
+    }
+
+    protected void publishReports(String pattern, String reportName) {
+        def reports = context.findFiles(glob: pattern)
+        for (int i = 0; i < reports.length; i++) {
+            def parentFile = new File(reports[i].path).getParentFile()
+            if (parentFile == null) {
+                context.println "ERROR! Parent report is null! for " + reports[i].path
+                continue
+            }
+            def reportDir = parentFile.getPath()
+            context.println "Report File Found, Publishing " + reports[i].path
+            if (i > 0){
+                def reportIndex = "_" + i
+                reportName = reportName + reportIndex
+            }
+            context.publishHTML Executor.getReportParameters(reportDir, reports[i].name, reportName )
+        }
+    }
+
+    protected void runCron() {
 		context.println("QARunner->runCron")
 	}
+
 }
