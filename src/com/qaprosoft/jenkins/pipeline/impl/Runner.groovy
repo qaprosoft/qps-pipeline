@@ -5,6 +5,8 @@ import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
 
+import hudson.plugins.sonar.SonarGlobalConfiguration
+
 public class Runner extends AbstractRunner {
 	
 	public Runner(context) {
