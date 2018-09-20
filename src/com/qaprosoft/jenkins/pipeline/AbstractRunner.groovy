@@ -18,9 +18,11 @@ public abstract class AbstractRunner {
 		this.context = context
 	}
 
+	//Methods
+	abstract public void build()
+	
 	//Events
 	abstract public void onPush()
 	abstract public void onPullRequest()
-	abstract public void build()
 	
 }
