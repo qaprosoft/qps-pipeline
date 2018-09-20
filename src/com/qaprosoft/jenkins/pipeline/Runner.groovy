@@ -4,7 +4,8 @@ package com.qaprosoft.jenkins.pipeline
 //import com.qaprosoft.scm.ISCM
 //import com.qaprosoft.scm.github.GitHub;
 
-class Runner implements IRunner {
+class Runner { //implements IRunner {
+	def context
 	public Runner(context) {
 		this.context = context
 //		configuration = new Configuration(context)
