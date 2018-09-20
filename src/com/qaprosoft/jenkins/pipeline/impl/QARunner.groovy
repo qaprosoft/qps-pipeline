@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins.pipeline.impl
 
 import com.qaprosoft.jenkins.pipeline.Executor
+import com.qaprosoft.jenkins.pipeline.browserstack.OS
 import com.qaprosoft.zafira.ZafiraClient
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser;
@@ -38,7 +39,10 @@ public class QARunner extends AbstractRunner {
 	protected def onlyUpdated = false
     protected def uuid
     protected def zc
-	protected def JobType jobType = JobType.JOB
+    //CRON related vars
+    protected def listPipelines = []
+
+    protected def JobType jobType = JobType.JOB
 	
 	public enum JobType {
 		JOB("JOB"),
@@ -357,7 +361,7 @@ public class QARunner extends AbstractRunner {
 		return context.pwd()
 	}
 
-	public static Object parseJSON(String path) {
+    protected Object parseJSON(String path) {
 		def inputFile = new File(path)
 		def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
 		return content
@@ -786,6 +790,27 @@ public class QARunner extends AbstractRunner {
         return failureReason
     }
 
+    protected String getAbortCause(currentBuild)
+    {
+        def causee = ''
+        def actions = currentBuild.getRawBuild().getActions(jenkins.model.InterruptedBuildAction)
+        for (action in actions) {
+            def causes = action.getCauses()
+
+            // on cancellation, report who cancelled the build
+            for (cause in causes) {
+                causee = cause.getUser().getDisplayName()
+                cause = null
+            }
+            causes = null
+            action = null
+        }
+        actions = null
+
+        return causee
+    }
+
+
     protected void exportZafiraReport() {
         //replace existing local emailable-report.html by Zafira content
         def zafiraReport = zc.exportZafiraReport(uuid)
@@ -852,6 +877,322 @@ public class QARunner extends AbstractRunner {
 
     protected void runCron() {
 		context.println("QARunner->runCron")
-	}
+        def nodeName = "master"
+        //TODO: remove master node assignment
+        context.node(nodeName) {
+            scmClient.clone()
+
+            def WORKSPACE = getWorkspace()
+            context.println("WORKSPACE: " + WORKSPACE)
+            def project = Configuration.get("project")
+            def sub_project = Configuration.get("sub_project")
+            def jenkinsFile = ".jenkinsfile.json"
+
+            if (!context.fileExists("${jenkinsFile}")) {
+                context.println("no .jenkinsfile.json discovered! Scanner will use default qps-pipeline logic for project: ${project}")
+            }
+
+            def suiteFilter = "src/test/resources/**"
+            Object subProjects = parseJSON(WORKSPACE + "/" + jenkinsFile).sub_projects
+            subProjects.each {
+                listPipelines = []
+                suiteFilter = it.suite_filter
+                sub_project = it.name
+
+                def subProjectFilter = sub_project
+                if (sub_project.equals(".")) {
+                    subProjectFilter = "**"
+                }
+
+                def files = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
+                if(files.length > 0) {
+                    context.println("Number of Test Suites to Scan Through: " + files.length)
+                    for (int i = 0; i < files.length; i++) {
+                        parsePipeline(WORKSPACE + "/" + files[i].path)
+                    }
+
+                    listPipelines = sortPipelineList(listPipelines)
+                    executeStages(parseFolderName())
+                } else {
+                    context.println("No Test Suites Found to Scan...")
+                }
+            }
+        }
+
+    }
+
+    protected void parsePipeline(String filePath) {
+        //context.println("filePath: " + filePath)
+        def XmlSuite currentSuite = null
+        try {
+            currentSuite = parseSuite(filePath)
+        } catch (FileNotFoundException e) {
+            context.println("ERROR! Unable to find suite: " + filePath)
+            Executor.printStackTrace(context, e)
+            return
+        } catch (Exception e) {
+            context.println("ERROR! Unable to parse suite: " + filePath)
+            Executor.printStackTrace(context, e)
+            return
+        }
+
+        def jobName = currentSuite.getParameter("jenkinsJobName").toString()
+        def supportedPipelines = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
+        def orderNum = currentSuite.getParameter("jenkinsJobExecutionOrder").toString()
+        if (orderNum.equals("null")) {
+            orderNum = "0"
+            context.println("specify by default '0' order - start asap")
+        }
+        def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode").toString()
+
+        def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
+
+        def currentEnvs = getCronEnv(currentSuite)
+        def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
+
+        // override suite email_list from params if defined
+        def emailList = currentSuite.getParameter("jenkinsEmail").toString()
+        def paramEmailList = Configuration.get("email_list")
+        if (paramEmailList != null && !paramEmailList.isEmpty()) {
+            emailList = paramEmailList
+        }
+
+        def priorityNum = "5"
+        def curPriorityNum = Configuration.get("BuildPriority")
+        if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
+            priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
+        }
+
+        //def overrideFields = currentSuite.getParameter("overrideFields").toString()
+        def overrideFields = Configuration.get("overrideFields")
+
+        String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
+        String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
+
+        def currentBrowser = Configuration.get("browser")
+
+        if (currentBrowser == null || currentBrowser.isEmpty()) {
+            currentBrowser = "NULL"
+        }
+
+        logLine += "	currentBrowser: ${currentBrowser};\n"
+        context.println(logLine)
+
+        if (!supportedPipelines.contains("null")) {
+            for (def pipeName : supportedPipelines.split(",")) {
+                if (!pipelineJobName.equals(pipeName)) {
+                    //launch test only if current pipeName exists among supportedPipelines
+                    continue;
+                }
+                for (def currentEnv : currentEnvs.split(",")) {
+                    for (def supportedEnv : supportedEnvs.split(",")) {
+                        //context.println("supportedEnv: " + supportedEnv)
+                        if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
+                            //context.println("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
+                            //launch test only if current suite support cron regression execution for current env
+                            continue
+                        }
+
+                        for (def supportedBrowser : supportedBrowsers.split(",")) {
+                            // supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
+                            // supportedBrowser - splitted single browser name from supportedBrowsers
+                            def browser = currentBrowser
+                            def browserVersion = null
+                            def os = null
+                            def osVersion = null
+
+                            String browserInfo = supportedBrowser
+                            if (supportedBrowser.contains("-")) {
+                                def systemInfoArray = supportedBrowser.split("-")
+                                String osInfo = systemInfoArray[0]
+                                os = OS.getName(osInfo)
+                                osVersion = OS.getVersion(osInfo)
+                                browserInfo = systemInfoArray[1]
+                            }
+                            def browserInfoArray = browserInfo.split(" ")
+                            browser = browserInfoArray[0]
+                            if (browserInfoArray.size() > 1) {
+                                browserVersion = browserInfoArray[1]
+                            }
+
+                            // currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
+
+                            //context.println("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
+                            if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
+                                //context.println("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
+                                continue;
+                            }
+
+                            //context.println("adding ${filePath} suite to pipeline run...")
+
+                            def pipelineMap = [:]
+
+                            def branch = Configuration.get("branch")
+                            def ci_parent_url = Configuration.get("ci_parent_url")
+                            if (ci_parent_url.isEmpty()) {
+                                ci_parent_url = Configuration.get(Configuration.Parameter.JOB_URL)
+                            }
+                            def ci_parent_build = Configuration.get("ci_parent_build")
+                            if (ci_parent_build.isEmpty()) {
+                                ci_parent_build = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+                            }
+                            def retry_count = Configuration.get("retry_count")
+                            def thread_count = Configuration.get("thread_count")
+                            // put all not NULL args into the pipelineMap for execution
+                            Executor.putNotNull(pipelineMap, "browser", browser)
+                            Executor.putNotNull(pipelineMap, "browser_version", browserVersion)
+                            Executor.putNotNull(pipelineMap, "os", os)
+                            Executor.putNotNull(pipelineMap, "os_version", osVersion)
+                            pipelineMap.put("name", pipeName)
+                            pipelineMap.put("branch", branch)
+                            pipelineMap.put("ci_parent_url", ci_parent_url)
+                            pipelineMap.put("ci_parent_build", ci_parent_build)
+                            pipelineMap.put("retry_count", retry_count)
+                            Executor.putNotNull(pipelineMap, "thread_count", thread_count)
+                            pipelineMap.put("jobName", jobName)
+                            pipelineMap.put("env", supportedEnv)
+                            pipelineMap.put("order", orderNum)
+                            pipelineMap.put("BuildPriority", priorityNum)
+                            Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
+                            Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+                            Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
+
+                            //context.println("initialized ${filePath} suite to pipeline run...")
+                            registerPipeline(currentSuite, pipelineMap)
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    protected def getCronEnv(currentSuite) {
+        //currentSuite is need to override action in private pipelines
+        return Configuration.get("env")
+    }
+
+    protected def registerPipeline(currentSuite, pipelineMap) {
+        listPipelines.add(pipelineMap)
+    }
+
+    @NonCPS
+    protected def sortPipelineList(List pipelinesList) {
+        context.println("Finished Dynamic Mapping: " + pipelinesList.dump())
+        pipelinesList = pipelinesList.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
+        context.println("Finished Dynamic Mapping Sorted Order: " + pipelinesList.dump())
+        return pipelinesList
+
+    }
+
+    protected def parseFolderName() {
+        def folderName = ""
+        def workspace = this.getWorkspace();
+        if (workspace.contains("jobs/")) {
+            def array = workspace.split("jobs/")
+            for (def i = 1; i < array.size() - 1; i++){
+                folderName  = folderName + array[i]
+            }
+            folderName = folderName.replaceAll(".\$","")
+        } else {
+            def array = workspace.split("/")
+            folderName = array[array.size() - 2]
+        }
+
+        return folderName
+    }
+
+    protected def executeStages(String folderName) {
+        def mappedStages = [:]
+
+        boolean parallelMode = true
+
+        //combine jobs with similar priority into the single paralle stage and after that each stage execute in parallel
+        String beginOrder = "0"
+        String curOrder = ""
+        for (Map entry : listPipelines) {
+            def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
+            context.println("stageName: ${stageName}")
+
+            boolean propagateJob = true
+            if (entry.get("executionMode").toString().contains("continue")) {
+                //do not interrupt pipeline/cron if any child job failed
+                propagateJob = false
+            }
+            if (entry.get("executionMode").toString().contains("abort")) {
+                //interrupt pipeline/cron and return fail status to piepeline if any child job failed
+                propagateJob = true
+            }
+
+            curOrder = entry.get("order")
+            //context.println("beginOrder: ${beginOrder}; curOrder: ${curOrder}")
+
+            // do not wait results for jobs with default order "0". For all the rest we should wait results between phases
+            boolean waitJob = false
+            if (curOrder.toInteger() > 0) {
+                waitJob = true
+            }
+
+            if (curOrder.equals(beginOrder)) {
+                //context.println("colect into order: ${curOrder}; job: ${stageName}")
+                mappedStages[stageName] = buildOutStages(folderName, entry, waitJob, propagateJob)
+            } else {
+                context.parallel mappedStages
+
+                //reset mappedStages to empty after execution
+                mappedStages = [:]
+                beginOrder = curOrder
+
+                //add existing pipeline as new one in the current stage
+                mappedStages[stageName] = buildOutStages(folderName, entry, waitJob, propagateJob)
+            }
+        }
+
+        if (!mappedStages.isEmpty()) {
+            //context.println("launch jobs with order: ${curOrder}")
+            context.parallel mappedStages
+        }
+
+    }
+
+    def buildOutStages(String folderName, Map entry, boolean waitJob, boolean propagateJob) {
+        return {
+            buildOutStage(folderName, entry, waitJob, propagateJob)
+        }
+    }
+
+    protected def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propagateJob) {
+        context.stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))) {
+            //context.println("Dynamic Stage Created For: " + entry.get("jobName"))
+            //context.println("Checking EmailList: " + entry.get("emailList"))
+
+            List jobParams = []
+            for (param in entry) {
+                jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
+            }
+            context.println(jobParams.dump())
+            //context.println("propagate: " + propagateJob)
+            try {
+                context.build job: folderName + "/" + entry.get("jobName"),
+                        propagate: propagateJob,
+                        parameters: jobParams,
+                        wait: waitJob
+            } catch (Exception ex) {
+                printStackTrace(ex)
+
+                def body = "Unable to start job via cron! " + ex.getMessage()
+                def subject = "JOBSTART FAILURE: " + entry.get("jobName")
+                def to = entry.get("email_list") + "," + Configuration.get("email_list")
+
+                context.emailext getEmailParams(body, subject, to)
+            }
+        }
+    }
+
+    public void rerunJobs(){
+        context.stage('Rerun Tests'){
+            zc.smartRerun()
+        }
+    }
 
 }
