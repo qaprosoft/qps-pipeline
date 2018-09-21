@@ -94,6 +94,19 @@ public class Executor {
         return folderName
     }
 
+    static String getAbortCause(currentBuild)
+    {
+        def abortCause = ''
+        def actions = currentBuild.getRawBuild().getActions(jenkins.model.InterruptedBuildAction)
+        for (action in actions) {
+            // on cancellation, report who cancelled the build
+            for (cause in action.getCauses()) {
+                abortCause = cause.getUser().getDisplayName()
+            }
+        }
+        return abortCause
+    }
+
     /** Determines BuildCause */
     static String getBuildCause(jobName, currentBuild) {
         String buildCause = null
