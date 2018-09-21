@@ -188,6 +188,14 @@ public class Executor {
         return hosts
     }
 
+    static def setDefaultIfEmpty(stringKey, enumKey){
+        def configValue = Configuration.get(stringKey)
+        if (configValue.isEmpty()) {
+            configValue = Configuration.get(enumKey)
+        }
+        return configValue
+    }
+
     static void putNotNull(map, key, value) {
         if (value != null && !value.equalsIgnoreCase("null")) {
             map.put(key, value)
