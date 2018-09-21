@@ -42,7 +42,7 @@ public class QARunner extends AbstractRunner {
     protected def zc
     //CRON related vars
     protected def listPipelines = []
-    protected def jobType = JobType.JOB
+    protected JobType jobType = JobType.JOB
 
     public enum JobType {
         JOB("JOB"),
@@ -173,12 +173,12 @@ public class QARunner extends AbstractRunner {
     protected void scan() {
 
         context.stage("Scan Repository") {
-            def BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+            def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def project = Configuration.get("project")
             def jobFolder = Configuration.get("project")
 
             def branch = Configuration.get("branch")
-            currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
+            currentBuild.displayName = "#${buildNumber}|${project}|${branch}"
 
             def workspace = getWorkspace()
             context.println("WORKSPACE: ${workspace}")
