@@ -367,8 +367,8 @@ class Runner extends Executor {
 -Dci_user_first_name=\"$BUILD_USER_FIRST_NAME\" \
 -Dci_user_last_name=\"$BUILD_USER_LAST_NAME\" \
 -Dci_user_email=\"$BUILD_USER_EMAIL\" \
--Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \ 
 -Ds3_save_screenshots=true \
+-Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
 clean test"
 
 			//TODO: move 8000 port into the global var
