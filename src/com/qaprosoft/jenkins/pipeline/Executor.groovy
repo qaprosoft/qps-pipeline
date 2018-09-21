@@ -22,12 +22,6 @@ public class Executor {
         return params
     }
 
-    static void printStackTrace(context, Exception ex) {
-        context.println "exception: " + ex.getMessage()
-        context.println "exception class: " + ex.getClass().getName()
-        context.println "stacktrace: " + Arrays.toString(ex.getStackTrace())
-    }
-
     static def getReportParameters(reportDir, reportFiles, reportName) {
         def reportParameters = [allowMissing: false,
                                 alwaysLinkToLastBuild: false,

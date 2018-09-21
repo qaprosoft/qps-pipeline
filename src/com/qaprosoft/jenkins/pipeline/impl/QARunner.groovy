@@ -298,10 +298,10 @@ public class QARunner extends AbstractRunner {
 		
 							} catch (FileNotFoundException e) {
 								context.println("ERROR! Unable to find suite: " + suite.path)
-                                Executor.printStackTrace(context, e)
+                                printStackTrace(e)
 							} catch (Exception e) {
 								context.println("ERROR! Unable to parse suite: " + suite.path)
-                                Executor.printStackTrace(context, e)
+                                printStackTrace(e)
 							}
 		
 						}
@@ -434,13 +434,13 @@ public class QARunner extends AbstractRunner {
                         this.publishJacocoReport()
                     }
 
-                } catch (Exception ex) {
-                    Executor.printStackTrace(context, ex)
+                } catch (Exception e) {
+                    printStackTrace(e)
                     String failureReason = getFailure(context.currentBuild)
                     context.echo "failureReason: ${failureReason}"
                     //explicitly execute abort to resolve anomalies with in_progress tests...
                     zc.abortZafiraTestRun(uuid, failureReason)
-                    throw ex
+                    throw e
                 } finally {
                     this.exportZafiraReport()
                     this.sendTestRunResultsEmail()
@@ -929,11 +929,11 @@ public class QARunner extends AbstractRunner {
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
             context.println("ERROR! Unable to find suite: " + filePath)
-            Executor.printStackTrace(context, e)
+            printStackTrace(e)
             return
         } catch (Exception e) {
             context.println("ERROR! Unable to parse suite: " + filePath)
-            Executor.printStackTrace(context, e)
+            printStackTrace(e)
             return
         }
 
@@ -1178,10 +1178,10 @@ public class QARunner extends AbstractRunner {
                         propagate: propagateJob,
                         parameters: jobParams,
                         wait: waitJob
-            } catch (Exception ex) {
-                printStackTrace(ex)
+            } catch (Exception e) {
+                printStackTrace(e)
 
-                def body = "Unable to start job via cron! " + ex.getMessage()
+                def body = "Unable to start job via cron! " + e.getMessage()
                 def subject = "JOBSTART FAILURE: " + entry.get("jobName")
                 def to = entry.get("email_list") + "," + Configuration.get("email_list")
 
@@ -1194,6 +1194,41 @@ public class QARunner extends AbstractRunner {
         context.stage('Rerun Tests'){
             zc.smartRerun()
         }
+    }
+
+    public void printStackTrace(Exception e) {
+        context.println "exception: " + e.getMessage()
+        context.println "exception class: " + e.getClass().getName()
+        context.println "stacktrace: " + Arrays.toString(e.getStackTrace())
+    }
+
+    public void publishUnitTestResults() {
+        //publish junit/cobertura reports
+        context.junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+        context.step([$class: 'CoberturaPublisher',
+                      autoUpdateHealth: false,
+                      autoUpdateStability: false,
+                      coberturaReportFile: '**/target/site/cobertura/coverage.xml',
+                      failUnhealthy: false,
+                      failUnstable: false,
+                      maxNumberOfBuilds: 0,
+                      onlyStable: false,
+                      sourceEncoding: 'ASCII',
+                      zoomCoverageChart: false])
+    }
+
+    /** Checks if current job started as rebuild */
+    public Boolean isRebuild(jobName) {
+        Boolean isRebuild = false
+        /* Gets CauseActions of the job */
+        context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
+            action ->
+                /* Search UpstreamCause among CauseActions */
+                if (action.findCause(hudson.model.Cause.UpstreamCause.class) != null)
+                /* If UpstreamCause exists and has the same name as current job, rebuild was called */
+                    isRebuild = (jobName == action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())
+        }
+        return isRebuild
     }
 
 }
