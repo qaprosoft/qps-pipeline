@@ -998,28 +998,17 @@ public class QARunner extends AbstractRunner {
 
                             def pipelineMap = [:]
 
-                            def branch = Configuration.get("branch")
-                            def ci_parent_url = Configuration.get("ci_parent_url")
-                            if (ci_parent_url.isEmpty()) {
-                                ci_parent_url = Configuration.get(Configuration.Parameter.JOB_URL)
-                            }
-                            def ci_parent_build = Configuration.get("ci_parent_build")
-                            if (ci_parent_build.isEmpty()) {
-                                ci_parent_build = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-                            }
-                            def retry_count = Configuration.get("retry_count")
-                            def thread_count = Configuration.get("thread_count")
                             // put all not NULL args into the pipelineMap for execution
                             Executor.putNotNull(pipelineMap, "browser", browser)
                             Executor.putNotNull(pipelineMap, "browser_version", browserVersion)
                             Executor.putNotNull(pipelineMap, "os", os)
                             Executor.putNotNull(pipelineMap, "os_version", osVersion)
                             pipelineMap.put("name", pipeName)
-                            pipelineMap.put("branch", branch)
-                            pipelineMap.put("ci_parent_url", ci_parent_url)
-                            pipelineMap.put("ci_parent_build", ci_parent_build)
-                            pipelineMap.put("retry_count", retry_count)
-                            Executor.putNotNull(pipelineMap, "thread_count", thread_count)
+                            pipelineMap.put("branch", Configuration.get("branch"))
+                            pipelineMap.put("ci_parent_url", Executor.setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
+                            pipelineMap.put("ci_parent_build", Executor.setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
+                            pipelineMap.put("retry_count", Configuration.get("retry_count"))
+                            Executor.putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
                             pipelineMap.put("jobName", jobName)
                             pipelineMap.put("env", supportedEnv)
                             pipelineMap.put("order", orderNum)
@@ -1029,7 +1018,7 @@ public class QARunner extends AbstractRunner {
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
 
                             //context.println("initialized ${filePath} suite to pipeline run...")
-                            registerPipeline(currentSuite, pipelineMap)
+                            registerPipeline(pipelineMap)
                         }
 
                     }
@@ -1043,7 +1032,7 @@ public class QARunner extends AbstractRunner {
         return Configuration.get("env")
     }
 
-    protected def registerPipeline(currentSuite, pipelineMap) {
+    protected def registerPipeline(pipelineMap) {
         listPipelines.add(pipelineMap)
     }
 
