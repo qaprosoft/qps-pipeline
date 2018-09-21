@@ -906,6 +906,11 @@ public class QARunner extends AbstractRunner {
         }
 
         def jobName = currentSuite.getParameter("jenkinsJobName").toString()
+        def jobCreated = currentSuite.getParameter("jenkinsJobCreation")
+        if (jobCreated != null && !jobCreated.toBoolean()) {
+            //no need to proceed as jenkinsJobCreation=false
+            return
+        }
         def supportedPipelines = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
         def orderNum = currentSuite.getParameter("jenkinsJobExecutionOrder").toString()
         if (orderNum.equals("null")) {
@@ -1106,6 +1111,16 @@ public class QARunner extends AbstractRunner {
             //context.println("Checking EmailList: " + entry.get("emailList"))
 
             List jobParams = []
+
+            //add current build params from cron
+            for (param in Configuration.getParams()) {
+                if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
+                    jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
+                } else {
+                    jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
+                }
+            }
+
             for (param in entry) {
                 jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
             }
