@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.pipeline
 
+import groovy.json.JsonSlurperClassic
+
 import static java.util.UUID.randomUUID
 
 public class Executor {
@@ -57,6 +59,13 @@ public class Executor {
     static boolean isParamEmpty(String value) {
         return value == null || value.isEmpty() || value.equals("NULL")
     }
+
+    static Object parseJSON(String path) {
+        def inputFile = new File(path)
+        def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
+        return content
+    }
+
 
     static def parseFolderName(workspace) {
         def folderName = ""
