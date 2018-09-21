@@ -368,6 +368,7 @@ class Runner extends Executor {
 -Dci_user_last_name=\"$BUILD_USER_LAST_NAME\" \
 -Dci_user_email=\"$BUILD_USER_EMAIL\" \
 -Ds3_save_screenshots=true \
+-Dauto_screenshot=true \
 -Duser.timezone=${Configurator.get(Configurator.Parameter.TIMEZONE)} \
 clean test"
 
