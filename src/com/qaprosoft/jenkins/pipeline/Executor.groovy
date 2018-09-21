@@ -95,10 +95,10 @@ public class Executor {
     }
 
     /** Determines BuildCause */
-    static String getBuildCause(jobName, context) {
+    static String getBuildCause(jobName, currentBuild) {
         String buildCause = null
         /* Gets CauseActions of the job */
-        context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
+        currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
             action ->
 //                context.println "DUMP" + action.dump()
                 /* Searches UpstreamCause among CauseActions and checks if it is not the same job as current(the other way it was rebuild) */
@@ -124,6 +124,21 @@ public class Executor {
         }
         return buildCause
     }
+
+    /** Checks if current job started as rebuild */
+    public Boolean isRebuild(currentBuild) {
+        Boolean isRebuild = false
+        /* Gets CauseActions of the job */
+        currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
+            action ->
+                /* Search UpstreamCause among CauseActions */
+                if (action.findCause(hudson.model.Cause.UpstreamCause.class) != null)
+                /* If UpstreamCause exists and has the same name as current job, rebuild was called */
+                    isRebuild = (jobName == action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())
+        }
+        return isRebuild
+    }
+
 
     static def enableVideoStreaming(node, message, capability, goals) {
         if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {

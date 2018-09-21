@@ -642,7 +642,7 @@ public class QARunner extends AbstractRunner {
             //TODO: move 8000 port into the global var
             def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
-            Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), context))
+            Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), context.currentBuild))
 
             def goals = Configuration.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
@@ -833,6 +833,7 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    //Overrided in private pipeline
     protected def overrideRecipients(emailList) {
         return emailList
     }
@@ -1189,18 +1190,5 @@ public class QARunner extends AbstractRunner {
                       zoomCoverageChart: false])
     }
 
-    /** Checks if current job started as rebuild */
-    public Boolean isRebuild(jobName) {
-        Boolean isRebuild = false
-        /* Gets CauseActions of the job */
-        context.currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
-            action ->
-                /* Search UpstreamCause among CauseActions */
-                if (action.findCause(hudson.model.Cause.UpstreamCause.class) != null)
-                /* If UpstreamCause exists and has the same name as current job, rebuild was called */
-                    isRebuild = (jobName == action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())
-        }
-        return isRebuild
-    }
 
 }
