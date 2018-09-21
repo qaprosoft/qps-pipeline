@@ -487,14 +487,13 @@ public class QARunner extends AbstractRunner {
     //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
     protected void prepareBuild(currentBuild) {
 
-        Configuration.set("BUILD_USER_ID", getBuildUser())
+        Configuration.set("BUILD_USER_ID", Executor.getBuildUser(context.currentBuild))
 
-        String BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String CARINA_CORE_VERSION = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
+        String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+        String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
-        //TODO: rename to devicePool
         String devicePool = Configuration.get("devicePool")
         String browser = Configuration.get("browser")
 
@@ -502,9 +501,9 @@ public class QARunner extends AbstractRunner {
         String browser_version = Configuration.get("browser_version")
 
         context.stage('Preparation') {
-            currentBuild.displayName = "#${BUILD_NUMBER}|${suite}|${env}|${branch}"
-            if (!Executor.isParamEmpty("${CARINA_CORE_VERSION}")) {
-                currentBuild.displayName += "|" + "${CARINA_CORE_VERSION}"
+            currentBuild.displayName = "#${buildNumber}|${suite}|${env}|${branch}"
+            if (!Executor.isParamEmpty("${carinaCoreVersion}")) {
+                currentBuild.displayName += "|" + "${carinaCoreVersion}"
             }
             if (!Executor.isParamEmpty(devicePool)) {
                 currentBuild.displayName += "|${devicePool}"
@@ -524,15 +523,7 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected String getBuildUser() {
-        try {
-            return context.currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
-        } catch (Exception e) {
-            return ""
-        }
-    }
-
-    protected void prepareForMobile() {
+     protected void prepareForMobile() {
         context.println("Runner->prepareForMobile")
         def devicePool = Configuration.get("devicePool")
         def defaultPool = Configuration.get("DefaultPool")

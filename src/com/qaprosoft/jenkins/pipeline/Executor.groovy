@@ -41,14 +41,6 @@ public class Executor {
         return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
     }
 
-    static boolean isFailure(currentBuild) {
-        boolean failure = false
-        if (currentBuild.result) {
-            failure = "FAILURE".equals(currentBuild.result.name)
-        }
-        return failure
-    }
-
     static String getSubProjectFolder() {
         //specify current dir as subProject folder by default
         def subProjectFolder = "."
@@ -92,6 +84,22 @@ public class Executor {
         }
 
         return folderName
+    }
+
+    static boolean isFailure(currentBuild) {
+        boolean failure = false
+        if (currentBuild.result) {
+            failure = "FAILURE".equals(currentBuild.result.name)
+        }
+        return failure
+    }
+
+    static String getBuildUser(currentBuild) {
+        try {
+            return currentBuild.rawBuild.getCause(hudson.model.Cause.UserIdCause).getUserId()
+        } catch (Exception e) {
+            return ""
+        }
     }
 
     static String getAbortCause(currentBuild)
