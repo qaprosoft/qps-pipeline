@@ -211,7 +211,7 @@ public class QARunner extends AbstractRunner {
 						return
 					}
 		
-					Object subProjects = this.parseJSON("${workspace}/${jenkinsFile}").sub_projects
+					Object subProjects = Executor.parseJSON("${workspace}/${jenkinsFile}").sub_projects
 
                     context.println "PRSED: " + subProjects
 					subProjects.each {
@@ -362,11 +362,6 @@ public class QARunner extends AbstractRunner {
 		return context.pwd()
 	}
 
-    protected Object parseJSON(String path) {
-		def inputFile = new File(path)
-		def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
-		return content
-	}
 
 	protected XmlSuite parseSuite(String path) {
 		def xmlFile = new Parser(path)
@@ -895,7 +890,7 @@ public class QARunner extends AbstractRunner {
             }
 
             def suiteFilter = "src/test/resources/**"
-            Object subProjects = parseJSON(WORKSPACE + "/" + jenkinsFile).sub_projects
+            Object subProjects = Executor.parseJSON(WORKSPACE + "/" + jenkinsFile).sub_projects
             subProjects.each {
                 listPipelines = []
                 suiteFilter = it.suite_filter
