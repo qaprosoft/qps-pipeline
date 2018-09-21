@@ -1,24 +1,19 @@
 package com.qaprosoft.jenkins.pipeline.impl
 
+@Grab('org.testng:testng:6.8.8')
 import com.qaprosoft.jenkins.pipeline.Executor
+import com.qaprosoft.jenkins.pipeline.ExecutorTrait
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 import com.qaprosoft.zafira.ZafiraClient
-@Grab('org.testng:testng:6.8.8')
-import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import com.cloudbees.groovy.cps.NonCPS
-
-import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
-
 import java.nio.file.FileSystems
 import java.nio.file.Path
 import java.nio.file.PathMatcher
 import java.nio.file.Paths
-
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
-
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
@@ -29,7 +24,7 @@ import com.qaprosoft.scm.github.GitHub;
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
 
-public class QARunner extends AbstractRunner {
+public class QARunner extends AbstractRunner implements ExecutorTrait {
 
     protected Map dslObjects = [:]
     protected static final String zafiraReport = "ZafiraReport"
@@ -1123,12 +1118,6 @@ public class QARunner extends AbstractRunner {
         context.stage('Rerun Tests'){
             zc.smartRerun()
         }
-    }
-
-    public void printStackTrace(Exception e) {
-        context.println "exception: " + e.getMessage()
-        context.println "exception class: " + e.getClass().getName()
-        context.println "stacktrace: " + Arrays.toString(e.getStackTrace())
     }
 
     public void publishUnitTestResults() {
