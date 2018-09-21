@@ -1,6 +1,8 @@
 package com.qaprosoft.jenkins.pipeline
 
 import groovy.json.JsonSlurperClassic
+import org.testng.xml.Parser
+import org.testng.xml.XmlSuite
 
 import static java.util.UUID.randomUUID
 
@@ -66,6 +68,14 @@ public class Executor {
         return content
     }
 
+    static XmlSuite parseSuite(String path) {
+        def xmlFile = new Parser(path)
+        xmlFile.setLoadClasses(false)
+
+        List<XmlSuite> suiteXml = xmlFile.parseToList()
+        XmlSuite currentSuite = suiteXml.get(0)
+        return currentSuite
+    }
 
     static def parseFolderName(workspace) {
         def folderName = ""

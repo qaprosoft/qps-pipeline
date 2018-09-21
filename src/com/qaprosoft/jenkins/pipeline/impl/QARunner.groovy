@@ -264,7 +264,7 @@ public class QARunner extends AbstractRunner {
 							suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 		
 							try {
-								XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
+								XmlSuite currentSuite = Executor.parseSuite(workspace + "/" + suite.path)
 								if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
 									context.println("suite name: " + suiteName)
 									context.println("suite path: " + suite.path)
@@ -363,14 +363,6 @@ public class QARunner extends AbstractRunner {
 	}
 
 
-	protected XmlSuite parseSuite(String path) {
-		def xmlFile = new Parser(path)
-		xmlFile.setLoadClasses(false)
-
-		List<XmlSuite> suiteXml = xmlFile.parseToList()
-		XmlSuite currentSuite = suiteXml.get(0)
-		return currentSuite
-	}
 
 	protected String getPipelineScript() {
 		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
@@ -924,7 +916,7 @@ public class QARunner extends AbstractRunner {
         //context.println("filePath: " + filePath)
         def XmlSuite currentSuite = null
         try {
-            currentSuite = parseSuite(filePath)
+            currentSuite = Executor.parseSuite(filePath)
         } catch (FileNotFoundException e) {
             context.println("ERROR! Unable to find suite: " + filePath)
             printStackTrace(e)
