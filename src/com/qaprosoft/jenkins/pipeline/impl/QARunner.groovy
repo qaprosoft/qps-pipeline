@@ -1122,7 +1122,7 @@ public class QARunner extends AbstractRunner {
                 def subject = "JOBSTART FAILURE: " + entry.get("jobName")
                 def to = entry.get("email_list") + "," + Configuration.get("email_list")
 
-                context.emailext getEmailParams(body, subject, to)
+                context.emailext Executor.getEmailParams(body, subject, to)
             }
         }
     }
