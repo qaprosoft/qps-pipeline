@@ -160,6 +160,12 @@ public class Executor {
         return isRebuild
     }
 
+    @NonCPS
+    static def sortPipelineList(List pipelinesList) {
+        pipelinesList = pipelinesList.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
+        return pipelinesList
+
+    }
 
     static def enableVideoStreaming(node, message, capability, goals) {
         if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {
