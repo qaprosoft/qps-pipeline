@@ -30,33 +30,26 @@ import hudson.plugins.sonar.SonarGlobalConfiguration
 
 
 public class QARunner extends AbstractRunner {
-    protected Map dslObjects = [:]
 
+    protected Map dslObjects = [:]
+    protected static final String zafiraReport = "ZafiraReport"
     protected def pipelineLibrary = "QPS-Pipeline"
     protected def runnerClass = "com.qaprosoft.jenkins.pipeline.impl.QARunner"
     protected def folderName = "Automation"
-    protected static final String zafiraReport = "ZafiraReport"
     protected def onlyUpdated = false
+    protected def currentBuild
     protected def uuid
     protected def zc
     //CRON related vars
     protected def listPipelines = []
-
-    protected def JobType jobType = JobType.JOB
+    protected def jobType = JobType.JOB
 
     public enum JobType {
         JOB("JOB"),
         CRON("CRON")
-
-        private final String type
-
+        String type
         JobType(String type) {
             this.type = type
-        }
-
-        @NonCPS
-        public String getType() {
-            return type
         }
     }
 
@@ -64,6 +57,7 @@ public class QARunner extends AbstractRunner {
         super(context)
         scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
+        currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
             onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
         }
@@ -184,7 +178,7 @@ public class QARunner extends AbstractRunner {
             def jobFolder = Configuration.get("project")
 
             def branch = Configuration.get("branch")
-            context.currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
+            currentBuild.displayName = "#${BUILD_NUMBER}|${project}|${branch}"
 
             def workspace = getWorkspace()
             context.println("WORKSPACE: ${workspace}")
@@ -207,7 +201,7 @@ public class QARunner extends AbstractRunner {
             def jenkinsFile = ".jenkinsfile.json"
             if (!context.fileExists("${workspace}/${jenkinsFile}")) {
                 context.println("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
-                context.currentBuild.result = 'UNSTABLE'
+                currentBuild.result = 'UNSTABLE'
                 return
             }
 
@@ -335,7 +329,7 @@ public class QARunner extends AbstractRunner {
     @NonCPS
     protected boolean isUpdated(String patterns) {
         def isUpdated = false
-        def changeLogSets = context.currentBuild.rawBuild.changeSets
+        def changeLogSets = currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
             /* Extracts GitChangeLogs from changeLogSet */
             for (entry in changeLogSet.getItems()) {
@@ -407,7 +401,7 @@ public class QARunner extends AbstractRunner {
                 try {
                     context.timestamps {
 
-                        prepareBuild(context.currentBuild)
+                        prepareBuild(currentBuild)
                         scmClient.clone()
 
                         downloadResources()
@@ -418,22 +412,22 @@ public class QARunner extends AbstractRunner {
                         }
 
                         //TODO: think about seperate stage for uploading jacoco reports
-                        this.publishJacocoReport()
+                        publishJacocoReport()
                     }
 
                 } catch (Exception e) {
                     printStackTrace(e)
-                    String failureReason = getFailure(context.currentBuild)
+                    String failureReason = getFailure(currentBuild)
                     context.println "failureReason: ${failureReason}"
                     //explicitly execute abort to resolve anomalies with in_progress tests...
                     zc.abortZafiraTestRun(uuid, failureReason)
                     throw e
                 } finally {
-                    this.exportZafiraReport()
-                    this.sendTestRunResultsEmail()
-                    this.reportingResults()
+                    exportZafiraReport()
+                    sendTestRunResultsEmail()
+                    reportingResults()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    this.clean()
+                    clean()
                 }
             }
         }
@@ -487,7 +481,7 @@ public class QARunner extends AbstractRunner {
     //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
     protected void prepareBuild(currentBuild) {
 
-        Configuration.set("BUILD_USER_ID", Executor.getBuildUser(context.currentBuild))
+        Configuration.set("BUILD_USER_ID", Executor.getBuildUser(currentBuild))
 
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
         String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
@@ -498,7 +492,7 @@ public class QARunner extends AbstractRunner {
         String browser = Configuration.get("browser")
 
         //TODO: improve carina to detect browser_version on the fly
-        String browser_version = Configuration.get("browser_version")
+        String browserVersion = Configuration.get("browser_version")
 
         context.stage('Preparation') {
             currentBuild.displayName = "#${buildNumber}|${suite}|${env}|${branch}"
@@ -512,7 +506,7 @@ public class QARunner extends AbstractRunner {
                 currentBuild.displayName += "|${browser}"
             }
             if (!Executor.isParamEmpty(Configuration.get("browser_version"))) {
-                currentBuild.displayName += "|${browser_version}"
+                currentBuild.displayName += "|${browserVersion}"
             }
             currentBuild.description = "${suite}"
 
@@ -631,7 +625,7 @@ public class QARunner extends AbstractRunner {
             //TODO: move 8000 port into the global var
             def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
-            Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), context.currentBuild))
+            Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
             def goals = Configuration.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
 
@@ -782,9 +776,9 @@ public class QARunner extends AbstractRunner {
         // set job status based on zafira report
         if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
             //context.println "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
-            context.currentBuild.result = 'FAILURE'
+            currentBuild.result = 'FAILURE'
         } else if (zafiraReport.contains("SKIP_ALL:")) {
-            context.currentBuild.result = 'UNSTABLE'
+            currentBuild.result = 'UNSTABLE'
         }
     }
 
@@ -796,7 +790,7 @@ public class QARunner extends AbstractRunner {
         if (emailList != null && !emailList.isEmpty()) {
             zc.sendTestRunResultsEmail(uuid, emailList, "all")
         }
-        if (Executor.isFailure(context.currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
+        if (Executor.isFailure(currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
             zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures")
         }
     }
