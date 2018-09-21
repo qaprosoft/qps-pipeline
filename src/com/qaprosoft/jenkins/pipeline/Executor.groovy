@@ -58,6 +58,23 @@ public class Executor {
         return value == null || value.isEmpty() || value.equals("NULL")
     }
 
+    static def parseFolderName(workspace) {
+        def folderName = ""
+
+        if (workspace.contains("jobs/")) {
+            def array = workspace.split("jobs/")
+            for (def i = 1; i < array.size() - 1; i++){
+                folderName  = folderName + array[i]
+            }
+            folderName = folderName.replaceAll(".\$","")
+        } else {
+            def array = workspace.split("/")
+            folderName = array[array.size() - 2]
+        }
+
+        return folderName
+    }
+
     /** Determines BuildCause */
     static String getBuildCause(jobName, context) {
         String buildCause = null
