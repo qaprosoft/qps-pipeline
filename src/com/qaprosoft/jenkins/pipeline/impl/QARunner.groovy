@@ -34,6 +34,7 @@ public class QARunner extends AbstractRunner {
 	
 	protected def pipelineLibrary = "QPS-Pipeline"
 	protected def runnerClass = "com.qaprosoft.jenkins.pipeline.impl.QARunner"
+    protected def folderName = "Automation"
     protected static final String zafiraReport = "ZafiraReport"
 	protected def onlyUpdated = false
     protected def uuid
@@ -211,7 +212,8 @@ public class QARunner extends AbstractRunner {
 					}
 		
 					Object subProjects = this.parseJSON("${workspace}/${jenkinsFile}").sub_projects
-		
+
+                    context.println "PRSED: " + subProjects
 					subProjects.each {
 						context.println("sub_project: " + it)
 		
@@ -437,7 +439,7 @@ public class QARunner extends AbstractRunner {
                 } catch (Exception e) {
                     printStackTrace(e)
                     String failureReason = getFailure(context.currentBuild)
-                    context.echo "failureReason: ${failureReason}"
+                    context.println "failureReason: ${failureReason}"
                     //explicitly execute abort to resolve anomalies with in_progress tests...
                     zc.abortZafiraTestRun(uuid, failureReason)
                     throw e
@@ -556,7 +558,7 @@ public class QARunner extends AbstractRunner {
         } else if (platform.equalsIgnoreCase("ios")) {
             prepareForiOS()
         } else {
-            context.echo "Unable to identify mobile platform: ${platform}"
+            context.println "Unable to identify mobile platform: ${platform}"
         }
 
         //general mobile capabilities
@@ -606,7 +608,7 @@ public class QARunner extends AbstractRunner {
 /*		def CARINA_CORE_VERSION = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
 		context.stage("Download Resources") {
 		def pomFile = Executor.getSubProjectFolder() + "/pom.xml"
-		context.echo "pomFile: " + pomFile
+		context.println "pomFile: " + pomFile
 			if (context.isUnix()) {
 				context.sh "'mvn' -B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION"
 			} else {
@@ -684,15 +686,15 @@ public class QARunner extends AbstractRunner {
             //append again overrideFields to make sure they are declared at the end
             goals = goals + " " + Configuration.get("overrideFields")
 
-            //context.echo "goals: ${goals}"
+            //context.println "goals: ${goals}"
 
             if (context.isUnix()) {
                 def suiteNameForUnix = Configuration.get("suite").replace("\\", "/")
-                context.echo "Suite for Unix: ${suiteNameForUnix}"
+                context.println "Suite for Unix: ${suiteNameForUnix}"
                 context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix}"
             } else {
                 def suiteNameForWindows = Configuration.get("suite").replace("/", "\\")
-                context.echo "Suite for Windows: ${suiteNameForWindows}"
+                context.println "Suite for Windows: ${suiteNameForWindows}"
                 context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
             }
 
@@ -824,7 +826,7 @@ public class QARunner extends AbstractRunner {
 
         // set job status based on zafira report
         if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
-            //context.echo "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
+            //context.println "Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report."
             context.currentBuild.result = 'FAILURE'
         } else if (zafiraReport.contains("SKIP_ALL:")) {
             context.currentBuild.result = 'UNSTABLE'
@@ -912,8 +914,9 @@ public class QARunner extends AbstractRunner {
                     }
 
                     listPipelines = sortPipelineList(listPipelines)
-                    //TODO: think about class level variable folderName
-                    executeStages(parseFolderName())
+
+                    folderName = Executor.parseFolderName(getWorkspace())
+                    executeStages()
                 } else {
                     context.println("No Test Suites Found to Scan...")
                 }
@@ -1086,24 +1089,7 @@ public class QARunner extends AbstractRunner {
 
     }
 
-    protected def parseFolderName() {
-        def folderName = ""
-        def workspace = this.getWorkspace();
-        if (workspace.contains("jobs/")) {
-            def array = workspace.split("jobs/")
-            for (def i = 1; i < array.size() - 1; i++){
-                folderName  = folderName + array[i]
-            }
-            folderName = folderName.replaceAll(".\$","")
-        } else {
-            def array = workspace.split("/")
-            folderName = array[array.size() - 2]
-        }
-
-        return folderName
-    }
-
-    protected def executeStages(String folderName) {
+    protected def executeStages() {
         def mappedStages = [:]
 
         boolean parallelMode = true
@@ -1136,7 +1122,7 @@ public class QARunner extends AbstractRunner {
 
             if (curOrder.equals(beginOrder)) {
                 //context.println("colect into order: ${curOrder}; job: ${stageName}")
-                mappedStages[stageName] = buildOutStages(folderName, entry, waitJob, propagateJob)
+                mappedStages[stageName] = buildOutStages(entry, waitJob, propagateJob)
             } else {
                 context.parallel mappedStages
 
@@ -1145,7 +1131,7 @@ public class QARunner extends AbstractRunner {
                 beginOrder = curOrder
 
                 //add existing pipeline as new one in the current stage
-                mappedStages[stageName] = buildOutStages(folderName, entry, waitJob, propagateJob)
+                mappedStages[stageName] = buildOutStages(entry, waitJob, propagateJob)
             }
         }
 
@@ -1156,13 +1142,13 @@ public class QARunner extends AbstractRunner {
 
     }
 
-    def buildOutStages(String folderName, Map entry, boolean waitJob, boolean propagateJob) {
+    def buildOutStages(Map entry, boolean waitJob, boolean propagateJob) {
         return {
-            buildOutStage(folderName, entry, waitJob, propagateJob)
+            buildOutStage(entry, waitJob, propagateJob)
         }
     }
 
-    protected def buildOutStage(String folderName, Map entry, boolean waitJob, boolean propagateJob) {
+    protected def buildOutStage(Map entry, boolean waitJob, boolean propagateJob) {
         context.stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))) {
             //context.println("Dynamic Stage Created For: " + entry.get("jobName"))
             //context.println("Checking EmailList: " + entry.get("emailList"))
@@ -1180,7 +1166,6 @@ public class QARunner extends AbstractRunner {
                         wait: waitJob
             } catch (Exception e) {
                 printStackTrace(e)
-
                 def body = "Unable to start job via cron! " + e.getMessage()
                 def subject = "JOBSTART FAILURE: " + entry.get("jobName")
                 def to = entry.get("email_list") + "," + Configuration.get("email_list")
