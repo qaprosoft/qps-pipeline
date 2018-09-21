@@ -865,7 +865,7 @@ public class QARunner extends AbstractRunner {
 
                     context.println("Finished Dynamic Mapping: " + listPipelines.dump())
                     listPipelines = Executor.sortPipelineList(listPipelines)
-                    context.println("Finished Dynamic Mapping Sorted Order: " + pipelinesList.dump())
+                    context.println("Finished Dynamic Mapping Sorted Order: " + listPipelines.dump())
                     folderName = Executor.parseFolderName(getWorkspace())
                     executeStages()
                 } else {
