@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.pipeline.impl
 
 @Grab('org.testng:testng:6.8.8')
 import com.qaprosoft.jenkins.pipeline.Executor
-import com.qaprosoft.jenkins.pipeline.ExecutorTrait
+
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 import com.qaprosoft.zafira.ZafiraClient
 import org.testng.xml.XmlSuite;
@@ -24,7 +24,7 @@ import com.qaprosoft.scm.github.GitHub;
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
 
-public class QARunner extends AbstractRunner implements ExecutorTrait {
+public class QARunner extends AbstractRunner {
 
     protected Map dslObjects = [:]
     protected static final String zafiraReport = "ZafiraReport"
