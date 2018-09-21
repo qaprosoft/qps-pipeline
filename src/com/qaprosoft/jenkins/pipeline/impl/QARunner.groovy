@@ -863,8 +863,9 @@ public class QARunner extends AbstractRunner {
                         parsePipeline(workspace + "/" + files[i].path)
                     }
 
-                    listPipelines = sortPipelineList(listPipelines)
-
+                    context.println("Finished Dynamic Mapping: " + listPipelines.dump())
+                    listPipelines = Executor.sortPipelineList(listPipelines)
+                    context.println("Finished Dynamic Mapping Sorted Order: " + pipelinesList.dump())
                     folderName = Executor.parseFolderName(getWorkspace())
                     executeStages()
                 } else {
@@ -1020,15 +1021,6 @@ public class QARunner extends AbstractRunner {
 
     protected def registerPipeline(pipelineMap) {
         listPipelines.add(pipelineMap)
-    }
-
-    @NonCPS
-    protected def sortPipelineList(List pipelinesList) {
-        context.println("Finished Dynamic Mapping: " + pipelinesList.dump())
-        pipelinesList = pipelinesList.sort { map1, map2 -> !map1.order ? !map2.order ? 0 : 1 : !map2.order ? -1 : map1.order.toInteger() <=> map2.order.toInteger() }
-        context.println("Finished Dynamic Mapping Sorted Order: " + pipelinesList.dump())
-        return pipelinesList
-
     }
 
     protected def executeStages() {
