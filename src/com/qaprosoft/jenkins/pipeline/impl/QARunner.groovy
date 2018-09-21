@@ -756,8 +756,8 @@ public class QARunner extends AbstractRunner {
             subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
-            failureReason = "Aborted by " + getAbortCause(currentBuild)
-            bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${JOB_URL}${BUILD_NUMBER}</p>"
+            failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
+            bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${JOB_URL}${BUILD_NUMBER}</p>"
             subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
         } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
             currentBuild.result = 'ABORTED'
@@ -776,27 +776,6 @@ public class QARunner extends AbstractRunner {
         //TODO: enable emailing but seems like it should be moved to the notification code
         context.emailext Executor.getEmailParams(body, subject, to)
         return failureReason
-    }
-
-    //TODO: investigate whether null assignments are necessary
-    protected String getAbortCause(currentBuild)
-    {
-        def causee = ''
-        def actions = currentBuild.getRawBuild().getActions(jenkins.model.InterruptedBuildAction)
-        for (action in actions) {
-            def causes = action.getCauses()
-
-            // on cancellation, report who cancelled the build
-            for (cause in causes) {
-                causee = cause.getUser().getDisplayName()
-                cause = null
-            }
-            causes = null
-            action = null
-        }
-        actions = null
-
-        return causee
     }
 
 
