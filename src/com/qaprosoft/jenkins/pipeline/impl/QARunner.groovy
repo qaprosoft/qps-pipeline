@@ -1132,7 +1132,7 @@ public class QARunner extends AbstractRunner {
 	protected boolean isBrowserStackRun() {
 		boolean res = false
 		def customCapabilities = Configuration.get("custom_capabilities")
-		if (!isParamEmpty(customCapabilities)) {
+		if (!Executor.isParamEmpty(customCapabilities)) {
 			if (customCapabilities.toLowerCase().contains("browserstack")) {
 				res = true
 			}

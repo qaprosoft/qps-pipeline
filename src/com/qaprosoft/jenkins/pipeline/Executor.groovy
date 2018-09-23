@@ -49,13 +49,6 @@ public class Executor {
         }
         return subProjectFolder
     }
-
-	static boolean isParamEmpty() {
-		//[VD] if no argument provided then it is definitely empty
-		// to resolve:
-		// exception: No signature of method: com.qaprosoft.jenkins.pipeline.impl.QARunner.isParamEmpty() is applicable for argument types: (null) values: [null]
-		return true
-	}
 	
     static boolean isParamEmpty(String value) {
         return value == null || value.isEmpty() || value.equals("NULL")
