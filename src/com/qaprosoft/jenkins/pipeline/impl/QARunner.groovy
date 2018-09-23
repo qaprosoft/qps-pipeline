@@ -302,7 +302,7 @@ public class QARunner extends AbstractRunner {
 
                 context.println("factoryTarget: " + FACTORY_TARGET)
                 //TODO: test carefully auto-removal for jobs/views and configs
-                context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
+                context.jobDsl additionalClasspath: additionalClasspath,
                         removedConfigFilesAction: removedConfigFilesAction,
                         removedJobAction: removedJobAction,
                         removedViewAction: removedViewAction,

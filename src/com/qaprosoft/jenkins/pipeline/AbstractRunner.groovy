@@ -8,7 +8,7 @@ public abstract class AbstractRunner {
 	protected ISCM scmClient
 
 	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
-	protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
+	protected def additionalClasspath = "qps-pipeline/src"
 
 	
 	//this is very important line which should be declared only as a class member!
