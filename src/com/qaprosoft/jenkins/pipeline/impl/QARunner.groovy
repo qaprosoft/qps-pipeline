@@ -214,7 +214,7 @@ public class QARunner extends AbstractRunner {
 
             Object subProjects = Executor.parseJSON("${workspace}/${jenkinsFile}").sub_projects
 
-            context.println "PRSED: " + subProjects
+            context.println "PARSED: " + subProjects
             subProjects.each {
                 context.println("sub_project: " + it)
 
