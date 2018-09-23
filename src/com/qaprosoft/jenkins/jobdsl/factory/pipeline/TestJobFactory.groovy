@@ -14,7 +14,7 @@ public class TestJobFactory extends PipelineFactory {
 	def zafira_project
 	def suitePath
 	def suiteName
-	
+
 	public TestJobFactory(folder, pipelineScript, project, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
 		this.folder = folder
         this.description = jobDesc
@@ -25,19 +25,19 @@ public class TestJobFactory extends PipelineFactory {
 		this.suitePath = suitePath
 		this.suiteName = suiteName
 	}
-	
+
 	def create() {
 		_dslFactory.println "TestJobFactory->create"
 		def proxyInfo = new ProxyInfo(_dslFactory)
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
-		
+
 		List<XmlSuite> suiteXml = xmlFile.parseToList()
 		XmlSuite currentSuite = suiteXml.get(0)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
 		_dslFactory.println "name: " + name
-		
+
 		def pipelineJob = super.create()
 		pipelineJob.with {
 
@@ -49,7 +49,7 @@ public class TestJobFactory extends PipelineFactory {
 			//** Properties & Parameters Area **//*
 			parameters {
 				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
-				
+
 				//** Requires Active Choices Plug-in v1.2+ **//*
 				//** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **//*
 				if (currentSuite.toXml().contains("jenkinsGroups")) {
@@ -63,7 +63,7 @@ public class TestJobFactory extends PipelineFactory {
 						}
 					}
 				}
-				
+
 				booleanParam('fork', false, "Reuse forked repository for ${project} project.")
 				booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
@@ -72,21 +72,21 @@ public class TestJobFactory extends PipelineFactory {
 					defaultMobilePool = "ANY"
 				}
 
-				def autoScreenshot = false
+				def autoScreenshot = true
 				if (currentSuite.getParameter("jenkinsAutoScreenshot") != null) {
 					autoScreenshot = currentSuite.getParameter("jenkinsAutoScreenshot").toBoolean()
 				}
-				
+
 				def keepAllScreenshots = true
 				if (currentSuite.getParameter("jenkinsKeepAllScreenshots") != null) {
 					keepAllScreenshots = currentSuite.getParameter("jenkinsKeepAllScreenshots").toBoolean()
 				}
-				
+
 				def enableVideo = true
 				if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
 					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
 				}
-				
+
 				def jobType = suiteName
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
@@ -125,6 +125,7 @@ public class TestJobFactory extends PipelineFactory {
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
+						//TODO: hardcode auto_screenshots=true for iOS until we fix video recording
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						//TODO: enable video as only issue with Appiym and xrecord utility is fixed
 						//booleanParam('enableVideo', enableVideo, 'Enable video recording')
@@ -175,13 +176,13 @@ public class TestJobFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsDefaultRetryCount") != null) {
 					retryCount = currentSuite.getParameter("jenkinsDefaultRetryCount").toInteger()
 				}
-				
+
 				if (retryCount != 0) {
 					choiceParam('retry_count', [retryCount, 0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
 				} else {
 					choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
 				}
-				
+
 				booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
 				def customFields = getCustomFields(currentSuite)
 				configure addHiddenParameter('overrideFields', '' , customFields)
