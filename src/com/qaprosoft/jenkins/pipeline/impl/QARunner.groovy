@@ -378,8 +378,6 @@ public class QARunner extends AbstractRunner {
 
     protected void runJob() {
         context.println("QARunner->runJob")
-        //use this method to override any beforeRunJob logic
-        beforeRunJob()
 
         uuid = Executor.getUUID()
         context.println "UUID: " + uuid
@@ -426,10 +424,6 @@ public class QARunner extends AbstractRunner {
                 }
             }
         }
-    }
-
-    protected void beforeRunJob() {
-        // do nothing
     }
 
     protected String chooseNode() {
