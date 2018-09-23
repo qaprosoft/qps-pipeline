@@ -211,10 +211,4 @@ public class Executor {
         }
     }
 
-	static void printStackTrace(Exception ex) {
-		context.println "exception: " + ex.getMessage()
-		context.println "exception class: " + ex.getClass().getName()
-		context.println "stacktrace: " + Arrays.toString(ex.getStackTrace())
-	}
-
 }
