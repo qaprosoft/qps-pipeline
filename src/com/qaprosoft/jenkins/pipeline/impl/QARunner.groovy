@@ -637,7 +637,7 @@ public class QARunner extends AbstractRunner {
             goals = Executor.addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
             //browserstack goals
-            if (Executor.isBrowserStackRun()) {
+            if (isBrowserStackRun()) {
                 def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
                         Configuration.get("browser") + "-" + Configuration.get("env") + "\""
                 uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
@@ -1134,5 +1134,16 @@ public class QARunner extends AbstractRunner {
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
     }
+	
+	protected boolean isBrowserStackRun() {
+		boolean res = false
+		def customCapabilities = Configuration.get("custom_capabilities")
+		if (!isParamEmpty(customCapabilities)) {
+			if (customCapabilities.toLowerCase().contains("browserstack")) {
+				res = true
+			}
+		}
+		return res
+	}
 
 }
