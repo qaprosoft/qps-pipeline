@@ -289,10 +289,10 @@ public class QARunner extends AbstractRunner {
 
                     } catch (FileNotFoundException e) {
                         context.println("ERROR! Unable to find suite: " + suite.path)
-                        printStackTrace(e)
+                        Executor.printStackTrace(e)
                     } catch (Exception e) {
                         context.println("ERROR! Unable to parse suite: " + suite.path)
-                        printStackTrace(e)
+                        Executor.printStackTrace(e)
                     }
 
                 }
@@ -409,7 +409,7 @@ public class QARunner extends AbstractRunner {
                     }
 
                 } catch (Exception e) {
-                    printStackTrace(e)
+                    Executor.printStackTrace(e)
                     String failureReason = getFailure(currentBuild)
                     context.println "failureReason: ${failureReason}"
                     //explicitly execute abort to resolve anomalies with in_progress tests...
@@ -872,11 +872,11 @@ public class QARunner extends AbstractRunner {
             currentSuite = Executor.parseSuite(filePath)
         } catch (FileNotFoundException e) {
             context.println("ERROR! Unable to find suite: " + filePath)
-            printStackTrace(e)
+            Executor.printStackTrace(e)
             return
         } catch (Exception e) {
             context.println("ERROR! Unable to parse suite: " + filePath)
-            printStackTrace(e)
+            Executor.printStackTrace(e)
             return
         }
 
@@ -1098,7 +1098,7 @@ public class QARunner extends AbstractRunner {
                         parameters: jobParams,
                         wait: waitJob
             } catch (Exception e) {
-                printStackTrace(e)
+                Executor.printStackTrace(e)
                 def body = "Unable to start job via cron! " + e.getMessage()
                 def subject = "JOBSTART FAILURE: " + entry.get("jobName")
                 def to = entry.get("email_list") + "," + Configuration.get("email_list")
