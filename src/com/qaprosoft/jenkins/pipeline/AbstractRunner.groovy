@@ -24,5 +24,10 @@ public abstract class AbstractRunner {
 	//Events
 	abstract public void onPush()
 	abstract public void onPullRequest()
-	
+
+	protected void printStackTrace(Exception ex) {
+		context.println("exception: " + ex.getMessage())
+		context.println("exception class: " + ex.getClass().getName())
+		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
+	}
 }
