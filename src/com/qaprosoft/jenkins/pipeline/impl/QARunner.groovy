@@ -616,10 +616,6 @@ public class QARunner extends AbstractRunner {
 			-Dgit_url=${Configuration.get("scm_url")} \
 			-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
 			-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-			-Dci_user_id=${Configuration.get("BUILD_USER_ID")} \
-			-Dci_user_first_name=${Configuration.get("BUILD_USER_FIRST_NAME")} \
-			-Dci_user_last_name=${Configuration.get("BUILD_USER_LAST_NAME")} \
-			-Dci_user_email=${BUILD_USER_EMAIL} \
 			-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 			clean test"
 
