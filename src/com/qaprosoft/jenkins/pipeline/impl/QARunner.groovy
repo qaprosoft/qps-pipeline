@@ -826,7 +826,7 @@ public class QARunner extends AbstractRunner {
 
     protected void runCron() {
         context.println("QARunner->runCron")
-        context.node("web|api") {
+        context.node("api") {
             scmClient.clone()
 
             def workspace = getWorkspace()
