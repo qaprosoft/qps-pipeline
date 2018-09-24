@@ -437,6 +437,7 @@ public class QARunner extends AbstractRunner {
     protected String chooseNode() {
 
         Configuration.set("node", "master") //master is default node to execute job
+        context.println "I AM HERE"
 
         //TODO: handle browserstack etc integration here?
         switch(Configuration.get("platform").toLowerCase()) {
