@@ -65,15 +65,12 @@ public class QARunner extends AbstractRunner {
 
     //Methods
     public void build() {
-        context.node("master") {
-            context.println("QARunner->build")
-            if (jobType.equals(JobType.JOB)) {
-                runJob()
-            }
-            if (jobType.equals(JobType.CRON)) {
-                runCron()
-            }
-            //TODO: identify if it is job or cron and execute appropriate protected method
+        context.println("QARunner->build")
+        if (jobType.equals(JobType.JOB)) {
+            runJob()
+        }
+        if (jobType.equals(JobType.CRON)) {
+            runCron()
         }
     }
 
@@ -393,12 +390,11 @@ public class QARunner extends AbstractRunner {
 
         uuid = Executor.getUUID()
         context.println "UUID: " + uuid
-        String nodeName = "master"
 
-        //TODO: remove master node assignment
-        context.node(nodeName) {
-            zc.queueZafiraTestRun(uuid)
-            nodeName = chooseNode()
+		String nodeName = "master"
+		context.node(nodeName) {
+			zc.queueZafiraTestRun(uuid)
+			nodeName = chooseNode()
         }
 
         context.node(nodeName) {
@@ -826,9 +822,7 @@ public class QARunner extends AbstractRunner {
 
     protected void runCron() {
         context.println("QARunner->runCron")
-        def nodeName = "master"
-        //TODO: remove master node assignment
-        context.node(nodeName) {
+        context.node("master") {
             scmClient.clone()
 
             def workspace = getWorkspace()
