@@ -393,13 +393,9 @@ public class QARunner extends AbstractRunner {
 
         uuid = Executor.getUUID()
         context.println "UUID: " + uuid
-        String nodeName = "master"
 
-        //TODO: remove master node assignment
-        context.node(nodeName) {
-            zc.queueZafiraTestRun(uuid)
-            nodeName = chooseNode()
-        }
+        zc.queueZafiraTestRun(uuid)
+        nodeName = chooseNode()
 
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
@@ -830,9 +826,7 @@ public class QARunner extends AbstractRunner {
 
     protected void runCron() {
         context.println("QARunner->runCron")
-        def nodeName = "master"
-        //TODO: remove master node assignment
-        context.node(nodeName) {
+        context.node("web|api") {
             scmClient.clone()
 
             def workspace = getWorkspace()
