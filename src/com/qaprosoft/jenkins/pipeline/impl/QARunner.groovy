@@ -65,12 +65,14 @@ public class QARunner extends AbstractRunner {
 
     //Methods
     public void build() {
-        context.println("QARunner->build")
-        if (jobType.equals(JobType.JOB)) {
-            runJob()
-        }
-        if (jobType.equals(JobType.CRON)) {
-            runCron()
+        context.node("master") {
+            context.println("QARunner->build")
+            if (jobType.equals(JobType.JOB)) {
+                runJob()
+            }
+            if (jobType.equals(JobType.CRON)) {
+                runCron()
+            }
         }
     }
 
