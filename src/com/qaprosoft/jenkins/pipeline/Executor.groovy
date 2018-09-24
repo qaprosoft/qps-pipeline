@@ -185,14 +185,15 @@ public class Executor {
         return res
     }
 
-    static def getHostAddresses() {
+    static def getHostAddress() {
         def hosts = []
         for(ifs in NetworkInterface.getNetworkInterfaces()){
             for(address in ifs.getInetAddresses()){
+                if(address.getHostAddress() != '127.0.0.1')
                 hosts.add(address.getHostAddress())
             }
         }
-        return hosts
+        return hosts[0]
     }
 
     static def setDefaultIfEmpty(stringKey, enumKey){
