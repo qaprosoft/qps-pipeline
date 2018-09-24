@@ -394,10 +394,8 @@ public class QARunner extends AbstractRunner {
         context.println "UUID: " + uuid
 
 		String nodeName = "master"
-		context.node(nodeName) {
-			zc.queueZafiraTestRun(uuid)
-			nodeName = chooseNode()
-        }
+        zc.queueZafiraTestRun(uuid)
+        nodeName = chooseNode()
 
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
