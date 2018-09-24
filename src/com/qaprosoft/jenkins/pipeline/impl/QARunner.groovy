@@ -437,7 +437,6 @@ public class QARunner extends AbstractRunner {
     protected String chooseNode() {
 
         Configuration.set("node", "master") //master is default node to execute job
-        context.println "I AM HERE"
 
         //TODO: handle browserstack etc integration here?
         switch(Configuration.get("platform").toLowerCase()) {
@@ -630,13 +629,13 @@ public class QARunner extends AbstractRunner {
             Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
             goals = Executor.enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
-            goals = Executor.addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
-            goals = Executor.addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
-            goals = Executor.addOptionalParameter("debug", "Enabling remote debug...", mavenDebug, goals)
-            goals = Executor.addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
+            goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
+            goals = addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
+            goals = addOptionalParameter("debug", "Enabling remote debug...", mavenDebug, goals)
+            goals = addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
             //browserstack goals
-            if (isBrowserStackRun()) {
+            if (Executor.isBrowserStackRunning()) {
                 def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
                         Configuration.get("browser") + "-" + Configuration.get("env") + "\""
                 uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
@@ -1131,16 +1130,15 @@ public class QARunner extends AbstractRunner {
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
     }
-	
-	protected boolean isBrowserStackRun() {
-		boolean res = false
-		def customCapabilities = Configuration.get("custom_capabilities")
-		if (!Executor.isParamEmpty(customCapabilities)) {
-			if (customCapabilities.toLowerCase().contains("browserstack")) {
-				res = true
-			}
-		}
-		return res
-	}
+
+    protected def addOptionalParameter(parameter, message, capability, goals) {
+        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
+            context.println message
+            goals += capability
+        }
+        return goals
+    }
+
+
 
 }
