@@ -615,9 +615,6 @@ public class QARunner extends AbstractRunner {
 			-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 			clean test"
 
-            //TODO: move 8000 port into the global var
-            def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
-
             Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
             def goals = Configuration.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
@@ -631,7 +628,11 @@ public class QARunner extends AbstractRunner {
             goals = Executor.enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
             goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
             goals = addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
-            goals = addOptionalParameter("debug", "Enabling remote debug... debug_host=" + Executor.getHostAddress(), mavenDebug, goals)
+
+            //TODO: move 8000 port into the global var
+            def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
+
+            goals = addOptionalParameter("debug", "Enabling remote debug on ${getDebugHost()}:${getDebugPort()}", mavenDebug, goals)
             goals = addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
             //browserstack goals
@@ -1139,6 +1140,22 @@ public class QARunner extends AbstractRunner {
         return goals
     }
 
+    // Possible to override in private pipelines
+    protected def getDebugHost() {
+        def hosts = []
+        for(ifs in NetworkInterface.getNetworkInterfaces()){
+            for(address in ifs.getInetAddresses()){
+                if(address.getHostAddress() != '127.0.0.1')
+                    hosts.add(address.getHostAddress())
+            }
+        }
+        return hosts[0]
+    }
 
+    // Possible to override in private pipelines
+    protected def getDebugPort() {
+        def port = "8000"
+        return port
+    }
 
 }
