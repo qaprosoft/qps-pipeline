@@ -174,11 +174,15 @@ public class Executor {
         return goals
     }
 
-    static def addOptionalParameter(parameter, message, capability, goals) {
-        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
-            goals += capability
+    static boolean isBrowserStackRunning() {
+        boolean res = false
+        def customCapabilities = Configuration.get("custom_capabilities")
+        if (!isParamEmpty(customCapabilities)) {
+            if (customCapabilities.toLowerCase().contains("browserstack")) {
+                res = true
+            }
         }
-        return goals
+        return res
     }
 
     static def getHostAddresses() {
