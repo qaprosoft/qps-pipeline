@@ -617,8 +617,6 @@ public class QARunner extends AbstractRunner {
 
             //TODO: move 8000 port into the global var
             def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
-            def debugHost = Executor.getHostAddress()
-            context.println "DEBUG HOST: " + debugHost
 
             Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
@@ -633,7 +631,7 @@ public class QARunner extends AbstractRunner {
             goals = Executor.enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
             goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
             goals = addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
-            goals = addOptionalParameter("debug", "Enabling remote debug...", mavenDebug, goals)
+            goals = addOptionalParameter("debug", "Enabling remote debug... debug_host=" + Executor.getHostAddress(), mavenDebug, goals)
             goals = addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
             //browserstack goals
