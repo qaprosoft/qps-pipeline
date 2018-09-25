@@ -174,23 +174,6 @@ public class Executor {
         return goals
     }
 
-    static def addOptionalParameter(parameter, message, capability, goals) {
-        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
-            goals += capability
-        }
-        return goals
-    }
-
-    static def getHostAddresses() {
-        def hosts = []
-        for(ifs in NetworkInterface.getNetworkInterfaces()){
-            for(address in ifs.getInetAddresses()){
-                hosts.add(address.getHostAddress())
-            }
-        }
-        return hosts
-    }
-
     static def setDefaultIfEmpty(stringKey, enumKey){
         def configValue = Configuration.get(stringKey)
         if (configValue.isEmpty()) {
