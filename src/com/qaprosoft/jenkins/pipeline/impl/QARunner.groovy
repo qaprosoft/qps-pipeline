@@ -65,14 +65,12 @@ public class QARunner extends AbstractRunner {
 
     //Methods
     public void build() {
-        context.node("master") {
-            context.println("QARunner->build")
-            if (jobType.equals(JobType.JOB)) {
-                runJob()
-            }
-            if (jobType.equals(JobType.CRON)) {
-                runCron()
-            }
+        context.println("QARunner->build")
+        if (jobType.equals(JobType.JOB)) {
+            runJob()
+        }
+        if (jobType.equals(JobType.CRON)) {
+            runCron()
         }
     }
 
@@ -394,8 +392,10 @@ public class QARunner extends AbstractRunner {
         context.println "UUID: " + uuid
 
 		String nodeName = "master"
-        zc.queueZafiraTestRun(uuid)
-        nodeName = chooseNode()
+		context.node(nodeName) {
+			zc.queueZafiraTestRun(uuid)
+			nodeName = chooseNode()
+        }
 
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
