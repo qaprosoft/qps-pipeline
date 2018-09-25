@@ -65,12 +65,14 @@ public class QARunner extends AbstractRunner {
 
     //Methods
     public void build() {
-        context.println("QARunner->build")
-        if (jobType.equals(JobType.JOB)) {
-            runJob()
-        }
-        if (jobType.equals(JobType.CRON)) {
-            runCron()
+        context.node("master") {
+            context.println("QARunner->build")
+            if (jobType.equals(JobType.JOB)) {
+                runJob()
+            }
+            if (jobType.equals(JobType.CRON)) {
+                runCron()
+            }
         }
     }
 
@@ -392,10 +394,8 @@ public class QARunner extends AbstractRunner {
         context.println "UUID: " + uuid
 
 		String nodeName = "master"
-		context.node(nodeName) {
-			zc.queueZafiraTestRun(uuid)
-			nodeName = chooseNode()
-        }
+        zc.queueZafiraTestRun(uuid)
+        nodeName = chooseNode()
 
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
@@ -636,7 +636,7 @@ public class QARunner extends AbstractRunner {
             goals = addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
             //browserstack goals
-            if (Executor.isBrowserStackRunning()) {
+            if (isBrowserStackRun()) {
                 def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
                         Configuration.get("browser") + "-" + Configuration.get("env") + "\""
                 uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
@@ -1132,6 +1132,17 @@ public class QARunner extends AbstractRunner {
                       zoomCoverageChart: false])
     }
 
+	protected boolean isBrowserStackRun() {
+		boolean res = false
+		def customCapabilities = Configuration.get("custom_capabilities")
+		if (!Executor.isParamEmpty(customCapabilities)) {
+			if (customCapabilities.toLowerCase().contains("browserstack")) {
+				res = true
+			}
+		}
+		return res
+	}
+
     protected def addOptionalParameter(parameter, message, capability, goals) {
         if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
             context.println message
@@ -1157,5 +1168,4 @@ public class QARunner extends AbstractRunner {
         def port = "8000"
         return port
     }
-
 }

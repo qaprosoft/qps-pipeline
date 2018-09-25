@@ -57,7 +57,6 @@ public class Runner extends AbstractRunner {
         }
     }
 
-
     protected def void executeMavenGoals(goals){
         if (context.isUnix()) {
             context.sh "'mvn' -B ${goals}"
