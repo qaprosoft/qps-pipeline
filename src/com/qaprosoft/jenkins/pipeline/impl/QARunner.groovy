@@ -1153,14 +1153,7 @@ public class QARunner extends AbstractRunner {
 
     // Possible to override in private pipelines
     protected def getDebugHost() {
-        def hosts = []
-        for(ifs in NetworkInterface.getNetworkInterfaces()){
-            for(address in ifs.getInetAddresses()){
-                if(address.getHostAddress() != '127.0.0.1' && address.getHostAddress() != 'localhost')
-                    hosts.add(address.getHostAddress())
-            }
-        }
-        return hosts[0]
+       return Configuration.get(Configuration.Parameter.QPS_HOST)
     }
 
     // Possible to override in private pipelines
