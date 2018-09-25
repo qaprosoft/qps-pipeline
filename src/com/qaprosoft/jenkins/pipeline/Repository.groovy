@@ -39,7 +39,7 @@ class Repository {
 		context.node('master') {
 			context.timestamps {
 				prepare()
-				create()
+				generateCiItems()
 				clean()
 			}
 		}
@@ -66,6 +66,7 @@ class Repository {
 		throw new RuntimeException("Not implemented yet!")
 		
 	}
+
 	private void prepare() {
 		//[VD] do not clone repo by default. Just qps-pipeline is enough
 		//scmClient.clone(true) //do shallow clone during repo registration
@@ -75,7 +76,7 @@ class Repository {
 	}
 
 
-	private void create() {
+	private void generateCiItems() {
 
 		context.stage("Create Repository") {
 			def BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
