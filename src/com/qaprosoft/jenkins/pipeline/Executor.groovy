@@ -174,17 +174,6 @@ public class Executor {
         return goals
     }
 
-    static boolean isBrowserStackRunning() {
-        boolean res = false
-        def customCapabilities = Configuration.get("custom_capabilities")
-        if (!isParamEmpty(customCapabilities)) {
-            if (customCapabilities.toLowerCase().contains("browserstack")) {
-                res = true
-            }
-        }
-        return res
-    }
-
     static def setDefaultIfEmpty(stringKey, enumKey){
         def configValue = Configuration.get(stringKey)
         if (configValue.isEmpty()) {
