@@ -1156,7 +1156,7 @@ public class QARunner extends AbstractRunner {
         def hosts = []
         for(ifs in NetworkInterface.getNetworkInterfaces()){
             for(address in ifs.getInetAddresses()){
-                if(address.getHostAddress() != '127.0.0.1')
+                if(address.getHostAddress() != '127.0.0.1' && address.getHostAddress() != 'localhost')
                     hosts.add(address.getHostAddress())
             }
         }
