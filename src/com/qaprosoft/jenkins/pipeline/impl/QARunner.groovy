@@ -612,15 +612,8 @@ public class QARunner extends AbstractRunner {
 			-Dgit_url=${Configuration.get("scm_url")} \
 			-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
 			-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-			-Dci_user_id=${Configuration.get("BUILD_USER_ID")} \
-			-Dci_user_first_name=${Configuration.get("BUILD_USER_FIRST_NAME")} \
-			-Dci_user_last_name=${Configuration.get("BUILD_USER_LAST_NAME")} \
-			-Dci_user_email=${BUILD_USER_EMAIL} \
 			-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 			clean test"
-
-            //TODO: move 8000 port into the global var
-            def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
 
             Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
@@ -633,10 +626,14 @@ public class QARunner extends AbstractRunner {
             Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
             goals = Executor.enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
-            goals = Executor.addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
-            goals = Executor.addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
-            goals = Executor.addOptionalParameter("debug", "Enabling remote debug...", mavenDebug, goals)
-            goals = Executor.addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
+            goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
+            goals = addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
+
+            //TODO: move 8000 port into the global var
+            def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
+
+            goals = addOptionalParameter("debug", "Enabling remote debug on ${getDebugHost()}:${getDebugPort()}", mavenDebug, goals)
+            goals = addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
 
             //browserstack goals
             if (isBrowserStackRun()) {
@@ -1134,7 +1131,7 @@ public class QARunner extends AbstractRunner {
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
     }
-	
+
 	protected boolean isBrowserStackRun() {
 		boolean res = false
 		def customCapabilities = Configuration.get("custom_capabilities")
@@ -1146,4 +1143,29 @@ public class QARunner extends AbstractRunner {
 		return res
 	}
 
+    protected def addOptionalParameter(parameter, message, capability, goals) {
+        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
+            context.println message
+            goals += capability
+        }
+        return goals
+    }
+
+    // Possible to override in private pipelines
+    protected def getDebugHost() {
+        def hosts = []
+        for(ifs in NetworkInterface.getNetworkInterfaces()){
+            for(address in ifs.getInetAddresses()){
+                if(address.getHostAddress() != '127.0.0.1' && address.getHostAddress() != 'localhost')
+                    hosts.add(address.getHostAddress())
+            }
+        }
+        return hosts[0]
+    }
+
+    // Possible to override in private pipelines
+    protected def getDebugPort() {
+        def port = "8000"
+        return port
+    }
 }
