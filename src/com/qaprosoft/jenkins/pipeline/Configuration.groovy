@@ -71,7 +71,7 @@ public class Configuration {
 		SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
 		SCREEN_RECORD_DURATION("screen_record_duration", "1800"),
 
-		S3_SAVE_SCREENSHOTS_V2("s3_save_screenshots", "true"),
+		S3_SAVE_SCREENSHOTS("s3_save_screenshots", "true"),
 
 		VNC_PROTOCOL("vnc_protocol", "ws"),
 		VNC_HOST("vnc_host", "\${QPS_HOST}"),

@@ -596,7 +596,7 @@ public class QARunner extends AbstractRunner {
             }
             def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
-			-Ds3_save_screenshots_v2=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS_V2)} \
+			-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 			-f ${pomFile} \
 			-Dmaven.test.failure.ignore=true \
 			-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
