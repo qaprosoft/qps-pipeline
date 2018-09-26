@@ -997,7 +997,7 @@ public class QARunner extends AbstractRunner {
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
 
                             //context.println("initialized ${filePath} suite to pipeline run...")
-                            registerPipeline(pipelineMap)
+                            registerPipeline(currentSuite, pipelineMap)
                         }
 
                     }
@@ -1011,7 +1011,8 @@ public class QARunner extends AbstractRunner {
         return Configuration.get("env")
     }
 
-    protected def registerPipeline(pipelineMap) {
+	// do not remove currentSuite from this method! It is available here to be override on customer level.
+    protected def registerPipeline(currentSuite, pipelineMap) {
         listPipelines.add(pipelineMap)
     }
 
