@@ -386,7 +386,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def getHost(){
-        def config = context.sh script: "ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print \$1}'", returnStdout: true
+        def config = context.sh script: "pwd", returnStdout: true
         return config
     }
 
@@ -403,7 +403,7 @@ public class QARunner extends AbstractRunner {
         }
 
         context.node(nodeName) {
-            context.println "CONFIG: " + getHost()
+            context.println "CONFIG: " + getHost() + ":8000"
 
             context.wrap([$class: 'BuildUser']) {
                 try {
