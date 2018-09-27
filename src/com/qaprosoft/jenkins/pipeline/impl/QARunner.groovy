@@ -997,7 +997,7 @@ public class QARunner extends AbstractRunner {
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
 
                             //context.println("initialized ${filePath} suite to pipeline run...")
-                            registerPipeline(pipelineMap)
+                            registerPipeline(currentSuite, pipelineMap)
                         }
 
                     }
@@ -1011,7 +1011,8 @@ public class QARunner extends AbstractRunner {
         return Configuration.get("env")
     }
 
-    protected def registerPipeline(pipelineMap) {
+	// do not remove currentSuite from this method! It is available here to be override on customer level.
+    protected def registerPipeline(currentSuite, pipelineMap) {
         listPipelines.add(pipelineMap)
     }
 
@@ -1153,14 +1154,7 @@ public class QARunner extends AbstractRunner {
 
     // Possible to override in private pipelines
     protected def getDebugHost() {
-        def hosts = []
-        for(ifs in NetworkInterface.getNetworkInterfaces()){
-            for(address in ifs.getInetAddresses()){
-                if(address.getHostAddress() != '127.0.0.1' && address.getHostAddress() != 'localhost')
-                    hosts.add(address.getHostAddress())
-            }
-        }
-        return hosts[0]
+       return Configuration.get("QPS_HOST")
     }
 
     // Possible to override in private pipelines
