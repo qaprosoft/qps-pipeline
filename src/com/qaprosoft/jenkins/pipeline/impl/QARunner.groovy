@@ -399,7 +399,7 @@ public class QARunner extends AbstractRunner {
 
         context.node(nodeName) {
             def config = context.sh script: "ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print \$1}'", returnStdout: true
-            context.println "CONFIG: " + config
+            context.println "CONFIG: " + config.dump()
 
             context.wrap([$class: 'BuildUser']) {
                 try {
