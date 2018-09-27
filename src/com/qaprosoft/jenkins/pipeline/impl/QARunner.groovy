@@ -387,7 +387,7 @@ public class QARunner extends AbstractRunner {
 
     protected def getHost(){
         def config = context.sh script: "pwd", returnStdout: true
-        return config
+        return config.trim()
     }
 
     protected void runJob() {
