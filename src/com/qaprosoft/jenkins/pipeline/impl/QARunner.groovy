@@ -386,7 +386,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def getHost(){
-        def config = context.sh script: "pwd", returnStdout: true
+        def config = context.sh script: "ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print \$1}'", returnStdout: true
         return config.trim()
     }
 
