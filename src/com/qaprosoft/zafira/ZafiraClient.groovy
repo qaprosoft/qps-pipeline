@@ -33,7 +33,8 @@ class ZafiraClient {
                                          \"env\": \"${Configuration.get("env")}\", \
                                          \"ciRunId\": \"${uuid}\", \
                                          \"ciParentUrl\": \"${Configuration.get("ci_parent_url")}\", \
-                                         \"ciParentBuild\": \"${Configuration.get("ci_parent_build")}\"}",
+                                         \"ciParentBuild\": \"${Configuration.get("ci_parent_build")}\", \
+                                         \"project\": \"${Configuration.get("zafira_project")}\"}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/queue"]
 
