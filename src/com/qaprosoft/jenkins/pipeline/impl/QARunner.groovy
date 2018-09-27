@@ -601,8 +601,7 @@ public class QARunner extends AbstractRunner {
 			-Dmaven.test.failure.ignore=true \
 			-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
 			-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
-            -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
-			-Dmax_screen_history=1 \
+ 			-Dmax_screen_history=1 \
             -Dinit_retry_count=0 \
             -Dinit_retry_interval=10 \
 			-Dzafira_enabled=true \
@@ -615,6 +614,7 @@ public class QARunner extends AbstractRunner {
 			-Dgit_url=${Configuration.get("scm_url")} \
 			-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
 			-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+            -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
 			-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 			clean test"
 
