@@ -612,6 +612,7 @@ public class QARunner extends AbstractRunner {
 			-Dgit_url=${Configuration.get("scm_url")} \
 			-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
 			-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+                      -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
 			-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 			clean test"
 
