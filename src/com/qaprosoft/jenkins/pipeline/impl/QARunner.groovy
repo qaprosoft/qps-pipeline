@@ -388,8 +388,6 @@ public class QARunner extends AbstractRunner {
     protected void runJob() {
         context.println("QARunner->runJob")
 
-        def config = context.sh "ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print \$1}'"
-        context.println "CONFIG: " + config
 
         uuid = Executor.getUUID()
         context.println "UUID: " + uuid
@@ -401,6 +399,9 @@ public class QARunner extends AbstractRunner {
         }
 
         context.node(nodeName) {
+            def config = context.sh "ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print \$1}'"
+            context.println "CONFIG: " + config
+
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
