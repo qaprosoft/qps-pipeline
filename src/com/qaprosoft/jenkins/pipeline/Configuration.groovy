@@ -59,6 +59,7 @@ public class Configuration {
 
 		ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride),
 		ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
+        QUEUE_REGISTRATION("queue_registration", "true"),
 
 		JOB_URL("JOB_URL", mustOverride),
 		JOB_NAME("JOB_NAME", mustOverride),

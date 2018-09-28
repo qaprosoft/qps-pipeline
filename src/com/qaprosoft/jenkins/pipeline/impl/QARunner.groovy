@@ -393,7 +393,9 @@ public class QARunner extends AbstractRunner {
 
 		String nodeName = "master"
 		context.node(nodeName) {
-			zc.queueZafiraTestRun(uuid)
+            if(Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION).toBoolean()){
+                zc.queueZafiraTestRun(uuid)
+            }
 			nodeName = chooseNode()
         }
 
