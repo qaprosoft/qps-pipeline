@@ -389,7 +389,7 @@ public class QARunner extends AbstractRunner {
         context.println("QARunner->runJob")
 
         context.println "CLI before: " + jenkins.model.Jenkins.instance.getDescriptor("jenkins.CLI").dump()
-        Executor.cliEnabled(true)
+        Executor.cliEnabled(false)
         context.println "CLI after: " + jenkins.model.Jenkins.instance.getDescriptor("jenkins.CLI").dump()
 
         uuid = Executor.getUUID()
