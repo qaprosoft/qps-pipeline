@@ -19,30 +19,31 @@ class ZafiraClient {
 	}
 
 	public void queueZafiraTestRun(String uuid) {
-		if(Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION).toBoolean()) {
-			if (isTokenExpired()) {
-				getZafiraAuthToken(refreshToken)
-			}
-			def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
-							  contentType       : 'APPLICATION_JSON',
-							  httpMode          : 'POST',
-							  requestBody       : "{\"jobName\": \"${Configuration.get(Configuration.Parameter.JOB_BASE_NAME)}\", \
+		//do nothing for current nightly run with queue registration
+
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
+		}
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'POST',
+						  requestBody: "{\"jobName\": \"${Configuration.get(Configuration.Parameter.JOB_BASE_NAME)}\", \
                                          \"buildNumber\": \"${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}\", \
                                          \"branch\": \"${Configuration.get("branch")}\", \
                                          \"env\": \"${Configuration.get("env")}\", \
                                          \"ciRunId\": \"${uuid}\", \
                                          \"ciParentUrl\": \"${Configuration.get("ci_parent_url")}\", \
                                          \"ciParentBuild\": \"${Configuration.get("ci_parent_build")}\"}",
-							  validResponseCodes: "200:401",
-							  url               : this.serviceURL + "/api/tests/runs/queue"]
+						  validResponseCodes: "200:401",
+						  url: this.serviceURL + "/api/tests/runs/queue"]
 
-			def response = sendRequest(parameters)
-			if (!response) {
-				return
-			}
-			String formattedJSON = JsonOutput.prettyPrint(response.content)
-			context.println "Queued TestRun: " + formattedJSON
+		def response = sendRequest(parameters)
+		if(!response){
+			return
 		}
+        String formattedJSON = JsonOutput.prettyPrint(response.content)
+        context.println "Queued TestRun: " + formattedJSON
+        
     }
 
 	public void smartRerun() {
