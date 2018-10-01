@@ -1083,10 +1083,12 @@ public class QARunner extends AbstractRunner {
 
             //add current build params from cron
             for (param in Configuration.getParams()) {
-                if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
-                    jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
-                } else {
-                    jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
+                if (param.getValue() != null) {
+                    if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
+                        jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
+                    } else {
+                        jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
+                    }
                 }
             }
 
