@@ -993,7 +993,7 @@ public class QARunner extends AbstractRunner {
                             pipelineMap.put("env", supportedEnv)
                             pipelineMap.put("order", orderNum)
                             pipelineMap.put("BuildPriority", priorityNum)
-                            Executor.putNotNullWithSplit(pipelineMap, "email_list", emailList)
+                            Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
                             Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
 
@@ -1085,10 +1085,12 @@ public class QARunner extends AbstractRunner {
 
             //add current build params from cron
             for (param in Configuration.getParams()) {
-                if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
-                    jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
-                } else {
-                    jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
+                if (param.getValue() != null) {
+                    if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
+                        jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
+                    } else {
+                        jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
+                    }
                 }
             }
 
