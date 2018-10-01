@@ -21,7 +21,7 @@ class ZafiraClient {
 	public void queueZafiraTestRun(String uuid) {
 		//do nothing for current nightly run with queue registration
 
-		if (isTokenExpired()) {
+/*		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
@@ -42,7 +42,7 @@ class ZafiraClient {
 			return
 		}
         String formattedJSON = JsonOutput.prettyPrint(response.content)
-        context.println "Queued TestRun: " + formattedJSON
+        context.println "Queued TestRun: " + formattedJSON*/
         
     }
 
