@@ -391,10 +391,10 @@ public class QARunner extends AbstractRunner {
         uuid = Executor.getUUID()
         context.println "UUID: " + uuid
 
-		String nodeName = "master"
-		context.node(nodeName) {
+        String nodeName = "master"
+        context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
-			nodeName = chooseNode()
+            nodeName = chooseNode()
         }
 
         context.node(nodeName) {
