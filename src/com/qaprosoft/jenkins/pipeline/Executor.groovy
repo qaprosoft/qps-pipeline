@@ -102,6 +102,10 @@ public class Executor {
         }
     }
 
+    static def disableCli() {
+        jenkins.model.Jenkins.instance.getDescriptor("jenkins.CLI").get().setEnabled(false)
+    }
+
     static String getAbortCause(currentBuild)
     {
         def abortCause = ''
