@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.impl
+package com.qaprosoft.jenkins.pipeline.maven
 
 @Grab('org.testng:testng:6.8.8')
 import com.qaprosoft.jenkins.pipeline.Executor
@@ -387,10 +387,6 @@ public class QARunner extends AbstractRunner {
 
     protected void runJob() {
         context.println("QARunner->runJob")
-
-        context.println "CLI before: " + jenkins.model.Jenkins.instance.getDescriptor("jenkins.CLI").dump()
-        Executor.cliEnabled(false)
-        context.println "CLI after: " + jenkins.model.Jenkins.instance.getDescriptor("jenkins.CLI").dump()
 
         uuid = Executor.getUUID()
         context.println "UUID: " + uuid
