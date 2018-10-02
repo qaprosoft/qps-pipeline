@@ -417,8 +417,9 @@ public class QARunner extends AbstractRunner {
                         publishJacocoReport()
                     }
 
-                } catch (Exception e) {
-                    printStackTrace(e)
+                } catch (Throwable e) {
+                    //printStackTrace(e)
+                    context.println "ERROR: " + e.dump()
                     String failureReason = getFailure(currentBuild)
                     context.println "failureReason: ${failureReason}"
                     //explicitly execute abort to resolve anomalies with in_progress tests...
