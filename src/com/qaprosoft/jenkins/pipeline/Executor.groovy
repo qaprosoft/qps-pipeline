@@ -95,7 +95,7 @@ public class Executor {
     }
 
     static String getFailureSubject(cause, jobName, env, buildNumber){
-        return "${cause}: ${jobName} - Env: ${env} - Build # ${buildNumber}!"
+        return "${cause}: ${jobName} - ${env} - Build # ${buildNumber}!"
     }
 
     static String getBuildUser(currentBuild) {
