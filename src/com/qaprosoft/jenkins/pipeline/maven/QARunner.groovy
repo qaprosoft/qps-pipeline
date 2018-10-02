@@ -728,7 +728,7 @@ public class QARunner extends AbstractRunner {
         def subject = Executor.getFailureSubject("UNRECOGNIZED FAILURE", jobName, env, buildNumber)
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            context.println "FAILURE LOG" + getFailureLog(currentBuild)
+            context.println "FAILURE LOG" + Executor.getFailureLog(currentBuild)
             failureReason = "COMPILATION ERROR"
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
@@ -753,22 +753,11 @@ public class QARunner extends AbstractRunner {
 				Console: ${jobBuildUrl}/console"""
 
         //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
-        def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+        //def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+        def to = "itsvirko@qaprosoft.com"
         //TODO: enable emailing but seems like it should be moved to the notification code
         context.emailext Executor.getEmailParams(body, subject, to)
         return failureReason
-    }
-
-    public def getFailureLog(currentBuild){
-        def failureLog = ""
-        int lineCount = 0
-        for(logLine in currentBuild.rawBuild.getLog(50)) {
-            if(logLine.contains("ERROR") && lineCount < 10){
-                failureLog = failureLog + logLine + "\n"
-                lineCount++
-            }
-        }
-        return failureLog
     }
 
     protected void exportZafiraReport() {

@@ -98,6 +98,18 @@ public class Executor {
         return "${cause}: ${jobName} - ${env} - Build # ${buildNumber}!"
     }
 
+    static String getFailureLog(currentBuild){
+        def failureLog = ""
+        int lineCount = 0
+        for(logLine in currentBuild.rawBuild.getLog(50)) {
+            if(logLine.contains("ERROR") && lineCount < 10){
+                failureLog = failureLog + logLine + "\n"
+                lineCount++
+            }
+        }
+        return failureLog
+    }
+
     static String getBuildUser(currentBuild) {
         try {
             return currentBuild.rawBuild.getCause(hudson.model.Cause.UserIdCause).getUserId()
