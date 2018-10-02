@@ -727,7 +727,7 @@ public class QARunner extends AbstractRunner {
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
             context.println "LOGSTART"
-            for(log in context.currentBuild.rawBuild.getLog(100).each) {
+            for(log in context.currentBuild.rawBuild.getLog(100)) {
                 if(log.contains("ERROR")){
                     context.println log
                 }
