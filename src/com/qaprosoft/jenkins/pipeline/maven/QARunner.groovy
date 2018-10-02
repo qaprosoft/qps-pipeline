@@ -23,9 +23,6 @@ import com.qaprosoft.scm.github.GitHub;
 
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
-import java.util.regex.Pattern
-
-
 public class QARunner extends AbstractRunner {
 
     protected Map dslObjects = [:]
@@ -729,7 +726,7 @@ public class QARunner extends AbstractRunner {
         def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            failureLog = Executor.getFailureLog(currentBuild)
+            failureLog = Executor.getFailureLogForEmail(currentBuild)
             failureReason = "COMPILATION ERROR"
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
