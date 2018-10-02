@@ -728,21 +728,7 @@ public class QARunner extends AbstractRunner {
         def subject = Executor.getFailureSubject("UNRECOGNIZED FAILURE", jobName, env, buildNumber)
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            context.println "LOGSTART"
-            for(log in context.currentBuild.rawBuild.getLog(100)) {
-                if(log.contains("ERROR")){
-                    if(log.matches(".*\\.java.*")){
-                        context.println log
-                        break
-                    }
-//                    Pattern pattern = Pattern.compile(".*\\.java.*")
-//                    if(pattern.matcher(log).matches()){
-//                        context.println log
-//                        break
-//                    }
-                }
-            }
-            context.println "LOGFIISH"
+            context.println "FAILURE LOG" + getFailureLog(currentBuild)
             failureReason = "COMPILATION ERROR"
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
@@ -773,6 +759,20 @@ public class QARunner extends AbstractRunner {
         return failureReason
     }
 
+    public def getFailureLog(currentBuild){
+        def failureLog = ""
+        int lineCount = 0
+        for(logLine in currentBuild.rawBuild.getLog(50)) {
+            if(logLine.contains("ERROR")){
+                failureLog = failureLog + logLine + "\n"
+                lineCount++
+            }
+            if(lineCount > 9) {
+                break
+            }
+        }
+        return failureLog
+    }
 
     protected void exportZafiraReport() {
         //replace existing local emailable-report.html by Zafira content
