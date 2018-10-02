@@ -731,7 +731,7 @@ public class QARunner extends AbstractRunner {
             context.println "LOGSTART"
             for(log in context.currentBuild.rawBuild.getLog(100)) {
                 if(log.contains("ERROR")){
-                    Pattern pattern = Pattern.compile(".*\\.java")
+                    Pattern pattern = Pattern.compile(".*\\.java.*")
                     if(pattern.matcher(log).matches()){
                         context.println log
                         break
