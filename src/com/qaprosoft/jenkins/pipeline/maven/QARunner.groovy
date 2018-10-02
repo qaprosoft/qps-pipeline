@@ -717,37 +717,37 @@ public class QARunner extends AbstractRunner {
         currentBuild.result = 'FAILURE'
         def failureReason = "undefined failure"
 
-        String JOB_URL = Configuration.get(Configuration.Parameter.JOB_URL)
-        String BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String JOB_NAME = Configuration.get(Configuration.Parameter.JOB_NAME)
+        String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+        String jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + buildNumber
+        String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
+        String env = Configuration.get("env")
 
-        def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
-        def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
+        def subject = Executor.getFailureSubject("UNRECOGNIZED FAILURE", jobName, env, buildNumber)
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
             failureReason = "COMPILATION ERROR"
-            bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}</p>"
-            subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+            bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
+            subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
             failureReason = "BUILD FAILURE"
-            bodyHeader = "<p>Unable to execute tests due to the build failure. ${JOB_URL}${BUILD_NUMBER}</p>"
-            subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+            bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
+            subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
             failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
-            bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${JOB_URL}${BUILD_NUMBER}</p>"
-            subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+            bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
+            subject = Executor.getFailureSubject("ABORTED", jobName, env, buildNumber)
         } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
             currentBuild.result = 'ABORTED'
             failureReason = "Aborted by timeout"
-            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${JOB_URL}${BUILD_NUMBER}</p>"
-            subject = "TIMED OUT: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
+            subject = Executor.getFailureSubject("TIMED OUT", jobName, env, buildNumber)
         }
 
-
-        def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
-		${zafiraReport}: ${JOB_URL}${BUILD_NUMBER}/${zafiraReport}<br>
-				Console: ${JOB_URL}${BUILD_NUMBER}/console"""
+        def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
+		${zafiraReport}: ${jobBuildUrl}/${zafiraReport}<br>
+				Console: ${jobBuildUrl}/console"""
 
         //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
