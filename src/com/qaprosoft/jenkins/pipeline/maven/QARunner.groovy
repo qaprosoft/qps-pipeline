@@ -654,18 +654,14 @@ public class QARunner extends AbstractRunner {
 
             //context.println "goals: ${goals}"
 
-            try {
-                if (context.isUnix()) {
-                    def suiteNameForUnix = Configuration.get("suite").replace("\\", "/")
-                    context.println "Suite for Unix: ${suiteNameForUnix}"
-                    context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix}"
-                } else {
-                    def suiteNameForWindows = Configuration.get("suite").replace("/", "\\")
-                    context.println "Suite for Windows: ${suiteNameForWindows}"
-                    context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
-                }
-            } catch (Throwable e) {
-                context.println "ERROR DUMP: " + e.dump()
+            if (context.isUnix()) {
+                def suiteNameForUnix = Configuration.get("suite").replace("\\", "/")
+                context.println "Suite for Unix: ${suiteNameForUnix}"
+                context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix}"
+            } else {
+                def suiteNameForWindows = Configuration.get("suite").replace("/", "\\")
+                context.println "Suite for Windows: ${suiteNameForWindows}"
+                context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
             }
         }
     }
