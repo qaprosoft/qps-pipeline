@@ -763,12 +763,9 @@ public class QARunner extends AbstractRunner {
         def failureLog = ""
         int lineCount = 0
         for(logLine in currentBuild.rawBuild.getLog(50)) {
-            if(logLine.contains("ERROR")){
+            if(logLine.contains("ERROR") && lineCount < 10){
                 failureLog = failureLog + logLine + "\n"
                 lineCount++
-            }
-            if(lineCount > 9) {
-                break
             }
         }
         return failureLog
