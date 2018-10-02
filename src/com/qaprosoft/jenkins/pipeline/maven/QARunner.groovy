@@ -23,6 +23,8 @@ import com.qaprosoft.scm.github.GitHub;
 
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
+import java.util.regex.Pattern
+
 
 public class QARunner extends AbstractRunner {
 
@@ -729,7 +731,8 @@ public class QARunner extends AbstractRunner {
             context.println "LOGSTART"
             for(log in context.currentBuild.rawBuild.getLog(100)) {
                 if(log.contains("ERROR")){
-                    if(log.matches(".*\\.java")){
+                    Pattern pattern = Pattern.compile(".*\\.java")
+                    if(pattern.matcher(log).matches()){
                         context.println log
                         break
                     }
