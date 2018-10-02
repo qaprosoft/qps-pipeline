@@ -29,7 +29,7 @@ public class QARunner extends AbstractRunner {
     protected Map dslObjects = [:]
     protected static final String zafiraReport = "ZafiraReport"
     protected def pipelineLibrary = "QPS-Pipeline"
-    protected def runnerClass = "com.qaprosoft.jenkins.pipeline.impl.QARunner"
+    protected def runnerClass = "com.qaprosoft.jenkins.pipeline.maven.QARunner"
     protected def folderName = "Automation"
     protected def onlyUpdated = false
     protected def currentBuild
