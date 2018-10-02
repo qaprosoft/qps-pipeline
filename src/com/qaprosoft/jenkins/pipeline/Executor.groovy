@@ -99,7 +99,7 @@ public class Executor {
     }
 
     static String getFailureLogForEmail(currentBuild){
-        def failureLog = ""
+        def failureLog = "Details:<br>"
         int lineCount = 0
         for(logLine in currentBuild.rawBuild.getLog(50)) {
             if(logLine.contains("ERROR") && lineCount < 10){
