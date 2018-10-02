@@ -417,9 +417,8 @@ public class QARunner extends AbstractRunner {
                         publishJacocoReport()
                     }
 
-                } catch (Throwable e) {
-                    //printStackTrace(e)
-                    context.println "ERROR: " + e.dump()
+                } catch (Exception e) {
+                    printStackTrace(e)
                     String failureReason = getFailure(currentBuild)
                     context.println "failureReason: ${failureReason}"
                     //explicitly execute abort to resolve anomalies with in_progress tests...
@@ -658,7 +657,8 @@ public class QARunner extends AbstractRunner {
             if (context.isUnix()) {
                 def suiteNameForUnix = Configuration.get("suite").replace("\\", "/")
                 context.println "Suite for Unix: ${suiteNameForUnix}"
-                context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix}"
+                def out = context.sh script: "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix}", returnStdout: true
+                context.println "OUT: " + out
             } else {
                 def suiteNameForWindows = Configuration.get("suite").replace("/", "\\")
                 context.println "Suite for Windows: ${suiteNameForWindows}"
