@@ -756,7 +756,8 @@ public class QARunner extends AbstractRunner {
         //def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         def to = "itsvirko@qaprosoft.com"
         //TODO: enable emailing but seems like it should be moved to the notification code
-        context.emailext Executor.getEmailParams(body, subject, to)
+        def emailext = context.emailext Executor.getEmailParams(body, subject, to)
+        context.println "RESPONSE: " + emailext
         return failureReason
     }
 
