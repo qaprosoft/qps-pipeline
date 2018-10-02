@@ -385,11 +385,6 @@ public class QARunner extends AbstractRunner {
         this.additionalClasspath = additionalClasspath
     }
 
-    protected def getHost(){
-        def config = context.sh script: "ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print \$1}'", returnStdout: true
-        return config.trim()
-    }
-
     protected void runJob() {
         context.println("QARunner->runJob")
 
@@ -403,7 +398,6 @@ public class QARunner extends AbstractRunner {
         }
 
         context.node(nodeName) {
-            context.println "CONFIG: " + getHost() + ":8000"
 
             context.wrap([$class: 'BuildUser']) {
                 try {
