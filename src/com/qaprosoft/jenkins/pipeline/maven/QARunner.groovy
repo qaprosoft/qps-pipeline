@@ -23,7 +23,6 @@ import com.qaprosoft.scm.github.GitHub;
 
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
-
 public class QARunner extends AbstractRunner {
 
     protected Map dslObjects = [:]
@@ -663,7 +662,6 @@ public class QARunner extends AbstractRunner {
                 context.println "Suite for Windows: ${suiteNameForWindows}"
                 context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
             }
-
         }
     }
 
@@ -725,8 +723,10 @@ public class QARunner extends AbstractRunner {
 
         def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
         def subject = Executor.getFailureSubject("UNRECOGNIZED FAILURE", jobName, env, buildNumber)
+        def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
+            failureLog = Executor.getFailureLogForEmail(currentBuild)
             failureReason = "COMPILATION ERROR"
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
@@ -748,7 +748,7 @@ public class QARunner extends AbstractRunner {
 
         def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
 		${zafiraReport}: ${jobBuildUrl}/${zafiraReport}<br>
-				Console: ${jobBuildUrl}/console"""
+				Console: ${jobBuildUrl}/console<br>${failureLog}"""
 
         //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
@@ -756,7 +756,6 @@ public class QARunner extends AbstractRunner {
         context.emailext Executor.getEmailParams(body, subject, to)
         return failureReason
     }
-
 
     protected void exportZafiraReport() {
         //replace existing local emailable-report.html by Zafira content
