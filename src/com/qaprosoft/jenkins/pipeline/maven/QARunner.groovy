@@ -726,9 +726,10 @@ public class QARunner extends AbstractRunner {
 
         def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
         def subject = Executor.getFailureSubject("UNRECOGNIZED FAILURE", jobName, env, buildNumber)
+        def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            context.println "FAILURE LOG" + Executor.getFailureLog(currentBuild)
+            failureLog = Executor.getFailureLog(currentBuild)
             failureReason = "COMPILATION ERROR"
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
@@ -748,7 +749,7 @@ public class QARunner extends AbstractRunner {
             subject = Executor.getFailureSubject("TIMED OUT", jobName, env, buildNumber)
         }
 
-        def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
+        def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>${failureLog}<br>
 		${zafiraReport}: ${jobBuildUrl}/${zafiraReport}<br>
 				Console: ${jobBuildUrl}/console"""
 
