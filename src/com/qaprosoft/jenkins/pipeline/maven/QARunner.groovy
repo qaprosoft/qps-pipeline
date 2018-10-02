@@ -727,7 +727,8 @@ public class QARunner extends AbstractRunner {
         def subject = Executor.getFailureSubject("UNRECOGNIZED FAILURE", jobName, env, buildNumber)
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            context.println "DUMP: " + context.currentBuild.rawBuild.dump()
+            context.println "DUMP: " + context.currentBuild.dump()
+            context.println "DUMP RAWBUIlD: " + context.currentBuild.rawBuild.dump()
             failureReason = "COMPILATION ERROR"
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
