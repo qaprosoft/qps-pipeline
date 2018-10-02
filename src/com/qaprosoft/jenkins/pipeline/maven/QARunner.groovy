@@ -665,7 +665,7 @@ public class QARunner extends AbstractRunner {
                     context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
                 }
             } catch (Throwable e) {
-                e.dump()
+                context.println "ERROR DUMP: " + e.dump()
             }
 
         }
