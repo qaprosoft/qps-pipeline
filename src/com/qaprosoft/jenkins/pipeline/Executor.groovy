@@ -94,6 +94,10 @@ public class Executor {
         return failure
     }
 
+    static String getFailureSubject(cause, jobName, env, buildNumber){
+        return "${cause}: ${jobName} - ${env} - Build # ${buildNumber}!"
+    }
+
     static String getBuildUser(currentBuild) {
         try {
             return currentBuild.rawBuild.getCause(hudson.model.Cause.UserIdCause).getUserId()
