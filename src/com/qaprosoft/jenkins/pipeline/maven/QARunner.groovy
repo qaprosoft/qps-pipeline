@@ -594,7 +594,7 @@ public class QARunner extends AbstractRunner {
                 //override "null" value by empty to be able to register in cloud version of Zafira
                 buildUserEmail = ""
             }
-            def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+            def defaultBaseMavenGoals = "dd-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 			-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 			-f ${pomFile} \
@@ -729,12 +729,12 @@ public class QARunner extends AbstractRunner {
             failureReason = "COMPILATION ERROR"
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
-            failureLog = Executor.getFailureLogForEmail(currentBuild)
+            failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
             failureReason = "BUILD FAILURE"
             bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
-            failureLog = Executor.getFailureLogForEmail(currentBuild)
+            failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
             failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
