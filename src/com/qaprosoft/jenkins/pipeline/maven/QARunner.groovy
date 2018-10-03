@@ -752,7 +752,8 @@ public class QARunner extends AbstractRunner {
 				Console: ${jobBuildUrl}/console<br>${failureLog}"""
 
         //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
-        def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+//        def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+        def to = "itsvirko@qaprosoft.com"
         //TODO: enable emailing but seems like it should be moved to the notification code
         context.emailext Executor.getEmailParams(body, subject, to)
         return failureReason
