@@ -726,14 +726,15 @@ public class QARunner extends AbstractRunner {
         def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            failureLog = Executor.getFailureLogForEmail(currentBuild)
             failureReason = "COMPILATION ERROR"
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
+            failureLog = Executor.getFailureLogForEmail(currentBuild)
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
             failureReason = "BUILD FAILURE"
             bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
+            failureLog = Executor.getFailureLogForEmail(currentBuild)
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
             failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
