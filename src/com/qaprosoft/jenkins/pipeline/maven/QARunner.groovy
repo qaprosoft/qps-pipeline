@@ -606,7 +606,7 @@ public class QARunner extends AbstractRunner {
 			-Dzafira_rerun_failures=${Configuration.get("rerun_failures")} \
 			-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 			-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-			-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/${zafiraReport}\" \
+			-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
 					-Dgit_branch=${Configuration.get("branch")} \
 			-Dgit_commit=${Configuration.get("scm_commit")} \
 			-Dgit_url=${Configuration.get("scm_url")} \
