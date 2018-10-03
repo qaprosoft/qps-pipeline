@@ -734,7 +734,7 @@ public class QARunner extends AbstractRunner {
             failureReason = "BUILD FAILURE"
             bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
-            failureLog = Executor.getLogDetailsForEmail(currentBuild, "INFO")
+            failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
             failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
@@ -752,8 +752,7 @@ public class QARunner extends AbstractRunner {
 				Console: ${jobBuildUrl}/console<br>${failureLog}"""
 
         //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
-//        def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
-        def to = "itsvirko@qaprosoft.com"
+        def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         //TODO: enable emailing but seems like it should be moved to the notification code
         context.emailext Executor.getEmailParams(body, subject, to)
         return failureReason
