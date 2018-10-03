@@ -594,7 +594,7 @@ public class QARunner extends AbstractRunner {
                 //override "null" value by empty to be able to register in cloud version of Zafira
                 buildUserEmail = ""
             }
-            def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+            def defaultBaseMavenGoals = "ff-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 			-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 			-f ${pomFile} \
@@ -612,7 +612,7 @@ public class QARunner extends AbstractRunner {
 			-Dgit_url=${Configuration.get("scm_url")} \
 			-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
 			-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-                      -D optimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
+                      -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
 			-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 			clean test"
 
