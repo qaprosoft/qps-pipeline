@@ -589,12 +589,12 @@ public class QARunner extends AbstractRunner {
         context.stage('Run Test Suite') {
 
             def pomFile = Executor.getSubProjectFolder() + "/pom.xml"
-            def BUILD_USER_EMAIL = Configuration.get("BUILD_USER_EMAIL")
-            if (BUILD_USER_EMAIL == null) {
+            def buildUserEmail = Configuration.get("BUILD_USER_EMAIL")
+            if (buildUserEmail == null) {
                 //override "null" value by empty to be able to register in cloud version of Zafira
-                BUILD_USER_EMAIL = ""
+                buildUserEmail = ""
             }
-            def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+            def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 			-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 			-f ${pomFile} \
@@ -618,7 +618,7 @@ public class QARunner extends AbstractRunner {
 
             Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
-            def goals = Configuration.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
+            def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
             //register all obligatory vars
             Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
