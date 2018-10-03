@@ -28,7 +28,6 @@ public class TestJobFactory extends PipelineFactory {
 
 	def create() {
 		_dslFactory.println "TestJobFactory->create"
-		def proxyInfo = new ProxyInfo(_dslFactory)
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 
@@ -235,7 +234,7 @@ public class TestJobFactory extends PipelineFactory {
 	}
 	
 	protected def getDevices(String platform) {
-		_dslFactory.println("111")
+		def proxyInfo = new ProxyInfo(_dslFactory)
 		return proxyInfo.getDevicesList(platform)
 	}
 

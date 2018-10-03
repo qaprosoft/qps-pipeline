@@ -16,7 +16,6 @@ class ProxyInfo {
 
     //TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
     public def getDevicesList(String platform) {
-		_dslFactory.println("222")
         def deviceList = platformDeviceListMap.get(platform.toLowerCase())
         try {
             if (deviceList.size() == 0) {
@@ -32,7 +31,6 @@ class ProxyInfo {
         } catch (Exception e) {
             dslFactory.println e.getMessage()
         }
-		_dslFactory.println("333")
         return baseDeviceList + deviceList.sort()
     }
 }
