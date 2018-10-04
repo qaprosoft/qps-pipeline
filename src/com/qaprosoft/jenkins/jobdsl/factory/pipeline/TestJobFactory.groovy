@@ -28,7 +28,6 @@ public class TestJobFactory extends PipelineFactory {
 
 	def create() {
 		_dslFactory.println "TestJobFactory->create"
-		def proxyInfo = new ProxyInfo(_dslFactory)
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 
@@ -110,7 +109,7 @@ public class TestJobFactory extends PipelineFactory {
 						configure addHiddenParameter('platform', '', '*')
 						break;
 					case ~/^.*android.*$/:
-						choiceParam('devicePool', proxyInfo.getDevicesList('ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('devicePool', getDevices('ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
@@ -121,7 +120,7 @@ public class TestJobFactory extends PipelineFactory {
 						break;
 					case ~/^.*ios.*$/:
 						//TODO:  Need to adjust this for virtual as well.
-						choiceParam('devicePool', proxyInfo.getDevicesList('iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+						choiceParam('devicePool', getDevices('iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
@@ -129,6 +128,7 @@ public class TestJobFactory extends PipelineFactory {
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						//TODO: enable video as only issue with Appiym and xrecord utility is fixed
 						//booleanParam('enableVideo', enableVideo, 'Enable video recording')
+						configure addHiddenParameter('enableVideo', 'Disable video recording until issue with Appium is resolved', 'false')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'iOS')
 						break;
@@ -232,6 +232,11 @@ public class TestJobFactory extends PipelineFactory {
 		}
 
 		return prepCustomFields
+	}
+	
+	protected def getDevices(String platform) {
+		def proxyInfo = new ProxyInfo(_dslFactory)
+		return proxyInfo.getDevicesList(platform)
 	}
 
 }

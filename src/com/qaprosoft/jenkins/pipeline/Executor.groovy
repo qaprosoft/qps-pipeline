@@ -94,6 +94,22 @@ public class Executor {
         return failure
     }
 
+    static String getFailureSubject(cause, jobName, env, buildNumber){
+        return "${cause}: ${jobName} - ${env} - Build # ${buildNumber}!"
+    }
+
+    static String getLogDetailsForEmail(currentBuild, logPattern){
+        def failureLog = "Details:<br>"
+        int lineCount = 0
+        for(logLine in currentBuild.rawBuild.getLog(50)) {
+            if(logLine.contains(logPattern) && lineCount < 10){
+                failureLog = failureLog + logLine + "<br>"
+                lineCount++
+            }
+        }
+        return failureLog
+    }
+
     static String getBuildUser(currentBuild) {
         try {
             return currentBuild.rawBuild.getCause(hudson.model.Cause.UserIdCause).getUserId()
