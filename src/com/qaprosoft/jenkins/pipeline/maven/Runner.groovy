@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.impl
+package com.qaprosoft.jenkins.pipeline.maven
 
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.pipeline.AbstractRunner

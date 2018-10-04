@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.impl
+package com.qaprosoft.jenkins.pipeline.maven
 
 @Grab('org.testng:testng:6.8.8')
 import com.qaprosoft.jenkins.pipeline.Executor
@@ -23,13 +23,12 @@ import com.qaprosoft.scm.github.GitHub;
 
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
-
 public class QARunner extends AbstractRunner {
 
     protected Map dslObjects = [:]
     protected static final String zafiraReport = "ZafiraReport"
     protected def pipelineLibrary = "QPS-Pipeline"
-    protected def runnerClass = "com.qaprosoft.jenkins.pipeline.impl.QARunner"
+    protected def runnerClass = "com.qaprosoft.jenkins.pipeline.maven.QARunner"
     protected def folderName = "Automation"
     protected def onlyUpdated = false
     protected def currentBuild
@@ -391,13 +390,14 @@ public class QARunner extends AbstractRunner {
         uuid = Executor.getUUID()
         context.println "UUID: " + uuid
 
-		String nodeName = "master"
-		context.node(nodeName) {
-			zc.queueZafiraTestRun(uuid)
-			nodeName = chooseNode()
+        String nodeName = "master"
+        context.node(nodeName) {
+            zc.queueZafiraTestRun(uuid)
+            nodeName = chooseNode()
         }
 
         context.node(nodeName) {
+
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
@@ -589,12 +589,12 @@ public class QARunner extends AbstractRunner {
         context.stage('Run Test Suite') {
 
             def pomFile = Executor.getSubProjectFolder() + "/pom.xml"
-            def BUILD_USER_EMAIL = Configuration.get("BUILD_USER_EMAIL")
-            if (BUILD_USER_EMAIL == null) {
+            def buildUserEmail = Configuration.get("BUILD_USER_EMAIL")
+            if (buildUserEmail == null) {
                 //override "null" value by empty to be able to register in cloud version of Zafira
-                BUILD_USER_EMAIL = ""
+                buildUserEmail = ""
             }
-            def DEFAULT_BASE_MAVEN_GOALS = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+            def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 			-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 			-f ${pomFile} \
@@ -606,18 +606,19 @@ public class QARunner extends AbstractRunner {
 			-Dzafira_rerun_failures=${Configuration.get("rerun_failures")} \
 			-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 			-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-			-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/${zafiraReport}\" \
+			-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
 					-Dgit_branch=${Configuration.get("branch")} \
 			-Dgit_commit=${Configuration.get("scm_commit")} \
 			-Dgit_url=${Configuration.get("scm_url")} \
 			-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
 			-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+                      -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
 			-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 			clean test"
 
             Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
-            def goals = Configuration.resolveVars(DEFAULT_BASE_MAVEN_GOALS)
+            def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
             //register all obligatory vars
             Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
@@ -661,7 +662,6 @@ public class QARunner extends AbstractRunner {
                 context.println "Suite for Windows: ${suiteNameForWindows}"
                 context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
             }
-
         }
     }
 
@@ -716,37 +716,40 @@ public class QARunner extends AbstractRunner {
         currentBuild.result = 'FAILURE'
         def failureReason = "undefined failure"
 
-        String JOB_URL = Configuration.get(Configuration.Parameter.JOB_URL)
-        String BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String JOB_NAME = Configuration.get(Configuration.Parameter.JOB_NAME)
+        String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+        String jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + buildNumber
+        String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
+        String env = Configuration.get("env")
 
-        def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${JOB_URL}${BUILD_NUMBER}</p>"
-        def subject = "UNRECOGNIZED FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+        def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
+        def subject = Executor.getFailureSubject("UNRECOGNIZED FAILURE", jobName, env, buildNumber)
+        def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
             failureReason = "COMPILATION ERROR"
-            bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${JOB_URL}${BUILD_NUMBER}</p>"
-            subject = "COMPILATION FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+            bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
+            subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
+            failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
             failureReason = "BUILD FAILURE"
-            bodyHeader = "<p>Unable to execute tests due to the build failure. ${JOB_URL}${BUILD_NUMBER}</p>"
-            subject = "BUILD FAILURE: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+            bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
+            subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
+            failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
             failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
-            bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${JOB_URL}${BUILD_NUMBER}</p>"
-            subject = "ABORTED: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+            bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
+            subject = Executor.getFailureSubject("ABORTED", jobName, env, buildNumber)
         } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
             currentBuild.result = 'ABORTED'
             failureReason = "Aborted by timeout"
-            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${JOB_URL}${BUILD_NUMBER}</p>"
-            subject = "TIMED OUT: ${JOB_NAME} - Build # ${BUILD_NUMBER}!"
+            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
+            subject = Executor.getFailureSubject("TIMED OUT", jobName, env, buildNumber)
         }
 
-
-        def body = bodyHeader + """<br>Rebuild: ${JOB_URL}${BUILD_NUMBER}/rebuild/parameterized<br>
-		${zafiraReport}: ${JOB_URL}${BUILD_NUMBER}/${zafiraReport}<br>
-				Console: ${JOB_URL}${BUILD_NUMBER}/console"""
+        def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
+		${zafiraReport}: ${jobBuildUrl}/${zafiraReport}<br>
+				Console: ${jobBuildUrl}/console<br>${failureLog}"""
 
         //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
@@ -754,7 +757,6 @@ public class QARunner extends AbstractRunner {
         context.emailext Executor.getEmailParams(body, subject, to)
         return failureReason
     }
-
 
     protected void exportZafiraReport() {
         //replace existing local emailable-report.html by Zafira content
@@ -997,7 +999,7 @@ public class QARunner extends AbstractRunner {
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
 
                             //context.println("initialized ${filePath} suite to pipeline run...")
-                            registerPipeline(pipelineMap)
+                            registerPipeline(currentSuite, pipelineMap)
                         }
 
                     }
@@ -1011,7 +1013,8 @@ public class QARunner extends AbstractRunner {
         return Configuration.get("env")
     }
 
-    protected def registerPipeline(pipelineMap) {
+	// do not remove currentSuite from this method! It is available here to be override on customer level.
+    protected def registerPipeline(currentSuite, pipelineMap) {
         listPipelines.add(pipelineMap)
     }
 
@@ -1155,14 +1158,7 @@ public class QARunner extends AbstractRunner {
 
     // Possible to override in private pipelines
     protected def getDebugHost() {
-        def hosts = []
-        for(ifs in NetworkInterface.getNetworkInterfaces()){
-            for(address in ifs.getInetAddresses()){
-                if(address.getHostAddress() != '127.0.0.1' && address.getHostAddress() != 'localhost')
-                    hosts.add(address.getHostAddress())
-            }
-        }
-        return hosts[0]
+       return Configuration.get("QPS_HOST")
     }
 
     // Possible to override in private pipelines
