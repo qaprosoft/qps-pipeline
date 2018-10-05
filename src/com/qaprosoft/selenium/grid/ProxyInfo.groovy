@@ -45,7 +45,7 @@ class ProxyInfo {
             def slurper = new XmlSlurper(tagsoupParser)
             def htmlParser = slurper.parse(output.toString())
             dslFactory.println "CONSOLE:\n"
-            dslFactory.println htmlParser
+            dslFactory.println htmlParser.dump()
 //            dslFactory.println JsonOutput.prettyPrint(json.toString())
         } catch (Exception e) {
             dslFactory.println e.getMessage()
