@@ -1,7 +1,8 @@
 package com.qaprosoft.selenium.grid
 
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper;
+import groovy.json.JsonSlurper
+@Grab(group='org.ccil.cowan.tagsoup', module='tagsoup', version='1.2' )
 
 class ProxyInfo {
 
@@ -40,7 +41,8 @@ class ProxyInfo {
         try {
             //def json = new JsonSlurper().parse(consoleUrl.toURL())
             def output = consoleUrl.toURL()
-            def slurper = new XmlSlurper()
+            def tagsoupParser = new org.ccil.cowan.tagsoup.Parser()
+            def slurper = new XmlSlurper(tagsoupParser)
             def htmlParser = slurper.parse(output.toString())
             dslFactory.println "CONSOLE:\n"
             dslFactory.println htmlParser
