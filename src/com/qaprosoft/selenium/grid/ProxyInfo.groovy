@@ -43,7 +43,7 @@ class ProxyInfo {
             def json = new JsonSlurper().parse(consoleUrl.toURL())
             dslFactory.println "JSON: " + json
             json.servlets.each { servlet ->
-                dslFactory.println "SERVLET: " + servlet
+                dslFactory.println "SERVLET: " + servlet.dump()
 
             }
 //            def parser = new SAXParser()
