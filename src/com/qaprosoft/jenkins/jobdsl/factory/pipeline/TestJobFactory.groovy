@@ -37,6 +37,7 @@ public class TestJobFactory extends PipelineFactory {
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
 		_dslFactory.println "name: " + name
 
+
 		def pipelineJob = super.create()
 		pipelineJob.with {
 
@@ -236,6 +237,7 @@ public class TestJobFactory extends PipelineFactory {
 	
 	protected def getDevices(String platform) {
 		def proxyInfo = new ProxyInfo(_dslFactory)
+        proxyInfo.getGridConsoleInfo()
 		return proxyInfo.getDevicesList(platform)
 	}
 
