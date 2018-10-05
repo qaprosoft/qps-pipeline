@@ -44,7 +44,8 @@ class ProxyInfo {
             def page = new XmlSlurper(parser).parse(consoleUrl)
 
             dslFactory.println "PAGE:\n${page.dump()}"
-            page.childNodes().each { childNode ->
+            page.depthFirst().each { childNode ->
+                dslFactory.println "NODE:"
                 dslFactory.println childNode.dump()
 
             }
