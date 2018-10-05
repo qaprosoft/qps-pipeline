@@ -1,8 +1,9 @@
 package com.qaprosoft.selenium.grid
 
-import groovy.json.JsonOutput
+@Grab(group='net.sourceforge.nekohtml', module='nekohtml', version='1.9.14')
+import org.cyberneko.html.parsers.SAXParser
+import groovy.util.XmlSlurper
 import groovy.json.JsonSlurper
-@Grab(group='org.ccil.cowan.tagsoup', module='tagsoup', version='1.2' )
 
 class ProxyInfo {
 
@@ -39,14 +40,9 @@ class ProxyInfo {
     public def getGridConsoleInfo(String platform) {
         String consoleUrl = dslFactory.binding.variables.QPS_HUB + "/grid/console"
         try {
-            //def json = new JsonSlurper().parse(consoleUrl.toURL())
-            def tagsoupParser = new org.ccil.cowan.tagsoup.Parser()
-            def slurper = new XmlSlurper(tagsoupParser)
-            def htmlParser = slurper.parse(consoleUrl)
-            def data = htmlParser.'**'.find { it.@class == 'tag' }
-            dslFactory.println "CONSOLE:\n"
-            dslFactory.println data
-//            dslFactory.println JsonOutput.prettyPrint(json.toString())
+            def parser = new SAXParser()
+            def page = new XmlSlurper(parser).parse()
+            dslFactory.println "PAGE:\n${page}"
         } catch (Exception e) {
             dslFactory.println e.getMessage()
         }
