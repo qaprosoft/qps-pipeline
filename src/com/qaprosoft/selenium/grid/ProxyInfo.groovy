@@ -39,8 +39,12 @@ class ProxyInfo {
         String consoleUrl = dslFactory.binding.variables.QPS_HUB + "/grid/console"
         try {
             def json = new JsonSlurper().parse(consoleUrl.toURL())
+            def slurper = new XmlSlurper()
+            def htmlParser = slurper.parse(consoleUrl)
+
+
             dslFactory.println "CONSOLE:\n"
-            dslFactory.println json
+            dslFactory.println htmlParser.dump()
 //            dslFactory.println JsonOutput.prettyPrint(json.toString())
         } catch (Exception e) {
             dslFactory.println e.getMessage()
