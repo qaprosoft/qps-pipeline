@@ -41,12 +41,11 @@ class ProxyInfo {
         try {
             //def json = new JsonSlurper().parse(consoleUrl.toURL())
             def tagsoupParser = new org.ccil.cowan.tagsoup.Parser()
-            dslFactory.println "TAGSOUP: " + tagsoupParser.dump()
             def slurper = new XmlSlurper(tagsoupParser)
-            dslFactory.println "SLURPER: " + tagsoupParser.dump()
             def htmlParser = slurper.parse(consoleUrl)
+            def data = htmlParser.'**'.find { it.@class == 'tag' }
             dslFactory.println "CONSOLE:\n"
-            dslFactory.println htmlParser.dump()
+            dslFactory.println data
 //            dslFactory.println JsonOutput.prettyPrint(json.toString())
         } catch (Exception e) {
             dslFactory.println e.getMessage()
