@@ -43,7 +43,7 @@ class ProxyInfo {
             def parser = new SAXParser()
             def page = new XmlSlurper(parser).parse(consoleUrl)
 
-            dslFactory.println "PAGE:\n${page.attributes()}"
+            dslFactory.println "PAGE:\n${page.dump()}"
         } catch (Exception e) {
             dslFactory.println e.getMessage()
         }
