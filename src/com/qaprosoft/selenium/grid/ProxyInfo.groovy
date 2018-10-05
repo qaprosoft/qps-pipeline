@@ -38,17 +38,18 @@ class ProxyInfo {
     }
 
     public def getGridConsoleInfo(String platform) {
-        String consoleUrl = dslFactory.binding.variables.QPS_HUB + "/grid/console"
+        String consoleUrl = dslFactory.binding.variables.QPS_HUB + "/grid/api/hub/status"
         try {
-            def parser = new SAXParser()
-            def page = new XmlSlurper(parser).parse(consoleUrl)
-
-            dslFactory.println "PAGE:\n${page.dump()}"
-            page.depthFirst().each { childNode ->
-                dslFactory.println "NODE:"
-                dslFactory.println childNode.dump()
-
-            }
+            def json = new JsonSlurper().parse(consoleUrl.toURL())
+            dslFactory.println "JSON: " + json
+//            def parser = new SAXParser()
+//            def page = new XmlSlurper(parser).parse(consoleUrl)
+//
+//            dslFactory.println "PAGE:\n${page.dump()}"
+//            page.depthFirst().each { childNode ->
+//                dslFactory.println "NODE:"
+//                dslFactory.println childNode.dump()
+//            }
         } catch (Exception e) {
             dslFactory.println e.getMessage()
         }
