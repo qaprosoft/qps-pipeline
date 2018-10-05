@@ -1,5 +1,6 @@
 package com.qaprosoft.selenium.grid
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper;
 
 class ProxyInfo {
@@ -32,5 +33,17 @@ class ProxyInfo {
             dslFactory.println e.getMessage()
         }
         return baseDeviceList + deviceList.sort()
+    }
+
+    public def getGridConsoleInfo(String platform) {
+        String consoleUrl = dslFactory.binding.variables.QPS_HUB + "/grid/admin"
+        try {
+            def json = new JsonSlurper().parse(consoleUrl.toURL())
+            dslFactory.println "CONSOLE:\n"
+            dslFactory.println JsonOutput.prettyPrint(json.toString())
+        } catch (Exception e) {
+            dslFactory.println e.getMessage()
+        }
+        //return baseDeviceList + deviceList.sort()
     }
 }
