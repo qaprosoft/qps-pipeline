@@ -40,10 +40,11 @@ class ProxyInfo {
         String consoleUrl = dslFactory.binding.variables.QPS_HUB + "/grid/console"
         try {
             //def json = new JsonSlurper().parse(consoleUrl.toURL())
-            def output = consoleUrl.toURL()
             def tagsoupParser = new org.ccil.cowan.tagsoup.Parser()
+            dslFactory.println "TAGSOUP: " + tagsoupParser.dump()
             def slurper = new XmlSlurper(tagsoupParser)
-            def htmlParser = slurper.parse(output.toString())
+            dslFactory.println "SLURPER: " + tagsoupParser.dump()
+            def htmlParser = slurper.parse(consoleUrl)
             dslFactory.println "CONSOLE:\n"
             dslFactory.println htmlParser.dump()
 //            dslFactory.println JsonOutput.prettyPrint(json.toString())
