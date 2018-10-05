@@ -41,7 +41,7 @@ class ProxyInfo {
         String consoleUrl = dslFactory.binding.variables.QPS_HUB + "/grid/console"
         try {
             def parser = new SAXParser()
-            def page = new XmlSlurper(parser).parse()
+            def page = new XmlSlurper(parser).parse(consoleUrl)
             dslFactory.println "PAGE:\n${page}"
         } catch (Exception e) {
             dslFactory.println e.getMessage()
