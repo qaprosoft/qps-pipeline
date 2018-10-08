@@ -1,9 +1,6 @@
 package com.qaprosoft.selenium.grid
 
-@Grab(group='net.sourceforge.nekohtml', module='nekohtml', version='1.9.14')
-import org.cyberneko.html.parsers.SAXParser
-import groovy.util.XmlSlurper
-import groovy.json.JsonSlurper
+import groovy.json.JsonSlurper;
 
 class ProxyInfo {
 
@@ -35,28 +32,5 @@ class ProxyInfo {
             dslFactory.println e.getMessage()
         }
         return baseDeviceList + deviceList.sort()
-    }
-
-    public def getGridConsoleInfo(String platform) {
-        String consoleUrl = dslFactory.binding.variables.QPS_HUB + "/grid/api/hub/status"
-        try {
-            def json = new JsonSlurper().parse(consoleUrl.toURL())
-            dslFactory.println "JSON: " + json
-            json.servlets.each { servlet ->
-                dslFactory.println "SERVLET: " + servlet.dump()
-
-            }
-//            def parser = new SAXParser()
-//            def page = new XmlSlurper(parser).parse(consoleUrl)
-//
-//            dslFactory.println "PAGE:\n${page.dump()}"
-//            page.depthFirst().each { childNode ->
-//                dslFactory.println "NODE:"
-//                dslFactory.println childNode.dump()
-//            }
-        } catch (Exception e) {
-            dslFactory.println e.getMessage()
-        }
-        //return baseDeviceList + deviceList.sort()
     }
 }
