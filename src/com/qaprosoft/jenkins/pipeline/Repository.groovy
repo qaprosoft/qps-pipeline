@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.carina.Documentation
 import groovy.json.JsonOutput
 
 import com.qaprosoft.jenkins.pipeline.Configuration
