@@ -6,7 +6,7 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class Documentation extends PipelineFactory {
 
-	public Documentation(folder, jobName, jobDesc) {
+	public Documentation(folder, pipelineScript, jobName, jobDesc) {
 		this.folder = folder
 		this.name = jobName
 		this.description = jobDesc

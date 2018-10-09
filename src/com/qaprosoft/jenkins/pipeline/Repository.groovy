@@ -106,7 +106,7 @@ class Repository {
 
 			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, pushJobDescription, project, gitUrl))
 
-			registerObject("documentation_job", new Documentation(jobFolder, 'carina-DOCUMENTATION', 'documentation', project, gitUrl))
+			registerObject("documentation_job", new Documentation(jobFolder, '', 'carina-DOCUMENTATION', 'documentation'))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
