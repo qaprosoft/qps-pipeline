@@ -18,6 +18,9 @@ class CarinaRunner {
     public void onPush() {
         context.node("master") {
             context.println("CarinaRunner->onPush")
+            Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+            //register all params after vars to be able to override
+            Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
             scmClient.clone(false)
             if(Executor.isUpdated(context.currentBuild, "**.md")){
                 generateDocumentation()
