@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
+@Grab('org.testng:testng:6.8.8')
 import groovy.json.JsonSlurperClassic
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
