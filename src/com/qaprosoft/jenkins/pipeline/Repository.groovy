@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
-
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.carina.Documentation
 import groovy.json.JsonOutput
 
 import com.qaprosoft.jenkins.pipeline.Configuration
@@ -105,6 +105,8 @@ class Repository {
 					"- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
 			registerObject("push_job", new PushJobFactory(jobFolder, getOnPushScript(), "onPush-" + project, pushJobDescription, project, gitUrl))
+
+			registerObject("documentation_job", new Documentation(jobFolder, 'carina-DOCUMENTATION', 'documentation', project, gitUrl))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
