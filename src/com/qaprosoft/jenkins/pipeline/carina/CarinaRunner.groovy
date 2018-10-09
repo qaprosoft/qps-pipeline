@@ -3,9 +3,8 @@ package com.qaprosoft.jenkins.pipeline.carina
 import com.qaprosoft.jenkins.pipeline.Executor
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub
-import groovy.transform.InheritConstructors
+import com.qaprosoft.jenkins.pipeline.Configuration
 
-@InheritConstructors
 class CarinaRunner {
 
     protected def context
