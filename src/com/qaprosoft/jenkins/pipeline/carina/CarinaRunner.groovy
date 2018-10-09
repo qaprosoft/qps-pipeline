@@ -21,7 +21,6 @@ class CarinaRunner {
             context.println("CarinaRunner->onPush")
             scmClient.clonePush()
             if(Executor.isUpdated(context.currentBuild, "**.md")){
-                context.sh 'git remote prune origin'
                 context.sh 'mkdocs gh-deploy'
             }
             context.deleteDir()
