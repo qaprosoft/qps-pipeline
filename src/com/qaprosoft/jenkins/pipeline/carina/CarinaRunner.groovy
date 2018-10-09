@@ -17,16 +17,16 @@ class CarinaRunner {
     }
 
     public void onPush() {
-        context.println("CarinaRunner->onPush")
-        scmClient.clone(false)
-        if(Executor.isUpdated(context.currentBuild, "**.md")){
-            context.node("docs") {
+        context.node("docs") {
+            context.println("CarinaRunner->onPush")
+            scmClient.clone(false)
+            if(Executor.isUpdated(context.currentBuild, "**.md")){
                 generateDocumentation()
             }
+            // handle each push/merge operation
+            // execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
+            context.println("TODO: implement snapshot build generation and emailing build number...")
         }
-        // handle each push/merge operation
-        // execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
-        context.println("TODO: implement snapshot build generation and emailing build number...")
     }
 
     public def generateDocumentation() {
