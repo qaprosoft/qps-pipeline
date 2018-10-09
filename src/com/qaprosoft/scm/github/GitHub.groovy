@@ -102,9 +102,9 @@ class GitHub implements ISCM {
         context.stage('Checkout GitHub Repository') {
             context.println("GitHub->clone")
             def branch = Configuration.get("branch")
+            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
             context.println("GIT_URL: " + gitUrl)
             context.println("branch: " + branch)
-            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', '')
         }
     }
