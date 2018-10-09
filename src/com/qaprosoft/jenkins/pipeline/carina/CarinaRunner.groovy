@@ -21,7 +21,7 @@ class CarinaRunner {
             context.println("CarinaRunner->onPush")
             scmClient.clonePush()
             if(Executor.isUpdated(context.currentBuild, "**.md")){
-                context.sh 'mkdocs gh-deploy'
+                generateDocumentation()
             }
             // handle each push/merge operation
             // execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
@@ -30,6 +30,6 @@ class CarinaRunner {
     }
 
     public def generateDocumentation() {
-
+        context.sh 'mkdocs gh-deploy'
     }
 }
