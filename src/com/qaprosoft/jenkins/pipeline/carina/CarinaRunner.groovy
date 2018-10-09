@@ -17,7 +17,7 @@ class CarinaRunner {
     }
 
     public void onPush() {
-        context.node("master") {
+        context.node("docs") {
             context.println("CarinaRunner->onPush")
             scmClient.clone(false)
             if(Executor.isUpdated(context.currentBuild, "**.md")){
