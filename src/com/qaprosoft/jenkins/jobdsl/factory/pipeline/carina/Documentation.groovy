@@ -21,7 +21,7 @@ public class Documentation extends PipelineFactory {
                 git {
                     remote {
                         url("git@github.com:qaprosoft/carina.git")
-                        credentialsId("creds")
+                        credentials("creds")
                     }
                     extensions {
                         submoduleOptions {
