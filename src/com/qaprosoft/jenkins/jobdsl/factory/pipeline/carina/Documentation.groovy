@@ -1,12 +1,12 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline.carina
 
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
+import com.qaprosoft.jenkins.jobdsl.factory.DslFactory
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class Documentation extends PipelineFactory {
+public class Documentation extends DslFactory {
 
-	public Documentation(folder, pipelineScript, jobName, jobDesc) {
+	public Documentation(folder, jobName, jobDesc) {
 		this.folder = folder
 		this.name = jobName
 		this.description = jobDesc
@@ -31,13 +31,6 @@ public class Documentation extends PipelineFactory {
                     }
                 }
             }
-			properties {
-				pipelineTriggers {
-					triggers {
-						githubPush()
-					}
-				}
-			}
             concurrentBuild(false)
             steps {
                 shell('mkdocs gh-deploy')
