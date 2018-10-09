@@ -11,4 +11,6 @@ public interface ISCM {
     public def clone(gitUrl, branch, subFolder)
 
 	public def mergePR()
+
+	public def clonePush()
 }
