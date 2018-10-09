@@ -9,6 +9,7 @@ class CarinaRunner {
 
     protected def context
     protected ISCM scmClient
+    protected Configuration configuration = new Configuration(context)
 
     public CarinaRunner(context) {
         this.context = context
