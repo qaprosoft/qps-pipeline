@@ -13,7 +13,7 @@ public class Documentation extends DslFactory {
 	}
 
 	def create() {
-        _dslFactory.pipelineJob(name) {
+        def pipelineJob = _dslFactory.pipelineJob(name) {
 			keepDependencies(true)
             jdk('(System)')
             scm {
