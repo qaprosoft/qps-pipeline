@@ -30,7 +30,7 @@ class CarinaRunner {
                     executeMavenGoals("versions:set -DnewVersion=${releaseName}")
                     executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
                 }
-                proceedSuccessfulBuild(jobBuildUrl, subject, to)
+                proceedSuccessfulBuild(releaseName, subject, to)
             } catch (Exception e) {
                 printStackTrace(e)
                 proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
@@ -84,8 +84,8 @@ class CarinaRunner {
         context.emailext Executor.getEmailParams(body, subject, to)
     }
 
-    protected def proceedSuccessfulBuild(jobBuildUrl, subject, to) {
-        def body = "<p>${subject}: ${jobBuildUrl}</p>"
+    protected def proceedSuccessfulBuild(releaseName, subject, to) {
+        def body = "<p>http://ci.qaprosoft.com/nexus/content/repositories/snapshots/com/qaprosoft/carina-core/${releaseName}/}</p>"
         subject = subject + "is available."
         context.emailext Executor.getEmailParams(body, subject, to)
     }
