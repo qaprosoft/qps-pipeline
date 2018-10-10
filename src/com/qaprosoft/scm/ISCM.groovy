@@ -12,5 +12,5 @@ public interface ISCM {
 
 	public def mergePR()
 
-	public def cloneDocsBranch()
+	public def cloneDocsPush()
 }

@@ -98,14 +98,14 @@ class GitHub implements ISCM {
 		}
 	}
 
-    public def cloneDocsBranch() {
+    public def cloneDocsPush() {
         context.stage('Checkout GitHub Repository') {
             context.println("GitHub->clone")
-            def branch = "gh-pages"
+            def branch = Configuration.get("branch")
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}.git")
             context.println("GIT_URL: " + gitUrl)
             context.println("branch: " + branch)
-            context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', '')
+            context.checkout getCheckoutParams(gitUrl, branch, null, false, false, '', '')
         }
     }
 
