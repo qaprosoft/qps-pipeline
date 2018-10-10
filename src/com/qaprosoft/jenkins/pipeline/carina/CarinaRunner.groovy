@@ -17,7 +17,7 @@ class CarinaRunner {
     }
 
     public void onPush() {
-        context.node("docs") {
+        context.node("maven") {
             context.println("CarinaRunner->onPush")
             scmClient.clonePush()
             if(Executor.isUpdated(context.currentBuild, "**.md")){
@@ -27,7 +27,7 @@ class CarinaRunner {
 
             executeMavenGoals("versions:set -DnewVersion=${releaseName}")
             executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-
+            context.junit testResults: "**/target/surefire-reports/junitreports/*.xml", healthScaleFactor: 1.0
             def body = "New CARINA build ${releaseName} is available."
             def subject = "CARINA ${releaseName}"
             def to = "itsvirko@qaprosoft.com"
