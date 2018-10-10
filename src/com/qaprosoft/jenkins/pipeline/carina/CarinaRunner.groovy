@@ -19,22 +19,23 @@ class CarinaRunner {
     public void onPush() {
         context.node("maven") {
             context.println("CarinaRunner->onPush")
-            def body = ""
+            def releaseName = "${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT"
+            def body = "CARINA build ${releaseName} "
+            def subject = "CARINA ${releaseName} "
+            def to = "itsvirko@qaprosoft.com"
             try {
                 scmClient.clonePush()
                 deployDocumentation()
-                def releaseName = "${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT"
+
                 context.stage('Build Snapshot') {
                     executeMavenGoals("versions:set -DnewVersion=${releaseName}")
                 }
-                body = "New CARINA build ${releaseName} is available."
-                subject = "CARINA ${releaseName}"
-                to = "itsvirko@qaprosoft.com"
+                subject = subject + "is available."
+                body = body + "is available."
             } catch (Exception e) {
                 printStackTrace(e)
-                body = "CARINA build ${releaseName} failed."
-                subject = "CARINA ${releaseName}"
-                to = "itsvirko@qaprosoft.com"
+                subject = subject + "failed."
+                body = body + "failed."
                 throw e
             } finally {
                 context.emailext Executor.getEmailParams(body, subject, to)
