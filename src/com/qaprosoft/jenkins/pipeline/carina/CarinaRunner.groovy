@@ -20,6 +20,7 @@ class CarinaRunner {
         context.node("docs") {
             context.println("CarinaRunner->onPush")
             scmClient.cloneDocsPush()
+            context.sh 'pwd'
             if(Executor.isUpdated(context.currentBuild, "**.md")){
                 context.sh 'mkdocs gh-deploy'
             }
