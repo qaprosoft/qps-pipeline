@@ -98,7 +98,7 @@ class GitHub implements ISCM {
 		}
 	}
 
-    public def cloneDocsPush() {
+    public def clonePush() {
         context.stage('Checkout GitHub Repository') {
             context.println("GitHub->clone")
             def branch = Configuration.get("branch")
