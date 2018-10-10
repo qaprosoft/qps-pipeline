@@ -20,21 +20,20 @@ class CarinaRunner {
         context.node("maven") {
             context.println("CarinaRunner->onPush")
             def releaseName = "${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT"
-            def body = "CARINA build ${releaseName} "
+            def jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def subject = "CARINA ${releaseName} "
             def to = "itsvirko@qaprosoft.com"
             try {
                 scmClient.clonePush()
-                context.stage('Build Snapshot') {
-                    executeMavenGoals("versions:set -DanewVersion=${releaseName}")
-                }
-                subject = subject + "is available."
-                body = body + "is available."
                 deployDocumentation()
-                context.emailext Executor.getEmailParams(body, subject, to)
+                context.stage('Build Snapshot') {
+                    executeMavenGoals("versions:set -DnewVersion=${releaseName}")
+                    executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+                }
+                proceedSuccessfulBuild(jobBuildUrl, subject, to)
             } catch (Exception e) {
                 printStackTrace(e)
-                proceedFailure(context.currentBuild, subject, to)
+                proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
                 throw e
             } finally {
                 reportingBuildResults()
@@ -45,7 +44,6 @@ class CarinaRunner {
 
     protected def reportingBuildResults() {
         context.stage('Report Results') {
-            executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
             context.junit testResults: "**/target/surefire-reports/junitreports/*.xml", healthScaleFactor: 1.0
         }
     }
@@ -58,13 +56,10 @@ class CarinaRunner {
         }
     }
 
-    protected def proceedFailure(currentBuild, subject, to) {
-        //TODO: move string constants into object/enum if possible
+    protected def proceedFailure(currentBuild, jobBuildUrl, subject, to) {
         currentBuild.result = 'FAILURE'
 
-        String jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-
-        def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
+        def bodyHeader = "<p>Unable to finish build due to the unrecognized failure: ${jobBuildUrl}</p>"
         def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
@@ -77,15 +72,21 @@ class CarinaRunner {
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
-            bodyHeader = "<p>Unable to continue build due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
+            bodyHeader = "<p>Unable to finish build due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
             subject = subject + "ABORTED"
         } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
             currentBuild.result = 'ABORTED'
-            bodyHeader = "<p>Unable to continue build due to the abort by timeout ${jobBuildUrl}</p>"
+            bodyHeader = "<p>Unable to finish build due to the abort by timeout ${jobBuildUrl}</p>"
             subject = subject + "TIMED OUT"
         }
 
         def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>Console: ${jobBuildUrl}/console<br>${failureLog}"""
+        context.emailext Executor.getEmailParams(body, subject, to)
+    }
+
+    protected def proceedSuccessfulBuild(jobBuildUrl, subject, to) {
+        def body = "<p>${subject}: ${jobBuildUrl}</p>"
+        subject = subject + "is available."
         context.emailext Executor.getEmailParams(body, subject, to)
     }
 
