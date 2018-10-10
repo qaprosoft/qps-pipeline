@@ -26,7 +26,7 @@ class CarinaRunner {
             try {
                 scmClient.clonePush()
                 context.stage('Build Snapshot') {
-                    executeMavenGoals("versions:set -DnewVersion=${releaseName}")
+                    executeMavenGoals("versions:set -DanewVersion=${releaseName}")
                 }
                 subject = subject + "is available."
                 body = body + "is available."
