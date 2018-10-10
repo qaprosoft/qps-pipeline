@@ -105,7 +105,7 @@ class GitHub implements ISCM {
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}.git")
             context.println("GIT_URL: " + gitUrl)
             context.println("branch: " + branch)
-            context.checkout getCheckoutParams(gitUrl, branch, null, false, false, '', '')
+            context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', '')
         }
     }
 
