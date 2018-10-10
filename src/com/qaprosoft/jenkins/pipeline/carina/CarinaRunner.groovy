@@ -23,19 +23,16 @@ class CarinaRunner {
             if(Executor.isUpdated(context.currentBuild, "**.md")){
                 context.sh 'mkdocs gh-deploy'
             }
-            //context.deleteDir()
-            context.println "CARINA_RELEASE: " + context.env.getEnvironment().get("CARINA_RELEASE")
-            executeMavenGoals("versions:set -DnewVersion=${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT")
+            def releaseName = "${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT"
+
+            executeMavenGoals("versions:set -DnewVersion=${releaseName}")
             executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-            /*                context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-                            context.echo "USERNAME: ${context.env.USERNAME}"
-                            context.echo "PASSWORD: ${context.env.PASSWORD}"
-                            executeMavenGoals("-Dgpg.passphrase=${context.env.PASSWORD} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-                        }
-        */
-            // handle each push/merge operation
-            // execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
-            context.println("TODO: implement snapshot build generation and emailing build number...")
+
+            def body = "New CARINA build ${releaseName} is available."
+            def subject = "CARINA ${releaseName}"
+            def to = "itsvirko@qaprosoft.com"
+
+            context.emailext Executor.getEmailParams(body, subject, to)
         }
     }
 
