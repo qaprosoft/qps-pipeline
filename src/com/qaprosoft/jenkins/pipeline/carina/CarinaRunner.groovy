@@ -24,9 +24,19 @@ class CarinaRunner {
                 context.sh 'mkdocs gh-deploy'
             }
             context.deleteDir()
+            executeMavenGoals()
+
             // handle each push/merge operation
             // execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
             context.println("TODO: implement snapshot build generation and emailing build number...")
+        }
+    }
+
+    protected def executeMavenGoals(goals) {
+        if (context.isUnix()) {
+            context.sh "mvn -B ${goals}"
+        } else {
+            context.bat "mvn -B ${goals}"
         }
     }
 }
