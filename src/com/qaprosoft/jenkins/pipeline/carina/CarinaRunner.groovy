@@ -19,7 +19,7 @@ class CarinaRunner {
     public void onPush() {
         context.node("docs") {
             context.println("CarinaRunner->onPush")
-            scmClient.clonePush()
+            scmClient.cloneDocsBranch()
             if(Executor.isUpdated(context.currentBuild, "**.md")){
                 context.sh 'mkdocs gh-deploy --clean'
 //                context.sh 'git update-ref -d refs/remotes/origin/gh-pages'
