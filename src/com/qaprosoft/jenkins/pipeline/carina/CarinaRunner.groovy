@@ -19,16 +19,11 @@ class CarinaRunner {
     public void onPush() {
         context.node("docs") {
             context.println("CarinaRunner->onPush")
-            scmClient.cloneDocsPush()
-            context.sh 'pwd'
-            context.dir('/opt/jenkins/workspace/carina/onPush-carina/site') {
-                context.deleteDir()
-            }
+            scmClient.clonePush()
             if(Executor.isUpdated(context.currentBuild, "**.md")){
                 context.sh 'mkdocs gh-deploy'
             }
-
-            //context.deleteDir()
+            context.deleteDir()
             // handle each push/merge operation
             // execute logic inside this method only if $REPO_HOME/Jenkinsfile was updated
             context.println("TODO: implement snapshot build generation and emailing build number...")
