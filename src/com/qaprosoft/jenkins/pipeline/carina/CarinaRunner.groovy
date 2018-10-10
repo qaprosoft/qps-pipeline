@@ -19,20 +19,49 @@ class CarinaRunner {
     public void onPush() {
         context.node("maven") {
             context.println("CarinaRunner->onPush")
-            scmClient.clonePush()
-            if(Executor.isUpdated(context.currentBuild, "**.md")){
-                context.sh 'mkdocs gh-deploy'
+            def body = ""
+            try {
+                scmClient.clonePush()
+                deployDocumentation()
+                def releaseName = "${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT"
+                context.stage('Build Snapshot') {
+                    executeMavenGoals("versions:set -DnewVersion=${releaseName}")
+                }
+                body = "New CARINA build ${releaseName} is available."
+                subject = "CARINA ${releaseName}"
+                to = "itsvirko@qaprosoft.com"
+            } catch (Exception e) {
+                printStackTrace(e)
+                body = "CARINA build ${releaseName} failed."
+                subject = "CARINA ${releaseName}"
+                to = "itsvirko@qaprosoft.com"
+                throw e
+            } finally {
+                context.emailext Executor.getEmailParams(body, subject, to)
+                reportingBuildResults()
+                clean()
             }
-            def releaseName = "${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT"
+        }
+    }
 
-            executeMavenGoals("versions:set -DnewVersion=${releaseName}")
+    protected def reportingBuildResults() {
+        context.stage('Report Results') {
             executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
             context.junit testResults: "**/target/surefire-reports/junitreports/*.xml", healthScaleFactor: 1.0
-            def body = "New CARINA build ${releaseName} is available."
-            def subject = "CARINA ${releaseName}"
-            def to = "itsvirko@qaprosoft.com"
+        }
+    }
 
-            context.emailext Executor.getEmailParams(body, subject, to)
+    protected def deployDocumentation(){
+        if(Executor.isUpdated(context.currentBuild, "**.md")){
+            context.stage('Deploy Docs'){
+                context.sh 'mkdocs gh-deploy'
+            }
+        }
+    }
+
+    protected clean() {
+        context.stage('Wipe out Workspace') {
+            context.deleteDir()
         }
     }
 
@@ -44,5 +73,9 @@ class CarinaRunner {
         }
     }
 
-
+    protected void printStackTrace(Exception e) {
+        context.println("exception: " + e.getMessage())
+        context.println("exception class: " + e.getClass().getName())
+        context.println("stacktrace: " + Arrays.toString(e.getStackTrace()))
+    }
 }
