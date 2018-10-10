@@ -85,6 +85,7 @@ class CarinaRunner {
     }
 
     protected def proceedSuccessfulBuild(releaseName, subject, to) {
+        //TODO: replace http with https when ci uses secure protocol
         def body = "<p>http://ci.qaprosoft.com/nexus/content/repositories/snapshots/com/qaprosoft/carina-core/${releaseName}/}</p>"
         subject = subject + "is available."
         context.emailext Executor.getEmailParams(body, subject, to)
