@@ -34,7 +34,7 @@ class CarinaRunner {
             } catch (Exception e) {
                 printStackTrace(e)
                 subject = subject + "failed."
-                body = body + "failed."
+                body = body + "failed.<br>${e.getMessage()}<br>${e.getClass().getName()}<br>${Arrays.toString(e.getStackTrace())}"
                 throw e
             } finally {
                 context.emailext Executor.getEmailParams(body, subject, to)
