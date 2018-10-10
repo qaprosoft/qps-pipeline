@@ -25,13 +25,12 @@ class CarinaRunner {
             def to = "itsvirko@qaprosoft.com"
             try {
                 scmClient.clonePush()
-                deployDocumentation()
-
                 context.stage('Build Snapshot') {
                     executeMavenGoals("versions:set -DnewVersion=${releaseName}")
                 }
                 subject = subject + "is available."
                 body = body + "is available."
+                deployDocumentation()
             } catch (Exception e) {
                 printStackTrace(e)
                 subject = subject + "failed."
@@ -54,7 +53,7 @@ class CarinaRunner {
 
     protected def deployDocumentation(){
         if(Executor.isUpdated(context.currentBuild, "**.md")){
-            context.stage('Deploy Docs'){
+            context.stage('Deploy Documentation'){
                 context.sh 'mkdocs gh-deploy'
             }
         }
