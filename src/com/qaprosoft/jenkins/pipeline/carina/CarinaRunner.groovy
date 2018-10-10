@@ -22,7 +22,7 @@ class CarinaRunner {
             def releaseName = "${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT"
             def jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def subject = "CARINA ${releaseName} "
-            def to = "itsvirko@qaprosoft.com"
+            def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
             try {
                 scmClient.clonePush()
                 deployDocumentation()
