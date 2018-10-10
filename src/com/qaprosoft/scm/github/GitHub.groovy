@@ -105,7 +105,7 @@ class GitHub implements ISCM {
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}.git")
             context.println("GIT_URL: " + gitUrl)
             context.println("branch: " + branch)
-            context.checkout getDocCheckoutParams(gitUrl, branch, null, false, true, '', '')
+            context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', '')
         }
     }
 
@@ -126,21 +126,6 @@ class GitHub implements ISCM {
         return checkoutParams
     }
 
-    private def getDocCheckoutParams(gitUrl, branch, subFolder, shallow, changelog, refspecValue, credentialsIdValue) {
-        def checkoutParams = [scm: [$class: 'GitSCM',
-                                    doGenerateSubmoduleConfigurations: false,
-                                    extensions: [[$class: 'CheckoutOption', timeout: 15],
-                                                 [$class: 'CloneOption', noTags: false, reference: '', shallow: shallow, timeout: 15]],
-                                    submoduleCfg: [],
-                                    userRemoteConfigs: [[url: gitUrl, refspec: refspecValue, credentialsId: credentialsIdValue]]],
-                              changelog: changelog,
-                              poll: false]
-        if (subFolder != null) {
-            def subfolderExtension = [[$class: 'RelativeTargetDirectory', relativeTargetDir: subFolder]]
-            checkoutParams.get("scm")["extensions"] = subfolderExtension
-        }
-        return checkoutParams
-    }
     //TODO: move to GitHub and iSCM
     public def mergePR(){
         //merge pull request
