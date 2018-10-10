@@ -26,7 +26,7 @@ class CarinaRunner {
             //context.deleteDir()
             context.println "CARINA_RELEASE: " + context.env.getEnvironment().get("CARINA_RELEASE")
             executeMavenGoals("versions:set -DnewVersion=${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT")
-            executeMavenGoals("-Dgpg.passphrase=Qaprosoft2015 -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+            executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
             /*                context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
                             context.echo "USERNAME: ${context.env.USERNAME}"
                             context.echo "PASSWORD: ${context.env.PASSWORD}"
