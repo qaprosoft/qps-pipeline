@@ -31,13 +31,12 @@ class CarinaRunner {
                 subject = subject + "is available."
                 body = body + "is available."
                 deployDocumentation()
+                context.emailext Executor.getEmailParams(body, subject, to)
             } catch (Exception e) {
                 printStackTrace(e)
-                subject = subject + "failed."
-                body = body + "failed.<br>${e.getMessage()}<br>${e.getClass().getName()}<br>${Arrays.toString(e.getStackTrace())}"
+                proceedFailure(context.currentBuild, subject, to)
                 throw e
             } finally {
-                context.emailext Executor.getEmailParams(body, subject, to)
                 reportingBuildResults()
                 clean()
             }
@@ -57,6 +56,37 @@ class CarinaRunner {
                 context.sh 'mkdocs gh-deploy'
             }
         }
+    }
+
+    protected def proceedFailure(currentBuild, subject, to) {
+        //TODO: move string constants into object/enum if possible
+        currentBuild.result = 'FAILURE'
+
+        String jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+
+        def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
+        def failureLog = ""
+
+        if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
+            bodyHeader = "<p>Failed due to the compilation failure. ${jobBuildUrl}</p>"
+            subject = subject + "COMPILATION FAILURE"
+            failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
+        } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
+            bodyHeader = "<p>Failed due to the build failure. ${jobBuildUrl}</p>"
+            subject = subject + "BUILD FAILURE"
+            failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
+        } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
+            currentBuild.result = 'ABORTED'
+            bodyHeader = "<p>Unable to continue build due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
+            subject = subject + "ABORTED"
+        } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
+            currentBuild.result = 'ABORTED'
+            bodyHeader = "<p>Unable to continue build due to the abort by timeout ${jobBuildUrl}</p>"
+            subject = subject + "TIMED OUT"
+        }
+
+        def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>Console: ${jobBuildUrl}/console<br>${failureLog}"""
+        context.emailext Executor.getEmailParams(body, subject, to)
     }
 
     protected clean() {
