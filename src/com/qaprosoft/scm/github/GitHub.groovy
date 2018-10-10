@@ -128,7 +128,6 @@ class GitHub implements ISCM {
 
     private def getDocCheckoutParams(gitUrl, branch, subFolder, shallow, changelog, refspecValue, credentialsIdValue) {
         def checkoutParams = [scm: [$class: 'GitSCM',
-                                    branches: [[name: branch]],
                                     doGenerateSubmoduleConfigurations: false,
                                     extensions: [[$class: 'CheckoutOption', timeout: 15],
                                                  [$class: 'CloneOption', noTags: false, reference: '', shallow: shallow, timeout: 15]],
