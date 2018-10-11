@@ -125,7 +125,7 @@ class CarinaRunner {
     }
 
     protected void performSonarQubeScan(){
-        context.stage('SonarQube Scan') {
+        context.stage('Sonar Scanner') {
             def sonarQubeEnv = ''
             Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
                 sonarQubeEnv = installation.getName()
@@ -134,10 +134,10 @@ class CarinaRunner {
                 context.println "There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan."
                 return
             }
-            //TODO: find a way to get somehow 2 below hardcoded string values
-            context.stage('SonarQube analysis') {
-                context.withSonarQubeEnv(sonarQubeEnv) {
-                    context.sh "mvn clean package sonar:sonar -DskipTests \
+            context.withSonarQubeEnv(sonarQubeEnv) {
+                context.sh "mvn \
+				 -f pom.xml \
+				 clean package sonar:sonar -DskipTests \
 				 -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
 				 -Dsonar.analysis.mode=preview  \
 				 -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
@@ -151,7 +151,6 @@ class CarinaRunner {
 				 -Dsonar.inclusions=**/src/main/java/** \
 				 -Dsonar.test.inclusions=**/src/test/java/** \
 				 -Dsonar.java.source=1.8"
-                }
             }
         }
     }
