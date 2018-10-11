@@ -202,6 +202,7 @@ public class Executor {
             for (entry in changeLogSet.getItems()) {
                 if(entry.getMsg().contains(trigger)){
                     isRequired = true
+                    return
                 }
             }
         }
