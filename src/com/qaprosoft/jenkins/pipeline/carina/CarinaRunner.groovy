@@ -30,18 +30,22 @@ class CarinaRunner {
         context.node("maven") {
              try {
                 scmClient.clonePush()
-//                deployDocumentation()
-//                compile()
-//                performSonarQubeScan()
-                 getPushAuthorEmail(context.currentBuild)
+                deployDocumentation()
+                compile()
+                performSonarQubeScan()
                 if(Executor.isSnapshotRequired(context.currentBuild, "build-snapshot")){
                     buildSnapshot()
                     reportingBuildResults()
+                    def authorEmail = Executor.getPushAuthorEmail(context.currentBuild)
+                    if(!authorEmail.isEmpty()){
+                        emailRecipients = emailRecipients + ',' + authorEmail
+
+                    }
                     proceedSuccessfulBuild()
                 }
             } catch (Exception e) {
                 printStackTrace(e)
-//                proceedFailure()
+                proceedFailure()
                 throw e
             } finally {
                 clean()
@@ -49,18 +53,6 @@ class CarinaRunner {
         }
     }
 
-    @NonCPS
-    protected def getPushAuthorEmail(currentBuild) {
-        def authorEmail = ''
-        def changeLogSets = currentBuild.rawBuild.changeSets
-        changeLogSets.each { changeLogSet ->
-            for (entry in changeLogSet.getItems()) {
-                authorEmail =  entry.getAuthorEmail()
-                context.println "AUTHOR: " + authorEmail
-            }
-        }
-        return authorEmail
-    }
 
     public void onPullRequest() {
         context.println("CarinaRunner->onPullRequest")
@@ -72,7 +64,10 @@ class CarinaRunner {
                 if (Configuration.get("ghprbPullTitle").contains("build-snapshot")){
                     buildSnapshot()
                     reportingBuildResults()
-                    emailRecipients = emailRecipients + ',' + Configuration.get("ghprbActualCommitAuthorEmail")
+                    def authorEmail = Configuration.get("ghprbActualCommitAuthorEmail")
+                    if(!authorEmail.isEmpty()) {
+                        emailRecipients = emailRecipients + ',' + authorEmail
+                    }
                     proceedSuccessfulBuild()
                 }
             } catch (Exception e) {
