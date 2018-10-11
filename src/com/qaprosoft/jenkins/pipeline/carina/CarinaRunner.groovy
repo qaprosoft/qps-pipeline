@@ -5,40 +5,42 @@ import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
-import com.cloudbees.groovy.cps.NonCPS
 
 class CarinaRunner {
 
     protected def context
     protected ISCM scmClient
+    protected def releaseName
+    protected def jobBuildUrl
+    protected def emailSubject
+    protected def emailRecipients
     protected Configuration configuration = new Configuration(context)
 
     public CarinaRunner(context) {
         this.context = context
         scmClient = new GitHub(context)
+        releaseName = "${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT"
+        jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+        emailSubject = "CARINA ${releaseName} "
+        emailRecipients = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
     }
 
     public void onPush() {
         context.println("CarinaRunner->onPush")
         context.node("maven") {
-            def releaseName = "${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT"
-            def jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            def subject = "CARINA ${releaseName} "
-            def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
-            try {
+             try {
                 scmClient.clonePush()
-
                 deployDocumentation()
                 compile()
                 performSonarQubeScan()
                 if(Executor.isSnapshotRequired(context.currentBuild, "build-snapshot")){
-                    buildSnapshot(releaseName)
+                    buildSnapshot()
                     reportingBuildResults()
                 }
-                proceedSuccessfulBuild(releaseName, subject, to)
+                proceedSuccessfulBuild()
             } catch (Exception e) {
                 printStackTrace(e)
-                proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
+                proceedFailure()
                 throw e
             } finally {
                 clean()
@@ -46,7 +48,29 @@ class CarinaRunner {
         }
     }
 
-    protected def buildSnapshot(releaseName) {
+    public void onPullRequest() {
+        context.println("CarinaRunner->onPullRequest")
+        context.node("maven") {
+            try {
+                scmClient.clonePR()
+                compile()
+                performSonarQubeScan()
+                if (Configuration.get("ghprbPullTitle").contains("build-snapshot")){
+                    buildSnapshot()
+                    reportingBuildResults()
+                }
+                proceedSuccessfulBuild()
+            } catch (Exception e) {
+                printStackTrace(e)
+                proceedFailure()
+                throw e
+            } finally {
+                clean()
+            }
+        }
+    }
+
+    protected def buildSnapshot() {
         context.stage('Build Snapshot') {
             executeMavenGoals("versions:set -DnewVersion=${releaseName}")
             executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
@@ -67,39 +91,38 @@ class CarinaRunner {
         }
     }
 
-    protected def proceedFailure(currentBuild, jobBuildUrl, subject, to) {
+    protected def proceedFailure() {
+        def currentBuild = context.currentBuild
         currentBuild.result = 'FAILURE'
-
         def bodyHeader = "<p>Unable to finish build due to the unrecognized failure: ${jobBuildUrl}</p>"
         def failureLog = ""
-
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
             bodyHeader = "<p>Failed due to the compilation failure. ${jobBuildUrl}</p>"
-            subject = subject + "COMPILATION FAILURE"
+            emailSubject = emailSubject + "COMPILATION FAILURE"
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
             bodyHeader = "<p>Failed due to the build failure. ${jobBuildUrl}</p>"
-            subject = subject + "BUILD FAILURE"
+            emailSubject = emailSubject + "BUILD FAILURE"
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
             bodyHeader = "<p>Unable to finish build due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
-            subject = subject + "ABORTED"
+            emailSubject = emailSubject + "ABORTED"
         } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
             currentBuild.result = 'ABORTED'
             bodyHeader = "<p>Unable to finish build due to the abort by timeout ${jobBuildUrl}</p>"
-            subject = subject + "TIMED OUT"
+            emailSubject = emailSubject + "TIMED OUT"
         }
 
         def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>Console: ${jobBuildUrl}/console<br>${failureLog}"""
-        context.emailext Executor.getEmailParams(body, subject, to)
+        context.emailext Executor.getEmailParams(body, emailSubject, emailRecipients)
     }
 
-    protected def proceedSuccessfulBuild(releaseName, subject, to) {
+    protected def proceedSuccessfulBuild() {
         //TODO: replace http with https when ci uses secure protocol
         def body = "<p>http://ci.qaprosoft.com/nexus/content/repositories/snapshots/com/qaprosoft/carina-core/${releaseName}/</p><br><br>This is autogenerated email.<br>Please, do not reply."
-        subject = subject + "is available."
-        context.emailext Executor.getEmailParams(body, subject, to)
+        emailSubject = emailSubject + "is available."
+        context.emailext Executor.getEmailParams(body, emailSubject, emailRecipients)
     }
 
     protected clean() {
