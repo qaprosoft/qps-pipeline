@@ -26,7 +26,7 @@ class CarinaRunner {
             def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
             try {
                 scmClient.clonePush()
-                deployDocumentation()
+//                deployDocumentation()
                 compile()
                 performSonarQubeScan()
                 buildSnapshot()
@@ -36,7 +36,7 @@ class CarinaRunner {
 //                proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
                 throw e
             } finally {
-                reportingBuildResults()
+//                reportingBuildResults()
                 clean()
             }
         }
