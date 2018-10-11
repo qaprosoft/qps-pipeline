@@ -194,6 +194,20 @@ public class Executor {
         return isUpdated
     }
 
+    @NonCPS
+    static def isSnapshotRequired(currentBuild, trigger) {
+        def isRequired = false
+        def changeLogSets = currentBuild.rawBuild.changeSets
+        changeLogSets.each { changeLogSet ->
+            for (entry in changeLogSet.getItems()) {
+                if(entry.getMsg().contains(trigger)){
+                    isRequired = true
+                }
+            }
+        }
+        return isRequired
+    }
+
     /** Checks if current job started as rebuild */
     static Boolean isRebuild(currentBuild) {
         Boolean isRebuild = false
