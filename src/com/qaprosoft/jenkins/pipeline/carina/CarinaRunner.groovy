@@ -36,8 +36,8 @@ class CarinaRunner {
                 if(Executor.isSnapshotRequired(context.currentBuild, "build-snapshot")){
                     buildSnapshot()
                     reportingBuildResults()
+                    proceedSuccessfulBuild()
                 }
-                proceedSuccessfulBuild()
             } catch (Exception e) {
                 printStackTrace(e)
                 proceedFailure()
@@ -58,8 +58,8 @@ class CarinaRunner {
                 if (Configuration.get("ghprbPullTitle").contains("build-snapshot")){
                     buildSnapshot()
                     reportingBuildResults()
+                    proceedSuccessfulBuild()
                 }
-                proceedSuccessfulBuild()
             } catch (Exception e) {
                 printStackTrace(e)
                 proceedFailure()
