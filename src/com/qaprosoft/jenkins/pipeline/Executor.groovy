@@ -200,7 +200,6 @@ public class Executor {
         def changeLogSets = currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
             for (entry in changeLogSet.getItems()) {
-                context.println entry.dump()
                 if(entry.getMsg().contains(trigger)){
                     isRequired = true
                     return
