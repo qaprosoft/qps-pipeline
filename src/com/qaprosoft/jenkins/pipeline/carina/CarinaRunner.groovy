@@ -34,7 +34,7 @@ class CarinaRunner {
 //                compile()
 //                performSonarQubeScan()
                  getPushAuthorEmail(context.currentBuild)
-                if(isSnapshotRequired(context.currentBuild, "build-snapshot")){
+                if(Executor.isSnapshotRequired(context.currentBuild, "build-snapshot")){
                     buildSnapshot()
                     reportingBuildResults()
                     proceedSuccessfulBuild()
