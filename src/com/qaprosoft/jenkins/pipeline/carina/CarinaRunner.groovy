@@ -58,6 +58,7 @@ class CarinaRunner {
                 if (Configuration.get("ghprbPullTitle").contains("build-snapshot")){
                     buildSnapshot()
                     reportingBuildResults()
+                    emailRecipients = emailRecipients + ',' + Configuration.get("ghprbActualCommitAuthorEmail")
                     proceedSuccessfulBuild()
                 }
             } catch (Exception e) {
