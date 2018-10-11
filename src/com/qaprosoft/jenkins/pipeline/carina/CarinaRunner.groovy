@@ -17,8 +17,8 @@ class CarinaRunner {
     }
 
     public void onPush() {
+        context.println("CarinaRunner->onPush")
         context.node("maven") {
-            context.println("CarinaRunner->onPush")
             def releaseName = "${context.env.getEnvironment().get("CARINA_RELEASE")}.${context.env.getEnvironment().get("BUILD_NUMBER")}-SNAPSHOT"
             def jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def subject = "CARINA ${releaseName} "
@@ -26,10 +26,7 @@ class CarinaRunner {
             try {
                 scmClient.clonePush()
                 deployDocumentation()
-                context.stage('Build Snapshot') {
-                    executeMavenGoals("versions:set -DnewVersion=${releaseName}")
-                    executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-                }
+                buildSnapshot()
                 proceedSuccessfulBuild(releaseName, subject, to)
             } catch (Exception e) {
                 printStackTrace(e)
@@ -39,6 +36,40 @@ class CarinaRunner {
                 reportingBuildResults()
                 clean()
             }
+        }
+    }
+
+    public void onPullRequest() {
+        context.println("CarinaRunner->onPullRequest")
+        context.node("maven") {
+            scmClient.clonePR()
+            executeMavenGoals("-U clean process-resources process-test-resources")
+            executeMavenGoals("-Dcobertura.report.format=xml clean test cobertura:cobertura")
+
+            context.sh("find . -name \"*cobertura*\"")
+            context.sh("find . -name coverage.xml")
+
+            reportingBuildResults()
+            // produce snapshot build if ghprbPullTitle contains 'build-snapshot'
+            if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
+                //versions:set -DnewVersion=${CARINA_RELEASE}.${BUILD_NUMBER}-SNAPSHOT
+                //-Dgpg.passphrase=<pswd> -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc
+                buildSnapshot()
+/*                context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+                    context.echo "USERNAME: ${context.env.USERNAME}"
+                    context.echo "PASSWORD: ${context.env.PASSWORD}"
+                    executeMavenGoals("-Dgpg.passphrase=${context.env.PASSWORD} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
+                }
+*/
+            }
+            //TODO: email notification
+        }
+    }
+
+    protected def buildSnapshot() {
+        context.stage('Build Snapshot') {
+            executeMavenGoals("versions:set -DnewVersion=${releaseName}")
+            executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
         }
     }
 
