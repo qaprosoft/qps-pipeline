@@ -209,6 +209,19 @@ public class Executor {
         return isRequired
     }
 
+    @NonCPS
+    static def getPushAuthorEmail(currentBuild) {
+        def authorEmail = ''
+        def changeLogSets = currentBuild.rawBuild.changeSets
+        changeLogSets.each { changeLogSet ->
+            for (entry in changeLogSet.getItems()) {
+                authorEmail =  entry.getAuthorEmail()
+                context.println "AUTHOR: " + authorEmail
+            }
+        }
+        return authorEmail
+    }
+
     /** Checks if current job started as rebuild */
     static Boolean isRebuild(currentBuild) {
         Boolean isRebuild = false
