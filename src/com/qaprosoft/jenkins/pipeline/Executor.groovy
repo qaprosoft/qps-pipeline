@@ -216,7 +216,6 @@ public class Executor {
         changeLogSets.each { changeLogSet ->
             for (entry in changeLogSet.getItems()) {
                 authorEmail =  entry.getAuthorEmail()
-                context.println "AUTHOR: " + authorEmail
             }
         }
         return authorEmail
