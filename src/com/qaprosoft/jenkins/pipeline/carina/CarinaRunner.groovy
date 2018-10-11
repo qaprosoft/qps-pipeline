@@ -33,6 +33,7 @@ class CarinaRunner {
 //                deployDocumentation()
 //                compile()
 //                performSonarQubeScan()
+                 getPushAuthorEmail(context.currentBuild)
                 if(isSnapshotRequired(context.currentBuild, "build-snapshot")){
                     buildSnapshot()
                     reportingBuildResults()
@@ -49,19 +50,16 @@ class CarinaRunner {
     }
 
     @NonCPS
-    protected def isSnapshotRequired(currentBuild, trigger) {
-        def isRequired = false
+    protected def getPushAuthorEmail(currentBuild) {
+        def authorEmail = ''
         def changeLogSets = currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
             for (entry in changeLogSet.getItems()) {
-                context.println "ENTRY: " + entry.dump()
-                if(entry.getMsg().contains(trigger)){
-                    isRequired = true
-                    return
-                }
+                authorEmail =  entry.getAuthorEmail()
+                context.println "AUTHOR: " + authorEmail
             }
         }
-        return isRequired
+        return authorEmail
     }
 
     public void onPullRequest() {
