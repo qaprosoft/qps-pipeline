@@ -169,13 +169,7 @@ class CarinaRunner {
         changeLogSets.each { changeLogSet ->
             context.println "CHANGELOGSET: " + changeLogSet.dump()
             for (entry in changeLogSet.getItems()) {
-                context.println "ENTRY: " + entry.dump()
-                for (path in entry.getPaths()) {
-                    Path pathObject = Paths.get(path.getPath())
-                    context.println "PATH: " + pathObject.dump()
-                    /* Checks whether any changed file matches one of patterns */
-
-                }
+                context.println "MESSAGE: " + entry.getMsg()
             }
         }
 //        return isUpdated
