@@ -4,6 +4,7 @@ import com.qaprosoft.jenkins.pipeline.Executor
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.Configuration
+import hudson.plugins.sonar.SonarGlobalConfiguration
 
 class CarinaRunner {
 
@@ -29,10 +30,10 @@ class CarinaRunner {
                 compile()
                 performSonarQubeScan()
                 buildSnapshot()
-                proceedSuccessfulBuild(releaseName, subject, to)
+//                proceedSuccessfulBuild(releaseName, subject, to)
             } catch (Exception e) {
                 printStackTrace(e)
-                proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
+//                proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
                 throw e
             } finally {
                 reportingBuildResults()
