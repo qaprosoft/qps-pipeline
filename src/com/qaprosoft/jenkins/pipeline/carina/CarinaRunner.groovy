@@ -29,7 +29,7 @@ class CarinaRunner {
 //                deployDocumentation()
                 compile()
 //                performSonarQubeScan()
-                buildSnapshot()
+                buildSnapshot(releaseName)
 //                proceedSuccessfulBuild(releaseName, subject, to)
             } catch (Exception e) {
                 printStackTrace(e)
@@ -42,7 +42,7 @@ class CarinaRunner {
         }
     }
 
-    protected def buildSnapshot() {
+    protected def buildSnapshot(releaseName) {
         context.stage('Build Snapshot') {
             executeMavenGoals("versions:set -DnewVersion=${releaseName}")
             executeMavenGoals("-Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
