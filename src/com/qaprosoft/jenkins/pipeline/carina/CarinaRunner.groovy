@@ -7,11 +7,6 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
 import com.cloudbees.groovy.cps.NonCPS
 
-import java.nio.file.FileSystems
-import java.nio.file.Path
-import java.nio.file.PathMatcher
-import java.nio.file.Paths
-
 class CarinaRunner {
 
     protected def context
@@ -32,18 +27,20 @@ class CarinaRunner {
             def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
             try {
                 scmClient.clonePush()
-                getCommit(context.currentBuild)
-//                deployDocumentation()
-//                compile()
-//                performSonarQubeScan()
-//                buildSnapshot(releaseName)
-//                proceedSuccessfulBuild(releaseName, subject, to)
+
+                deployDocumentation()
+                compile()
+                performSonarQubeScan()
+                if(Executor.isSnapshotRequired(context.currentBuild, "build-snapshot")){
+                    buildSnapshot(releaseName)
+                }
+                proceedSuccessfulBuild(releaseName, subject, to)
             } catch (Exception e) {
                 printStackTrace(e)
-//                proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
+                proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
                 throw e
             } finally {
-//                reportingBuildResults()
+                reportingBuildResults()
                 clean()
             }
         }
@@ -159,19 +156,5 @@ class CarinaRunner {
 				 -Dsonar.java.source=1.8"
             }
         }
-    }
-
-    @NonCPS
-    protected def getCommit(currentBuild) {
-        def isUpdated = false
-        def changeLogSets = currentBuild.rawBuild.changeSets
-        context.println "CHANGELOG: " + changeLogSets.dump()
-        changeLogSets.each { changeLogSet ->
-            context.println "CHANGELOGSET: " + changeLogSet.dump()
-            for (entry in changeLogSet.getItems()) {
-                context.println "MESSAGE: " + entry.getMsg()
-            }
-        }
-//        return isUpdated
     }
 }
