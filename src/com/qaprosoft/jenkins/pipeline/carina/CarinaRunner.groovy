@@ -140,8 +140,7 @@ class CarinaRunner {
 				 clean package sonar:sonar -DskipTests \
 				 -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
 				 -Dsonar.analysis.mode=preview  \
-				 -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-				 -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+				 -Dsonar.github.repository=qaprosoft/carina \
 				 -Dsonar.projectKey=${Configuration.get("project")} \
 				 -Dsonar.projectName=${Configuration.get("project")} \
 				 -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
