@@ -26,6 +26,8 @@ class CarinaRunner {
             try {
                 scmClient.clonePush()
                 deployDocumentation()
+                compile()
+                performSonarQubeScan()
                 buildSnapshot()
                 proceedSuccessfulBuild(releaseName, subject, to)
             } catch (Exception e) {
@@ -36,33 +38,6 @@ class CarinaRunner {
                 reportingBuildResults()
                 clean()
             }
-        }
-    }
-
-    public void onPullRequest() {
-        context.println("CarinaRunner->onPullRequest")
-        context.node("maven") {
-            scmClient.clonePR()
-            executeMavenGoals("-U clean process-resources process-test-resources")
-            executeMavenGoals("-Dcobertura.report.format=xml clean test cobertura:cobertura")
-
-            context.sh("find . -name \"*cobertura*\"")
-            context.sh("find . -name coverage.xml")
-
-            reportingBuildResults()
-            // produce snapshot build if ghprbPullTitle contains 'build-snapshot'
-            if (Configuration.get("ghprbPullTitle").contains("build-snapshot")) {
-                //versions:set -DnewVersion=${CARINA_RELEASE}.${BUILD_NUMBER}-SNAPSHOT
-                //-Dgpg.passphrase=<pswd> -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc
-                buildSnapshot()
-/*                context.withCredentials([context.usernamePassword(credentialsId:'gpg_token', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-                    context.echo "USERNAME: ${context.env.USERNAME}"
-                    context.echo "PASSWORD: ${context.env.PASSWORD}"
-                    executeMavenGoals("-Dgpg.passphrase=${context.env.PASSWORD} -Dcobertura.report.format=xml cobertura:cobertura clean deploy javadoc:javadoc")
-                }
-*/
-            }
-            //TODO: email notification
         }
     }
 
@@ -140,5 +115,43 @@ class CarinaRunner {
         context.println("exception: " + e.getMessage())
         context.println("exception class: " + e.getClass().getName())
         context.println("stacktrace: " + Arrays.toString(e.getStackTrace()))
+    }
+
+    protected void compile(){
+        context.stage('Maven Compile') {
+            executeMavenGoals("clean compile test-compile -f pom.xml -Dmaven.test.failure.ignore=true")
+        }
+    }
+
+    protected void performSonarQubeScan(){
+        context.stage('SonarQube Scan') {
+            def sonarQubeEnv = ''
+            Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
+                sonarQubeEnv = installation.getName()
+            }
+            if(sonarQubeEnv.isEmpty()){
+                context.println "There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan."
+                return
+            }
+            //TODO: find a way to get somehow 2 below hardcoded string values
+            context.stage('SonarQube analysis') {
+                context.withSonarQubeEnv(sonarQubeEnv) {
+                    context.sh "mvn clean package sonar:sonar -DskipTests \
+				 -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
+				 -Dsonar.analysis.mode=preview  \
+				 -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
+				 -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+				 -Dsonar.projectKey=${Configuration.get("project")} \
+				 -Dsonar.projectName=${Configuration.get("project")} \
+				 -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+				 -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
+				 -Dsonar.sources=. \
+				 -Dsonar.tests=. \
+				 -Dsonar.inclusions=**/src/main/java/** \
+				 -Dsonar.test.inclusions=**/src/test/java/** \
+				 -Dsonar.java.source=1.8"
+                }
+            }
+        }
     }
 }
