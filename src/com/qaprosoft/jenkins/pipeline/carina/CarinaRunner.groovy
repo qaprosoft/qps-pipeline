@@ -33,6 +33,7 @@ class CarinaRunner {
                 performSonarQubeScan()
                 if(Executor.isSnapshotRequired(context.currentBuild, "build-snapshot")){
                     buildSnapshot(releaseName)
+                    reportingBuildResults()
                 }
                 proceedSuccessfulBuild(releaseName, subject, to)
             } catch (Exception e) {
@@ -40,7 +41,6 @@ class CarinaRunner {
                 proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
                 throw e
             } finally {
-                reportingBuildResults()
                 clean()
             }
         }
