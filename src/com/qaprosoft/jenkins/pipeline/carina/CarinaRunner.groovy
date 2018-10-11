@@ -30,22 +30,38 @@ class CarinaRunner {
         context.node("maven") {
              try {
                 scmClient.clonePush()
-                deployDocumentation()
-                compile()
-                performSonarQubeScan()
-                if(Executor.isSnapshotRequired(context.currentBuild, "build-snapshot")){
+//                deployDocumentation()
+//                compile()
+//                performSonarQubeScan()
+                if(isSnapshotRequired(context.currentBuild, "build-snapshot")){
                     buildSnapshot()
                     reportingBuildResults()
                     proceedSuccessfulBuild()
                 }
             } catch (Exception e) {
                 printStackTrace(e)
-                proceedFailure()
+//                proceedFailure()
                 throw e
             } finally {
                 clean()
             }
         }
+    }
+
+    @NonCPS
+    protected def isSnapshotRequired(currentBuild, trigger) {
+        def isRequired = false
+        def changeLogSets = currentBuild.rawBuild.changeSets
+        changeLogSets.each { changeLogSet ->
+            for (entry in changeLogSet.getItems()) {
+                context.println "ENTRY: " + entry.dump()
+                if(entry.getMsg().contains(trigger)){
+                    isRequired = true
+                    return
+                }
+            }
+        }
+        return isRequired
     }
 
     public void onPullRequest() {
