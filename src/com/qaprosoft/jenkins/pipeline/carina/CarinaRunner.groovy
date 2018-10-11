@@ -5,6 +5,12 @@ import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
+import com.cloudbees.groovy.cps.NonCPS
+
+import java.nio.file.FileSystems
+import java.nio.file.Path
+import java.nio.file.PathMatcher
+import java.nio.file.Paths
 
 class CarinaRunner {
 
@@ -26,17 +32,18 @@ class CarinaRunner {
             def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
             try {
                 scmClient.clonePush()
-                deployDocumentation()
-                compile()
-                performSonarQubeScan()
-                buildSnapshot(releaseName)
-                proceedSuccessfulBuild(releaseName, subject, to)
+                getCommit(context.currentBuild)
+//                deployDocumentation()
+//                compile()
+//                performSonarQubeScan()
+//                buildSnapshot(releaseName)
+//                proceedSuccessfulBuild(releaseName, subject, to)
             } catch (Exception e) {
                 printStackTrace(e)
-                proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
+//                proceedFailure(context.currentBuild, jobBuildUrl, subject, to)
                 throw e
             } finally {
-                reportingBuildResults()
+//                reportingBuildResults()
                 clean()
             }
         }
@@ -152,5 +159,24 @@ class CarinaRunner {
 				 -Dsonar.java.source=1.8"
             }
         }
+    }
+
+    @NonCPS
+    protected def getCommit(currentBuild) {
+        def isUpdated = false
+        def changeLogSets = currentBuild.rawBuild.changeSets
+        context.println "CHANGELOG: " + changeLogSets.dump()
+//        changeLogSets.each { changeLogSet ->
+//            /* Extracts GitChangeLogs from changeLogSet */
+//            for (entry in changeLogSet.getItems()) {
+//                /* Extracts paths to changed files */
+//                for (path in entry.getPaths()) {
+//                    Path pathObject = Paths.get(path.getPath())
+//                    /* Checks whether any changed file matches one of patterns */
+//
+//                }
+//            }
+//        }
+//        return isUpdated
     }
 }
