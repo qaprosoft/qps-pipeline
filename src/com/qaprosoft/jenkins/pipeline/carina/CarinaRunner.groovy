@@ -28,7 +28,7 @@ class CarinaRunner {
                 scmClient.clonePush()
 //                deployDocumentation()
                 compile()
-                performSonarQubeScan()
+//                performSonarQubeScan()
                 buildSnapshot()
 //                proceedSuccessfulBuild(releaseName, subject, to)
             } catch (Exception e) {
