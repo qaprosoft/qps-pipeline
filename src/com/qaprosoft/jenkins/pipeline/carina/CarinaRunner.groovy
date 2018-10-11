@@ -166,17 +166,18 @@ class CarinaRunner {
         def isUpdated = false
         def changeLogSets = currentBuild.rawBuild.changeSets
         context.println "CHANGELOG: " + changeLogSets.dump()
-//        changeLogSets.each { changeLogSet ->
-//            /* Extracts GitChangeLogs from changeLogSet */
-//            for (entry in changeLogSet.getItems()) {
-//                /* Extracts paths to changed files */
-//                for (path in entry.getPaths()) {
-//                    Path pathObject = Paths.get(path.getPath())
-//                    /* Checks whether any changed file matches one of patterns */
-//
-//                }
-//            }
-//        }
+        changeLogSets.each { changeLogSet ->
+            context.println "CHANGELOGSET: " + changeLogSet.dump()
+            for (entry in changeLogSet.getItems()) {
+                context.println "ENTRY: " + entry.dump()
+                for (path in entry.getPaths()) {
+                    Path pathObject = Paths.get(path.getPath())
+                    context.println "PATH: " + pathObject.dump()
+                    /* Checks whether any changed file matches one of patterns */
+
+                }
+            }
+        }
 //        return isUpdated
     }
 }
