@@ -290,7 +290,7 @@ public class QARunner extends AbstractRunner {
                                 for (def cronJobName : cronJobNames.split(",")) {
                                     cronJobName = cronJobName.trim()
                                     def cronDesc = "project: ${project}; type: cron"
-                                    registerObject(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
+                                    registerObject(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, getWorkspace() + "/" + suite.path, cronDesc))
                                 }
                             }
                         }
@@ -831,7 +831,6 @@ public class QARunner extends AbstractRunner {
             def workspace = getWorkspace()
             context.println("WORKSPACE: " + workspace)
             def project = Configuration.get("project")
-            def sub_project = Configuration.get("sub_project")
             def jenkinsFile = ".jenkinsfile.json"
 
             if (!context.fileExists("${jenkinsFile}")) {
