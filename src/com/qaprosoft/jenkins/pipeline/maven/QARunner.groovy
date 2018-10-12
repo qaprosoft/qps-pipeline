@@ -224,6 +224,11 @@ public class QARunner extends AbstractRunner {
                 def prChecker = it.pr_checker
                 def zafiraFilter = it.zafira_filter
                 def suiteFilter = it.suite_filter
+				
+				if (suiteFilter.isEmpty()) {
+					context.println("Skip repository scan as no suiteFilter identified! Project: ${project}")
+					return
+				}
 
                 def zafira_project = 'unknown'
                 def zafiraProperties = context.findFiles(glob: subProjectFilter + "/" + zafiraFilter)
