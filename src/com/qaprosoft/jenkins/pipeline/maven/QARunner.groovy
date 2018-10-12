@@ -842,7 +842,7 @@ public class QARunner extends AbstractRunner {
             subProjects.each {
                 listPipelines = []
                 suiteFilter = it.suite_filter
-                sub_project = it.name
+                def sub_project = it.name
 
                 def subProjectFilter = sub_project
                 if (sub_project.equals(".")) {
