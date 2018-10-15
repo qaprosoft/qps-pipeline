@@ -710,7 +710,8 @@ public class QARunner extends AbstractRunner {
             bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
-            failureReason = failureLog.replace("<br>", "\\n")
+            failureReason = failureLog
+//            failureReason = failureLog.replace("<br>", "\\n")
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
             bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
