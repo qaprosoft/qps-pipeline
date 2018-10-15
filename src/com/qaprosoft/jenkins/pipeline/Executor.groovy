@@ -56,9 +56,13 @@ public class Executor {
         return subProjectFolder
     }
 	
-    static boolean isParamEmpty(value) {
+    static boolean isParamEmpty(String value) {
         return value == null || value.isEmpty() || value.equals("NULL")
     }
+	
+	static boolean isParamEmpty(Boolean value) {
+		return value == null
+	}
 
     static Object parseJSON(String path) {
         def inputFile = new File(path)
