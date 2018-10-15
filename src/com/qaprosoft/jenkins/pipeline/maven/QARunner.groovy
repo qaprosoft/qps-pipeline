@@ -719,7 +719,6 @@ public class QARunner extends AbstractRunner {
             subject = Executor.getFailureSubject("TIMED OUT", jobName, env, buildNumber)
             failureReason = "Aborted by timeout"
         }
-
         def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
 		${zafiraReport}: ${jobBuildUrl}/${zafiraReport}<br>
 				Console: ${jobBuildUrl}/console<br>${failureLog}"""
