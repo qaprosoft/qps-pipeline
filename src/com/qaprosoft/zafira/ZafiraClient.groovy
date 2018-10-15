@@ -76,7 +76,7 @@ class ZafiraClient {
 			getZafiraAuthToken(refreshToken)
 		}
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
+                          contentType: 'TEXT_HTML',
                           httpMode: 'POST',
                           requestBody: "${comment}",
 						  validResponseCodes: "200:401",
