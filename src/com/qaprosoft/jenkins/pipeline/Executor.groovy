@@ -56,7 +56,7 @@ public class Executor {
         return subProjectFolder
     }
 	
-    static boolean isParamEmpty(String value) {
+    static boolean isParamEmpty(value) {
         return value == null || value.isEmpty() || value.equals("NULL")
     }
 
