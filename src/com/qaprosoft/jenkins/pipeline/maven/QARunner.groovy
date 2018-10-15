@@ -702,12 +702,12 @@ public class QARunner extends AbstractRunner {
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
-            failureReason = URLEncoder.encode(failureLog.replace("<br>", "\n"))
+            failureReason = URLEncoder.encode(failureLog.replace("<br>", "\n"), "UTF-8")
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
             bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
-            failureReason = URLEncoder.encode(failureLog.replace("<br>", "\n"))
+            failureReason = URLEncoder.encode(failureLog.replace("<br>", "\n"), "UTF-8")
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
             bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
