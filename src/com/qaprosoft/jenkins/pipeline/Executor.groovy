@@ -1,8 +1,14 @@
 package com.qaprosoft.jenkins.pipeline
 
+@Grab('org.testng:testng:6.8.8')
 import groovy.json.JsonSlurperClassic
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
+
+import java.nio.file.FileSystems
+import java.nio.file.Path
+import java.nio.file.PathMatcher
+import java.nio.file.Paths
 
 import static java.util.UUID.randomUUID
 
@@ -162,8 +168,61 @@ public class Executor {
         return buildCause
     }
 
+    /** Detects if any changes are present in files matching patterns  */
+    @NonCPS
+    static boolean isUpdated(currentBuild, patterns) {
+        def isUpdated = false
+        def changeLogSets = currentBuild.rawBuild.changeSets
+        changeLogSets.each { changeLogSet ->
+            /* Extracts GitChangeLogs from changeLogSet */
+            for (entry in changeLogSet.getItems()) {
+                /* Extracts paths to changed files */
+                for (path in entry.getPaths()) {
+                    Path pathObject = Paths.get(path.getPath())
+                    /* Checks whether any changed file matches one of patterns */
+                    for (pattern in patterns.split(",")){
+                        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
+                        /* As only match is found stop search*/
+                        if (matcher.matches(pathObject)){
+                            isUpdated = true
+                            return
+                        }
+                    }
+                }
+            }
+        }
+        return isUpdated
+    }
+
+    @NonCPS
+    static def isSnapshotRequired(currentBuild, trigger) {
+        def isRequired = false
+        def changeLogSets = currentBuild.rawBuild.changeSets
+        changeLogSets.each { changeLogSet ->
+            for (entry in changeLogSet.getItems()) {
+                if(entry.getMsg().contains(trigger)){
+                    isRequired = true
+                    return
+                }
+            }
+        }
+        return isRequired
+    }
+
+    @NonCPS
+    static def getPushAuthorEmail(currentBuild) {
+        def authorEmail = ''
+        def changeLogSets = currentBuild.rawBuild.changeSets
+        changeLogSets.each { changeLogSet ->
+            for (entry in changeLogSet.getItems()) {
+                authorEmail =  entry.getAuthorEmail()
+            }
+        }
+        return authorEmail
+    }
+
     /** Checks if current job started as rebuild */
-    public Boolean isRebuild(currentBuild) {
+    static Boolean isRebuild(currentBuild) {
         Boolean isRebuild = false
         /* Gets CauseActions of the job */
         currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
