@@ -56,14 +56,14 @@ public class Executor {
         return subProjectFolder
     }
 	
-    static boolean isParamEmpty(String value) {
-        return value == null || value.isEmpty() || value.equals("NULL")
+    static boolean isParamEmpty(value) {
+		if (value == null) {
+			return true
+		}  else {
+			return value.toString().isEmpty() || value.toString().equals("NULL")
+		}
     }
 	
-	static boolean isParamEmpty(Boolean value) {
-		return value == null
-	}
-
     static Object parseJSON(String path) {
         def inputFile = new File(path)
         def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
