@@ -702,25 +702,25 @@ public class QARunner extends AbstractRunner {
         def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            failureReason = "COMPILATION ERROR"
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
+            failureReason = "COMPILATION ERROR\n" + failureLog
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
-            failureReason = "BUILD FAILURE"
             bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
+            failureReason = "BUILD FAILURE\n" + failureLog
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
-            failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
             bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("ABORTED", jobName, env, buildNumber)
+            failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
         } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
             currentBuild.result = 'ABORTED'
-            failureReason = "Aborted by timeout"
             bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("TIMED OUT", jobName, env, buildNumber)
+            failureReason = "Aborted by timeout"
         }
 
         def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
