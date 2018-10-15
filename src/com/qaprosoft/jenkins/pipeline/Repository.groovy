@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.pipeline
 
-
 import groovy.json.JsonOutput
 
 import com.qaprosoft.jenkins.pipeline.Configuration
