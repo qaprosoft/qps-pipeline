@@ -80,7 +80,7 @@ public class QARunner extends AbstractRunner {
             context.timestamps {
                 context.println("QARunner->onPush")
                 prepare()
-                if (!isUpdated("**.xml,**/zafira.properties") && onlyUpdated) {
+                if (!Executor.isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                     context.println("do not continue scanner as none of suite was updated ( *.xml )")
                     return
                 }
@@ -224,6 +224,11 @@ public class QARunner extends AbstractRunner {
                 def prChecker = it.pr_checker
                 def zafiraFilter = it.zafira_filter
                 def suiteFilter = it.suite_filter
+				
+				if (suiteFilter.isEmpty()) {
+					context.println("Skip repository scan as no suiteFilter identified! Project: ${project}")
+					return
+				}
 
                 def zafira_project = 'unknown'
                 def zafiraProperties = context.findFiles(glob: subProjectFilter + "/" + zafiraFilter)
@@ -290,7 +295,7 @@ public class QARunner extends AbstractRunner {
                                 for (def cronJobName : cronJobNames.split(",")) {
                                     cronJobName = cronJobName.trim()
                                     def cronDesc = "project: ${project}; type: cron"
-                                    registerObject(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, sub_project, getWorkspace() + "/" + suite.path, cronDesc))
+                                    registerObject(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, getWorkspace() + "/" + suite.path, cronDesc))
                                 }
                             }
                         }
@@ -320,39 +325,10 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-
     protected clean() {
         context.stage('Wipe out Workspace') {
             context.deleteDir()
         }
-    }
-
-
-    /** Detects if any changes are present in files matching patterns  */
-    @NonCPS
-    protected boolean isUpdated(String patterns) {
-        def isUpdated = false
-        def changeLogSets = currentBuild.rawBuild.changeSets
-        changeLogSets.each { changeLogSet ->
-            /* Extracts GitChangeLogs from changeLogSet */
-            for (entry in changeLogSet.getItems()) {
-                /* Extracts paths to changed files */
-                for (path in entry.getPaths()) {
-                    context.println("UPDATED: " + path.getPath())
-                    Path pathObject = Paths.get(path.getPath())
-                    /* Checks whether any changed file matches one of patterns */
-                    for (pattern in patterns.split(",")){
-                        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
-                        /* As only match is found stop search*/
-                        if (matcher.matches(pathObject)){
-                            isUpdated = true
-                            return
-                        }
-                    }
-                }
-            }
-        }
-        return isUpdated
     }
 
     protected String getWorkspace() {
@@ -831,7 +807,6 @@ public class QARunner extends AbstractRunner {
             def workspace = getWorkspace()
             context.println("WORKSPACE: " + workspace)
             def project = Configuration.get("project")
-            def sub_project = Configuration.get("sub_project")
             def jenkinsFile = ".jenkinsfile.json"
 
             if (!context.fileExists("${jenkinsFile}")) {
@@ -843,7 +818,7 @@ public class QARunner extends AbstractRunner {
             subProjects.each {
                 listPipelines = []
                 suiteFilter = it.suite_filter
-                sub_project = it.name
+                def sub_project = it.name
 
                 def subProjectFilter = sub_project
                 if (sub_project.equals(".")) {
