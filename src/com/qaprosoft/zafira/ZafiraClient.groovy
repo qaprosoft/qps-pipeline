@@ -78,7 +78,7 @@ class ZafiraClient {
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
-                          requestBody: "{\"comment\": \"${comment}\"}",
+                          requestBody: "${comment}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
 
