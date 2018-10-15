@@ -80,7 +80,7 @@ public class QARunner extends AbstractRunner {
             context.timestamps {
                 context.println("QARunner->onPush")
                 prepare()
-                if (!isUpdated("**.xml,**/zafira.properties") && onlyUpdated) {
+                if (!Executor.isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                     context.println("do not continue scanner as none of suite was updated ( *.xml )")
                     return
                 }
@@ -325,39 +325,10 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-
     protected clean() {
         context.stage('Wipe out Workspace') {
             context.deleteDir()
         }
-    }
-
-
-    /** Detects if any changes are present in files matching patterns  */
-    @NonCPS
-    protected boolean isUpdated(String patterns) {
-        def isUpdated = false
-        def changeLogSets = currentBuild.rawBuild.changeSets
-        changeLogSets.each { changeLogSet ->
-            /* Extracts GitChangeLogs from changeLogSet */
-            for (entry in changeLogSet.getItems()) {
-                /* Extracts paths to changed files */
-                for (path in entry.getPaths()) {
-                    context.println("UPDATED: " + path.getPath())
-                    Path pathObject = Paths.get(path.getPath())
-                    /* Checks whether any changed file matches one of patterns */
-                    for (pattern in patterns.split(",")){
-                        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
-                        /* As only match is found stop search*/
-                        if (matcher.matches(pathObject)){
-                            isUpdated = true
-                            return
-                        }
-                    }
-                }
-            }
-        }
-        return isUpdated
     }
 
     protected String getWorkspace() {
