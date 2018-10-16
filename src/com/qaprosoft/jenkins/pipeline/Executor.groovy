@@ -105,7 +105,7 @@ public class Executor {
     }
 
     static String getLogDetailsForEmail(currentBuild, logPattern){
-        def failureLog = "Details:\\n"
+        def failureLog = "Details:\n"
         int lineCount = 0
         for(logLine in currentBuild.rawBuild.getLog(50)) {
             if(logLine.contains(logPattern) && lineCount < 10){
