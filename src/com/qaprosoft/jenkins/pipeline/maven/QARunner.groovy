@@ -702,12 +702,12 @@ public class QARunner extends AbstractRunner {
             bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
-            failureReason = URLEncoder.encode(failureLog.replace("<br>", "\n"), "UTF-8")
+            failureReason = URLEncoder.encode(failureLog, "UTF-8")
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
             bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
-            failureReason = URLEncoder.encode("BUILD FAILURE:\n" + failureLog.replace("<br>", "\n"), "UTF-8")
+            failureReason = URLEncoder.encode("BUILD FAILURE:\n" + failureLog, "UTF-8")
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = 'ABORTED'
             bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
@@ -721,7 +721,7 @@ public class QARunner extends AbstractRunner {
         }
         def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
 		${zafiraReport}: ${jobBuildUrl}/${zafiraReport}<br>
-				Console: ${jobBuildUrl}/console<br>${failureLog}"""
+				Console: ${jobBuildUrl}/console<br>${failureLog.replace("\n", "<br>")}"""
 
         //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
