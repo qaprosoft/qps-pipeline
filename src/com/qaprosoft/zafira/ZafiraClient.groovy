@@ -121,7 +121,7 @@ class ZafiraClient {
         def emailList = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         //TODO: append to emailList suitOwner and suiteRunner
         //TODO: think about separate endpoint for negative email
-        if(response.status == 200){
+        if(response && response.status == 200){
             sendEmail(uuid, emailList, "all")
 //            sendEmailFailure(uuid, emailList)
         } else {
