@@ -721,7 +721,7 @@ public class QARunner extends AbstractRunner {
         }
         def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
 		${zafiraReport}: ${jobBuildUrl}/${zafiraReport}<br>
-				Console: ${jobBuildUrl}/console<br>${failureLog.replace("\n", "<br>")}"""
+				Console: ${jobBuildUrl}/console<br>${failureLog}"""
 
         //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
