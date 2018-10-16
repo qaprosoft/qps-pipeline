@@ -160,7 +160,7 @@ class ZafiraClient {
                           httpMode: 'POST',
                           requestBody: "{\"recipients\": \"${emailList}\"}",
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}?suiteRunner=${suiteRunner}"]
+                          url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
         sendRequest(parameters)
     }
 
