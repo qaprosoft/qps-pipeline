@@ -130,7 +130,7 @@ class ZafiraClient {
             def body = bodyHeader + """<br>
                        Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
                   ZafiraReport: ${jobBuildUrl}/"ZafiraReport"<br>
-		               Console: ${jobBuildUrl}/console<br>${failureLog}"""
+		               Console: ${jobBuildUrl}/console<br>${failureLog.replace("\n", "<br>")}"""
             context.emailext Executor.getEmailParams(body, subject, emailList)
         }
     }
