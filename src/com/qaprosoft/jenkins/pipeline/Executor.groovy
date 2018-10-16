@@ -109,7 +109,7 @@ public class Executor {
         int lineCount = 0
         for(logLine in currentBuild.rawBuild.getLog(50)) {
             if(logLine.contains(logPattern) && lineCount < 10){
-                failureLog = failureLog + "\n${logLine}"
+                failureLog = failureLog + "${logLine}\n"
                 lineCount++
             }
         }
