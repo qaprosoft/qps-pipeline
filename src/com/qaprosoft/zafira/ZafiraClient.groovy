@@ -118,7 +118,8 @@ class ZafiraClient {
 						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
 
         def response = sendRequest(parameters)
-        def emailList = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+//        def emailList = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+        def emailList = "itsvirko@qaprosoft.com"
         //TODO: append to emailList suitOwner and suiteRunner
         //TODO: think about separate endpoint for negative email
         if(response && response.status == 200){
