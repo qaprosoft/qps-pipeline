@@ -123,8 +123,7 @@ class ZafiraClient {
         //TODO: append to emailList suitOwner and suiteRunner
         //TODO: think about separate endpoint for negative email
         if(response && response.status == 200){
-            sendEmail(uuid, emailList, "all")
-//            sendEmailFailure(uuid, emailList)
+            sendFailureEmail(uuid, emailList)
         } else {
             //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
             def body = bodyHeader + """<br>
@@ -149,19 +148,21 @@ class ZafiraClient {
 		sendRequest(parameters)
     }
 
-//    public void sendEmailFailure(String uuid, String emailList) {
-//        //TODO: determine runner/owner sending process
-//        if (isTokenExpired()) {
-//            getZafiraAuthToken(refreshToken)
-//        }
-//        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-//                          contentType: 'APPLICATION_JSON',
-//                          httpMode: 'POST',
-//                          requestBody: "{\"recipients\": \"${emailList}\"}",
-//                          validResponseCodes: "200:401",
-//                          url: this.serviceURL + "/api/tests/runs/${uuid}/emailfailure"]
-//        sendRequest(parameters)
-//    }
+    public void sendFailureEmail(String uuid, String emailList) {
+        //TODO: determine runner/owner sending process
+        def suiteOwner = Configuration.get("suiteOwner")
+        def suiteRunner = Configuration.get("suiteRunner")
+        if (isTokenExpired()) {
+            getZafiraAuthToken(refreshToken)
+        }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'POST',
+                          requestBody: "{\"recipients\": \"${emailList}\"}",
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}?suiteRunner=${suiteRunner}"]
+        sendRequest(parameters)
+    }
 
 	public String exportZafiraReport(String uuid) {
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
