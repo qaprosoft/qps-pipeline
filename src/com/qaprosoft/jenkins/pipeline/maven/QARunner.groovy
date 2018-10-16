@@ -703,6 +703,11 @@ public class QARunner extends AbstractRunner {
             subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
             failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
             failureReason = URLEncoder.encode(failureLog, "UTF-8")
+        } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
+            currentBuild.result = 'ABORTED'
+            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
+            subject = Executor.getFailureSubject("TIMED OUT", jobName, env, buildNumber)
+            failureReason = "Aborted by timeout"
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
             bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
@@ -713,11 +718,6 @@ public class QARunner extends AbstractRunner {
             bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
             subject = Executor.getFailureSubject("ABORTED", jobName, env, buildNumber)
             failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
-        } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
-            currentBuild.result = 'ABORTED'
-            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
-            subject = Executor.getFailureSubject("TIMED OUT", jobName, env, buildNumber)
-            failureReason = "Aborted by timeout"
         }
         def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
 		${zafiraReport}: ${jobBuildUrl}/${zafiraReport}<br>
