@@ -11,6 +11,10 @@ import java.nio.file.PathMatcher
 import java.nio.file.Paths
 
 import static java.util.UUID.randomUUID
+import org.jenkinsci.plugins.ghprb.GhprbTrigger
+import org.jenkinsci.plugins.ghprb.GhprbPullRequest
+import org.jenkinsci.plugins.ghprb.GhprbCause
+import org.jenkinsci.plugins.ghprb.Ghprb
 
 public class Executor {
 
@@ -196,6 +200,20 @@ public class Executor {
             }
         }
         return isUpdated
+    }
+
+    static def isLabelApplied(build, label) {
+        boolean isApplied = false
+        GhprbCause c = Ghprb.getCause(build)
+        GhprbTrigger trigger = Ghprb.extractTrigger(build)
+        GhprbPullRequest ghprbPullRequest = trigger.getRepository().getPullRequest(c.getPullID())
+        for(ghLabel in ghprbPullRequest.getPullRequest().getLabels()) {
+            if(ghLabel.getName() == label){
+                isApplied = true
+                return
+            }
+        }
+        return isApplied
     }
 
     @NonCPS
