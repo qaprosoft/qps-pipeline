@@ -210,7 +210,7 @@ public class Executor {
         for(ghLabel in ghprbPullRequest.getPullRequest().getLabels()) {
             if(ghLabel.getName() == label){
                 isApplied = true
-                return
+                break
             }
         }
         return isApplied
