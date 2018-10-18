@@ -271,19 +271,21 @@ public class QARunner extends AbstractRunner {
                             if (currentSuite.toXml().contains("suiteOwner")) {
                                 suiteOwner = currentSuite.getParameter("suiteOwner")
                             }
+							
+							def currentZafiraProject = zafira_project 
                             if (currentSuite.toXml().contains("zafira_project")) {
-                                zafira_project = currentSuite.getParameter("zafira_project")
+                                currentZafiraProject = currentSuite.getParameter("zafira_project")
                             }
 
                             // put standard views factory into the map
-                            registerObject(zafira_project, new ListViewFactory(jobFolder, zafira_project.toUpperCase(), ".*${zafira_project}.*"))
+                            registerObject(currentZafiraProject, new ListViewFactory(jobFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
                             registerObject(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 
                             //pipeline job
                             //TODO: review each argument to TestJobFactory and think about removal
                             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-                            def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
-                            registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+                            def jobDesc = "project: ${project}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+                            registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 
                             //cron job
                             if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
