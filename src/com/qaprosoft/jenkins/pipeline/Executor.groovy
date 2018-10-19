@@ -108,6 +108,16 @@ public class Executor {
         return failure
     }
 
+    static def getJenkinsJobByName(jobName) {
+        def currentJob = null
+        Jenkins.getInstance().getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob).each { job ->
+            if (job.displayName == jobName) {
+                currentJob = job
+            }
+        }
+        return currentJob
+    }
+
     static String getFailureSubject(cause, jobName, env, buildNumber){
         return "${cause}: ${jobName} - ${env} - Build # ${buildNumber}!"
     }
