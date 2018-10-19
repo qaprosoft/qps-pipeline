@@ -361,6 +361,7 @@ public class QARunner extends AbstractRunner {
     protected void runJob() {
         context.println("QARunner->runJob")
 
+        context.println Executor.getJenkinsJobByName("Web-Demo-Test")
         uuid = Executor.getUUID()
         context.println "UUID: " + uuid
 
