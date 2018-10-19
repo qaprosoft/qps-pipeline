@@ -115,7 +115,7 @@ class ZafiraClient {
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
                           requestBody: "{\"comment\": \"${failureReason}\"}",
-						  validResponseCodes: "200:404",
+						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
 
         def response = sendRequest(parameters)
