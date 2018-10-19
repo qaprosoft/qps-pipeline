@@ -151,8 +151,14 @@ class ZafiraClient {
 
     public void sendFailureEmail(String uuid, String emailList) {
         //TODO: determine runner/owner sending process
-        def suiteOwner = Configuration.get("suiteOwner")
-        def suiteRunner = Configuration.get("suiteRunner")
+        def suiteOwner = true
+        def suiteRunner = false
+        if(Configuration.get("suiteOwner")){
+            suiteOwner = Configuration.get("suiteOwner")
+        }
+        if(Configuration.get("suiteRunner")){
+            suiteOwner = Configuration.get("suiteRunner")
+        }
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
         }
