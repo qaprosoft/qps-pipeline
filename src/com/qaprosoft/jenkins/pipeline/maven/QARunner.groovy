@@ -108,7 +108,9 @@ public class QARunner extends AbstractRunner {
 	
 	protected void compile(pomFile) {
 		context.stage('Maven Compile') {
-			def goals = "clean compile test-compile \
+			// [VD] don't remove -U otherwise latest dependencies are not downloaded
+			// and PR can be marked as fail due to the compilation failure!
+			def goals = "-U clean compile test-compile \
 					-f ${pomFile} \
 					-Dmaven.test.failure.ignore=true \
 					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
