@@ -561,7 +561,7 @@ public class QARunner extends AbstractRunner {
                 //override "null" value by empty to be able to register in cloud version of Zafira
                 buildUserEmail = ""
             }
-            def defaultBaseMavenGoals = "d-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+            def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 			-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 			-f ${pomFile} \
