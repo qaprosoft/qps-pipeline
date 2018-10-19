@@ -5,17 +5,16 @@ import com.qaprosoft.jenkins.pipeline.Executor
 
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 import com.qaprosoft.zafira.ZafiraClient
-import org.testng.xml.XmlSuite;
-import com.cloudbees.groovy.cps.NonCPS
+import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
-import java.net.URLEncoder
+
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
-import com.qaprosoft.scm.github.GitHub;
+import com.qaprosoft.scm.github.GitHub
 
 
 import hudson.plugins.sonar.SonarGlobalConfiguration
@@ -271,19 +270,21 @@ public class QARunner extends AbstractRunner {
                             if (currentSuite.toXml().contains("suiteOwner")) {
                                 suiteOwner = currentSuite.getParameter("suiteOwner")
                             }
+							
+							def currentZafiraProject = zafira_project 
                             if (currentSuite.toXml().contains("zafira_project")) {
-                                zafira_project = currentSuite.getParameter("zafira_project")
+                                currentZafiraProject = currentSuite.getParameter("zafira_project")
                             }
 
                             // put standard views factory into the map
-                            registerObject(zafira_project, new ListViewFactory(jobFolder, zafira_project.toUpperCase(), ".*${zafira_project}.*"))
+                            registerObject(currentZafiraProject, new ListViewFactory(jobFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
                             registerObject(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
 
                             //pipeline job
                             //TODO: review each argument to TestJobFactory and think about removal
                             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-                            def jobDesc = "project: ${project}; zafira_project: ${zafira_project}; owner: ${suiteOwner}"
-                            registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, zafira_project, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+                            def jobDesc = "project: ${project}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+                            registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 
                             //cron job
                             if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
@@ -384,22 +385,17 @@ public class QARunner extends AbstractRunner {
                         context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
                             buildJob()
                         }
-
+                        sendZafiraEmail()
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
                     }
-
                 } catch (Exception e) {
                     printStackTrace(e)
-                    String failureReason = getFailure(currentBuild)
-                    context.println "failureReason: ${failureReason}"
-                    //explicitly execute abort to resolve anomalies with in_progress tests...
-                    zc.abortZafiraTestRun(uuid, failureReason)
+                    zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
                     exportZafiraReport()
-                    sendTestRunResultsEmail()
-                    reportingResults()
+                    publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     clean()
                 }
@@ -684,52 +680,6 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected String getFailure(currentBuild) {
-        //TODO: move string constants into object/enum if possible
-        currentBuild.result = 'FAILURE'
-        def failureReason = "undefined failure"
-
-        String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + buildNumber
-        String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
-        String env = Configuration.get("env")
-
-        def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
-        def subject = Executor.getFailureSubject("UNRECOGNIZED FAILURE", jobName, env, buildNumber)
-        def failureLog = ""
-
-        if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
-            subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
-            failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
-            failureReason = URLEncoder.encode(failureLog, "UTF-8")
-        } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
-            currentBuild.result = 'ABORTED'
-            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
-            subject = Executor.getFailureSubject("TIMED OUT", jobName, env, buildNumber)
-            failureReason = "Aborted by timeout"
-        } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
-            bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
-            subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
-            failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
-            failureReason = URLEncoder.encode("BUILD FAILURE:\n" + failureLog, "UTF-8")
-        } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
-            currentBuild.result = 'ABORTED'
-            bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
-            subject = Executor.getFailureSubject("ABORTED", jobName, env, buildNumber)
-            failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
-        }
-        def body = bodyHeader + """<br>Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
-		${zafiraReport}: ${jobBuildUrl}/${zafiraReport}<br>
-				Console: ${jobBuildUrl}/console<br>${failureLog}"""
-
-        //        def to = Configuration.get("email_list") + "," + Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
-        def to = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
-        //TODO: enable emailing but seems like it should be moved to the notification code
-        context.emailext Executor.getEmailParams(body, subject, to)
-        return failureReason
-    }
-
     protected void exportZafiraReport() {
         //replace existing local emailable-report.html by Zafira content
         def zafiraReport = zc.exportZafiraReport(uuid)
@@ -750,16 +700,16 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected void sendTestRunResultsEmail() {
+    protected void sendZafiraEmail() {
         String emailList = Configuration.get("email_list")
         emailList = overrideRecipients(emailList)
         String failureEmailList = Configuration.get("failure_email_list")
 
         if (emailList != null && !emailList.isEmpty()) {
-            zc.sendTestRunResultsEmail(uuid, emailList, "all")
+            zc.sendEmail(uuid, emailList, "all")
         }
         if (Executor.isFailure(currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
-            zc.sendTestRunResultsEmail(uuid, failureEmailList, "failures")
+            zc.sendEmail(uuid, failureEmailList, "failures")
         }
     }
 
@@ -768,16 +718,16 @@ public class QARunner extends AbstractRunner {
         return emailList
     }
 
-    protected void reportingResults() {
+    protected void publishJenkinsReports() {
         context.stage('Results') {
-            publishReports('**/zafira/report.html', "${zafiraReport}")
-            publishReports('**/artifacts/**', 'eTAF_Artifacts')
-            publishReports('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
-            publishReports('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
+            publishReport('**/zafira/report.html', "${zafiraReport}")
+            publishReport('**/artifacts/**', 'eTAF_Artifacts')
+            publishReport('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
+            publishReport('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
         }
     }
 
-    protected void publishReports(String pattern, String reportName) {
+    protected void publishReport(String pattern, String reportName) {
         def reports = context.findFiles(glob: pattern)
         for (int i = 0; i < reports.length; i++) {
             def parentFile = new File(reports[i].path).getParentFile()

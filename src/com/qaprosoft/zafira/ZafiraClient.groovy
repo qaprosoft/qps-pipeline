@@ -1,5 +1,6 @@
 package com.qaprosoft.zafira
 
+import com.qaprosoft.jenkins.pipeline.Executor
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import com.qaprosoft.jenkins.pipeline.Configuration
@@ -72,21 +73,70 @@ class ZafiraClient {
 		context.println "Tests for rerun: " + responseJson
 	}
 
-	public void abortZafiraTestRun(String uuid, String comment) {
+	public void abortTestRun(String uuid, currentBuild) {
+		currentBuild.result = 'FAILURE'
+		def failureReason = "undefined failure"
+
+		String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+		String jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + buildNumber
+		String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
+		String env = Configuration.get("env")
+
+		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
+		def subject = Executor.getFailureSubject("UNRECOGNIZED FAILURE", jobName, env, buildNumber)
+		def failureLog = ""
+
+		if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
+			bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
+			subject = Executor.getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
+			failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
+			failureReason = URLEncoder.encode(failureLog, "UTF-8")
+		} else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
+			currentBuild.result = 'ABORTED'
+			bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
+			subject = Executor.getFailureSubject("TIMED OUT", jobName, env, buildNumber)
+			failureReason = "Aborted by timeout"
+		} else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
+			bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
+			subject = Executor.getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
+			failureLog = Executor.getLogDetailsForEmail(currentBuild, "ERROR")
+			failureReason = URLEncoder.encode("BUILD FAILURE:\n" + failureLog, "UTF-8")
+		} else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
+			currentBuild.result = 'ABORTED'
+			bodyHeader = "<p>Unable to continue tests due to the abort by " + Executor.getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
+			subject = Executor.getFailureSubject("ABORTED", jobName, env, buildNumber)
+			failureReason = "Aborted by " + Executor.getAbortCause(currentBuild)
+		}
+
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
-                          requestBody: "{\"comment\": \"${comment}\"}",
+                          requestBody: "{\"comment\": \"${failureReason}\"}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
 
-        sendRequest(parameters)
-	}
+        def response = sendRequest(parameters)
+//        def emailList = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+        def emailList = "itsvirko@qaprosoft.com"
+        //TODO: append to emailList suitOwner and suiteRunner
+        //TODO: think about separate endpoint for negative email
+        if(response && response.status == 200){
+            sendFailureEmail(uuid, emailList)
+        } else {
+            //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
+            def body = bodyHeader + """<br>
+                       Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
+                  ZafiraReport: ${jobBuildUrl}/"ZafiraReport"<br>
+		               Console: ${jobBuildUrl}/console<br>${failureLog.replace("\n", "<br>")}"""
+            context.emailext Executor.getEmailParams(body, subject, emailList)
+        }
+    }
 
-    public void sendTestRunResultsEmail(String uuid, String emailList, String filter) {
+    public void sendEmail(String uuid, String emailList, String filter) {
+
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -97,6 +147,28 @@ class ZafiraClient {
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
 		sendRequest(parameters)
+    }
+
+    public void sendFailureEmail(String uuid, String emailList) {
+        //TODO: determine runner/owner sending process
+        def suiteOwner = true
+        def suiteRunner = false
+        if(Configuration.get("suiteOwner")){
+            suiteOwner = Configuration.get("suiteOwner")
+        }
+        if(Configuration.get("suiteRunner")){
+            suiteOwner = Configuration.get("suiteRunner")
+        }
+        if (isTokenExpired()) {
+            getZafiraAuthToken(refreshToken)
+        }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'POST',
+                          requestBody: "{\"recipients\": \"${emailList}\"}",
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
+        sendRequest(parameters)
     }
 
 	public String exportZafiraReport(String uuid) {

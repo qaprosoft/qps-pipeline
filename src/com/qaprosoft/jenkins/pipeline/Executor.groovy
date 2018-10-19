@@ -11,6 +11,10 @@ import java.nio.file.PathMatcher
 import java.nio.file.Paths
 
 import static java.util.UUID.randomUUID
+import org.jenkinsci.plugins.ghprb.GhprbTrigger
+import org.jenkinsci.plugins.ghprb.GhprbPullRequest
+import org.jenkinsci.plugins.ghprb.GhprbCause
+import org.jenkinsci.plugins.ghprb.Ghprb
 
 public class Executor {
 
@@ -56,10 +60,14 @@ public class Executor {
         return subProjectFolder
     }
 	
-    static boolean isParamEmpty(String value) {
-        return value == null || value.isEmpty() || value.equals("NULL")
+    static boolean isParamEmpty(value) {
+		if (value == null) {
+			return true
+		}  else {
+			return value.toString().isEmpty() || value.toString().equals("NULL")
+		}
     }
-
+	
     static Object parseJSON(String path) {
         def inputFile = new File(path)
         def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
@@ -98,6 +106,16 @@ public class Executor {
             failure = "FAILURE".equals(currentBuild.result.name)
         }
         return failure
+    }
+
+    static def getJenkinsJobByName(jobName) {
+        def currentJob = null
+        Jenkins.getInstance().getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob).each { job ->
+            if (job.displayName == jobName) {
+                currentJob = job
+            }
+        }
+        return currentJob
     }
 
     static String getFailureSubject(cause, jobName, env, buildNumber){
@@ -192,6 +210,20 @@ public class Executor {
             }
         }
         return isUpdated
+    }
+
+    static def isLabelApplied(build, label) {
+        boolean isApplied = false
+        GhprbCause c = Ghprb.getCause(build)
+        GhprbTrigger trigger = Ghprb.extractTrigger(build)
+        GhprbPullRequest ghprbPullRequest = trigger.getRepository().getPullRequest(c.getPullID())
+        for(ghLabel in ghprbPullRequest.getPullRequest().getLabels()) {
+            if(ghLabel.getName() == label){
+                isApplied = true
+                break
+            }
+        }
+        return isApplied
     }
 
     @NonCPS
