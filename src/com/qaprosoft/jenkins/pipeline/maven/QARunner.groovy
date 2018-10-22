@@ -21,6 +21,7 @@ import hudson.plugins.sonar.SonarGlobalConfiguration
 
 public class QARunner extends AbstractRunner {
 
+    def DEFAULT_LOG_LEVEL = Configuration.get(Configuration.Parameter.LOG_LEVEL)
     protected Map dslObjects = [:]
     protected static final String zafiraReport = "ZafiraReport"
     protected def pipelineLibrary = "QPS-Pipeline"
