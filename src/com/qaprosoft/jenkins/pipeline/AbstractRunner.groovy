@@ -26,13 +26,14 @@ public abstract class AbstractRunner {
 	abstract public void onPullRequest()
 
 	protected void printStackTrace(Exception e) {
-		context.println("exception: " + e.getMessage())
-		context.println("exception class: " + e.getClass().getName())
+//		context.println("exception: " + e.getMessage())
+//		context.println("exception class: " + e.getClass().getName())
 //		context.println("stacktrace: " + Arrays.toString(e.getStackTrace()))
-        def stringStacktrace = "stacktrace:"
+
+        context.println "${e.getClass().getName()}: ${e.getMessage()}" + stringStacktrace
         e.getStackTrace().each { traceLine ->
-            stringStacktrace = stringStacktrace + "\n${traceLine}"
+            context.println
+            "\tat " + traceLine
         }
-        context.println stringStacktrace
 	}
 }
