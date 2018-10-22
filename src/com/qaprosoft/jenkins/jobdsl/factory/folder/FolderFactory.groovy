@@ -16,7 +16,7 @@ public class FolderFactory extends DslFactory {
 
     def create() {
 		//TODO: add support for multi-level sub-folders
-        return _dslFactory.folder(getFullName())
+        return _dslFactory.folder()
     }
 
 }

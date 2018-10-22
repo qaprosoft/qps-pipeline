@@ -19,6 +19,10 @@ factories.each{
 		//println "factory after load: " + factory.dump()
 		factory.create()
 	} catch (Exception e) {
-		println e.dump()
+		def stringStacktrace = ""
+		e.getStackTrace().each { traceLine ->
+			stringStacktrace = stringStacktrace + "\tat " + traceLine + "\n"
+		}
+		println "${e.getClass().getName()}: ${e.getMessage()}\n" + stringStacktrace
 	}
 }
