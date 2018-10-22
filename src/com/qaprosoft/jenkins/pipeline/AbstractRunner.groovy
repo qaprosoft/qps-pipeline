@@ -29,10 +29,11 @@ public abstract class AbstractRunner {
 //		context.println("exception: " + e.getMessage())
 //		context.println("exception class: " + e.getClass().getName())
 //		context.println("stacktrace: " + Arrays.toString(e.getStackTrace()))
-
-        context.println "${e.getClass().getName()}: ${e.getMessage()}"
+        def stringStacktrace = ""
         e.getStackTrace().each { traceLine ->
-            context.println "\tat " + traceLine
+            stringStacktrace = stringStacktrace + "\tat " + traceLine + "\n"
         }
+        context.println "${e.getClass().getName()}: ${e.getMessage()}\n" + stringStacktrace
+
 	}
 }
