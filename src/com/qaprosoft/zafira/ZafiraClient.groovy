@@ -211,9 +211,11 @@ class ZafiraClient {
 		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
 	}
 	
-	protected void printStackTrace(Exception ex) {
-		context.println("exception: " + ex.getMessage())
-		context.println("exception class: " + ex.getClass().getName())
-		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
-	}
+	protected void printStackTrace(Exception e) {
+        def stringStacktrace = ""
+        e.getStackTrace().each { traceLine ->
+            stringStacktrace = stringStacktrace + "\tat " + traceLine + "\n"
+        }
+        context.println "${e.getClass().getName()}: ${e.getMessage()}\n" + stringStacktrace
+    }
 }
