@@ -104,7 +104,7 @@ public class TestJobFactory extends PipelineFactory {
 						configure addHiddenParameter('browser_version', '', '*')
 						configure addHiddenParameter('os', '', 'NULL')
 						configure addHiddenParameter('os_version', '', '*')
-						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+						booleanParam('auto_screenshot', 1, 'Generate screenshots automatically during the test')
 						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('platform', '', '*')
 						break;

@@ -1,5 +1,6 @@
 package com.qaprosoft.selenium.grid
 
+import com.qaprosoft.jenkins.Utils
 import groovy.json.JsonSlurper;
 
 class ProxyInfo {
@@ -29,11 +30,7 @@ class ProxyInfo {
                 platformDeviceListMap.put(platform.toLowerCase(), deviceList)
             }
         } catch (Exception e) {
-            def stringStacktrace = ""
-            e.getStackTrace().each { traceLine ->
-                stringStacktrace = stringStacktrace + "\tat " + traceLine + "\n"
-            }
-            dslFactory.println "${e.getClass().getName()}: ${e.getMessage()}\n" + stringStacktrace
+            dslFactory.println Utils.formatStackTrace(e)
         }
         return baseDeviceList + deviceList.sort()
     }
