@@ -183,17 +183,17 @@ class ZafiraClient {
 		return response.content
 	}
 
-	/** Sends httpRequest using passed parameters */
-	protected def sendRequest(requestParams) {
-		def response = null
-		/** Catches exceptions in every http call */
-		try {
-			response = context.httpRequest requestParams
-		} catch (Exception e) {
+    /** Sends httpRequest using passed parameters */
+    protected def sendRequest(requestParams) {
+        def response = null
+        /** Catches exceptions in every http call */
+        try {
+            response = context.httpRequest requestParams
+        } catch (Exception e) {
             context.println Utils.printStackTrace(e)
-		}
-		return response
-	}
+        }
+        return response
+    }
 
 	protected boolean isTokenExpired() {
 		return authToken == null || System.currentTimeMillis() > tokenExpTime
