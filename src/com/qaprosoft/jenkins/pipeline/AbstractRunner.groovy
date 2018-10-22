@@ -26,7 +26,7 @@ public abstract class AbstractRunner {
 	abstract public void onPullRequest()
 
 	protected void printStackTrace(Exception e) {
-        context.println formatStackTrace(e)
+        context.println Executor.formatStackTrace(e)
 	}
 
 }
