@@ -1,9 +1,8 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
-import com.qaprosoft.jenkins.Utils
 @Grab('org.testng:testng:6.8.8')
 import com.qaprosoft.jenkins.pipeline.Executor
-
+import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 import com.qaprosoft.zafira.ZafiraClient
 import org.testng.xml.XmlSuite
