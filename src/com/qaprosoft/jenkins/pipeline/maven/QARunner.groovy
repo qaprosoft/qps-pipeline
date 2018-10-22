@@ -91,6 +91,8 @@ public class QARunner extends AbstractRunner {
 
     public def findSuits(){
         List suits = new ArrayList()
+        def workspace = getWorkspace()
+        def jenkinsFile = ".jenkinsfile.json"
         Object subProjects = Executor.parseJSON("${workspace}/${jenkinsFile}").sub_projects
         context.println "PARSED: " + subProjects
         subProjects.each {
