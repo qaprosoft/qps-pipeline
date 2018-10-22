@@ -190,7 +190,7 @@ class ZafiraClient {
 		try {
 			response = context.httpRequest requestParams
 		} catch (Exception e) {
-            context.println Utils.formatStackTrace(e)
+            context.println Utils.printStackTrace(e)
 		}
 		return response
 	}
