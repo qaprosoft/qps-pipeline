@@ -29,6 +29,7 @@ public class TestJobFactory extends PipelineFactory {
 
 	def create() {
         def logLevel = _dslFactory.binding.variables.LOG_LEVEL
+        _dslFactory.println "LOG_LEVEL" + logLevel
         _dslFactory.println Logger.info (logLevel,"TestJobFactory->create")
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
