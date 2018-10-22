@@ -32,8 +32,7 @@ public abstract class AbstractRunner {
 
         context.println "${e.getClass().getName()}: ${e.getMessage()}"
         e.getStackTrace().each { traceLine ->
-            context.println
-            "\tat " + traceLine
+            context.println "\tat " + traceLine
         }
 	}
 }
