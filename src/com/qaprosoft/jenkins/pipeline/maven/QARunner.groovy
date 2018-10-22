@@ -90,14 +90,24 @@ public class QARunner extends AbstractRunner {
     }
 
     public def findSuits(){
-        def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
         List suits = new ArrayList()
-        for (File suite : suites) {
-            if (!suite.path.endsWith(".xml")) {
-                continue
+        Object subProjects = Executor.parseJSON("${workspace}/${jenkinsFile}").sub_projects
+        context.println "PARSED: " + subProjects
+        subProjects.each {
+            def sub_project = it.name
+            def subProjectFilter = it.name
+            if (sub_project.equals(".")) {
+                subProjectFilter = "**"
             }
-            suits.add(suite.path)
-            context.println "SUIRE: " + suite.path
+            def suiteFilter = it.suite_filter
+            def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
+            for (File suite : suites) {
+                if (!suite.path.endsWith(".xml")) {
+                    continue
+                }
+                suits.add(suite.path)
+                context.println "SUITE: " + suite.path
+            }
         }
         return suits
     }
