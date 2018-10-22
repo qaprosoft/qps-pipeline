@@ -29,6 +29,7 @@ public abstract class AbstractRunner {
 		context.println("exception: " + e.getMessage())
 		context.println("exception class: " + e.getClass().getName())
 //		context.println("stacktrace: " + Arrays.toString(e.getStackTrace()))
+        context.println e.getStackTrace().dump()
 		context.println("stacktrace: " + e.getStackTrace())
 	}
 }
