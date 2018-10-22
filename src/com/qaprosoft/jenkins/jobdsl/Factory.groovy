@@ -22,5 +22,6 @@ factories.each{
 		factory.create()
 	} catch (Exception e) {
 		println Utils.printStackTrace(e)
+        throw new RuntimeException("JobDSL Exception")
 	}
 }
