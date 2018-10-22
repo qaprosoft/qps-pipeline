@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
+import com.qaprosoft.jenkins.Logger
 @Grab('org.testng:testng:6.8.8')
 import com.qaprosoft.jenkins.pipeline.Executor
 import com.qaprosoft.jenkins.Utils
@@ -21,7 +22,7 @@ import hudson.plugins.sonar.SonarGlobalConfiguration
 
 public class QARunner extends AbstractRunner {
 
-    def DEFAULT_LOG_LEVEL = Configuration.get(Configuration.Parameter.LOG_LEVEL)
+    protected def logLevel = Configuration.get(Configuration.Parameter.LOG_LEVEL)
     protected Map dslObjects = [:]
     protected static final String zafiraReport = "ZafiraReport"
     protected def pipelineLibrary = "QPS-Pipeline"
@@ -61,7 +62,7 @@ public class QARunner extends AbstractRunner {
 
     //Methods
     public void build() {
-        context.println("QARunner->build")
+        context.println Logger.info(logLevel,"QARunner->build")
         if (jobType.equals(JobType.JOB)) {
             runJob()
         }
