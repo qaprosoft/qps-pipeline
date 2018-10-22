@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.jobdsl
 
+import com.qaprosoft.jenkins.pipeline.Executor
+
 // groovy script for initialization and execution all kind of jobdsl factories which are transfered from pipeline scanner script
 
 import groovy.json.*
@@ -19,10 +21,6 @@ factories.each{
 		//println "factory after load: " + factory.dump()
 		factory.create()
 	} catch (Exception e) {
-		def stringStacktrace = ""
-		e.getStackTrace().each { traceLine ->
-			stringStacktrace = stringStacktrace + "\tat " + traceLine + "\n"
-		}
-		println "${e.getClass().getName()}: ${e.getMessage()}\n" + stringStacktrace
+		println Executor.formatStackTrace(e)
 	}
 }
