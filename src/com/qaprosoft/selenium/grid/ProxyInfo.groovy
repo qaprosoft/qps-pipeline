@@ -30,7 +30,7 @@ class ProxyInfo {
                 platformDeviceListMap.put(platform.toLowerCase(), deviceList)
             }
         } catch (Exception e) {
-            dslFactory.println Utils.formatStackTrace(e)
+            dslFactory.println Utils.printStackTrace(e)
         }
         return baseDeviceList + deviceList.sort()
     }
