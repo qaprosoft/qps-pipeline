@@ -216,5 +216,4 @@ class ZafiraClient {
 		context.println("exception class: " + ex.getClass().getName())
 		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
 	}
-
 }
