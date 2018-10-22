@@ -30,7 +30,7 @@ public abstract class AbstractRunner {
 //		context.println("exception class: " + e.getClass().getName())
 //		context.println("stacktrace: " + Arrays.toString(e.getStackTrace()))
 
-        context.println "${e.getClass().getName()}: ${e.getMessage()}" + stringStacktrace
+        context.println "${e.getClass().getName()}: ${e.getMessage()}"
         e.getStackTrace().each { traceLine ->
             context.println
             "\tat " + traceLine
