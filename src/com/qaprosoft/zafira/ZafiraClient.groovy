@@ -188,8 +188,8 @@ class ZafiraClient {
 		/** Catches exceptions in every http call */
 		try {
 			response = context.httpRequest requestParams
-		} catch (Exception ex) {
-			printStackTrace(ex)
+		} catch (Exception e) {
+			printStackTrace(e)
 		}
 		return response
 	}
