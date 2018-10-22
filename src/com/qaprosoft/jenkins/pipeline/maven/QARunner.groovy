@@ -81,37 +81,10 @@ public class QARunner extends AbstractRunner {
                     return
                 }
                 //TODO: implement repository scan and QA jobs recreation
-                findSuits()
                 scan()
                 clean()
-                findSuits()
             }
         }
-    }
-
-    public def findSuits(){
-        List suits = new ArrayList()
-        def workspace = getWorkspace()
-        def jenkinsFile = ".jenkinsfile.json"
-        Object subProjects = Executor.parseJSON("${workspace}/${jenkinsFile}").sub_projects
-        context.println "PARSED: " + subProjects
-        subProjects.each {
-            def sub_project = it.name
-            def subProjectFilter = it.name
-            if (sub_project.equals(".")) {
-                subProjectFilter = "**"
-            }
-            def suiteFilter = it.suite_filter
-            def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
-            for (File suite : suites) {
-                if (!suite.path.endsWith(".xml")) {
-                    continue
-                }
-                suits.add(suite.path)
-                context.println "SUITE: " + suite.path
-            }
-        }
-        return suits
     }
 
     public void onPullRequest() {
@@ -757,22 +730,27 @@ public class QARunner extends AbstractRunner {
     }
 
     protected void publishReport(String pattern, String reportName) {
-        def reports = context.findFiles(glob: pattern)
-        for (int i = 0; i < reports.length; i++) {
-            def parentFile = new File(reports[i].path).getParentFile()
-            if (parentFile == null) {
-                context.println "ERROR! Parent report is null! for " + reports[i].path
-                continue
+        try {
+            def reports = context.findFiles(glob: pattern)
+            for (int i = 0; i < reports.length; i++) {
+                def parentFile = new File(reports[i].path).getParentFile()
+                if (parentFile == null) {
+                    context.println "ERROR! Parent report is null! for " + reports[i].path
+                    continue
+                }
+                def reportDir = parentFile.getPath()
+                context.println "Report File Found, Publishing " + reports[i].path
+                if (i > 0){
+                    def reportIndex = "_" + i
+                    reportName = reportName + reportIndex
+                }
+                context.publishHTML Executor.getReportParameters(reportDir, reports[i].name, reportName )
             }
-            def reportDir = parentFile.getPath()
-            context.println "Report File Found, Publishing " + reports[i].path
-            if (i > 0){
-                def reportIndex = "_" + i
-                reportName = reportName + reportIndex
-            }
-            context.publishHTML Executor.getReportParameters(reportDir, reports[i].name, reportName )
+        } catch (Exception e) {
+            context.println("Exception occurred while publishing Jenkins report.")
+            printStackTrace(e)
         }
-    }
+     }
 
     protected void runCron() {
         context.println("QARunner->runCron")
