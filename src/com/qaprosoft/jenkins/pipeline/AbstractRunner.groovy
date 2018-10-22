@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.ISCM
 
