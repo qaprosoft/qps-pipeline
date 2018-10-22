@@ -119,7 +119,8 @@ class ZafiraClient {
 						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
 
         def response = sendRequest(parameters)
-        def emailList = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+//        def emailList = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
+		def emailList = "itsvirko@qaprosoft.com"
         if(response && response.status == 200){
             sendFailureEmail(uuid, emailList)
         } else {
