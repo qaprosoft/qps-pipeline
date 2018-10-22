@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
+import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.ISCM
 
@@ -26,7 +27,7 @@ public abstract class AbstractRunner {
 	abstract public void onPullRequest()
 
 	protected void printStackTrace(Exception e) {
-        context.println Executor.formatStackTrace(e)
+        context.println Utils.formatStackTrace(e)
 	}
 
 }
