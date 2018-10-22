@@ -1,5 +1,6 @@
 package com.qaprosoft.zafira
 
+import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Executor
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -189,7 +190,7 @@ class ZafiraClient {
 		try {
 			response = context.httpRequest requestParams
 		} catch (Exception e) {
-			printStackTrace(e)
+            context.println Utils.formatStackTrace(e)
 		}
 		return response
 	}
@@ -210,12 +211,4 @@ class ZafiraClient {
 		authToken = properties.get("type") + " " + properties.get("accessToken")
 		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
 	}
-	
-	protected void printStackTrace(Exception e) {
-        def stringStacktrace = ""
-        e.getStackTrace().each { traceLine ->
-            stringStacktrace = stringStacktrace + "\tat " + traceLine + "\n"
-        }
-        context.println "${e.getClass().getName()}: ${e.getMessage()}\n" + stringStacktrace
-    }
 }

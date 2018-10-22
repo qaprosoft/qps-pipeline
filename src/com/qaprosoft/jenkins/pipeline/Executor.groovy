@@ -69,14 +69,6 @@ public class Executor {
         return content
     }
 
-    static def formatStackTrace(Exception e) {
-        def stringStacktrace = ""
-        e.getStackTrace().each { traceLine ->
-            stringStacktrace = stringStacktrace + "\tat " + traceLine + "\n"
-        }
-        return "${e.getClass().getName()}: ${e.getMessage()}\n" + stringStacktrace
-    }
-
     static XmlSuite parseSuite(String path) {
         def xmlFile = new Parser(path)
         xmlFile.setLoadClasses(false)
