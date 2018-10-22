@@ -81,10 +81,25 @@ public class QARunner extends AbstractRunner {
                     return
                 }
                 //TODO: implement repository scan and QA jobs recreation
+                findSuits()
                 scan()
                 clean()
+                findSuits()
             }
         }
+    }
+
+    public def findSuits(){
+        def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
+        List suits = new ArrayList()
+        for (File suite : suites) {
+            if (!suite.path.endsWith(".xml")) {
+                continue
+            }
+            suits.add(suite.path)
+            context.println "SUIRE: " + suite.path
+        }
+        return suits
     }
 
     public void onPullRequest() {
