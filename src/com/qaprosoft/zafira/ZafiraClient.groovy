@@ -127,7 +127,7 @@ class ZafiraClient {
             //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
             def body = bodyHeader + """<br>
                        Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
-                  ZafiraReport: ${jobBuildUrl}/"ZafiraReport"<br>
+                  ZafiraReport: ${jobBuildUrl}/ZafiraReport<br>
 		               Console: ${jobBuildUrl}/console<br>${failureLog.replace("\n", "<br>")}"""
             context.emailext Executor.getEmailParams(body, subject, emailList)
         }
