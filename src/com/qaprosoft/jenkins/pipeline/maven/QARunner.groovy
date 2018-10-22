@@ -303,10 +303,10 @@ public class QARunner extends AbstractRunner {
 
                     } catch (FileNotFoundException e) {
                         context.println("ERROR! Unable to find suite: " + suite.path)
-                        Utils.printStackTrace(e)
+                        context.println Utils.printStackTrace(e)
                     } catch (Exception e) {
                         context.println("ERROR! Unable to parse suite: " + suite.path)
-                        Utils.printStackTrace(e)
+                        context.println Utils.printStackTrace(e)
                     }
 
                 }
@@ -393,7 +393,7 @@ public class QARunner extends AbstractRunner {
                         publishJacocoReport()
                     }
                 } catch (Exception e) {
-                    Utils.printStackTrace(e)
+                    context.println Utils.printStackTrace(e)
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
@@ -749,7 +749,7 @@ public class QARunner extends AbstractRunner {
             }
         } catch (Exception e) {
             context.println("Exception occurred while publishing Jenkins report.")
-            Utils.printStackTrace(e)
+            context.println Utils.printStackTrace(e)
         }
      }
 
@@ -806,11 +806,11 @@ public class QARunner extends AbstractRunner {
             currentSuite = Executor.parseSuite(filePath)
         } catch (FileNotFoundException e) {
             context.println("ERROR! Unable to find suite: " + filePath)
-            Utils.printStackTrace(e)
+            context.println Utils.printStackTrace(e)
             return
         } catch (Exception e) {
             context.println("ERROR! Unable to parse suite: " + filePath)
-            Utils.printStackTrace(e)
+            context.println Utils.printStackTrace(e)
             return
         }
 
@@ -1035,7 +1035,7 @@ public class QARunner extends AbstractRunner {
                         parameters: jobParams,
                         wait: waitJob
             } catch (Exception e) {
-                Utils.printStackTrace(e)
+                context.println Utils.printStackTrace(e)
                 def body = "Unable to start job via cron! " + e.getMessage()
                 def subject = "JOBSTART FAILURE: " + entry.get("jobName")
                 def to = entry.get("email_list") + "," + Configuration.get("email_list")
