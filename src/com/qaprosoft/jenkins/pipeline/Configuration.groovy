@@ -1,21 +1,21 @@
 package com.qaprosoft.jenkins.pipeline
 
+import com.qaprosoft.jenkins.Logger
+
 public class Configuration {
 
 	private def context
-
+	private def logLevel
 	private final static def mustOverride = "{must_override}"
-
 	//list of CI job params as a map
 	protected static Map params = [:]
 	//list of required goals vars which must present in command line obligatory
 	protected static Map vars = [:]
 
-
 	public Configuration(context) {
 		this.context = context
 		this.loadContext()
-
+		this.logLevel = Parameter.PIPELINE_LOG_LEVEL
 	}
 
 	@NonCPS
@@ -132,7 +132,7 @@ public class Configuration {
 		}
 
 		for (var in vars) {
-			context.println(var)
+            context.printf Logger.info(logLevel,"${var}")
 		}
 
 		// 2. Load all job parameters into unmodifiable map
@@ -144,7 +144,7 @@ public class Configuration {
 		}
 
 		for (param in params) {
-			context.println(param)
+            context.printf Logger.info(logLevel,"${param}")
 		}
 
 		//3. TODO: investigate how private pipeline can override those values
