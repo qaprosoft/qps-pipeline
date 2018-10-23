@@ -9,13 +9,14 @@ public abstract class AbstractRunner {
 
 	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
+    protected def logLevel
 
-	
 	//this is very important line which should be declared only as a class member!
 	protected Configuration configuration = new Configuration(context)
 	
 	public AbstractRunner(context) {
 		this.context = context
+        this.logLevel = Configuration.get(Configuration.Parameter.PIPELINE_LOG_LEVEL)
 	}
 
 	//Methods
