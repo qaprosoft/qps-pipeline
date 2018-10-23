@@ -44,15 +44,15 @@ public class DslFactory {
 	
 	// dynamically load properties from map to members
 	public load(args) {
-		_dslFactory.printf Logger.info(logLevel,"Loaded factory:")
+		_dslFactory.printf Logger.info(logLevel,"FactoryProperties:")
 		args.each {
             _dslFactory.printf Logger.info(logLevel,"${it.key}:${it.value}")
 			if (it.value != null) {
 				this."${it.key}" = it.value
 			}
 		}
-		
-	}
+        _dslFactory.printf Logger.info(logLevel,"")
+    }
 	
 	
 	public setClass(_clazz) {
