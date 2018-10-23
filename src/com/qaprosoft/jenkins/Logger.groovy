@@ -7,7 +7,7 @@ class Logger {
     public static def debug(logLevel, String message){
         def logMessage = ""
         if(LEVEL_MAP.get(logLevel) < 2){
-            logMessage = message
+            logMessage = "${message}\n"
         }
         return logMessage
     }
@@ -15,7 +15,7 @@ class Logger {
     public static def info(logLevel, String message){
         def logMessage = ""
         if(LEVEL_MAP.get(logLevel) < 3){
-            logMessage = message
+            logMessage = "${message}\n"
         }
         return logMessage
     }
@@ -23,13 +23,13 @@ class Logger {
     public static def warn(logLevel, String message){
         def logMessage = ""
         if(LEVEL_MAP.get(logLevel) < 4){
-            logMessage = message
+            logMessage = "${message}\n"
         }
         return logMessage
     }
 
     public static def error(message){
-        return message
+        return "${message}\n"
     }
 
 }
