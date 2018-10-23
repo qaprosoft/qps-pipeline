@@ -44,7 +44,7 @@ public class DslFactory {
 	
 	// dynamically load properties from map to members
 	public load(args) {
-		_dslFactory.printf Logger.info(logLevel,"FactoryLoaded: ${args.dump()}")
+		_dslFactory.printf Logger.debug(logLevel,"FactoryProperties: ${args.dump()}")
 		args.each {
 			if (it.value != null) {
 				this."${it.key}" = it.value
