@@ -15,6 +15,7 @@ public class TestJobFactory extends PipelineFactory {
 	def zafira_project
 	def suitePath
 	def suiteName
+    def logLevel
 
 	public TestJobFactory(folder, pipelineScript, project, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
 		this.folder = folder
@@ -25,11 +26,10 @@ public class TestJobFactory extends PipelineFactory {
 		this.zafira_project = zafira_project
 		this.suitePath = suitePath
 		this.suiteName = suiteName
+        logLevel = _dslFactory.binding.variables.PIPELINE_LOG_LEVEL
 	}
 
 	def create() {
-        def logLevel = _dslFactory.binding.variables.LOG_LEVEL
-        _dslFactory.println "LOG_LEVEL" + logLevel
         _dslFactory.println Logger.info (logLevel,"TestJobFactory->create")
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
