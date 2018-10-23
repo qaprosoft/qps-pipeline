@@ -16,8 +16,10 @@ factories.each{
 	try {
 		def factory = Class.forName(it.value.clazz)?.newInstance(this)
         printf Logger.info(logLevel, "Factory before load: ${it.value.dump()}")
+        println "111"
 		factory.load(it.value)
         printf Logger.info(logLevel, "Factory after load: ${factory.dump()}")
+        println "222"
 		factory.create()
 	} catch (Exception e) {
 		println Utils.printStackTrace(e)
