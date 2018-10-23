@@ -12,16 +12,29 @@ def slurper = new JsonSlurper()
 String factoryDataMap = readFileFromWorkspace("factories.json")
 printf Logger.info(logLevel,"FactoryDataMap: ${JsonOutput.prettyPrint(factoryDataMap)}")
 def factories = new HashMap(slurper.parseText(factoryDataMap))
-factories.each{
-	try {
-		def factory = Class.forName(it.value.clazz)?.newInstance(this)
+for(it in factories){
+    try {
+        def factory = Class.forName(it.value.clazz)?.newInstance(this)
         printf "ttttt"
         println Logger.info(logLevel, "Factory before load: ${it.value.dump()}")
-		factory.load(it.value)
+        factory.load(it.value)
         println Logger.info(logLevel, "Factory after load: ${factory.dump()}")
-		factory.create()
-	} catch (Exception e) {
-		println Utils.printStackTrace(e)
+        factory.create()
+    } catch (Exception e) {
+        println Utils.printStackTrace(e)
         throw new RuntimeException("JobDSL Exception")
-	}
+    }
 }
+//factories.each{
+//	try {
+//		def factory = Class.forName(it.value.clazz)?.newInstance(this)
+//        printf "ttttt"
+//        println Logger.info(logLevel, "Factory before load: ${it.value.dump()}")
+//		factory.load(it.value)
+//        println Logger.info(logLevel, "Factory after load: ${factory.dump()}")
+//		factory.create()
+//	} catch (Exception e) {
+//		println Utils.printStackTrace(e)
+//        throw new RuntimeException("JobDSL Exception")
+//	}
+//}
