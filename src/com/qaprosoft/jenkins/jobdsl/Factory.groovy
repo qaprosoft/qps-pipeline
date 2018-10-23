@@ -6,6 +6,7 @@ import com.qaprosoft.jenkins.Utils
 
 import groovy.json.*
 
+println "LGLVL: " + binding.variables.PIPELINE_LOG_LEVEL
 def slurper = new JsonSlurper()
 
 String factoryDataMap = readFileFromWorkspace("factories.json")
