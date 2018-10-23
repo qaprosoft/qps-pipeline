@@ -46,8 +46,7 @@ public class DslFactory {
 	public load(args) {
 		_dslFactory.printf Logger.info(logLevel,"loads: ${args.dump()}")
 		args.each {
-            _dslFactory.printf Logger.info(logLevel,"it.key: ${it.key}")
-            _dslFactory.printf Logger.info(logLevel,"it.value: ${it.value}")
+            _dslFactory.printf Logger.info(logLevel,"key: ${it.key}; value: ${it.value}")
 			if (it.value != null) {
 				this."${it.key}" = it.value
 			}
