@@ -342,11 +342,11 @@ public class QARunner extends AbstractRunner {
         return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
     }
 
-    protected void registerObject(name, object) {
+    private void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
-            context.println("WARNING! key '" + name + "' already defined and will be replaced!")
-            context.println("old item: " + dslObjects.get(name).dump())
-            context.println("new item: " + object.dump())
+            context.printf Logger.warn(logLevel,"WARNING! key ${name} already defined and will be replaced!")
+            context.printf Logger.info(logLevel,"Old Item: ${dslObjects.get(name).dump()}")
+            context.printf Logger.info(logLevel,"New Item: ${object.dump()}")
         }
         dslObjects.put(name, object)
     }
