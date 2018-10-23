@@ -16,14 +16,12 @@ public class DslFactory {
         this._dslFactory = dslFactory
 		this.clazz = this.getClass().getCanonicalName()
         this.logLevel = _dslFactory.binding.variables.PIPELINE_LOG_LEVEL
-
     }
 	
 	DslFactory() {
 		this._dslFactory = null
 		this.clazz = this.getClass().getCanonicalName()
 	}
-
 
 	DslFactory(folder, name, description) {
 		this.folder = folder
