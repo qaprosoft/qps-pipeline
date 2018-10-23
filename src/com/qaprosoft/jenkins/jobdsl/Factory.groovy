@@ -20,7 +20,7 @@ for(it in factories){
         printf Logger.info(logLevel, "Factory after load: ${factory.dump()}")
         factory.create()
     } catch (Exception e) {
-        println Utils.printStackTrace(e)
+        printf Logger.error(logLevel, Utils.printStackTrace(e))
         throw new RuntimeException("JobDSL Exception")
     }
 }

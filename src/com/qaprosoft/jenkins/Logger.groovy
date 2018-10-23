@@ -28,7 +28,7 @@ class Logger {
         return logMessage
     }
 
-    public static def error(message){
+    public static def error(logLevel, message){
         return "${message}\n"
     }
 
