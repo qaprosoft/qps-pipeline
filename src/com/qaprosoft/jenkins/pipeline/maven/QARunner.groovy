@@ -61,7 +61,7 @@ public class QARunner extends AbstractRunner {
 
     //Methods
     public void build() {
-        context.println Logger.info(logLevel,"QARunner->build")
+        context.println Logger.debug(logLevel,"QARunner->build")
         if (jobType.equals(JobType.JOB)) {
             runJob()
         }
