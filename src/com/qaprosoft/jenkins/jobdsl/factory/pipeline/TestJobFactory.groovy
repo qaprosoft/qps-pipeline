@@ -26,7 +26,7 @@ public class TestJobFactory extends PipelineFactory {
 		this.zafira_project = zafira_project
 		this.suitePath = suitePath
 		this.suiteName = suiteName
-        logLevel = _dslFactory.binding.variables.PIPELINE_LOG_LEVEL
+        logLevel = super._dslFactory.binding.variables.PIPELINE_LOG_LEVEL
 	}
 
 	def create() {
