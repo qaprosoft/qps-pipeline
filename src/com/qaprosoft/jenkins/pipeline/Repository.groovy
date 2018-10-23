@@ -139,9 +139,9 @@ class Repository {
 
 	private void registerObject(name, object) {
 		if (dslObjects.containsKey(name)) {
-            context.println Logger.warn(logLevel,"WARNING! key ${name} already defined and will be replaced!")
-            context.println Logger.info(logLevel,"Old Item: ${dslObjects.get(name).dump()}")
-            context.println Logger.info(logLevel,"New Item: ${object.dump()}")
+            context.print Logger.warn(logLevel,"WARNING! key ${name} already defined and will be replaced!")
+            context.print Logger.info(logLevel,"Old Item: ${dslObjects.get(name).dump()}")
+            context.print Logger.info(logLevel,"New Item: ${object.dump()}")
 		}
 		dslObjects.put(name, object)
 	}
