@@ -37,7 +37,7 @@ public class TestJobFactory extends PipelineFactory {
 		XmlSuite currentSuite = suiteXml.get(0)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
-		_dslFactory.printf Logger.info(logLevel,"Jenkins Job Name: ${name}")
+		_dslFactory.printf Logger.info(logLevel,"JenkinsJobName: ${name}")
 
 		def pipelineJob = super.create()
 		pipelineJob.with {
@@ -92,7 +92,7 @@ public class TestJobFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-                _dslFactory.printf Logger.info(logLevel,"Job Type: ${jobType}")
+                _dslFactory.printf Logger.info(logLevel,"JobType: ${jobType}")
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -191,7 +191,7 @@ public class TestJobFactory extends PipelineFactory {
 
 				def paramsMap = [:]
 				paramsMap = currentSuite.getAllParameters()
-                _dslFactory.printf Logger.info(logLevel,"Parameters Map: ${paramsMap}")
+                _dslFactory.printf Logger.info(logLevel,"ParametersMap: ${paramsMap}")
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
