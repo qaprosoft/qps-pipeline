@@ -137,7 +137,6 @@ class Repository {
 		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
 	}
 
-
 	private void registerObject(name, object) {
 		if (dslObjects.containsKey(name)) {
             context.printf Logger.warn(logLevel,"WARNING! key ${name} already defined and will be replaced!")
