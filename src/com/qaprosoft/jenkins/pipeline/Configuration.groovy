@@ -15,7 +15,7 @@ public class Configuration {
 	public Configuration(context) {
 		this.context = context
 		this.loadContext()
-		this.logLevel = Parameter.PIPELINE_LOG_LEVEL.getValue()
+//		this.logLevel = Parameter.PIPELINE_LOG_LEVEL.getValue()
 	}
 
 	@NonCPS
