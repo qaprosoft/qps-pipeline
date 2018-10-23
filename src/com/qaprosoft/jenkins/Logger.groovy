@@ -5,7 +5,7 @@ class Logger {
     private static final LEVEL_MAP = ["DEBUG": 1, "INFO": 2, "WARN": 3, "ERROR": 4]
 
     public static def debug(logLevel, String message){
-        def logMessage = ""
+        def logMessage = null
         if(LEVEL_MAP.get(logLevel) < 2){
             logMessage = message
         }
