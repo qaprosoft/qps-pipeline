@@ -15,9 +15,9 @@ def factories = new HashMap(slurper.parseText(factoryDataMap))
 for(it in factories){
     try {
         def factory = Class.forName(it.value.clazz)?.newInstance(this)
-        printf Logger.info(logLevel, "Factory before load: ${it.value.dump()}")
+        printf Logger.debug(logLevel, "Factory before load: ${it.value.dump()}")
         factory.load(it.value)
-        printf Logger.info(logLevel, "Factory after load: ${factory.dump()}")
+        printf Logger.debug(logLevel, "Factory after load: ${factory.dump()}")
         factory.create()
     } catch (Exception e) {
         printf Logger.error(logLevel, Utils.printStackTrace(e))
