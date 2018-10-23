@@ -8,6 +8,8 @@ class Logger {
         def logMessage = null
         if(LEVEL_MAP.get(logLevel) < 2){
             logMessage = message
+        } else {
+            return
         }
         return logMessage
     }
