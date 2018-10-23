@@ -132,7 +132,7 @@ public class Configuration {
 		}
 
 		for (var in vars) {
-			context.printf("${var}\n")
+			context.println(var)
 		}
 
 		// 2. Load all job parameters into unmodifiable map
