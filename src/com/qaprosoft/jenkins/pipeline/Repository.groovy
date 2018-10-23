@@ -140,8 +140,8 @@ class Repository {
 	private void registerObject(name, object) {
 		if (dslObjects.containsKey(name)) {
             context.printf Logger.warn(logLevel,"WARNING! key ${name} already defined and will be replaced!")
-            context.printf Logger.info(logLevel,"Old Item: ${dslObjects.get(name).dump()}")
-            context.printf Logger.info(logLevel,"New Item: ${object.dump()}")
+            context.printf Logger.debug(logLevel,"Old Item: ${dslObjects.get(name).dump()}")
+            context.printf Logger.debug(logLevel,"New Item: ${object.dump()}")
 		}
 		dslObjects.put(name, object)
 	}
