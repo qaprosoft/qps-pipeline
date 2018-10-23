@@ -1,14 +1,9 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
 import com.qaprosoft.jenkins.Logger
-@Grab('org.testng:testng:6.8.8')
-import com.qaprosoft.jenkins.pipeline.Executor
 import com.qaprosoft.jenkins.Utils
+import com.qaprosoft.jenkins.pipeline.Executor
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
-import com.qaprosoft.zafira.ZafiraClient
-import org.testng.xml.XmlSuite
-import groovy.json.JsonOutput
-
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
@@ -16,9 +11,12 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.scm.github.GitHub
-
-
+import com.qaprosoft.zafira.ZafiraClient
+import org.testng.xml.XmlSuite
+import groovy.json.JsonOutput
 import hudson.plugins.sonar.SonarGlobalConfiguration
+
+@Grab('org.testng:testng:6.8.8')
 
 public class QARunner extends AbstractRunner {
 
