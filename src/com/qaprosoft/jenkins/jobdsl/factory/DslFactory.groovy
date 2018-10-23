@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.jobdsl.factory
 
+import com.qaprosoft.jenkins.Logger
+
 public class DslFactory {
 	def folder
 	def name
@@ -42,10 +44,10 @@ public class DslFactory {
 	
 	// dynamically load properties from map to members
 	public load(args) {
-		//_dslFactory.println("loads: " + args.dump())
-		args.each{
-			//_dslFactory.println("it.key: " + it.key)
-			//_dslFactory.println("it.value: " + it.value)
+		_dslFactory.printf Logger.info(logLevel,"loads: ${args.dump()}")
+		args.each {
+            _dslFactory.printf Logger.info(logLevel,"it.key: ${it.key}")
+            _dslFactory.printf Logger.info(logLevel,"it.value: ${it.value}")
 			if (it.value != null) {
 				this."${it.key}" = it.value
 			}
