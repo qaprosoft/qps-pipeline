@@ -197,7 +197,7 @@ public class TestJobFactory extends PipelineFactory {
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
 
-                    _dslFactory.printf Logger.debug(logLevel,"Parameter: ${param}")
+                    _dslFactory.printf Logger.info(logLevel,"Parameter: ${param}")
 					def delimiter = "::"
 					if (param.key.contains(delimiter)) {
 						def (type, name, desc) = param.key.split(delimiter)
