@@ -4,14 +4,17 @@ public class DslFactory {
 	def folder
 	def name
 	def description
-	
+
     def _dslFactory
 	def clazz
+	def logLevel
 
 	// ATTENTION! this is very important constructor. Please do not override on children level constructor with single argument
     DslFactory(dslFactory) {
         this._dslFactory = dslFactory
 		this.clazz = this.getClass().getCanonicalName()
+        this.logLevel = _dslFactory.binding.variables.PIPELINE_LOG_LEVEL
+
     }
 	
 	DslFactory() {
