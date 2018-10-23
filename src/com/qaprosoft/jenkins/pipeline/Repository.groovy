@@ -1,22 +1,22 @@
 package com.qaprosoft.jenkins.pipeline
 
-import groovy.json.JsonOutput
+import com.qaprosoft.jenkins.Logger
 
-import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.ISCM
-import com.qaprosoft.scm.github.GitHub;
-
+import com.qaprosoft.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
-
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
-
-//import hudson.FilePath
+import groovy.json.JsonOutput
 
 class Repository {
+
 	def context
 	protected ISCM scmClient
+	protected def logLevel
+
 	protected Configuration configuration = new Configuration(context)
 
 	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
@@ -26,13 +26,13 @@ class Repository {
 
 	public Repository(context) {
 		this.context = context
-
 		//TODO: howto register repository not at github?
 		scmClient = new GitHub(context)
+        logLevel = Configuration.get(Configuration.Parameter.PIPELINE_LOG_LEVEL)
 	}
 
 	public void register() {
-		context.println("Repository->register")
+        context.printf Logger.info(logLevel,"Repository->register")
 
 		//create only high level management jobs.
 		context.node('master') {
@@ -140,9 +140,9 @@ class Repository {
 
 	private void registerObject(name, object) {
 		if (dslObjects.containsKey(name)) {
-			context.println("WARNING! key '" + name + "' already defined and will be replaced!")
-			context.println("old item: " + dslObjects.get(name).dump())
-			context.println("new item: " + object.dump())
+            context.printf Logger.warn(logLevel,"WARNING! key ${name} already defined and will be replaced!")
+            context.printf Logger.info(logLevel,"Old Item: ${dslObjects.get(name).dump()}")
+            context.printf Logger.info(logLevel,"New Item: ${object.dump()}")
 		}
 		dslObjects.put(name, object)
 	}
