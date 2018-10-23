@@ -27,13 +27,12 @@ public class DslFactory {
 		this.folder = folder
 		this.name = name
 		this.description = description
-		
 		this.clazz = this.getClass().getCanonicalName()
 	}
 	
 	public String getFullName() {
 		if (folder != null && !folder.isEmpty()) {
-			//_dslFactory.println("full name: ${folder}/${name}")
+            _dslFactory.printf Logger.debug(logLevel,"FactoryFullName: ${folder}/${name}")
 			return "${folder}/${name}"
 		} else {
 			return name
