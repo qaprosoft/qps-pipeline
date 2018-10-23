@@ -37,7 +37,7 @@ public class TestJobFactory extends PipelineFactory {
 		XmlSuite currentSuite = suiteXml.get(0)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
-		_dslFactory.println Logger.info(logLevel,"name: ${name}")
+		_dslFactory.println Logger.info(logLevel,"Jenkins Job Name: ${name}")
 
 		def pipelineJob = super.create()
 		pipelineJob.with {
@@ -92,7 +92,7 @@ public class TestJobFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-				_dslFactory.println "jobType: " + jobType
+                _dslFactory.println Logger.info(logLevel,"Job Type: ${jobType}")
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -191,12 +191,13 @@ public class TestJobFactory extends PipelineFactory {
 
 				def paramsMap = [:]
 				paramsMap = currentSuite.getAllParameters()
-				_dslFactory.println "paramsMap: " + paramsMap
+                _dslFactory.println Logger.info(logLevel,"Parameters Map: ${paramsMap}")
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-//					_dslFactory.println "param: " + param
+
+                    _dslFactory.println Logger.debug(logLevel,"Parameter: ${param}")
 					def delimiter = "::"
 					if (param.key.contains(delimiter)) {
 						def (type, name, desc) = param.key.split(delimiter)
