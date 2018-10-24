@@ -1,5 +1,6 @@
 package com.qaprosoft.zafira
 
+import com.qaprosoft.Logger
 import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Executor
 import groovy.json.JsonOutput
@@ -13,11 +14,13 @@ class ZafiraClient {
 	private String authToken
 	private long tokenExpTime
 	private def context
+	private Logger logger
 
 	public ZafiraClient(context) {
 		this.context = context
 		serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
 		refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+        logger = new Logger(context)
 	}
 
 	public void queueZafiraTestRun(String uuid) {
@@ -44,7 +47,7 @@ class ZafiraClient {
                 return
             }
             String formattedJSON = JsonOutput.prettyPrint(response.content)
-            context.println "Queued TestRun: " + formattedJSON
+            logger.info("Queued TestRun: " + formattedJSON)
         }
     }
 
@@ -70,8 +73,8 @@ class ZafiraClient {
 		}
     
 		def responseJson = new JsonSlurper().parseText(response.content)
-		context.println "Results : " + responseJson.size()
-		context.println "Tests for rerun: " + responseJson
+        logger.info("Results : " + responseJson.size())
+        logger.info("Tests for rerun: " + responseJson)
 	}
 
 	public void abortTestRun(String uuid, currentBuild) {
@@ -179,7 +182,6 @@ class ZafiraClient {
 		if(!response){
 			return ""
 		}
-		//context.println "exportZafiraReport response: " + response.content
 		return response.content
 	}
 
@@ -190,7 +192,7 @@ class ZafiraClient {
         try {
             response = context.httpRequest requestParams
         } catch (Exception e) {
-            context.println Utils.printStackTrace(e)
+            logger.error(Utils.printStackTrace(e))
         }
         return response
     }
@@ -201,7 +203,7 @@ class ZafiraClient {
 
 	/** Generates authToken using refreshToken*/
 	protected void getZafiraAuthToken(String refreshToken) {
-		//context.println "refreshToken: " + refreshToken
+        logger.debug("refreshToken: " + refreshToken)
 		def parameters = [contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
 						  requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
