@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins.jobdsl.factory
 
-import com.qaprosoft.jenkins.Utils
+import com.qaprosoft.Logger
+import com.qaprosoft.Utils
 
 public class DslFactory {
 	def folder
@@ -10,12 +11,14 @@ public class DslFactory {
     def _dslFactory
 	def clazz
 	def logLevel
+    def Logger logger
 
 	// ATTENTION! this is very important constructor. Please do not override on children level constructor with single argument
     DslFactory(dslFactory) {
         this._dslFactory = dslFactory
 		this.clazz = this.getClass().getCanonicalName()
         this.logLevel = _dslFactory.binding.variables.PIPELINE_LOG_LEVEL
+        this.logger = new Logger(logLevel, _dslFactory)
     }
 	
 	DslFactory() {
@@ -32,7 +35,7 @@ public class DslFactory {
 	
 	public String getFullName() {
 		if (folder != null && !folder.isEmpty()) {
-            debug("FactoryFullName: ${folder}/${name}")
+            logger.debug("FactoryFullName: ${folder}/${name}")
 			return "${folder}/${name}"
 		} else {
 			return name
@@ -41,7 +44,7 @@ public class DslFactory {
 	
 	// dynamically load properties from map to members
 	public load(args) {
-		debug("FactoryProperties: ${args.dump()}")
+		logger.debug("FactoryProperties: ${args.dump()}")
 		args.each {
 			if (it.value != null) {
 				this."${it.key}" = it.value
@@ -52,21 +55,5 @@ public class DslFactory {
 	public setClass(_clazz) {
 		clazz = _clazz
 	}
-
-    public debug(String message){
-        _dslFactory.printf Utils.debug(logLevel, message)
-    }
-
-    public info(String message){
-        _dslFactory.printf Utils.info(logLevel, message)
-    }
-
-    public warn(String message){
-        _dslFactory.printf Utils.warn(logLevel, message)
-    }
-
-    public error(String message){
-        _dslFactory.printf Utils.error(logLevel, message)
-    }
 
 }

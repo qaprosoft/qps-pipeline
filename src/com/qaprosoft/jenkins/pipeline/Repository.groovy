@@ -1,10 +1,10 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.Utils
+import com.qaprosoft.Logger
+import com.qaprosoft.Utils
 
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
@@ -16,6 +16,7 @@ class Repository {
 	def context
 	protected ISCM scmClient
 	protected def logLevel
+    protected Logger logger
 
 	protected Configuration configuration = new Configuration(context)
 
@@ -29,10 +30,11 @@ class Repository {
 		//TODO: howto register repository not at github?
 		scmClient = new GitHub(context)
         logLevel = Configuration.get(Configuration.Parameter.PIPELINE_LOG_LEVEL)
+        logger = new Logger(context, logLevel)
 	}
 
 	public void register() {
-        info("Repository->register")
+        logger.info("Repository->register")
 
 		//create only high level management jobs.
 		context.node('master') {
@@ -139,28 +141,11 @@ class Repository {
 
 	private void registerObject(name, object) {
 		if (dslObjects.containsKey(name)) {
-            warn(logLevel,"WARNING! key ${name} already defined and will be replaced!")
-            debug(logLevel,"Old Item: ${dslObjects.get(name).dump()}")
-            debug(logLevel,"New Item: ${object.dump()}")
+            logger.warn("WARNING! key ${name} already defined and will be replaced!")
+            logger.debug("Old Item: ${dslObjects.get(name).dump()}")
+            logger.debug("New Item: ${object.dump()}")
 		}
 		dslObjects.put(name, object)
 	}
-
-    public debug(String message){
-        context.printf Utils.debug(logLevel, message)
-    }
-
-    public info(String message){
-        context.printf Utils.info(logLevel, message)
-    }
-
-    public warn(String message){
-        context.printf Utils.warn(logLevel, message)
-    }
-
-    public error(String message){
-        context.printf Utils.error(logLevel, message)
-    }
-
 
 }

@@ -1,12 +1,13 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.Utils
-import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.Logger
+import com.qaprosoft.Utils
 import com.qaprosoft.scm.ISCM
 
 public abstract class AbstractRunner {
 	protected def context
 	protected ISCM scmClient
+    protected Logger logger
 
 	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
@@ -18,6 +19,7 @@ public abstract class AbstractRunner {
 	public AbstractRunner(context) {
 		this.context = context
         this.logLevel = Configuration.get(Configuration.Parameter.PIPELINE_LOG_LEVEL)
+        this.logger = new Logger(logLevel, context)
 	}
 
 	//Methods
@@ -26,22 +28,4 @@ public abstract class AbstractRunner {
 	//Events
 	abstract public void onPush()
 	abstract public void onPullRequest()
-
-
-	public debug(String message){
-		context.printf Utils.debug(logLevel, message)
-	}
-
-	public info(String message){
-		context.printf Utils.info(logLevel, message)
-	}
-
-	public warn(String message){
-		context.printf Utils.warn(logLevel, message)
-	}
-
-	public error(String message){
-		context.printf Utils.error(logLevel, message)
-	}
-
 }

@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-import com.qaprosoft.jenkins.Utils
 @Grab('org.testng:testng:6.8.8')
 
 import org.testng.xml.Parser;
@@ -29,7 +28,7 @@ public class TestJobFactory extends PipelineFactory {
 	}
 
 	def create() {
-        info("TestJobFactory->create")
+        logger.info("TestJobFactory->create")
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 
@@ -37,7 +36,7 @@ public class TestJobFactory extends PipelineFactory {
 		XmlSuite currentSuite = suiteXml.get(0)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
-		info("JenkinsJobName: ${name}")
+		logger.info("JenkinsJobName: ${name}")
 
 		def pipelineJob = super.create()
 		pipelineJob.with {
@@ -92,7 +91,7 @@ public class TestJobFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-                info("JobType: ${jobType}")
+                logger.info("JobType: ${jobType}")
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -191,12 +190,12 @@ public class TestJobFactory extends PipelineFactory {
 
 				def paramsMap = [:]
 				paramsMap = currentSuite.getAllParameters()
-                info("ParametersMap: ${paramsMap}")
+                logger.info("ParametersMap: ${paramsMap}")
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-                    debug("Parameter: ${param}")
+                    logger.debug("Parameter: ${param}")
 					def delimiter = "::"
 					if (param.key.contains(delimiter)) {
 						def (type, name, desc) = param.key.split(delimiter)

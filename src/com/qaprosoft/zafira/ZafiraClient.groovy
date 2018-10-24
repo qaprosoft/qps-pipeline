@@ -1,6 +1,6 @@
 package com.qaprosoft.zafira
 
-import com.qaprosoft.jenkins.Utils
+import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Executor
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
