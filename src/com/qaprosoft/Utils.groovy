@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins
+package com.qaprosoft
 
 class Utils {
 

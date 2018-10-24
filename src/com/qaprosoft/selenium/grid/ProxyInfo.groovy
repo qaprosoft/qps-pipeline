@@ -1,6 +1,6 @@
 package com.qaprosoft.selenium.grid
 
-import com.qaprosoft.jenkins.Utils
+import com.qaprosoft.Utils
 import groovy.json.JsonSlurper
 
 class ProxyInfo {

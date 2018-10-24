@@ -1,7 +1,7 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
-import com.qaprosoft.jenkins.Utils
-import com.qaprosoft.jenkins.Utils
+
+import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Executor
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 //[VD] do not remove this important import!
@@ -59,7 +59,7 @@ public class QARunner extends AbstractRunner {
 
     //Methods
     public void build() {
-        info("QARunner->build")
+        logger.info("QARunner->build")
         if (jobType.equals(JobType.JOB)) {
             runJob()
         }
@@ -344,9 +344,9 @@ public class QARunner extends AbstractRunner {
 
     private void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
-            warn("WARNING! key ${name} already defined and will be replaced!")
-            debug("Old Item: ${dslObjects.get(name).dump()}")
-            debug("New Item: ${object.dump()}")
+            logger.warn("WARNING! key ${name} already defined and will be replaced!")
+            logger.debug("Old Item: ${dslObjects.get(name).dump()}")
+            logger.debug("New Item: ${object.dump()}")
         }
         dslObjects.put(name, object)
     }
