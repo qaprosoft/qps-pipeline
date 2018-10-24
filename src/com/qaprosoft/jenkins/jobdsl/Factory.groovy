@@ -2,26 +2,29 @@ package com.qaprosoft.jenkins.jobdsl
 
 import com.qaprosoft.Logger
 import com.qaprosoft.Utils
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 
 // groovy script for initialization and execution all kind of jobdsl factories which are transfered from pipeline scanner script
 
+import groovy.json.*
+
 Logger logger = new Logger(this)
 def slurper = new JsonSlurper()
+
 String factoryDataMap = readFileFromWorkspace("factories.json")
 logger.info("FactoryDataMap: ${JsonOutput.prettyPrint(factoryDataMap)}")
+def prettyPrint = JsonOutput.prettyPrint(factoryDataMap)
+println "factoryDataMap: " + prettyPrint
 def factories = new HashMap(slurper.parseText(factoryDataMap))
-//Lambda replaced with for loop, because printf method necessary for logging logic seems not to work inside each closure
-for(factory in factories){
-    try {
-        def factoryObject = Class.forName(factory.value.clazz)?.newInstance(this)
-        logger.debug("Factory before load: ${factory.value.dump()}")
-        factoryObject.load(factory.value)
-        logger.debug("Factory after load: ${factoryObject.dump()}")
-        factoryObject.create()
-    } catch (Exception e) {
-        logger.error(Utils.printStackTrace(e))
-        throw new RuntimeException("JobDSL Exception")
-    }
+
+factories.each{
+	try {
+		def factory = Class.forName(it.value.clazz)?.newInstance(this)
+        logger.debug("Factory before load: ${it.value.dump()}")
+		factory.load(it.value)
+        logger.debug("Factory after load: ${factory.dump()}")
+		//println "factory after load: " +
+		factory.create()
+	} catch (Exception e) {
+		println e.dump()
+	}
 }
