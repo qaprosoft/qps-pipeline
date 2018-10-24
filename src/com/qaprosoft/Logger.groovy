@@ -7,7 +7,7 @@ class Logger {
 
     Logger(context) {
         this.context = context
-        this.logLevel = context?.binding ? context.variables.PIPELINE_LOG_LEVEL : context.env.getEnvironment().get("PIPELINE_LOG_LEVEL")
+        this.logLevel = context?.binding ? context.binding.variables.PIPELINE_LOG_LEVEL : context.env.getEnvironment().get("PIPELINE_LOG_LEVEL")
     }
 
     public debug(String message){
