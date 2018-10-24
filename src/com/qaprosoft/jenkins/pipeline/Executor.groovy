@@ -226,6 +226,12 @@ public class Executor {
         return isApplied
     }
 
+    static def getPullRequest(build) {
+        GhprbCause c = Ghprb.getCause(build)
+        GhprbTrigger trigger = Ghprb.extractTrigger(build)
+        return trigger.getRepository().getPullRequest(c.getPullID())
+    }
+
     @NonCPS
     static def isSnapshotRequired(currentBuild, trigger) {
         def isRequired = false
