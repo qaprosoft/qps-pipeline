@@ -19,7 +19,7 @@ public abstract class AbstractRunner {
 	public AbstractRunner(context) {
 		this.context = context
         this.logLevel = Configuration.get(Configuration.Parameter.PIPELINE_LOG_LEVEL)
-        this.logger = new Logger(logLevel, context)
+        this.logger = new Logger(context)
 	}
 
 	//Methods

@@ -5,9 +5,9 @@ class Logger {
     def context
     def logLevel
 
-    Logger(context, logLevel) {
+    Logger(context) {
         this.context = context
-        this.logLevel = logLevel
+        this.logLevel = context?.binding ? context.variables.PIPELINE_LOG_LEVEL : context.env.getEnvironment().get("PIPELINE_LOG_LEVEL")
     }
 
     public debug(String message){
