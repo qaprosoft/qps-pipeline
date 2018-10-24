@@ -31,8 +31,8 @@ class Logger {
     private def log(String logLevel, String message){
         def logMessage = ""
         if(LEVEL_MAP.get(logLevel) >= LEVEL_MAP.get(pipelineLogLevel)){
-//            logMessage = "${message}\n"
-            logMessage = "${message}"
+            logMessage = "${message}\n"
+//            logMessage = "${message}"
         }
         return logMessage
     }
