@@ -2,10 +2,10 @@ package com.qaprosoft.jenkins.jobdsl
 
 import com.qaprosoft.Logger
 import com.qaprosoft.Utils
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
 // groovy script for initialization and execution all kind of jobdsl factories which are transfered from pipeline scanner script
-
-import groovy.json.*
 
 Logger logger = new Logger(this)
 def slurper = new JsonSlurper()
