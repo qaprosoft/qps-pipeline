@@ -89,22 +89,16 @@ class GitHub implements ISCM {
 		context.stage('Checkout GitHub Repository') {
 			def branch  = Configuration.get("sha1")
 			def credentialsId = Configuration.get("ghprbCredentialsId")
-
-			context.println("GitHub->clonePR")
-			context.println("GIT_URL: " + gitSshUrl)
-			context.println("branch: " + branch)
-
+            logger.info("GitHub->clonePR\nGIT_URL: ${gitSshUrl}\nbranch: ${branch}")
 			context.checkout getCheckoutParams(gitSshUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
 		}
 	}
 
     public def clonePush() {
         context.stage('Checkout GitHub Repository') {
-            context.println("GitHub->clone")
             def branch = Configuration.get("branch")
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}.git")
-            context.println("GIT_URL: " + gitUrl)
-            context.println("branch: " + branch)
+            logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', '')
         }
     }
@@ -126,7 +120,6 @@ class GitHub implements ISCM {
         return checkoutParams
     }
 
-    //TODO: move to GitHub and iSCM
     public def mergePR(){
         //merge pull request
         def org = Configuration.get("GITHUB_ORGANIZATION")
@@ -134,11 +127,11 @@ class GitHub implements ISCM {
         def ghprbPullId = Configuration.get("ghprbPullId")
 
         def ghprbCredentialsId = Configuration.get("ghprbCredentialsId")
-        context.println("ghprbCredentialsId: " + ghprbCredentialsId)
+        logger.info("ghprbCredentialsId: " + ghprbCredentialsId)
         context.withCredentials([context.usernamePassword(credentialsId: "${ghprbCredentialsId}", usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            context.println "USERNAME: ${context.env.USERNAME}"
-            context.println "PASSWORD: ${context.env.PASSWORD}"
-            context.println("curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge")
+            logger.debug("USERNAME: ${context.env.USERNAME}")
+            logger.debug("PASSWORD: ${context.env.PASSWORD}")
+            logger.debug("curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge")
             //context.sh "curl -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge?access_token=${context.env.PASSWORD}"
             context.sh "curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge"
         }
