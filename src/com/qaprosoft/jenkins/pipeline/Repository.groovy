@@ -30,7 +30,7 @@ class Repository {
 		//TODO: howto register repository not at github?
 		scmClient = new GitHub(context)
         logLevel = Configuration.get(Configuration.Parameter.PIPELINE_LOG_LEVEL)
-        logger = new Logger(context, logLevel)
+        logger = new Logger(context)
 	}
 
 	public void register() {

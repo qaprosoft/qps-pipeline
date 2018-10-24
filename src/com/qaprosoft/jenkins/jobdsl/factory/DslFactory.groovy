@@ -18,7 +18,7 @@ public class DslFactory {
         this._dslFactory = dslFactory
 		this.clazz = this.getClass().getCanonicalName()
         this.logLevel = _dslFactory.binding.variables.PIPELINE_LOG_LEVEL
-        this.logger = new Logger(logLevel, _dslFactory)
+        this.logger = new Logger(_dslFactory)
     }
 	
 	DslFactory() {
