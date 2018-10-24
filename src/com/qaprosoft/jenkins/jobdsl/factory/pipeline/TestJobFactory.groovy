@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.Utils
 @Grab('org.testng:testng:6.8.8')
 
 import org.testng.xml.Parser;
@@ -29,7 +29,7 @@ public class TestJobFactory extends PipelineFactory {
 	}
 
 	def create() {
-        _dslFactory.printf Logger.info(logLevel,"TestJobFactory->create")
+        info("TestJobFactory->create")
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 
@@ -37,7 +37,7 @@ public class TestJobFactory extends PipelineFactory {
 		XmlSuite currentSuite = suiteXml.get(0)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
-		_dslFactory.printf Logger.info(logLevel,"JenkinsJobName: ${name}")
+		info("JenkinsJobName: ${name}")
 
 		def pipelineJob = super.create()
 		pipelineJob.with {
@@ -92,7 +92,7 @@ public class TestJobFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-                _dslFactory.printf Logger.info(logLevel,"JobType: ${jobType}")
+                info("JobType: ${jobType}")
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -191,12 +191,12 @@ public class TestJobFactory extends PipelineFactory {
 
 				def paramsMap = [:]
 				paramsMap = currentSuite.getAllParameters()
-                _dslFactory.printf Logger.info(logLevel,"ParametersMap: ${paramsMap}")
+                info("ParametersMap: ${paramsMap}")
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-                    _dslFactory.printf Logger.debug(logLevel,"Parameter: ${param}")
+                    debug("Parameter: ${param}")
 					def delimiter = "::"
 					if (param.key.contains(delimiter)) {
 						def (type, name, desc) = param.key.split(delimiter)

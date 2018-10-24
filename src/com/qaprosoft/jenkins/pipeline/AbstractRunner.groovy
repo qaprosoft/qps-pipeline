@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
+import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.ISCM
 
@@ -25,5 +26,22 @@ public abstract class AbstractRunner {
 	//Events
 	abstract public void onPush()
 	abstract public void onPullRequest()
+
+
+	public debug(String message){
+		context.printf Utils.debug(logLevel, message)
+	}
+
+	public info(String message){
+		context.printf Utils.info(logLevel, message)
+	}
+
+	public warn(String message){
+		context.printf Utils.warn(logLevel, message)
+	}
+
+	public error(String message){
+		context.printf Utils.error(logLevel, message)
+	}
 
 }

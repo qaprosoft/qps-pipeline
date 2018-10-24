@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
-import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Executor
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
@@ -59,7 +59,7 @@ public class QARunner extends AbstractRunner {
 
     //Methods
     public void build() {
-        context.printf Logger.info(logLevel,"QARunner->build")
+        info("QARunner->build")
         if (jobType.equals(JobType.JOB)) {
             runJob()
         }
@@ -344,9 +344,9 @@ public class QARunner extends AbstractRunner {
 
     private void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
-            context.printf Logger.warn(logLevel,"WARNING! key ${name} already defined and will be replaced!")
-            context.printf Logger.debug(logLevel,"Old Item: ${dslObjects.get(name).dump()}")
-            context.printf Logger.debug(logLevel,"New Item: ${object.dump()}")
+            warn("WARNING! key ${name} already defined and will be replaced!")
+            debug("Old Item: ${dslObjects.get(name).dump()}")
+            debug("New Item: ${object.dump()}")
         }
         dslObjects.put(name, object)
     }
