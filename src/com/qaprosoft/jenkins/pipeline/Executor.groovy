@@ -229,7 +229,7 @@ public class Executor {
     static def getPullRequest(build) {
         GhprbCause c = Ghprb.getCause(build)
         GhprbTrigger trigger = Ghprb.extractTrigger(build)
-        return trigger.getRepository().getPullRequest(c.getPullID())
+        return trigger.getRepository().getPullRequest(c.getPullID()).getPullRequest()
     }
 
     @NonCPS
