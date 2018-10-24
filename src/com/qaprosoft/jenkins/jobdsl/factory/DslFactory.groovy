@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.jobdsl.factory
 
-import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.Utils
 
 public class DslFactory {
 	def folder
@@ -32,7 +32,7 @@ public class DslFactory {
 	
 	public String getFullName() {
 		if (folder != null && !folder.isEmpty()) {
-            _dslFactory.printf Logger.debug(logLevel,"FactoryFullName: ${folder}/${name}")
+            debug("FactoryFullName: ${folder}/${name}")
 			return "${folder}/${name}"
 		} else {
 			return name
@@ -41,7 +41,7 @@ public class DslFactory {
 	
 	// dynamically load properties from map to members
 	public load(args) {
-		_dslFactory.printf Logger.debug(logLevel,"FactoryProperties: ${args.dump()}")
+		debug("FactoryProperties: ${args.dump()}")
 		args.each {
 			if (it.value != null) {
 				this."${it.key}" = it.value
@@ -52,5 +52,21 @@ public class DslFactory {
 	public setClass(_clazz) {
 		clazz = _clazz
 	}
+
+    public debug(String message){
+        _dslFactory.printf Utils.debug(logLevel, message)
+    }
+
+    public info(String message){
+        _dslFactory.printf Utils.info(logLevel, message)
+    }
+
+    public warn(String message){
+        _dslFactory.printf Utils.warn(logLevel, message)
+    }
+
+    public error(String message){
+        _dslFactory.printf Utils.error(logLevel, message)
+    }
 
 }

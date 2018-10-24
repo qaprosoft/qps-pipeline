@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.Utils
 
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub
@@ -32,7 +32,7 @@ class Repository {
 	}
 
 	public void register() {
-        context.printf Logger.info(logLevel,"Repository->register")
+        info("Repository->register")
 
 		//create only high level management jobs.
 		context.node('master') {
@@ -139,11 +139,28 @@ class Repository {
 
 	private void registerObject(name, object) {
 		if (dslObjects.containsKey(name)) {
-            context.printf Logger.warn(logLevel,"WARNING! key ${name} already defined and will be replaced!")
-            context.printf Logger.debug(logLevel,"Old Item: ${dslObjects.get(name).dump()}")
-            context.printf Logger.debug(logLevel,"New Item: ${object.dump()}")
+            warn(logLevel,"WARNING! key ${name} already defined and will be replaced!")
+            debug(logLevel,"Old Item: ${dslObjects.get(name).dump()}")
+            debug(logLevel,"New Item: ${object.dump()}")
 		}
 		dslObjects.put(name, object)
 	}
+
+    public debug(String message){
+        context.printf Utils.debug(logLevel, message)
+    }
+
+    public info(String message){
+        context.printf Utils.info(logLevel, message)
+    }
+
+    public warn(String message){
+        context.printf Utils.warn(logLevel, message)
+    }
+
+    public error(String message){
+        context.printf Utils.error(logLevel, message)
+    }
+
 
 }

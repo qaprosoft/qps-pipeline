@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.jobdsl
 
-import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.Utils
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -10,17 +9,18 @@ import groovy.json.JsonSlurper
 def logLevel = binding.variables.PIPELINE_LOG_LEVEL
 def slurper = new JsonSlurper()
 String factoryDataMap = readFileFromWorkspace("factories.json")
-printf Logger.info(logLevel,"FactoryDataMap: ${JsonOutput.prettyPrint(factoryDataMap)}")
+printf Utils.info(logLevel,"FactoryDataMap: ${JsonOutput.prettyPrint(factoryDataMap)}")
 def factories = new HashMap(slurper.parseText(factoryDataMap))
-for(it in factories){
+//Lambda replaced with for loop, because printf method necessary for logging logic seems not to work inside each closure
+for(factory in factories){
     try {
-        def factory = Class.forName(it.value.clazz)?.newInstance(this)
-        printf Logger.debug(logLevel, "Factory before load: ${it.value.dump()}")
-        factory.load(it.value)
-        printf Logger.debug(logLevel, "Factory after load: ${factory.dump()}")
-        factory.create()
+        def factoryObject = Class.forName(factory.value.clazz)?.newInstance(this)
+        printf Utils.debug(logLevel, "Factory before load: ${factory.value.dump()}")
+        factoryObject.load(factory.value)
+        printf Utils.debug(logLevel, "Factory after load: ${factoryObject.dump()}")
+        factoryObject.create()
     } catch (Exception e) {
-        printf Logger.error(logLevel, Utils.printStackTrace(e))
+        printf Utils.error(logLevel, Utils.printStackTrace(e))
         throw new RuntimeException("JobDSL Exception")
     }
 }
