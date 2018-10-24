@@ -22,9 +22,8 @@ factories.each{
         logger.debug("Factory before load: ${it.value.dump()}")
 		factory.load(it.value)
         logger.debug("Factory after load: ${factory.dump()}")
-		//println "factory after load: " +
 		factory.create()
 	} catch (Exception e) {
-		println e.dump()
+        logger.error(Utils.printStackTrace(e))
 	}
 }
