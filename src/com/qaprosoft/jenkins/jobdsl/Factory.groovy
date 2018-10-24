@@ -7,7 +7,6 @@ import groovy.json.JsonSlurper
 
 // groovy script for initialization and execution all kind of jobdsl factories which are transfered from pipeline scanner script
 
-def logLevel = binding.variables.PIPELINE_LOG_LEVEL
 Logger logger = new Logger(this)
 def slurper = new JsonSlurper()
 String factoryDataMap = readFileFromWorkspace("factories.json")

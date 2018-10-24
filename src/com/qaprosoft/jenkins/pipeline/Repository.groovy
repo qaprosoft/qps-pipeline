@@ -15,7 +15,6 @@ class Repository {
 
 	def context
 	protected ISCM scmClient
-	protected def logLevel
     protected Logger logger
 
 	protected Configuration configuration = new Configuration(context)
@@ -29,7 +28,6 @@ class Repository {
 		this.context = context
 		//TODO: howto register repository not at github?
 		scmClient = new GitHub(context)
-        logLevel = Configuration.get(Configuration.Parameter.PIPELINE_LOG_LEVEL)
         logger = new Logger(context)
 	}
 

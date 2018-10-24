@@ -1,7 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.Logger
-import com.qaprosoft.Utils
 import com.qaprosoft.scm.ISCM
 
 public abstract class AbstractRunner {
@@ -18,7 +17,6 @@ public abstract class AbstractRunner {
 	
 	public AbstractRunner(context) {
 		this.context = context
-        this.logLevel = Configuration.get(Configuration.Parameter.PIPELINE_LOG_LEVEL)
         this.logger = new Logger(context)
 	}
 
