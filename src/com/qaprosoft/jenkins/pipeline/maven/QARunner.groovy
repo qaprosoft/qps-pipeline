@@ -723,7 +723,7 @@ public class QARunner extends AbstractRunner {
     protected void publishJenkinsReports() {
         context.stage('Results') {
             publishReport('**/zafira/report.html', "${zafiraReport}")
-            publishReport('**/artifacts/**', 'eTAF_Artifacts')
+            publishReport('**/artifacts/**', 'Artifacts')
             publishReport('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReport('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
         }
