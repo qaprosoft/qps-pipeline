@@ -17,13 +17,13 @@ logger.debug("factoryDataMap: " + prettyPrint)
 def factories = new HashMap(slurper.parseText(factoryDataMap))
 
 factories.each{
-	try {
-		def factory = Class.forName(it.value.clazz)?.newInstance(this)
+    try {
+        def factory = Class.forName(it.value.clazz)?.newInstance(this)
         logger.debug("Factory before load: ${it.value.dump()}")
-		factory.load(it.value)
+        factory.load(it.value)
         logger.debug("Factory after load: ${factory.dump()}")
-		factory.create()
-	} catch (Exception e) {
+        factory.create()
+    } catch (Exception e) {
         logger.error(Utils.printStackTrace(e))
-	}
+    }
 }
