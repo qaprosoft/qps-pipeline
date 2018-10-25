@@ -822,6 +822,10 @@ public class QARunner extends AbstractRunner {
         }
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode").toString()
         def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
+		if (Executor.isParamEmpty(supportedEnvs)) {
+			supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
+		}
+		
         def currentEnvs = getCronEnv(currentSuite)
         def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
 
@@ -842,7 +846,7 @@ public class QARunner extends AbstractRunner {
         def overrideFields = Configuration.get("overrideFields")
 
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
-        String logLine = "pipelineJobName: ${pipelineJobName};\n	supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
+        String logLine = "supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
 
         def currentBrowser = Configuration.get("browser")
 
