@@ -16,12 +16,12 @@ class ZafiraClient {
 	private def context
 	private Logger logger
 
-	public ZafiraClient(context) {
-		this.context = context
-		serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
-		refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+    public ZafiraClient(context) {
+        this.context = context
+        serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
+        refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
         logger = new Logger(context)
-	}
+    }
 
 	public void queueZafiraTestRun(String uuid) {
         if(Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION).toBoolean()) {
@@ -71,8 +71,8 @@ class ZafiraClient {
 		if(!response){
 			return
 		}
-    
-		def responseJson = new JsonSlurper().parseText(response.content)
+
+        def responseJson = new JsonSlurper().parseText(response.content)
         logger.info("Results : " + responseJson.size())
         logger.info("Tests for rerun: " + responseJson)
 	}
