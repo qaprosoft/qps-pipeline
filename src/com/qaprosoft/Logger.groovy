@@ -2,37 +2,52 @@ package com.qaprosoft
 
 class Logger {
 
-    private static final LEVEL_MAP = ["DEBUG": 1, "INFO": 2, "WARN": 3, "ERROR": 4]
+    public enum LogLevel {
+
+        DEBUG(1),
+        INFO(2),
+        WARN(3),
+        ERROR(4),
+
+        final int value
+        LogLevel(int value) {
+            this.value = value
+        }
+    }
 
     def context
-    def pipelineLogLevel
+    LogLevel pipelineLogLevel
+    String contextType
 
     Logger(context) {
         this.context = context
-        this.pipelineLogLevel = context?.binding ? context.binding.variables.PIPELINE_LOG_LEVEL : context.env.getEnvironment().get("LOG_LEVEL")
+        this.pipelineLogLevel = context?.binding ? LogLevel.valueOf(context.binding.variables.PIPELINE_LOG_LEVEL) : LogLevel.valueOf(context.env.getEnvironment().get("LOG_LEVEL"))
+        this.contextType = context?.binding ? "jobDSL" : "pipeline"
     }
 
     public debug(String message){
-        context.printf log("DEBUG", message)
+        context.printf log(LogLevel.DEBUG, message)
     }
 
     public info(String message){
-        context.printf log("INFO", message)
+        context.printf log(LogLevel.INFO, message)
     }
 
     public warn(String message){
-        context.printf log("WARN", message)
+        context.printf log(LogLevel.WARN, message)
     }
 
     public error(String message){
-        context.printf log("ERROR", message)
+        context.printf log(LogLevel.ERROR, message)
     }
 
-    private def log(String logLevel, String message){
+    private def log(LogLevel logLevel, String message){
         def logMessage = ""
-        if(LEVEL_MAP.get(logLevel) >= LEVEL_MAP.get(pipelineLogLevel)){
-            logMessage = "${message}\n"
-//            logMessage = "${message}"
+        if(logLevel.value >= pipelineLogLevel.value){
+            logMessage = "${message}"
+            if(contextType == "jobDSL"){
+                logMessage = logMessage +"\n"
+            }
         }
         return logMessage
     }
