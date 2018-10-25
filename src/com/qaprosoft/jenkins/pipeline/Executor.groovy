@@ -64,7 +64,7 @@ public class Executor {
 		if (value == null) {
 			return true
 		}  else {
-			return value.toString().isEmpty() || value.toString().equals("NULL")
+			return value.toString().isEmpty() || value.toString().equalsIgnoreCase("NULL")
 		}
     }
 	
