@@ -822,6 +822,10 @@ public class QARunner extends AbstractRunner {
         }
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode").toString()
         def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
+		if (Executor.isParamEmpty(supportedEnvs)) {
+			supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
+		}
+		
         def currentEnvs = getCronEnv(currentSuite)
         def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
 
