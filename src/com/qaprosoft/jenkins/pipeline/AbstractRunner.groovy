@@ -4,13 +4,11 @@ import com.qaprosoft.Logger
 import com.qaprosoft.scm.ISCM
 
 public abstract class AbstractRunner {
-	protected def context
-	protected ISCM scmClient
+    protected def context
+    protected ISCM scmClient
     protected Logger logger
-
 	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
 	protected def additionalClasspath = "qps-pipeline/src"
-    protected def logLevel
 
 	//this is very important line which should be declared only as a class member!
 	protected Configuration configuration = new Configuration(context)
