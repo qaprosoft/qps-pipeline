@@ -16,7 +16,6 @@ class Logger {
     }
 
     def context
-    LogLevel pipelineLogLevel = LogLevel.INFO
     String contextType
 
     Logger(context) {
