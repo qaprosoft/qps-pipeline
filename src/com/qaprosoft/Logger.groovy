@@ -16,13 +16,13 @@ class Logger {
     }
 
     def context
-    LogLevel pipelineLogLevel
+    LogLevel pipelineLogLevel = LogLevel.INFO
     String contextType
 
     Logger(context) {
         this.context = context
-        context.println context?.binding ? "DSLLGLVL: " + context.env.dump() : "PPLNLGLVL: " + context.env.getEnvironment().get("PIPELINE_LOG_LEVEL")
-        this.pipelineLogLevel = context?.binding ? LogLevel.valueOf(context.binding.variables.PIPELINE_LOG_LEVEL) : LogLevel.valueOf(context.env.getEnvironment().get("PIPELINE_LOG_LEVEL"))
+//        context.println context?.binding ? "DSLLGLVL: " + context.dump() : "PPLNLGLVL: " + context.env.getEnvironment().get("PIPELINE_LOG_LEVEL")
+//        this.pipelineLogLevel = context?.binding ? LogLevel.valueOf(context.binding.variables.PIPELINE_LOG_LEVEL) : LogLevel.valueOf(context.env.getEnvironment().get("PIPELINE_LOG_LEVEL"))
         this.contextType = context?.binding ? "jobDSL" : "pipeline"
     }
 
