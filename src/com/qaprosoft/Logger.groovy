@@ -21,7 +21,7 @@ class Logger {
 
     Logger(context) {
         this.context = context
-        this.contextType = context?.currentBuild ? "pipeline" : "jobDSL"
+        this.contextType = context.hasProperty("currentBuild") ? "pipeline" : "jobDSL"
         this.pipelineLogLevel = context?.currentBuild ? LogLevel.valueOf(context.env.getEnvironment().get("PIPELINE_LOG_LEVEL")) : LogLevel.valueOf(context.binding.variables.PIPELINE_LOG_LEVEL)
     }
 
