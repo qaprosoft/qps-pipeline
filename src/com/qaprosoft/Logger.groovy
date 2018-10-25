@@ -15,13 +15,18 @@ class Logger {
         }
     }
 
+    public enum ContextType {
+        JOB_DSL,
+        PIPELINE
+    }
+
     def context
     LogLevel pipelineLogLevel
-    String contextType
+    ContextType contextType
 
     Logger(context) {
         this.context = context
-        this.contextType = context.binding.variables.get("PIPELINE_LOG_LEVEL") ? "jobDSL" : "pipeline"
+        this.contextType = context.binding.variables.get("PIPELINE_LOG_LEVEL") ? ContextType.JOB_DSL : ContextType.PIPELINE
         this.pipelineLogLevel = context.binding.variables.get("PIPELINE_LOG_LEVEL") ? LogLevel.valueOf(context.binding.variables.PIPELINE_LOG_LEVEL) : LogLevel.valueOf(context.env.getEnvironment().get("PIPELINE_LOG_LEVEL"))
     }
 
@@ -45,7 +50,7 @@ class Logger {
         def logMessage = ""
         if(logLevel.value >= pipelineLogLevel.value){
             logMessage = "${message}"
-            if(contextType == "jobDSL"){
+            if(contextType == ContextType.JOB_DSL){
                 logMessage = logMessage +"\n"
             }
         }
