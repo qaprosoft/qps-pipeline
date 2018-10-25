@@ -144,10 +144,10 @@ public class QARunner extends AbstractRunner {
 	        Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
 	            sonarQubeEnv = installation.getName()
 	        }
-	        if(sonarQubeEnv.isEmpty()){
+            if(sonarQubeEnv.isEmpty()){
                 logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
-	            return
-	        }
+                return
+            }
             context.withSonarQubeEnv(sonarQubeEnv) {
                 context.sh "mvn \
 				 -f ${pomFile} \
@@ -342,7 +342,7 @@ public class QARunner extends AbstractRunner {
         return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
     }
 
-    private void registerObject(name, object) {
+    protected void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
             logger.warn("WARNING! key ${name} already defined and will be replaced!")
             logger.debug("Old Item: ${dslObjects.get(name).dump()}")
