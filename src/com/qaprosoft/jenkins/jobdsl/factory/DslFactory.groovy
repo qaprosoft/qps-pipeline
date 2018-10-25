@@ -31,17 +31,17 @@ public class DslFactory {
 		this.clazz = this.getClass().getCanonicalName()
 	}
 
-	public String getFullName() {
+    public String getFullName() {
         if (folder != null && !folder.isEmpty()) {
             logger.debug("FactoryFullName: ${folder}/${name}")
             return "${folder}/${name}"
         } else {
             return name
         }
-	}
+    }
 
-	// dynamically load properties from map to members
-	public load(args) {
+    // dynamically load properties from map to members
+    public load(args) {
         logger.debug("FactoryProperties: ${args.dump()}")
         args.each {
             if (it.value != null) {
