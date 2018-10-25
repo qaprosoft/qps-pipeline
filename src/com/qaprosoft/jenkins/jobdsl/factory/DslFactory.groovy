@@ -8,14 +8,14 @@ public class DslFactory {
 	def description
 
     def _dslFactory
-	def clazz
-	def logLevel
-    def Logger logger
+    def clazz
+    def logLevel
+    Logger logger
 
 	// ATTENTION! this is very important constructor. Please do not override on children level constructor with single argument
     DslFactory(dslFactory) {
         this._dslFactory = dslFactory
-		this.clazz = this.getClass().getCanonicalName()
+        this.clazz = this.getClass().getCanonicalName()
         this.logger = new Logger(_dslFactory)
     }
 	
@@ -30,24 +30,24 @@ public class DslFactory {
 		this.description = description
 		this.clazz = this.getClass().getCanonicalName()
 	}
-	
+
 	public String getFullName() {
-		if (folder != null && !folder.isEmpty()) {
+        if (folder != null && !folder.isEmpty()) {
             logger.debug("FactoryFullName: ${folder}/${name}")
-			return "${folder}/${name}"
-		} else {
-			return name
-		}
+            return "${folder}/${name}"
+        } else {
+            return name
+        }
 	}
-	
+
 	// dynamically load properties from map to members
 	public load(args) {
-		logger.debug("FactoryProperties: ${args.dump()}")
-		args.each {
-			if (it.value != null) {
-				this."${it.key}" = it.value
-			}
-		}
+        logger.debug("FactoryProperties: ${args.dump()}")
+        args.each {
+            if (it.value != null) {
+                this."${it.key}" = it.value
+            }
+        }
     }
 
 	public setClass(_clazz) {
