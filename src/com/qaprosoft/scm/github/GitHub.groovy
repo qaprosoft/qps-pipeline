@@ -13,11 +13,6 @@ class GitHub implements ISCM {
 
 	public GitHub(context) {
 		this.context = context
-        context instanceof WorkflowScript
-        context.println "PPLNDUMP: " + context.binding.variables.size()
-        context.binding.variables.each { var ->
-            context.println var
-        }
         logger = new Logger(context)
         gitHtmlUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
         gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")

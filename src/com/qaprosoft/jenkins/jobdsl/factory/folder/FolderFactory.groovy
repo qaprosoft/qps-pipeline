@@ -15,10 +15,6 @@ public class FolderFactory extends DslFactory {
 	}
 
     def create() {
-		_dslFactory.println "DSLDUMP: " + _dslFactory.binding.variables.size()
-        _dslFactory.binding.variables.each { var ->
-            _dslFactory.println var
-        }
 		//TODO: add support for multi-level sub-folders
         return _dslFactory.folder(getFullName())
     }
