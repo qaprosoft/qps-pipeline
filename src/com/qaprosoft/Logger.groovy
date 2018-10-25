@@ -21,7 +21,7 @@ class Logger {
 
     Logger(context) {
         this.context = context
-        context.println context?.binding ? "DSLLGLVL: " + context.binding.dump() : "PPLNLGLVL: " + context.env.getEnvironment().get("PIPELINE_LOG_LEVEL")
+        context.println context?.binding ? "DSLLGLVL: " + context.binding.variables.dump() : "PPLNLGLVL: " + context.env.getEnvironment().get("PIPELINE_LOG_LEVEL")
         this.pipelineLogLevel = context?.binding ? LogLevel.valueOf(context.binding.variables.PIPELINE_LOG_LEVEL) : LogLevel.valueOf(context.env.getEnvironment().get("PIPELINE_LOG_LEVEL"))
         this.contextType = context?.binding ? "jobDSL" : "pipeline"
     }
