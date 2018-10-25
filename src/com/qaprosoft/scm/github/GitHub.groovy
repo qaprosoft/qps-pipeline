@@ -13,6 +13,7 @@ class GitHub implements ISCM {
 
 	public GitHub(context) {
 		this.context = context
+        context instanceof WorkflowScript
         context.println "PPLNDUMP: " + context.binding.variables.size()
         context.binding.variables.each { var ->
             context.println var
