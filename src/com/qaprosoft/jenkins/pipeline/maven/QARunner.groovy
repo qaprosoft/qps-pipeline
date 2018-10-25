@@ -73,10 +73,10 @@ public class QARunner extends AbstractRunner {
     public void onPush() {
         context.node("master") {
             context.timestamps {
-                context.println("QARunner->onPush")
+                logger.info("QARunner->onPush")
                 prepare()
                 if (!Executor.isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-                    context.println("do not continue scanner as none of suite was updated ( *.xml )")
+                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
                     return
                 }
                 //TODO: implement repository scan and QA jobs recreation
@@ -88,7 +88,7 @@ public class QARunner extends AbstractRunner {
 
     public void onPullRequest() {
         context.node("master") {
-            context.println("QARunner->onPullRequest")
+            logger.info("QARunner->onPullRequest")
             scmClient.clonePR()
 
 			compile()
@@ -145,7 +145,7 @@ public class QARunner extends AbstractRunner {
 	            sonarQubeEnv = installation.getName()
 	        }
 	        if(sonarQubeEnv.isEmpty()){
-	            context.println "There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan."
+                logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
 	            return
 	        }
             context.withSonarQubeEnv(sonarQubeEnv) {
@@ -181,7 +181,7 @@ public class QARunner extends AbstractRunner {
             currentBuild.displayName = "#${buildNumber}|${project}|${branch}"
 
             def workspace = getWorkspace()
-            context.println("WORKSPACE: ${workspace}")
+            logger.info("WORKSPACE: ${workspace}")
 
             def removedConfigFilesAction = Configuration.get("removedConfigFilesAction")
             def removedJobAction = Configuration.get("removedJobAction")
@@ -200,16 +200,16 @@ public class QARunner extends AbstractRunner {
 
             def jenkinsFile = ".jenkinsfile.json"
             if (!context.fileExists("${workspace}/${jenkinsFile}")) {
-                context.println("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
+                logger.warn("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
                 currentBuild.result = 'UNSTABLE'
                 return
             }
 
             Object subProjects = Executor.parseJSON("${workspace}/${jenkinsFile}").sub_projects
 
-            context.println "PARSED: " + subProjects
+            logger.info("PARSED: " + subProjects)
             subProjects.each {
-                context.println("sub_project: " + it)
+                logger.info("sub_project: " + it)
 
                 def sub_project = it.name
 
@@ -360,11 +360,9 @@ public class QARunner extends AbstractRunner {
     }
 
     protected void runJob() {
-        context.println("QARunner->runJob")
-
+        logger.info("QARunner->runJob")
         uuid = Executor.getUUID()
-        context.println "UUID: " + uuid
-
+        logger.info("UUID: " + uuid)
         String nodeName = "master"
         context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
@@ -391,7 +389,7 @@ public class QARunner extends AbstractRunner {
                         publishJacocoReport()
                     }
                 } catch (Exception e) {
-                    context.println Utils.printStackTrace(e)
+                    logger.error(Utils.printStackTrace(e))
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
@@ -411,37 +409,36 @@ public class QARunner extends AbstractRunner {
         //TODO: handle browserstack etc integration here?
         switch(Configuration.get("platform").toLowerCase()) {
             case "api":
-                context.println("Suite Type: API")
+                logger.info("Suite Type: API")
                 Configuration.set("node", "api")
                 Configuration.set("browser", "NULL")
                 break;
             case "android":
-                context.println("Suite Type: ANDROID")
+                logger.info("Suite Type: ANDROID")
                 Configuration.set("node", "android")
                 break;
             case "ios":
                 //TODO: Need to improve this to be able to handle where emulator vs. physical tests should be run.
-                context.println("Suite Type: iOS")
+                logger.info("Suite Type: iOS")
                 Configuration.set("node", "ios")
                 break;
             default:
                 if ("NULL".equals(Configuration.get("browser"))) {
-                    context.println("Suite Type: Default")
+                    logger.info("Suite Type: Default")
                     Configuration.set("node", "master")
                 } else {
-                    context.println("Suite Type: Web")
+                    logger.info("Suite Type: Web")
                     Configuration.set("node", "web")
                 }
         }
 
         def nodeLabel = Configuration.get("node_label")
-        context.println("nodeLabel: " + nodeLabel)
+        logger.info("nodeLabel: " + nodeLabel)
         if (!Executor.isParamEmpty(nodeLabel)) {
-            context.println("overriding default node to: " + nodeLabel)
+            logger.info("overriding default node to: " + nodeLabel)
             Configuration.set("node", nodeLabel)
         }
-
-        context.println "node: " + Configuration.get("node")
+        logger.info("node: " + Configuration.get("node"))
         return Configuration.get("node")
     }
 
@@ -485,7 +482,7 @@ public class QARunner extends AbstractRunner {
     }
 
      protected void prepareForMobile() {
-        context.println("Runner->prepareForMobile")
+         logger.info("Runner->prepareForMobile")
         def devicePool = Configuration.get("devicePool")
         def defaultPool = Configuration.get("DefaultPool")
         def platform = Configuration.get("platform")
@@ -495,7 +492,7 @@ public class QARunner extends AbstractRunner {
         } else if (platform.equalsIgnoreCase("ios")) {
             prepareForiOS()
         } else {
-            context.println "Unable to identify mobile platform: ${platform}"
+            logger.warn("Unable to identify mobile platform: ${platform}")
         }
 
         //general mobile capabilities
@@ -518,7 +515,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected void prepareForAndroid() {
-        context.println("Runner->prepareForAndroid")
+        logger.info("Runner->prepareForAndroid")
         Configuration.set("mobile_app_clear_cache", "true")
         Configuration.set("capabilities.platformName", "ANDROID")
         Configuration.set("capabilities.autoGrantPermissions", "true")
@@ -529,7 +526,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected void prepareForiOS() {
-        context.println("Runner->prepareForiOS")
+        logger.info("Runner->prepareForiOS")
         Configuration.set("capabilities.platform", "IOS")
         Configuration.set("capabilities.platformName", "IOS")
         Configuration.set("capabilities.deviceName", "*")
@@ -545,7 +542,7 @@ public class QARunner extends AbstractRunner {
 /*		def CARINA_CORE_VERSION = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
 		context.stage("Download Resources") {
 		def pomFile = Executor.getSubProjectFolder() + "/pom.xml"
-		context.println "pomFile: " + pomFile
+		logger.info("pomFile: " + pomFile)
 			if (context.isUnix()) {
 				context.sh "'mvn' -B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION"
 			} else {
