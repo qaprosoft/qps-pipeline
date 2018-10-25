@@ -13,23 +13,21 @@ import groovy.json.JsonOutput
 
 class Repository {
 
-	def context
-	protected ISCM scmClient
+    def context
+    protected ISCM scmClient
     protected Logger logger
-
-	protected Configuration configuration = new Configuration(context)
-
-	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
-	protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
+    protected Configuration configuration = new Configuration(context)
+    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
+    protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
 	protected Map dslObjects = [:]
 
-	public Repository(context) {
-		this.context = context
-		//TODO: howto register repository not at github?
-		scmClient = new GitHub(context)
+    public Repository(context) {
+        this.context = context
+        //TODO: howto register repository not at github?
+        scmClient = new GitHub(context)
         logger = new Logger(context)
-	}
+    }
 
 	public void register() {
         logger.info("Repository->register")
@@ -137,13 +135,13 @@ class Repository {
 		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
 	}
 
-	private void registerObject(name, object) {
-		if (dslObjects.containsKey(name)) {
+    private void registerObject(name, object) {
+        if (dslObjects.containsKey(name)) {
             logger.warn("WARNING! key ${name} already defined and will be replaced!")
             logger.debug("Old Item: ${dslObjects.get(name).dump()}")
             logger.debug("New Item: ${object.dump()}")
-		}
-		dslObjects.put(name, object)
-	}
+        }
+        dslObjects.put(name, object)
+    }
 
 }
