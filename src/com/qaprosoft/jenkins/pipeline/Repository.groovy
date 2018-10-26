@@ -1,38 +1,36 @@
 package com.qaprosoft.jenkins.pipeline
 
-import groovy.json.JsonOutput
+import com.qaprosoft.Logger
 
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.ISCM
-import com.qaprosoft.scm.github.GitHub;
-
+import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
-
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
-
-//import hudson.FilePath
+import groovy.json.JsonOutput
 
 class Repository {
-	def context
-	protected ISCM scmClient
-	protected Configuration configuration = new Configuration(context)
 
-	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
-	protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
+    def context
+    protected ISCM scmClient
+    protected Logger logger
+    protected Configuration configuration = new Configuration(context)
+    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
+    protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
 	protected Map dslObjects = [:]
 
-	public Repository(context) {
-		this.context = context
-
-		//TODO: howto register repository not at github?
-		scmClient = new GitHub(context)
-	}
+    public Repository(context) {
+        this.context = context
+        //TODO: howto register repository not at github?
+        scmClient = new GitHub(context)
+        logger = new Logger(context)
+    }
 
 	public void register() {
-		context.println("Repository->register")
+        logger.info("Repository->register")
 
 		//create only high level management jobs.
 		context.node('master') {
@@ -137,14 +135,13 @@ class Repository {
 		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
 	}
 
-
-	private void registerObject(name, object) {
-		if (dslObjects.containsKey(name)) {
-			context.println("WARNING! key '" + name + "' already defined and will be replaced!")
-			context.println("old item: " + dslObjects.get(name).dump())
-			context.println("new item: " + object.dump())
-		}
-		dslObjects.put(name, object)
-	}
+    private void registerObject(name, object) {
+        if (dslObjects.containsKey(name)) {
+            logger.warn("WARNING! key ${name} already defined and will be replaced!")
+            logger.debug("Old Item: ${dslObjects.get(name).dump()}")
+            logger.debug("New Item: ${object.dump()}")
+        }
+        dslObjects.put(name, object)
+    }
 
 }

@@ -161,7 +161,6 @@ public class Executor {
         /* Gets CauseActions of the job */
         currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
             action ->
-//                context.println "DUMP" + action.dump()
                 /* Searches UpstreamCause among CauseActions and checks if it is not the same job as current(the other way it was rebuild) */
                 if (action.findCause(hudson.model.Cause.UpstreamCause.class)
                         && (jobName != action.findCause(hudson.model.Cause.UpstreamCause.class).getUpstreamProject())) {
