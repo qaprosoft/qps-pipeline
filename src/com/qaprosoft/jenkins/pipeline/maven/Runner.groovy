@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
+import com.qaprosoft.Logger
 import com.qaprosoft.scm.github.GitHub;
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
 
@@ -10,17 +11,20 @@ import hudson.plugins.sonar.SonarGlobalConfiguration
 
 public class Runner extends AbstractRunner {
 
+    Logger logger
+
     public Runner(context) {
         super(context)
         scmClient = new GitHub(context)
+        logger = new Logger(context)
     }
 
     //Events
     public void onPush() {
         context.node("master") {
-            context.println("Runner->onPush")
+            logger.info("Runner->onPush")
             boolean shadowClone = !Configuration.get("onlyUpdated").toBoolean()
-            context.println("shadowClone: " + shadowClone)
+            logger.info("shadowClone: " + shadowClone)
             scmClient.clone(shadowClone)
             //TODO: implement Sonar scan for full reposiory
         }
@@ -28,7 +32,7 @@ public class Runner extends AbstractRunner {
 
     public void onPullRequest() {
         context.node("master") {
-            context.println("Runner->onPullRequest")
+            logger.info("Runner->onPullRequest")
             scmClient.clonePR()
 
             context.stage('Maven Compile') {
@@ -51,7 +55,7 @@ public class Runner extends AbstractRunner {
     //Methods
     public void build() {
         context.node("master") {
-            context.println("Runner->build")
+            logger.info("Runner->build")
             throw new RuntimeException("Not implemented yet!")
             //TODO: implement Jenkinsfile pipeline execution from the repo
         }
@@ -71,7 +75,7 @@ public class Runner extends AbstractRunner {
             sonarQubeEnv = installation.getName()
         }
         if(sonarQubeEnv.isEmpty()){
-            context.println "There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan."
+            logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
             return
         }
         //TODO: find a way to get somehow 2 below hardcoded string values

@@ -15,6 +15,7 @@ public class TestJobFactory extends PipelineFactory {
 	def suitePath
 	def suiteName
 
+
 	public TestJobFactory(folder, pipelineScript, project, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
 		this.folder = folder
         this.description = jobDesc
@@ -27,7 +28,7 @@ public class TestJobFactory extends PipelineFactory {
 	}
 
 	def create() {
-		_dslFactory.println "TestJobFactory->create"
+        logger.info("TestJobFactory->create")
 		def xmlFile = new Parser(suitePath)
 		xmlFile.setLoadClasses(false)
 
@@ -35,7 +36,7 @@ public class TestJobFactory extends PipelineFactory {
 		XmlSuite currentSuite = suiteXml.get(0)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
-		_dslFactory.println "name: " + name
+		logger.info("JenkinsJobName: ${name}")
 
 		def pipelineJob = super.create()
 		pipelineJob.with {
@@ -90,7 +91,7 @@ public class TestJobFactory extends PipelineFactory {
 				if (currentSuite.getParameter("jenkinsJobType") != null) {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
-				_dslFactory.println "jobType: " + jobType
+                logger.info("JobType: ${jobType}")
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -104,7 +105,7 @@ public class TestJobFactory extends PipelineFactory {
 						configure addHiddenParameter('browser_version', '', '*')
 						configure addHiddenParameter('os', '', 'NULL')
 						configure addHiddenParameter('os_version', '', '*')
-						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+						booleanParam('auto_screenshot', 1, 'Generate screenshots automatically during the test')
 						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('platform', '', '*')
 						break;
@@ -189,30 +190,30 @@ public class TestJobFactory extends PipelineFactory {
 
 				def paramsMap = [:]
 				paramsMap = currentSuite.getAllParameters()
-				_dslFactory.println "paramsMap: " + paramsMap
+                logger.info("ParametersMap: ${paramsMap}")
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-//					_dslFactory.println "param: " + param
+                    logger.debug("Parameter: ${param}")
 					def delimiter = "::"
 					if (param.key.contains(delimiter)) {
 						def (type, name, desc) = param.key.split(delimiter)
 						switch(type.toLowerCase()) {
 							case "hiddenparam":
 								configure addHiddenParameter(name, desc, param.value)
-								break;
+								break
 							case "stringparam":
 								stringParam(name, param.value, desc)
-								break;
+								break
 							case "choiceparam":
 								choiceParam(name, Arrays.asList(param.value.split(',')), desc)
-								break;
+								break
 							case "booleanparam":
 								booleanParam(name, param.value.toBoolean(), desc)
-								break;
+								break
 							default:
-								break;
+								break
 						}
 					}
 				}
