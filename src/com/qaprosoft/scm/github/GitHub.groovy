@@ -1,5 +1,6 @@
 package com.qaprosoft.scm.github
 
+import com.qaprosoft.Logger
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.Configuration
 
@@ -8,9 +9,11 @@ class GitHub implements ISCM {
     private def context
     private def gitHtmlUrl
     private def gitSshUrl
+    private Logger logger
 
 	public GitHub(context) {
 		this.context = context
+        logger = new Logger(context)
         gitHtmlUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
         gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
         //TODO: investigate how we can remove such harcoded https repo urls
@@ -31,7 +34,7 @@ class GitHub implements ISCM {
 
 	public def clone(isShallow) {
 		context.stage('Checkout GitHub Repository') {
-			context.println("GitHub->clone")
+            logger.info("GitHub->clone")
 
             def fork = parseFork(Configuration.get("fork"))
             def branch = Configuration.get("branch")
@@ -40,15 +43,14 @@ class GitHub implements ISCM {
             def gitUrl = gitSshUrl
             def scmVars = [:]
 
-			context.println("GIT_URL: " + gitUrl)
-			//context.println("forked_repo: " + fork)
+            logger.info("GIT_URL: " + gitUrl)
+            logger.debug("forked_repo: " + fork)
 			if (!fork) {
                 scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', '')
 			} else {
-
 				def token_name = 'token_' + "${userId}"
-				context.println("token_name: " + token_name)
-				
+                logger.debug("token_name: " + token_name)
+
 				//register into the Configuration.vars personal token of the current user
 				def token_value = context.env.getEnvironment().get(token_name)
 
@@ -61,7 +63,7 @@ class GitHub implements ISCM {
                 if (token_value != null) {
                     def GITHUB_HOST = Configuration.get(Configuration.Parameter.GITHUB_HOST)
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
-					context.println "fork repo url: ${gitUrl}"
+                    logger.info("fork repo url: ${gitUrl}")
                     scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', '')
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
@@ -78,9 +80,7 @@ class GitHub implements ISCM {
 
 	public def clone(gitUrl, branch, subFolder) {
 		context.stage('Checkout GitHub Repository') {
-			context.println("GitHub->clone")
-			context.println("GIT_URL: " + gitUrl)
-			context.println("branch: " + branch)
+            logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false, '', '')
 		}
 	}
@@ -89,22 +89,16 @@ class GitHub implements ISCM {
 		context.stage('Checkout GitHub Repository') {
 			def branch  = Configuration.get("sha1")
 			def credentialsId = Configuration.get("ghprbCredentialsId")
-
-			context.println("GitHub->clonePR")
-			context.println("GIT_URL: " + gitSshUrl)
-			context.println("branch: " + branch)
-
+            logger.info("GitHub->clonePR\nGIT_URL: ${gitSshUrl}\nbranch: ${branch}")
 			context.checkout getCheckoutParams(gitSshUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
 		}
 	}
 
     public def clonePush() {
         context.stage('Checkout GitHub Repository') {
-            context.println("GitHub->clone")
             def branch = Configuration.get("branch")
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}.git")
-            context.println("GIT_URL: " + gitUrl)
-            context.println("branch: " + branch)
+            logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', '')
         }
     }
@@ -126,7 +120,6 @@ class GitHub implements ISCM {
         return checkoutParams
     }
 
-    //TODO: move to GitHub and iSCM
     public def mergePR(){
         //merge pull request
         def org = Configuration.get("GITHUB_ORGANIZATION")
@@ -134,11 +127,11 @@ class GitHub implements ISCM {
         def ghprbPullId = Configuration.get("ghprbPullId")
 
         def ghprbCredentialsId = Configuration.get("ghprbCredentialsId")
-        context.println("ghprbCredentialsId: " + ghprbCredentialsId)
+        logger.info("ghprbCredentialsId: " + ghprbCredentialsId)
         context.withCredentials([context.usernamePassword(credentialsId: "${ghprbCredentialsId}", usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            context.println "USERNAME: ${context.env.USERNAME}"
-            context.println "PASSWORD: ${context.env.PASSWORD}"
-            context.println("curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge")
+            logger.debug("USERNAME: ${context.env.USERNAME}")
+            logger.debug("PASSWORD: ${context.env.PASSWORD}")
+            logger.debug("curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge")
             //context.sh "curl -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge?access_token=${context.env.PASSWORD}"
             context.sh "curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${project}/pulls/${ghprbPullId}/merge"
         }

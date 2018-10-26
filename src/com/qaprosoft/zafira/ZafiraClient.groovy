@@ -1,5 +1,7 @@
 package com.qaprosoft.zafira
 
+import com.qaprosoft.Logger
+import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Executor
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -12,12 +14,14 @@ class ZafiraClient {
 	private String authToken
 	private long tokenExpTime
 	private def context
+	private Logger logger
 
-	public ZafiraClient(context) {
-		this.context = context
-		serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
-		refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
-	}
+    public ZafiraClient(context) {
+        this.context = context
+        serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
+        refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+        logger = new Logger(context)
+    }
 
 	public void queueZafiraTestRun(String uuid) {
         if(Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION).toBoolean()) {
@@ -43,7 +47,7 @@ class ZafiraClient {
                 return
             }
             String formattedJSON = JsonOutput.prettyPrint(response.content)
-            context.println "Queued TestRun: " + formattedJSON
+            logger.info("Queued TestRun: " + formattedJSON)
         }
     }
 
@@ -67,10 +71,10 @@ class ZafiraClient {
 		if(!response){
 			return
 		}
-    
-		def responseJson = new JsonSlurper().parseText(response.content)
-		context.println "Results : " + responseJson.size()
-		context.println "Tests for rerun: " + responseJson
+
+        def responseJson = new JsonSlurper().parseText(response.content)
+        logger.info("Results : " + responseJson.size())
+        logger.info("Tests for rerun: " + responseJson)
 	}
 
 	public void abortTestRun(String uuid, currentBuild) {
@@ -178,21 +182,20 @@ class ZafiraClient {
 		if(!response){
 			return ""
 		}
-		//context.println "exportZafiraReport response: " + response.content
 		return response.content
 	}
 
-	/** Sends httpRequest using passed parameters */
-	protected def sendRequest(requestParams) {
-		def response = null
-		/** Catches exceptions in every http call */
-		try {
-			response = context.httpRequest requestParams
-		} catch (Exception ex) {
-			printStackTrace(ex)
-		}
-		return response
-	}
+    /** Sends httpRequest using passed parameters */
+    protected def sendRequest(requestParams) {
+        def response = null
+        /** Catches exceptions in every http call */
+        try {
+            response = context.httpRequest requestParams
+        } catch (Exception e) {
+            logger.error(Utils.printStackTrace(e))
+        }
+        return response
+    }
 
 	protected boolean isTokenExpired() {
 		return authToken == null || System.currentTimeMillis() > tokenExpTime
@@ -200,7 +203,7 @@ class ZafiraClient {
 
 	/** Generates authToken using refreshToken*/
 	protected void getZafiraAuthToken(String refreshToken) {
-		//context.println "refreshToken: " + refreshToken
+        logger.debug("refreshToken: " + refreshToken)
 		def parameters = [contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
 						  requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
@@ -209,11 +212,5 @@ class ZafiraClient {
 		def properties = (Map) new JsonSlurper().parseText(response.getContent())
 		authToken = properties.get("type") + " " + properties.get("accessToken")
 		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
-	}
-	
-	protected void printStackTrace(Exception ex) {
-		context.println("exception: " + ex.getMessage())
-		context.println("exception class: " + ex.getClass().getName())
-		context.println("stacktrace: " + Arrays.toString(ex.getStackTrace()))
 	}
 }
