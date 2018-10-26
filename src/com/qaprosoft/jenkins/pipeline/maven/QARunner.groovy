@@ -865,9 +865,9 @@ public class QARunner extends AbstractRunner {
                 }
                 for (def currentEnv : currentEnvs.split(",")) {
                     for (def supportedEnv : supportedEnvs.split(",")) {
-                        logger.debug("supportedEnv: " + supportedEnv)
+//                        logger.debug("supportedEnv: " + supportedEnv)
                         if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
-                            logger.debug("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
+                            logger.info("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
                             //launch test only if current suite support cron regression execution for current env
                             continue
                         }
@@ -896,13 +896,13 @@ public class QARunner extends AbstractRunner {
 
                             // currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
 
-                            logger.debug("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
+//                            logger.debug("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
                             if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
-                                logger.debug("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
+                                logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                                 continue
                             }
 
-                            logger.debug("adding ${filePath} suite to pipeline run...")
+                            logger.info("adding ${filePath} suite to pipeline run...")
 
                             def pipelineMap = [:]
 
