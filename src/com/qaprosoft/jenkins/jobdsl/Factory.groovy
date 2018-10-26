@@ -15,7 +15,7 @@ logger.info("FactoryDataMap: ${JsonOutput.prettyPrint(factoryDataMap)}")
 def prettyPrint = JsonOutput.prettyPrint(factoryDataMap)
 logger.debug("factoryDataMap: " + prettyPrint)
 def factories = new HashMap(slurper.parseText(factoryDataMap))
-
+boolean exceptionOccurred = false
 factories.each{
     try {
         def factory = Class.forName(it.value.clazz)?.newInstance(this)
@@ -25,5 +25,11 @@ factories.each{
         factory.create()
     } catch (Exception e) {
         logger.error(Utils.printStackTrace(e))
+        exceptionOccurred = true
+    } finally {
+        if(exceptionOccurred) {
+            logger.error("Something went wrong during job creation. Please, check stacktrace for more information.")
+            throw new RuntimeException("JobDslException occurred")
+        }
     }
 }
