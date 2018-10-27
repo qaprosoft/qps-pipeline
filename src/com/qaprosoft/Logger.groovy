@@ -26,8 +26,8 @@ class Logger {
 
     Logger(context) {
         this.context = context
-        this.contextType = context.binding.variables.get("PIPELINE_LOG_LEVEL") ? ContextType.JOB_DSL : ContextType.PIPELINE
-        this.pipelineLogLevel = context.binding.variables.get("PIPELINE_LOG_LEVEL") ? LogLevel.valueOf(context.binding.variables.PIPELINE_LOG_LEVEL) : LogLevel.valueOf(context.env.getEnvironment().get("PIPELINE_LOG_LEVEL"))
+        this.contextType = context.binding.variables.get("QPS_PIPELINE_LOG_LEVEL") ? ContextType.JOB_DSL : ContextType.PIPELINE
+        this.pipelineLogLevel = context.binding.variables.get("QPS_PIPELINE_LOG_LEVEL") ? LogLevel.valueOf(context.binding.variables.QPS_PIPELINE_LOG_LEVEL) : LogLevel.valueOf(context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL"))
     }
 
     public debug(String message){
