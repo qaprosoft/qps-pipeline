@@ -807,7 +807,6 @@ public class QARunner extends AbstractRunner {
             logger.error(Utils.printStackTrace(e))
             return
         }
-        context.println "SUITE_DUMP: " + currentSuite.dump()
         def jobName = currentSuite.getParameter("jenkinsJobName").toString()
         def jobCreated = currentSuite.getParameter("jenkinsJobCreation")
         if (jobCreated != null && !jobCreated.toBoolean()) {
@@ -829,6 +828,9 @@ public class QARunner extends AbstractRunner {
         if(queueRegistration){
             Configuration.set(Configuration.Parameter.QUEUE_REGISTRATION, queueRegistration)
         }
+
+        def jenkinsMultipleLLanguages = Configuration.get("jenkinsMultipleLocales")
+        def jenkinsMultipleLocales = Configuration.get("jenkinsMultipleLocales")
 
         def currentEnvs = getCronEnv(currentSuite)
         def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
@@ -928,7 +930,16 @@ public class QARunner extends AbstractRunner {
                             Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
                             Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
-
+                            if(!Executor.isParamEmpty(jenkinsMultipleLLanguages) && !Executor.isParamEmpty(jenkinsMultipleLocales) ){
+                                jenkinsMultipleLLanguages = jenkinsMultipleLLanguages.toString().split(",")
+                                jenkinsMultipleLocales = jenkinsMultipleLocales.toString().split(",")
+                                for (int i = 0; i < jenkinsMultipleLLanguages.size(); i++){
+                                    pipelineMap.put("language", jenkinsMultipleLLanguages[i])
+                                    pipelineMap.put("locale", jenkinsMultipleLocales[i])
+                                    logger.debug("initialized ${filePath} suite to pipeline run...")
+                                    registerPipeline(currentSuite, pipelineMap)
+                                }
+                            }
                             logger.debug("initialized ${filePath} suite to pipeline run...")
                             registerPipeline(currentSuite, pipelineMap)
                         }
