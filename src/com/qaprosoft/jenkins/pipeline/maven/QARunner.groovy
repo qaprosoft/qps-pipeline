@@ -830,6 +830,9 @@ public class QARunner extends AbstractRunner {
             Configuration.set("queue_registration", queueRegistration)
         }
 
+        def jenkinsMultipleLanguages = currentSuite.getParameter("jenkinsMultipleLanguages")
+        def jenkinsMultipleLocales = currentSuite.getParameter("jenkinsMultipleLocales")
+
         def currentEnvs = getCronEnv(currentSuite)
         def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
 
@@ -929,6 +932,16 @@ public class QARunner extends AbstractRunner {
                             Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
                             Executor.putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
+                            if(!Executor.isParamEmpty(jenkinsMultipleLanguages) && !Executor.isParamEmpty(jenkinsMultipleLocales) ){
+                                jenkinsMultipleLanguages = jenkinsMultipleLanguages.toString().split(",")
+                                jenkinsMultipleLocales = jenkinsMultipleLocales.toString().split(",")
+                                for (int i = 0; i < jenkinsMultipleLanguages.size(); i++){
+                                    pipelineMap.put("language", jenkinsMultipleLanguages[i])
+                                    pipelineMap.put("locale", jenkinsMultipleLocales[i])
+                                    logger.debug("initialized ${filePath} suite to pipeline run...")
+                                    registerPipeline(currentSuite, pipelineMap)
+                                }
+                            }
                             logger.debug("initialized ${filePath} suite to pipeline run...")
                             registerPipeline(currentSuite, pipelineMap)
                         }
