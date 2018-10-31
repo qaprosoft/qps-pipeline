@@ -807,6 +807,7 @@ public class QARunner extends AbstractRunner {
             logger.error(Utils.printStackTrace(e))
             return
         }
+
         def jobName = currentSuite.getParameter("jenkinsJobName").toString()
         def jobCreated = currentSuite.getParameter("jenkinsJobCreation")
         if (jobCreated != null && !jobCreated.toBoolean()) {
@@ -829,11 +830,6 @@ public class QARunner extends AbstractRunner {
         if(!Executor.isParamEmpty(queueRegistration)){
             Configuration.set(Configuration.Parameter.QUEUE_REGISTRATION, queueRegistration)
         }
-
-        def jenkinsMultipleLanguages = currentSuite.getParameter("jenkinsMultipleLanguages")
-        context.println "LANGS: " + jenkinsMultipleLanguages
-        context.println currentSuite.dump()
-        def jenkinsMultipleLocales = currentSuite.getParameter("jenkinsMultipleLocales")
 
         def currentEnvs = getCronEnv(currentSuite)
         def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
@@ -930,22 +926,11 @@ public class QARunner extends AbstractRunner {
                             pipelineMap.put("env", supportedEnv)
                             pipelineMap.put("order", orderNum)
                             pipelineMap.put("BuildPriority", priorityNum)
-                            context.println "QUEUE_REGISTRATION:" + Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION)
                             pipelineMap.put("QUEUE_REGISTRATION", Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION))
                             Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
                             Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
-                            if(!Executor.isParamEmpty(jenkinsMultipleLanguages) && !Executor.isParamEmpty(jenkinsMultipleLocales) ){
-                                context.println "11111"
-                                jenkinsMultipleLanguages = jenkinsMultipleLanguages.toString().split(",")
-                                jenkinsMultipleLocales = jenkinsMultipleLocales.toString().split(",")
-                                for (int i = 0; i < jenkinsMultipleLanguages.size(); i++){
-                                    pipelineMap.put("language", jenkinsMultipleLanguages[i])
-                                    pipelineMap.put("locale", jenkinsMultipleLocales[i])
-                                    logger.debug("initialized ${filePath} suite to pipeline run...")
-                                    registerPipeline(currentSuite, pipelineMap)
-                                }
-                            }
+
                             logger.debug("initialized ${filePath} suite to pipeline run...")
                             registerPipeline(currentSuite, pipelineMap)
                         }
