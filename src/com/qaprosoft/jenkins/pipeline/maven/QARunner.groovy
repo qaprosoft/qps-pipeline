@@ -777,7 +777,6 @@ public class QARunner extends AbstractRunner {
                 if(files.length > 0) {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
-                        context.println "FDUMP: " + files[i].dump()
                         parsePipeline(workspace + "/" + files[i].path)
                     }
 
@@ -808,7 +807,7 @@ public class QARunner extends AbstractRunner {
             logger.error(Utils.printStackTrace(e))
             return
         }
-
+        context.println "SUITE_DUMP: " + currentSuite.dump()
         def jobName = currentSuite.getParameter("jenkinsJobName").toString()
         def jobCreated = currentSuite.getParameter("jenkinsJobCreation")
         if (jobCreated != null && !jobCreated.toBoolean()) {
