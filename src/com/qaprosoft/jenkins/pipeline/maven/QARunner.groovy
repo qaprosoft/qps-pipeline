@@ -827,9 +827,7 @@ public class QARunner extends AbstractRunner {
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
 
         if(!Executor.isParamEmpty(queueRegistration)){
-            context.println "QUEUE: " + queueRegistration
-            Configuration.set("QUEUE_REGISTRATION", queueRegistration)
-            context.println "QUEUE_REGISTRATION1:" + Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION)
+            Configuration.set(Configuration.Parameter.QUEUE_REGISTRATION, queueRegistration)
         }
 
         def jenkinsMultipleLanguages = currentSuite.getParameter("jenkinsMultipleLanguages")
@@ -932,7 +930,7 @@ public class QARunner extends AbstractRunner {
                             pipelineMap.put("env", supportedEnv)
                             pipelineMap.put("order", orderNum)
                             pipelineMap.put("BuildPriority", priorityNum)
-                            context.println "QUEUE_REGISTRATION2:" + Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION)
+                            context.println "QUEUE_REGISTRATION:" + Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION)
                             pipelineMap.put("QUEUE_REGISTRATION", Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION))
                             Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
                             Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
@@ -1036,6 +1034,7 @@ public class QARunner extends AbstractRunner {
 
             //add current build params from cron
             for (param in Configuration.getParams()) {
+                context.println "PARAMVALUE: " + param
                 if (!Executor.isParamEmpty(param.getValue())) {
                     if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
                         jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
