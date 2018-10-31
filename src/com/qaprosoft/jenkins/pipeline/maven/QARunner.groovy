@@ -828,8 +828,8 @@ public class QARunner extends AbstractRunner {
 
         if(!Executor.isParamEmpty(queueRegistration)){
             context.println "QUEUE: " + queueRegistration
-            Configuration.set("QUEUE_REGISTRATION", queueRegistration)
-            context.println  "new: " + Configuration.Parameter.QUEUE_REGISTRATION
+            Configuration.set(Configuration.Parameter.QUEUE_REGISTRATION, queueRegistration)
+            context.println  "new: " + Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION)
         }
 
         def jenkinsMultipleLanguages = currentSuite.getParameter("jenkinsMultipleLanguages")
