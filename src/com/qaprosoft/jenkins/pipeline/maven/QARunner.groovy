@@ -828,7 +828,7 @@ public class QARunner extends AbstractRunner {
 
         if(!Executor.isParamEmpty(queueRegistration)){
             context.println "QUEUE: " + queueRegistration
-            Configuration.set(Configuration.Parameter.QUEUE_REGISTRATION, queueRegistration)
+            Configuration.set("QUEUE_REGISTRATION", queueRegistration)
             context.println "QUEUE_REGISTRATION1:" + Configuration.Parameter.QUEUE_REGISTRATION.getValue()
         }
 
