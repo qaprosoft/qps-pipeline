@@ -829,8 +829,8 @@ public class QARunner extends AbstractRunner {
             Configuration.set(Configuration.Parameter.QUEUE_REGISTRATION, queueRegistration)
         }
 
-        def jenkinsMultipleLLanguages = Configuration.get("jenkinsMultipleLocales")
-        context.println "LANGS: " + jenkinsMultipleLLanguages
+        def jenkinsMultipleLanguages = Configuration.get("jenkinsMultipleLanguages")
+        context.println "LANGS: " + jenkinsMultipleLanguages
         context.println currentSuite.dump()
         def jenkinsMultipleLocales = Configuration.get("jenkinsMultipleLocales")
 
@@ -932,12 +932,12 @@ public class QARunner extends AbstractRunner {
                             Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
                             Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
-                            if(!Executor.isParamEmpty(jenkinsMultipleLLanguages) && !Executor.isParamEmpty(jenkinsMultipleLocales) ){
+                            if(!Executor.isParamEmpty(jenkinsMultipleLanguages) && !Executor.isParamEmpty(jenkinsMultipleLocales) ){
                                 context.println "11111"
-                                jenkinsMultipleLLanguages = jenkinsMultipleLLanguages.toString().split(",")
+                                jenkinsMultipleLanguages = jenkinsMultipleLanguages.toString().split(",")
                                 jenkinsMultipleLocales = jenkinsMultipleLocales.toString().split(",")
-                                for (int i = 0; i < jenkinsMultipleLLanguages.size(); i++){
-                                    pipelineMap.put("language", jenkinsMultipleLLanguages[i])
+                                for (int i = 0; i < jenkinsMultipleLanguages.size(); i++){
+                                    pipelineMap.put("language", jenkinsMultipleLanguages[i])
                                     pipelineMap.put("locale", jenkinsMultipleLocales[i])
                                     logger.debug("initialized ${filePath} suite to pipeline run...")
                                     registerPipeline(currentSuite, pipelineMap)
