@@ -829,6 +829,7 @@ public class QARunner extends AbstractRunner {
         if(!Executor.isParamEmpty(queueRegistration)){
             context.println "QUEUE: " + queueRegistration
             Configuration.set(Configuration.Parameter.QUEUE_REGISTRATION, queueRegistration)
+            context.println "QUEUE_REGISTRATION1:" + Configuration.Parameter.QUEUE_REGISTRATION.getValue()
         }
 
         def jenkinsMultipleLanguages = currentSuite.getParameter("jenkinsMultipleLanguages")
@@ -931,7 +932,7 @@ public class QARunner extends AbstractRunner {
                             pipelineMap.put("env", supportedEnv)
                             pipelineMap.put("order", orderNum)
                             pipelineMap.put("BuildPriority", priorityNum)
-                            context.println "QUEUE_REGISTRATION:" + Configuration.Parameter.QUEUE_REGISTRATION.getValue()
+                            context.println "QUEUE_REGISTRATION2:" + Configuration.Parameter.QUEUE_REGISTRATION.getValue()
                             pipelineMap.put("QUEUE_REGISTRATION", Configuration.Parameter.QUEUE_REGISTRATION.getValue())
                             Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
                             Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
