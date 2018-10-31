@@ -831,7 +831,7 @@ public class QARunner extends AbstractRunner {
 
         def jenkinsMultipleLLanguages = Configuration.get("jenkinsMultipleLocales")
         context.println "LANGS: " + jenkinsMultipleLLanguages
-        currentSuite.dump()
+        context.println currentSuite.dump()
         def jenkinsMultipleLocales = Configuration.get("jenkinsMultipleLocales")
 
         def currentEnvs = getCronEnv(currentSuite)
