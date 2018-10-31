@@ -829,10 +829,10 @@ public class QARunner extends AbstractRunner {
             Configuration.set(Configuration.Parameter.QUEUE_REGISTRATION, queueRegistration)
         }
 
-        def jenkinsMultipleLanguages = Configuration.get("jenkinsMultipleLanguages")
+        def jenkinsMultipleLanguages = currentSuite.getParameter("jenkinsMultipleLanguages")
         context.println "LANGS: " + jenkinsMultipleLanguages
         context.println currentSuite.dump()
-        def jenkinsMultipleLocales = Configuration.get("jenkinsMultipleLocales")
+        def jenkinsMultipleLocales = currentSuite.getParameter("jenkinsMultipleLocales")
 
         def currentEnvs = getCronEnv(currentSuite)
         def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
