@@ -827,7 +827,7 @@ public class QARunner extends AbstractRunner {
 		}
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
         if(!Executor.isParamEmpty(queueRegistration)){
-            Configuration.set(Configuration.Parameter.QUEUE_REGISTRATION, queueRegistration)
+            Configuration.set("queue_registration", queueRegistration)
         }
 
         def currentEnvs = getCronEnv(currentSuite)
@@ -925,11 +925,10 @@ public class QARunner extends AbstractRunner {
                             pipelineMap.put("env", supportedEnv)
                             pipelineMap.put("order", orderNum)
                             pipelineMap.put("BuildPriority", priorityNum)
-                            pipelineMap.put("QUEUE_REGISTRATION", Configuration.get(Configuration.Parameter.QUEUE_REGISTRATION))
                             Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
                             Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
-
+                            Executor.putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
                             logger.debug("initialized ${filePath} suite to pipeline run...")
                             registerPipeline(currentSuite, pipelineMap)
                         }
