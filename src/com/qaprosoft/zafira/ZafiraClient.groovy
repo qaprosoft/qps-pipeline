@@ -24,7 +24,7 @@ class ZafiraClient {
     }
 
 	public void queueZafiraTestRun(String uuid) {
-        if(Configuration.get("queue_registration") && Configuration.get("queue_registration").toBoolean()) {
+        if(!Configuration.get("queue_registration") || Configuration.get("queue_registration") && Configuration.get("queue_registration").toBoolean()) {
             if (isTokenExpired()) {
                 getZafiraAuthToken(refreshToken)
             }
