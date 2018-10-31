@@ -164,7 +164,7 @@ public class Configuration {
 	}
 
 	public static void set(Parameter param, String value) {
-		vars.put(param.getKey(), value)
+		set(param.getKey(), value)
 	}
 
 	public static void set(String paramName, String value) {
