@@ -931,7 +931,7 @@ public class QARunner extends AbstractRunner {
                             pipelineMap.put("env", supportedEnv)
                             pipelineMap.put("order", orderNum)
                             pipelineMap.put("BuildPriority", priorityNum)
-                            pipelineMap.put("QUEUE_REGISTRATION", Configuration.Parameter.QUEUE_REGISTRATION)
+                            pipelineMap.put("QUEUE_REGISTRATION", Configuration.Parameter.QUEUE_REGISTRATION.getValue())
                             Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
                             Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
