@@ -830,6 +830,7 @@ public class QARunner extends AbstractRunner {
         }
 
         def jenkinsMultipleLLanguages = Configuration.get("jenkinsMultipleLocales")
+        context.println "LANGS: " + jenkinsMultipleLLanguages
         def jenkinsMultipleLocales = Configuration.get("jenkinsMultipleLocales")
 
         def currentEnvs = getCronEnv(currentSuite)
@@ -931,6 +932,7 @@ public class QARunner extends AbstractRunner {
                             Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
                             if(!Executor.isParamEmpty(jenkinsMultipleLLanguages) && !Executor.isParamEmpty(jenkinsMultipleLocales) ){
+                                context.println "11111"
                                 jenkinsMultipleLLanguages = jenkinsMultipleLLanguages.toString().split(",")
                                 jenkinsMultipleLocales = jenkinsMultipleLocales.toString().split(",")
                                 for (int i = 0; i < jenkinsMultipleLLanguages.size(); i++){
