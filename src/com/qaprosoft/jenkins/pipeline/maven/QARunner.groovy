@@ -825,8 +825,9 @@ public class QARunner extends AbstractRunner {
 			supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
 		}
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
-        context.println "QUEUE: " + queueRegistration
+
         if(!Executor.isParamEmpty(queueRegistration)){
+            context.println "QUEUE: " + queueRegistration
             Configuration.set(Configuration.Parameter.QUEUE_REGISTRATION, queueRegistration)
         }
 
