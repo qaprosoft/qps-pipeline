@@ -915,40 +915,38 @@ public class QARunner extends AbstractRunner {
                                 logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                                 continue
                             }
-
-                            logger.info("adding ${filePath} suite to pipeline run...")
-
-                            def pipelineMap = [:]
-
-                            // put all not NULL args into the pipelineMap for execution
-                            Executor.putNotNull(pipelineMap, "browser", browser)
-                            Executor.putNotNull(pipelineMap, "browser_version", browserVersion)
-                            Executor.putNotNull(pipelineMap, "os", os)
-                            Executor.putNotNull(pipelineMap, "os_version", osVersion)
-                            pipelineMap.put("name", pipeName)
-                            pipelineMap.put("branch", Configuration.get("branch"))
-                            pipelineMap.put("ci_parent_url", Executor.setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
-                            pipelineMap.put("ci_parent_build", Executor.setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
-                            pipelineMap.put("retry_count", Configuration.get("retry_count"))
-                            Executor.putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
-                            pipelineMap.put("jobName", jobName)
-                            pipelineMap.put("env", supportedEnv)
-                            pipelineMap.put("order", orderNum)
-                            pipelineMap.put("BuildPriority", priorityNum)
-                            Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
-                            Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-                            Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
-                            Executor.putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
                             supportedLanguages.each { language ->
                                 context.println "LNG: " + language.dump()
+                                logger.info("adding ${filePath} suite to pipeline run...")
+
+                                def pipelineMap = [:]
+
+                                // put all not NULL args into the pipelineMap for execution
+                                Executor.putNotNull(pipelineMap, "browser", browser)
+                                Executor.putNotNull(pipelineMap, "browser_version", browserVersion)
+                                Executor.putNotNull(pipelineMap, "os", os)
+                                Executor.putNotNull(pipelineMap, "os_version", osVersion)
+                                pipelineMap.put("name", pipeName)
+                                pipelineMap.put("branch", Configuration.get("branch"))
+                                pipelineMap.put("ci_parent_url", Executor.setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
+                                pipelineMap.put("ci_parent_build", Executor.setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
+                                pipelineMap.put("retry_count", Configuration.get("retry_count"))
+                                Executor.putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
+                                pipelineMap.put("jobName", jobName)
+                                pipelineMap.put("env", supportedEnv)
+                                pipelineMap.put("order", orderNum)
+                                pipelineMap.put("BuildPriority", priorityNum)
+                                Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
+                                Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+                                Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
+                                Executor.putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
                                 pipelineMap.put("locale", language.key)
                                 pipelineMap.put("language", language.value)
                                 logger.debug("initialized ${filePath} suite to pipeline run...")
                                 registerPipeline(currentSuite, pipelineMap)
+
                             }
-                            logger.debug("initialized ${filePath} suite to pipeline run...")
-                            registerPipeline(currentSuite, pipelineMap)
-                        }
+                         }
 
                     }
                 }
