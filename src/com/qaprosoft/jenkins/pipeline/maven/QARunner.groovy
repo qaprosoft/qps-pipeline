@@ -940,6 +940,7 @@ public class QARunner extends AbstractRunner {
                             Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
                             Executor.putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
                             supportedLanguages.each { language ->
+                                context.println "LNG: " + language.dump()
                                 pipelineMap.put("locale", language.key)
                                 pipelineMap.put("language", language.value)
                                 logger.debug("initialized ${filePath} suite to pipeline run...")
