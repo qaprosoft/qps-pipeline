@@ -31,19 +31,19 @@ class Logger {
     }
 
     public debug(String message){
-        context.printf log(LogLevel.DEBUG, message)
+        context.println log(LogLevel.DEBUG, message)
     }
 
     public info(String message){
-        context.printf log(LogLevel.INFO, message)
+        context.println log(LogLevel.INFO, message)
     }
 
     public warn(String message){
-        context.printf log(LogLevel.WARN, message)
+        context.println log(LogLevel.WARN, message)
     }
 
     public error(String message){
-        context.printf log(LogLevel.ERROR, message)
+        context.println log(LogLevel.ERROR, message)
     }
 
     private def log(LogLevel logLevel, String message){
