@@ -825,14 +825,14 @@ public class QARunner extends AbstractRunner {
 		if (Executor.isParamEmpty(supportedEnvs)) {
 			supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
 		}
-        def supportedLanguages = currentSuite.getParameter("jenkinsPipelineLanguages")
-        if (!Executor.isParamEmpty(supportedLanguages)) {
+        def supportedLocales = currentSuite.getParameter("jenkinsPipelineLanguages")
+        if (!Executor.isParamEmpty(supportedLocales)) {
             def languageLocaleMap = [:]
-            for (language in supportedLanguages.split(",")) {
-                def languageLocaleArray = language.split(":")
-                languageLocaleMap.put(languageLocaleArray[0], languageLocaleArray[1])
+            for (locale in supportedLocales.split(",")) {
+                def language = locale.split("_")[0]
+                languageLocaleMap.put(language, locale)
             }
-            supportedLanguages = languageLocaleMap
+            supportedLocales = languageLocaleMap
         }
 
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
@@ -915,7 +915,7 @@ public class QARunner extends AbstractRunner {
                                 logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                                 continue
                             }
-                            supportedLanguages.each { language ->
+                            supportedLocales.each { language ->
                                 context.println "LNG: " + language.dump()
                                 logger.info("adding ${filePath} suite to pipeline run...")
 
