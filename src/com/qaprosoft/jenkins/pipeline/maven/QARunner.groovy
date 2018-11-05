@@ -32,6 +32,7 @@ public class QARunner extends AbstractRunner {
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
+    protected def pipelineLanguage = ""
 
     public enum JobType {
         JOB("JOB"),
@@ -777,7 +778,16 @@ public class QARunner extends AbstractRunner {
                 if(files.length > 0) {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
-                        parsePipeline(workspace + "/" + files[i].path)
+                        def currentSuite = parsePipeline(workspace + "/" + files[i].path)
+                        def supportedLanguages = getPipelineLanguages(currentSuite)
+                        if (supportedLanguages.size() > 0){
+                            supportedLanguages.each { language ->
+                                pipelineLanguage = language
+                                proceedPipeline(currentSuite)
+                            }
+                        } else {
+                            proceedPipeline(currentSuite)
+                        }
                     }
 
                     logger.info("Finished Dynamic Mapping: " + listPipelines.dump())
@@ -793,20 +803,34 @@ public class QARunner extends AbstractRunner {
 
     }
 
-    protected void parsePipeline(String filePath) {
+    protected def getPipelineLanguages(xmlSuite){
+        def supportedLanguages = [:]
+        def jenkinsPipelineLanguages = xmlSuite.getParameter("jenkinsPipelineLanguages")
+        if (!Executor.isParamEmpty(jenkinsPipelineLanguages)) {
+            for (locale in jenkinsPipelineLanguages.split(",")) {
+                def language = locale.split("_")[0]
+                supportedLanguages.put(language, locale)
+            }
+        }
+        return supportedLanguages
+    }
+
+    protected XmlSuite parsePipeline(filePath){
         logger.debug("filePath: " + filePath)
-        def XmlSuite currentSuite = null
+        XmlSuite currentSuite = null
         try {
             currentSuite = Executor.parseSuite(filePath)
         } catch (FileNotFoundException e) {
             logger.error("ERROR! Unable to find suite: " + filePath)
             logger.error(Utils.printStackTrace(e))
-            return
         } catch (Exception e) {
             logger.error("ERROR! Unable to parse suite: " + filePath)
             logger.error(Utils.printStackTrace(e))
-            return
         }
+        return currentSuite
+    }
+
+    protected void proceedPipeline(XmlSuite currentSuite) {
 
         def jobName = currentSuite.getParameter("jenkinsJobName").toString()
         def jobCreated = currentSuite.getParameter("jenkinsJobCreation")
@@ -825,15 +849,6 @@ public class QARunner extends AbstractRunner {
 		if (Executor.isParamEmpty(supportedEnvs)) {
 			supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
 		}
-        def supportedLocales = currentSuite.getParameter("jenkinsPipelineLanguages")
-        if (!Executor.isParamEmpty(supportedLocales)) {
-            def languageLocaleMap = [:]
-            for (locale in supportedLocales.split(",")) {
-                def language = locale.split("_")[0]
-                languageLocaleMap.put(language, locale)
-            }
-            supportedLocales = languageLocaleMap
-        }
 
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
         if(!Executor.isParamEmpty(queueRegistration)){
@@ -915,39 +930,34 @@ public class QARunner extends AbstractRunner {
                                 logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                                 continue
                             }
-                            supportedLocales.each { language ->
-                                context.println "LNG: " + language.dump()
-                                logger.info("adding ${filePath} suite to pipeline run...")
+//                                logger.info("adding ${filePath} suite to pipeline run...")
 
-                                def pipelineMap = [:]
+                            def pipelineMap = [:]
 
-                                // put all not NULL args into the pipelineMap for execution
-                                Executor.putNotNull(pipelineMap, "browser", browser)
-                                Executor.putNotNull(pipelineMap, "browser_version", browserVersion)
-                                Executor.putNotNull(pipelineMap, "os", os)
-                                Executor.putNotNull(pipelineMap, "os_version", osVersion)
-                                pipelineMap.put("name", pipeName)
-                                pipelineMap.put("branch", Configuration.get("branch"))
-                                pipelineMap.put("ci_parent_url", Executor.setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
-                                pipelineMap.put("ci_parent_build", Executor.setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
-                                pipelineMap.put("retry_count", Configuration.get("retry_count"))
-                                Executor.putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
-                                pipelineMap.put("jobName", jobName)
-                                pipelineMap.put("env", supportedEnv)
-                                pipelineMap.put("order", orderNum)
-                                pipelineMap.put("BuildPriority", priorityNum)
-                                Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
-                                Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-                                Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
-                                Executor.putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
-                                pipelineMap.put("locale", language.key)
-                                pipelineMap.put("language", language.value)
-                                logger.debug("initialized ${filePath} suite to pipeline run...")
-                                registerPipeline(currentSuite, pipelineMap)
-
-                            }
-                         }
-
+                            // put all not NULL args into the pipelineMap for execution
+                            Executor.putNotNull(pipelineMap, "browser", browser)
+                            Executor.putNotNull(pipelineMap, "browser_version", browserVersion)
+                            Executor.putNotNull(pipelineMap, "os", os)
+                            Executor.putNotNull(pipelineMap, "os_version", osVersion)
+                            Executor.putNotNull(pipelineMap, "locale", pipelineLanguage?.key)
+                            Executor.putNotNull(pipelineMap, "language", pipelineLanguage?.value)
+                            pipelineMap.put("name", pipeName)
+                            pipelineMap.put("branch", Configuration.get("branch"))
+                            pipelineMap.put("ci_parent_url", Executor.setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
+                            pipelineMap.put("ci_parent_build", Executor.setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
+                            pipelineMap.put("retry_count", Configuration.get("retry_count"))
+                            Executor.putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
+                            pipelineMap.put("jobName", jobName)
+                            pipelineMap.put("env", supportedEnv)
+                            pipelineMap.put("order", orderNum)
+                            pipelineMap.put("BuildPriority", priorityNum)
+                            Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
+                            Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+                            Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
+                            Executor.putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
+//                                logger.debug("initialized ${filePath} suite to pipeline run...")
+                            registerPipeline(currentSuite, pipelineMap)
+                        }
                     }
                 }
             }
