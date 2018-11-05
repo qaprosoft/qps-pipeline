@@ -32,7 +32,7 @@ public class QARunner extends AbstractRunner {
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
-    protected def pipelineLanguage = ""
+    protected Map pipelineLanguageMap = [:]
 
     public enum JobType {
         JOB("JOB"),
@@ -788,10 +788,11 @@ public class QARunner extends AbstractRunner {
                         context.println "LNG: " + supportedLanguages.dump()
                         if (supportedLanguages.size() > 0){
                             supportedLanguages.each { language ->
-                                pipelineLanguage = language
+                                pipelineLanguageMap.put("language", language.key)
+                                pipelineLanguageMap.put("locale", language.value)
                                 proceedPipeline(currentSuite)
                             }
-                            pipelineLanguage = ""
+                            pipelineLanguageMap.clear()
                         } else {
                             proceedPipeline(currentSuite)
                         }
@@ -942,12 +943,11 @@ public class QARunner extends AbstractRunner {
                             def pipelineMap = [:]
 
                             // put all not NULL args into the pipelineMap for execution
+                            putMap(pipelineMap, pipelineLanguageMap)
                             putNotNull(pipelineMap, "browser", browser)
                             putNotNull(pipelineMap, "browser_version", browserVersion)
                             putNotNull(pipelineMap, "os", os)
                             putNotNull(pipelineMap, "os_version", osVersion)
-                            putNotNull(pipelineMap, "locale", pipelineLanguage?.key)
-                            putNotNull(pipelineMap, "language", pipelineLanguage?.value)
                             pipelineMap.put("name", pipeName)
                             pipelineMap.put("branch", Configuration.get("branch"))
                             pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))

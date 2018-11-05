@@ -314,4 +314,9 @@ public class Executor {
         }
     }
 
+    static void putMap(pipelineMap, map) {
+        map.each { mapItem ->
+            pipelineMap.put(mapItem.key, mapItem.value)
+        }
+    }
 }
