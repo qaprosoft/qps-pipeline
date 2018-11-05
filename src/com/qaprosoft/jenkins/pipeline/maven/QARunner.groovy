@@ -779,12 +779,12 @@ public class QARunner extends AbstractRunner {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
                         def currentSuite = parsePipeline(workspace + "/" + files[i].path)
-                        if(!currentSuite){
+                        if (!currentSuite) {
                             setBuildResult(currentBuild, BuildResult.FAILURE)
                             return
                         }
                         def supportedLanguages = getPipelineLanguages(currentSuite)
-                        if (supportedLanguages.size() > 0){
+                        if (supportedLanguages.size() > 0) {
                             context.println "22222"
                             supportedLanguages.each { language ->
                                 pipelineLanguageMap.put("language", language.key)
@@ -797,6 +797,7 @@ public class QARunner extends AbstractRunner {
                             context.println "11111"
                             generatePipeline(currentSuite)
                         }
+                    }
                         logger.info "Finished Dynamic Mapping:"
                         listPipelines.each { pipeline ->
                             logger.info(pipeline.toString())
@@ -808,7 +809,6 @@ public class QARunner extends AbstractRunner {
                         }
                         folderName = parseFolderName(getWorkspace())
                         executeStages()
-                    }
                 } else {
                     logger.error("No Test Suites Found to Scan...")
                 }
