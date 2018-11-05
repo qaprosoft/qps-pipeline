@@ -786,6 +786,7 @@ public class QARunner extends AbstractRunner {
                         def supportedLanguages = getPipelineLanguages(currentSuite)
                         if (supportedLanguages.size() > 0){
                             supportedLanguages.each { language ->
+                                context.println "LNG: " + language.dump()
                                 pipelineLanguageMap.put("language", language.key)
                                 pipelineLanguageMap.put("locale", language.value)
                                 executePipeline(currentSuite)
@@ -803,16 +804,7 @@ public class QARunner extends AbstractRunner {
 
     }
 
-    protected void executePipeline(XmlSuite currentSuite) {
-        proceedPipeline(currentSuite)
-        logger.info("Finished Dynamic Mapping: " + listPipelines.dump())
-        listPipelines = sortPipelineList(listPipelines)
-        logger.info("Finished Dynamic Mapping Sorted Order: " + listPipelines.dump())
-        folderName = parseFolderName(getWorkspace())
-        executeStages()
-    }
-
-    protected XmlSuite parsePipeline(filePath){
+     protected XmlSuite parsePipeline(filePath){
         logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
@@ -827,7 +819,16 @@ public class QARunner extends AbstractRunner {
         return currentSuite
     }
 
-    protected void proceedPipeline(XmlSuite currentSuite) {
+    protected void executePipeline(XmlSuite currentSuite) {
+        generatePipeline(currentSuite)
+        logger.info("Finished Dynamic Mapping: " + listPipelines.dump())
+        listPipelines = sortPipelineList(listPipelines)
+        logger.info("Finished Dynamic Mapping Sorted Order: " + listPipelines.dump())
+        folderName = parseFolderName(getWorkspace())
+        executeStages()
+    }
+
+    protected void generatePipeline(XmlSuite currentSuite) {
 
         def jobName = currentSuite.getParameter("jenkinsJobName").toString()
         def jobCreated = currentSuite.getParameter("jenkinsJobCreation")
