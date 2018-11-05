@@ -22,6 +22,18 @@ public class Executor {
         FAILURE, ABORTED, UNSTABLE
     }
 
+    static def getPipelineLanguages(xmlSuite){
+        def supportedLanguages = [:]
+        def jenkinsPipelineLanguages = xmlSuite.getParameter("jenkinsPipelineLanguages")
+        if (!isParamEmpty(jenkinsPipelineLanguages)) {
+            for (locale in jenkinsPipelineLanguages.split(",")) {
+                def language = locale.split("_")[0]
+                supportedLanguages.put(language, locale)
+            }
+        }
+        return supportedLanguages
+    }
+
     static String getUUID() {
 		def ci_run_id = Configuration.get("ci_run_id")
 		if (ci_run_id == null || ci_run_id.isEmpty()) {
