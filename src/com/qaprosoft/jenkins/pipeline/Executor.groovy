@@ -18,7 +18,7 @@ import org.jenkinsci.plugins.ghprb.Ghprb
 
 public class Executor {
 
-    enum BuildResult {
+    static enum BuildResult {
         FAILURE, ABORTED, UNSTABLE
     }
 
