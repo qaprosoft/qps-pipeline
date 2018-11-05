@@ -823,11 +823,10 @@ public class QARunner extends AbstractRunner {
         } catch (FileNotFoundException e) {
             logger.error("ERROR! Unable to find suite: " + filePath)
             logger.error(Utils.printStackTrace(e))
+            return
         } catch (Exception e) {
             logger.error("ERROR! Unable to parse suite: " + filePath)
             logger.error(Utils.printStackTrace(e))
-        }
-        if(!currentSuite){
             return
         }
         return currentSuite
