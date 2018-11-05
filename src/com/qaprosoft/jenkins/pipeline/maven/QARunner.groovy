@@ -785,12 +785,15 @@ public class QARunner extends AbstractRunner {
                         }
                         def supportedLanguages = getPipelineLanguages(currentSuite)
                         if (supportedLanguages.size() > 0){
+                            context.println "22222"
                             supportedLanguages.each { language ->
                                 pipelineLanguageMap.put("language", language.key)
                                 pipelineLanguageMap.put("locale", language.value)
+                                generatePipeline(currentSuite)
                             }
                             pipelineLanguageMap.clear()
                         } else {
+                            context.println "11111"
                             generatePipeline(currentSuite)
                         }
                         listPipelines.each { pipeline ->
