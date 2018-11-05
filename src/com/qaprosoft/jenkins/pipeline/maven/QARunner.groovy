@@ -974,6 +974,7 @@ public class QARunner extends AbstractRunner {
 
 	// do not remove currentSuite from this method! It is available here to be override on customer level.
     protected def registerPipeline(currentSuite, pipelineMap) {
+        context.println "33333"
         listPipelines.add(pipelineMap)
     }
 
