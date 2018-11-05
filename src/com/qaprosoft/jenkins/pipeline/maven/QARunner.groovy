@@ -203,7 +203,7 @@ public class QARunner extends AbstractRunner {
             def jenkinsFile = ".jenkinsfile.json"
             if (!context.fileExists("${workspace}/${jenkinsFile}")) {
                 logger.warn("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
-                currentBuild.result = 'UNSTABLE'
+                setBuildResult(currentBuild, BuildResult.UNSTABLE)
                 return
             }
 
@@ -693,9 +693,9 @@ public class QARunner extends AbstractRunner {
         // set job status based on zafira report
         if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
             logger.debug("Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report.")
-            currentBuild.result = 'FAILURE'
+            setBuildResult(currentBuild, BuildResult.FAILURE)
         } else if (zafiraReport.contains("SKIP_ALL:")) {
-            currentBuild.result = 'UNSTABLE'
+            setBuildResult(currentBuild, BuildResult.UNSTABLE)
         }
     }
 
@@ -829,10 +829,6 @@ public class QARunner extends AbstractRunner {
             logger.error(Utils.printStackTrace(e))
         }
         return currentSuite
-    }
-
-    protected void executePipeline(XmlSuite currentSuite) {
-
     }
 
     protected void generatePipeline(XmlSuite currentSuite) {
