@@ -779,6 +779,9 @@ public class QARunner extends AbstractRunner {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
                         def currentSuite = parsePipeline(workspace + "/p" + files[i].path)
+                        if(!currentSuite){
+                            return
+                        }
                         def supportedLanguages = getPipelineLanguages(currentSuite)
                         if (supportedLanguages.size() > 0){
                             supportedLanguages.each { language ->
@@ -823,11 +826,9 @@ public class QARunner extends AbstractRunner {
         } catch (FileNotFoundException e) {
             logger.error("ERROR! Unable to find suite: " + filePath)
             logger.error(Utils.printStackTrace(e))
-            return
         } catch (Exception e) {
             logger.error("ERROR! Unable to parse suite: " + filePath)
             logger.error(Utils.printStackTrace(e))
-            return
         }
         return currentSuite
     }
