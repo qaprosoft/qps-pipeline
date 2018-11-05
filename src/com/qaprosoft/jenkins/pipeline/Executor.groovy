@@ -100,12 +100,16 @@ public class Executor {
         return folderName
     }
 
-    static boolean isFailure(currentBuild) {
+     static boolean isFailure(currentBuild) {
         boolean failure = false
         if (currentBuild.result) {
             failure = "FAILURE".equals(currentBuild.result.name)
         }
         return failure
+    }
+
+    static void setBuildResult(currentBuild, result) {
+        currentBuild.result = result
     }
 
     static def getJenkinsJobByName(jobName) {

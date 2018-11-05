@@ -779,6 +779,10 @@ public class QARunner extends AbstractRunner {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
                         def currentSuite = parsePipeline(workspace + "/p" + files[i].path)
+                        if(!currentSuite){
+                            Executor.setBuildResult(currentBuild.result, 'FAILURE')
+                            return
+                        }
                         def supportedLanguages = getPipelineLanguages(currentSuite)
                         if (supportedLanguages.size() > 0){
                             supportedLanguages.each { language ->
@@ -826,9 +830,6 @@ public class QARunner extends AbstractRunner {
         } catch (Exception e) {
             logger.error("ERROR! Unable to parse suite: " + filePath)
             logger.error(Utils.printStackTrace(e))
-        }
-        if(!currentSuite){
-            throw new RuntimeException("No XmlSuite to run, terminating build.")
         }
         return currentSuite
     }
