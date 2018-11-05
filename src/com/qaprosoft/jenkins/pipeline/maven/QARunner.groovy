@@ -793,7 +793,7 @@ public class QARunner extends AbstractRunner {
                             }
                             pipelineLanguageMap.clear()
                         } else {
-                            context.println "LNGS: " + supportedLanguages.dump()
+                            context.println "LNGS: " + supportedLanguages.size()
                             context.println "11111"
                             generatePipeline(currentSuite)
                         }
