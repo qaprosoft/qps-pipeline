@@ -791,6 +791,7 @@ public class QARunner extends AbstractRunner {
                                 pipelineLanguage = language
                                 proceedPipeline(currentSuite)
                             }
+                            pipelineLanguage = ""
                         } else {
                             proceedPipeline(currentSuite)
                         }
