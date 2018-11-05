@@ -780,7 +780,7 @@ public class QARunner extends AbstractRunner {
                     for (int i = 0; i < files.length; i++) {
                         def currentSuite = parsePipeline(workspace + "/p" + files[i].path)
                         if(!currentSuite){
-                            Executor.setBuildResult(currentBuild.result, 'FAILURE')
+                            Executor.setBuildResult(currentBuild, 'FAILURE')
                             return
                         }
                         def supportedLanguages = getPipelineLanguages(currentSuite)
