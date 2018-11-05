@@ -18,6 +18,10 @@ import org.jenkinsci.plugins.ghprb.Ghprb
 
 public class Executor {
 
+    enum BuildResult {
+        FAILURE, ABORTED, UNSTABLE
+    }
+
     static String getUUID() {
 		def ci_run_id = Configuration.get("ci_run_id")
 		if (ci_run_id == null || ci_run_id.isEmpty()) {
