@@ -784,6 +784,8 @@ public class QARunner extends AbstractRunner {
                             return
                         }
                         def supportedLanguages = getPipelineLanguages(currentSuite)
+                        context.println "SNM: " + currentSuite.getParameter("jenkinsJobName").toString()
+                        context.println "LNG: " + supportedLanguages.dump()
                         if (supportedLanguages.size() > 0){
                             supportedLanguages.each { language ->
                                 pipelineLanguage = language
