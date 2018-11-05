@@ -827,6 +827,9 @@ public class QARunner extends AbstractRunner {
             logger.error("ERROR! Unable to parse suite: " + filePath)
             logger.error(Utils.printStackTrace(e))
         }
+        if(!currentSuite){
+            return
+        }
         return currentSuite
     }
 
