@@ -788,12 +788,19 @@ public class QARunner extends AbstractRunner {
                             supportedLanguages.each { language ->
                                 pipelineLanguageMap.put("language", language.key)
                                 pipelineLanguageMap.put("locale", language.value)
-                                executePipeline(currentSuite)
                             }
-                            pipelineLanguageMap.clear()
                         } else {
-                            executePipeline(currentSuite)
+                            generatePipeline(currentSuite)
                         }
+                        listPipelines.each { pipeline ->
+                            logger.info("Finished Dynamic Mapping: " + pipeline)
+                        }
+                        listPipelines = sortPipelineList(listPipelines)
+                        listPipelines.each { pipeline ->
+                            logger.debug("Finished Dynamic Mapping Sorted Order: " + pipeline)
+                        }
+                        folderName = parseFolderName(getWorkspace())
+                        executeStages()
                     }
                 } else {
                     logger.error("No Test Suites Found to Scan...")
@@ -819,14 +826,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected void executePipeline(XmlSuite currentSuite) {
-        generatePipeline(currentSuite)
-        listPipelines.each { pipeline ->
-            logger.info("Finished Dynamic Mapping: " + pipeline)
-        }
-        listPipelines = sortPipelineList(listPipelines)
-        logger.debug("Finished Dynamic Mapping Sorted Order: " + listPipelines.dump())
-        folderName = parseFolderName(getWorkspace())
-        executeStages()
+
     }
 
     protected void generatePipeline(XmlSuite currentSuite) {
