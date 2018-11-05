@@ -33,6 +33,7 @@ public class QARunner extends AbstractRunner {
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
     protected Map pipelineLanguageMap = [:]
+    protected boolean multilingualMode = false
 
     public enum JobType {
         JOB("JOB"),
@@ -785,7 +786,7 @@ public class QARunner extends AbstractRunner {
                         }
                         def supportedLanguages = getPipelineLanguages(currentSuite)
                         if (supportedLanguages.size() > 0) {
-                            context.println "22222"
+                            multilingualMode = true
                             supportedLanguages.each { language ->
                                 pipelineLanguageMap.put("language", language.key)
                                 pipelineLanguageMap.put("locale", language.value)
@@ -793,22 +794,20 @@ public class QARunner extends AbstractRunner {
                             }
                             pipelineLanguageMap.clear()
                         } else {
-                            context.println "LNGS: " + supportedLanguages.size()
-                            context.println "11111"
                             generatePipeline(currentSuite)
                         }
                     }
-                        logger.info "Finished Dynamic Mapping:"
-                        listPipelines.each { pipeline ->
-                            logger.info(pipeline.toString())
-                        }
-                        listPipelines = sortPipelineList(listPipelines)
-                        logger.debug("Finished Dynamic Mapping Sorted Order:")
-                        listPipelines.each { pipeline ->
-                            logger.debug(pipeline.toString())
-                        }
-                        folderName = parseFolderName(getWorkspace())
-                        executeStages()
+                    logger.info "Finished Dynamic Mapping:"
+                    listPipelines.each { pipeline ->
+                        logger.info(pipeline.toString())
+                    }
+                    listPipelines = sortPipelineList(listPipelines)
+                    logger.debug("Finished Dynamic Mapping Sorted Order:")
+                    listPipelines.each { pipeline ->
+                        logger.debug(pipeline.toString())
+                    }
+                    folderName = parseFolderName(getWorkspace())
+                    executeStages()
                 } else {
                     logger.error("No Test Suites Found to Scan...")
                 }
@@ -976,7 +975,6 @@ public class QARunner extends AbstractRunner {
 
 	// do not remove currentSuite from this method! It is available here to be override on customer level.
     protected def registerPipeline(currentSuite, pipelineMap) {
-        context.println "33333"
         listPipelines.add(pipelineMap)
     }
 
@@ -989,7 +987,12 @@ public class QARunner extends AbstractRunner {
         String beginOrder = "0"
         String curOrder = ""
         for (Map entry : listPipelines) {
-            def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
+            def stageName
+            if(multilingualMode){
+                stageName = String.format("Stage: %s Environment: %s Browser: %s Language: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"), entry.get("language"))
+            } else {
+                stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
+            }
             logger.info("stageName: ${stageName}")
 
             boolean propagateJob = true
