@@ -784,25 +784,17 @@ public class QARunner extends AbstractRunner {
                             return
                         }
                         def supportedLanguages = getPipelineLanguages(currentSuite)
-                        context.println "SNM: " + currentSuite.getParameter("jenkinsJobName").toString()
-                        context.println "LNG: " + supportedLanguages.dump()
                         if (supportedLanguages.size() > 0){
                             supportedLanguages.each { language ->
                                 pipelineLanguageMap.put("language", language.key)
                                 pipelineLanguageMap.put("locale", language.value)
-                                proceedPipeline(currentSuite)
+                                executePipeline(currentSuite)
                             }
                             pipelineLanguageMap.clear()
                         } else {
-                            proceedPipeline(currentSuite)
+                            executePipeline(currentSuite)
                         }
                     }
-
-                    logger.info("Finished Dynamic Mapping: " + listPipelines.dump())
-                    listPipelines = sortPipelineList(listPipelines)
-                    logger.info("Finished Dynamic Mapping Sorted Order: " + listPipelines.dump())
-                    folderName = parseFolderName(getWorkspace())
-                    executeStages()
                 } else {
                     logger.error("No Test Suites Found to Scan...")
                 }
@@ -811,16 +803,13 @@ public class QARunner extends AbstractRunner {
 
     }
 
-    protected def getPipelineLanguages(xmlSuite){
-        def supportedLanguages = [:]
-        def jenkinsPipelineLanguages = xmlSuite.getParameter("jenkinsPipelineLanguages")
-        if (!isParamEmpty(jenkinsPipelineLanguages)) {
-            for (locale in jenkinsPipelineLanguages.split(",")) {
-                def language = locale.split("_")[0]
-                supportedLanguages.put(language, locale)
-            }
-        }
-        return supportedLanguages
+    protected void executePipeline(XmlSuite currentSuite) {
+        proceedPipeline(currentSuite)
+        logger.info("Finished Dynamic Mapping: " + listPipelines.dump())
+        listPipelines = sortPipelineList(listPipelines)
+        logger.info("Finished Dynamic Mapping Sorted Order: " + listPipelines.dump())
+        folderName = parseFolderName(getWorkspace())
+        executeStages()
     }
 
     protected XmlSuite parsePipeline(filePath){
