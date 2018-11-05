@@ -778,7 +778,7 @@ public class QARunner extends AbstractRunner {
                 if(files.length > 0) {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
-                        def currentSuite = parsePipeline(workspace + "/" + files[i].path)
+                        def currentSuite = parsePipeline(workspace + "/p" + files[i].path)
                         def supportedLanguages = getPipelineLanguages(currentSuite)
                         if (supportedLanguages.size() > 0){
                             supportedLanguages.each { language ->
