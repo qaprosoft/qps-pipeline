@@ -124,7 +124,7 @@ public class Executor {
      static boolean isFailure(currentBuild) {
         boolean failure = false
         if (currentBuild.result) {
-            failure = "FAILURE".equals(currentBuild.result.name)
+            failure = BuildResult.FAILURE == currentBuild.result.name
         }
         return failure
     }
