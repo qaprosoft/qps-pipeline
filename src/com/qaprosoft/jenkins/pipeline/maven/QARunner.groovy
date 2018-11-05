@@ -797,12 +797,14 @@ public class QARunner extends AbstractRunner {
                             context.println "11111"
                             generatePipeline(currentSuite)
                         }
+                        logger.info "Finished Dynamic Mapping:"
                         listPipelines.each { pipeline ->
-                            logger.info("Finished Dynamic Mapping: " + pipeline)
+                            logger.info(pipeline)
                         }
                         listPipelines = sortPipelineList(listPipelines)
+                        logger.debug("Finished Dynamic Mapping Sorted Order:")
                         listPipelines.each { pipeline ->
-                            logger.debug("Finished Dynamic Mapping Sorted Order: " + pipeline)
+                            logger.debug(pipeline)
                         }
                         folderName = parseFolderName(getWorkspace())
                         executeStages()
