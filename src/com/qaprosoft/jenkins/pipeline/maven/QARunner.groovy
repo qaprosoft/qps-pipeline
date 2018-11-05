@@ -789,6 +789,7 @@ public class QARunner extends AbstractRunner {
                                 pipelineLanguageMap.put("language", language.key)
                                 pipelineLanguageMap.put("locale", language.value)
                             }
+                            pipelineLanguageMap.clear()
                         } else {
                             generatePipeline(currentSuite)
                         }
