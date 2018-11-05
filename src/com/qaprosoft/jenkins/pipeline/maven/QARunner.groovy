@@ -708,7 +708,7 @@ public class QARunner extends AbstractRunner {
             zc.sendEmail(uuid, emailList, "all")
         }
         context.println "ISFLR: " + isFailure(currentBuild.rawBuild)
-        context.println "RSLT: " + currentBuild.result.dump()
+        context.println "RSLT: " + currentBuild.result
         if (isFailure(currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
             zc.sendEmail(uuid, failureEmailList, "failures")
         }
