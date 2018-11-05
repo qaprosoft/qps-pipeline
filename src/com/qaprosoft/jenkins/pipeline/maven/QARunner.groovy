@@ -201,7 +201,7 @@ public class QARunner extends AbstractRunner {
 
 
             def jenkinsFile = ".jenkinsfile.json"
-            if (!context.fileExists("${workspace}//${jenkinsFile}")) {
+            if (!context.fileExists("${workspace}/wewew${jenkinsFile}")) {
                 logger.warn("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
                 setBuildResult(currentBuild, BuildResult.UNSTABLE)
                 return
