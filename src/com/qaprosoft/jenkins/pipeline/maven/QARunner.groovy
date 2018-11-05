@@ -786,7 +786,6 @@ public class QARunner extends AbstractRunner {
                         def supportedLanguages = getPipelineLanguages(currentSuite)
                         if (supportedLanguages.size() > 0){
                             supportedLanguages.each { language ->
-                                context.println "LNG: " + language.dump()
                                 pipelineLanguageMap.put("language", language.key)
                                 pipelineLanguageMap.put("locale", language.value)
                                 executePipeline(currentSuite)
@@ -823,7 +822,7 @@ public class QARunner extends AbstractRunner {
         generatePipeline(currentSuite)
         logger.info("Finished Dynamic Mapping: " + listPipelines.dump())
         listPipelines = sortPipelineList(listPipelines)
-        logger.info("Finished Dynamic Mapping Sorted Order: " + listPipelines.dump())
+        logger.debug("Finished Dynamic Mapping Sorted Order: " + listPipelines.dump())
         folderName = parseFolderName(getWorkspace())
         executeStages()
     }
@@ -931,7 +930,7 @@ public class QARunner extends AbstractRunner {
 //                                logger.info("adding ${filePath} suite to pipeline run...")
 
                             def pipelineMap = [:]
-
+                            context.println "LNG: " + pipelineLanguageMap
                             // put all not NULL args into the pipelineMap for execution
                             putMap(pipelineMap, pipelineLanguageMap)
                             putNotNull(pipelineMap, "browser", browser)
