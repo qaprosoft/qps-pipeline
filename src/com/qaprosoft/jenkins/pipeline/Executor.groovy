@@ -113,20 +113,20 @@ public class Executor {
     }
 
     static def getPipelineLocales(xmlSuite){
-        def supportedLanguages = [:]
+        def supportedLocales = [:]
         def jenkinsPipelineLocales = xmlSuite.getParameter("jenkinsPipelineLocales")
         if (!isParamEmpty(jenkinsPipelineLocales)) {
             for (String locale in jenkinsPipelineLocales.split(",")) {
                 if(locale.contains(":")){
                     def languageLocaleArray = locale.split(":")
-                    supportedLanguages.put(languageLocaleArray[0], languageLocaleArray[1])
+                    supportedLocales.put(languageLocaleArray[0], languageLocaleArray[1])
                 } else {
                     def language = locale.split("_")[0]
-                    supportedLanguages.put(locale, language)
+                    supportedLocales.put(locale, language)
                 }
             }
         }
-        return supportedLanguages
+        return supportedLocales
     }
 
 
