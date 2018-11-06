@@ -32,7 +32,7 @@ public class QARunner extends AbstractRunner {
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
-    protected Map pipelineLanguageMap = [:]
+    protected Map pipelineLocaleMap = [:]
     protected boolean multilingualMode = false
 
     public enum JobType {
@@ -203,7 +203,7 @@ public class QARunner extends AbstractRunner {
             def jenkinsFile = ".jenkinsfile.json"
             if (!context.fileExists("${workspace}/${jenkinsFile}")) {
                 logger.warn("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
-                setBuildResult(currentBuild, BuildResult.UNSTABLE)
+                currentBuild.result = BuildResult.UNSTABLE
                 return
             }
 
@@ -693,9 +693,9 @@ public class QARunner extends AbstractRunner {
         // set job status based on zafira report
         if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
             logger.debug("Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report.")
-            setBuildResult(currentBuild, BuildResult.FAILURE)
+            currentBuild.result = BuildResult.FAILURE
         } else if (zafiraReport.contains("SKIP_ALL:")) {
-            setBuildResult(currentBuild, BuildResult.UNSTABLE)
+            currentBuild.result = BuildResult.UNSTABLE
         }
     }
 
@@ -707,8 +707,6 @@ public class QARunner extends AbstractRunner {
         if (emailList != null && !emailList.isEmpty()) {
             zc.sendEmail(uuid, emailList, "all")
         }
-        context.println "ISFLR: " + isFailure(currentBuild.rawBuild)
-        context.println "RSLT: " + currentBuild.rawBuild.result
         if (isFailure(currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
             zc.sendEmail(uuid, failureEmailList, "failures")
         }
@@ -783,18 +781,18 @@ public class QARunner extends AbstractRunner {
                     for (int i = 0; i < files.length; i++) {
                         def currentSuite = parsePipeline(workspace + "/" + files[i].path)
                         if (!currentSuite) {
-                            setBuildResult(currentBuild, BuildResult.FAILURE)
+                            currentBuild.result = BuildResult.FAILURE
                             return
                         }
-                        def supportedLanguages = getPipelineLanguages(currentSuite)
-                        if (supportedLanguages.size() > 0) {
+                        def supportedLocales = getPipelineLocales(currentSuite)
+                        if (supportedLocales.size() > 0) {
                             multilingualMode = true
-                            supportedLanguages.each { language ->
-                                pipelineLanguageMap.put("language", language.key)
-                                pipelineLanguageMap.put("locale", language.value)
+                            supportedLocales.each { locale ->
+                                pipelineLocaleMap.put("locale", locale.key)
+                                pipelineLocaleMap.put("language", locale.value)
                                 generatePipeline(currentSuite)
                             }
-                            pipelineLanguageMap.clear()
+                            pipelineLocaleMap.clear()
                         } else {
                             generatePipeline(currentSuite)
                         }
@@ -852,7 +850,6 @@ public class QARunner extends AbstractRunner {
 		if (isParamEmpty(supportedEnvs)) {
 			supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
 		}
-
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
         if(!isParamEmpty(queueRegistration)){
             Configuration.set("queue_registration", queueRegistration)
@@ -933,12 +930,13 @@ public class QARunner extends AbstractRunner {
                                 logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                                 continue
                             }
-//                                logger.info("adding ${filePath} suite to pipeline run...")
+
+//                            logger.info("adding ${filePath} suite to pipeline run...")
 
                             def pipelineMap = [:]
-                            context.println "LNG: " + pipelineLanguageMap
+
                             // put all not NULL args into the pipelineMap for execution
-                            putMap(pipelineMap, pipelineLanguageMap)
+                            putMap(pipelineMap, pipelineLocaleMap)
                             putNotNull(pipelineMap, "browser", browser)
                             putNotNull(pipelineMap, "browser_version", browserVersion)
                             putNotNull(pipelineMap, "os", os)

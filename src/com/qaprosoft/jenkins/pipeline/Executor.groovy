@@ -22,23 +22,6 @@ public class Executor {
         FAILURE, ABORTED, UNSTABLE
     }
 
-    static def getPipelineLanguages(xmlSuite){
-        def supportedLanguages = [:]
-        def jenkinsPipelineLanguages = xmlSuite.getParameter("jenkinsPipelineLanguages")
-        if (!isParamEmpty(jenkinsPipelineLanguages)) {
-            for (String locale in jenkinsPipelineLanguages.split(",")) {
-                if(locale.contains(":")){
-                    def languageLocaleArray = locale.split(":")
-                    supportedLanguages.put(languageLocaleArray[0], languageLocaleArray[1])
-                } else {
-                    def language = locale.split("_")[0]
-                    supportedLanguages.put(language, locale)
-                }
-            }
-        }
-        return supportedLanguages
-    }
-
     static String getUUID() {
 		def ci_run_id = Configuration.get("ci_run_id")
 		if (ci_run_id == null || ci_run_id.isEmpty()) {
@@ -129,9 +112,23 @@ public class Executor {
         return failure
     }
 
-    static void setBuildResult(currentBuild, result) {
-        currentBuild.result = result
+    static def getPipelineLocales(xmlSuite){
+        def supportedLanguages = [:]
+        def jenkinsPipelineLocales = xmlSuite.getParameter("jenkinsPipelineLocales")
+        if (!isParamEmpty(jenkinsPipelineLocales)) {
+            for (String locale in jenkinsPipelineLocales.split(",")) {
+                if(locale.contains(":")){
+                    def languageLocaleArray = locale.split(":")
+                    supportedLanguages.put(languageLocaleArray[0], languageLocaleArray[1])
+                } else {
+                    def language = locale.split("_")[0]
+                    supportedLanguages.put(locale, language)
+                }
+            }
+        }
+        return supportedLanguages
     }
+
 
     static def getJenkinsJobByName(jobName) {
         def currentJob = null
