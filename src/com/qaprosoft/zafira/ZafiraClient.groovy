@@ -78,7 +78,7 @@ class ZafiraClient {
 	}
 
 	public void abortTestRun(String uuid, currentBuild) {
-		setBuildResult(currentBuild, BuildResult.FAILURE)
+		currentBuild.result = BuildResult.FAILURE
 		def failureReason = "undefined failure"
 
 		String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
@@ -96,7 +96,7 @@ class ZafiraClient {
 			failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
 			failureReason = URLEncoder.encode(failureLog, "UTF-8")
 		} else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
-			setBuildResult(currentBuild, BuildResult.ABORTED)
+			currentBuild.result = BuildResult.ABORTED
 			bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
 			subject = getFailureSubject("TIMED OUT", jobName, env, buildNumber)
 			failureReason = "Aborted by timeout"
@@ -106,7 +106,7 @@ class ZafiraClient {
 			failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
 			failureReason = URLEncoder.encode("BUILD FAILURE:\n" + failureLog, "UTF-8")
 		} else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
-			setBuildResult(currentBuild, BuildResult.ABORTED)
+			currentBuild.result = BuildResult.ABORTED
 			bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
 			subject = getFailureSubject("ABORTED", jobName, env, buildNumber)
 			failureReason = "Aborted by " + getAbortCause(currentBuild)
