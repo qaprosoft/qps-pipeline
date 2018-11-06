@@ -779,7 +779,7 @@ public class QARunner extends AbstractRunner {
                 if(files.length > 0) {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
-                        def currentSuite = parsePipeline(workspace + "/y" + files[i].path)
+                        def currentSuite = parsePipeline(workspace + "/" + files[i].path)
                         if (!currentSuite) {
                             currentBuild.result = BuildResult.FAILURE
                             return
