@@ -985,7 +985,7 @@ public class QARunner extends AbstractRunner {
         for (Map entry : listPipelines) {
             def stageName
             if(multilingualMode){
-                stageName = String.format("Stage: %s Environment: %s Browser: %s Language: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"), entry.get("language"))
+                stageName = String.format("Stage: %s Environment: %s Browser: %s Locale: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"), entry.get("locale"))
             } else {
                 stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
             }
