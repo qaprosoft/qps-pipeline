@@ -542,85 +542,93 @@ public class QARunner extends AbstractRunner {
 		}
 */	}
 
+	protected String getMavenGoals() {
+		def buildUserEmail = Configuration.get("BUILD_USER_EMAIL")
+		if (buildUserEmail == null) {
+			//override "null" value by empty to be able to register in cloud version of Zafira
+			buildUserEmail = ""
+		}
+		def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+				-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+		-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
+		-Dmaven.test.failure.ignore=true \
+		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
+		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
+		-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
+		-Dzafira_enabled=true \
+		-Dzafira_rerun_failures=${Configuration.get("rerun_failures")} \
+		-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
+		-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
+		-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
+				-Dgit_branch=${Configuration.get("branch")} \
+		-Dgit_commit=${Configuration.get("scm_commit")} \
+		-Dgit_url=${Configuration.get("scm_url")} \
+		-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
+		-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+				  -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
+		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
+		clean test"
+
+		Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
+
+		def goals = Configuration.resolveVars(defaultBaseMavenGoals)
+
+		//register all obligatory vars
+		Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+
+		//register all params after vars to be able to override
+		Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+
+		goals = Executor.enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
+		goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
+		goals = addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
+
+		//TODO: move 8000 port into the global var
+		def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
+
+		if (Configuration.get("debug") && Configuration.get("debug").toBoolean()) {
+			// [VD] getting debug host works only on specific nodes which are detecetd by chooseNode.
+			// on this stage this method is not fucntion properly!
+			goals = addOptionalParameter("debug", "Enabling remote debug on ${getDebugHost()}:${getDebugPort()}", mavenDebug, goals)
+		}
+		goals = addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
+
+		//browserstack goals
+		if (isBrowserStackRun()) {
+			def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
+					Configuration.get("browser") + "-" + Configuration.get("env") + "\""
+			uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
+			startBrowserStackLocal(uniqueBrowserInstance)
+			goals += " -Dcapabilities.project=" + Configuration.get("project")
+			goals += " -Dcapabilities.build=" + uniqueBrowserInstance
+			goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
+			goals += " -Dapp_version=browserStack"
+		}
+
+		//append again overrideFields to make sure they are declared at the end
+		goals = goals + " " + Configuration.get("overrideFields")
+
+		logger.debug("goals: ${goals}")
+
+		def suiteName = null
+		if (context.isUnix()) {
+			suiteName = Configuration.get("suite").replace("\\", "/")
+		} else {
+			suiteName = Configuration.get("suite").replace("/", "\\")
+		}
+		
+		return "${goals} -Dsuite=${suiteName}"
+	}
+	
+	protected String getMavenPomFile() {
+		return Executor.getSubProjectFolder() + "/pom.xml"
+	}
+	
     protected void buildJob() {
         context.stage('Run Test Suite') {
-
-            def buildUserEmail = Configuration.get("BUILD_USER_EMAIL")
-            if (buildUserEmail == null) {
-                //override "null" value by empty to be able to register in cloud version of Zafira
-                buildUserEmail = ""
-            }
-            def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
-					-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
-			-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
-			-Dmaven.test.failure.ignore=true \
-			-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
-			-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
-			-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
-			-Dzafira_enabled=true \
-			-Dzafira_rerun_failures=${Configuration.get("rerun_failures")} \
-			-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
-			-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-			-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
-					-Dgit_branch=${Configuration.get("branch")} \
-			-Dgit_commit=${Configuration.get("scm_commit")} \
-			-Dgit_url=${Configuration.get("scm_url")} \
-			-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
-			-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-                      -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
-			-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
-			clean test"
-
-            Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
-
-            def goals = Configuration.resolveVars(defaultBaseMavenGoals)
-
-            //register all obligatory vars
-            Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
-
-            //register all params after vars to be able to override
-            Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
-
-            goals = Executor.enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
-            goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
-            goals = addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
-
-            //TODO: move 8000 port into the global var
-            def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
-
-			if (Configuration.get("debug") && Configuration.get("debug").toBoolean()) {
-				// [VD] getting debug host works only on specific nodes which are detecetd by chooseNode.
-				// on this stage this method is not fucntion properly! 
-				goals = addOptionalParameter("debug", "Enabling remote debug on ${getDebugHost()}:${getDebugPort()}", mavenDebug, goals)
-			}
-            goals = addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
-
-            //browserstack goals
-            if (isBrowserStackRun()) {
-                def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
-                        Configuration.get("browser") + "-" + Configuration.get("env") + "\""
-                uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
-                startBrowserStackLocal(uniqueBrowserInstance)
-                goals += " -Dcapabilities.project=" + Configuration.get("project")
-                goals += " -Dcapabilities.build=" + uniqueBrowserInstance
-                goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
-                goals += " -Dapp_version=browserStack"
-            }
-
-            //append again overrideFields to make sure they are declared at the end
-            goals = goals + " " + Configuration.get("overrideFields")
-
-            logger.debug("goals: ${goals}")
-
-			def suiteName = null
-            if (context.isUnix()) {
-                suiteName = Configuration.get("suite").replace("\\", "/")
-            } else {
-                suiteName = Configuration.get("suite").replace("/", "\\")
-            }
-			
-			def pomFile = Executor.getSubProjectFolder() + "/pom.xml"
-			executeMavenGoals("-U ${goals} -Dsuite=${suiteName} -f ${pomFile}")
+			def goals = getMavenGoals()
+			def pomFile = getMavenPomFile()
+			executeMavenGoals("-U ${goals} -f ${pomFile}")
         }
     }
 
