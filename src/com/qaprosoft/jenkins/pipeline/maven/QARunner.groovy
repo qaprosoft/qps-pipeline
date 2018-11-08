@@ -545,7 +545,6 @@ public class QARunner extends AbstractRunner {
     protected void buildJob() {
         context.stage('Run Test Suite') {
 
-            def pomFile = Executor.getSubProjectFolder() + "/pom.xml"
             def buildUserEmail = Configuration.get("BUILD_USER_EMAIL")
             if (buildUserEmail == null) {
                 //override "null" value by empty to be able to register in cloud version of Zafira
@@ -554,7 +553,6 @@ public class QARunner extends AbstractRunner {
             def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 			-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
-			-f ${pomFile} \
 			-Dmaven.test.failure.ignore=true \
 			-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
 			-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
@@ -621,7 +619,8 @@ public class QARunner extends AbstractRunner {
                 suiteName = Configuration.get("suite").replace("/", "\\")
             }
 			
-			executeMavenGoals("-U ${goals} -Dsuite=${suiteName}")
+			def pomFile = Executor.getSubProjectFolder() + "/pom.xml"
+			executeMavenGoals("-U ${goals} -Dsuite=${suiteName} -f ${pomFile}")
         }
     }
 
