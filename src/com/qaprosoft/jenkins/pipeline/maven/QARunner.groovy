@@ -125,15 +125,6 @@ public class QARunner extends AbstractRunner {
         scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
     }
 
-
-    protected def void executeMavenGoals(goals){
-        if (context.isUnix()) {
-            context.sh "'mvn' -B ${goals}"
-        } else {
-            context.bat "mvn -B ${goals}"
-        }
-    }
-
 	protected void performSonarQubeScan(){
 		performSonarQubeScan("pom.xml")
 	}
@@ -623,15 +614,14 @@ public class QARunner extends AbstractRunner {
 
             logger.debug("goals: ${goals}")
 
+			def suiteName = null
             if (context.isUnix()) {
-                def suiteNameForUnix = Configuration.get("suite").replace("\\", "/")
-                logger.info("Suite for Unix: ${suiteNameForUnix}")
-                context.sh "'mvn' -B -U ${goals} -Dsuite=${suiteNameForUnix}"
+                suiteName = Configuration.get("suite").replace("\\", "/")
             } else {
-                def suiteNameForWindows = Configuration.get("suite").replace("/", "\\")
-                logger.info("Suite for Windows: ${suiteNameForWindows}")
-                context.bat "mvn -B -U ${goals} -Dsuite=${suiteNameForWindows}"
+                suiteName = Configuration.get("suite").replace("/", "\\")
             }
+			
+			executeMavenGoals("-U ${goals} -Dsuite=${suiteName}")
         }
     }
 
