@@ -26,7 +26,7 @@ public abstract class AbstractRunner {
     abstract public void onPullRequest()
 	
 	
-	protected def void executeMavenGoals(goals){
+	protected void executeMavenGoals(goals) {
 		if (context.isUnix()) {
 			context.sh "'mvn' -B ${goals}"
 		} else {
