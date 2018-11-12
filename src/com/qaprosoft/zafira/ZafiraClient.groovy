@@ -24,7 +24,7 @@ class ZafiraClient {
     }
 
 	public void queueZafiraTestRun(String uuid) {
-        if(Executor.isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
+/*        if(Executor.isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
             if (isTokenExpired()) {
                 getZafiraAuthToken(refreshToken)
             }
@@ -48,7 +48,7 @@ class ZafiraClient {
             }
             String formattedJSON = JsonOutput.prettyPrint(response.content)
             logger.info("Queued TestRun: " + formattedJSON)
-        }
+        }*/
     }
 
 	public void smartRerun() {
