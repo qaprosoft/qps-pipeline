@@ -23,7 +23,8 @@ class TestRailClient {
             context.echo "USERNAME: ${context.env.USERNAME}"
             context.echo "PASSWORD: ${context.env.PASSWORD}"
 
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${context.env.USERNAME}:${context.env.PASSWORD}"]],
+            String encodedCreds = "${context.env.USERNAME}:${context.env.PASSWORD}".bytes.encodeBase64().toString()
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodedCreds}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
