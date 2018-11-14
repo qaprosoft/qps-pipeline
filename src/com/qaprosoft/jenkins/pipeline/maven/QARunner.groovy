@@ -2,6 +2,8 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 
 import com.qaprosoft.Utils
+import com.qaprosoft.testrail.TestRailClient
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 //[VD] do not remove this important import!
@@ -29,6 +31,7 @@ public class QARunner extends AbstractRunner {
     protected def currentBuild
     protected def uuid
     protected def zc
+    protected def trc
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
@@ -48,6 +51,7 @@ public class QARunner extends AbstractRunner {
         super(context)
         scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
+        trc = new TestRailClient(context)
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
             onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
@@ -365,6 +369,7 @@ public class QARunner extends AbstractRunner {
         uuid = getUUID()
         logger.info("UUID: " + uuid)
         context.println "TAGS: " + zc.getTagData("d4240db9-092c-4c5c-9ff5-0f6f29e599c8", "TESTRAIL_TESTCASE_UUID")
+        context.println "PROJECTS: " + zc.getRuns("11")
         String nodeName = "master"
         context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
