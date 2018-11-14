@@ -828,6 +828,7 @@ public class QARunner extends AbstractRunner {
 		}
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
         if(!Executor.isParamEmpty(queueRegistration)){
+            logger.info("override queue_registration to: " + queueRegistration)
             Configuration.set("queue_registration", queueRegistration)
         }
 
