@@ -1,8 +1,7 @@
 package com.qaprosoft.testrail
 
-import com.qaprosoft.Utils
+import static com.qaprosoft.Utils.*
 import com.qaprosoft.Logger
-import com.qaprosoft.jenkins.pipeline.Configuration
 import groovy.json.JsonBuilder
 
 class TestRailClient {
@@ -20,11 +19,7 @@ class TestRailClient {
 
     public def getRuns(projectId) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            context.echo "USERNAME: ${context.env.USERNAME}"
-            context.echo "PASSWORD: ${context.env.PASSWORD}"
-
-            String encodedCreds = "${context.env.USERNAME}:${context.env.PASSWORD}".bytes.encodeBase64().toString()
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodedCreds}"]],
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
@@ -39,7 +34,6 @@ class TestRailClient {
     }
 
     public String addTestRunCustomCases(suite_id, name, assignedto_id, projectID, case_ids) {
-
         def builder = new JsonBuilder()
         builder suite_id: "${suite_id}",
                 name: "${name}",
@@ -48,22 +42,19 @@ class TestRailClient {
                 case_ids: "${case_ids}"
 
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            context.echo "USERNAME: ${context.env.USERNAME}"
-            context.echo "PASSWORD: ${context.env.PASSWORD}"
-
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${context.env.USERNAME}:${context.env.PASSWORD}"]],
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'POST',
                               requestBody: "${builder.toString()}",
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "add_run/${projectID}"]
 
+            def response = sendRequest(parameters)
+            if(!response){
+                return ""
+            }
+            return response.content
         }
-        def response = sendRequest(parameters)
-        if(!response){
-            return ""
-        }
-        return response.content
     }
 
     public String addTestRun(suite_id, name, assignedto_id, projectID, insludeAllCases) {
@@ -97,7 +88,7 @@ class TestRailClient {
         try {
             response = context.httpRequest requestParams
         } catch (Exception e) {
-            logger.error(Utils.printStackTrace(e))
+            logger.error(printStackTrace(e))
         }
         return response
     }
