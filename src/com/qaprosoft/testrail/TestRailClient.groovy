@@ -18,7 +18,7 @@ class TestRailClient {
         logger = new Logger(context)
     }
 
-    public def getRuns(int projectId) {
+    public def getRuns(projectId) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             context.echo "USERNAME: ${context.env.USERNAME}"
             context.echo "PASSWORD: ${context.env.PASSWORD}"
