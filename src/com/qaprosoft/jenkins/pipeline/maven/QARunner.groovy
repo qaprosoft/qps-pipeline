@@ -364,6 +364,7 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
+        context.println "TAGS: " + zc.getTagData("d4240db9-092c-4c5c-9ff5-0f6f29e599c8", "TESTRAIL_TESTCASE_UUID")
         String nodeName = "master"
         context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)

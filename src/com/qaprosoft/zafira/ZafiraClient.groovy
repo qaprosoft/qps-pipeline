@@ -150,7 +150,24 @@ class ZafiraClient {
 		sendRequest(parameters)
     }
 
-    public void sendFailureEmail(String uuid, String emailList) {
+	public String getTagData(String uuid, String tagName) {
+
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
+		}
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'GET',
+						  validResponseCodes: "200:401",
+						  url: this.serviceURL + "/api/tags/${uuid}/${tagName}"]
+		def response = sendRequest(parameters)
+		if(!response){
+			return ""
+		}
+		return response.content
+	}
+
+	public void sendFailureEmail(String uuid, String emailList) {
         def suiteOwner = true
         def suiteRunner = false
         if(Configuration.get("suiteOwner")){
