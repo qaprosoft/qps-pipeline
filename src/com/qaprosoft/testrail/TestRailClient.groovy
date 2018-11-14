@@ -19,18 +19,22 @@ class TestRailClient {
     }
 
     public def getRuns(int projectId) {
+        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            context.echo "USERNAME: ${context.env.USERNAME}"
+            context.echo "PASSWORD: ${context.env.PASSWORD}"
 
-        def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${user}:${password}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
-                          validResponseCodes: "200:401",
-                          url: this.serviceURL + "get_runs/${projectId}"]
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${context.env.USERNAME}:${context.env.PASSWORD}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200:401",
+                              url: this.serviceURL + "get_runs/${projectId}"]
+            def response = sendRequest(parameters)
 
-        def response = sendRequest(parameters)
-        if(!response){
-            return ""
+            if(!response){
+                return ""
+            }
+            return response.content
         }
-        return response.content
     }
 
     public String addTestRunCustomCases(suite_id, name, assignedto_id, projectID, case_ids) {
@@ -42,13 +46,18 @@ class TestRailClient {
                 include_all: false,
                 case_ids: "${case_ids}"
 
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: "${builder.toString()}",
-                          validResponseCodes: "200:401",
-                          url: this.serviceURL + "add_run/${projectID}"]
+        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            context.echo "USERNAME: ${context.env.USERNAME}"
+            context.echo "PASSWORD: ${context.env.PASSWORD}"
 
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${context.env.USERNAME}:${context.env.PASSWORD}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'POST',
+                              requestBody: "${builder.toString()}",
+                              validResponseCodes: "200:401",
+                              url: this.serviceURL + "add_run/${projectID}"]
+
+        }
         def response = sendRequest(parameters)
         if(!response){
             return ""
