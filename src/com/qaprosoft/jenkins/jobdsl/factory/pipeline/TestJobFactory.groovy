@@ -158,7 +158,13 @@ public class TestJobFactory extends PipelineFactory {
 				configure addHiddenParameter('ci_parent_build', '', '')
 				configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
 				configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-				configure addHiddenParameter('queue_registration', '', true)
+
+				def queue_registration = "true"
+				if (currentSuite.getParameter("jenkinsQueueRegistration") != null) {
+					queue_registration = currentSuite.getParameter("jenkinsQueueRegistration")
+				}
+				configure addHiddenParameter('queue_registration', '', queue_registration)
+
 				def threadCount = '1'
 				if (currentSuite.toXml().contains("jenkinsDefaultThreadCount")) {
 					threadCount = currentSuite.getParameter("jenkinsDefaultThreadCount")
