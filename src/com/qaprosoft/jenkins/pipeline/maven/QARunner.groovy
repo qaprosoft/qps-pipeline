@@ -32,6 +32,8 @@ public class QARunner extends AbstractRunner {
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
+    protected Map pipelineLocaleMap = [:]
+    protected boolean multilingualMode = false
 
     public enum JobType {
         JOB("JOB"),
@@ -621,7 +623,7 @@ public class QARunner extends AbstractRunner {
 	}
 
 	protected String getMavenPomFile() {
-		return Executor.getSubProjectFolder() + "/pom.xml"
+		return getSubProjectFolder() + "/pom.xml"
 	}
 
     protected void buildJob() {
