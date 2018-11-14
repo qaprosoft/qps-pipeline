@@ -159,7 +159,7 @@ class ZafiraClient {
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
 						  validResponseCodes: "200:401",
-						  url: this.serviceURL + "/api/tags/${uuid}/${tagName}"]
+						  url: this.serviceURL + "/api/tags/${uuid}?name=${tagName}"]
 		def response = sendRequest(parameters)
 		if(!response){
 			return ""
