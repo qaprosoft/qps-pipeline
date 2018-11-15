@@ -106,11 +106,11 @@ public class QARunner extends AbstractRunner {
             //            }
         }
     }
-	
+
 	protected void compile() {
 		compile("pom.xml")
 	}
-	
+
 	protected void compile(pomFile) {
 		context.stage('Maven Compile') {
 			// [VD] don't remove -U otherwise latest dependencies are not downloaded
@@ -143,7 +143,7 @@ public class QARunner extends AbstractRunner {
 	protected void performSonarQubeScan(){
 		performSonarQubeScan("pom.xml")
 	}
-	
+
     protected void performSonarQubeScan(pomFile){
 		context.stage('Sonar Scanner') {
 	        def sonarQubeEnv = ''
@@ -227,7 +227,7 @@ public class QARunner extends AbstractRunner {
                 def prChecker = it.pr_checker
                 def zafiraFilter = it.zafira_filter
                 def suiteFilter = it.suite_filter
-				
+
 				if (suiteFilter.isEmpty()) {
 					logger.warn("Skip repository scan as no suiteFilter identified! Project: ${project}")
 					return
@@ -277,8 +277,8 @@ public class QARunner extends AbstractRunner {
                             if (currentSuite.toXml().contains("suiteOwner")) {
                                 suiteOwner = currentSuite.getParameter("suiteOwner")
                             }
-							
-							def currentZafiraProject = zafira_project 
+
+							def currentZafiraProject = zafira_project
                             if (currentSuite.toXml().contains("zafira_project")) {
                                 currentZafiraProject = currentSuite.getParameter("zafira_project")
                             }
@@ -371,6 +371,7 @@ public class QARunner extends AbstractRunner {
 
 //        context.println "USER_ID: " + trc.getUserByEmail("vdelendik@myfitnesspal.com")
         context.println "SUITE_RUNS: " + trc.getRuns(11, 65)
+        context.println "ADD_RUN: " + trc.addTestRunAllCases(65, "Pipeline testRail integration demo all cases", 26, 11)
         String nodeName = "master"
 //        context.node(nodeName) {
 //            zc.queueZafiraTestRun(uuid)
