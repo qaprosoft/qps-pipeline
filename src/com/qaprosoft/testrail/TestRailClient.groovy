@@ -35,11 +35,11 @@ class TestRailClient {
 
     public String addTestRunCustomCases(suite_id, name, assignedto_id, projectID, case_ids) {
         def builder = new JsonBuilder()
-        builder suite_id: "${suite_id}",
-                name: "${name}",
-                assignedto_id: "${assignedto_id}",
+        builder suite_id: suite_id,
+                name: name,
+                assignedto_id: assignedto_id,
                 include_all: false,
-                case_ids: "${case_ids}"
+                case_ids: case_ids
 
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
@@ -76,12 +76,10 @@ class TestRailClient {
     public String addTestRun(suite_id, name, assignedto_id, projectID, insludeAllCases) {
 
         def builder = new JsonBuilder()
-        builder suite_id: "${suite_id}",
-                name: "${name}",
-                assignedto_id: "${assignedto_id}",
-                include_all: "${insludeAllCases}"
-
-        def stringJson = builder.toString()
+        builder suite_id: suite_id,
+                name: name,
+                assignedto_id: assignedto_id,
+                include_all: insludeAllCases
 
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
