@@ -41,18 +41,20 @@ class TestRailClient {
                 assignedto_id: assignedto_id,
                 include_all: true
 
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: "${builder.toString()}",
-                          validResponseCodes: "200:401",
-                          url: this.serviceURL + "add_run/${projectID}"]
+        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            def parameters = [customHeaders     : [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
+                              contentType       : 'APPLICATION_JSON',
+                              httpMode          : 'POST',
+                              requestBody       : "${builder.toString()}",
+                              validResponseCodes: "200:401",
+                              url               : this.serviceURL + "add_run/${projectID}"]
 
-        def response = sendRequest(parameters)
-        if(!response){
-            return ""
+            def response = sendRequest(parameters)
+            if (!response) {
+                return ""
+            }
+            return response.content
         }
-        return response.content
     }
 
     public String addTestRunCustomCases(suite_id, name, assignedto_id, projectID, case_ids) {
