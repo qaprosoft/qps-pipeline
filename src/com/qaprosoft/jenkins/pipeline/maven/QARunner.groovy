@@ -372,42 +372,42 @@ public class QARunner extends AbstractRunner {
         context.println "USER_ID: " + trc.getUserByEmail("vdelendik@myfitnesspal.com")
         context.println "ADD_TEST_RUN: " + trc.addTestRunCustomCases(65, "Pipeline testRail integration demo", 26, 11, [16461,16462,16518])
         String nodeName = "master"
-        context.node(nodeName) {
-            zc.queueZafiraTestRun(uuid)
-            nodeName = chooseNode()
-        }
-
-        context.node(nodeName) {
-
-            context.wrap([$class: 'BuildUser']) {
-                try {
-                    context.timestamps {
-
-                        prepareBuild(currentBuild)
-                        scmClient.clone()
-
-                        downloadResources()
-
-                        def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
-                        context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
-                            buildJob()
-                        }
-                        sendZafiraEmail()
-                        //TODO: think about seperate stage for uploading jacoco reports
-                        publishJacocoReport()
-                    }
-                } catch (Exception e) {
-                    logger.error(Utils.printStackTrace(e))
-                    zc.abortTestRun(uuid, currentBuild)
-                    throw e
-                } finally {
-                    exportZafiraReport()
-                    publishJenkinsReports()
-                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    clean()
-                }
-            }
-        }
+//        context.node(nodeName) {
+//            zc.queueZafiraTestRun(uuid)
+//            nodeName = chooseNode()
+//        }
+//
+//        context.node(nodeName) {
+//
+//            context.wrap([$class: 'BuildUser']) {
+//                try {
+//                    context.timestamps {
+//
+//                        prepareBuild(currentBuild)
+//                        scmClient.clone()
+//
+//                        downloadResources()
+//
+//                        def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
+//                        context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
+//                            buildJob()
+//                        }
+//                        sendZafiraEmail()
+//                        //TODO: think about seperate stage for uploading jacoco reports
+//                        publishJacocoReport()
+//                    }
+//                } catch (Exception e) {
+//                    logger.error(Utils.printStackTrace(e))
+//                    zc.abortTestRun(uuid, currentBuild)
+//                    throw e
+//                } finally {
+//                    exportZafiraReport()
+//                    publishJenkinsReports()
+//                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
+//                    clean()
+//                }
+//            }
+//        }
     }
 
     protected String chooseNode() {
