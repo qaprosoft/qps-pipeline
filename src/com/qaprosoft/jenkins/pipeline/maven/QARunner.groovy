@@ -968,7 +968,7 @@ public class QARunner extends AbstractRunner {
         if (orderNum.equals("null")) {
             orderNum = "0"
             logger.info("specify by default '0' order - start asap")
-        } else if (pipelineLocaleMap.size() > 0) {
+        } else if (orderNum.equals("ordered")) {
             orderedJobExecNum++
             orderNum = orderedJobExecNum.toString()
         }
