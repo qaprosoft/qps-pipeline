@@ -23,7 +23,7 @@ class TestRailClient {
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
-                              url: this.serviceURL + "get_runs/${projectId}&suiteId=${suiteId}"]
+                              url: this.serviceURL + "get_runs/${projectId}&suite_id=${suiteId}"]
             def response = sendRequest(parameters)
 
             if(!response){
