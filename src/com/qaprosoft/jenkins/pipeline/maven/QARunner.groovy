@@ -370,7 +370,7 @@ public class QARunner extends AbstractRunner {
         logger.info("UUID: " + uuid)
 
         context.println "USER_ID: " + trc.getUserByEmail("vdelendik@myfitnesspal.com")
-        context.println "ADD_TEST_RUN: " + trc.addTestRunCustomCases(65, "Pipeline testRail integration demo", 26, 11, [16461,16462,16518])
+        context.println "ADD_TEST_RUN: " + trc.addTestRunAllCases(65, "Pipeline testRail integration demo", 26, 11)
         String nodeName = "master"
 //        context.node(nodeName) {
 //            zc.queueZafiraTestRun(uuid)

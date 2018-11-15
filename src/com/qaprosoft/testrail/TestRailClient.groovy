@@ -33,6 +33,28 @@ class TestRailClient {
         }
     }
 
+    public String addTestRunAllCases(suite_id, name, assignedto_id, projectID) {
+
+        def builder = new JsonBuilder()
+        builder suite_id: suite_id,
+                name: name,
+                assignedto_id: assignedto_id,
+                include_all: true
+
+        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'POST',
+                          requestBody: "${builder.toString()}",
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + "add_run/${projectID}"]
+
+        def response = sendRequest(parameters)
+        if(!response){
+            return ""
+        }
+        return response.content
+    }
+
     public String addTestRunCustomCases(suite_id, name, assignedto_id, projectID, case_ids) {
         def builder = new JsonBuilder()
         builder suite_id: suite_id,
@@ -73,27 +95,6 @@ class TestRailClient {
         }
     }
 
-    public String addTestRun(suite_id, name, assignedto_id, projectID, insludeAllCases) {
-
-        def builder = new JsonBuilder()
-        builder suite_id: suite_id,
-                name: name,
-                assignedto_id: assignedto_id,
-                include_all: insludeAllCases
-
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: "${builder.toString()}",
-                          validResponseCodes: "200:401",
-                          url: this.serviceURL + "add_run/${projectID}"]
-
-        def response = sendRequest(parameters)
-        if(!response){
-            return ""
-        }
-        return response.content
-    }
 
     /** Sends httpRequest using passed parameters */
     protected def sendRequest(requestParams) {
