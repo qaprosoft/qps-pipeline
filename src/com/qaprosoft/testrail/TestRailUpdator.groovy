@@ -39,8 +39,7 @@ class TestRailUpdator {
     public def getTestRunId(milestoneId, assignedToId){
         def testRunId = null
         context.println "CREATED_AT: " + integrationInfo.createdAfter.dump()
-        Math.round(integrationInfo.createdAfter/1000)
-        context.println "CREATED_AT2: " + integrationInfo.createdAfter.dump()
+        context.println "CREATED_AT2: " + Math.round(integrationInfo.createdAfter/1000)
         def testRuns = trc.getRuns(integrationInfo.createdAfter/1000, assignedToId, milestoneId, integrationInfo.projectId, integrationInfo.suiteId)
         testRuns.each { Map testRun ->
             logger.info("TR: " + testRun)
