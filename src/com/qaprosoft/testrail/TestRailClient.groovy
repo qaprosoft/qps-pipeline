@@ -1,5 +1,7 @@
 package com.qaprosoft.testrail
 
+import groovy.json.JsonSlurper
+
 import static com.qaprosoft.Utils.*
 import com.qaprosoft.Logger
 import groovy.json.JsonBuilder

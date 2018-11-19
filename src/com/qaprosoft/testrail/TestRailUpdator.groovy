@@ -2,6 +2,7 @@ package com.qaprosoft.testrail
 
 import com.qaprosoft.Logger
 import com.qaprosoft.zafira.ZafiraClient
+import groovy.json.JsonSlurper
 
 class TestRailUpdator {
 
@@ -10,6 +11,7 @@ class TestRailUpdator {
     private TestRailClient trc
     private Logger logger
     private integrationInfo
+
 
     public TestRailUpdator(context) {
         this.context = context
@@ -22,6 +24,7 @@ class TestRailUpdator {
         integrationInfo = zc.getTestRailIntegrationInfo(uuid)
         context.println "INTGR: " + integrationInfo
         if(!integrationInfo.isEmpty()){
+
             def milestoneId = getMilestoneId(integrationInfo.milestone)
             def assignedToId = getAssignedToId(integrationInfo.createdBy)
             def updatedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName, milestoneId, assignedToId, false, testCaseIds, integrationInfo.projectId)
