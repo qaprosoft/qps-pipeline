@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 import com.qaprosoft.Utils
 import com.qaprosoft.testrail.TestRailClient
+import com.qaprosoft.testrail.TestRailUpdator
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
@@ -32,6 +33,7 @@ public class QARunner extends AbstractRunner {
     protected def uuid
     protected ZafiraClient zc
     protected TestRailClient trc
+    protected TestRailUpdator tru
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
@@ -52,6 +54,7 @@ public class QARunner extends AbstractRunner {
         scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
         trc = new TestRailClient(context)
+        tru = new TestRailUpdator(context)
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
             onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
@@ -369,10 +372,8 @@ public class QARunner extends AbstractRunner {
         uuid = getUUID()
         logger.info("UUID: " + uuid)
 
-        context.println "TESTRAIL_INTEGRATION: " + zc.getTestRailIntegrationInfo("d4240db9-092c-4c5c-9ff5-0f6f29e599c8")
+        context.println "TESTRAIL_INTEGRATION: " + tru.updateTestRun("d4240db9-092c-4c5c-9ff5-0f6f29e599c8")
 //        context.println "USER_ID: " + trc.getUserByEmail("vdelendik@myfitnesspal.com")
-        context.println "SUITE_RUNS: " + trc.getRuns(11, 65)
-        context.println "ADD_RUN: " + trc.addTestRunAllCases(65, "Pipeline testRail integration demo all cases", 26, 11)
         String nodeName = "master"
 //        context.node(nodeName) {
 //            zc.queueZafiraTestRun(uuid)
