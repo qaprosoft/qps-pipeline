@@ -1,5 +1,7 @@
 package com.qaprosoft.testrail
 
+import groovy.json.JsonOutput
+
 import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.Logger
@@ -10,6 +12,7 @@ class TestRailClient {
     private String serviceURL
     private def context
     private Logger logger
+    private JsonBuilder jsonBuilder = new JsonBuilder()
 
     public TestRailClient(context) {
         this.context = context
@@ -29,25 +32,21 @@ class TestRailClient {
     }
 
     public def addTestRun(suite_id, testRunName, milestone_id, assignedto_id, include_all, case_ids, projectID) {
-
-        def builder = new JsonBuilder()
-        builder suite_id: suite_id,
+        jsonBuilder suite_id: suite_id,
                 name: testRunName,
                 milestone_id: milestone_id,
                 assignedto_id: assignedto_id,
                 include_all: include_all,
                 case_ids: case_ids
 
-        logger.info("RQST: " + builder.toString())
-
+        logger.info("RQST: " + JsonOutput.prettyPrint(jsonBuilder.toString()))
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'POST',
-                              requestBody: "${builder.toString()}",
+                              requestBody: "${jsonBuilder}",
                               validResponseCodes: "200",
                               url: this.serviceURL + "add_run/${projectID}"]
-
             return sendRequest(parameters)
         }
     }
@@ -75,17 +74,15 @@ class TestRailClient {
     }
 
     public def addMilestone(projectId, milestoneName) {
-        def builder = new JsonBuilder()
-        builder name: milestoneName
+        jsonBuilder name: milestoneName
 
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'POST',
-                              requestBody: "${builder.toString()}",
+                              requestBody: "${jsonBuilder}",
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "add_milestone/${projectId}"]
-
             return sendRequest(parameters)
         }
     }
