@@ -28,7 +28,8 @@ class TestRailUpdator {
 
             def milestoneId = getMilestoneId(integrationInfo.milestone)
             def assignedToId = getAssignedToId(integrationInfo.createdBy)
-            def updatedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName, milestoneId, assignedToId, false, testCaseIds, integrationInfo.projectId)
+            def updatedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName, milestoneId, assignedToId, false, integrationInfo.testCaseIds, integrationInfo.projectId)
+            logger.info(updatedTestRun)
         }
     }
 
@@ -41,7 +42,6 @@ class TestRailUpdator {
         def projectId = integrationInfo.projectId
         def milestones = trc.getMilestones(projectId)
         milestones.each { Map milestone ->
-            logger.info("MLSTN: " + milestone.dump())
             if (milestone.name == name) {
                 milestoneId = milestone.id
             }
