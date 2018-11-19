@@ -41,7 +41,7 @@ class TestRailUpdator {
         def projectId = integrationInfo.projectId
         def milestones = trc.getMilestones(projectId)
         milestones.each { milestone ->
-            logger.info("MLSTN: " + milestone)
+            logger.info("MLSTN: " + milestone.dump())
 //            if (milestone.name == milestoneName) {
 //                milestoneId = milestone.id
 //            }
