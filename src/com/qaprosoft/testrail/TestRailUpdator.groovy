@@ -21,7 +21,7 @@ class TestRailUpdator {
     public void updateTestRun(uuid) {
         integrationInfo = zc.getTestRailIntegrationInfo(uuid)
         context.println "INTGR: " + integrationInfo
-        if(integrationInfo){
+        if(!integrationInfo.isEmpty()){
             def milestoneId = getMilestoneId(integrationInfo.milestone)
             def assignedToId = getAssignedToId(integrationInfo.createdBy)
             def updatedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName, milestoneId, assignedToId, false, testCaseIds, integrationInfo.projectId)

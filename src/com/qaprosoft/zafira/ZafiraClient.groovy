@@ -161,7 +161,7 @@ class ZafiraClient {
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tags/${uuid}/testrail"]
 		def response = sendRequest(parameters)
-		if(!response){
+		if(!response || response.status == 400){
 			return ""
 		}
 		return response.content
