@@ -158,10 +158,10 @@ class ZafiraClient {
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
-						  validResponseCodes: "200:401",
+						  validResponseCodes: "200",
 						  url: this.serviceURL + "/api/tags/${uuid}/testrail"]
 		def response = sendRequest(parameters)
-		if(!response || response.status == 400){
+		if(!response){
 			return ""
 		}
 		return response.content
