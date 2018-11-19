@@ -54,9 +54,6 @@ class TestRailUpdator {
     }
 
     public def getAssignedToId(assigneeEmail){
-        def assignedToId
-        assignedToId = trc.getUserIdByEmail(assigneeEmail)
-        return assignedToId
+        return trc.getUserIdByEmail(assigneeEmail).id
     }
-
 }
