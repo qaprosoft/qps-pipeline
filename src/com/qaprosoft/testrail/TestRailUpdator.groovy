@@ -28,12 +28,22 @@ class TestRailUpdator {
             def assignedToId = getAssignedToId(integrationInfo.createdBy)
             def testRunId = getTestRunId(milestoneId, assignedToId)
             if(testRunId){
-                def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", milestoneId, assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
-                logger.info(addedTestRun)
+                if(milestoneId){
+                    def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", milestoneId, assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
+                    logger.info(addedTestRun)
+                } else {
+                    def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
+                    logger.info(addedTestRun)
+                }
                 logger.info("Not implemented yet")
             } else {
-                def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", milestoneId, assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
-                logger.info(addedTestRun)
+                if(milestoneId){
+                    def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", milestoneId, assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
+                    logger.info(addedTestRun)
+                } else {
+                    def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
+                    logger.info(addedTestRun)
+                }
             }
         }
     }
@@ -58,7 +68,8 @@ class TestRailUpdator {
                 milestoneId = milestone.id
             }
         }
-        if(!milestoneId){
+        logger.info("MLSTN_NAME: " + name)
+        if(!milestoneId ){
             def milestone = trc.addMilestone(integrationInfo.projectId, name)
             milestoneId = milestone.id
         }
