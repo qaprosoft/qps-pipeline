@@ -43,6 +43,8 @@ class TestRailClient {
                 include_all: include_all,
                 case_ids: case_ids
 
+        logger.info("RQST: " + builder.toString())
+
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
