@@ -24,12 +24,7 @@ class TestRailClient {
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "get_runs/${projectId}&suite_id=${suiteId}"]
-            def response = sendRequest(parameters)
-
-            if(!response){
-                return
-            }
-            return getObjectResponse(response.content)
+            return sendRequest(parameters)
         }
     }
 
@@ -64,12 +59,7 @@ class TestRailClient {
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "get_user_by_email&email=${userEmail}"]
-            def response = sendRequest(parameters)
-
-            if(!response){
-                return
-            }
-            return getObjectResponse(response.content)
+            return sendRequest(parameters)
         }
     }
 
@@ -80,8 +70,6 @@ class TestRailClient {
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "get_milestones/${projectId}"]
-            def response = sendRequest(parameters)
-
             return sendRequest(parameters)
         }
     }
@@ -97,12 +85,8 @@ class TestRailClient {
                               requestBody: "${builder.toString()}",
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "add_milestone/${projectId}"]
-            def response = sendRequest(parameters)
 
-            if(!response){
-                return
-            }
-            return getObjectResponse(response.content)
+            return sendRequest(parameters)
         }
     }
 
