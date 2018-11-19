@@ -26,7 +26,8 @@ class TestRailUpdator {
 
             def milestoneId = getMilestoneId(integrationInfo.milestone)
             def assignedToId = getAssignedToId(integrationInfo.createdBy)
-            def testRunId = getTestRunId(milestoneId, assignedToId)
+//            def testRunId = getTestRunId(milestoneId, assignedToId)
+            def testRunId = getTestRunId(assignedToId)
             if(testRunId){
                 if(milestoneId){
                     def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", milestoneId, assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
@@ -48,9 +49,9 @@ class TestRailUpdator {
         }
     }
 
-    public def getTestRunId(milestoneId, assignedToId){
+    public def getTestRunId(assignedToId){
         def testRunId = null
-        def testRuns = trc.getRuns(Math.round(integrationInfo.createdAfter/1000), assignedToId, milestoneId, integrationInfo.projectId, integrationInfo.suiteId)
+        def testRuns = trc.getRuns(Math.round(integrationInfo.createdAfter/1000), assignedToId, integrationInfo.projectId, integrationInfo.suiteId)
         testRuns.each { Map testRun ->
             logger.info("TR: " + testRun)
             if(testRun.name == integrationInfo.testRunName){
