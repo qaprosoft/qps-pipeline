@@ -2,6 +2,7 @@ package com.qaprosoft.testrail
 
 import com.qaprosoft.Logger
 import com.qaprosoft.zafira.ZafiraClient
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class TestRailUpdator {
@@ -39,6 +40,7 @@ class TestRailUpdator {
         def milestoneId
         def projectId = integrationInfo.projectId
         def milestones = trc.getMilestones(projectId)
+        logger.info("MLST: " + JsonOutput.prettyPrint(milestones))
         milestones.each { milestone ->
             if (milestone.name == milestoneName) {
                 milestoneId = milestone.id

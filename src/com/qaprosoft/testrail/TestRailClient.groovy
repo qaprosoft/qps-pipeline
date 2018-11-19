@@ -1,8 +1,7 @@
 package com.qaprosoft.testrail
 
-import groovy.json.JsonSlurper
-
 import static com.qaprosoft.Utils.*
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.Logger
 import groovy.json.JsonBuilder
 
@@ -28,9 +27,9 @@ class TestRailClient {
             def response = sendRequest(parameters)
 
             if(!response){
-                return ""
+                return
             }
-            return response.content
+            return getObjectResponse(response.content)
         }
     }
 
@@ -56,7 +55,7 @@ class TestRailClient {
             if(!response){
                 return
             }
-            return response.content
+            return getObjectResponse(response.content)
         }
     }
 
@@ -70,9 +69,9 @@ class TestRailClient {
             def response = sendRequest(parameters)
 
             if(!response){
-                return ""
+                return
             }
-            return response.content
+            return getObjectResponse(response.content)
         }
     }
 
@@ -86,9 +85,9 @@ class TestRailClient {
             def response = sendRequest(parameters)
 
             if(!response){
-                return ""
+                return
             }
-            return response.content
+            return getObjectResponse(response.content)
         }
     }
 
@@ -106,9 +105,9 @@ class TestRailClient {
             def response = sendRequest(parameters)
 
             if(!response){
-                return ""
+                return
             }
-            return response.content
+            return getObjectResponse(response.content)
         }
     }
 
