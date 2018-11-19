@@ -164,7 +164,7 @@ class ZafiraClient {
 		if(!response){
 			return ""
 		}
-		return response.content
+		return getObjectResponse(response.content)
 	}
 
 	public void sendFailureEmail(String uuid, String emailList) {

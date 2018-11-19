@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
+import groovy.json.JsonSlurper
 @Grab('org.testng:testng:6.8.8')
 import groovy.json.JsonSlurperClassic
 import org.testng.xml.Parser
@@ -76,6 +77,10 @@ public class Executor {
         def inputFile = new File(path)
         def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
         return content
+    }
+
+    static def getObjectResponse(response){
+        return new JsonSlurper().parseText(response)
     }
 
     static XmlSuite parseSuite(String path) {

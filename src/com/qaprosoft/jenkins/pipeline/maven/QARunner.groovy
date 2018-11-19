@@ -34,6 +34,7 @@ public class QARunner extends AbstractRunner {
     protected ZafiraClient zc
     protected TestRailClient trc
     protected TestRailUpdator tru
+
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
