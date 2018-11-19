@@ -7,7 +7,6 @@ import groovy.json.JsonBuilder
 class TestRailClient {
 
     private String serviceURL
-    private String authToken
     private def context
     private Logger logger
 
@@ -33,11 +32,11 @@ class TestRailClient {
         }
     }
 
-    public String addTestRunAllCases(suite_id, name, assignedto_id, projectID) {
+    public String addTestRunAllCases(suite_id, testRunName, assignedto_id, milestoneName, projectID) {
 
         def builder = new JsonBuilder()
         builder suite_id: suite_id,
-                name: name,
+                name: testRunName,
                 assignedto_id: assignedto_id,
                 include_all: true
 
@@ -57,12 +56,14 @@ class TestRailClient {
         }
     }
 
-    public String addTestRunCustomCases(suite_id, name, assignedto_id, projectID, case_ids) {
+    public String addTestRun(suite_id, testRunName, milestone_id, assignedto_id, include_all, case_ids, projectID) {
+
         def builder = new JsonBuilder()
         builder suite_id: suite_id,
-                name: name,
+                name: testRunName,
+                milestone_id: milestone_id,
                 assignedto_id: assignedto_id,
-                include_all: false,
+                include_all: include_all,
                 case_ids: case_ids
 
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
@@ -81,7 +82,7 @@ class TestRailClient {
         }
     }
 
-    public def getUserByEmail(userEmail) {
+    public def getUserIdByEmail(userEmail) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
@@ -97,6 +98,41 @@ class TestRailClient {
         }
     }
 
+    public def getMilestones(projectId) {
+        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200:401",
+                              url: this.serviceURL + "get_milestones/${projectId}"]
+            def response = sendRequest(parameters)
+
+            if(!response){
+                return ""
+            }
+            return response.content
+        }
+    }
+
+    public def addMilestone(projectId, milestoneName) {
+        def builder = new JsonBuilder()
+        builder name: milestoneName
+
+        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'POST',
+                              requestBody: "${builder.toString()}",
+                              validResponseCodes: "200:401",
+                              url: this.serviceURL + "add_milestone/${projectId}"]
+            def response = sendRequest(parameters)
+
+            if(!response){
+                return ""
+            }
+            return response.content
+        }
+    }
 
     /** Sends httpRequest using passed parameters */
     protected def sendRequest(requestParams) {
