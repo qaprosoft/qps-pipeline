@@ -28,6 +28,10 @@ class TestRailUpdator {
         }
     }
 
+    public def getTestRunId(){
+
+    }
+
     public def getMilestoneId(name){
         def milestoneId
         def projectId = integrationInfo.projectId

@@ -32,31 +32,7 @@ class TestRailClient {
         }
     }
 
-    public String addTestRunAllCases(suite_id, testRunName, assignedto_id, milestoneName, projectID) {
-
-        def builder = new JsonBuilder()
-        builder suite_id: suite_id,
-                name: testRunName,
-                assignedto_id: assignedto_id,
-                include_all: true
-
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders     : [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType       : 'APPLICATION_JSON',
-                              httpMode          : 'POST',
-                              requestBody       : "${builder.toString()}",
-                              validResponseCodes: "200:401",
-                              url               : this.serviceURL + "add_run/${projectID}"]
-
-            def response = sendRequest(parameters)
-            if (!response) {
-                return ""
-            }
-            return response.content
-        }
-    }
-
-    public String addTestRun(suite_id, testRunName, milestone_id, assignedto_id, include_all, case_ids, projectID) {
+    public def addTestRun(suite_id, testRunName, milestone_id, assignedto_id, include_all, case_ids, projectID) {
 
         def builder = new JsonBuilder()
         builder suite_id: suite_id,
@@ -71,12 +47,12 @@ class TestRailClient {
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'POST',
                               requestBody: "${builder.toString()}",
-                              validResponseCodes: "200:401",
+                              validResponseCodes: "200",
                               url: this.serviceURL + "add_run/${projectID}"]
 
             def response = sendRequest(parameters)
             if(!response){
-                return ""
+                return
             }
             return response.content
         }
