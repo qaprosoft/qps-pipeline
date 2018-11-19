@@ -42,7 +42,7 @@ class TestRailUpdator {
         def milestones = trc.getMilestones(projectId)
         milestones.each { Map milestone ->
             logger.info("MLSTN: " + milestone.dump())
-            if (milestone.name == milestoneName) {
+            if (milestone.name == name) {
                 milestoneId = milestone.id
             }
         }
