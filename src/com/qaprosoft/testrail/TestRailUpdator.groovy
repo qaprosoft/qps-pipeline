@@ -30,7 +30,7 @@ class TestRailUpdator {
             if(testRunId){
                 logger.info("Not implemented yet")
             } else {
-                def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName, milestoneId, assignedToId, false, integrationInfo.testCaseIds, integrationInfo.projectId)
+                def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName, milestoneId, assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
                 logger.info(addedTestRun)
             }
         }
