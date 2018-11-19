@@ -40,6 +40,7 @@ class TestRailUpdator {
         def testRunId = null
         def testRuns = trc.getRuns(integrationInfo.createdAfter, assignedToId, milestoneId, integrationInfo.projectId, integrationInfo.suiteId)
         testRuns.each { Map testRun ->
+            logger.info("TR: " + testRun)
             if(testRun.name == integrationInfo.testRunName){
                 testRunId = testRun.id
             }
