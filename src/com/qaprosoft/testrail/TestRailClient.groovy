@@ -53,11 +53,7 @@ class TestRailClient {
                               validResponseCodes: "200",
                               url: this.serviceURL + "add_run/${projectID}"]
 
-            def response = sendRequest(parameters)
-            if(!response){
-                return
-            }
-            return getObjectResponse(response.content)
+            return sendRequest(parameters)
         }
     }
 
@@ -122,6 +118,9 @@ class TestRailClient {
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
-        return response
+        if(!response){
+            return
+        }
+        return getObjectResponse(response.content)
     }
 }
