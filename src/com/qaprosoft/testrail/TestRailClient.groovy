@@ -12,7 +12,6 @@ class TestRailClient {
     private String serviceURL
     private def context
     private Logger logger
-    private JsonBuilder jsonBuilder = new JsonBuilder()
 
     public TestRailClient(context) {
         this.context = context
@@ -32,6 +31,7 @@ class TestRailClient {
     }
 
     public def addTestRun(suite_id, testRunName, milestone_id, assignedto_id, include_all, case_ids, projectID) {
+        JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder suite_id: suite_id,
                 name: testRunName,
                 milestone_id: milestone_id,
@@ -74,8 +74,8 @@ class TestRailClient {
     }
 
     public def addMilestone(projectId, milestoneName) {
+        JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder name: milestoneName
-
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
