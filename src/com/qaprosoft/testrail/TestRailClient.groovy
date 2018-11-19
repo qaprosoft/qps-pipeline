@@ -82,10 +82,7 @@ class TestRailClient {
                               url: this.serviceURL + "get_milestones/${projectId}"]
             def response = sendRequest(parameters)
 
-            if(!response){
-                return
-            }
-            return getObjectResponse(response.content)
+            return sendRequest(parameters)
         }
     }
 
