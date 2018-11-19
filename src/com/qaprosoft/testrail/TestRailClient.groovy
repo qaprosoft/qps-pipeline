@@ -51,6 +51,26 @@ class TestRailClient {
         }
     }
 
+    public def addTestRun(suite_id, testRunName, assignedto_id, include_all, case_ids, projectID) {
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder suite_id: suite_id,
+                name: testRunName,
+                assignedto_id: assignedto_id,
+                include_all: include_all,
+                case_ids: case_ids
+
+        logger.info("RQST: " + JsonOutput.prettyPrint(jsonBuilder.toString()))
+        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'POST',
+                              requestBody: "${jsonBuilder}",
+                              validResponseCodes: "200",
+                              url: this.serviceURL + "add_run/${projectID}"]
+            return sendRequest(parameters)
+        }
+    }
+
     public def deleteTestRun(testRunId) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
