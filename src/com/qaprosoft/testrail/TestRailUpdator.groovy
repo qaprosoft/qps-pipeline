@@ -2,8 +2,6 @@ package com.qaprosoft.testrail
 
 import com.qaprosoft.Logger
 import com.qaprosoft.zafira.ZafiraClient
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 
 class TestRailUpdator {
 
@@ -28,19 +26,30 @@ class TestRailUpdator {
 
             def milestoneId = getMilestoneId(integrationInfo.milestone)
             def assignedToId = getAssignedToId(integrationInfo.createdBy)
-            def updatedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName, milestoneId, assignedToId, false, integrationInfo.testCaseIds, integrationInfo.projectId)
-            logger.info(updatedTestRun)
+            def testRunId = getTestRunId(milestoneId, assignedToId)
+            if(testRunId){
+                logger.info("Not implemented yet")
+            } else {
+                def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName, milestoneId, assignedToId, false, integrationInfo.testCaseIds, integrationInfo.projectId)
+                logger.info(addedTestRun)
+            }
         }
     }
 
-    public def getTestRunId(){
-
+    public def getTestRunId(milestoneId, assignedToId){
+        def testRunId = null
+        def testRuns = trc.getRuns(integrationInfo.createdAfter, assignedToId, milestoneId, integrationInfo.projectId, integrationInfo.suiteId)
+        testRuns.each { Map testRun ->
+            if(testRun.name == integrationInfo.testRunName){
+                testRunId = testRun.id
+            }
+        }
+        return testRunId
     }
 
     public def getMilestoneId(name){
-        def milestoneId
-        def projectId = integrationInfo.projectId
-        def milestones = trc.getMilestones(projectId)
+        def milestoneId = null
+        def milestones = trc.getMilestones(integrationInfo.projectId)
         milestones.each { Map milestone ->
             if (milestone.name == name) {
                 milestoneId = milestone.id

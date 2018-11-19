@@ -19,13 +19,13 @@ class TestRailClient {
         logger = new Logger(context)
     }
 
-    public def getRuns(projectId, suiteId) {
+    public def getRuns(createdAfter, createdBy, milestoneId, projectId, suiteId) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
-                              url: this.serviceURL + "get_runs/${projectId}&suite_id=${suiteId}"]
+                              url: this.serviceURL + "get_runs/${projectId}&created_after=${createdAfter}&created_by=${createdBy}&milestone_id=${milestoneId}&suite_id=${suiteId}"]
             return sendRequest(parameters)
         }
     }
