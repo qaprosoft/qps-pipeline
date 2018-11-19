@@ -150,7 +150,7 @@ class ZafiraClient {
 		sendRequest(parameters)
     }
 
-	public String getTagData(String uuid, String tagName) {
+	public String getTestRailIntegrationInfo(uuid) {
 
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
@@ -159,7 +159,7 @@ class ZafiraClient {
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
 						  validResponseCodes: "200:401",
-						  url: this.serviceURL + "/api/tags/${uuid}?name=${tagName}"]
+						  url: this.serviceURL + "/api/tags/${uuid}/testrail"]
 		def response = sendRequest(parameters)
 		if(!response){
 			return ""

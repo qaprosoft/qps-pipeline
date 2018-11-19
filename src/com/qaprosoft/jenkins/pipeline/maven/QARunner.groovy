@@ -30,8 +30,8 @@ public class QARunner extends AbstractRunner {
     protected def onlyUpdated = false
     protected def currentBuild
     protected def uuid
-    protected def zc
-    protected def trc
+    protected ZafiraClient zc
+    protected TestRailClient trc
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
@@ -369,6 +369,7 @@ public class QARunner extends AbstractRunner {
         uuid = getUUID()
         logger.info("UUID: " + uuid)
 
+        context.println "TESTRAIL_INTEGRATION: " + zc.getTestRailIntegrationInfo("d4240db9-092c-4c5c-9ff5-0f6f29e599c8")
 //        context.println "USER_ID: " + trc.getUserByEmail("vdelendik@myfitnesspal.com")
         context.println "SUITE_RUNS: " + trc.getRuns(11, 65)
         context.println "ADD_RUN: " + trc.addTestRunAllCases(65, "Pipeline testRail integration demo all cases", 26, 11)
