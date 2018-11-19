@@ -27,6 +27,7 @@ class TestRailUpdator {
             def milestoneId = getMilestoneId(integrationInfo.milestone)
             def assignedToId = getAssignedToId(integrationInfo.createdBy)
             def testRunId = getTestRunId(milestoneId, assignedToId)
+            trc.deleteTestRun(testRunId)
             if(testRunId){
                 logger.info("Not implemented yet")
             } else {
@@ -57,7 +58,7 @@ class TestRailUpdator {
             }
         }
         if(!milestoneId){
-            def milestone = trc.addMilestone(projectId, name)
+            def milestone = trc.addMilestone(integrationInfo.projectId, name)
             milestoneId = milestone.id
         }
         return milestoneId
