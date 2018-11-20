@@ -20,18 +20,18 @@ class TestRailUpdator {
         logger = new Logger(context)
     }
 
-    public void updateTestRun(uuid) {
+    public void updateTestRun(uuid, isRebuild) {
         integration = zc.getTestRailIntegrationInfo(uuid)
         if(!integration.isEmpty()){
             integration.milestoneId = getMilestoneId()
             integration.assignedToId = getAssignedToId()
-            integration.testRunId = getTestRunId()
-            if(integration.testRunId){
-                addTestRun()
-                updateTestRun()
+            if(!isRebuild){
+                def testRun = addTestRun(false)
+                integration.testRunId = testRun.id
             } else {
-                addTestRun()
+                integration.testRunId = getTestRunId()
             }
+            addResultsForCases()
         }
     }
 
@@ -74,17 +74,18 @@ class TestRailUpdator {
         return assignedToId.id
     }
 
-    public def addTestRun(){
+    public def addTestRun(boolean include_all){
         def testRun
         if(integration.milestoneId){
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, true, integration.testCaseIds, integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
         } else {
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, true, integration.testCaseIds, integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
         }
         logger.info("ADDED TESTRUN:\n" + testRun)
+        return testRun
     }
 
-    public def updateTestRun(){
+    public def addResultsForCases(){
         logger.info("Not implemented yet")
     }
 }
