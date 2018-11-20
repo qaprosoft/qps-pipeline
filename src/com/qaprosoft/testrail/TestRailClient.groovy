@@ -1,5 +1,7 @@
 package com.qaprosoft.testrail
 
+import com.qaprosoft.jenkins.pipeline.Executor
+
 import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.Logger
@@ -82,7 +84,7 @@ class TestRailClient {
 
     public def getUserIdByEmail(userEmail) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            if(userEmail == null){
+            if(isParamEmpty(userEmail)){
                 logger.info("USRNM: " + context.env.USERNAME)
                 userEmail = context.env.USERNAME
             }
