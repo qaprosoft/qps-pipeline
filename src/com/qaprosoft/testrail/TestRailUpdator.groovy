@@ -26,6 +26,7 @@ class TestRailUpdator {
             integration.assignedToId = getAssignedToId()
             integration.testRunId = getTestRunId()
             if(integration.testRunId){
+                addTestRun()
                 updateTestRun()
             } else {
                 addTestRun()
@@ -70,11 +71,13 @@ class TestRailUpdator {
     }
 
     public def addTestRun(){
+        def testRun
         if(integration.milestoneId){
-            trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, true, integration.testCaseIds, integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, true, integration.testCaseIds, integration.projectId)
         } else {
-            trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, true, integration.testCaseIds, integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, true, integration.testCaseIds, integration.projectId)
         }
+        logger.info("ADDED TESTRUN: " + testRun)
     }
 
     public def updateTestRun(){
