@@ -370,7 +370,8 @@ public class QARunner extends AbstractRunner {
 
     protected void runJob() {
         logger.info("QARunner->runJob")
-        uuid = getUUID()
+//        uuid = getUUID()
+        uuid = "d4240db9-092c-4c5c-9ff5-0f6f29e599c8"
         logger.info("UUID: " + uuid)
         def testRun = zc.getTestRunByCiRunId(uuid)
         logger.info("TEST_RUN: " + testRun)
