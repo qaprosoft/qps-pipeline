@@ -83,6 +83,7 @@ class TestRailClient {
     public def getUserIdByEmail(userEmail) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             if(userEmail == null){
+                logger.info("USRNM: " + context.env.USERNAME)
                 userEmail = context.env.USERNAME
             }
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
