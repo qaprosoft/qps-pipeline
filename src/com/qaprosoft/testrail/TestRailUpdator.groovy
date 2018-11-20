@@ -1,5 +1,6 @@
 package com.qaprosoft.testrail
 
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.Logger
 import com.qaprosoft.zafira.ZafiraClient
 
@@ -77,7 +78,7 @@ class TestRailUpdator {
         } else {
             testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, true, integration.testCaseIds, integration.projectId)
         }
-        logger.info("ADDED TESTRUN: " + testRun)
+        logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
     }
 
     public def updateTestRun(){

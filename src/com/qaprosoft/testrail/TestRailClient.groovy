@@ -1,7 +1,5 @@
 package com.qaprosoft.testrail
 
-import groovy.json.JsonOutput
-
 import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.Logger
