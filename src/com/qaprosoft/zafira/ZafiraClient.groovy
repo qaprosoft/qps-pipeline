@@ -23,7 +23,7 @@ class ZafiraClient {
         logger = new Logger(context)
     }
 
-	public void queueZafiraTestRun(String uuid) {
+	public def queueZafiraTestRun(String uuid) {
         if(isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
             if (isTokenExpired()) {
                 getZafiraAuthToken(refreshToken)
@@ -43,15 +43,11 @@ class ZafiraClient {
                               url               : this.serviceURL + "/api/tests/runs/queue"]
 
             def response = sendRequest(parameters)
-            if (!response) {
-                return
-            }
-            String formattedJSON = JsonOutput.prettyPrint(response.content)
-            logger.info("Queued TestRun: " + formattedJSON)
+            logger.info("Queued TestRun: " + formatJson(response))
         }
     }
 
-	public void smartRerun() {
+	public def smartRerun() {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -68,16 +64,11 @@ class ZafiraClient {
 						 timeout: 300000]
 
 		def response = sendRequest(parameters)
-		if(!response){
-			return
-		}
-
-        def responseJson = new JsonSlurper().parseText(response.content)
-        logger.info("Results : " + responseJson.size())
-        logger.info("Tests for rerun: " + responseJson)
+        logger.info("Results : " + response.size())
+        logger.info("Tests for rerun: " + response)
 	}
 
-	public void abortTestRun(String uuid, currentBuild) {
+	public def abortTestRun(String uuid, currentBuild) {
 		currentBuild.result = BuildResult.FAILURE
 		def failureReason = "undefined failure"
 
@@ -136,7 +127,7 @@ class ZafiraClient {
         }
     }
 
-    public void sendEmail(String uuid, String emailList, String filter) {
+    public def sendEmail(String uuid, String emailList, String filter) {
 
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
@@ -147,10 +138,10 @@ class ZafiraClient {
 						  requestBody: "{\"recipients\": \"${emailList}\"}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
-		sendRequest(parameters)
+		return sendRequest(parameters)
     }
 
-	public String getTestRailIntegrationInfo(uuid) {
+	public def getTestRailIntegrationInfo(uuid) {
 
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
@@ -160,14 +151,10 @@ class ZafiraClient {
 						  httpMode: 'GET',
 						  validResponseCodes: "200",
 						  url: this.serviceURL + "/api/tags/${uuid}/testrail"]
-		def response = sendRequest(parameters)
-		if(!response){
-			return ""
-		}
-		return getObjectResponse(response.content)
+		return sendRequest(parameters)
 	}
 
-	public void sendFailureEmail(String uuid, String emailList) {
+	public def sendFailureEmail(String uuid, String emailList) {
         def suiteOwner = true
         def suiteRunner = false
         if(Configuration.get("suiteOwner")){
@@ -185,24 +172,30 @@ class ZafiraClient {
                           requestBody: "{\"recipients\": \"${emailList}\"}",
                           validResponseCodes: "200:401",
                           url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
-        sendRequest(parameters)
+        return sendRequest(parameters)
     }
 
-	public String exportZafiraReport(String uuid) {
+	public def exportZafiraReport(String uuid) {
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
 
-		def response = sendRequest(parameters)
-		if(!response){
-			return ""
-		}
-		return response.content
+		return sendRequest(parameters)
 	}
 
-    /** Sends httpRequest using passed parameters */
+	public def getTestRunByCiRunId(String uuid) {
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'GET',
+						  validResponseCodes: "200:401",
+						  url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"]
+
+		return sendRequest(parameters)
+	}
+
+	/** Sends httpRequest using passed parameters */
     protected def sendRequest(requestParams) {
         def response = null
         /** Catches exceptions in every http call */
@@ -211,7 +204,10 @@ class ZafiraClient {
         } catch (Exception e) {
             logger.error(Utils.printStackTrace(e))
         }
-        return response
+		if(!response){
+			return
+		}
+		return getObjectResponse(response.content)
     }
 
 	protected boolean isTokenExpired() {
