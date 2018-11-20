@@ -128,7 +128,6 @@ class ZafiraClient {
     }
 
     public def sendEmail(String uuid, String emailList, String filter) {
-
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -142,7 +141,6 @@ class ZafiraClient {
     }
 
 	public def getTestRailIntegrationInfo(uuid) {
-
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -166,6 +164,9 @@ class ZafiraClient {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
         }
+        if (isTokenExpired()) {
+            getZafiraAuthToken(refreshToken)
+        }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
@@ -176,6 +177,9 @@ class ZafiraClient {
     }
 
 	public def exportZafiraReport(String uuid) {
+        if (isTokenExpired()) {
+            getZafiraAuthToken(refreshToken)
+        }
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
@@ -230,8 +234,7 @@ class ZafiraClient {
 						  requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
 						  url: this.serviceURL + "/api/auth/refresh"]
         Map properties = (Map)sendRequest(parameters)
-//		def properties = (Map) response
-		authToken = properties.get("type") + " " + properties.get("accessToken")
+		authToken = properties.type + " " + properties.accessToken
 		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
 	}
 }
