@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 @Grab('org.testng:testng:6.8.8')
 import groovy.json.JsonSlurperClassic
@@ -81,6 +82,10 @@ public class Executor {
 
     static def getObjectResponse(response){
         return new JsonSlurper().parseText(response)
+    }
+
+    static def formatJson(json){
+        JsonOutput.prettyPrint(json.toString())
     }
 
     static XmlSuite parseSuite(String path) {
