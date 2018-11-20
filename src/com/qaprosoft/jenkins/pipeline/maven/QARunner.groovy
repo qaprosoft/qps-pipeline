@@ -406,9 +406,9 @@ public class QARunner extends AbstractRunner {
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-                    logger.info("IS_REBUILD: " + isZafiraRebuild(uuid))
-                    exportZafiraReport()
-                    publishJenkinsReports()
+                    logger.info("IS_REBUILD: " + isZafiraRebuild())
+//                    exportZafiraReport()
+//                    publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     clean()
                 }
