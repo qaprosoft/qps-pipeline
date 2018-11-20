@@ -78,7 +78,7 @@ class TestRailUpdator {
         } else {
             testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, true, integration.testCaseIds, integration.projectId)
         }
-        logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
+        logger.info("ADDED TESTRUN:\n" + testRun)
     }
 
     public def updateTestRun(){
