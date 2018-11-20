@@ -370,8 +370,7 @@ public class QARunner extends AbstractRunner {
 
     protected void runJob() {
         logger.info("QARunner->runJob")
-//        uuid = getUUID()
-        uuid = "d4240db9-092c-4c5c-9ff5-0f6f29e599c8"
+        uuid = getUUID()
         logger.info("UUID: " + uuid)
         def testRun = zc.getTestRunByCiRunId(uuid)
         logger.info("TEST_RUN: " + testRun)
@@ -407,6 +406,7 @@ public class QARunner extends AbstractRunner {
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
+                    logger.info("IS_REBUILD: " + isZafiraRebuild(uuid))
                     exportZafiraReport()
                     publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
@@ -1111,7 +1111,11 @@ public class QARunner extends AbstractRunner {
                       zoomCoverageChart: false])
     }
 
-	protected boolean isBrowserStackRun() {
+    protected boolean isZafiraRebuild() {
+        return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
+    }
+
+    protected boolean isBrowserStackRun() {
 		boolean res = false
 		def customCapabilities = Configuration.get("custom_capabilities")
 		if (!isParamEmpty(customCapabilities)) {
