@@ -186,6 +186,9 @@ class ZafiraClient {
 	}
 
 	public def getTestRunByCiRunId(String uuid) {
+        if (isTokenExpired()) {
+            getZafiraAuthToken(refreshToken)
+        }
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
