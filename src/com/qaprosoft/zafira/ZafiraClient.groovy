@@ -43,6 +43,7 @@ class ZafiraClient {
                               url               : this.serviceURL + "/api/tests/runs/queue"]
 
             def response = sendRequest(parameters)
+            logger.info("QQQ" + response)
             logger.info("Queued TestRun: " + formatJson(response))
         }
     }
