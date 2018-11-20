@@ -53,18 +53,20 @@ class TestRailUpdator {
     }
 
     public def getMilestoneId(){
-        def milestoneId = null
-        def milestones = trc.getMilestones(integration.projectId)
-        milestones.each { Map milestone ->
-            if (milestone.name == integration.milestone) {
+        if(integration.milestone){
+            def milestoneId = null
+            def milestones = trc.getMilestones(integration.projectId)
+            milestones.each { Map milestone ->
+                if (milestone.name == integration.milestone) {
+                    milestoneId = milestone.id
+                }
+            }
+            if(!milestoneId ){
+                def milestone = trc.addMilestone(integration.projectId, integration.milestone)
                 milestoneId = milestone.id
             }
+            return milestoneId
         }
-        if(!milestoneId ){
-            def milestone = trc.addMilestone(integration.projectId, integration.milestone)
-            milestoneId = milestone.id
-        }
-        return milestoneId
     }
 
     public def getAssignedToId(){
