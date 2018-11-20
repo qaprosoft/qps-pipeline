@@ -122,6 +122,20 @@ class TestRailClient {
         }
     }
 
+    public def addResultsForCases(testRunId) {
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder name: milestoneName
+        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'POST',
+                              requestBody: "${jsonBuilder}",
+                              validResponseCodes: "200:401",
+                              url: this.serviceURL + "add_results_for_cases/${testRunId}"]
+            return sendRequest(parameters)
+        }
+    }
+
     /** Sends httpRequest using passed parameters */
     protected def sendRequest(requestParams) {
         def response = null
