@@ -80,19 +80,11 @@ class TestRailClient {
         }
     }
 
-    public def deleteTestRun(testRunId) {
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'POST',
-                              validResponseCodes: "200",
-                              url: this.serviceURL + "delete_run/${testRunId}"]
-            return sendRequest(parameters)
-        }
-    }
-
     public def getUserIdByEmail(userEmail) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            if(userEmail == null){
+                userEmail = context.env.USERNAME
+            }
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',

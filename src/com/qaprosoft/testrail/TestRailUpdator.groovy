@@ -70,7 +70,8 @@ class TestRailUpdator {
     }
 
     public def getAssignedToId(){
-        return trc.getUserIdByEmail(integration.createdBy).id
+        def assignedToId = trc.getUserIdByEmail(integration.createdBy)
+        return assignedToId.id
     }
 
     public def addTestRun(){
