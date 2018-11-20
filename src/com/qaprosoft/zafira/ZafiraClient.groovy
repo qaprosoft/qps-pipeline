@@ -192,7 +192,7 @@ class ZafiraClient {
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
-						  validResponseCodes: "200:401",
+						  validResponseCodes: "200:404",
 						  url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"]
 
 		return sendRequest(parameters)
