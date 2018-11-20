@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 
 import com.qaprosoft.Utils
-import static com.qaprosoft.jenkins.pipeline.Executor.*
+import com.qaprosoft.jenkins.pipeline.Executor
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
@@ -32,8 +32,6 @@ public class QARunner extends AbstractRunner {
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
-    protected Map pipelineLocaleMap = [:]
-    protected boolean multilingualMode = false
 
     public enum JobType {
         JOB("JOB"),
@@ -77,7 +75,7 @@ public class QARunner extends AbstractRunner {
             context.timestamps {
                 logger.info("QARunner->onPush")
                 prepare()
-                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+                if (!Executor.isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                     logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
                     return
                 }
@@ -194,11 +192,11 @@ public class QARunner extends AbstractRunner {
             def jenkinsFile = ".jenkinsfile.json"
             if (!context.fileExists("${workspace}/${jenkinsFile}")) {
                 logger.warn("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
-                currentBuild.result = BuildResult.UNSTABLE
+                currentBuild.result = 'UNSTABLE'
                 return
             }
 
-            Object subProjects = parseJSON("${workspace}/${jenkinsFile}").sub_projects
+            Object subProjects = Executor.parseJSON("${workspace}/${jenkinsFile}").sub_projects
 
             logger.info("PARSED: " + subProjects)
             subProjects.each {
@@ -256,7 +254,7 @@ public class QARunner extends AbstractRunner {
                     suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 
                     try {
-                        XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
+                        XmlSuite currentSuite = Executor.parseSuite(workspace + "/" + suite.path)
                         if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
                             logger.info("suite name: " + suiteName)
                             logger.info("suite path: " + suite.path)
@@ -353,7 +351,7 @@ public class QARunner extends AbstractRunner {
 
     protected void runJob() {
         logger.info("QARunner->runJob")
-        uuid = getUUID()
+        uuid = Executor.getUUID()
         logger.info("UUID: " + uuid)
         String nodeName = "master"
         context.node(nodeName) {
@@ -426,7 +424,7 @@ public class QARunner extends AbstractRunner {
 
         def nodeLabel = Configuration.get("node_label")
         logger.info("nodeLabel: " + nodeLabel)
-        if (!isParamEmpty(nodeLabel)) {
+        if (!Executor.isParamEmpty(nodeLabel)) {
             logger.info("overriding default node to: " + nodeLabel)
             Configuration.set("node", nodeLabel)
         }
@@ -437,7 +435,7 @@ public class QARunner extends AbstractRunner {
     //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
     protected void prepareBuild(currentBuild) {
 
-        Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
+        Configuration.set("BUILD_USER_ID", Executor.getBuildUser(currentBuild))
 
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
         String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
@@ -452,21 +450,21 @@ public class QARunner extends AbstractRunner {
 
         context.stage('Preparation') {
             currentBuild.displayName = "#${buildNumber}|${suite}|${env}|${branch}"
-            if (!isParamEmpty("${carinaCoreVersion}")) {
+            if (!Executor.isParamEmpty("${carinaCoreVersion}")) {
                 currentBuild.displayName += "|" + "${carinaCoreVersion}"
             }
-            if (!isParamEmpty(devicePool)) {
+            if (!Executor.isParamEmpty(devicePool)) {
                 currentBuild.displayName += "|${devicePool}"
             }
-            if (!isParamEmpty(Configuration.get("browser"))) {
+            if (!Executor.isParamEmpty(Configuration.get("browser"))) {
                 currentBuild.displayName += "|${browser}"
             }
-            if (!isParamEmpty(Configuration.get("browser_version"))) {
+            if (!Executor.isParamEmpty(Configuration.get("browser_version"))) {
                 currentBuild.displayName += "|${browserVersion}"
             }
             currentBuild.description = "${suite}"
 
-            if (isMobile()) {
+            if (Executor.isMobile()) {
                 //this is mobile test
                 prepareForMobile()
             }
@@ -533,7 +531,7 @@ public class QARunner extends AbstractRunner {
 
 /*		def CARINA_CORE_VERSION = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
 		context.stage("Download Resources") {
-		def pomFile = getSubProjectFolder() + "/pom.xml"
+		def pomFile = Executor.getSubProjectFolder() + "/pom.xml"
 		logger.info("pomFile: " + pomFile)
 			if (context.isUnix()) {
 				context.sh "'mvn' -B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION"
@@ -694,9 +692,9 @@ public class QARunner extends AbstractRunner {
         // set job status based on zafira report
         if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
             logger.debug("Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report.")
-            currentBuild.result = BuildResult.FAILURE
+            currentBuild.result = 'FAILURE'
         } else if (zafiraReport.contains("SKIP_ALL:")) {
-            currentBuild.result = BuildResult.UNSTABLE
+            currentBuild.result = 'UNSTABLE'
         }
     }
 
@@ -708,7 +706,7 @@ public class QARunner extends AbstractRunner {
         if (emailList != null && !emailList.isEmpty()) {
             zc.sendEmail(uuid, emailList, "all")
         }
-        if (isFailure(currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
+        if (Executor.isFailure(currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
             zc.sendEmail(uuid, failureEmailList, "failures")
         }
     }
@@ -742,7 +740,7 @@ public class QARunner extends AbstractRunner {
                     def reportIndex = "_" + i
                     reportName = reportName + reportIndex
                 }
-                context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
+                context.publishHTML Executor.getReportParameters(reportDir, reports[i].name, reportName )
             }
         } catch (Exception e) {
             logger.error("Exception occurred while publishing Jenkins report.")
@@ -765,7 +763,7 @@ public class QARunner extends AbstractRunner {
             }
 
             def suiteFilter = "src/test/resources/**"
-            Object subProjects = parseJSON(workspace + "/" + jenkinsFile).sub_projects
+            Object subProjects = Executor.parseJSON(workspace + "/" + jenkinsFile).sub_projects
             subProjects.each {
                 listPipelines = []
                 suiteFilter = it.suite_filter
@@ -780,34 +778,13 @@ public class QARunner extends AbstractRunner {
                 if(files.length > 0) {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
-                        def currentSuite = parsePipeline(workspace + "/" + files[i].path)
-                        if (!currentSuite) {
-                            currentBuild.result = BuildResult.FAILURE
-                            return
-                        }
-                        def supportedLocales = getPipelineLocales(currentSuite)
-                        if (supportedLocales.size() > 0) {
-                            multilingualMode = true
-                            supportedLocales.each { locale ->
-                                pipelineLocaleMap.put("locale", locale.key)
-                                pipelineLocaleMap.put("language", locale.value)
-                                generatePipeline(currentSuite)
-                            }
-                            pipelineLocaleMap.clear()
-                        } else {
-                            generatePipeline(currentSuite)
-                        }
+                        parsePipeline(workspace + "/" + files[i].path)
                     }
-                    logger.info "Finished Dynamic Mapping:"
-                    listPipelines.each { pipeline ->
-                        logger.info(pipeline.toString())
-                    }
-                    listPipelines = sortPipelineList(listPipelines)
-                    logger.debug("Finished Dynamic Mapping Sorted Order:")
-                    listPipelines.each { pipeline ->
-                        logger.debug(pipeline.toString())
-                    }
-                    folderName = parseFolderName(getWorkspace())
+
+                    logger.info("Finished Dynamic Mapping: " + listPipelines.dump())
+                    listPipelines = Executor.sortPipelineList(listPipelines)
+                    logger.info("Finished Dynamic Mapping Sorted Order: " + listPipelines.dump())
+                    folderName = Executor.parseFolderName(getWorkspace())
                     executeStages()
                 } else {
                     logger.error("No Test Suites Found to Scan...")
@@ -817,22 +794,20 @@ public class QARunner extends AbstractRunner {
 
     }
 
-     protected XmlSuite parsePipeline(filePath){
+    protected void parsePipeline(String filePath) {
         logger.debug("filePath: " + filePath)
-        XmlSuite currentSuite = null
+        def XmlSuite currentSuite = null
         try {
-            currentSuite = parseSuite(filePath)
+            currentSuite = Executor.parseSuite(filePath)
         } catch (FileNotFoundException e) {
             logger.error("ERROR! Unable to find suite: " + filePath)
             logger.error(Utils.printStackTrace(e))
+            return
         } catch (Exception e) {
             logger.error("ERROR! Unable to parse suite: " + filePath)
             logger.error(Utils.printStackTrace(e))
+            return
         }
-        return currentSuite
-    }
-
-    protected void generatePipeline(XmlSuite currentSuite) {
 
         def jobName = currentSuite.getParameter("jenkinsJobName").toString()
         def jobCreated = currentSuite.getParameter("jenkinsJobCreation")
@@ -848,7 +823,7 @@ public class QARunner extends AbstractRunner {
         }
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode").toString()
         def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
-		if (isParamEmpty(supportedEnvs)) {
+		if (Executor.isParamEmpty(supportedEnvs)) {
 			supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
 		}
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
@@ -933,33 +908,33 @@ public class QARunner extends AbstractRunner {
                                 continue
                             }
 
-//                            logger.info("adding ${filePath} suite to pipeline run...")
+                            logger.info("adding ${filePath} suite to pipeline run...")
 
                             def pipelineMap = [:]
 
                             // put all not NULL args into the pipelineMap for execution
-                            putMap(pipelineMap, pipelineLocaleMap)
-                            putNotNull(pipelineMap, "browser", browser)
-                            putNotNull(pipelineMap, "browser_version", browserVersion)
-                            putNotNull(pipelineMap, "os", os)
-                            putNotNull(pipelineMap, "os_version", osVersion)
+                            Executor.putNotNull(pipelineMap, "browser", browser)
+                            Executor.putNotNull(pipelineMap, "browser_version", browserVersion)
+                            Executor.putNotNull(pipelineMap, "os", os)
+                            Executor.putNotNull(pipelineMap, "os_version", osVersion)
                             pipelineMap.put("name", pipeName)
                             pipelineMap.put("branch", Configuration.get("branch"))
-                            pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
-                            pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
+                            pipelineMap.put("ci_parent_url", Executor.setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
+                            pipelineMap.put("ci_parent_build", Executor.setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
                             pipelineMap.put("retry_count", Configuration.get("retry_count"))
-                            putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
+                            Executor.putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
                             pipelineMap.put("jobName", jobName)
                             pipelineMap.put("env", supportedEnv)
                             pipelineMap.put("order", orderNum)
                             pipelineMap.put("BuildPriority", priorityNum)
-                            putNotNullWithSplit(pipelineMap, "emailList", emailList)
-                            putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-                            putNotNull(pipelineMap, "overrideFields", overrideFields)
-                            putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
-//                                logger.debug("initialized ${filePath} suite to pipeline run...")
+                            Executor.putNotNullWithSplit(pipelineMap, "emailList", emailList)
+                            Executor.putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+                            Executor.putNotNull(pipelineMap, "overrideFields", overrideFields)
+                            Executor.putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
+                            logger.debug("initialized ${filePath} suite to pipeline run...")
                             registerPipeline(currentSuite, pipelineMap)
                         }
+
                     }
                 }
             }
@@ -985,12 +960,7 @@ public class QARunner extends AbstractRunner {
         String beginOrder = "0"
         String curOrder = ""
         for (Map entry : listPipelines) {
-            def stageName
-            if(multilingualMode){
-                stageName = String.format("Stage: %s Environment: %s Browser: %s Locale: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"), entry.get("locale"))
-            } else {
-                stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
-            }
+            def stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
             logger.info("stageName: ${stageName}")
 
             boolean propagateJob = true
@@ -1049,7 +1019,7 @@ public class QARunner extends AbstractRunner {
 
             //add current build params from cron
             for (param in Configuration.getParams()) {
-                if (!isParamEmpty(param.getValue())) {
+                if (!Executor.isParamEmpty(param.getValue())) {
                     if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
                         jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
                     } else {
@@ -1074,7 +1044,7 @@ public class QARunner extends AbstractRunner {
                 def subject = "JOBSTART FAILURE: " + entry.get("jobName")
                 def to = entry.get("email_list") + "," + Configuration.get("email_list")
 
-                context.emailext getEmailParams(body, subject, to)
+                context.emailext Executor.getEmailParams(body, subject, to)
             }
         }
     }
@@ -1103,7 +1073,7 @@ public class QARunner extends AbstractRunner {
 	protected boolean isBrowserStackRun() {
 		boolean res = false
 		def customCapabilities = Configuration.get("custom_capabilities")
-		if (!isParamEmpty(customCapabilities)) {
+		if (!Executor.isParamEmpty(customCapabilities)) {
 			if (customCapabilities.toLowerCase().contains("browserstack")) {
 				res = true
 			}
