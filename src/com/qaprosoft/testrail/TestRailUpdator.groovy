@@ -9,7 +9,7 @@ class TestRailUpdator {
     private ZafiraClient zc
     private TestRailClient trc
     private Logger logger
-    private integrationInfo
+    private integration
 
 
     public TestRailUpdator(context) {
@@ -20,64 +20,64 @@ class TestRailUpdator {
     }
 
     public void updateTestRun(uuid) {
-        integrationInfo = zc.getTestRailIntegrationInfo(uuid)
-        context.println "INTGR: " + integrationInfo
-        if(!integrationInfo.isEmpty()){
-
-            def milestoneId = getMilestoneId(integrationInfo.milestone)
-            def assignedToId = getAssignedToId(integrationInfo.createdBy)
-//            def testRunId = getTestRunId(milestoneId, assignedToId)
-            def testRunId = getTestRunId(assignedToId)
-            if(testRunId){
-                if(milestoneId){
-                    def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", milestoneId, assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
-                    logger.info(addedTestRun)
-                } else {
-                    def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
-                    logger.info(addedTestRun)
-                }
-                logger.info("Not implemented yet")
+        integration = zc.getTestRailIntegrationInfo(uuid)
+        if(!integration.isEmpty()){
+            integration.milestoneId = getMilestoneId()
+            integration.assignedToId = getAssignedToId()
+            integration.testRunId = getTestRunId()
+            if(integration.testRunId){
+                updateTestRun()
             } else {
-                if(milestoneId){
-                    def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", milestoneId, assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
-                    logger.info(addedTestRun)
-                } else {
-                    def addedTestRun = trc.addTestRun(integrationInfo.suiteId, integrationInfo.testRunName + " All Cases", assignedToId, true, integrationInfo.testCaseIds, integrationInfo.projectId)
-                    logger.info(addedTestRun)
-                }
+                addTestRun()
             }
         }
     }
 
-    public def getTestRunId(assignedToId){
+    public def getTestRunId(){
         def testRunId = null
-        def testRuns = trc.getRuns(Math.round(integrationInfo.createdAfter/1000), assignedToId, integrationInfo.projectId, integrationInfo.suiteId)
+        def testRuns
+        if(integration.milestoneId){
+            testRuns = trc.getRuns(Math.round(integration.createdAfter/1000), integration.assignedToId, integration.milestoneId, integration.projectId, integration.suiteId)
+        } else {
+            testRuns = trc.getRuns(Math.round(integration.createdAfter/1000), integration.assignedToId, integration.projectId, integration.suiteId)
+        }
         testRuns.each { Map testRun ->
-            logger.info("TR: " + testRun)
-            if(testRun.name == integrationInfo.testRunName){
+            logger.info("TEST_RUN: " + testRun)
+            if(testRun.name == integration.testRunName){
                 testRunId = testRun.id
             }
         }
         return testRunId
     }
 
-    public def getMilestoneId(name){
+    public def getMilestoneId(){
         def milestoneId = null
-        def milestones = trc.getMilestones(integrationInfo.projectId)
+        def milestones = trc.getMilestones(integration.projectId)
         milestones.each { Map milestone ->
-            if (milestone.name == name) {
+            if (milestone.name == integration.milestone) {
                 milestoneId = milestone.id
             }
         }
-        logger.info("MLSTN_NAME: " + name)
         if(!milestoneId ){
-            def milestone = trc.addMilestone(integrationInfo.projectId, name)
+            def milestone = trc.addMilestone(integration.projectId, integration.milestone)
             milestoneId = milestone.id
         }
         return milestoneId
     }
 
-    public def getAssignedToId(assigneeEmail){
-        return trc.getUserIdByEmail(assigneeEmail).id
+    public def getAssignedToId(){
+        return trc.getUserIdByEmail(integration.createdBy).id
+    }
+
+    public def addTestRun(){
+        if(integration.milestoneId){
+            trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, true, integration.testCaseIds, integration.projectId)
+        } else {
+            trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, true, integration.testCaseIds, integration.projectId)
+        }
+    }
+
+    public def updateTestRun(){
+        logger.info("Not implemented yet")
     }
 }
