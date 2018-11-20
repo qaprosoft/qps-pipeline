@@ -61,14 +61,6 @@ public class Runner extends AbstractRunner {
         }
     }
 
-    protected def void executeMavenGoals(goals){
-        if (context.isUnix()) {
-            context.sh "'mvn' -B ${goals}"
-        } else {
-            context.bat "mvn -B ${goals}"
-        }
-    }
-
     protected void performSonarQubeScan(){
         def sonarQubeEnv = ''
         Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
