@@ -221,8 +221,8 @@ class ZafiraClient {
 						  httpMode: 'POST',
 						  requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
 						  url: this.serviceURL + "/api/auth/refresh"]
-		def response = sendRequest(parameters)
-		def properties = (Map) new JsonSlurper().parseText(response.getContent())
+        Map properties = (Map)sendRequest(parameters)
+//		def properties = (Map) response
 		authToken = properties.get("type") + " " + properties.get("accessToken")
 		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
 	}
