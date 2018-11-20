@@ -182,7 +182,7 @@ class ZafiraClient {
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
 
-		return sendRequest(parameters)
+		return sendVoidRequest(parameters)
 	}
 
 	public def getTestRunByCiRunId(String uuid) {
@@ -208,6 +208,20 @@ class ZafiraClient {
 			return
 		}
 		return getObjectResponse(response.content)
+    }
+
+    protected def sendVoidRequest(requestParams) {
+        def response = null
+        /** Catches exceptions in every http call */
+        try {
+            response = context.httpRequest requestParams
+        } catch (Exception e) {
+            logger.error(Utils.printStackTrace(e))
+        }
+        if(!response || response.status > 200){
+            return
+        }
+        return response.content
     }
 
 	protected boolean isTokenExpired() {
