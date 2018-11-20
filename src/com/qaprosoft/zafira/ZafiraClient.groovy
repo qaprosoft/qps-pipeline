@@ -43,7 +43,6 @@ class ZafiraClient {
                               url               : this.serviceURL + "/api/tests/runs/queue"]
 
             def response = sendRequest(parameters)
-            logger.info("QQQ" + response)
             logger.info("Queued TestRun: " + formatJson(response))
         }
     }
@@ -205,7 +204,7 @@ class ZafiraClient {
         } catch (Exception e) {
             logger.error(Utils.printStackTrace(e))
         }
-		if(!response){
+		if(!response && response.status > 200){
 			return
 		}
 		return getObjectResponse(response.content)
