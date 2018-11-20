@@ -372,9 +372,11 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
+
         def testRun = zc.getTestRunByCiRunId(uuid)
         logger.info("TEST_RUN: " + testRun)
-
+        def isRebuild = isParamEmpty(testRun)
+        logger.info("IS_REBUILD: " + testRun)
 //        context.println "TESTRAIL_INTEGRATION: " + tru.updateTestRun("d4240db9-092c-4c5c-9ff5-0f6f29e599c8")
         String nodeName = "master"
         context.node(nodeName) {
@@ -406,7 +408,6 @@ public class QARunner extends AbstractRunner {
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-                    logger.info("IS_REBUILD: " + isZafiraRebuild())
 //                    exportZafiraReport()
 //                    publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
@@ -1109,10 +1110,6 @@ public class QARunner extends AbstractRunner {
                       onlyStable: false,
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
-    }
-
-    protected boolean isZafiraRebuild() {
-        return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
     }
 
     protected boolean isBrowserStackRun() {
