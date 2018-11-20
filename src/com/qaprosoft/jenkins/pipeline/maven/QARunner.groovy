@@ -375,7 +375,7 @@ public class QARunner extends AbstractRunner {
 
         def testRun = zc.getTestRunByCiRunId(uuid)
         logger.info("TEST_RUN: " + testRun)
-        def isRebuild = isParamEmpty(testRun)
+        def isRebuild = !isParamEmpty(testRun)
         logger.info("IS_REBUILD: " + isRebuild)
 //        context.println "TESTRAIL_INTEGRATION: " + tru.updateTestRun("d4240db9-092c-4c5c-9ff5-0f6f29e599c8")
         String nodeName = "master"
