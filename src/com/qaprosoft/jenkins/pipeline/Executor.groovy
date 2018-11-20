@@ -85,7 +85,7 @@ public class Executor {
     }
 
     static def formatJson(json){
-        JsonOutput.prettyPrint(json.toString())
+        return JsonOutput.prettyPrint(json.toString())
     }
 
     static XmlSuite parseSuite(String path) {
