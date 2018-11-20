@@ -204,7 +204,7 @@ class ZafiraClient {
         } catch (Exception e) {
             logger.error(Utils.printStackTrace(e))
         }
-		if(!response && response.status > 200){
+		if(!response || response.status > 200){
 			return
 		}
 		return getObjectResponse(response.content)
