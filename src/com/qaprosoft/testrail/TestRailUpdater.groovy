@@ -1,10 +1,10 @@
 package com.qaprosoft.testrail
 
-import static com.qaprosoft.jenkins.pipeline.Executor.*
+
 import com.qaprosoft.Logger
 import com.qaprosoft.zafira.ZafiraClient
 
-class TestRailUpdator {
+class TestRailUpdater {
 
     private def context
     private ZafiraClient zc
@@ -13,7 +13,7 @@ class TestRailUpdator {
     private integration
 
 
-    public TestRailUpdator(context) {
+    public TestRailUpdater(context) {
         this.context = context
         zc = new ZafiraClient(context)
         trc = new TestRailClient(context)
@@ -86,6 +86,42 @@ class TestRailUpdator {
     }
 
     public def addResultsForCases(){
-        logger.info("Not implemented yet")
+        def response = trc.addResultsForCases(integration.testRunId, getStatusCodeId(), integration.testRunComment, integration.testRunAppVersion, integration.testRunElapsed, getDefectsString(), integration.assignedToId)
+        logger.info("ADD_RESULTS_RESPONSE: " + response)
+    }
+
+    public def getStatusCodeId(){
+        return TestRailStatusMapper.getTestRailStatus(integration.testRunStatus)
+    }
+
+    public def getDefectsString(){
+        def defectsString = ""
+        return defectsString.replaceAll(".\$","")
+    }
+    public def parseIntegrationInfo(){
+        Map testCaseResultMap = new HashMap<>()
+        integration.integrationInfo.each { integrationInfoItem ->
+            String[] tagInfoArray = integrationInfoItem.getTagValue().split("-")
+            def testCaseResult = {}
+            List<String> defectList
+            if (testCaseResultMap.get(tagInfoArray[2]) == null) {
+                if (!integration.projectId) {
+                    integration.projectId = tagInfoArray[0]
+                    integration.suiteId = tagInfoArray[1]
+                }
+                testCaseResult = new TestCaseResult()
+                testCaseResult.setTestCaseId(tagInfoArray[2])
+                testCaseResult.setStatus(integrationInfoItem.getStatus())
+                defectList = new ArrayList<>()
+            } else {
+                testCaseResult = testCaseResultMap.get(tagInfoArray[2])
+                defectList = testCaseResult.getDefects()
+            }
+            defectList.add(integrationInfoItem.getDefectId())
+            testCaseResult.setDefects(defectList)
+            testCaseResultMap.put(tagInfoArray[2], testCaseResult)
+        }
+        integration.testCaseIds = (List<TestCaseResult>) testCaseResultMap.values()
+
     }
 }
