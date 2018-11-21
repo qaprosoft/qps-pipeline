@@ -16,8 +16,8 @@ class GitHub implements ISCM {
         logger = new Logger(context)
         // gitHtmlUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
         // gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
-		gitHtmlUrl = "\$GITHUB_HTML_URL}/${Configuration.get("project")}"
-		gitSshUrl = "\${GITHUB_SSH_URL}/${Configuration.get("project")}"
+		gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("project")}"
+		gitSshUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("project")}"
         //TODO: investigate how we can remove such harcoded https repo urls
         if (Configuration.get("project").equals("carina-demo")) {
             //sample public carina-demo project should be cloned using https only!
