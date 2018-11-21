@@ -14,8 +14,10 @@ class GitHub implements ISCM {
 	public GitHub(context) {
 		this.context = context
         logger = new Logger(context)
-        gitHtmlUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
-        gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
+        // gitHtmlUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}")
+        // gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}")
+		gitHtmlUrl = "${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("project")}"
+		gitSshUrl = "${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}"
         //TODO: investigate how we can remove such harcoded https repo urls
         if (Configuration.get("project").equals("carina-demo")) {
             //sample public carina-demo project should be cloned using https only!
@@ -40,7 +42,7 @@ class GitHub implements ISCM {
             def branch = Configuration.get("branch")
             def project = Configuration.get("project")
             def userId = Configuration.get("BUILD_USER_ID")
-            def gitUrl = gitSshUrl
+            def gitUrl = Configuration.resolveVars(gitSshUrl)
             def scmVars = [:]
 
             logger.info("GIT_URL: " + gitUrl)
@@ -89,14 +91,16 @@ class GitHub implements ISCM {
 		context.stage('Checkout GitHub Repository') {
 			def branch  = Configuration.get("sha1")
 			def credentialsId = Configuration.get("ghprbCredentialsId")
-            logger.info("GitHub->clonePR\nGIT_URL: ${gitSshUrl}\nbranch: ${branch}")
-			context.checkout getCheckoutParams(gitSshUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
+			def gitUrl = Configuration.resolveVars(gitSshUrl)
+            logger.info("GitHub->clonePR\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
+			context.checkout getCheckoutParams(gitUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
 		}
 	}
 
     public def clonePush() {
         context.stage('Checkout GitHub Repository') {
             def branch = Configuration.get("branch")
+			//TODO: [VD] duplicate code in url generation?
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}.git")
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', '')
