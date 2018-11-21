@@ -1,10 +1,8 @@
 package com.qaprosoft.zafira
 
 import com.qaprosoft.Logger
-import com.qaprosoft.Utils
+import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import com.qaprosoft.jenkins.pipeline.Configuration
 
 class ZafiraClient {
@@ -204,8 +202,7 @@ class ZafiraClient {
 
 	/** Sends httpRequest using passed parameters */
     protected def sendRequest(requestParams) {
-        def response = sendRequest(requestParams)
-		return getObjectResponse(response)
+		return getObjectResponse(sendRequestStringResp(requestParams))
     }
 
     protected def sendRequestStringResp(requestParams) {
@@ -214,7 +211,7 @@ class ZafiraClient {
         try {
             response = context.httpRequest requestParams
         } catch (Exception e) {
-            logger.error(Utils.printStackTrace(e))
+            logger.error(printStackTrace(e))
         }
         if(!response || response.status > 200){
             return

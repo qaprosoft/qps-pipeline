@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 import com.qaprosoft.Utils
 import com.qaprosoft.testrail.TestRailClient
-import com.qaprosoft.testrail.TestRailUpdator
+import com.qaprosoft.testrail.TestRailUpdater
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
@@ -33,7 +33,7 @@ public class QARunner extends AbstractRunner {
     protected def uuid
     protected ZafiraClient zc
     protected TestRailClient trc
-    protected TestRailUpdator tru
+    protected TestRailUpdater tru
 
     //CRON related vars
     protected def listPipelines = []
@@ -55,7 +55,7 @@ public class QARunner extends AbstractRunner {
         scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
         trc = new TestRailClient(context)
-        tru = new TestRailUpdator(context)
+        tru = new TestRailUpdater(context)
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
             onlyUpdated = Configuration.get("onlyUpdated").toBoolean()

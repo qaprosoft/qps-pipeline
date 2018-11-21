@@ -1,7 +1,5 @@
 package com.qaprosoft.testrail
 
-import com.qaprosoft.jenkins.pipeline.Executor
-
 import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.Logger
@@ -41,14 +39,14 @@ class TestRailClient {
         }
     }
 
-    public def addTestRun(suite_id, testRunName, milestone_id, assignedto_id, include_all, case_ids, projectID) {
+    public def addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, caseIds, projectID) {
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder suite_id: suite_id,
+        jsonBuilder suite_id: suiteId,
                 name: testRunName,
-                milestone_id: milestone_id,
-                assignedto_id: assignedto_id,
-                include_all: include_all,
-                case_ids: case_ids
+                milestone_id: milestoneId,
+                assignedto_id: assignedToId,
+                include_all: includeAll,
+                case_ids: caseIds
 
         logger.info("RQST: " + formatJson(jsonBuilder))
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
@@ -62,13 +60,13 @@ class TestRailClient {
         }
     }
 
-    public def addTestRun(suite_id, testRunName, assignedto_id, include_all, case_ids, projectID) {
+    public def addTestRun(suiteId, testRunName, assignedToId, includeAll, caseIds, projectID) {
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder suite_id: suite_id,
+        jsonBuilder suite_id: suiteId,
                 name: testRunName,
-                assignedto_id: assignedto_id,
-                include_all: include_all,
-                case_ids: case_ids
+                assignedto_id: assignedToId,
+                include_all: includeAll,
+                case_ids: caseIds
 
         logger.info("RQST: " + formatJson(jsonBuilder))
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
@@ -122,9 +120,15 @@ class TestRailClient {
         }
     }
 
-    public def addResultsForCases(testRunId) {
+    public def addResultsForCases(testRunId, statusId, comment, version, elapsed, defects, assignedToId) {
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder name: milestoneName
+        jsonBuilder status_id: statusId,
+                comment: comment,
+                version: assignedToId,
+                elapsed: elapsed,
+                defects: defects,
+                assignedto_id: assignedToId
+
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
@@ -138,6 +142,10 @@ class TestRailClient {
 
     /** Sends httpRequest using passed parameters */
     protected def sendRequest(requestParams) {
+        return getObjectResponse(sendRequestStringResp(requestParams))
+    }
+
+    protected def sendRequestStringResp(requestParams) {
         def response = null
         /** Catches exceptions in every http call */
         try {
@@ -145,9 +153,10 @@ class TestRailClient {
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
-        if(!response){
+        if(!response || response.status > 200){
             return
         }
-        return getObjectResponse(response.content)
+        return response.content
     }
+
 }
