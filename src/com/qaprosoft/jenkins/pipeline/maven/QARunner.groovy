@@ -373,7 +373,7 @@ public class QARunner extends AbstractRunner {
         uuid = getUUID()
         logger.info("UUID: " + uuid)
         uuid = "a52c2a60-3b7d-41eb-b380-f1f527c18bcd"
-        context.println "TESTRAIL_INTEGRATION: " + tru.updateTestRun(uuid, setRebuild(), setTestRailRunName())
+        tru.updateTestRun(uuid, getSearchable())
         String nodeName = "master"
         context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
@@ -412,16 +412,8 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected boolean setRebuild(){
+    protected boolean getSearchable(){
         return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
-    }
-
-    protected def setTestRailRunName(){
-        def runName = null
-        if(!isParamEmpty(Configuration.get("testRailRunName"))){
-            runName = Configuration.get("testRailRunName")
-        }
-        return runName
     }
 
     protected String chooseNode() {
