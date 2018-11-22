@@ -27,13 +27,14 @@ class TestRailUpdater {
             integration.milestoneId = getMilestoneId()
             integration.assignedToId = getAssignedToId()
             parseIntegrationInfo()
-            if(!isRebuild){
-                def testRun = addTestRun(false)
-                integration.testRunId = testRun.id
-            } else {
-                integration.testRunId = getTestRunId()
-            }
-            addResultsForCases()
+            logger.info("INTEGRATION_INFO" + integration)
+//            if(!isRebuild){
+//                def testRun = addTestRun(false)
+//                integration.testRunId = testRun.id
+//            } else {
+//                integration.testRunId = getTestRunId()
+//            }
+//            addResultsForCases()
         }
     }
 
