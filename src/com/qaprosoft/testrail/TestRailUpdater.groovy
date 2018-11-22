@@ -4,7 +4,6 @@ package com.qaprosoft.testrail
 import com.qaprosoft.Logger
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.zafira.ZafiraClient
-import com.qaprosoft.testrail.TestRailStatusMapper
 
 class TestRailUpdater {
 
@@ -24,7 +23,6 @@ class TestRailUpdater {
 
     public void updateTestRun(uuid, isRebuild) {
         integration = zc.getIntegrationInfo(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
-        logger.info("ITYPE: " + integration.dump())
         if(!isParamEmpty(integration)){
             parseIntegrationInfo()
             integration.milestoneId = getMilestoneId()
@@ -106,7 +104,6 @@ class TestRailUpdater {
         integration.integrationInfo.each { integrationInfoItem ->
             String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
             Map testCase = new HashMap()
-            logger.info("TCR0: " + testCase)
             if (!testCaseResultMap.get(tagInfoArray[2])) {
                 if (!integration.projectId) {
                     integration.projectId = tagInfoArray[0]
@@ -115,7 +112,6 @@ class TestRailUpdater {
                 testCase.case_id = tagInfoArray[2]
                 testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
                 testCase.comment = integrationInfoItem.message
-                testCase.defects = integrationInfoItem.defectId
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[2])
             }
