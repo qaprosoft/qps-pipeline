@@ -138,7 +138,7 @@ class ZafiraClient {
 		return sendRequest(parameters)
     }
 
-	public def getTestRailIntegrationInfo(uuid) {
+	public def getIntegrationInfo(uuid, tagName) {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -146,7 +146,7 @@ class ZafiraClient {
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
 						  validResponseCodes: "200",
-						  url: this.serviceURL + "/api/tags/${uuid}/testrail"]
+						  url: this.serviceURL + "/api/tags/${uuid}/integration?integrationTag=${tagName}"]
 		return sendRequest(parameters)
 	}
 
