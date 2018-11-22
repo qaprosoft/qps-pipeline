@@ -320,6 +320,18 @@ public class Executor {
         return goals
     }
 
+    static def getDefectsString(String defects, String newDefects){
+        if(isParamEmpty(defects)){
+            defects = newDefects
+        } else {
+            if(!newDefects.isEmpty()){
+                defects = "${defects},${newDefects}"
+            }
+        }
+        return defects
+    }
+
+
     static def setDefaultIfEmpty(stringKey, enumKey){
         def configValue = Configuration.get(stringKey)
         if (configValue.isEmpty()) {

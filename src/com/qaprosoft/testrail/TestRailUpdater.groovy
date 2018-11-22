@@ -2,6 +2,7 @@ package com.qaprosoft.testrail
 
 
 import com.qaprosoft.Logger
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.zafira.ZafiraClient
 
 class TestRailUpdater {
@@ -25,6 +26,7 @@ class TestRailUpdater {
         if(!integration.isEmpty()){
             integration.milestoneId = getMilestoneId()
             integration.assignedToId = getAssignedToId()
+            parseIntegrationInfo()
             if(!isRebuild){
                 def testRun = addTestRun(false)
                 integration.testRunId = testRun.id
@@ -53,7 +55,8 @@ class TestRailUpdater {
     }
 
     public def getMilestoneId(){
-        if(integration.milestone){
+        Map customParams = integration.customParams
+        if(customParams.milestone){
             def milestoneId = null
             def milestones = trc.getMilestones(integration.projectId)
             milestones.each { Map milestone ->
@@ -70,7 +73,8 @@ class TestRailUpdater {
     }
 
     public def getAssignedToId(){
-        def assignedToId = trc.getUserIdByEmail(integration.createdBy)
+        Map customParams = integration.customParams
+        def assignedToId = trc.getUserIdByEmail(customParams.assignee)
         return assignedToId.id
     }
 
@@ -86,42 +90,30 @@ class TestRailUpdater {
     }
 
     public def addResultsForCases(){
-        def response = trc.addResultsForCases(integration.testRunId, getStatusCodeId(), integration.testRunComment, integration.testRunAppVersion, integration.testRunElapsed, getDefectsString(), integration.assignedToId)
+        def response = trc.addResultsForCases(integration.testRunId, integration.results)
         logger.info("ADD_RESULTS_RESPONSE: " + response)
     }
 
-    public def getStatusCodeId(){
-        return TestRailStatusMapper.getTestRailStatus(integration.testRunStatus)
-    }
-
-    public def getDefectsString(){
-        def defectsString = ""
-        return defectsString.replaceAll(".\$","")
-    }
     public def parseIntegrationInfo(){
         Map testCaseResultMap = new HashMap<>()
         integration.integrationInfo.each { integrationInfoItem ->
-            String[] tagInfoArray = integrationInfoItem.getTagValue().split("-")
+            String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
             def testCaseResult = {}
-            List<String> defectList
-            if (testCaseResultMap.get(tagInfoArray[2]) == null) {
+            if (testCaseResultMap.tagInfoArray[2]) {
                 if (!integration.projectId) {
                     integration.projectId = tagInfoArray[0]
                     integration.suiteId = tagInfoArray[1]
                 }
-                testCaseResult = new TestCaseResult()
-                testCaseResult.setTestCaseId(tagInfoArray[2])
-                testCaseResult.setStatus(integrationInfoItem.getStatus())
-                defectList = new ArrayList<>()
+                testCaseResult.case_id = tagInfoArray[2]
+                testCaseResult.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
+                testCaseResult.comment = integrationInfoItem.message
             } else {
                 testCaseResult = testCaseResultMap.get(tagInfoArray[2])
-                defectList = testCaseResult.getDefects()
             }
-            defectList.add(integrationInfoItem.getDefectId())
-            testCaseResult.setDefects(defectList)
+            testCaseResult.defects = getDefectsString(testCaseResult.defects, integrationInfoItem.defectId)
             testCaseResultMap.put(tagInfoArray[2], testCaseResult)
         }
-        integration.testCaseIds = (List<TestCaseResult>) testCaseResultMap.values()
-
+        integration.testCaseIds = testCaseResultMap.keySet()
+        integration.results = testCaseResultMap.values()
     }
 }

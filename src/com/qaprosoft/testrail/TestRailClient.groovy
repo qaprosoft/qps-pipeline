@@ -83,7 +83,6 @@ class TestRailClient {
     public def getUserIdByEmail(userEmail) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             if(isParamEmpty(userEmail)){
-                logger.info("USRNM: " + context.env.USERNAME)
                 userEmail = context.env.USERNAME
             }
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
@@ -120,20 +119,12 @@ class TestRailClient {
         }
     }
 
-    public def addResultsForCases(testRunId, statusId, comment, version, elapsed, defects, assignedToId) {
-        JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder status_id: statusId,
-                comment: comment,
-                version: assignedToId,
-                elapsed: elapsed,
-                defects: defects,
-                assignedto_id: assignedToId
-
+    public def addResultsForCases(testRunId, results) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'POST',
-                              requestBody: "${jsonBuilder}",
+                              requestBody: "${results}",
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "add_results_for_cases/${testRunId}"]
             return sendRequest(parameters)
