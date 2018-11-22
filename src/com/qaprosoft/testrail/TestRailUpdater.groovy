@@ -99,40 +99,6 @@ class TestRailUpdater {
         logger.info("ADD_RESULTS_RESPONSE: " + response)
     }
 
-    enum TestRailStatus {
-        PASSED(1),
-        BLOCKED(2),
-        UNTESTED(3),
-        RETEST(4),
-        FAILED(5),
-        final int value
-        TestRailStatus(int value) {
-            this.value = value
-        }
-    }
-
-    enum ZafiraStatus {
-        PASSED(1),
-        FAILED(5),
-        SKIPPED(3),
-        ABORTED(3),
-        QUEUED(3),
-        final int value
-        ZafiraStatus(int value) {
-            this.value = value
-        }
-    }
-
-    public  def getTestRailStatus(String zafiraStringStatus){
-        ZafiraStatus zafiraStatus = ZafiraStatus.valueOf(zafiraStringStatus)
-        for(testRailStatus in TestRailStatus.values()){
-            if(testRailStatus.value == zafiraStatus.value) {
-                logger.info("ZAFIRA_STATUS_VALUE: " + zafiraStatus.value)
-                logger.info("TEST_RAIL_STATUS_VALUE: " + testRailStatus.value)
-                return testRailStatus.name()
-            }
-        }
-    }
     public def parseIntegrationInfo(){
         Map testCaseResultMap = new HashMap<>()
         integration.integrationInfo.each { integrationInfoItem ->
@@ -145,7 +111,7 @@ class TestRailUpdater {
                     integration.suiteId = tagInfoArray[1]
                 }
                 testCase.case_id = tagInfoArray[2]
-                testCase.status_id = getTestRailStatus(integrationInfoItem.status)
+                testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
                 testCase.comment = integrationInfoItem.message
                 testCase.defects = integrationInfoItem.defectId
             } else {
