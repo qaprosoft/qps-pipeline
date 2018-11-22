@@ -125,7 +125,7 @@ class TestRailUpdater {
 
     public  def getTestRailStatus(String zafiraStringStatus){
         ZafiraStatus zafiraStatus = ZafiraStatus.valueOf(zafiraStringStatus)
-        TestRailStatus.values().each { testRailStatus ->
+        for(testRailStatus in TestRailStatus.values()){
             if(testRailStatus.value == zafiraStatus.value) {
                 logger.info("ZAFIRA_STATUS_VALUE: " + zafiraStatus.value)
                 logger.info("TEST_RAIL_STATUS_VALUE: " + testRailStatus.value)
