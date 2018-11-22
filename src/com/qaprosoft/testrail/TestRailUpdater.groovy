@@ -111,6 +111,7 @@ class TestRailUpdater {
                 testCaseResult.case_id = tagInfoArray[2]
                 testCaseResult.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
                 testCaseResult.comment = integrationInfoItem.message
+                testCaseResult.defects = integrationInfoItem.defectId
             } else {
                 testCaseResult = testCaseResultMap.get(tagInfoArray[2])
             }
