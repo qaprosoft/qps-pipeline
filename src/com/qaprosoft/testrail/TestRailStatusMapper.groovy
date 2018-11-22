@@ -1,6 +1,9 @@
 package com.qaprosoft.testrail
 
+import com.qaprosoft.Logger
+
 class TestRailStatusMapper {
+
 
     enum TestRailStatus {
         PASSED(1),
@@ -26,12 +29,5 @@ class TestRailStatusMapper {
         }
     }
 
-    public static def getTestRailStatus(String zafiraStringStatus){
-        ZafiraStatus zafiraStatus = ZafiraStatus.valueOf(zafiraStringStatus)
-        TestRailStatus.values().each { testRailStatus ->
-            if(testRailStatus.value == zafiraStatus.value) {
-                return testRailStatus.name()
-            }
-        }
-    }
+
 }

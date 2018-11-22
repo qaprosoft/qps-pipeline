@@ -98,6 +98,16 @@ class TestRailUpdater {
         logger.info("ADD_RESULTS_RESPONSE: " + response)
     }
 
+    public  def getTestRailStatus(String zafiraStringStatus){
+        TestRailStatusMapper.ZafiraStatus zafiraStatus = TestRailStatusMapper.ZafiraStatus.valueOf(zafiraStringStatus)
+        logger.info("ZAFIRA_STATUS: " + zafiraStatus)
+        TestRailStatusMapper.TestRailStatus.values().each { testRailStatus ->
+            logger.info("TEST_RAIL_STATUS: " + testRailStatus)
+            if(testRailStatus.value == zafiraStatus.value) {
+                return testRailStatus.name()
+            }
+        }
+    }
     public def parseIntegrationInfo(){
         Map testCaseResultMap = new HashMap<>()
         integration.integrationInfo.each { integrationInfoItem ->
@@ -110,7 +120,7 @@ class TestRailUpdater {
                     integration.suiteId = tagInfoArray[1]
                 }
                 testCase.case_id = tagInfoArray[2]
-                testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
+                testCase.status_id = getTestRailStatus(integrationInfoItem.status)
                 testCase.comment = integrationInfoItem.message
                 testCase.defects = integrationInfoItem.defectId
             } else {
