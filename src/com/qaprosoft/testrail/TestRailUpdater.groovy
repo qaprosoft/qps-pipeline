@@ -28,13 +28,14 @@ class TestRailUpdater {
             integration.milestoneId = getMilestoneId()
             integration.assignedToId = getAssignedToId()
             logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
-//            if(!isRebuild){
-//                def testRun = addTestRun(false)
-//                integration.testRunId = testRun.id
-//            } else {
-//                integration.testRunId = getTestRunId()
-//            }
-//            addResultsForCases()
+            isRebuild = false
+            if(!isRebuild){
+                def testRun = addTestRun(false)
+                integration.testRunId = testRun.id
+            } else {
+                integration.testRunId = getTestRunId()
+            }
+            addResultsForCases()
         }
     }
 
@@ -86,7 +87,7 @@ class TestRailUpdater {
     public def addTestRun(boolean include_all){
         def testRun
         if(integration.milestoneId){
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName + " Add Cases Results", integration.milestoneId, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
         } else {
             testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
         }
