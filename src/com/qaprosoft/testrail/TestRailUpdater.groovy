@@ -59,7 +59,7 @@ class TestRailUpdater {
     public def getMilestoneId(){
         Map customParams = integration.customParams
         if(!isParamEmpty(customParams.milestone)){
-            logger.info("MLST: " + customParams.milestone)
+
             def milestoneId = null
             def milestones = trc.getMilestones(integration.projectId)
             milestones.each { Map milestone ->
@@ -67,6 +67,7 @@ class TestRailUpdater {
                     milestoneId = milestone.id
                 }
             }
+            logger.info("MLST: " + milestoneId)
             if(!milestoneId ){
                 def milestone = trc.addMilestone(integration.projectId, integration.milestone)
                 if(!isParamEmpty(milestone)){
