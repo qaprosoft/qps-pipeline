@@ -47,7 +47,7 @@ class TestRailUpdater {
             testRuns = trc.getRuns(Math.round(integration.createdAfter/1000), integration.assignedToId, integration.projectId, integration.suiteId)
         }
         testRuns.each { Map testRun ->
-            logger.info("TEST_RUN: " + testRun)
+            logger.info("TEST_RUN: " + formatJson(testRun))
             if(testRun.name == integration.testRunName){
                 testRunId = testRun.id
             }
