@@ -3,7 +3,7 @@ package com.qaprosoft.testrail
 class TestRailStatusMapper {
 
 
-    public enum TestRailStatus {
+    enum TestRailStatus {
         PASSED(1),
         BLOCKED(2),
         UNTESTED(3),
@@ -15,7 +15,7 @@ class TestRailStatusMapper {
         }
     }
 
-    public enum ZafiraStatus {
+    enum ZafiraStatus {
         PASSED(1),
         FAILED(5),
         SKIPPED(3),
