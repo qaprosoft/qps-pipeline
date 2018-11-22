@@ -13,7 +13,6 @@ class TestRailUpdater {
     private Logger logger
     private integration
 
-
     public TestRailUpdater(context) {
         this.context = context
         zc = new ZafiraClient(context)
@@ -32,7 +31,7 @@ class TestRailUpdater {
                 def testRun = addTestRun(false)
                 integration.testRunId = testRun.id
             } else {
-                integration.testRunId = getTestRunId()
+                getTestRunId()
             }
             addResultsForCases()
         }
@@ -49,10 +48,9 @@ class TestRailUpdater {
         testRuns.each { Map testRun ->
             logger.info("TEST_RUN: " + formatJson(testRun))
             if(testRun.name == integration.testRunName){
-                testRunId = testRun.id
+                integration.testRunId = testRun.id
             }
         }
-        return testRunId
     }
 
     public def getMilestoneId(){
@@ -66,7 +64,6 @@ class TestRailUpdater {
                     milestoneId = milestone.id
                 }
             }
-            logger.info("MLST: " + milestoneId)
             if(!milestoneId ){
                 def milestone = trc.addMilestone(integration.projectId, customParams.milestone)
                 if(!isParamEmpty(milestone)){
@@ -86,7 +83,7 @@ class TestRailUpdater {
     public def addTestRun(boolean include_all){
         def testRun
         if(integration.milestoneId){
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName + " Add Cases Results", integration.milestoneId, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
         } else {
             testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
         }
