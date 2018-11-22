@@ -68,7 +68,7 @@ class TestRailUpdater {
             }
             if(!milestoneId ){
                 def milestone = trc.addMilestone(integration.projectId, integration.milestone)
-                if(isParamEmpty(milestone)){
+                if(!isParamEmpty(milestone)){
                     milestoneId = milestone.id
                 }
             }
