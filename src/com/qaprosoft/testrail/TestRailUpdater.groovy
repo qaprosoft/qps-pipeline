@@ -24,18 +24,20 @@ class TestRailUpdater {
         integration = zc.getIntegrationInfo(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
         if(!isParamEmpty(integration)){
             parseIntegrationInfo()
-            integration.milestoneId = getMilestoneId()
-            integration.assignedToId = getAssignedToId()
-            logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
-            if(!isRebuild){
-                def testRun = addTestRun(true)
-                if(!isParamEmpty(testRun)){
-                    integration.testRunId = testRun.id
+            if(!isParamEmpty(integration.projectId)){
+                integration.milestoneId = getMilestoneId()
+                integration.assignedToId = getAssignedToId()
+                logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
+                if(!isRebuild){
+                    def testRun = addTestRun(true)
+                    if(!isParamEmpty(testRun)){
+                        integration.testRunId = testRun.id
+                    }
+                } else {
+                    getTestRunId()
                 }
-            } else {
-                getTestRunId()
+                addResultsForCases()
             }
-            addResultsForCases()
         }
     }
 
