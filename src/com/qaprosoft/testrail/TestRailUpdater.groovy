@@ -23,7 +23,7 @@ class TestRailUpdater {
 
     public void updateTestRun(uuid, isRebuild) {
         integration = zc.getTestRailIntegrationInfo(uuid)
-        if(!integration.isEmpty()){
+        if(!isParamEmpty(integration)){
             integration.milestoneId = getMilestoneId()
             integration.assignedToId = getAssignedToId()
             parseIntegrationInfo()
