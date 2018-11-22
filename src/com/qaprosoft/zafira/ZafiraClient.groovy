@@ -213,7 +213,7 @@ class ZafiraClient {
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
-        logger.info("RESPONSE: " + response)
+        logger.info("RESPONSE: " + response.status.dump())
         if(!response || Integer.valueOf(response.status) > 200){
             return
         }
