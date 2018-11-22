@@ -202,7 +202,10 @@ class ZafiraClient {
 
 	/** Sends httpRequest using passed parameters */
     protected def sendRequest(requestParams) {
-		return getObjectResponse(sendRequestStringResp(requestParams))
+        def response = sendRequestStringResp(requestParams)
+        if(response){
+            return getObjectResponse(response)
+        }
     }
 
     protected def sendRequestStringResp(requestParams) {
@@ -213,9 +216,7 @@ class ZafiraClient {
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
-        logger.info("RESPONSE: " + response.status.dump())
         if(!response || response.status > 200){
-            logger.info("I SHOULD BE HERE")
             return
         }
         return response.content
