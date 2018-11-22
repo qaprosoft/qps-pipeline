@@ -100,25 +100,25 @@ class TestRailUpdater {
         Map testCaseResultMap = new HashMap<>()
         integration.integrationInfo.each { integrationInfoItem ->
             String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
-            def testCaseResult
-            logger.info("TCR0: " + testCaseResult)
+            Map testCase = new HashMap()
+            logger.info("TCR0: " + testCase)
             if (testCaseResultMap.get(tagInfoArray[2])) {
                 if (!integration.projectId) {
                     integration.projectId = tagInfoArray[0]
                     integration.suiteId = tagInfoArray[1]
                 }
-                logger.info("TCR1: " + testCaseResult)
-                testCaseResult.case_id = tagInfoArray[2]
-                testCaseResult.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
-                testCaseResult.comment = integrationInfoItem.message
-                testCaseResult.defects = integrationInfoItem.defectId
-                logger.info("TCR2: " + testCaseResult)
-                logger.info("TCR: " + testCaseResult)
+                logger.info("TCR1: " + testCase)
+                testCase.case_id = tagInfoArray[2]
+                testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
+                testCase.comment = integrationInfoItem.message
+                testCase.defects = integrationInfoItem.defectId
+                logger.info("TCR2: " + testCase)
+                logger.info("TCR: " + testCase)
             } else {
-                testCaseResult = testCaseResultMap.get(tagInfoArray[2])
+                testCase = testCaseResultMap.get(tagInfoArray[2])
             }
-            testCaseResult.defects = getDefectsString(testCaseResult.defects, integrationInfoItem.defectId)
-            testCaseResultMap.put(tagInfoArray[2], testCaseResult)
+            testCase.defects = getDefectsString(testCase.defects, integrationInfoItem.defectId)
+            testCaseResultMap.put(tagInfoArray[2], testCase)
         }
         integration.testCaseIds = testCaseResultMap.keySet()
         integration.results = testCaseResultMap.values()
