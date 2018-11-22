@@ -374,8 +374,7 @@ public class QARunner extends AbstractRunner {
         logger.info("UUID: " + uuid)
 
         def isRebuild = !isParamEmpty(zc.getTestRunByCiRunId(uuid))
-        logger.info("PRM: " + context.params)
-//        context.println "TESTRAIL_INTEGRATION: " + tru.updateTestRun("d4240db9-092c-4c5c-9ff5-0f6f29e599c8", isRebuild)
+        context.println "TESTRAIL_INTEGRATION: " + tru.updateTestRun("a52c2a60-3b7d-41eb-b380-f1f527c18bcd", isRebuild)
         String nodeName = "master"
         context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
