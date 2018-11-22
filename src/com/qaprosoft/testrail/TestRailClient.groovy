@@ -47,8 +47,6 @@ class TestRailClient {
                 assignedto_id: assignedToId,
                 include_all: includeAll,
                 case_ids: caseIds
-
-        logger.info("RQST: " + formatJson(jsonBuilder))
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
@@ -67,8 +65,6 @@ class TestRailClient {
                 assignedto_id: assignedToId,
                 include_all: includeAll,
                 case_ids: caseIds
-
-        logger.info("RQST: " + formatJson(jsonBuilder))
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
