@@ -102,7 +102,7 @@ class TestRailUpdater {
             String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
             Map testCase = new HashMap()
             logger.info("TCR0: " + testCase)
-            if (testCaseResultMap.get(tagInfoArray[2])) {
+            if (!testCaseResultMap.get(tagInfoArray[2])) {
                 if (!integration.projectId) {
                     integration.projectId = tagInfoArray[0]
                     integration.suiteId = tagInfoArray[1]
@@ -111,7 +111,7 @@ class TestRailUpdater {
                 testCase.case_id = tagInfoArray[2]
                 testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
                 testCase.comment = integrationInfoItem.message
-                testCase.put("defects", integrationInfoItem.defectId)
+                testCase.defects = integrationInfoItem.defectId
                 logger.info("TCR2: " + testCase)
                 logger.info("TCR: " + testCase)
             } else {
