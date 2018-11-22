@@ -30,7 +30,7 @@ class TestRailStatusMapper {
         ZafiraStatus zafiraStatus = ZafiraStatus.valueOf(zafiraStringStatus)
         for(testRailStatus in TestRailStatus.values()){
             if(testRailStatus.value == zafiraStatus.value) {
-                return testRailStatus.value()
+                return testRailStatus.value
             }
         }
     }
