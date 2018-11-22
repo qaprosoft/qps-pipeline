@@ -373,7 +373,7 @@ public class QARunner extends AbstractRunner {
         uuid = getUUID()
         logger.info("UUID: " + uuid)
         uuid = "a52c2a60-3b7d-41eb-b380-f1f527c18bcd"
-        tru.updateTestRun(uuid, getSearchable())
+        def isRebuild = getSearchable()
         String nodeName = "master"
         context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
@@ -403,8 +403,9 @@ public class QARunner extends AbstractRunner {
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-//                    exportZafiraReport()
-//                    publishJenkinsReports()
+                    tru.updateTestRun(uuid, isRebuild)
+                    exportZafiraReport()
+                    publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     clean()
                 }
