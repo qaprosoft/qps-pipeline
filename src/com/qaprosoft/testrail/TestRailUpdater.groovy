@@ -99,10 +99,34 @@ class TestRailUpdater {
         logger.info("ADD_RESULTS_RESPONSE: " + response)
     }
 
+    enum TestRailStatus {
+        PASSED(1),
+        BLOCKED(2),
+        UNTESTED(3),
+        RETEST(4),
+        FAILED(5),
+        final int value
+        TestRailStatus(int value) {
+            this.value = value
+        }
+    }
+
+    enum ZafiraStatus {
+        PASSED(1),
+        FAILED(5),
+        SKIPPED(3),
+        ABORTED(3),
+        QUEUED(3),
+        final int value
+        ZafiraStatus(int value) {
+            this.value = value
+        }
+    }
+
     public  def getTestRailStatus(String zafiraStringStatus){
-        TestRailStatusMapper.ZafiraStatus zafiraStatus = TestRailStatusMapper.ZafiraStatus.valueOf(zafiraStringStatus)
+        ZafiraStatus zafiraStatus = ZafiraStatus.valueOf(zafiraStringStatus)
         logger.info("ZAFIRA_STATUS: " + zafiraStatus)
-        TestRailStatusMapper.TestRailStatus.values().each { testRailStatus ->
+        TestRailStatus.values().each { testRailStatus ->
             logger.info("TEST_RAIL_STATUS: " + testRailStatus)
             if(testRailStatus.value == zafiraStatus.value) {
                 return testRailStatus.name()
