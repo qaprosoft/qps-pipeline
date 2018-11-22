@@ -68,7 +68,9 @@ class TestRailUpdater {
             }
             if(!milestoneId ){
                 def milestone = trc.addMilestone(integration.projectId, integration.milestone)
-                milestoneId = milestone.id
+                if(isParamEmpty(milestone)){
+                    milestoneId = milestone.id
+                }
             }
             return milestoneId
         }
@@ -107,13 +109,10 @@ class TestRailUpdater {
                     integration.projectId = tagInfoArray[0]
                     integration.suiteId = tagInfoArray[1]
                 }
-                logger.info("TCR1: " + testCase)
                 testCase.case_id = tagInfoArray[2]
                 testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
                 testCase.comment = integrationInfoItem.message
                 testCase.defects = integrationInfoItem.defectId
-                logger.info("TCR2: " + testCase)
-                logger.info("TCR: " + testCase)
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[2])
             }
