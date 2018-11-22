@@ -28,7 +28,6 @@ class TestRailUpdater {
             integration.milestoneId = getMilestoneId()
             integration.assignedToId = getAssignedToId()
             logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
-            isRebuild = false
             if(!isRebuild){
                 def testRun = addTestRun(false)
                 integration.testRunId = testRun.id
