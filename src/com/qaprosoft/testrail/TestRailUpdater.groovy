@@ -20,7 +20,10 @@ class TestRailUpdater {
         logger = new Logger(context)
     }
 
-    public void updateTestRun(uuid, isRebuild) {
+    public void updateTestRun(uuid, isRebuild, testRailRunName) {
+        if(!isParamEmpty(testRailRunName)){
+            integration.testRunName = testRailRunName
+        }
         integration = zc.getIntegrationInfo(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
         if(!isParamEmpty(integration)){
             parseIntegrationInfo()
