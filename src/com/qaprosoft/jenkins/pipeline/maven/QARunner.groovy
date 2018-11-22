@@ -372,7 +372,7 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
-//        uuid = "a52c2a60-3b7d-41eb-b380-f1f527c18bcd"
+        uuid = "a52c2a60-3b7d-41eb-b380-f1f527c18bcd"
         def isRebuild = getSearchable()
         String nodeName = "master"
         context.node(nodeName) {
