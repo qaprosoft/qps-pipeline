@@ -106,10 +106,12 @@ class TestRailUpdater {
                     integration.projectId = tagInfoArray[0]
                     integration.suiteId = tagInfoArray[1]
                 }
+                logger.info("TCR1: " + testCaseResult)
                 testCaseResult.case_id = tagInfoArray[2]
                 testCaseResult.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
                 testCaseResult.comment = integrationInfoItem.message
                 testCaseResult.defects = integrationInfoItem.defectId
+                logger.info("TCR2: " + testCaseResult)
                 logger.info("TCR: " + testCaseResult)
             } else {
                 testCaseResult = testCaseResultMap.get(tagInfoArray[2])
