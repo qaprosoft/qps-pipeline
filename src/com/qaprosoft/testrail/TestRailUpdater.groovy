@@ -57,7 +57,7 @@ class TestRailUpdater {
 
     public def getMilestoneId(){
         Map customParams = integration.customParams
-        if(customParams.milestone){
+        if(!isParamEmpty(customParams.milestone)){
             def milestoneId = null
             def milestones = trc.getMilestones(integration.projectId)
             milestones.each { Map milestone ->
