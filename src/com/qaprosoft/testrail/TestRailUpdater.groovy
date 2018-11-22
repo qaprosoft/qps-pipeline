@@ -103,7 +103,7 @@ class TestRailUpdater {
             logger.info("ITM: " + integrationInfoItem)
             logger.info("TGI: " + tagInfoArray)
             def testCaseResult = {}
-            if (testCaseResultMap.tagInfoArray[2]) {
+            if (testCaseResultMap.get(tagInfoArray[2])) {
                 if (!integration.projectId) {
                     integration.projectId = tagInfoArray[0]
                     integration.suiteId = tagInfoArray[1]
