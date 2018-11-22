@@ -213,9 +213,11 @@ class ZafiraClient {
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
+        logger.info("RESPONSE: " + response)
         if(!response || response.status > 200){
             return
         }
+        logger.info("I SHOULDNT BE HERE")
         return response.content
     }
 
