@@ -100,6 +100,8 @@ class TestRailUpdater {
         Map testCaseResultMap = new HashMap<>()
         integration.integrationInfo.each { integrationInfoItem ->
             String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
+            logger.info("ITM: " + integrationInfoItem)
+            logger.info("TGI: " + tagInfoArray)
             def testCaseResult = {}
             if (testCaseResultMap.tagInfoArray[2]) {
                 if (!integration.projectId) {
