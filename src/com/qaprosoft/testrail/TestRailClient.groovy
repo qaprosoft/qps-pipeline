@@ -133,7 +133,10 @@ class TestRailClient {
 
     /** Sends httpRequest using passed parameters */
     protected def sendRequest(requestParams) {
-        return getObjectResponse(sendRequestStringResp(requestParams))
+        def response = sendRequestStringResp(requestParams)
+        if(response){
+            return getObjectResponse(response)
+        }
     }
 
     protected def sendRequestStringResp(requestParams) {
