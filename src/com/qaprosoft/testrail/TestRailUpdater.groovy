@@ -30,7 +30,9 @@ class TestRailUpdater {
             isRebuild = false
             if(!isRebuild){
                 def testRun = addTestRun(true)
-                integration.testRunId = testRun.id
+                if(!isParamEmpty(testRun)){
+                    integration.testRunId = testRun.id
+                }
             } else {
                 getTestRunId()
             }
