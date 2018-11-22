@@ -90,13 +90,13 @@ class TestRailUpdater {
         } else {
             testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
         }
-        logger.info("ADDED TESTRUN:\n" + testRun)
+        logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
         return testRun
     }
 
     public def addResultsForCases(){
         def response = trc.addResultsForCases(integration.testRunId, integration.results)
-        logger.info("ADD_RESULTS_RESPONSE: " + response)
+        logger.info("ADD_RESULTS_RESPONSE: " + formatJson(response))
     }
 
     public def parseIntegrationInfo(){
