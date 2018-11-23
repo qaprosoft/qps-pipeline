@@ -696,7 +696,7 @@ public class QARunner extends AbstractRunner {
         //replace existing local emailable-report.html by Zafira content
         def zafiraReport = zc.exportZafiraReport(uuid)
         logger.debug(zafiraReport)
-        if (!zafiraReport.isEmpty()) {
+        if (!isParamEmpty(zafiraReport)) {
             context.writeFile file: getWorkspace() + "/zafira/report.html", text: zafiraReport
         }
 
