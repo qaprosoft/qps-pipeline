@@ -54,8 +54,11 @@ class TestRailUpdater {
             logger.info("TEST_RUN: " + formatJson(testRun))
             if(testRun.name == integration.testRunName){
                 integration.testRunId = testRun.id
+                return
             }
         }
+        def tests = trc.getTests(integration.testRunId)
+        logger.info("TESTS:" + formatJson(tests))
     }
 
     public def getMilestoneId(){
@@ -93,6 +96,8 @@ class TestRailUpdater {
             testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
         }
         logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
+        def tests = trc.getTests(testRun.id)
+        logger.info("TESTS:" + formatJson(tests))
         return testRun
     }
 
