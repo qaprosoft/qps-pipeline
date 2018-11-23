@@ -24,7 +24,7 @@ class TestRailClient {
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "get_runs/${projectId}&created_after=${createdAfter}&created_by=${createdBy}&milestone_id=${milestoneId}&suite_id=${suiteId}"]
-            return sendRequest(parameters)
+            return sendRequestFormatted(parameters)
         }
     }
 
@@ -35,7 +35,7 @@ class TestRailClient {
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "get_runs/${projectId}&created_after=${createdAfter}&created_by=${createdBy}&suite_id=${suiteId}"]
-            return sendRequest(parameters)
+            return sendRequestFormatted(parameters)
         }
     }
 
@@ -54,7 +54,7 @@ class TestRailClient {
                               requestBody: "${jsonBuilder}",
                               validResponseCodes: "200",
                               url: this.serviceURL + "add_run/${projectID}"]
-            return sendRequest(parameters)
+            return sendRequestFormatted(parameters)
         }
     }
 
@@ -72,7 +72,7 @@ class TestRailClient {
                               requestBody: "${jsonBuilder}",
                               validResponseCodes: "200",
                               url: this.serviceURL + "add_run/${projectID}"]
-            return sendRequest(parameters)
+            return sendRequestFormatted(parameters)
         }
     }
 
@@ -86,7 +86,7 @@ class TestRailClient {
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "get_user_by_email&email=${userEmail}"]
-            return sendRequest(parameters)
+            return sendRequestFormatted(parameters)
         }
     }
 
@@ -97,7 +97,7 @@ class TestRailClient {
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "get_milestones/${projectId}"]
-            return sendRequest(parameters)
+            return sendRequestFormatted(parameters)
         }
     }
 
@@ -111,7 +111,7 @@ class TestRailClient {
                               requestBody: "${jsonBuilder}",
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "add_milestone/${projectId}"]
-            return sendRequest(parameters)
+            return sendRequestFormatted(parameters)
         }
     }
 
@@ -125,19 +125,19 @@ class TestRailClient {
                               requestBody: "${jsonBuilder}",
                               validResponseCodes: "200:401",
                               url: this.serviceURL + "add_results_for_cases/${testRunId}"]
-            return sendRequest(parameters)
+            return sendRequestFormatted(parameters)
         }
     }
 
     /** Sends httpRequest using passed parameters */
-    protected def sendRequest(requestParams) {
-        def response = sendRequestStringResp(requestParams)
+    protected def sendRequestFormatted(requestParams) {
+        def response = sendRequest(requestParams)
         if(response){
             return getObjectResponse(response)
         }
     }
 
-    protected def sendRequestStringResp(requestParams) {
+    protected def sendRequest(requestParams) {
         def response = null
         /** Catches exceptions in every http call */
         try {
