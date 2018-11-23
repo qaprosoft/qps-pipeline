@@ -117,7 +117,8 @@ class TestRailUpdater {
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[2])
             }
-            testCase.defects = getDefectsString(testCase.defects, integrationInfoItem.defectId)
+//            testCase.defects = getDefectsString(testCase.defects, integrationInfoItem.defectId)
+            testCase.defects = ""
             testCaseResultMap.put(tagInfoArray[2], testCase)
         }
         integration.testCaseIds = testCaseResultMap.keySet()
