@@ -27,7 +27,7 @@ class TestRailUpdater {
             if(!isParamEmpty(integration.projectId)){
                 integration.milestoneId = getMilestoneId()
                 integration.assignedToId = getAssignedToId()
-                logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
+                logger.info("INTEGRATION_INFO:\n" + integration)
                 if(!isRebuild){
                     def testRun = addTestRun(true)
                     if(!isParamEmpty(testRun)){
@@ -50,7 +50,7 @@ class TestRailUpdater {
             testRuns = trc.getRuns(Math.round(integration.createdAfter/1000), integration.assignedToId, integration.projectId, integration.suiteId)
         }
         testRuns.each { Map testRun ->
-//            logger.info("TEST_RUN: " + formatJson(testRun))
+//            logger.info("TEST_RUN: " + testRun)
             if(testRun.name == integration.testRunName){
                 integration.testRunId = testRun.id
             }
@@ -91,13 +91,13 @@ class TestRailUpdater {
         } else {
             testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
         }
-        logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
+        logger.info("ADDED TESTRUN:\n" + testRun)
         return testRun
     }
 
     public def addResultsForCases(){
         def response = trc.addResultsForCases(integration.testRunId, integration.results)
-        logger.info("ADD_RESULTS_RESPONSE: " + formatJson(response))
+        logger.info("ADD_RESULTS_RESPONSE: " + response)
     }
 
     public def parseIntegrationInfo(){
