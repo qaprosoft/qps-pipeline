@@ -110,7 +110,7 @@ class TestRailUpdater {
                     integration.projectId = tagInfoArray[0]
                     integration.suiteId = tagInfoArray[1]
                 }
-                testCase.case_id = tagInfoArray[2]
+                testCase.case_id = Integer.valueOf(tagInfoArray[2])
                 testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
 //                testCase.comment = integrationInfoItem.message
                 testCase.comment = ""
