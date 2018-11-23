@@ -118,7 +118,7 @@ class TestRailClient {
     public def addResultsForCases(testRunId, results) {
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder results: results
-        logger.info("REQUEST:\n" + formatJson(jsonBuilder.toString()))
+        logger.info("REQUEST:\n" + formatJson(jsonBuilder))
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
