@@ -373,6 +373,7 @@ public class QARunner extends AbstractRunner {
         uuid = getUUID()
         logger.info("UUID: " + uuid)
         def searchTestRun = getSearchable()
+        logger.info("SEARCH: " + searchTestRun)
         String nodeName = "master"
         context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
