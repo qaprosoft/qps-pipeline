@@ -29,7 +29,7 @@ class TestRailUpdater {
                 integration.milestoneId = getMilestoneId()
                 integration.assignedToId = getAssignedToId()
                 if(!searchTestRun){
-                    def testRun = addTestRun(true)
+                    def testRun = addTestRun(false)
                     if(!isParamEmpty(testRun)){
                         integration.testRunId = testRun.id
                     }
@@ -112,13 +112,11 @@ class TestRailUpdater {
                 }
                 testCase.case_id = Integer.valueOf(tagInfoArray[2])
                 testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
-//                testCase.comment = integrationInfoItem.message
-                testCase.comment = ""
+                testCase.comment = integrationInfoItem.message
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[2])
             }
-//            testCase.defects = getDefectsString(testCase.defects, integrationInfoItem.defectId)
-            testCase.defects = ""
+            testCase.defects = getDefectsString(testCase.defects, integrationInfoItem.defectId)
             testCaseResultMap.put(tagInfoArray[2], testCase)
         }
         integration.testCaseIds = testCaseResultMap.keySet()
