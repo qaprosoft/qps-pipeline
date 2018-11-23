@@ -29,7 +29,7 @@ class TestRailUpdater {
                 integration.milestoneId = getMilestoneId()
                 integration.assignedToId = getAssignedToId()
                 if(!searchTestRun){
-                    def testRun = addTestRun(false)
+                    def testRun = addTestRun(true)
                     if(!isParamEmpty(testRun)){
                         integration.testRunId = testRun.id
                     }
