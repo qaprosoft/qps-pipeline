@@ -40,7 +40,7 @@ class ZafiraClient {
                               validResponseCodes: "200:401",
                               url               : this.serviceURL + "/api/tests/runs/queue"]
 
-            def response = sendRequest(parameters)
+            def response = sendRequestFormatted(parameters)
             logger.info("Queued TestRun: " + response)
         }
     }
@@ -61,7 +61,7 @@ class ZafiraClient {
 						  url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
 						 timeout: 300000]
 
-		def response = sendRequest(parameters)
+		def response = sendRequestFormatted(parameters)
         logger.info("Results : " + response.size())
         logger.info("Tests for rerun: " + response)
 	}
@@ -111,7 +111,7 @@ class ZafiraClient {
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
 
-        def response = sendRequest(parameters)
+        def response = sendRequestFormatted(parameters)
         def emailList = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         if(response && response.status == 200){
             sendFailureEmail(uuid, emailList)
@@ -135,7 +135,7 @@ class ZafiraClient {
 						  requestBody: "{\"recipients\": \"${emailList}\"}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
-		return sendRequest(parameters)
+		return sendRequestFormatted(parameters)
     }
 
 	public def getIntegrationInfo(uuid, tagName) {
@@ -147,7 +147,7 @@ class ZafiraClient {
 						  httpMode: 'GET',
 						  validResponseCodes: "200",
 						  url: this.serviceURL + "/api/tags/${uuid}/integration?integrationTag=${tagName}"]
-		return sendRequest(parameters)
+		return sendRequestFormatted(parameters)
 	}
 
 	public def sendFailureEmail(String uuid, String emailList) {
@@ -171,7 +171,7 @@ class ZafiraClient {
                           requestBody: "{\"recipients\": \"${emailList}\"}",
                           validResponseCodes: "200:401",
                           url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
-        return sendRequest(parameters)
+        return sendRequestFormatted(parameters)
     }
 
 	public def exportZafiraReport(String uuid) {
@@ -184,7 +184,7 @@ class ZafiraClient {
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
 
-		return sendRequestStringResp(parameters)
+		return sendRequest(parameters)
 	}
 
 	public def getTestRunByCiRunId(String uuid) {
@@ -197,30 +197,8 @@ class ZafiraClient {
 						  validResponseCodes: "200:404",
 						  url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"]
 
-		return sendRequest(parameters)
+		return sendRequestFormatted(parameters)
 	}
-
-	/** Sends httpRequest using passed parameters */
-    protected def sendRequest(requestParams) {
-        def response = sendRequestStringResp(requestParams)
-        if(response){
-            return getObjectResponse(response)
-        }
-    }
-
-    protected def sendRequestStringResp(requestParams) {
-        def response = null
-        /** Catches exceptions in every http call */
-        try {
-            response = context.httpRequest requestParams
-        } catch (Exception e) {
-            logger.error(printStackTrace(e))
-        }
-        if(!response || response.status > 200){
-            return
-        }
-        return response.content
-    }
 
 	protected boolean isTokenExpired() {
 		return authToken == null || System.currentTimeMillis() > tokenExpTime
@@ -233,8 +211,30 @@ class ZafiraClient {
 						  httpMode: 'POST',
 						  requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
 						  url: this.serviceURL + "/api/auth/refresh"]
-        Map properties = (Map)sendRequest(parameters)
+        Map properties = (Map)sendRequestFormatted(parameters)
 		authToken = properties.type + " " + properties.accessToken
 		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
+	}
+
+	/** Sends httpRequest using passed parameters */
+	protected def sendRequestFormatted(requestParams) {
+		def response = sendRequest(requestParams)
+		if(response){
+			return getObjectResponse(response)
+		}
+	}
+
+	protected def sendRequest(requestParams) {
+		def response = null
+		/** Catches exceptions in every http call */
+		try {
+			response = context.httpRequest requestParams
+		} catch (Exception e) {
+			logger.error(printStackTrace(e))
+		}
+		if(!response || response.status > 200){
+			return
+		}
+		return response.content
 	}
 }
