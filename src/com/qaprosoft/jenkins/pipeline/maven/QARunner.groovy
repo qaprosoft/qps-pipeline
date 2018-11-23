@@ -414,7 +414,9 @@ public class QARunner extends AbstractRunner {
     }
 
     protected boolean getSearchable(){
-        return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
+        def searchTestRun = zc.getTestRunByCiRunId(uuid)
+        logger.info("SEARCH: " + searchTestRun)
+        return !isParamEmpty(searchTestRun)
     }
 
     protected String chooseNode() {
