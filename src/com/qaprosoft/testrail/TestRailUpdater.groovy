@@ -66,8 +66,8 @@ class TestRailUpdater {
 		
         testRuns.each { Map testRun ->
             logger.info("TEST_RUN: " + formatJson(testRun))
-			logger.info("TEST_RUN_NAME: " + testRun.name)
-			logger.info("TEST_RUN_NAME2: " + integration.testRunName)
+			logger.info("TEST_RUN_NAME: '" + testRun.name + "'")
+			logger.info("TEST_RUN_NAME2: '" + integration.testRunName + "'")
 
             if(testRun.name.equals(integration.testRunName)){
                 integration.testRunId = testRun.id
