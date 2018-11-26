@@ -20,7 +20,7 @@ class TestRailUpdater {
         logger = new Logger(context)
     }
 
-    public void updateTestRun(uuid, isRerun) {
+    public void updateTestRun(uuid, isRerun, boolean includeAll) {
         integration = zc.getIntegrationInfo(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
         logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
         if(!isParamEmpty(integration)){
@@ -29,15 +29,15 @@ class TestRailUpdater {
                 integration.milestoneId = getMilestoneId()
                 integration.assignedToId = getAssignedToId()
                 if(!isRerun){
-                    def testRun = addTestRun(true)
+                    def testRun = addTestRun(includeAll)
                     if(!isParamEmpty(testRun)){
                         integration.testRunId = testRun.id
-                        def tests = trc.getTests(integration.testRunId)
-                        logger.info("tests:\n" + formatJson(tests))
+                        getValidCases()
                     }
                 } else {
                     getTestRunId()
                 }
+                checkValidCases()
                 addResultsForCases()
             }
         }
@@ -89,12 +89,45 @@ class TestRailUpdater {
         return assignedToId.id
     }
 
+    public def getValidCases(){
+        Set validTestCases = new HashSet()
+        def tests = trc.getTests(integration.testRunId)
+        if(!isParamEmpty(tests)){
+            tests.each { test ->
+                validTestCases.add(test.case_id)
+            }
+        } else {
+            def cases = trc.getCases(integration.projectId, integration.suiteId)
+            cases.each { testCase ->
+                validTestCases.add(testCase.id)
+            }
+        }
+        integration.validTestCases = validTestCases
+    }
+
+    public def checkValidCases(){
+        integration.testCaseResultMap.each { testCase ->
+            boolean isValid = false
+            for(validTestCaseId in integration.validTestCases){
+                logger.info("VALIDCASEID: " + validTestCaseId)
+                logger.info("CASEID: " + testCase.case_id)
+                if(validTestCaseId == testCase.case_id){
+                    isValid = true
+                    break
+                }
+            }
+            if(!isValid){
+                integration.testCaseResultMap.remove(testCase.case_id)
+            }
+        }
+    }
+
     public def addTestRun(boolean include_all){
         def testRun
         if(integration.milestoneId){
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, include_all, integration.testCaseResultMap.keySet(), integration.projectId)
         } else {
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, include_all, integration.testCaseIds, integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, include_all, integration.testCaseResultMap.keySet(), integration.projectId)
         }
         logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
         def tests = trc.getTests(testRun.id)
@@ -103,7 +136,7 @@ class TestRailUpdater {
     }
 
     public def addResultsForCases(){
-        def response = trc.addResultsForCases(integration.testRunId, integration.results)
+        def response = trc.addResultsForCases(integration.testRunId, integration.testCaseResultMap.values())
         logger.info("ADD_RESULTS_RESPONSE: " + formatJson(response))
     }
 
@@ -126,7 +159,6 @@ class TestRailUpdater {
             testCase.defects = getDefectsString(testCase.defects, integrationInfoItem.defectId)
             testCaseResultMap.put(tagInfoArray[2], testCase)
         }
-        integration.testCaseIds = testCaseResultMap.keySet()
-        integration.results = testCaseResultMap.values()
+        integration.testCaseResultMap = testCaseResultMap
     }
 }

@@ -27,16 +27,7 @@ class TestRailClient {
             return sendRequestFormatted(parameters)
         }
     }
-    public def getTests(runId) {
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'GET',
-                              validResponseCodes: "200:401",
-                              url: this.serviceURL + "get_tests/${runId}"]
-            return sendRequestFormatted(parameters)
-        }
-    }
+
     public def getRuns(createdAfter, createdBy, projectId, suiteId) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
@@ -47,6 +38,29 @@ class TestRailClient {
             return sendRequestFormatted(parameters)
         }
     }
+
+    public def getTests(runId) {
+        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200:401",
+                              url: this.serviceURL + "get_tests/${runId}"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
+    public def getCases(projectId, suiteId) {
+        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200:401",
+                              url: this.serviceURL + "get_cases/${projectId}&suite_id=${suiteId}"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
 
     public def addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, caseIds, projectID) {
         JsonBuilder jsonBuilder = new JsonBuilder()
