@@ -106,7 +106,7 @@ class TestRailUpdater {
     protected def parseCases(){
         Set validTestCases = new HashSet()
         def cases = trc.getCases(integration.projectId, integration.suiteId)
-        logger.info("SUITE_CASES: " + formatJson(cases))
+//        logger.debug("SUITE_CASES: " + formatJson(cases))
         cases.each { testCase ->
             validTestCases.add(testCase.id)
         }
