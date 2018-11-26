@@ -293,7 +293,7 @@ public class Executor {
     }
 
     /** Checks if current job started as rebuild */
-    static Boolean c(currentBuild) {
+    static Boolean isRebuild(currentBuild) {
         Boolean isRebuild = false
         /* Gets CauseActions of the job */
         currentBuild.rawBuild.getActions(hudson.model.CauseAction.class).each {
