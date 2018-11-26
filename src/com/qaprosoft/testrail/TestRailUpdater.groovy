@@ -119,6 +119,8 @@ class TestRailUpdater {
         logger.info("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
             for(validTestCaseId in integration.validTestCases){
+                logger.info("VALID_TEST_CASE_ID: " + validTestCaseId.dump())
+                logger.info("TEST_CASE_ID: " + test.case_id.dump())
                 if(validTestCaseId == test.case_id){
                     Map testResult = new HashMap()
                     testResult.test_id = test.id
