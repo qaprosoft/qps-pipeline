@@ -392,7 +392,7 @@ public class QARunner extends AbstractRunner {
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-                    tru.updateTestRun(uuid, isRerun, false)
+                    tru.updateTestRun(uuid, isRerun, true)
                     exportZafiraReport()
                     publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
