@@ -154,6 +154,21 @@ class TestRailClient {
         }
     }
 
+    public def addResultsForTests(testRunId, results) {
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder results: results
+        logger.info("REQUEST:\n" + formatJson(jsonBuilder))
+        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'POST',
+                              requestBody: "${jsonBuilder}",
+                              validResponseCodes: "200:401",
+                              url: this.serviceURL + "add_results/${testRunId}"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
     /** Sends httpRequest using passed parameters */
     protected def sendRequestFormatted(requestParams) {
         def response = sendRequest(requestParams)

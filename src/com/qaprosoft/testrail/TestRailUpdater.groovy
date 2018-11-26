@@ -28,27 +28,19 @@ class TestRailUpdater {
             if(!isParamEmpty(integration.projectId)){
                 integration.milestoneId = getMilestoneId()
                 integration.assignedToId = getAssignedToId()
-                if(!isRerun){
-                    def testRun = addTestRun(includeAll)
-                    if(!isParamEmpty(testRun)){
-                        integration.testRunId = testRun.id
-                        if(includeAll){
-                            logger.info("Not implemented yet")
-                        } else {
-                            getValidCases()
-                            checkValidCases()
-                        }
-                    }
-                    addResultsForCases()
-               } else {
-                    getTestRunId()
+                def testRun = null
+                if(isRerun){
+                    testRun = getTestRunId()
                 }
-
+                if(isParamEmpty(testRun)){
+                    testRun = addTestRun(includeAll)
+                }
+                addResults(testRun.id)
             }
         }
     }
 
-    public def getTestRunId(){
+    protected def getTestRunId(){
         def testRuns
         if(integration.milestoneId){
             testRuns = trc.getRuns(Math.round(integration.createdAfter/1000), integration.assignedToId, integration.milestoneId, integration.projectId, integration.suiteId)
@@ -60,14 +52,12 @@ class TestRailUpdater {
             logger.info("TEST_RUN: " + formatJson(testRun))
             if(testRun.name == integration.testRunName){
                 integration.testRunId = testRun.id
-                return
+                return testRun
             }
         }
-        def tests = trc.getTests(integration.testRunId)
-        logger.info("TESTS:" + formatJson(tests))
     }
 
-    public def getMilestoneId(){
+    protected def getMilestoneId(){
         Map customParams = integration.customParams
         if(!isParamEmpty(customParams.milestone)){
 
@@ -88,31 +78,26 @@ class TestRailUpdater {
         }
     }
 
-    public def getAssignedToId(){
+    protected def getAssignedToId(){
         Map customParams = integration.customParams
         def assignedToId = trc.getUserIdByEmail(customParams.assignee)
         return assignedToId.id
     }
 
-    public def getValidCases(){
+    protected def getCases(){
         Set validTestCases = new HashSet()
-        def tests = trc.getTests(integration.testRunId)
-        if(!isParamEmpty(tests)){
-            tests.each { test ->
-                validTestCases.add(test.case_id)
-            }
-        } else {
-            def cases = trc.getCases(integration.projectId, integration.suiteId)
-            cases.each { testCase ->
-                validTestCases.add(testCase.id)
-            }
+        def cases = trc.getCases(integration.projectId, integration.suiteId)
+        cases.each { testCase ->
+            validTestCases.add(testCase.id)
         }
         integration.validTestCases = validTestCases
+        //TODO: combine into single method
+        filterCases()
     }
 
-    public def checkValidCases(){
-        logger.info("SIZEBEFORE: " + integration.testCaseResultMap.size())
-        integration.testCaseResultMap.each { testCase ->
+
+    protected def filterCases(){
+        integration.caseResultMap.each { testCase ->
             boolean isValid = false
             for(validTestCaseId in integration.validTestCases){
                 if(validTestCaseId == testCase.value.case_id){
@@ -121,19 +106,36 @@ class TestRailUpdater {
                 }
             }
             if(!isValid){
-                integration.testCaseResultMap.remove(testCase.value.case_id.toString())
+                integration.caseResultMap.remove(testCase.value.case_id)
+                logger.error("REMOVE INVALID CASE: ${testCase.value.case_id}")
             }
         }
-        logger.info("SIZEAFTER: " + integration.testCaseResultMap.size())
-
     }
 
-    public def addTestRun(boolean includeAll){
+    protected def getTests(){
+        def tests = trc.getTests(integration.testRunId)
+        tests.each { test ->
+            for(validTestCaseId in integration.validTestCases){
+                if(validTestCaseId == test.case_id){
+                    Map testResult = new HashMap()
+                    testResult.test_id = test.id
+                    testResult.status_id = integration.caseResultMap.get(test.case_id).status_id
+                    testResult.comment = integration.caseResultMap.get(test.case_id).comment
+                    testResult.defects = integration.caseResultMap.get(test.case_id).defects
+                    integration.testResultMap.put(testResult.test_id, testResult)
+                    integration.caseResultMap.remove(test.case_id)
+                    break
+                }
+            }
+        }
+    }
+
+    protected def addTestRun(boolean includeAll){
         def testRun
         if(integration.milestoneId){
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, includeAll, integration.testCaseResultMap.keySet(), integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, includeAll, integration.caseResultMap.keySet(), integration.projectId)
         } else {
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, includeAll, integration.testCaseResultMap.keySet(), integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, includeAll, integration.caseResultMap.keySet(), integration.projectId)
         }
         logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
 //        def tests = trc.getTests(testRun.id)
@@ -141,12 +143,18 @@ class TestRailUpdater {
         return testRun
     }
 
-    public def addResultsForCases(){
-        def response = trc.addResultsForCases(integration.testRunId, integration.testCaseResultMap.values())
-        logger.info("ADD_RESULTS_RESPONSE: " + formatJson(response))
-    }
+    protected def addResults(testRunId){
+        integration.testRunId = testRunId
+        getCases()
+        getTests()
+        def response = trc.addResultsForCases(integration.testRunId, integration.caseResultMap.values())
+        logger.info("ADD_RESULTS_CASES_RESPONSE: " + formatJson(response))
+        response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
+        logger.info("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
 
-    public def parseIntegrationInfo(){
+    }
+    
+    protected def parseIntegrationInfo(){
         Map testCaseResultMap = new HashMap<>()
         integration.integrationInfo.each { integrationInfoItem ->
             String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
@@ -156,7 +164,7 @@ class TestRailUpdater {
                     integration.projectId = tagInfoArray[0]
                     integration.suiteId = tagInfoArray[1]
                 }
-                testCase.case_id = Integer.valueOf(tagInfoArray[2])
+                testCase.case_id = tagInfoArray[2]
                 testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
 //                testCase.comment = integrationInfoItem.message
                 testCase.comment = ""
@@ -166,6 +174,8 @@ class TestRailUpdater {
             testCase.defects = getDefectsString(testCase.defects, integrationInfoItem.defectId)
             testCaseResultMap.put(tagInfoArray[2], testCase)
         }
-        integration.testCaseResultMap = testCaseResultMap
+        integration.caseResultMap = testCaseResultMap
+        Map testResultMap = new HashMap<>()
+        integration.testResultMap = testResultMap
     }
 }
