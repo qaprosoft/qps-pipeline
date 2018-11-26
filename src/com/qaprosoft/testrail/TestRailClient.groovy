@@ -82,6 +82,7 @@ class TestRailClient {
     }
 
     public def addTestRun(suiteId, testRunName, assignedToId, includeAll, caseIds, projectID) {
+        logger.info("INCLUDE_ALL:" + includeAll)
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder suite_id: suiteId,
                 name: testRunName,
