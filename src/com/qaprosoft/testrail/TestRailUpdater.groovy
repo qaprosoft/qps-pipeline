@@ -109,6 +109,7 @@ class TestRailUpdater {
                 integration.caseResultMap.remove(testCase.value.case_id)
                 logger.error("REMOVE INVALID CASE: ${testCase.value.case_id}")
             }
+            logger.info("CASES_MAP:\n" + integration.caseResultMap)
         }
     }
 
@@ -128,6 +129,7 @@ class TestRailUpdater {
                 }
             }
         }
+        logger.info("TESTS_MAP:\n" + integration.testResultMap)
     }
 
     protected def addTestRun(boolean includeAll){
