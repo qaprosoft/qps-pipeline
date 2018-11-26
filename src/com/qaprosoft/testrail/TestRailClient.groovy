@@ -18,23 +18,16 @@ class TestRailClient {
     }
 
     public def getRuns(createdAfter, createdBy, milestoneId, projectId, suiteId) {
+		def requestArgs = "get_runs/${projectId}&created_after=${createdAfter}&created_by=${createdBy}&suite_id=${suiteId}"
+		if (!isparamEmpty(milestoneId)) {
+			requestArgs = "get_runs/${projectId}&created_after=${createdAfter}&created_by=${createdBy}&milestone_id=${milestoneId}&suite_id=${suiteId}"
+		}
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
                               validResponseCodes: "200:401",
-                              url: this.serviceURL + "get_runs/${projectId}&created_after=${createdAfter}&created_by=${createdBy}&milestone_id=${milestoneId}&suite_id=${suiteId}"]
-            return sendRequestFormatted(parameters)
-        }
-    }
-
-    public def getRuns(createdAfter, createdBy, projectId, suiteId) {
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'GET',
-                              validResponseCodes: "200:401",
-                              url: this.serviceURL + "get_runs/${projectId}&created_after=${createdAfter}&created_by=${createdBy}&suite_id=${suiteId}"]
+                              url: this.serviceURL + requestArgs]
             return sendRequestFormatted(parameters)
         }
     }
