@@ -19,7 +19,7 @@ class TestRailClient {
 
     public def getRuns(createdAfter, createdBy, milestoneId, projectId, suiteId) {
 		def requestArgs = "get_runs/${projectId}&created_after=${createdAfter}&created_by=${createdBy}&suite_id=${suiteId}"
-		if (!isparamEmpty(milestoneId)) {
+		if (!isParamEmpty(milestoneId)) {
 			requestArgs = "get_runs/${projectId}&created_after=${createdAfter}&created_by=${createdBy}&milestone_id=${milestoneId}&suite_id=${suiteId}"
 		}
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
