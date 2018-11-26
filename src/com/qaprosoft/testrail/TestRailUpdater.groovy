@@ -93,8 +93,7 @@ class TestRailUpdater {
         }
         integration.validTestCases = validTestCases
         logger.info("VALID_CASES: " + formatJson(validTestCases))
-        //TODO: combine into single method
-        filterCases()
+
     }
 
 
@@ -150,6 +149,9 @@ class TestRailUpdater {
         integration.testRunId = testRunId
         getCases()
         getTests()
+
+        filterCases()
+
         def response = trc.addResultsForCases(integration.testRunId, integration.caseResultMap.values())
         logger.info("ADD_RESULTS_CASES_RESPONSE: " + formatJson(response))
         response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
