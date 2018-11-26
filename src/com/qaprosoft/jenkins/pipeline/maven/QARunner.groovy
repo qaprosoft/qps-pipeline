@@ -2,6 +2,9 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 
 import com.qaprosoft.Utils
+import com.qaprosoft.testrail.TestRailClient
+import com.qaprosoft.testrail.TestRailUpdater
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 //[VD] do not remove this important import!
@@ -28,7 +31,9 @@ public class QARunner extends AbstractRunner {
     protected def onlyUpdated = false
     protected def currentBuild
     protected def uuid
-    protected def zc
+    protected ZafiraClient zc
+    protected TestRailUpdater testRailUpdater
+
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
@@ -48,6 +53,8 @@ public class QARunner extends AbstractRunner {
         super(context)
         scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
+        testRailUpdater = new TestRailUpdater(context)
+		
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
             onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
@@ -102,11 +109,11 @@ public class QARunner extends AbstractRunner {
             //            }
         }
     }
-	
+
 	protected void compile() {
 		compile("pom.xml")
 	}
-	
+
 	protected void compile(pomFile) {
 		context.stage('Maven Compile') {
 			// [VD] don't remove -U otherwise latest dependencies are not downloaded
@@ -130,7 +137,7 @@ public class QARunner extends AbstractRunner {
 	protected void performSonarQubeScan(){
 		performSonarQubeScan("pom.xml")
 	}
-	
+
     protected void performSonarQubeScan(pomFile){
 		context.stage('Sonar Scanner') {
 	        def sonarQubeEnv = ''
@@ -214,7 +221,7 @@ public class QARunner extends AbstractRunner {
                 def prChecker = it.pr_checker
                 def zafiraFilter = it.zafira_filter
                 def suiteFilter = it.suite_filter
-				
+
 				if (suiteFilter.isEmpty()) {
 					logger.warn("Skip repository scan as no suiteFilter identified! Project: ${project}")
 					return
@@ -264,8 +271,8 @@ public class QARunner extends AbstractRunner {
                             if (currentSuite.toXml().contains("suiteOwner")) {
                                 suiteOwner = currentSuite.getParameter("suiteOwner")
                             }
-							
-							def currentZafiraProject = zafira_project 
+
+							def currentZafiraProject = zafira_project
                             if (currentSuite.toXml().contains("zafira_project")) {
                                 currentZafiraProject = currentSuite.getParameter("zafira_project")
                             }
@@ -355,12 +362,13 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
+        def isRerun = isRerun()
+        logger.info("SEARCH: " + isRerun)
         String nodeName = "master"
         context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
         }
-
         context.node(nodeName) {
 
             context.wrap([$class: 'BuildUser']) {
@@ -385,6 +393,7 @@ public class QARunner extends AbstractRunner {
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
+                    testRailUpdater.updateTestRun(uuid, isRerun, true)
                     exportZafiraReport()
                     publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
@@ -392,6 +401,10 @@ public class QARunner extends AbstractRunner {
                 }
             }
         }
+    }
+
+    protected boolean isRerun(){
+        return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
     }
 
     protected String chooseNode() {
@@ -571,7 +584,7 @@ public class QARunner extends AbstractRunner {
 		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 		clean test"
 
-		Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
+		Configuration.set("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
 		def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
@@ -581,7 +594,7 @@ public class QARunner extends AbstractRunner {
 		//register all params after vars to be able to override
 		Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
-		goals = Executor.enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
+		goals = enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
 		goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
 		goals = addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
 
@@ -623,7 +636,7 @@ public class QARunner extends AbstractRunner {
 	}
 	
 	protected String getMavenPomFile() {
-		return Executor.getSubProjectFolder() + "/pom.xml"
+		return getSubProjectFolder() + "/pom.xml"
 	}
 	
     protected void buildJob() {
@@ -684,7 +697,7 @@ public class QARunner extends AbstractRunner {
         //replace existing local emailable-report.html by Zafira content
         def zafiraReport = zc.exportZafiraReport(uuid)
         logger.debug(zafiraReport)
-        if (!zafiraReport.isEmpty()) {
+        if (!isParamEmpty(zafiraReport)) {
             context.writeFile file: getWorkspace() + "/zafira/report.html", text: zafiraReport
         }
 
@@ -852,7 +865,7 @@ public class QARunner extends AbstractRunner {
 			supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
 		}
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
-        if(!Executor.isParamEmpty(queueRegistration)){
+        if(!isParamEmpty(queueRegistration)){
             logger.info("override queue_registration to: " + queueRegistration)
             Configuration.set("queue_registration", queueRegistration)
         }
@@ -1100,7 +1113,7 @@ public class QARunner extends AbstractRunner {
                       zoomCoverageChart: false])
     }
 
-	protected boolean isBrowserStackRun() {
+    protected boolean isBrowserStackRun() {
 		boolean res = false
 		def customCapabilities = Configuration.get("custom_capabilities")
 		if (!isParamEmpty(customCapabilities)) {
