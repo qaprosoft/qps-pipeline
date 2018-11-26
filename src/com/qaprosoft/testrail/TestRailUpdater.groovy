@@ -30,15 +30,20 @@ class TestRailUpdater {
                 integration.assignedToId = getAssignedToId()
                 if(!isRerun){
                     def testRun = addTestRun(includeAll)
-                    if(!isParamEmpty(testRun)){
-                        integration.testRunId = testRun.id
-                        getValidCases()
+                    if(includeAll){
+                        logger.info("Not implemented yet")
+                    } else {
+                        if(!isParamEmpty(testRun)){
+                            integration.testRunId = testRun.id
+                            getValidCases()
+                            checkValidCases()
+                            addResultsForCases()
+                        }
                     }
                 } else {
                     getTestRunId()
                 }
-                checkValidCases()
-                addResultsForCases()
+
             }
         }
     }
@@ -123,12 +128,12 @@ class TestRailUpdater {
 
     }
 
-    public def addTestRun(boolean include_all){
+    public def addTestRun(boolean includeAll){
         def testRun
         if(integration.milestoneId){
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, include_all, integration.testCaseResultMap.keySet(), integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, includeAll, integration.testCaseResultMap.keySet(), integration.projectId)
         } else {
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, include_all, integration.testCaseResultMap.keySet(), integration.projectId)
+            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, includeAll, integration.testCaseResultMap.keySet(), integration.projectId)
         }
         logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
         def tests = trc.getTests(testRun.id)
