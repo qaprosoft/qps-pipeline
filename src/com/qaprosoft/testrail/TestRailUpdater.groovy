@@ -60,13 +60,9 @@ class TestRailUpdater {
     }
 
     protected def getTestRunId(){
-        def testRuns
-        if(integration.milestoneId){
-            testRuns = trc.getRuns(Math.round(integration.createdAfter/1000), integration.assignedToId, integration.milestoneId, integration.projectId, integration.suiteId)
-        } else {
-            testRuns = trc.getRuns(Math.round(integration.createdAfter/1000), integration.assignedToId, integration.projectId, integration.suiteId)
-        }
+        def testRuns = trc.getRuns(Math.round(integration.createdAfter/1000), integration.assignedToId, integration.milestoneId, integration.projectId, integration.suiteId)
         logger.info("TEST_RUNS:\n" + formatJson(testRuns))
+		
         testRuns.each { Map testRun ->
             logger.info("TEST_RUN: " + formatJson(testRun))
             if(testRun.name == integration.testRunName){
@@ -74,6 +70,8 @@ class TestRailUpdater {
                 return testRun
             }
         }
+		
+		return null
     }
 
     protected def getMilestoneId(){
@@ -111,7 +109,7 @@ class TestRailUpdater {
             validTestCases.add(testCase.id)
         }
         integration.validTestCases = validTestCases
-        logger.info("VALID_CASES: " + formatJson(validTestCases))
+//        logger.debug("VALID_CASES: " + formatJson(validTestCases))
 
         filterCases()
     }
@@ -128,10 +126,11 @@ class TestRailUpdater {
             }
             if(!isValid){
                 integration.caseResultMap.remove(testCase.value.case_id)
-                logger.error("REMOVE INVALID CASE: ${testCase.value.case_id}")
+                logger.error("Removed non-existing case: ${testCase.value.case_id}.")
+				logger.warn("Please adjust your test code using valid platfrom/language/locale filters for TestRail cases registration.")
             }
         }
-        logger.info("CASES_MAP:\n" + formatJson(integration.caseResultMap))
+//        logger.debug("CASES_MAP:\n" + formatJson(integration.caseResultMap))
     }
 
     protected def getTests(){
