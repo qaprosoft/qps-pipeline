@@ -4,6 +4,7 @@ import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.Logger
 import groovy.json.JsonBuilder
+import com.qaprosoft.jenkins.pipeline.Configuration
 
 class TestRailClient {
 
