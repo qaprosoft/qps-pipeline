@@ -32,7 +32,6 @@ public class QARunner extends AbstractRunner {
     protected def currentBuild
     protected def uuid
     protected ZafiraClient zc
-    protected TestRailClient trc
     protected TestRailUpdater tru
 
     //CRON related vars
@@ -54,7 +53,6 @@ public class QARunner extends AbstractRunner {
         super(context)
         scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
-        trc = new TestRailClient(context)
         tru = new TestRailUpdater(context)
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
@@ -363,8 +361,8 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
-        def searchTestRun = getSearchable()
-        logger.info("SEARCH: " + searchTestRun)
+        def isRerun = getSearchable()
+        logger.info("SEARCH: " + isRerun)
         String nodeName = "master"
         context.node(nodeName) {
             zc.queueZafiraTestRun(uuid)
@@ -394,7 +392,7 @@ public class QARunner extends AbstractRunner {
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-                    tru.updateTestRun(uuid, searchTestRun)
+                    tru.updateTestRun(uuid, isRerun)
                     exportZafiraReport()
                     publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules

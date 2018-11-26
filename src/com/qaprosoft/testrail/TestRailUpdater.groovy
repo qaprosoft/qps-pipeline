@@ -20,7 +20,7 @@ class TestRailUpdater {
         logger = new Logger(context)
     }
 
-    public void updateTestRun(uuid, searchTestRun) {
+    public void updateTestRun(uuid, isRerun) {
         integration = zc.getIntegrationInfo(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
         logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
         if(!isParamEmpty(integration)){
@@ -28,10 +28,12 @@ class TestRailUpdater {
             if(!isParamEmpty(integration.projectId)){
                 integration.milestoneId = getMilestoneId()
                 integration.assignedToId = getAssignedToId()
-                if(!searchTestRun){
+                if(!isRerun){
                     def testRun = addTestRun(true)
                     if(!isParamEmpty(testRun)){
                         integration.testRunId = testRun.id
+                        def tests = trc.getTests(integration.testRunId)
+                        logger.info("tests:\n" + formatJson(tests))
                     }
                 } else {
                     getTestRunId()
@@ -42,7 +44,6 @@ class TestRailUpdater {
     }
 
     public def getTestRunId(){
-        def testRunId = null
         def testRuns
         if(integration.milestoneId){
             testRuns = trc.getRuns(Math.round(integration.createdAfter/1000), integration.assignedToId, integration.milestoneId, integration.projectId, integration.suiteId)
