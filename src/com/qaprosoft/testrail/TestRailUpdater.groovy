@@ -117,6 +117,7 @@ class TestRailUpdater {
 
     protected def getTests(){
         def tests = trc.getTests(integration.testRunId)
+        logger.info("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
             for(validTestCaseId in integration.validTestCases){
                 if(validTestCaseId == test.case_id){
@@ -131,7 +132,7 @@ class TestRailUpdater {
                 }
             }
         }
-        logger.info("TESTS_MAP:\n" + formatJson(integration.testResultMap))
+        logger.info("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
     }
 
     protected def addTestRun(boolean includeAll){
