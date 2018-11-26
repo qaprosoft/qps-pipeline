@@ -102,9 +102,7 @@ class TestRailUpdater {
         integration.caseResultMap.each { testCase ->
             boolean isValid = false
             for(validTestCaseId in integration.validTestCases){
-                logger.info("VALID_CASE: " + validTestCaseId.dump())
-                logger.info("CASE: " + testCase.value.case_id.dump())
-                if(validTestCaseId == testCase.value.case_id){
+                if(validTestCaseId.toString().equals(testCase.value.case_id)){
                     isValid = true
                     break
                 }
