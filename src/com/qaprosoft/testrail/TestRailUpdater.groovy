@@ -29,10 +29,10 @@ class TestRailUpdater {
                 integration.milestoneId = getMilestoneId()
                 integration.assignedToId = getAssignedToId()
                 if(!isRerun){
-                    def testRun = addTestRun(includeAll)
                     if(includeAll){
                         logger.info("Not implemented yet")
                     } else {
+                        def testRun = addTestRun(includeAll)
                         if(!isParamEmpty(testRun)){
                             integration.testRunId = testRun.id
                             getValidCases()
