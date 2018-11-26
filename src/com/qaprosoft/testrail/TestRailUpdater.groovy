@@ -64,6 +64,8 @@ class TestRailUpdater {
         def testRuns = trc.getRuns(Math.round(integration.createdAfter/1000) - 120, integration.assignedToId, integration.milestoneId, integration.projectId, integration.suiteId)
         logger.info("TEST_RUNS:\n" + formatJson(testRuns))
 		
+		def run = null
+		
         testRuns.each { Map testRun ->
             logger.info("TEST_RUN: " + formatJson(testRun))
 			logger.info("TEST_RUN_NAME: '" + testRun.name + "'")
@@ -71,11 +73,12 @@ class TestRailUpdater {
 
             if(testRun.name.equals(integration.testRunName)){
                 integration.testRunId = testRun.id
-                return testRun
+				run = testRun
+                return run
             }
         }
 		
-		return null
+		return run
     }
 
     protected def getMilestoneId(){
