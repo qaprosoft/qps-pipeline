@@ -32,7 +32,7 @@ public class QARunner extends AbstractRunner {
     protected def currentBuild
     protected def uuid
     protected ZafiraClient zc
-    protected TestRailUpdater tru
+    protected TestRailUpdater testRailUpdater
 
     //CRON related vars
     protected def listPipelines = []
@@ -53,7 +53,8 @@ public class QARunner extends AbstractRunner {
         super(context)
         scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
-        tru = new TestRailUpdater(context)
+        testRailUpdater = new TestRailUpdater(context)
+		
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
             onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
@@ -392,7 +393,7 @@ public class QARunner extends AbstractRunner {
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-                    tru.updateTestRun(uuid, isRerun, true)
+                    testRailUpdater.updateTestRun(uuid, isRerun, true)
                     exportZafiraReport()
                     publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules

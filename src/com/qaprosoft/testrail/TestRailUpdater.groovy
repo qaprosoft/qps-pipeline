@@ -22,6 +22,11 @@ class TestRailUpdater {
     }
 
     public void updateTestRun(uuid, isRerun, boolean includeAll) {
+		if (!trc.isAvailable()) {
+			// do nothing
+			return
+		}
+		
         // export all tag related metadata from Zafira
         integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
         logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
