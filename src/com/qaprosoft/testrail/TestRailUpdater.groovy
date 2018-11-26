@@ -131,8 +131,7 @@ class TestRailUpdater {
             }
             if(!isValid){
                 integration.caseResultMap.remove(testCase.value.case_id)
-                logger.error("Removed non-existing case: ${testCase.value.case_id}.")
-				logger.warn("Please adjust your test code using valid platfrom/language/locale filters for TestRail cases registration.")
+                logger.error("Removed non-existing case: ${testCase.value.case_id}.\nPlease adjust your test code using valid platfrom/language/locale filters for TestRail cases registration.")
             }
         }
 //        logger.debug("CASES_MAP:\n" + formatJson(integration.caseResultMap))
