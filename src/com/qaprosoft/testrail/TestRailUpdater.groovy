@@ -87,10 +87,12 @@ class TestRailUpdater {
     protected def getCases(){
         Set validTestCases = new HashSet()
         def cases = trc.getCases(integration.projectId, integration.suiteId)
+        logger.info("SUITE_CASES: " + formatJson(cases))
         cases.each { testCase ->
             validTestCases.add(testCase.id)
         }
         integration.validTestCases = validTestCases
+        logger.info("VALID_CASES: " + formatJson(validTestCases))
         //TODO: combine into single method
         filterCases()
     }
