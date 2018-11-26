@@ -30,23 +30,23 @@ class Logger {
         this.pipelineLogLevel = context.binding.variables.get("QPS_PIPELINE_LOG_LEVEL") ? LogLevel.valueOf(context.binding.variables.QPS_PIPELINE_LOG_LEVEL) : LogLevel.valueOf(context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL"))
     }
 
-    public debug(String message){
+    public debug(message){
         context.println log(LogLevel.DEBUG, message)
     }
 
-    public info(String message){
+    public info(message){
         context.println log(LogLevel.INFO, message)
     }
 
-    public warn(String message){
+    public warn(message){
         context.println log(LogLevel.WARN, message)
     }
 
-    public error(String message){
+    public error(message){
         context.println log(LogLevel.ERROR, message)
     }
 
-    private def log(LogLevel logLevel, String message){
+    private def log(LogLevel logLevel, message){
         def logMessage = ""
         if(logLevel.value >= pipelineLogLevel.value){
             logMessage = "${message}"

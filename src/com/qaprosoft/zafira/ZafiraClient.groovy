@@ -1,10 +1,10 @@
 package com.qaprosoft.zafira
 
 import com.qaprosoft.Logger
-import com.qaprosoft.Utils
+import groovy.json.JsonBuilder
+
+import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import com.qaprosoft.jenkins.pipeline.Configuration
 
 class ZafiraClient {
@@ -23,61 +23,56 @@ class ZafiraClient {
         logger = new Logger(context)
     }
 
-	public void queueZafiraTestRun(String uuid) {
+	public def queueZafiraTestRun(String uuid) {
         if(isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
             if (isTokenExpired()) {
                 getZafiraAuthToken(refreshToken)
             }
-            def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
-                              contentType       : 'APPLICATION_JSON',
-                              httpMode          : 'POST',
-                              requestBody       : "{\"jobName\": \"${Configuration.get(Configuration.Parameter.JOB_BASE_NAME)}\", \
-                                         \"buildNumber\": \"${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}\", \
-                                         \"branch\": \"${Configuration.get("branch")}\", \
-                                         \"env\": \"${Configuration.get("env")}\", \
-                                         \"ciRunId\": \"${uuid}\", \
-                                         \"ciParentUrl\": \"${Configuration.get("ci_parent_url")}\", \
-                                         \"ciParentBuild\": \"${Configuration.get("ci_parent_build")}\", \
-                                         \"project\":\"${Configuration.get("zafira_project")}\"}",
+            JsonBuilder jsonBuilder = new JsonBuilder()
+            jsonBuilder jobName: Configuration.get(Configuration.Parameter.JOB_BASE_NAME),
+                    buildNumber: Configuration.get(Configuration.Parameter.BUILD_NUMBER),
+                    branch: Configuration.get("branch"),
+                    env: Configuration.get("env"),
+                    ciRunId: uuid,
+                    ciParentUrl: Configuration.get("ci_parent_url"),
+                    ciParentBuild: Configuration.get("ci_parent_build"),
+                    project: Configuration.get("zafira_project")
+            def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'POST',
+                              requestBody: "${jsonBuilder}",
                               validResponseCodes: "200:401",
-                              url               : this.serviceURL + "/api/tests/runs/queue"]
+                              url: this.serviceURL + "/api/tests/runs/queue"]
 
-            def response = sendRequest(parameters)
-            if (!response) {
-                return
-            }
-            String formattedJSON = JsonOutput.prettyPrint(response.content)
-            logger.info("Queued TestRun: " + formattedJSON)
+            def response = sendRequestFormatted(parameters)
+            logger.info("Queued TestRun: " + formatJson(response))
         }
     }
 
-	public void smartRerun() {
+	public def smartRerun() {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
-		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-						 contentType: 'APPLICATION_JSON',
-						 httpMode: 'POST',
-						 requestBody: "{\"owner\": \"${Configuration.get("ci_user_id")}\", \
-                                        \"upstreamJobId\": \"${Configuration.get("ci_job_id")}\", \
-                                        \"upstreamJobBuildNumber\": \"${Configuration.get("ci_parent_build")}\", \
-                                        \"scmUrl\": \"${Configuration.get("scm_url")}\", \
-                                        \"hashcode\": \"${Configuration.get("hashcode")}\"}",
-						  validResponseCodes: "200:401",
-						  url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
-						 timeout: 300000]
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder owner: Configuration.get("ci_user_id"),
+                upstreamJobId: Configuration.get("ci_job_id"),
+                upstreamJobBuildNumber: Configuration.get("ci_parent_build"),
+                scmUrl: Configuration.get("scm_url"),
+                hashcode: Configuration.get("hashcode")
+        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'POST',
+                          requestBody: "${jsonBuilder}",
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
+                          timeout: 300000]
 
-		def response = sendRequest(parameters)
-		if(!response){
-			return
-		}
-
-        def responseJson = new JsonSlurper().parseText(response.content)
-        logger.info("Results : " + responseJson.size())
-        logger.info("Tests for rerun: " + responseJson)
+        def response = sendRequestFormatted(parameters)
+        logger.info("Results : " + response.size())
+        logger.info("Tests for rerun: " + formatJson(response))
 	}
 
-	public void abortTestRun(String uuid, currentBuild) {
+	public def abortTestRun(String uuid, currentBuild) {
 		currentBuild.result = BuildResult.FAILURE
 		def failureReason = "undefined failure"
 
@@ -115,14 +110,16 @@ class ZafiraClient {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder comment: failureReason
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
-                          requestBody: "{\"comment\": \"${failureReason}\"}",
+                          requestBody: "${jsonBuilder}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
 
-        def response = sendRequest(parameters)
+        def response = sendRequestFormatted(parameters)
         def emailList = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
         if(response && response.status == 200){
             sendFailureEmail(uuid, emailList)
@@ -136,21 +133,34 @@ class ZafiraClient {
         }
     }
 
-    public void sendEmail(String uuid, String emailList, String filter) {
+    public def sendEmail(String uuid, String emailList, String filter) {
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
+		}
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder recipients: emailList
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'POST',
+                          requestBody: "${jsonBuilder}",
+						  validResponseCodes: "200:401",
+						  url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
+		return sendRequestFormatted(parameters)
+    }
 
+	public def exportTagData(uuid, tagName) {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
-						  httpMode: 'POST',
-						  requestBody: "{\"recipients\": \"${emailList}\"}",
-						  validResponseCodes: "200:401",
-						  url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
-		sendRequest(parameters)
-    }
+						  httpMode: 'GET',
+						  validResponseCodes: "200",
+						  url: this.serviceURL + "/api/tags/${uuid}/integration?integrationTag=${tagName}"]
+		return sendRequestFormatted(parameters)
+	}
 
-    public void sendFailureEmail(String uuid, String emailList) {
+	public def sendFailureEmail(String uuid, String emailList) {
         def suiteOwner = true
         def suiteRunner = false
         if(Configuration.get("suiteOwner")){
@@ -162,40 +172,42 @@ class ZafiraClient {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
         }
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder recipients: emailList
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
-                          requestBody: "{\"recipients\": \"${emailList}\"}",
+                          requestBody: "${jsonBuilder}",
                           validResponseCodes: "200:401",
                           url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
-        sendRequest(parameters)
+        return sendRequestFormatted(parameters)
     }
 
-	public String exportZafiraReport(String uuid) {
+	public def exportZafiraReport(String uuid) {
+        if (isTokenExpired()) {
+            getZafiraAuthToken(refreshToken)
+        }
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
 
-		def response = sendRequest(parameters)
-		if(!response){
-			return ""
-		}
-		return response.content
+		return sendRequest(parameters)
 	}
 
-    /** Sends httpRequest using passed parameters */
-    protected def sendRequest(requestParams) {
-        def response = null
-        /** Catches exceptions in every http call */
-        try {
-            response = context.httpRequest requestParams
-        } catch (Exception e) {
-            logger.error(Utils.printStackTrace(e))
+	public def getTestRunByCiRunId(String uuid) {
+        if (isTokenExpired()) {
+            getZafiraAuthToken(refreshToken)
         }
-        return response
-    }
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'GET',
+						  validResponseCodes: "200:404",
+						  url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"]
+
+		return sendRequestFormatted(parameters)
+	}
 
 	protected boolean isTokenExpired() {
 		return authToken == null || System.currentTimeMillis() > tokenExpTime
@@ -204,13 +216,36 @@ class ZafiraClient {
 	/** Generates authToken using refreshToken*/
 	protected void getZafiraAuthToken(String refreshToken) {
         logger.debug("refreshToken: " + refreshToken)
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder refreshToken: refreshToken
 		def parameters = [contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
-						  requestBody: "{\"refreshToken\": \"${refreshToken}\"}",
+                          requestBody: "${jsonBuilder}",
 						  url: this.serviceURL + "/api/auth/refresh"]
-		def response = sendRequest(parameters)
-		def properties = (Map) new JsonSlurper().parseText(response.getContent())
-		authToken = properties.get("type") + " " + properties.get("accessToken")
+        Map properties = (Map)sendRequestFormatted(parameters)
+		authToken = properties.type + " " + properties.accessToken
 		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
+	}
+
+	/** Sends httpRequest using passed parameters */
+	protected def sendRequestFormatted(requestParams) {
+		def response = sendRequest(requestParams)
+		if(response){
+			return getObjectResponse(response)
+		}
+	}
+
+	protected def sendRequest(requestParams) {
+		def response = null
+		/** Catches exceptions in every http call */
+		try {
+			response = context.httpRequest requestParams
+		} catch (Exception e) {
+			logger.error(printStackTrace(e))
+		}
+		if(!response || response.status > 200){
+			return
+		}
+		return response.content
 	}
 }

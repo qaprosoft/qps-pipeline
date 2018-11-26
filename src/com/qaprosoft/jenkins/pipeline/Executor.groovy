@@ -1,5 +1,8 @@
 package com.qaprosoft.jenkins.pipeline
 
+import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 @Grab('org.testng:testng:6.8.8')
 import groovy.json.JsonSlurperClassic
 import org.testng.xml.Parser
@@ -76,6 +79,15 @@ public class Executor {
         def inputFile = new File(path)
         def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
         return content
+    }
+
+    static def getObjectResponse(response){
+        return new JsonSlurper().parseText(response)
+    }
+
+    static def formatJson(json){
+        JsonBuilder builder = new JsonBuilder(json)
+        return builder.toPrettyString()
     }
 
     static XmlSuite parseSuite(String path) {
@@ -307,6 +319,18 @@ public class Executor {
         }
         return goals
     }
+
+    static def getDefectsString(String defects, String newDefects){
+        if(isParamEmpty(defects)){
+            defects = newDefects
+        } else {
+            if(!newDefects.isEmpty()){
+                defects = "${defects},${newDefects}"
+            }
+        }
+        return defects
+    }
+
 
     static def setDefaultIfEmpty(stringKey, enumKey){
         def configValue = Configuration.get(stringKey)
