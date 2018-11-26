@@ -10,12 +10,18 @@ class TestRailClient {
     private String serviceURL
     private def context
     private Logger logger
+	private boolean isAvailable
 
     public TestRailClient(context) {
         this.context = context
-        serviceURL = "https://uacf.testrail.com?/api/v2/"
-        logger = new Logger(context)
+		this.serviceURL = Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL)
+		this.isAvailable = !serviceURL.isEmpty()
+        this.logger = new Logger(context)
     }
+	
+	public boolean isAvailable() {
+		return isAvailable
+	}
 
     public def getRuns(createdAfter, createdBy, milestoneId, projectId, suiteId) {
 		def requestArgs = "get_runs/${projectId}&created_after=${createdAfter}&created_by=${createdBy}&suite_id=${suiteId}"
