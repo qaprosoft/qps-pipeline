@@ -110,8 +110,8 @@ class TestRailUpdater {
             boolean isValid = false
             for(validTestCaseId in integration.validTestCases){
                 logger.info("VALIDCASEID: " + validTestCaseId)
-                logger.info("CASEID: " + testCase.case_id)
-                if(validTestCaseId == testCase.case_id){
+                logger.info("CASEID: " + testCase.value.case_id)
+                if(validTestCaseId == testCase.value.case_id){
                     isValid = true
                     break
                 }
