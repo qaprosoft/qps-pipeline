@@ -28,6 +28,9 @@ class TestRailUpdater {
             if(!isParamEmpty(integration.projectId)){
                 integration.milestoneId = getMilestoneId()
                 integration.assignedToId = getAssignedToId()
+
+                getCases()
+
                 def testRun = null
                 if(isRerun){
                     testRun = getTestRunId()
@@ -168,7 +171,7 @@ class TestRailUpdater {
 
     protected def addResults(testRunId){
         integration.testRunId = testRunId
-        getCases()
+//        getCases()
         getTests()
 
 
