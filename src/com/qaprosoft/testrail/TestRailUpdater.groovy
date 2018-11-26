@@ -118,35 +118,38 @@ class TestRailUpdater {
     protected def getTests(){
         def tests = trc.getTests(integration.testRunId)
         logger.info("TESTS_MAP:\n" + formatJson(tests))
-//        tests.each { test ->
-//            for(validTestCaseId in integration.validTestCases){
-//                if(validTestCaseId == test.case_id){
-//                    Map testResult = new HashMap()
-//                    testResult.test_id = test.id
-//                    String testCaseId = test.case_id.toString()
-//                    testResult.status_id = integration.caseResultMap.get(testCaseId).status_id
-//                    testResult.comment = integration.caseResultMap.get(testCaseId).comment
-//                    testResult.defects = integration.caseResultMap.get(testCaseId).defects
-//                    integration.testResultMap.put(testResult.test_id, testResult)
-//                    integration.caseResultMap.remove(testCaseId)
-//                    break
-//                }
-//            }
-//        }
         tests.each { test ->
             for(validTestCaseId in integration.validTestCases){
                 if(validTestCaseId == test.case_id){
+                    Map testResult = new HashMap()
+                    testResult.test_id = test.id
                     String testCaseId = test.case_id.toString()
-                    test.status_id = integration.caseResultMap.get(testCaseId).status_id
-                    test.comment = integration.caseResultMap.get(testCaseId).comment
-                    test.defects = integration.caseResultMap.get(testCaseId).defects
+                    testResult.status_id = integration.caseResultMap.get(testCaseId).status_id
+                    testResult.comment = integration.caseResultMap.get(testCaseId).comment
+                    testResult.defects = integration.caseResultMap.get(testCaseId).defects
                     if (test.status_id != 3) {
-                        integration.testResultMap.put(test.id, test)
+                        integration.testResultMap.put(testResult.test_id, testResult)
+//                        integration.caseResultMap.remove(testCaseId)
                     }
                     break
                 }
             }
         }
+
+//        tests.each { test ->
+//            for(validTestCaseId in integration.validTestCases){
+//                if(validTestCaseId == test.case_id){
+//                    String testCaseId = test.case_id.toString()
+//                    test.status_id = integration.caseResultMap.get(testCaseId).status_id
+//                    test.comment = integration.caseResultMap.get(testCaseId).comment
+//                    test.defects = integration.caseResultMap.get(testCaseId).defects
+//                    if (test.status_id != 3) {
+//                        integration.testResultMap.put(test.id, test)
+//                    }
+//                    break
+//                }
+//            }
+//        }
         logger.info("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
     }
 
