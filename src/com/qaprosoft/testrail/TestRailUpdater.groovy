@@ -138,8 +138,6 @@ class TestRailUpdater {
             testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, includeAll, integration.caseResultMap.keySet(), integration.projectId)
         }
         logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
-//        def tests = trc.getTests(testRun.id)
-//        logger.info("TESTS:" + formatJson(tests))
         return testRun
     }
 
