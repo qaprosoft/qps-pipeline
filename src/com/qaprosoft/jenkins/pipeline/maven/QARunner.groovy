@@ -361,7 +361,7 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
-        def isRerun = getSearchable()
+        def isRerun = isRerun()
         logger.info("SEARCH: " + isRerun)
         String nodeName = "master"
         context.node(nodeName) {
@@ -383,9 +383,9 @@ public class QARunner extends AbstractRunner {
                         context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
                             buildJob()
                         }
-//                        sendZafiraEmail()
-//                        //TODO: think about seperate stage for uploading jacoco reports
-//                        publishJacocoReport()
+                        sendZafiraEmail()
+                        //TODO: think about seperate stage for uploading jacoco reports
+                        publishJacocoReport()
                     }
                 } catch (Exception e) {
                     logger.error(Utils.printStackTrace(e))
@@ -402,7 +402,7 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected boolean getSearchable(){
+    protected boolean isRerun(){
         return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
     }
 
