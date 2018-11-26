@@ -159,14 +159,10 @@ class TestRailUpdater {
 
     protected def addResults(testRunId){
         integration.testRunId = testRunId
-//        getCases()
         getTests()
 
-
-        //def response = trc.addResultsForCases(integration.testRunId, integration.caseResultMap.values())
-        //logger.info("ADD_RESULTS_CASES_RESPONSE: " + formatJson(response))
         def response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
-        logger.info("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
+//        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
 
     }
     
@@ -182,8 +178,7 @@ class TestRailUpdater {
                 }
                 testCase.case_id = tagInfoArray[2]
                 testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
-//                testCase.comment = integrationInfoItem.message
-                testCase.comment = ""
+                testCase.comment = integrationInfoItem.message
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[2])
             }
