@@ -117,19 +117,30 @@ class TestRailUpdater {
     protected def getTests(){
         def tests = trc.getTests(integration.testRunId)
         logger.info("TESTS_MAP:\n" + formatJson(tests))
+//        tests.each { test ->
+//            for(validTestCaseId in integration.validTestCases){
+//                if(validTestCaseId == test.case_id){
+//                    Map testResult = new HashMap()
+//                    testResult.test_id = test.id
+//                    String testCaseId = test.case_id.toString()
+//                    testResult.status_id = integration.caseResultMap.get(testCaseId).status_id
+//                    testResult.comment = integration.caseResultMap.get(testCaseId).comment
+//                    testResult.defects = integration.caseResultMap.get(testCaseId).defects
+//                    integration.testResultMap.put(testResult.test_id, testResult)
+//                    integration.caseResultMap.remove(testCaseId)
+//                    break
+//                }
+//            }
+//        }
         tests.each { test ->
             for(validTestCaseId in integration.validTestCases){
-                logger.info("VALID_TEST_CASE_ID: " + validTestCaseId.dump())
-                logger.info("TEST_CASE_ID: " + test.case_id.dump())
                 if(validTestCaseId == test.case_id){
-                    Map testResult = new HashMap()
-                    testResult.test_id = test.id
                     String testCaseId = test.case_id.toString()
-                    testResult.status_id = integration.caseResultMap.get(testCaseId).status_id
-                    testResult.comment = integration.caseResultMap.get(testCaseId).comment
-                    testResult.defects = integration.caseResultMap.get(testCaseId).defects
-                    integration.testResultMap.put(testResult.test_id, testResult)
-                    integration.caseResultMap.remove(testCaseId)
+                    test.status_id = integration.caseResultMap.get(testCaseId).status_id
+                    test.comment = integration.caseResultMap.get(testCaseId).comment
+                    test.defects = integration.caseResultMap.get(testCaseId).defects
+                    integration.testResultMap.put(test.id, test)
+//                    integration.caseResultMap.remove(testCaseId)
                     break
                 }
             }
@@ -153,10 +164,10 @@ class TestRailUpdater {
         getCases()
         getTests()
 
-        filterCases()
+        //filterCases()
 
-        def response = trc.addResultsForCases(integration.testRunId, integration.caseResultMap.values())
-        logger.info("ADD_RESULTS_CASES_RESPONSE: " + formatJson(response))
+        //def response = trc.addResultsForCases(integration.testRunId, integration.caseResultMap.values())
+        //logger.info("ADD_RESULTS_CASES_RESPONSE: " + formatJson(response))
         response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
         logger.info("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
 
