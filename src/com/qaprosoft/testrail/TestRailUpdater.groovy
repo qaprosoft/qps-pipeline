@@ -124,11 +124,12 @@ class TestRailUpdater {
                 if(validTestCaseId == test.case_id){
                     Map testResult = new HashMap()
                     testResult.test_id = test.id
-                    testResult.status_id = integration.caseResultMap.get(test.case_id).status_id
-                    testResult.comment = integration.caseResultMap.get(test.case_id).comment
-                    testResult.defects = integration.caseResultMap.get(test.case_id).defects
+                    String testCaseId = test.case_id.toString()
+                    testResult.status_id = integration.caseResultMap.get(testCaseId).status_id
+                    testResult.comment = integration.caseResultMap.get(testCaseId).comment
+                    testResult.defects = integration.caseResultMap.get(testCaseId).defects
                     integration.testResultMap.put(testResult.test_id, testResult)
-                    integration.caseResultMap.remove(test.case_id)
+                    integration.caseResultMap.remove(testCaseId)
                     break
                 }
             }
