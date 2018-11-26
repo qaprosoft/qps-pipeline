@@ -129,7 +129,7 @@ class TestRailUpdater {
                     testResult.defects = integration.caseResultMap.get(testCaseId).defects
                     if (testResult.status_id != 3) {
                         integration.testResultMap.put(testResult.test_id, testResult)
-//                        integration.caseResultMap.remove(testCaseId)
+                        integration.caseResultMap.remove(testCaseId)
                     }
                     break
                 }
@@ -157,7 +157,9 @@ class TestRailUpdater {
         def testRun
         if(integration.milestoneId){
             testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, includeAll, integration.caseResultMap.keySet(), integration.projectId)
+
         } else {
+            logger.info("CASES_REQUEST: " + integration.caseResultMap.keySet())
             testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, includeAll, integration.caseResultMap.keySet(), integration.projectId)
         }
         logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
