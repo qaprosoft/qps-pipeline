@@ -4,6 +4,7 @@ package com.qaprosoft.testrail
 import com.qaprosoft.Logger
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.zafira.ZafiraClient
+import com.qaprosoft.zafira.IntegrationTag
 
 class TestRailUpdater {
 
