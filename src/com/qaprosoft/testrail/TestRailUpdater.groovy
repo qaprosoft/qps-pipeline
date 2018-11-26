@@ -127,7 +127,7 @@ class TestRailUpdater {
                     testResult.status_id = integration.caseResultMap.get(testCaseId).status_id
                     testResult.comment = integration.caseResultMap.get(testCaseId).comment
                     testResult.defects = integration.caseResultMap.get(testCaseId).defects
-                    if (test.status_id != 3) {
+                    if (testResult.status_id != 3) {
                         integration.testResultMap.put(testResult.test_id, testResult)
 //                        integration.caseResultMap.remove(testCaseId)
                     }
@@ -172,7 +172,7 @@ class TestRailUpdater {
 
         //def response = trc.addResultsForCases(integration.testRunId, integration.caseResultMap.values())
         //logger.info("ADD_RESULTS_CASES_RESPONSE: " + formatJson(response))
-        response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
+        def response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
         logger.info("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
 
     }
