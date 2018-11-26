@@ -106,6 +106,7 @@ class TestRailUpdater {
     }
 
     public def checkValidCases(){
+        logger.info("SIZEBEFORE: " + integration.testCaseResultMap.size())
         integration.testCaseResultMap.each { testCase ->
             boolean isValid = false
             for(validTestCaseId in integration.validTestCases){
@@ -120,6 +121,7 @@ class TestRailUpdater {
                 integration.testCaseResultMap.remove(testCase.value.case_id)
             }
         }
+        logger.info("SIZEAFTER: " + integration.testCaseResultMap.size())
     }
 
     public def addTestRun(boolean include_all){
@@ -152,7 +154,8 @@ class TestRailUpdater {
                 }
                 testCase.case_id = Integer.valueOf(tagInfoArray[2])
                 testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
-                testCase.comment = integrationInfoItem.message
+//                testCase.comment = integrationInfoItem.message
+                testCase.comment = ""
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[2])
             }
