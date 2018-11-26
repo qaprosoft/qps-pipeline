@@ -117,7 +117,7 @@ class TestRailUpdater {
                 }
             }
             if(!isValid){
-                integration.testCaseResultMap.remove(testCase.case_id)
+                integration.testCaseResultMap.remove(testCase.value.case_id)
             }
         }
     }
