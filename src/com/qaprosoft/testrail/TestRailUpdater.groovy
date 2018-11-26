@@ -62,14 +62,12 @@ class TestRailUpdater {
     protected def getTestRunId(){
 		// "-120" to resolve potential time async with testrail upto 2 min 
         def testRuns = trc.getRuns(Math.round(integration.createdAfter/1000) - 120, integration.assignedToId, integration.milestoneId, integration.projectId, integration.suiteId)
-        logger.info("TEST_RUNS:\n" + formatJson(testRuns))
+//        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		
 		def run = null
 		
         testRuns.each { Map testRun ->
-            logger.info("TEST_RUN: " + formatJson(testRun))
-			logger.info("TEST_RUN_NAME: '" + testRun.name + "'")
-			logger.info("TEST_RUN_NAME2: '" + integration.testRunName + "'")
+//            logger.debug("TEST_RUN: " + formatJson(testRun))
 
             if(testRun.name.equals(integration.testRunName)){
                 integration.testRunId = testRun.id
@@ -142,7 +140,7 @@ class TestRailUpdater {
 
     protected def getTests(){
         def tests = trc.getTests(integration.testRunId)
-        logger.info("TESTS_MAP:\n" + formatJson(tests))
+//        logger.debug("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
             for(validTestCaseId in integration.validTestCases){
                 if(validTestCaseId == test.case_id){
@@ -163,7 +161,7 @@ class TestRailUpdater {
             }
         }
 
-        logger.info("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
+//        logger.debug("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
     }
 
     protected def addTestRun(boolean includeAll){
