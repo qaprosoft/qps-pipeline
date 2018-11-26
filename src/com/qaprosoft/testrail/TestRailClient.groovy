@@ -140,6 +140,9 @@ class TestRailClient {
     }
 
     public def addResultsForCases(testRunId, results) {
+        if(results.isEmpty()){
+            return results
+        }
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder results: results
         logger.info("REQUEST:\n" + formatJson(jsonBuilder))
@@ -155,6 +158,9 @@ class TestRailClient {
     }
 
     public def addResultsForTests(testRunId, results) {
+        if(results.isEmpty()){
+            return results
+        }
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder results: results
         logger.info("REQUEST:\n" + formatJson(jsonBuilder))
