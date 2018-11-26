@@ -383,9 +383,9 @@ public class QARunner extends AbstractRunner {
                         context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
                             buildJob()
                         }
-                        sendZafiraEmail()
-                        //TODO: think about seperate stage for uploading jacoco reports
-                        publishJacocoReport()
+//                        sendZafiraEmail()
+//                        //TODO: think about seperate stage for uploading jacoco reports
+//                        publishJacocoReport()
                     }
                 } catch (Exception e) {
                     logger.error(Utils.printStackTrace(e))
@@ -583,7 +583,7 @@ public class QARunner extends AbstractRunner {
 		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 		clean test"
 
-		Configuration.set("ci_build_cause", Executor.getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
+		Configuration.set("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
 		def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
@@ -593,7 +593,7 @@ public class QARunner extends AbstractRunner {
 		//register all params after vars to be able to override
 		Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
-		goals = Executor.enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
+		goals = enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
 		goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
 		goals = addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
 
@@ -635,7 +635,7 @@ public class QARunner extends AbstractRunner {
 	}
 	
 	protected String getMavenPomFile() {
-		return Executor.getSubProjectFolder() + "/pom.xml"
+		return getSubProjectFolder() + "/pom.xml"
 	}
 	
     protected void buildJob() {
@@ -864,7 +864,7 @@ public class QARunner extends AbstractRunner {
 			supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
 		}
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
-        if(!Executor.isParamEmpty(queueRegistration)){
+        if(!isParamEmpty(queueRegistration)){
             logger.info("override queue_registration to: " + queueRegistration)
             Configuration.set("queue_registration", queueRegistration)
         }
