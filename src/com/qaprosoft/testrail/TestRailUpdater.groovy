@@ -116,6 +116,7 @@ class TestRailUpdater {
                 }
             }
             if(!isValid){
+                logger.info("TEST_CASE: " + testCase)
                 logger.info("SIZEBEFORE: " + integration.testCaseResultMap.size())
                 testCaseResultMap.remove(testCase.value.case_id)
                 logger.info("SIZEAFTER: " + integration.testCaseResultMap.size())
