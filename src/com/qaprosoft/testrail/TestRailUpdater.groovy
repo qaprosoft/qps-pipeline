@@ -21,26 +21,42 @@ class TestRailUpdater {
     }
 
     public void updateTestRun(uuid, isRerun, boolean includeAll) {
-        integration = zc.getIntegrationInfo(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
-        logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
-        if(!isParamEmpty(integration)){
-            parseIntegrationInfo()
-            if(!isParamEmpty(integration.projectId)){
-                integration.milestoneId = getMilestoneId()
-                integration.assignedToId = getAssignedToId()
+        // export all tag related metadata from Zafira
+        integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
+        logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
-                getCases()
+        if(isParamEmpty(integration)){
+            logger.debug("Nothing to update in TestRail.")
+            return
+        }
 
-                def testRun = null
-                if(isRerun){
-                    testRun = getTestRunId()
-                }
-                if(isParamEmpty(testRun)){
-                    testRun = addTestRun(includeAll)
-                }
-                addResults(testRun.id)
+        // convert uuid to project_id, suite_id and testcases related maps
+        integration = parseTagData()
+
+        if(isParamEmpty(integration.projectId)){
+            logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
+            return
+        }
+
+        integration.milestoneId = getMilestoneId()
+        integration.assignedToId = getAssignedToId()
+
+        // get all cases from TestRail by project and suite and compare with exported from Zafira
+        // only cases available in both maps should be registered later
+        parseCases()
+
+        def testRun = null
+        if(isRerun){
+            testRun = getTestRunId()
+            if (isParamEmpty(testRun)) {
+                logger.error("Unable to detect existing run in TestRail for rebuild!")
             }
         }
+
+        if(isParamEmpty(testRun)){
+            testRun = addTestRun(includeAll)
+        }
+        addResults(testRun.id)
     }
 
     protected def getTestRunId(){
@@ -87,7 +103,7 @@ class TestRailUpdater {
         return assignedToId.id
     }
 
-    protected def getCases(){
+    protected def parseCases(){
         Set validTestCases = new HashSet()
         def cases = trc.getCases(integration.projectId, integration.suiteId)
         logger.info("SUITE_CASES: " + formatJson(cases))
@@ -145,15 +161,8 @@ class TestRailUpdater {
     }
 
     protected def addTestRun(boolean includeAll){
-        def testRun
-        if(integration.milestoneId){
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, includeAll, integration.caseResultMap.keySet(), integration.projectId)
-
-        } else {
-            logger.info("CASES_REQUEST: " + integration.caseResultMap.keySet())
-            testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.assignedToId, includeAll, integration.caseResultMap.keySet(), integration.projectId)
-        }
-        logger.info("ADDED TESTRUN:\n" + formatJson(testRun))
+        def testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, includeAll, integration.caseResultMap.keySet(), integration.projectId)
+        logger.debug("ADDED TESTRUN:\n" + formatJson(testRun))
         return testRun
     }
 
@@ -166,7 +175,7 @@ class TestRailUpdater {
 
     }
     
-    protected def parseIntegrationInfo(){
+    protected def parseTagData(){
         Map testCaseResultMap = new HashMap<>()
         integration.integrationInfo.each { integrationInfoItem ->
             String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
@@ -188,5 +197,7 @@ class TestRailUpdater {
         integration.caseResultMap = testCaseResultMap
         Map testResultMap = new HashMap<>()
         integration.testResultMap = testResultMap
+
+        return integration
     }
 }

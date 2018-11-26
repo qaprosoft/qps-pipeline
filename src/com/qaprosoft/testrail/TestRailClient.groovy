@@ -63,32 +63,24 @@ class TestRailClient {
 
 
     public def addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, caseIds, projectID) {
+        // default request body without milestone id
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder suite_id: suiteId,
                 name: testRunName,
-                milestone_id: milestoneId,
                 assignedto_id: assignedToId,
                 include_all: includeAll,
                 case_ids: caseIds
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'POST',
-                              requestBody: "${jsonBuilder}",
-                              validResponseCodes: "200",
-                              url: this.serviceURL + "add_run/${projectID}"]
-            return sendRequestFormatted(parameters)
-        }
-    }
 
-    public def addTestRun(suiteId, testRunName, assignedToId, includeAll, caseIds, projectID) {
-        logger.info("INCLUDE_ALL:" + includeAll)
-        JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder suite_id: suiteId,
-                name: testRunName,
-                assignedto_id: assignedToId,
-                include_all: includeAll,
-                case_ids: caseIds
+        if (!isParamEmpty(milestoneId)) {
+            // insert milestone id into the request body
+            jsonBuilder = new JsonBuilder()
+            jsonBuilder suite_id: suiteId,
+                    name: testRunName,
+                    milestone_id: milestoneId,
+                    assignedto_id: assignedToId,
+                    include_all: includeAll,
+                    case_ids: caseIds
+        }
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',

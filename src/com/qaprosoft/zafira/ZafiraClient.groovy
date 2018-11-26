@@ -148,7 +148,7 @@ class ZafiraClient {
 		return sendRequestFormatted(parameters)
     }
 
-	public def getIntegrationInfo(uuid, tagName) {
+	public def exportTagData(uuid, tagName) {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
