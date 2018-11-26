@@ -139,20 +139,6 @@ class TestRailUpdater {
             }
         }
 
-//        tests.each { test ->
-//            for(validTestCaseId in integration.validTestCases){
-//                if(validTestCaseId == test.case_id){
-//                    String testCaseId = test.case_id.toString()
-//                    test.status_id = integration.caseResultMap.get(testCaseId).status_id
-//                    test.comment = integration.caseResultMap.get(testCaseId).comment
-//                    test.defects = integration.caseResultMap.get(testCaseId).defects
-//                    if (test.status_id != 3) {
-//                        integration.testResultMap.put(test.id, test)
-//                    }
-//                    break
-//                }
-//            }
-//        }
         logger.info("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
     }
 
