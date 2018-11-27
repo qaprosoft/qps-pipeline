@@ -2,9 +2,7 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 
 import com.qaprosoft.Utils
-import com.qaprosoft.testrail.TestRailClient
 import com.qaprosoft.testrail.TestRailUpdater
-
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 //[VD] do not remove this important import!
@@ -54,7 +52,7 @@ public class QARunner extends AbstractRunner {
         scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
         testRailUpdater = new TestRailUpdater(context)
-		
+
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
             onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
@@ -582,7 +580,7 @@ public class QARunner extends AbstractRunner {
 		-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
 				  -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
 		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
-		clean test"
+		clean test -Dqueue_registration=false"
 
 		Configuration.set("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
