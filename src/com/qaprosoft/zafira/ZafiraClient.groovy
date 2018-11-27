@@ -145,7 +145,7 @@ class ZafiraClient {
                           requestBody: "${jsonBuilder}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
-		return sendRequestFormatted(parameters)
+		return sendRequest(parameters)
     }
 
 	public def exportTagData(uuid, tagName) {
@@ -180,7 +180,7 @@ class ZafiraClient {
                           requestBody: "${jsonBuilder}",
                           validResponseCodes: "200:401",
                           url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
-        return sendRequestFormatted(parameters)
+        return sendRequest(parameters)
     }
 
 	public def exportZafiraReport(String uuid) {
