@@ -246,4 +246,19 @@ public class TestJobFactory extends PipelineFactory {
 		return proxyInfo.getDevicesList(platform)
 	}
 
+	protected String listToString(currentSuite, parameterName) {
+        def list = getGenericSplit(currentSuite, parameterName)
+        def prepList = 'return ['
+
+        if (!list.isEmpty()) {
+            for (String l : list) {
+                prepList = prepList + '"' + l + '", '
+            }
+            prepList = prepList.take(prepList.length() - 2)
+        }
+        
+        prepList = prepList + ']'
+
+        return prepList
+    }
 }
