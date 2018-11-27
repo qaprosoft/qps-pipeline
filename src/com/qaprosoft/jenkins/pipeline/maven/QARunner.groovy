@@ -38,6 +38,7 @@ public class QARunner extends AbstractRunner {
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
     protected Map pipelineLocaleMap = [:]
+    protected orderedJobExecNum = 0
     protected boolean multilingualMode = false
 
     public enum JobType {
@@ -631,14 +632,14 @@ public class QARunner extends AbstractRunner {
 		} else {
 			suiteName = Configuration.get("suite").replace("/", "\\")
 		}
-		
+
 		return "${goals} -Dsuite=${suiteName}"
 	}
-	
+
 	protected String getMavenPomFile() {
 		return getSubProjectFolder() + "/pom.xml"
 	}
-	
+
     protected void buildJob() {
         context.stage('Run Test Suite') {
 			def goals = getMavenGoals()
@@ -854,11 +855,7 @@ public class QARunner extends AbstractRunner {
             return
         }
         def supportedPipelines = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
-        def orderNum = currentSuite.getParameter("jenkinsJobExecutionOrder").toString()
-        if (orderNum.equals("null")) {
-            orderNum = "0"
-            logger.info("specify by default '0' order - start asap")
-        }
+        def orderNum = getOrderNum(currentSuite)
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode").toString()
         def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
 		if (isParamEmpty(supportedEnvs)) {
@@ -979,6 +976,18 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    protected def getOrderNum(suite){
+        def orderNum = suite.getParameter("jenkinsJobExecutionOrder").toString()
+        if (orderNum.equals("null")) {
+            orderNum = "0"
+            logger.info("specify by default '0' order - start asap")
+        } else if (orderNum.equals("ordered")) {
+            orderedJobExecNum++
+            orderNum = orderedJobExecNum.toString()
+        }
+        return orderNum
+    }
+
     protected def getCronEnv(currentSuite) {
         //currentSuite is need to override action in private pipelines
         return Configuration.get("env")
@@ -999,7 +1008,7 @@ public class QARunner extends AbstractRunner {
         String curOrder = ""
         for (Map entry : listPipelines) {
             def stageName
-            if(multilingualMode){
+            if(multilingualMode && entry.get("locale")){
                 stageName = String.format("Stage: %s Environment: %s Browser: %s Locale: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"), entry.get("locale"))
             } else {
                 stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
