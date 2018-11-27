@@ -2,7 +2,9 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 
 import com.qaprosoft.Utils
+import com.qaprosoft.testrail.TestRailClient
 import com.qaprosoft.testrail.TestRailUpdater
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 //[VD] do not remove this important import!
