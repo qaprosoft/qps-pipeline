@@ -538,7 +538,6 @@ public class QARunner extends AbstractRunner {
         Configuration.set("capabilities.deviceName", "*")
         Configuration.set("capabilities.appPackage", "")
         Configuration.set("capabilities.appActivity", "")
-        Configuration.set("capabilities.autoAcceptAlerts", "true")
         Configuration.set("capabilities.STF_ENABLED", "false")
     }
 
