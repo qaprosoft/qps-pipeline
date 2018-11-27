@@ -42,11 +42,11 @@ class GitHub implements ISCM {
             def branch = Configuration.get("branch")
             def project = Configuration.get("project")
             def userId = Configuration.get("BUILD_USER_ID")
-			
-			logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
-			logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
-			
-			logger.info("gitSshUrl: " + gitSshUrl)
+
+            logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
+            logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
+
+            logger.info("gitSshUrl: " + gitSshUrl)
             def gitUrl = Configuration.resolveVars(gitSshUrl)
 			
 			logger.info("gitUrl: " + gitUrl)
