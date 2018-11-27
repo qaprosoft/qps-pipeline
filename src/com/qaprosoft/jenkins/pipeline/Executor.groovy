@@ -21,6 +21,10 @@ import org.jenkinsci.plugins.ghprb.Ghprb
 
 public class Executor {
 
+    static enum BuildResult {
+        FAILURE, ABORTED, UNSTABLE
+    }
+
     static String getUUID() {
 		def ci_run_id = Configuration.get("ci_run_id")
 		if (ci_run_id == null || ci_run_id.isEmpty()) {
@@ -119,6 +123,24 @@ public class Executor {
         }
         return failure
     }
+
+    static def getPipelineLocales(xmlSuite){
+        def supportedLocales = [:]
+        def jenkinsPipelineLocales = xmlSuite.getParameter("jenkinsPipelineLocales")
+        if (!isParamEmpty(jenkinsPipelineLocales)) {
+            for (String locale in jenkinsPipelineLocales.split(",")) {
+                if(locale.contains(":")){
+                    def languageLocaleArray = locale.split(":")
+                    supportedLocales.put(languageLocaleArray[0], languageLocaleArray[1])
+                } else {
+                    def language = locale.split("_")[0]
+                    supportedLocales.put(locale, language)
+                }
+            }
+        }
+        return supportedLocales
+    }
+
 
     static def getJenkinsJobByName(jobName) {
         def currentJob = null
@@ -330,4 +352,9 @@ public class Executor {
         }
     }
 
+    static void putMap(pipelineMap, map) {
+        map.each { mapItem ->
+            pipelineMap.put(mapItem.key, mapItem.value)
+        }
+    }
 }
