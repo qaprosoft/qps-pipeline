@@ -14,7 +14,7 @@ class QTestUpdater {
     private Logger logger
     private integration
 
-    public QTestClient(context) {
+    public QTestUpdater(context) {
         this.context = context
         zc = new ZafiraClient(context)
         qTestClient = new QTestClient(context)
