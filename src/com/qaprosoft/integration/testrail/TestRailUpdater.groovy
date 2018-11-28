@@ -2,11 +2,11 @@ package com.qaprosoft.integration.testrail
 
 
 import com.qaprosoft.Logger
-import com.qaprosoft.zafira.StatusMapper
+import com.qaprosoft.integration.zafira.StatusMapper
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
-import com.qaprosoft.zafira.ZafiraClient
-import com.qaprosoft.zafira.IntegrationTag
+import com.qaprosoft.integration.zafira.ZafiraClient
+import com.qaprosoft.integration.zafira.IntegrationTag
 
 class TestRailUpdater {
 
