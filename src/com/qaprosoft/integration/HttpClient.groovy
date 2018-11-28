@@ -6,6 +6,7 @@ import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 abstract class HttpClient {
+
     protected def context
     protected Logger logger
 
