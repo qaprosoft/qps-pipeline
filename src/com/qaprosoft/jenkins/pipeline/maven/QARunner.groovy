@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 import com.qaprosoft.Utils
 import com.qaprosoft.integration.testrail.TestRailUpdater
+import com.qaprosoft.integration.qtest.QTestUpdater
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
