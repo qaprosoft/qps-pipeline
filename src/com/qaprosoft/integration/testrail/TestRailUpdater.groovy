@@ -1,4 +1,4 @@
-package com.qaprosoft.testrail
+package com.qaprosoft.integration.testrail
 
 
 import com.qaprosoft.Logger
