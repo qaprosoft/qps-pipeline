@@ -1,6 +1,5 @@
 package com.qaprosoft.integration.zafira
 
-import com.qaprosoft.Logger
 import com.qaprosoft.integration.HttpClient
 import groovy.json.JsonBuilder
 
