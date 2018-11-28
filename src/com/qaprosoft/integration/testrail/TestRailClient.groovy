@@ -4,21 +4,18 @@ import com.qaprosoft.integration.HttpClient
 
 import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
-import com.qaprosoft.Logger
 import groovy.json.JsonBuilder
 import com.qaprosoft.jenkins.pipeline.Configuration
 
 class TestRailClient extends HttpClient{
 
     private String serviceURL
-    private Logger logger
 	private boolean isAvailable
 
     public TestRailClient(context) {
         super(context)
 		this.serviceURL = Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL)
 		this.isAvailable = !serviceURL.isEmpty()
-        this.logger = new Logger(context)
     }
 	
 	public boolean isAvailable() {
