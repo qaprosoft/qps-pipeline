@@ -2,8 +2,7 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 
 import com.qaprosoft.Utils
-import com.qaprosoft.testrail.TestRailClient
-import com.qaprosoft.testrail.TestRailUpdater
+import com.qaprosoft.integration.testrail.TestRailUpdater
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
@@ -14,7 +13,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.scm.github.GitHub
-import com.qaprosoft.zafira.ZafiraClient
+import com.qaprosoft.integration.zafira.ZafiraClient
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 import hudson.plugins.sonar.SonarGlobalConfiguration
