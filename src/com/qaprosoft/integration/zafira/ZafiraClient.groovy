@@ -13,7 +13,6 @@ class ZafiraClient extends HttpClient{
 	private String refreshToken
 	private String authToken
 	private long tokenExpTime
-	private def context
 	private Logger logger
 
     public ZafiraClient(context) {
