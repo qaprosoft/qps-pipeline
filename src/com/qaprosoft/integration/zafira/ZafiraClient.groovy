@@ -13,13 +13,11 @@ class ZafiraClient extends HttpClient{
 	private String refreshToken
 	private String authToken
 	private long tokenExpTime
-	private Logger logger
 
     public ZafiraClient(context) {
         super(context)
         serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
         refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
-        logger = new Logger(context)
     }
 
 	public def queueZafiraTestRun(String uuid) {

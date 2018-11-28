@@ -11,7 +11,6 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 class TestRailClient extends HttpClient{
 
     private String serviceURL
-    private def context
     private Logger logger
 	private boolean isAvailable
 
