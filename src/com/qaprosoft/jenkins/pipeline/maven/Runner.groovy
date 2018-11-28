@@ -1,7 +1,7 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
 import com.qaprosoft.Logger
-import com.qaprosoft.scm.github.GitHub;
+import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
 
 //[VD] do not remove this important import!
