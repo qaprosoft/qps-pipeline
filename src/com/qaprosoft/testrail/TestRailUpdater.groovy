@@ -2,6 +2,8 @@ package com.qaprosoft.testrail
 
 
 import com.qaprosoft.Logger
+import com.qaprosoft.zafira.StatusMapper
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.zafira.ZafiraClient
 import com.qaprosoft.zafira.IntegrationTag
@@ -195,7 +197,7 @@ class TestRailUpdater {
                     integration.suiteId = tagInfoArray[1]
                 }
                 testCase.case_id = tagInfoArray[2]
-                testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
+                testCase.status_id = StatusMapper.getTestRailStatus(integrationInfoItem.status)
                 testCase.comment = integrationInfoItem.message
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[2])
