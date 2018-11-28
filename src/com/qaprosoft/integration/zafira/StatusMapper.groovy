@@ -1,4 +1,4 @@
-package com.qaprosoft.zafira
+package com.qaprosoft.integration.zafira
 
 class StatusMapper {
 

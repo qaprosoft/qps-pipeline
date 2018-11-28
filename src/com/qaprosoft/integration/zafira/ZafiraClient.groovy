@@ -1,13 +1,13 @@
-package com.qaprosoft.zafira
+package com.qaprosoft.integration.zafira
 
 import com.qaprosoft.Logger
+import com.qaprosoft.integration.HttpClient
 import groovy.json.JsonBuilder
 
-import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.Configuration
 
-class ZafiraClient {
+class ZafiraClient extends HttpClient{
 
 	private String serviceURL
 	private String refreshToken
@@ -17,7 +17,7 @@ class ZafiraClient {
 	private Logger logger
 
     public ZafiraClient(context) {
-        this.context = context
+        super(context)
         serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
         refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
         logger = new Logger(context)
@@ -227,25 +227,4 @@ class ZafiraClient {
 		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
 	}
 
-	/** Sends httpRequest using passed parameters */
-	protected def sendRequestFormatted(requestParams) {
-		def response = sendRequest(requestParams)
-		if(response){
-			return getObjectResponse(response)
-		}
-	}
-
-	protected def sendRequest(requestParams) {
-		def response = null
-		/** Catches exceptions in every http call */
-		try {
-			response = context.httpRequest requestParams
-		} catch (Exception e) {
-			logger.error(printStackTrace(e))
-		}
-		if(!response || response.status > 200){
-			return
-		}
-		return response.content
-	}
 }
