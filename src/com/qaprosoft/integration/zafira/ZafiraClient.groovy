@@ -78,28 +78,28 @@ class ZafiraClient extends HttpClient{
 		String env = Configuration.get("env")
 
 		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
-		def subject = getFailureSubject("UNRECOGNIZED FAILURE", jobName, env, buildNumber)
+		def subject = getFailureSubject(FailureCause.UNRECOGNIZED_FAILURE, jobName, env, buildNumber)
 		def failureLog = ""
 
 		if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
 			bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
-			subject = getFailureSubject("COMPILATION FAILURE", jobName, env, buildNumber)
+			subject = getFailureSubject(FailureCause.COMPILATION_FAILURE, jobName, env, buildNumber)
 			failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
-			failureReason = URLEncoder.encode(failureLog, "UTF-8")
+			failureReason = URLEncoder.encode("${FailureCause.COMPILATION_FAILURE}:\n" + failureLog, "UTF-8")
 		} else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
 			currentBuild.result = BuildResult.ABORTED
 			bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
-			subject = getFailureSubject("TIMED OUT", jobName, env, buildNumber)
+			subject = getFailureSubject(FailureCause.TIMED_OUT, jobName, env, buildNumber)
 			failureReason = "Aborted by timeout"
 		} else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
 			bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
-			subject = getFailureSubject("BUILD FAILURE", jobName, env, buildNumber)
+			subject = getFailureSubject(FailureCause.BUILD_FAILURE, jobName, env, buildNumber)
 			failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
-			failureReason = URLEncoder.encode("BUILD FAILURE:\n" + failureLog, "UTF-8")
+			failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE}:\n" + failureLog, "UTF-8")
 		} else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
 			currentBuild.result = BuildResult.ABORTED
 			bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
-			subject = getFailureSubject("ABORTED", jobName, env, buildNumber)
+			subject = getFailureSubject(FailureCause.ABORTED, jobName, env, buildNumber)
 			failureReason = "Aborted by " + getAbortCause(currentBuild)
 		}
 
