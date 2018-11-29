@@ -699,17 +699,16 @@ public class QARunner extends AbstractRunner {
         logger.debug(zafiraReport)
         if (!isParamEmpty(zafiraReport)) {
             context.writeFile file: getWorkspace() + "/zafira/report.html", text: zafiraReport
-        }
+            //TODO: think about method renaming because in additions it also could redefine job status in Jenkins.
+            // or move below code into another method
 
-        //TODO: think about method renaming because in additions it also could redefine job status in Jenkins.
-        // or move below code into another method
-
-        // set job status based on zafira report
-        if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
-            logger.debug("Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report.")
-            currentBuild.result = BuildResult.FAILURE
-        } else if (zafiraReport.contains("SKIP_ALL:")) {
-            currentBuild.result = BuildResult.UNSTABLE
+            // set job status based on zafira report
+            if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
+                logger.debug("Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report.")
+                currentBuild.result = BuildResult.FAILURE
+            } else if (zafiraReport.contains("SKIP_ALL:")) {
+                currentBuild.result = BuildResult.UNSTABLE
+            }
         }
     }
 
