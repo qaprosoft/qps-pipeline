@@ -173,7 +173,7 @@ public class Executor {
                 lineCount++
             }
         }
-        return failureLog.substring(1, 80)
+        return failureLog
     }
 
     static String getBuildUser(currentBuild) {
