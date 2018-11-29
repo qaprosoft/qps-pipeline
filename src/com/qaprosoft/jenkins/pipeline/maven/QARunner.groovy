@@ -698,12 +698,13 @@ public class QARunner extends AbstractRunner {
 
     protected void exportZafiraReport() {
         //replace existing local emailable-report.html by Zafira content
-        def zafiraReport = zc.exportZafiraReport(uuid)
-        logger.debug(zafiraReport)
-        if (!isParamEmpty(zafiraReport)) {
-            context.writeFile file: getWorkspace() + "/zafira/report.html", text: zafiraReport
+        String zafiraReport = zc.exportZafiraReport(uuid)
+        if(isParamEmpty(zafiraReport)){
+            return
         }
+        logger.debug(zafiraReport)
 
+        context.writeFile file: getWorkspace() + "/zafira/report.html", text: zafiraReport
         //TODO: think about method renaming because in additions it also could redefine job status in Jenkins.
         // or move below code into another method
 
