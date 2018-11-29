@@ -25,6 +25,14 @@ public class Executor {
         FAILURE, ABORTED, UNSTABLE
     }
 
+    static enum FailureCause {
+        UNRECOGNIZED_FAILURE,
+        COMPILATION_FAILURE,
+        TIMED_OUT,
+        BUILD_FAILURE,
+        ABORTED
+    }
+
     static String getUUID() {
 		def ci_run_id = Configuration.get("ci_run_id")
 		if (ci_run_id == null || ci_run_id.isEmpty()) {
