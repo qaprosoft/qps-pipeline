@@ -52,7 +52,7 @@ class QTestClient extends HttpClient{
 
     public def getToken() {
         context.withCredentials([context.usernamePassword(credentialsId:'qtest_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${Configuration.get(Configuration.Parameter.SITE_NAME)}:")}"]],
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("qtest-staging:")}"]],
                               contentType: 'APPLICATION_FORM',
                               httpMode: 'POST',
                               validResponseCodes: "200:401",
