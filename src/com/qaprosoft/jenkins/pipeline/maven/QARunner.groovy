@@ -373,7 +373,7 @@ public class QARunner extends AbstractRunner {
         logger.info("SEARCH: " + isRerun)
 
        def resp = qTestClient.addTestSuite(1, 7, "Test 2")
-        logger.info("RESP: " + resp)
+        logger.info("RESP: " + formatJson(resp))
         String nodeName = "master"
 //        context.node(nodeName) {
 //            zc.queueZafiraTestRun(uuid)
