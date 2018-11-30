@@ -58,6 +58,7 @@ class QTestClient extends HttpClient{
                               requestBody: "grant_type=password&username=${context.env.USERNAME}&password=${context.env.PASSWORD}",
                               validResponseCodes: "200:401",
                               url: "https://${Configuration.get(Configuration.Parameter.SITE_NAME)}:10443/oath/token"]
+            logger.info(parameters)
             return sendRequestFormatted(parameters)
         }
     }
