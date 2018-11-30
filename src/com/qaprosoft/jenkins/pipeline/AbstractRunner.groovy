@@ -27,7 +27,7 @@ public abstract class AbstractRunner {
 	
 	
 	protected void executeMavenGoals(goals) {
-		withMaven(
+		context.withMaven(
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
 			maven: 'M3',
 			// Maven settings.xml file defined with the Jenkins Config File Provider Plugin
