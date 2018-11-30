@@ -375,7 +375,6 @@ public class QARunner extends AbstractRunner {
             zc.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
         }
-        def token = qTestClient.getToken()
         logger.info("TOKEN:" + token)
         context.node(nodeName) {
             qTestUpdater.updateTestRun(uuid, isRerun)
