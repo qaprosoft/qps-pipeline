@@ -372,7 +372,7 @@ public class QARunner extends AbstractRunner {
         def isRerun = isRerun()
         logger.info("SEARCH: " + isRerun)
 
-       def resp = qTestClient.addTestSuite(1, 7, "Test 2")
+       def resp = qTestUpdater.updateTestRun(uuid, isRerun)
         logger.info("RESP: " + formatJson(resp))
         String nodeName = "master"
 //        context.node(nodeName) {
