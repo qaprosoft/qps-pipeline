@@ -45,6 +45,7 @@ class QTestUpdater {
         }
 
         def cycleId = getCycleId()
+        logger.info("CUCLE_ID: " + cycleId)
         def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.testRnName)
 
         logger.info("SUITE: " + testSuite)
