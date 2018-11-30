@@ -56,7 +56,7 @@ class QTestClient extends HttpClient{
                               contentType: 'APPLICATION_FORM',
                               httpMode: 'POST',
                               validResponseCodes: "200:401",
-                              url: "https://${Configuration.get(Configuration.Parameter.SITE_NAME)}/#/oath/token?grant_type=password&username=${context.env.USERNAME}&password=${context.env.PASSWORD}"]
+                              url: "https://${Configuration.get(Configuration.Parameter.SITE_NAME)}/#/oath/token/?grant_type=password&username=${context.env.USERNAME}&password=${context.env.PASSWORD}"]
             return sendRequestFormatted(parameters)
         }
     }
