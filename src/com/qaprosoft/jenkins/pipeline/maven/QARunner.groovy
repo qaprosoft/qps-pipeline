@@ -378,7 +378,7 @@ public class QARunner extends AbstractRunner {
         def token = qTestClient.getToken()
         logger.info("TOKEN:" + token)
         context.node(nodeName) {
-
+            qTestUpdater.updateTestRun(uuid, isRerun)
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
@@ -401,8 +401,7 @@ public class QARunner extends AbstractRunner {
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-                    testRailUpdater.updateTestRun(uuid, isRerun, true)
-					qTestUpdater.updateTestRun(uuid, isRerun)
+//                    testRailUpdater.updateTestRun(uuid, isRerun, true)
                     exportZafiraReport()
                     publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
