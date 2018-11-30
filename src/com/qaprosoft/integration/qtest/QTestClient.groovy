@@ -30,7 +30,7 @@ class QTestClient extends HttpClient{
                               httpMode: 'GET',
                               validResponseCodes: "200",
                               url: this.serviceURL + "projects/${projectId}/test-cycles"]
-            return sendRequestFormatted(parameters)
+            return sendRequest(parameters)
         }
     }
 
@@ -56,7 +56,7 @@ class QTestClient extends HttpClient{
                               contentType: 'APPLICATION_FORM',
                               httpMode: 'POST',
                               validResponseCodes: "200:401",
-                              url: "https://${Configuration.get(Configuration.Parameter.SITE_NAME)}/oath/token"]
+                              url: "https://${Configuration.get(Configuration.Parameter.SITE_NAME)}/#/oath/token"]
             return sendRequestFormatted(parameters)
         }
     }
