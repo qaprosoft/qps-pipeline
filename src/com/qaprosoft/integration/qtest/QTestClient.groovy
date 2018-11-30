@@ -36,16 +36,14 @@ class QTestClient extends HttpClient{
 
     public def addTestSuite(projectId, cycleId, name) {
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder parentId: cycleId,
-                parentType: "test-cycle",
-                name: name
+        jsonBuilder name: name
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'POST',
                               requestBody: "${jsonBuilder}",
                               validResponseCodes: "200",
-                              url: this.serviceURL + "projects/${projectId}/test-suites"]
+                              url: this.serviceURL + "projects/${projectId}/test-suites?parentId=${cycleId}&parentType=test-cycle"]
             return sendRequestFormatted(parameters)
         }
     }
