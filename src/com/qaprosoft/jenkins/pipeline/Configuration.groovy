@@ -87,6 +87,7 @@ public class Configuration {
 		
 		TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", ""), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
 		QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
+        SITE_NAME("SITE_NAME",""),
 
 		private final String key
 		private final String value
