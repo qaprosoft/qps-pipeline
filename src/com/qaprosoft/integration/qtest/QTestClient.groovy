@@ -52,11 +52,11 @@ class QTestClient extends HttpClient{
 
     public def getToken() {
         context.withCredentials([context.usernamePassword(credentialsId:'qtest_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${Configuration.Parameter.SITE_NAME}:")}"]],
+            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${Configuration.get(Configuration.Parameter.SITE_NAME)}:")}"]],
                               contentType: 'APPLICATION_FORM',
                               httpMode: 'POST',
                               validResponseCodes: "200:401",
-                              url: "https://${Configuration.Parameter.SITE_NAME}/#/oath/token?grant_type=password&username=${context.env.USERNAME}&password=${context.env.PASSWORD}"]
+                              url: "https://${Configuration.get(Configuration.Parameter.SITE_NAME)}/#/oath/token?grant_type=password&username=${context.env.USERNAME}&password=${context.env.PASSWORD}"]
             return sendRequestFormatted(parameters)
         }
     }
