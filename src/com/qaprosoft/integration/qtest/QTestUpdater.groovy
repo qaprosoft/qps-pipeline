@@ -46,9 +46,9 @@ class QTestUpdater {
 
         def cycleId = getCycleId()
         logger.info("CUCLE_ID: " + cycleId)
-        def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.testRnName)
+        def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.testRunName)
 
-        logger.info("SUITE: " + testSuite)
+        logger.info("SUITE: " + formatJson(testSuite))
 //        integration.assignedToId = getAssignedToId()
 //
 //        // get all cases from TestRail by project and suite and compare with exported from Zafira
