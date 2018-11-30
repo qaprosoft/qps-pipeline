@@ -49,17 +49,4 @@ class QTestClient extends HttpClient{
             return sendRequestFormatted(parameters)
         }
     }
-
-    public def getToken() {
-        context.withCredentials([context.usernamePassword(credentialsId:'qtest_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${Configuration.get(Configuration.Parameter.SITE_NAME)}:")}"]],
-                              contentType: 'APPLICATION_FORM',
-                              httpMode: 'POST',
-                              requestBody: "grant_type=password&username=${context.env.USERNAME}&password=${context.env.PASSWORD}",
-                              validResponseCodes: "200:401",
-                              url: "https://${Configuration.get(Configuration.Parameter.SITE_NAME)}:10443/oath/token"]
-            logger.info(parameters)
-            return sendRequestFormatted(parameters)
-        }
-    }
 }
