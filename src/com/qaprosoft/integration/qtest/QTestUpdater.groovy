@@ -70,6 +70,7 @@ class QTestUpdater {
 
     protected def getCycleId(){
         def cycles = qTestClient.getCycles(integration.projectId)
+        logger.info("CYCLES: ${cycles}")
         for(cycle in cycles){
             if(cycle.name == integration.customParams.qtest_cycle_name){
                 return cycle.id
