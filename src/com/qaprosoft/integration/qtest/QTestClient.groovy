@@ -30,7 +30,7 @@ class QTestClient extends HttpClient{
                               httpMode: 'GET',
                               validResponseCodes: "200",
                               url: this.serviceURL + "projects/${projectId}/test-cycles"]
-            return sendRequest(parameters)
+            return sendRequestFormatted(parameters)
         }
     }
 
