@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 
 import com.qaprosoft.Utils
+import com.qaprosoft.integration.qtest.QTestClient
 import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 
@@ -34,6 +35,7 @@ public class QARunner extends AbstractRunner {
     protected ZafiraClient zc
     protected TestRailUpdater testRailUpdater
 	protected QTestUpdater qTestUpdater
+    protected QTestClient qTestClient
 
     //CRON related vars
     protected def listPipelines = []
@@ -57,6 +59,7 @@ public class QARunner extends AbstractRunner {
         zc = new ZafiraClient(context)
         testRailUpdater = new TestRailUpdater(context)
 		qTestUpdater = new QTestUpdater(context)
+        qTestClient = new QTestClient(context)
 
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
@@ -372,6 +375,8 @@ public class QARunner extends AbstractRunner {
             zc.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
         }
+        def token = qTestClient.getToken()
+        logger.info("TOKEN:" + token)
         context.node(nodeName) {
 
             context.wrap([$class: 'BuildUser']) {
