@@ -47,4 +47,28 @@ class QTestClient extends HttpClient{
             return sendRequestFormatted(parameters)
         }
     }
+
+    public def addTestRun(projectId, suiteId, name) {
+        Map step = new HashMap<>()
+        step.put("id", 1)
+        def stepArray = []
+        stepArray.add(step)
+
+        Map caseMap = new HashMap<>()
+        caseMap.put("id", 1)
+        caseMap.put("test_steps", stepArray)
+
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder name: name,
+                test_case: caseMap
+        context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'POST',
+                              requestBody: "${jsonBuilder}",
+                              validResponseCodes: "200",
+                              url: this.serviceURL + "projects/${projectId}/test-runs?parentId=${suiteId}&parentType=test-suite"]
+            return sendRequestFormatted(parameters)
+        }
+    }
 }
