@@ -4,4 +4,6 @@ trait IMaven {
 	def context
 
 	abstract void executeMaven()
+
+	String build() { "I'm building!" }   
 }
