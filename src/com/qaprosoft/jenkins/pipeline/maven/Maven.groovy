@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 public class Maven {
 	
-	public void executeMavenGoals(goals) {
+	public void executeMavenGoals(String goals) {
 		logger.debug("Maven mixing->executeMavenGoals")
 		context.withMaven(
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
