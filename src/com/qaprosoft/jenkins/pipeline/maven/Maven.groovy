@@ -22,16 +22,15 @@ public class Maven {
 		}
 	}
 	
-	//TODO: 
-/*	public void executeMavenGoals(goals, maven, mavenLocalRepo, mavenSettingsConfig) {
+	public void executeMavenGoals(goals, maven, mavenLocalRepo, mavenSettingsConfig) {
 		logger.info("Maven mixing->executeMavenGoals")
 		context.withMaven(
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
-			maven: 'M3',
+			maven: ${maven},
 			// Maven settings.xml file defined with the Jenkins Config File Provider Plugin
 			// Maven settings and global settings can also be defined in Jenkins Global Tools Configuration
-			//mavenSettingsConfig: 'settings',
-			mavenLocalRepo: '.repository') {
+			mavenSettingsConfig: ${mavenSettingsConfig},
+			mavenLocalRepo: ${mavenLocalRepo}) {
 	 
 			// Run the maven build
 			
@@ -41,5 +40,5 @@ public class Maven {
 				context.bat "mvn -B ${goals}"
 			}
 		}
-	}*/
+	}
 }
