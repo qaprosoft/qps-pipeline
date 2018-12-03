@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
-trait IMaven {
+public class Maven {
 //	def context
 
 //	abstract void executeMaven()

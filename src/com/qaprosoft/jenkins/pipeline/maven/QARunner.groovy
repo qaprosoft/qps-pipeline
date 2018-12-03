@@ -19,11 +19,12 @@ import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
-import com.qaprosoft.jenkins.pipeline.maven.IMaven
+import com.qaprosoft.jenkins.pipeline.maven.Maven
 
 @Grab('org.testng:testng:6.8.8')
 
-public class QARunner extends AbstractRunner implements IMaven {
+@Mixin(Maven)
+public class QARunner extends AbstractRunner {
 
     protected Map dslObjects = [:]
     protected static final String zafiraReport = "ZafiraReport"
