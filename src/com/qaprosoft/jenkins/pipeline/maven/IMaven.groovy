@@ -1,7 +1,7 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
 trait IMaven {
-	def context
+//	def context
 
 //	abstract void executeMaven()
 
