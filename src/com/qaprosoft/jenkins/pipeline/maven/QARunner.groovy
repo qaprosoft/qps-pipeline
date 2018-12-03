@@ -19,6 +19,8 @@ import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
+import com.qaprosoft.jenkins.pipeline.maven.IMaven
+
 @Grab('org.testng:testng:6.8.8')
 
 public class QARunner extends AbstractRunner {
