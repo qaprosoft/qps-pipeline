@@ -127,7 +127,7 @@ public class QARunner extends AbstractRunner {
 					-Dmaven.test.failure.ignore=true \
 					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
 
-			executeMavenGoals(goals)
+			executeMavenGoals2(goals)
 		}
 	}
 
@@ -646,7 +646,7 @@ public class QARunner extends AbstractRunner {
         context.stage('Run Test Suite') {
 			def goals = getMavenGoals()
 			def pomFile = getMavenPomFile()
-			executeMavenGoals("-U ${goals} -f ${pomFile}")
+			executeMavenGoals2("-U ${goals} -f ${pomFile}")
         }
     }
 
