@@ -328,6 +328,13 @@ public class Executor {
         return goals
     }
 
+    static def getPlatformType(node, message, capability, goals) {
+        if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {
+            goals += capability
+        }
+        return goals
+    }
+
     static def getDefectsString(String defects, String newDefects){
         if(isParamEmpty(defects)){
             defects = newDefects

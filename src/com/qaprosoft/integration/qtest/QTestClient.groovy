@@ -61,7 +61,10 @@ class QTestClient extends HttpClient{
 
     public def uploadResults(status, projectId, testRunId) {
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder status: [name: status]
+        jsonBuilder exe_start_date: exe_start_date,
+                exe_end_date: exe_end_date,
+                name: name,
+                status: status
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
