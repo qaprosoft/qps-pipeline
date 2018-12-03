@@ -45,10 +45,11 @@ class QTestUpdater {
         }
 
         def cycleId = getCycleId()
-        logger.info("CUCLE_ID: " + cycleId)
-        def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.testRunName)
-
+        def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.env)
         logger.info("SUITE: " + formatJson(testSuite))
+        def testRun = qTestClient.addTestRun(integration.projectId, testSuite.id, integration.testRunName)
+        def results = qTestClient.uploadResults(integration.caseResultMap.get("1").status, integration.startedAt, integration.finishedAt, testRun.id, testRun.name, integration.projectId)
+        logger.info("UPLOADED_RESULTS: " + results)
 //        integration.assignedToId = getAssignedToId()
 //
 //        // get all cases from TestRail by project and suite and compare with exported from Zafira
@@ -67,6 +68,10 @@ class QTestUpdater {
 //            testRun = addTestRun(includeAll)
 //        }
 //        addResults(testRun.id)
+    }
+
+    protected def uploadResults(status, startedAt, finishedAt, testRunId, testRunName, projectId) {
+        qTestClient.uploadResults(status, integration.startedAt, integration.finishedAt, )
     }
 
     protected def getCycleId(){

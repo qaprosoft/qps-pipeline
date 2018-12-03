@@ -47,7 +47,7 @@ class QTestClient extends HttpClient{
     public def addTestRun(projectId, suiteId, name) {
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder name: name,
-                test_case: [id: 1, test_steps: [[id: 1]]]
+                test_case: [id: 1]
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
@@ -59,11 +59,11 @@ class QTestClient extends HttpClient{
         }
     }
 
-    public def uploadResults(status, projectId, testRunId) {
+    public def uploadResults(status, startedAt, finishedAt, testRunId, testRunName, projectId) {
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder exe_start_date: exe_start_date,
-                exe_end_date: exe_end_date,
-                name: name,
+        jsonBuilder exe_start_date: startedAt,
+                exe_end_date: finishedAt,
+                name: testRunName,
                 status: status
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
