@@ -127,7 +127,7 @@ public class QARunner extends AbstractRunner {
 					-Dmaven.test.failure.ignore=true \
 					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
 
-			executeMavenGoals2(goals)
+			executeMavenGoals(goals)
 		}
 	}
 
@@ -153,22 +153,23 @@ public class QARunner extends AbstractRunner {
                 return
             }
             context.withSonarQubeEnv(sonarQubeEnv) {
-                context.sh "mvn \
-				 -f ${pomFile} \
-				 clean package sonar:sonar -DskipTests \
-				 -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-				 -Dsonar.analysis.mode=preview  \
-				 -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-				 -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-				 -Dsonar.projectKey=${Configuration.get("project")} \
-				 -Dsonar.projectName=${Configuration.get("project")} \
-				 -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-				 -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-				 -Dsonar.sources=. \
-				 -Dsonar.tests=. \
-				 -Dsonar.inclusions=**/src/main/java/** \
-				 -Dsonar.test.inclusions=**/src/test/java/** \
-				 -Dsonar.java.source=1.8"
+				def goals = "-f ${pomFile} \
+					clean package sonar:sonar -DskipTests \
+					-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
+					-Dsonar.analysis.mode=preview  \
+					-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
+					-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+					-Dsonar.projectKey=${Configuration.get("project")} \
+					-Dsonar.projectName=${Configuration.get("project")} \
+					-Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+					-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
+					-Dsonar.sources=. \
+					-Dsonar.tests=. \
+					-Dsonar.inclusions=**/src/main/java/** \
+					-Dsonar.test.inclusions=**/src/test/java/** \
+					-Dsonar.java.source=1.8"
+   
+				executeMavenGoals(goals)
             }
 		}
     }
@@ -551,13 +552,8 @@ public class QARunner extends AbstractRunner {
 		context.stage("Download Resources") {
 		def pomFile = getSubProjectFolder() + "/pom.xml"
 		logger.info("pomFile: " + pomFile)
-			if (context.isUnix()) {
-				context.sh "'mvn' -B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION"
-			} else {
-				//TODO: verify that forward slash is ok for windows nodes.
-				context.bat(/"mvn" -B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION/)
-			}
-		}
+		
+		executeMavenGoals("-B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION")
 */	}
 
 	protected String getMavenGoals() {
@@ -646,7 +642,7 @@ public class QARunner extends AbstractRunner {
         context.stage('Run Test Suite') {
 			def goals = getMavenGoals()
 			def pomFile = getMavenPomFile()
-			executeMavenGoals2("-U ${goals} -f ${pomFile}")
+			executeMavenGoals("-U ${goals} -f ${pomFile}")
         }
     }
 
