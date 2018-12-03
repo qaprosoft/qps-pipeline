@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline.maven
 public class Maven {
 	
 	public void executeMavenGoals2(goals) {
+		logger.info("Maven mixing->executeMavenGoals2")
 		context.withMaven(
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
 			maven: 'M3',
