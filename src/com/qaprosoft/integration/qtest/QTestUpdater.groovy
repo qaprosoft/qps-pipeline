@@ -70,11 +70,7 @@ class QTestUpdater {
 //        addResults(testRun.id)
     }
 
-    protected def uploadResults(status, startedAt, finishedAt, testRunId, testRunName, projectId) {
-        qTestClient.uploadResults(status, integration.startedAt, integration.finishedAt, )
-    }
-
-    protected def getCycleId(){
+     protected def getCycleId(){
         def cycles = qTestClient.getCycles(integration.projectId)
         for(cycle in cycles){
             if(cycle.name == integration.customParams.cycle_name){
