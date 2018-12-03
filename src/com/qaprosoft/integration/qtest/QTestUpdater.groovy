@@ -95,7 +95,6 @@ class QTestUpdater {
             testCaseResultMap.put(tagInfoArray[1], testCase)
         }
         integration.caseResultMap = testCaseResultMap
-        Map testResultMap = new HashMap<>()
         return integration
     }
 }
