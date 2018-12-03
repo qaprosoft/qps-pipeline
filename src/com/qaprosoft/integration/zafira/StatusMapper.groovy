@@ -51,9 +51,8 @@ class StatusMapper {
         ZafiraStatus zafiraStatus = ZafiraStatus.valueOf(zafiraStringStatus)
         for(qTestStatus in QTestStatus.values()){
             if(qTestStatus.value == zafiraStatus.qTest) {
-                return qTestStatus.value
+                return qTestStatus.name()
             }
         }
     }
-
 }

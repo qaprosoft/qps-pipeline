@@ -88,7 +88,7 @@ class QTestUpdater {
                     integration.projectId = tagInfoArray[0]
                 }
                 testCase.case_id = tagInfoArray[1]
-//                testCase.status_id = StatusMapper.getQTestStatus(integrationInfoItem.status)
+                testCase.status = StatusMapper.getQTestStatus(integrationInfoItem.status)
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[1])
             }
