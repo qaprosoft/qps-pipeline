@@ -65,17 +65,25 @@ class QTestUpdater {
                 if(isEmpty(testRun, "Unable to add testRun.")){
                     return
                 }
+                def results = qTestClient.uploadResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, testRun.name,  integration.projectId)
+                if(isEmpty(results, "Unable to add results for TestRun.")){
+                    return
+                }
             } else {
                 testRun = getTestRun(suiteId, testCase.case_id)
                 logger.info("TEST_RUN: " + formatJson(testRun))
                 if(isEmpty(testRun, "Unable to get testRun.")){
                     return
                 }
+                def logs = qTestClient.getLogs(integration.projectId, testRun.id)
+                if(isEmpty(logs, "Unable to get logs.")){
+                    return
+                }
+                logs.items.each {log ->
+                    logger.info(log)
+                }
             }
-            def results = qTestClient.uploadResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, testRun.name,  integration.projectId)
-            if(isEmpty(results, "Unable to add results for TestRun.")){
-                return
-            }
+
             logger.info("UPLOADED_RESULTS: " + formatJson(results))
         }
     }
