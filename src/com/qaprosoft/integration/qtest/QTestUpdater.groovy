@@ -58,12 +58,19 @@ class QTestUpdater {
             suiteId = testSuite.id
         }
 
-        def testRun = qTestClient.addTestRun(integration.projectId, suiteId, integration.testRunName)
-        if(isEmpty(testRun, "Unable to add testRun.")){
-            return
+        integration.caseResultMap.each { testCase ->
+            def testRun = qTestClient.addTestRun(integration.projectId, suiteId, testCase.case_id, integration.testRunName)
+            if(isEmpty(testRun, "Unable to add testRun.")){
+                return
+            }
+            def results = qTestClient.uploadResults(testCase.status, new Date(integration.startedAt), new Date(integration.finishedAt), testRun.id, testRun.name, integration.projectId)
+            if(isEmpty(results, "Unable to add results for TestRun.")){
+                return
+            }
+            logger.info("UPLOADED_RESULTS: " + results)
         }
-        def results = qTestClient.uploadResults(integration.caseResultMap.get("1").status, new Date(integration.startedAt), new Date(integration.finishedAt), testRun.id, testRun.name, integration.projectId)
-        logger.info("UPLOADED_RESULTS: " + results)
+
+
 //        integration.assignedToId = getAssignedToId()
 //
 //        // get all cases from TestRail by project and suite and compare with exported from Zafira
