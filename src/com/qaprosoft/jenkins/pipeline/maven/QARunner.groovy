@@ -371,42 +371,42 @@ public class QARunner extends AbstractRunner {
         logger.info("UUID: " + uuid)
         def isRerun = isRerun()
         logger.info("SEARCH: " + isRerun)
-        def resp = qTestUpdater.updateTestRun(uuid,  isRerun)
-//        String nodeName = "master"
-//        context.node(nodeName) {
-//            nodeName = chooseNode()
-//            zc.queueZafiraTestRun(uuid)
-//        }
-//        context.node(nodeName) {
-//            context.wrap([$class: 'BuildUser']) {
-//                try {
-//                    context.timestamps {
-//
-//                        prepareBuild(currentBuild)
-//                        scmClient.clone()
-//
-//                        downloadResources()
-//
-//                        def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
-//                        context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
-//                            buildJob()
-//                        }
-//                        sendZafiraEmail()
-//                        //TODO: think about seperate stage for uploading jacoco reports
-//                        publishJacocoReport()
-//                    }
-//                } catch (Exception e) {
-//                    logger.error(Utils.printStackTrace(e))
-//                    zc.abortTestRun(uuid, currentBuild)
-//                    throw e
-//                } finally {
-//                    exportZafiraReport()
-//                    publishJenkinsReports()
-//                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-//                    clean()
-//                }
-//            }
-//        }
+        String nodeName = "master"
+        context.node(nodeName) {
+            nodeName = chooseNode()
+            zc.queueZafiraTestRun(uuid)
+        }
+        context.node(nodeName) {
+            context.wrap([$class: 'BuildUser']) {
+                try {
+                    context.timestamps {
+
+                        prepareBuild(currentBuild)
+                        scmClient.clone()
+
+                        downloadResources()
+
+                        def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
+                        context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
+                            buildJob()
+                        }
+                        qTestUpdater.updateTestRun(uuid,  isRerun)
+                        sendZafiraEmail()
+                        //TODO: think about seperate stage for uploading jacoco reports
+                        publishJacocoReport()
+                    }
+                } catch (Exception e) {
+                    logger.error(Utils.printStackTrace(e))
+                    zc.abortTestRun(uuid, currentBuild)
+                    throw e
+                } finally {
+                    exportZafiraReport()
+                    publishJenkinsReports()
+                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
+                    clean()
+                }
+            }
+        }
     }
 
     protected boolean isRerun(){
