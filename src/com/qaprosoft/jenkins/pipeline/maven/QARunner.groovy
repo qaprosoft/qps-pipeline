@@ -2,7 +2,6 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 
 import com.qaprosoft.Utils
-import com.qaprosoft.integration.qtest.QTestClient
 import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 
@@ -34,8 +33,7 @@ public class QARunner extends AbstractRunner {
     protected def uuid
     protected ZafiraClient zc
     protected TestRailUpdater testRailUpdater
-	protected QTestUpdater qTestUpdater
-    protected QTestClient qTestClient
+    protected QTestUpdater qTestUpdater
 
     //CRON related vars
     protected def listPipelines = []
@@ -59,7 +57,6 @@ public class QARunner extends AbstractRunner {
         zc = new ZafiraClient(context)
         testRailUpdater = new TestRailUpdater(context)
 		qTestUpdater = new QTestUpdater(context)
-        qTestClient = new QTestClient(context)
 
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
@@ -367,17 +364,16 @@ public class QARunner extends AbstractRunner {
     protected void runJob() {
         logger.info("QARunner->runJob")
         uuid = getUUID()
-        uuid = "0652b374-274b-4181-8f2c-fe1e103f06e4"
         logger.info("UUID: " + uuid)
         def isRerun = isRerun()
-        isRerun = false
-        logger.debug("SEARCH: " + isRerun)
+        logger.info("SEARCH: " + isRerun)
         String nodeName = "master"
         context.node(nodeName) {
-            nodeName = chooseNode()
             zc.queueZafiraTestRun(uuid)
+            nodeName = chooseNode()
         }
         context.node(nodeName) {
+
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
