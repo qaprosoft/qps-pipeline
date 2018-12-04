@@ -87,7 +87,7 @@ class QTestClient extends HttpClient{
         jsonBuilder exe_start_date: startedAt,
                              exe_end_date: finishedAt,
                              name: testRunName,
-                             status: "PASS",
+                             status: status,
                              automation_content: '<?xml version="1.0" ?>\n' +
                                      '<metadata>\n' +
                                      '</metadata>'
