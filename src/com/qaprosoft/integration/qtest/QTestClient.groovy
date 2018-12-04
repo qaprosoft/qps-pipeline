@@ -3,6 +3,7 @@ package com.qaprosoft.integration.qtest
 import com.qaprosoft.integration.HttpClient
 import com.qaprosoft.jenkins.pipeline.Configuration
 import groovy.json.JsonBuilder
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class QTestClient extends HttpClient{
 
@@ -26,6 +27,17 @@ class QTestClient extends HttpClient{
                               httpMode: 'GET',
                               validResponseCodes: "200",
                               url: this.serviceURL + "projects/${projectId}/test-cycles"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
+    public def getTestSuites(projectId, cycleId) {
+        context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200",
+                              url: this.serviceURL + "projects/${projectId}/test-suites?parentId=${cycleId}&parentType=test-cycle"]
             return sendRequestFormatted(parameters)
         }
     }
@@ -65,6 +77,7 @@ class QTestClient extends HttpClient{
                 exe_end_date: finishedAt,
                 name: testRunName,
                 status: status
+        logger.info("UPDATE_REQ: " + formatJson(jsonBuilder))
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
