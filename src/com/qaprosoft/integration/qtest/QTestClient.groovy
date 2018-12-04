@@ -53,13 +53,13 @@ class QTestClient extends HttpClient{
         }
     }
 
-    public def getLogs(projectId, testRunId) {
+    public def getLog(projectId, testRunId) {
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
                               validResponseCodes: "200",
-                              url: this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/test-logs"]
+                              url: this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/test-logs/last-run"]
             return sendRequestFormatted(parameters)
         }
     }
