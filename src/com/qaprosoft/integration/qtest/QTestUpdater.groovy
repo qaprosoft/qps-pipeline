@@ -97,7 +97,7 @@ class QTestUpdater {
     protected def getTestSuiteId(cycleId){
         def suites = qTestClient.getTestSuites(integration.projectId, cycleId)
         for(suite in suites){
-            if(suite.name == integration.env){
+            if(suite.name == integration.platform){
                 return suite.id
             }
         }
