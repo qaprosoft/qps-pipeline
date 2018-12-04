@@ -59,17 +59,26 @@ class QTestUpdater {
         }
 
         integration.caseResultMap.values().each { testCase ->
-            def testRun = qTestClient.addTestRun(integration.projectId, suiteId, testCase.case_id, integration.testRunName)
-            if(isEmpty(testRun, "Unable to add testRun.")){
-                return
+            def testRun
+            if(!isRerun){
+                testRun = qTestClient.addTestRun(integration.projectId, suiteId, testCase.case_id, integration.testRunName)
+                if(isEmpty(testRun, "Unable to add testRun.")){
+                    return
+                }
+                def results = qTestClient.uploadResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, testRun.name,  integration.projectId)
+                if(isEmpty(results, "Unable to add results for TestRun.")){
+                    return
+                }
+                logger.info("UPLOADED_RESULTS: " + formatJson(results))
+            } else {
+                testRun = getTestRun(suiteId)
+                if(isEmpty(testRun, "Unable to get testRun.")){
+                    return
+                }
             }
-            def results = qTestClient.uploadResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, testRun.name,  integration.projectId)
-            if(isEmpty(results, "Unable to add results for TestRun.")){
-                return
-            }
-            logger.info("UPLOADED_RESULTS: " + formatJson(results))
-        }
 
+
+        }
 
 //        integration.assignedToId = getAssignedToId()
 //
@@ -105,6 +114,15 @@ class QTestUpdater {
         for(suite in suites){
             if(suite.name == integration.env){
                 return suite.id
+            }
+        }
+    }
+
+    protected def getTestRun(suiteId){
+        def runs = qTestClient.getTestRuns(integration.projectId, suiteId)
+        for(run in runs){
+            if(run.name == integration.testRunName){
+                return run
             }
         }
     }
