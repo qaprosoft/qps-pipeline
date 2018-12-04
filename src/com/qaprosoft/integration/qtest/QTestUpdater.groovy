@@ -72,12 +72,11 @@ class QTestUpdater {
                 logger.info("UPLOADED_RESULTS: " + formatJson(results))
             } else {
                 testRun = getTestRun(suiteId)
+                logger.info("TEST_RUN: " + formatJson(testRun))
                 if(isEmpty(testRun, "Unable to get testRun.")){
                     return
                 }
             }
-
-
         }
 
 //        integration.assignedToId = getAssignedToId()
