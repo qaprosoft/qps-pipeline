@@ -78,25 +78,6 @@ class QTestUpdater {
             }
             logger.info("UPLOADED_RESULTS: " + formatJson(results))
         }
-
-//        integration.assignedToId = getAssignedToId()
-//
-//        // get all cases from TestRail by project and suite and compare with exported from Zafira
-//        // only cases available in both maps should be registered later
-//        parseCases()
-//
-//        def testRun = null
-//        if(isRerun){
-//            testRun = getTestRunId()
-//            if (isParamEmpty(testRun)) {
-//                logger.error("Unable to detect existing run in TestRail for rebuild!")
-//            }
-//        }
-//
-//        if(isParamEmpty(testRun)){
-//            testRun = addTestRun(includeAll)
-//        }
-//        addResults(testRun.id)
     }
 
      protected def getCycleId(){
