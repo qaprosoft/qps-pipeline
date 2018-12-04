@@ -21,7 +21,7 @@ class QTestUpdater {
         logger = new Logger(context)
     }
 
-    public void updateTestRun(uuid, automationContent, isRerun) {
+    public void updateTestRun(uuid, isRerun) {
         if (!qTestClient.isAvailable()) {
             // do nothing
             return
@@ -68,7 +68,7 @@ class QTestUpdater {
 //
 //            }
 //            logger.info("LOGS: " + formatJson(logs))
-            def results = qTestClient.uploadResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, testRun.name, automationContent,integration.projectId)
+            def results = qTestClient.uploadResults(testCase.status, integration.startedAt,  integration.finishedAt, testRun.id, testRun.name,  integration.projectId)
             if(isEmpty(results, "Unable to add results for TestRun.")){
                 return
             }
