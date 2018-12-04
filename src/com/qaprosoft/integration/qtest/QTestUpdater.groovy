@@ -58,7 +58,7 @@ class QTestUpdater {
             suiteId = testSuite.id
         }
 
-        integration.caseResultMap.each { testCase ->
+        integration.caseResultMap.values().each { testCase ->
             def testRun = qTestClient.addTestRun(integration.projectId, suiteId, testCase.case_id, integration.testRunName)
             if(isEmpty(testRun, "Unable to add testRun.")){
                 return
