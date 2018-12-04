@@ -2,7 +2,6 @@ package com.qaprosoft.integration.qtest
 
 import com.qaprosoft.Logger
 import com.qaprosoft.integration.zafira.IntegrationTag
-import com.qaprosoft.integration.zafira.StatusMapper
 import com.qaprosoft.integration.zafira.ZafiraClient
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
@@ -69,10 +68,10 @@ class QTestUpdater {
                 if(isEmpty(results, "Unable to add results for TestRun.")){
                     return
                 }
-                logger.info("UPLOADED_RESULTS: " + formatJson(results))
+                logger.debug("UPLOADED_RESULTS: " + formatJson(results))
             } else {
                 testRun = getTestRun(suiteId, testCase.case_id)
-                logger.info("TEST_RUN: " + formatJson(testRun))
+//                logger.debug("TEST_RUN: " + formatJson(testRun))
                 if(isEmpty(testRun, "Unable to get testRun.")){
                     return
                 }
@@ -80,7 +79,7 @@ class QTestUpdater {
                 if(isEmpty(log, "Unable to get logs.")){
                     return
                 }
-                logger.info("STATUS: " + testCase.status)
+                logger.debug("STATUS: " + testCase.status)
                 qTestClient.updateResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, integration.projectId, log.id)
             }
         }
