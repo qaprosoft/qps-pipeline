@@ -84,14 +84,13 @@ class QTestClient extends HttpClient{
 
     public def uploadResults(status, startedAt, finishedAt, testRunId, testRunName, automationContent, projectId) {
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder execution_date: startedAt,
-                test_logs: [[exe_start_date: startedAt,
+        jsonBuilder exe_start_date: startedAt,
                              exe_end_date: finishedAt,
                              name: testRunName,
                              status: status,
                              automation_content: '<?xml version="1.0" ?>\n' +
                                      '<metadata>\n' +
-                                     '</metadata>']]
+                                     '</metadata>'
 
         logger.info("UPDATE_REQ: " + formatJson(jsonBuilder))
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
