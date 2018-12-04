@@ -75,16 +75,14 @@ class QTestUpdater {
                 if(isEmpty(testRun, "Unable to get testRun.")){
                     return
                 }
-                def logs = qTestClient.getLogs(integration.projectId, testRun.id)
-                if(isEmpty(logs, "Unable to get logs.")){
+                def log = qTestClient.getLog(integration.projectId, testRun.id)
+                if(isEmpty(log, "Unable to get logs.")){
                     return
                 }
-                logs.items.each {log ->
-                    logger.info(log)
-                }
+                qTestClient.updateResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, integration.projectId, log.id)
             }
 
-            logger.info("UPLOADED_RESULTS: " + formatJson(results))
+//            logger.info("UPLOADED_RESULTS: " + formatJson(results))
         }
     }
 
