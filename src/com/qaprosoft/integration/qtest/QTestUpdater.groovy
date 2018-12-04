@@ -25,7 +25,6 @@ class QTestUpdater {
             // do nothing
             return
         }
-
         // export all tag related metadata from Zafira
         integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
         logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
@@ -35,18 +34,14 @@ class QTestUpdater {
         }
         // convert uuid to project_id, suite_id and testcases related maps
         integration = parseTagData()
-
         if(isEmpty(integration.projectId, "Unable to detect QTest project_id!\n" + formatJson(integration))){
             return
         }
-
         def cycleId = getCycleId()
-
         if(isEmpty(cycleId, "No dedicated QTest cycle detected.")){
             return
         }
         def suiteId = getTestSuiteId(cycleId)
-
         if(isParamEmpty(suiteId)){
             def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.platform)
             logger.info("SUITE: " + formatJson(testSuite))
@@ -55,7 +50,6 @@ class QTestUpdater {
             }
             suiteId = testSuite.id
         }
-
         integration.caseResultMap.values().each { testCase ->
             def testRun
             if(!isRerun){
