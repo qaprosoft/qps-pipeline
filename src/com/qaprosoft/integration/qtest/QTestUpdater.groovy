@@ -80,6 +80,7 @@ class QTestUpdater {
                 if(isEmpty(log, "Unable to get logs.")){
                     return
                 }
+                logger.info("STATUS: " + testCase.status)
                 qTestClient.updateResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, integration.projectId, log.id)
             }
         }
