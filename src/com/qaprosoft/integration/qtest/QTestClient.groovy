@@ -42,6 +42,17 @@ class QTestClient extends HttpClient{
         }
     }
 
+    public def getLogs(projectId, testRunId) {
+        context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200",
+                              url: this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/test-logs"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
     public def addTestSuite(projectId, cycleId, name) {
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder name: name
