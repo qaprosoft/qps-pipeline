@@ -14,16 +14,6 @@ class StatusMapper {
         }
     }
 
-    enum QTestStatus {
-        PASSED(1),
-        FAILED(2),
-        INCOMPLETE(3),
-        final int value
-        QTestStatus(int value) {
-            this.value = value
-        }
-    }
-
     enum ZafiraStatus {
         PASSED(1, 1),
         FAILED(5, 2),
@@ -43,15 +33,6 @@ class StatusMapper {
         for(testRailStatus in TestRailStatus.values()){
             if(testRailStatus.value == zafiraStatus.testRail) {
                 return testRailStatus.value
-            }
-        }
-    }
-
-    static def getQTestStatus(String zafiraStringStatus){
-        ZafiraStatus zafiraStatus = ZafiraStatus.valueOf(zafiraStringStatus)
-        for(qTestStatus in QTestStatus.values()){
-            if(qTestStatus.value == zafiraStatus.qTest) {
-                return qTestStatus.name()
             }
         }
     }
