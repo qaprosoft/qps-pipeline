@@ -45,11 +45,10 @@ class QTestUpdater {
         if(isEmpty(cycleId, "No dedicated QTest cycle detected.")){
             return
         }
-        logger.info("CYCLE_ID: " + cycleId)
         def suiteId = getTestSuiteId(cycleId)
 
         if(isParamEmpty(suiteId)){
-            def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.env)
+            def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.platform)
             logger.info("SUITE: " + formatJson(testSuite))
             if(isEmpty(testSuite, "Unable to register QTest testSuite.")){
                 return
