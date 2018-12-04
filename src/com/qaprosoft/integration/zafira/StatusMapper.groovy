@@ -15,25 +15,25 @@ class StatusMapper {
     }
 
     enum ZafiraStatus {
-        PASSED(1, 1),
-        FAILED(5, 2),
-        SKIPPED(3, 3),
-        ABORTED(3, 3),
-        QUEUED(3, 3),
-        final int testRail
-        final int qTest
-        ZafiraStatus(int testRail, int qTest) {
-            this.testRail = testRail
-            this.qTest = qTest
+        PASSED(1),
+        FAILED(5),
+        SKIPPED(3),
+        ABORTED(3),
+        QUEUED(3),
+        final int testRailId
+        final int qTestId
+        ZafiraStatus(int value) {
+            this.value = value
         }
     }
 
     static def getTestRailStatus(String zafiraStringStatus){
         ZafiraStatus zafiraStatus = ZafiraStatus.valueOf(zafiraStringStatus)
         for(testRailStatus in TestRailStatus.values()){
-            if(testRailStatus.value == zafiraStatus.testRail) {
+            if(testRailStatus.value == zafiraStatus.value) {
                 return testRailStatus.value
             }
         }
     }
+
 }

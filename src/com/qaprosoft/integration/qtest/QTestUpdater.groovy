@@ -7,6 +7,7 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class QTestUpdater {
 
+    // Make sure that in Automation Settings input statuses configured as PASSED, FAILED, SKIPPED!
     private def context
     private ZafiraClient zc
     private QTestClient qTestClient
