@@ -45,7 +45,7 @@ class QTestUpdater {
         if(isEmpty(cycleId, "No dedicated QTest cycle detected.")){
             return
         }
-
+        logger.info("CYCLE_ID: " + cycleId)
         def suiteId = getTestSuiteId(cycleId)
 
         if(isParamEmpty(suiteId)){
