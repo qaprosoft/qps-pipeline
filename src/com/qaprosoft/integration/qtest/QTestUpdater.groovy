@@ -120,10 +120,6 @@ class QTestUpdater {
     protected def getTestRun(suiteId, caseId){
         def runs = qTestClient.getTestRuns(integration.projectId, suiteId)
         for(run in runs){
-            logger.info("RUN_NAME1: " + run.name)
-            logger.info("RUN_NAME2: ${integration.testRunName}")
-            logger.info("RUN_TEST_CASE: " + run.test_case.id.dump())
-            logger.info("CASE: ${caseId.dump()}")
             if(run.name.equals(integration.testRunName) && run.test_case.id == Integer.valueOf(caseId)){
                 return run
             }
