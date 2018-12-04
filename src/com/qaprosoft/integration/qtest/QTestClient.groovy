@@ -82,7 +82,7 @@ class QTestClient extends HttpClient{
         }
     }
 
-    public def uploadResults(status, startedAt, finishedAt, testRunId, testRunName, automationContent, projectId) {
+    public def uploadResults(status, startedAt, finishedAt, testRunId, testRunName, projectId) {
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder exe_start_date: startedAt,
                              exe_end_date: finishedAt,
