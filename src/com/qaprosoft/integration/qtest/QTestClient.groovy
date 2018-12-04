@@ -42,6 +42,17 @@ class QTestClient extends HttpClient{
         }
     }
 
+    public def getTestRuns(projectId, suiteId) {
+        context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200",
+                              url: this.serviceURL + "projects/${projectId}/test-suites?parentId=${suiteId}&parentType=test-suite"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
     public def getLogs(projectId, testRunId) {
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
@@ -101,4 +112,21 @@ class QTestClient extends HttpClient{
         }
     }
 
+    public def updateResults(status, startedAt, finishedAt, testRunId, projectId, logsId) {
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder exe_start_date: startedAt,
+                exe_end_date: finishedAt,
+                status: status
+
+        logger.info("UPDATE_REQ: " + formatJson(jsonBuilder))
+        context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'PUT',
+                              requestBody: "${jsonBuilder}",
+                              validResponseCodes: "200",
+                              url: this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/auto-test-logs/${logsId}"]
+            return sendRequestFormatted(parameters)
+        }
+    }
 }
