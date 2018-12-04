@@ -78,7 +78,9 @@ class QTestClient extends HttpClient{
                              exe_end_date: finishedAt,
                              name: testRunName,
                              status: status,
-                             automation_content: automationContent]]
+                             automation_content: '<?xml version="1.0" ?>\n' +
+                                     '<metadata>\n' +
+                                     '</metadata>']]
 
         logger.info("UPDATE_REQ: " + formatJson(jsonBuilder))
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
