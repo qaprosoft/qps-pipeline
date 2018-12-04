@@ -56,7 +56,7 @@ public class QARunner extends AbstractRunner {
         scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
         testRailUpdater = new TestRailUpdater(context)
-		qTestUpdater = new QTestUpdater(context)
+        qTestUpdater = new QTestUpdater(context)
 
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
