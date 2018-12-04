@@ -68,7 +68,7 @@ class QTestUpdater {
 //
 //            }
 //            logger.info("LOGS: " + formatJson(logs))
-            def results = qTestClient.uploadResults(testCase.status, "2018-12-03T13:10:09.255Z", "2018-12-03T13:10:09.255Z", testRun.id, testRun.name, automationContent, integration.projectId)
+            def results = qTestClient.uploadResults(testCase.status, integration.startedAt, integration.finishedAt, testRun.id, testRun.name, automationContent,integration.projectId)
             if(isEmpty(results, "Unable to add results for TestRun.")){
                 return
             }
@@ -124,7 +124,7 @@ class QTestUpdater {
                     integration.projectId = tagInfoArray[0]
                 }
                 testCase.case_id = tagInfoArray[1]
-                testCase.status = StatusMapper.getQTestStatus(integrationInfoItem.status)
+                testCase.status = integrationInfoItem.status
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[1])
             }
