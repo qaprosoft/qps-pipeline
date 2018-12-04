@@ -124,7 +124,7 @@ class QTestUpdater {
             logger.info("RUN_NAME2: ${integration.testRunName}")
             logger.info("RUN_TEST_CASE: " + run.test_case.id.dump())
             logger.info("CASE: ${caseId.dump()}")
-            if(run.name.equals(integration.testRunName) && run.test_case.id == caseId){
+            if(run.name.equals(integration.testRunName) && run.test_case.id == Integer.valueOf(caseId)){
                 return run
             }
         }
