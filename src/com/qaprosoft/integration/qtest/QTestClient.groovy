@@ -100,7 +100,7 @@ class QTestClient extends HttpClient{
                              name: testRunName,
                              status: status
 
-        logger.info("UPDATE_REQ: " + formatJson(jsonBuilder))
+        logger.debug("UPDATE_REQ: " + formatJson(jsonBuilder))
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
@@ -118,7 +118,7 @@ class QTestClient extends HttpClient{
                 exe_end_date: finishedAt,
                 status: status
 
-        logger.info("UPDATE_REQ: " + formatJson(jsonBuilder))
+        logger.debug("UPDATE_REQ: " + formatJson(jsonBuilder))
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
