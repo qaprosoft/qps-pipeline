@@ -52,9 +52,7 @@ class TestRailUpdater {
         def testRun = null
         if(isRerun){
             testRun = getTestRunId()
-            if(isEmpty(testRun, "Unable to detect existing run in TestRail for rebuild!")){
-                return
-            }
+            isEmpty(testRun, "Unable to detect existing run in TestRail for rebuild!")
         }
 
         if(isParamEmpty(testRun)){
