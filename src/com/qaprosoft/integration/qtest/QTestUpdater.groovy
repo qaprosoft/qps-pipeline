@@ -69,6 +69,7 @@ class QTestUpdater {
                 if(isEmpty(results, "Unable to add results for TestRun.")){
                     return
                 }
+                logger.info("UPLOADED_RESULTS: " + formatJson(results))
             } else {
                 testRun = getTestRun(suiteId, testCase.case_id)
                 logger.info("TEST_RUN: " + formatJson(testRun))
@@ -81,8 +82,6 @@ class QTestUpdater {
                 }
                 qTestClient.updateResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, integration.projectId, log.id)
             }
-
-//            logger.info("UPLOADED_RESULTS: " + formatJson(results))
         }
     }
 
