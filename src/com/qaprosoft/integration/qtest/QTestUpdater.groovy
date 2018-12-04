@@ -28,7 +28,7 @@ class QTestUpdater {
 
         // export all tag related metadata from Zafira
         integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
-        logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
+        logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
 
         if(isEmpty(integration, "Nothing to update in QTest.")){
             return
