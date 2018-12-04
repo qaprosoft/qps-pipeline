@@ -66,7 +66,7 @@ class QTestUpdater {
                     return
                 }
             } else {
-                testRun = getTestRun(suiteId)
+                testRun = getTestRun(suiteId, testCase.case_id)
                 logger.info("TEST_RUN: " + formatJson(testRun))
                 if(isEmpty(testRun, "Unable to get testRun.")){
                     return
@@ -117,10 +117,10 @@ class QTestUpdater {
         }
     }
 
-    protected def getTestRun(suiteId){
+    protected def getTestRun(suiteId, caseId){
         def runs = qTestClient.getTestRuns(integration.projectId, suiteId)
         for(run in runs){
-            if(run.name == integration.testRunName){
+            if(run.name == integration.testRunName && run.test_case.id == caseId){
                 return run
             }
         }
