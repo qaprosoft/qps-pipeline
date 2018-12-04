@@ -48,7 +48,7 @@ class QTestClient extends HttpClient{
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
                               validResponseCodes: "200",
-                              url: this.serviceURL + "projects/${projectId}/test-suites?parentId=${suiteId}&parentType=test-suite"]
+                              url: this.serviceURL + "projects/${projectId}/test-runs?parentId=${suiteId}&parentType=test-suite"]
             return sendRequestFormatted(parameters)
         }
     }
