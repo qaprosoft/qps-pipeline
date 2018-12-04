@@ -72,7 +72,7 @@ class QTestUpdater {
             if(isEmpty(results, "Unable to add results for TestRun.")){
                 return
             }
-            logger.info("UPLOADED_RESULTS: " + results)
+            logger.info("UPLOADED_RESULTS: " + formatJson(results))
         }
 
 
