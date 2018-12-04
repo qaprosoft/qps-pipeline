@@ -31,24 +31,38 @@ class QTestUpdater {
         integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
         logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
-        if(isParamEmpty(integration)){
-            logger.debug("Nothing to update in TestRail.")
+        if(isEmpty(integration, "Nothing to update in TestRail.")){
             return
         }
-
         // convert uuid to project_id, suite_id and testcases related maps
         integration = parseTagData()
 
-        if(isParamEmpty(integration.projectId)){
-            logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
+        if(isEmpty(integration.projectId, "Unable to detect TestRail project_id!\n" + formatJson(integration))){
             return
         }
 
         def cycleId = getCycleId()
-        def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.env)
-        logger.info("SUITE: " + formatJson(testSuite))
-        def testRun = qTestClient.addTestRun(integration.projectId, testSuite.id, integration.testRunName)
-        def results = qTestClient.uploadResults(integration.caseResultMap.get("1").status, integration.startedAt, integration.finishedAt, testRun.id, testRun.name, integration.projectId)
+
+        if(isEmpty(cycleId, "No dedicated cycle detected.")){
+            return
+        }
+
+        def suiteId = getTestSuiteId(cycleId)
+
+        if(isParamEmpty(suiteId)){
+            def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.env)
+            logger.info("SUITE: " + formatJson(testSuite))
+            if(isEmpty(testSuite, "Unable to register testSuite.")){
+                return
+            }
+            suiteId = testSuite.id
+        }
+
+        def testRun = qTestClient.addTestRun(integration.projectId, suiteId, integration.testRunName)
+        if(isEmpty(testRun, "Unable to add testRun.")){
+            return
+        }
+        def results = qTestClient.uploadResults(integration.caseResultMap.get("1").status, new Date(integration.startedAt), new Date(integration.finishedAt), testRun.id, testRun.name, integration.projectId)
         logger.info("UPLOADED_RESULTS: " + results)
 //        integration.assignedToId = getAssignedToId()
 //
@@ -79,6 +93,15 @@ class QTestUpdater {
         }
     }
 
+    protected def getTestSuiteId(cycleId){
+        def suites = qTestClient.getTestSuites(integration.projectId, cycleId)
+        for(suite in suites){
+            if(suite.name == integration.env){
+                return suite.id
+            }
+        }
+    }
+
     protected def parseTagData(){
         Map testCaseResultMap = new HashMap<>()
         integration.integrationInfo.each { integrationInfoItem ->
@@ -97,5 +120,12 @@ class QTestUpdater {
         }
         integration.caseResultMap = testCaseResultMap
         return integration
+    }
+
+    protected boolean isEmpty(value, message){
+        if(isParamEmpty(value)){
+            logger.error(message)
+            return true
+        }
     }
 }
