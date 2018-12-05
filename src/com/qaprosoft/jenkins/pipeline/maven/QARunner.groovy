@@ -368,10 +368,10 @@ public class QARunner extends AbstractRunner {
     protected void runJob() {
         logger.info("QARunner->runJob")
         uuid = getUUID()
-
+        uuid = "0652b374-274b-4181-8f2c-fe1e103f06e4"
         logger.info("UUID: " + uuid)
         def isRerun = isRerun()
-        uuid = "0652b374-274b-4181-8f2c-fe1e103f06e4"
+
         logger.info("SEARCH: " + isRerun)
         String nodeName = "master"
         context.node(nodeName) {
