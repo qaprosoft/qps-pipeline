@@ -132,7 +132,6 @@ class QTestUpdater {
             }
             testCaseResultMap.put(tagInfoArray[1], testCase)
         }
-        logger.debug("TEST_CASE_RESULT_MAP: " + testCaseResultMap)
         integration.caseResultMap = testCaseResultMap
         return integration
     }
