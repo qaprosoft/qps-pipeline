@@ -41,14 +41,15 @@ class QTestUpdater {
             logger.error("Unable to detect QTest project_id!\n" + formatJson(integration))
             return
         }
-        def cycleId = getCycleId()
+        def projectId = integration.projectId
+        def cycleId = getCycleId(projectId)
         if(isParamEmpty(cycleId)){
             logger.error("No dedicated QTest cycle detected.")
             return
         }
-        def suiteId = getTestSuiteId(cycleId)
+        def suiteId = getTestSuiteId(projectId, cycleId)
         if(isParamEmpty(suiteId)){
-            def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.platform)
+            def testSuite = qTestClient.addTestSuite(projectId, cycleId, integration.platform)
             logger.info("SUITE: " + formatJson(testSuite))
             if(isParamEmpty(testSuite)){
                 logger.error("Unable to register QTest testSuite.")
@@ -59,37 +60,37 @@ class QTestUpdater {
         integration.caseResultMap.values().each { testCase ->
             def testRun
             if(!isRerun){
-                testRun = qTestClient.addTestRun(integration.projectId, suiteId, testCase.case_id, integration.testRunName)
+                testRun = qTestClient.addTestRun(projectId, suiteId, testCase.case_id, integration.testRunName)
                 if(isParamEmpty(testRun)){
                     logger.error("Unable to add QTest testRun.")
                     return
                 }
-                def results = qTestClient.uploadResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, testRun.name,  integration.projectId)
+                def results = qTestClient.uploadResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, testRun.name,  projectId)
                 if(isParamEmpty(results)){
                     logger.error("Unable to add results for QTest TestRun.")
                     return
                 }
                 logger.debug("UPLOADED_RESULTS: " + formatJson(results))
             } else {
-                testRun = getTestRun(suiteId, testCase.case_id)
+                testRun = getTestRun(projectId, suiteId, testCase.case_id)
 //                logger.debug("TEST_RUN: " + formatJson(testRun))
                 if(isParamEmpty(testRun)){
                     logger.error("Unable to get QTest testRun.")
                     return
                 }
-                def log = qTestClient.getLog(integration.projectId, testRun.id)
+                def log = qTestClient.getLog(projectId, testRun.id)
                 if(isParamEmpty(log)){
                     logger.error("Unable to get QTest testRun logs.")
                     return
                 }
                 logger.debug("STATUS: " + testCase.status)
-                qTestClient.updateResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, integration.projectId, log.id)
+                qTestClient.updateResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, projectId, log.id)
             }
         }
     }
 
-     protected def getCycleId(){
-        def cycles = qTestClient.getCycles(integration.projectId)
+     protected def getCycleId(projectId){
+        def cycles = qTestClient.getCycles(projectId)
         for(cycle in cycles){
             if(cycle.name == integration.customParams.cycle_name){
                 return cycle.id
@@ -97,8 +98,8 @@ class QTestUpdater {
         }
     }
 
-    protected def getTestSuiteId(cycleId){
-        def suites = qTestClient.getTestSuites(integration.projectId, cycleId)
+    protected def getTestSuiteId(projectId, cycleId){
+        def suites = qTestClient.getTestSuites(projectId, cycleId)
         for(suite in suites){
             if(suite.name == integration.platform){
                 return suite.id
@@ -106,8 +107,8 @@ class QTestUpdater {
         }
     }
 
-    protected def getTestRun(suiteId, caseId){
-        def runs = qTestClient.getTestRuns(integration.projectId, suiteId)
+    protected def getTestRun(projectId, suiteId, caseId){
+        def runs = qTestClient.getTestRuns(projectId, suiteId)
         for(run in runs){
             if(run.name.equals(integration.testRunName) && run.test_case.id == Integer.valueOf(caseId)){
                 return run
