@@ -372,7 +372,6 @@ public class QARunner extends AbstractRunner {
         logger.info("UUID: " + uuid)
         def isRerun = isRerun()
         uuid = "0652b374-274b-4181-8f2c-fe1e103f06e4"
-        isRerun = false
         logger.info("SEARCH: " + isRerun)
         String nodeName = "master"
         context.node(nodeName) {
