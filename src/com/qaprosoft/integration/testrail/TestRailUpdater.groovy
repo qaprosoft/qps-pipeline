@@ -33,15 +33,19 @@ class TestRailUpdater {
         integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
         logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
-        if(isEmpty(integration, "Nothing to update in TestRail.")){
+        if(isParamEmpty(integration)){
+            logger.debug("Nothing to update in TestRail.")
             return
         }
+
         // convert uuid to project_id, suite_id and testcases related maps
         integration = parseTagData()
 
-        if(isEmpty(integration.projectId, "Unable to detect TestRail project_id!\n" + formatJson(integration))){
+        if(isParamEmpty(integration.projectId)){
+            logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
             return
         }
+
         integration.milestoneId = getMilestoneId()
         integration.assignedToId = getAssignedToId()
 
@@ -52,7 +56,9 @@ class TestRailUpdater {
         def testRun = null
         if(isRerun){
             testRun = getTestRunId()
-            isEmpty(testRun, "Unable to detect existing run in TestRail for rebuild!")
+            if (isParamEmpty(testRun)) {
+                logger.error("Unable to detect existing run in TestRail for rebuild!")
+            }
         }
 
         if(isParamEmpty(testRun)){
@@ -204,12 +210,5 @@ class TestRailUpdater {
         integration.testResultMap = testResultMap
 
         return integration
-    }
-
-    protected boolean isEmpty(value, message){
-        if(isParamEmpty(value)){
-            logger.error(message)
-            return true
-        }
     }
 }

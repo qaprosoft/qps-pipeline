@@ -28,24 +28,30 @@ class QTestUpdater {
         }
         // export all tag related metadata from Zafira
         integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
-        logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
-        if(isEmpty(integration, "Nothing to update in QTest.")){
+        logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
+
+        if(isParamEmpty(integration)){
+            logger.debug("Nothing to update in QTest.")
             return
         }
         // convert uuid to project_id, suite_id and testcases related maps
         integration = parseTagData()
-        if(isEmpty(integration.projectId, "Unable to detect QTest project_id!\n" + formatJson(integration))){
+
+        if(isParamEmpty(integration.projectId)){
+            logger.error("Unable to detect QTest project_id!\n" + formatJson(integration))
             return
         }
         def cycleId = getCycleId()
-        if(isEmpty(cycleId, "No dedicated QTest cycle detected.")){
+        if(isParamEmpty(cycleId)){
+            logger.error("No dedicated QTest cycle detected.")
             return
         }
         def suiteId = getTestSuiteId(cycleId)
         if(isParamEmpty(suiteId)){
             def testSuite = qTestClient.addTestSuite(integration.projectId, cycleId, integration.platform)
             logger.info("SUITE: " + formatJson(testSuite))
-            if(isEmpty(testSuite, "Unable to register QTest testSuite.")){
+            if(isParamEmpty(testSuite)){
+                logger.error("Unable to register QTest testSuite.")
                 return
             }
             suiteId = testSuite.id
@@ -54,22 +60,26 @@ class QTestUpdater {
             def testRun
             if(!isRerun){
                 testRun = qTestClient.addTestRun(integration.projectId, suiteId, testCase.case_id, integration.testRunName)
-                if(isEmpty(testRun, "Unable to add QTest testRun.")){
+                if(isParamEmpty(testRun)){
+                    logger.error("Unable to add QTest testRun.")
                     return
                 }
                 def results = qTestClient.uploadResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, testRun.name,  integration.projectId)
-                if(isEmpty(results, "Unable to add results for QTest TestRun.")){
+                if(isParamEmpty(results)){
+                    logger.error("Unable to add results for QTest TestRun.")
                     return
                 }
                 logger.debug("UPLOADED_RESULTS: " + formatJson(results))
             } else {
                 testRun = getTestRun(suiteId, testCase.case_id)
 //                logger.debug("TEST_RUN: " + formatJson(testRun))
-                if(isEmpty(testRun, "Unable to get QTest testRun.")){
+                if(isParamEmpty(testRun)){
+                    logger.error("Unable to get QTest testRun.")
                     return
                 }
                 def log = qTestClient.getLog(integration.projectId, testRun.id)
-                if(isEmpty(log, "Unable to get QTest testRun logs.")){
+                if(isParamEmpty(log)){
+                    logger.error("Unable to get QTest testRun logs.")
                     return
                 }
                 logger.debug("STATUS: " + testCase.status)
@@ -123,12 +133,5 @@ class QTestUpdater {
         }
         integration.caseResultMap = testCaseResultMap
         return integration
-    }
-
-    protected boolean isEmpty(value, message){
-        if(isParamEmpty(value)){
-            logger.error(message)
-            return true
-        }
     }
 }
