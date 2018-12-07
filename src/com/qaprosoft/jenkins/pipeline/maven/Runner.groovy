@@ -10,7 +10,7 @@ import com.qaprosoft.jenkins.pipeline.maven.Maven
 
 import com.qaprosoft.jenkins.pipeline.sonar.Sonar
 
-@Mixin(Maven, Sonar)
+@Mixin([Maven, Sonar])
 public class Runner extends AbstractRunner {
 
     Logger logger
