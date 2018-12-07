@@ -105,7 +105,7 @@ public class QARunner extends AbstractRunner {
             scmClient.clonePR()
 
 			compile()
-            performSonarQubeScan()
+            executeSonarPRScan()
 
             //TODO: investigate whether we need this piece of code
             //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
