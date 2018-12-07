@@ -1,10 +1,12 @@
-package com.qaprosoft.testrail
+package com.qaprosoft.integration.testrail
 
 
 import com.qaprosoft.Logger
+import com.qaprosoft.integration.zafira.StatusMapper
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
-import com.qaprosoft.zafira.ZafiraClient
-import com.qaprosoft.zafira.IntegrationTag
+import com.qaprosoft.integration.zafira.ZafiraClient
+import com.qaprosoft.integration.zafira.IntegrationTag
 
 class TestRailUpdater {
 
@@ -66,7 +68,7 @@ class TestRailUpdater {
     }
 
     protected def getTestRunId(){
-		// "-120" to resolve potential time async with testrail upto 2 min 
+		// "-120" to resolve potential time async with testrail upto 2 min
         def testRuns = trc.getRuns(Math.round(integration.createdAfter/1000) - 120, integration.assignedToId, integration.milestoneId, integration.projectId, integration.suiteId)
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		
@@ -195,7 +197,7 @@ class TestRailUpdater {
                     integration.suiteId = tagInfoArray[1]
                 }
                 testCase.case_id = tagInfoArray[2]
-                testCase.status_id = TestRailStatusMapper.getTestRailStatus(integrationInfoItem.status)
+                testCase.status_id = StatusMapper.getTestRailStatus(integrationInfoItem.status)
                 testCase.comment = integrationInfoItem.message
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[2])

@@ -31,7 +31,7 @@ public class Configuration {
 	public enum Parameter {
 
 		//vars
-		CARINA_CORE_VERSION("CARINA_CORE_VERSION", "6.0.0"),
+		CARINA_CORE_VERSION("CARINA_CORE_VERSION", "6.0.1"),
 		CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
 		//to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
 		//the biggest problem is that AWS key can't be located in public repositories
@@ -86,6 +86,7 @@ public class Configuration {
 		BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}"),
 		
 		TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", ""), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
+		QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
 
 		private final String key
 		private final String value

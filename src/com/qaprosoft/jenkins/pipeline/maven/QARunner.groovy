@@ -2,8 +2,8 @@ package com.qaprosoft.jenkins.pipeline.maven
 
 
 import com.qaprosoft.Utils
-import com.qaprosoft.testrail.TestRailClient
-import com.qaprosoft.testrail.TestRailUpdater
+import com.qaprosoft.integration.testrail.TestRailUpdater
+import com.qaprosoft.integration.qtest.QTestUpdater
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
@@ -14,7 +14,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.scm.github.GitHub
-import com.qaprosoft.zafira.ZafiraClient
+import com.qaprosoft.integration.zafira.ZafiraClient
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 import hudson.plugins.sonar.SonarGlobalConfiguration
@@ -36,6 +36,7 @@ public class QARunner extends AbstractRunner {
     protected def uuid
     protected ZafiraClient zc
     protected TestRailUpdater testRailUpdater
+    protected QTestUpdater qTestUpdater
 
     //CRON related vars
     protected def listPipelines = []
@@ -58,6 +59,7 @@ public class QARunner extends AbstractRunner {
         scmClient = new GitHub(context)
         zc = new ZafiraClient(context)
         testRailUpdater = new TestRailUpdater(context)
+        qTestUpdater = new QTestUpdater(context)
 
         currentBuild = context.currentBuild
         if (Configuration.get("onlyUpdated") != null) {
@@ -389,6 +391,8 @@ public class QARunner extends AbstractRunner {
                         context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
                             buildJob()
                         }
+                        qTestUpdater.updateTestRun(uuid,  isRerun)
+                        testRailUpdater.updateTestRun(uuid, isRerun, true)
                         sendZafiraEmail()
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
@@ -398,7 +402,6 @@ public class QARunner extends AbstractRunner {
                     zc.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-                    testRailUpdater.updateTestRun(uuid, isRerun, true)
                     exportZafiraReport()
                     publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
