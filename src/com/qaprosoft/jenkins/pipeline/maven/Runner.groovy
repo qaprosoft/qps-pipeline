@@ -44,7 +44,7 @@ public class Runner extends AbstractRunner {
                 executeMavenGoals(goals)
             }
             context.stage('Sonar Scanner') {
-                performSonarQubeScan()
+                executeSonarPRScan()
             }
 
             //TODO: investigate whether we need this piece of code
