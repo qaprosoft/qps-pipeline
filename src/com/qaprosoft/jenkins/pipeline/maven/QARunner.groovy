@@ -203,7 +203,10 @@ public class QARunner extends AbstractRunner {
             }
 
 			// TODO: improve scanner and make .jenkinsfile.json not obligatory
-			getProjectPomFiles()
+			def pomFiles = getProjectPomFiles()
+			pomFiles.each {
+				logger.info(it.dump())
+			}
 
             def jenkinsFile = ".jenkinsfile.json"
             if (!context.fileExists("${workspace}/${jenkinsFile}")) {
