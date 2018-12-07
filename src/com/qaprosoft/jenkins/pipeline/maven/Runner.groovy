@@ -6,9 +6,9 @@ import com.qaprosoft.jenkins.pipeline.AbstractRunner
 
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.maven.Maven
 
-import com.qaprosoft.jenkins.pipeline.sonar.Sonar
+import com.qaprosoft.jenkins.pipeline.maven.Maven
+import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
 
 @Mixin([Maven, Sonar])
 public class Runner extends AbstractRunner {
