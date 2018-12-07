@@ -8,9 +8,10 @@ import com.qaprosoft.jenkins.pipeline.AbstractRunner
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.maven.Maven
 
-import hudson.plugins.sonar.SonarGlobalConfiguration
+import com.qaprosoft.jenkins.pipeline.sonar.Sonar
 
 @Mixin(Maven)
+@Mixin(Sonar)
 public class Runner extends AbstractRunner {
 
     Logger logger
@@ -63,35 +64,4 @@ public class Runner extends AbstractRunner {
         }
     }
 
-    protected void performSonarQubeScan(){
-        def sonarQubeEnv = ''
-        Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
-            sonarQubeEnv = installation.getName()
-        }
-        if(sonarQubeEnv.isEmpty()){
-            logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
-            return
-        }
-        //TODO: find a way to get somehow 2 below hardcoded string values
-        context.stage('SonarQube analysis') {
-            context.withSonarQubeEnv(sonarQubeEnv) {
-                def goals = "clean package sonar:sonar -DskipTests \
-				 -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-				 -Dsonar.analysis.mode=preview  \
-				 -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-				 -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-				 -Dsonar.projectKey=${Configuration.get("project")} \
-				 -Dsonar.projectName=${Configuration.get("project")} \
-				 -Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-				 -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-				 -Dsonar.sources=. \
-				 -Dsonar.tests=. \
-				 -Dsonar.inclusions=**/src/main/java/** \
-				 -Dsonar.test.inclusions=**/src/test/java/** \
-				 -Dsonar.java.source=1.8"
-				 
-				 executeMavenGoals(goals)
-            }
-        }
-    }
 }
