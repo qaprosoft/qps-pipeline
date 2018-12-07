@@ -1,6 +1,6 @@
-package com.qaprosoft.testrail
+package com.qaprosoft.integration.zafira
 
-class TestRailStatusMapper {
+class StatusMapper {
 
     enum TestRailStatus {
         PASSED(1),

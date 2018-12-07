@@ -1,23 +1,21 @@
-package com.qaprosoft.testrail
+package com.qaprosoft.integration.testrail
+
+import com.qaprosoft.integration.HttpClient
 
 import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
-import com.qaprosoft.Logger
 import groovy.json.JsonBuilder
 import com.qaprosoft.jenkins.pipeline.Configuration
 
-class TestRailClient {
+class TestRailClient extends HttpClient{
 
     private String serviceURL
-    private def context
-    private Logger logger
 	private boolean isAvailable
 
     public TestRailClient(context) {
-        this.context = context
+        super(context)
 		this.serviceURL = Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL)
 		this.isAvailable = !serviceURL.isEmpty()
-        this.logger = new Logger(context)
     }
 	
 	public boolean isAvailable() {
@@ -148,27 +146,4 @@ class TestRailClient {
             return sendRequestFormatted(parameters)
         }
     }
-
-    /** Sends httpRequest using passed parameters */
-    protected def sendRequestFormatted(requestParams) {
-        def response = sendRequest(requestParams)
-        if(response){
-            return getObjectResponse(response)
-        }
-    }
-
-    protected def sendRequest(requestParams) {
-        def response = null
-        /** Catches exceptions in every http call */
-        try {
-            response = context.httpRequest requestParams
-        } catch (Exception e) {
-            logger.error(printStackTrace(e))
-        }
-        if(!response || response.status > 200){
-            return
-        }
-        return response.content
-    }
-
 }
