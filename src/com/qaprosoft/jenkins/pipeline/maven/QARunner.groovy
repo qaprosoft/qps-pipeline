@@ -19,7 +19,7 @@ import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 
 import com.qaprosoft.jenkins.pipeline.maven.Maven
-import com.qaprosoft.jenkins.pipeline.sonar.Sonar
+import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
 
 @Grab('org.testng:testng:6.8.8')
 

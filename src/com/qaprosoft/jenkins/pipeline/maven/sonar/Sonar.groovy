@@ -1,9 +1,9 @@
-package com.qaprosoft.jenkins.pipeline.sonar
+package com.qaprosoft.jenkins.pipeline.maven.sonar
 
 import hudson.plugins.sonar.SonarGlobalConfiguration
 import com.qaprosoft.jenkins.pipeline.maven.Maven
 
-//** IMPORTANT Add @Mixin(Sonar) together with @Mixin(Maven) **//
+@Mixin(Maven)
 public class Sonar {
 
 	protected void performSonarQubeScan(){
