@@ -106,8 +106,13 @@ public class QARunner extends AbstractRunner {
             logger.info("QARunner->onPullRequest")
             scmClient.clonePR()
 
-			compile()
-            executeSonarPRScan()
+			def pomFiles = getProjectPomFiles()
+			pomFiles.each {
+				logger.debug(it.dump())
+				//do compile and scanner for all hogh level pom.xml files
+				compile(it.value)
+				executeSonarPRScan(it.value)
+			}
 
             //TODO: investigate whether we need this piece of code
             //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
