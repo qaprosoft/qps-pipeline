@@ -202,6 +202,8 @@ public class QARunner extends AbstractRunner {
                 // just create a job
             }
 
+			// TODO: improve scanner and make .jenkinsfile.json not obligatory
+			getProjectPomFiles()
 
             def jenkinsFile = ".jenkinsfile.json"
             if (!context.fileExists("${workspace}/${jenkinsFile}")) {
@@ -1150,4 +1152,29 @@ public class QARunner extends AbstractRunner {
         def port = "8000"
         return port
     }
+	
+	protected def getProjectPomFiles() {
+		def pomFiles = []
+		def files = context.findFiles(glob: "**/pom.xml")
+		
+		if(files.length > 0) {
+			logger.info("Number of pom.xml files to analyze: " + files.length)
+			
+			int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
+			for (int i = 0; i < files.length; i++) {
+				def path = files[i].path
+				int level = path.count("/")
+				logger.debug("file: " + path + "; level: " + level + "; curLevel: " + curLevel)
+				if (level < curLevel) {
+					curLevel = level
+					pomFiles.clear()
+					pomFiles.add(files[i].path)
+				} else if (level == curLevel) {
+					pomFiles.add(files[i].path)
+				}
+			}
+		}
+		logger.info(pomFiles.dump())
+		return pomFiles
+	}
 }
