@@ -228,7 +228,6 @@ public class QARunner extends AbstractRunner {
                     subProjectFilter = "**"
                 }
 
-                def prChecker = it.pr_checker
                 def zafiraFilter = it.zafira_filter
                 def suiteFilter = it.suite_filter
 
