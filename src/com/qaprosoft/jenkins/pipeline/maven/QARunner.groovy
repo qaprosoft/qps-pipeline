@@ -23,8 +23,7 @@ import com.qaprosoft.jenkins.pipeline.sonar.Sonar
 
 @Grab('org.testng:testng:6.8.8')
 
-@Mixin(Maven)
-@Mixin(Sonar)
+@Mixin(Maven, Sonar)
 public class QARunner extends AbstractRunner {
 
     protected Map dslObjects = [:]
