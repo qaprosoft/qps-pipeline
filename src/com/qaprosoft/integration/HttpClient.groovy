@@ -32,7 +32,7 @@ abstract class HttpClient {
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
-        if(!response || response.status > 200){
+        if(!response || response.status >= 400){
             return
         }
         return response.content

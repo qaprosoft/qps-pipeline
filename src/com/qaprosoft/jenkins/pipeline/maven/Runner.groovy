@@ -6,9 +6,11 @@ import com.qaprosoft.jenkins.pipeline.AbstractRunner
 
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.pipeline.maven.Maven
 
 import hudson.plugins.sonar.SonarGlobalConfiguration
 
+@Mixin(Maven)
 public class Runner extends AbstractRunner {
 
     Logger logger
@@ -73,7 +75,7 @@ public class Runner extends AbstractRunner {
         //TODO: find a way to get somehow 2 below hardcoded string values
         context.stage('SonarQube analysis') {
             context.withSonarQubeEnv(sonarQubeEnv) {
-                context.sh "mvn clean package sonar:sonar -DskipTests \
+                def goals = "clean package sonar:sonar -DskipTests \
 				 -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
 				 -Dsonar.analysis.mode=preview  \
 				 -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
@@ -87,6 +89,8 @@ public class Runner extends AbstractRunner {
 				 -Dsonar.inclusions=**/src/main/java/** \
 				 -Dsonar.test.inclusions=**/src/test/java/** \
 				 -Dsonar.java.source=1.8"
+				 
+				 executeMavenGoals(goals)
             }
         }
     }
