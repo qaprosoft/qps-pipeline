@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.maven.sonar
 
+import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
 import com.qaprosoft.jenkins.pipeline.maven.Maven
 
