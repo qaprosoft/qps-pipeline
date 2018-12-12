@@ -26,7 +26,7 @@ public class Maven {
 	}
 	
 	public void executeMavenGoals(goals, mavenSettingsConfig) {
-		executeMavenGoals(goals, 'M3', mavenSettingsConfig, ''.repository')
+		executeMavenGoals(goals, 'M3', mavenSettingsConfig, '.repository')
 	}
 	
 	public void executeMavenGoals(goals, mavenSettingsConfig, mavenLocalRepo) {
