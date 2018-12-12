@@ -21,9 +21,9 @@ public class Maven {
 			// Run the maven build
 			
 			if (context.isUnix()) {
-				context.sh "'mvn' -B ${goals}"
+				context.sh "'mvn' -X -B ${goals}"
 			} else {
-				context.bat "mvn -B ${goals}"
+				context.bat "mvn -X -B ${goals}"
 			}
 		}
 	}
