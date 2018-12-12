@@ -4,6 +4,7 @@ package com.qaprosoft.jenkins.pipeline.maven
 import com.qaprosoft.Utils
 import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
+import com.qaprosoft.integration.zafira.ZafiraUpdater
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
@@ -27,14 +28,12 @@ import com.qaprosoft.jenkins.pipeline.maven.Maven
 public class QARunner extends AbstractRunner {
 
     protected Map dslObjects = [:]
-    protected static final String zafiraReport = "ZafiraReport"
     protected def pipelineLibrary = "QPS-Pipeline"
     protected def runnerClass = "com.qaprosoft.jenkins.pipeline.maven.QARunner"
-    protected def folderName = "Automation"
     protected def onlyUpdated = false
     protected def currentBuild
     protected def uuid
-    protected ZafiraClient zc
+    protected ZafiraUpdater zafiraUpdater
     protected TestRailUpdater testRailUpdater
     protected QTestUpdater qTestUpdater
 
@@ -57,7 +56,7 @@ public class QARunner extends AbstractRunner {
     public QARunner(context) {
         super(context)
         scmClient = new GitHub(context)
-        zc = new ZafiraClient(context)
+        zafiraUpdater = new ZafiraUpdater(context)
         testRailUpdater = new TestRailUpdater(context)
         qTestUpdater = new QTestUpdater(context)
 
@@ -373,7 +372,7 @@ public class QARunner extends AbstractRunner {
         logger.info("SEARCH: " + isRerun)
         String nodeName = "master"
         context.node(nodeName) {
-            zc.queueZafiraTestRun(uuid)
+            zafiraUpdater.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
         }
         context.node(nodeName) {
@@ -387,22 +386,21 @@ public class QARunner extends AbstractRunner {
 
                         downloadResources()
 
-                        def timeoutValue = Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)
-                        context.timeout(time: timeoutValue.toInteger(), unit: 'MINUTES') {
+                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             buildJob()
                         }
                         qTestUpdater.updateTestRun(uuid,  isRerun)
                         testRailUpdater.updateTestRun(uuid, isRerun, true)
-                        sendZafiraEmail()
+                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")), currentBuild.rawBuild.result)
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
                     }
                 } catch (Exception e) {
                     logger.error(Utils.printStackTrace(e))
-                    zc.abortTestRun(uuid, currentBuild)
+                    zafiraUpdater.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-                    exportZafiraReport()
+                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace(), currentBuild)
                     publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     clean()
@@ -411,8 +409,9 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    // Possible to override in private pipelines
     protected boolean isRerun(){
-        return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
+        return zafiraUpdater.isZafiraRerun(uuid)
     }
 
     protected String chooseNode() {
@@ -695,48 +694,14 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected void exportZafiraReport() {
-        //replace existing local emailable-report.html by Zafira content
-        String zafiraReport = zc.exportZafiraReport(uuid)
-        if(isParamEmpty(zafiraReport)){
-            return
-        }
-        logger.debug(zafiraReport)
-
-        context.writeFile file: getWorkspace() + "/zafira/report.html", text: zafiraReport
-        //TODO: think about method renaming because in additions it also could redefine job status in Jenkins.
-        // or move below code into another method
-
-        // set job status based on zafira report
-        if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
-            logger.debug("Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report.")
-            currentBuild.result = BuildResult.FAILURE
-        } else if (zafiraReport.contains("SKIP_ALL:")) {
-            currentBuild.result = BuildResult.UNSTABLE
-        }
-    }
-
-    protected void sendZafiraEmail() {
-        String emailList = Configuration.get("email_list")
-        emailList = overrideRecipients(emailList)
-        String failureEmailList = Configuration.get("failure_email_list")
-
-        if (emailList != null && !emailList.isEmpty()) {
-            zc.sendEmail(uuid, emailList, "all")
-        }
-        if (isFailure(currentBuild.rawBuild) && failureEmailList != null && !failureEmailList.isEmpty()) {
-            zc.sendEmail(uuid, failureEmailList, "failures")
-        }
-    }
-
-    //Overrided in private pipeline
+     //Overriden in private pipeline
     protected def overrideRecipients(emailList) {
         return emailList
     }
 
     protected void publishJenkinsReports() {
         context.stage('Results') {
-            publishReport('**/zafira/report.html', "${zafiraReport}")
+            publishReport('**/zafira/report.html', "ZafiraReport")
             publishReport('**/artifacts/**', 'Artifacts')
             publishReport('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReport('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
@@ -823,7 +788,6 @@ public class QARunner extends AbstractRunner {
                     listPipelines.each { pipeline ->
                         logger.debug(pipeline.toString())
                     }
-                    folderName = parseFolderName(getWorkspace())
                     executeStages()
                 } else {
                     logger.error("No Test Suites Found to Scan...")
@@ -1086,9 +1050,9 @@ public class QARunner extends AbstractRunner {
                 jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
             }
             logger.info(jobParams.dump())
-            logger.debug("propagate: " + propagateJob)
+
             try {
-                context.build job: folderName + "/" + entry.get("jobName"),
+                context.build job: parseFolderName(getWorkspace()) + "/" + entry.get("jobName"),
                         propagate: propagateJob,
                         parameters: jobParams,
                         wait: waitJob
@@ -1105,7 +1069,7 @@ public class QARunner extends AbstractRunner {
 
     public void rerunJobs(){
         context.stage('Rerun Tests'){
-            zc.smartRerun()
+            zafiraUpdater.smartRerun()
         }
     }
 

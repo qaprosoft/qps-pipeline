@@ -19,31 +19,27 @@ class ZafiraClient extends HttpClient{
         refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
     }
 
-	public def queueZafiraTestRun(String uuid) {
-        if(isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
-            if (isTokenExpired()) {
-                getZafiraAuthToken(refreshToken)
-            }
-            JsonBuilder jsonBuilder = new JsonBuilder()
-            jsonBuilder jobName: Configuration.get(Configuration.Parameter.JOB_BASE_NAME),
-                    buildNumber: Configuration.get(Configuration.Parameter.BUILD_NUMBER),
-                    branch: Configuration.get("branch"),
-                    env: Configuration.get("env"),
-                    ciRunId: uuid,
-                    ciParentUrl: Configuration.get("ci_parent_url"),
-                    ciParentBuild: Configuration.get("ci_parent_build"),
-                    project: Configuration.get("zafira_project")
-            def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'POST',
-                              requestBody: "${jsonBuilder}",
-                              validResponseCodes: "200:401",
-                              url: this.serviceURL + "/api/tests/runs/queue"]
-
-            def response = sendRequestFormatted(parameters)
-            logger.info("Queued TestRun: " + formatJson(response))
-        }
-    }
+	public def queueZafiraTestRun(uuid) {
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
+		}
+		JsonBuilder jsonBuilder = new JsonBuilder()
+		jsonBuilder jobName: Configuration.get(Configuration.Parameter.JOB_BASE_NAME),
+				buildNumber: Configuration.get(Configuration.Parameter.BUILD_NUMBER),
+				branch: Configuration.get("branch"),
+				env: Configuration.get("env"),
+				ciRunId: uuid,
+				ciParentUrl: Configuration.get("ci_parent_url"),
+				ciParentBuild: Configuration.get("ci_parent_build"),
+				project: Configuration.get("zafira_project")
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'POST',
+						  requestBody: "${jsonBuilder}",
+						  validResponseCodes: "200:401",
+						  url: this.serviceURL + "/api/tests/runs/queue"]
+		return sendRequestFormatted(parameters)
+	}
 
 	public def smartRerun() {
 		if (isTokenExpired()) {
@@ -62,47 +58,10 @@ class ZafiraClient extends HttpClient{
                           validResponseCodes: "200:401",
                           url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
                           timeout: 300000]
-
-        def response = sendRequestFormatted(parameters)
-        logger.info("Results : " + response.size())
-        logger.info("Tests for rerun: " + formatJson(response))
+        return sendRequestFormatted(parameters)
 	}
 
-	public def abortTestRun(String uuid, currentBuild) {
-		currentBuild.result = BuildResult.FAILURE
-		def failureReason = "undefined failure"
-
-		String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-		String jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + buildNumber
-		String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
-		String env = Configuration.get("env")
-
-		def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
-		def subject = getFailureSubject(FailureCause.UNRECOGNIZED_FAILURE, jobName, env, buildNumber)
-		def failureLog = ""
-
-		if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-			bodyHeader = "<p>Unable to execute tests due to the compilation failure. ${jobBuildUrl}</p>"
-			subject = getFailureSubject(FailureCause.COMPILATION_FAILURE, jobName, env, buildNumber)
-			failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
-			failureReason = URLEncoder.encode("${FailureCause.COMPILATION_FAILURE}:\n" + failureLog, "UTF-8")
-		} else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
-			currentBuild.result = BuildResult.ABORTED
-			bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
-			subject = getFailureSubject(FailureCause.TIMED_OUT, jobName, env, buildNumber)
-			failureReason = "Aborted by timeout"
-		} else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
-			bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
-			subject = getFailureSubject(FailureCause.BUILD_FAILURE, jobName, env, buildNumber)
-			failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
-			failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE}:\n" + failureLog, "UTF-8")
-		} else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
-			currentBuild.result = BuildResult.ABORTED
-			bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
-			subject = getFailureSubject(FailureCause.ABORTED, jobName, env, buildNumber)
-			failureReason = "Aborted by " + getAbortCause(currentBuild)
-		}
-
+	public def abortTestRun(uuid, failureReason) {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -114,22 +73,10 @@ class ZafiraClient extends HttpClient{
                           requestBody: "${jsonBuilder}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
-
-        def response = sendRequestFormatted(parameters)
-        def emailList = Configuration.get(Configuration.Parameter.ADMIN_EMAILS)
-        if(response && response.status == 200){
-            sendFailureEmail(uuid, emailList)
-        } else {
-            //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
-            def body = bodyHeader + """<br>
-                       Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
-                  ZafiraReport: ${jobBuildUrl}/ZafiraReport<br>
-		               Console: ${jobBuildUrl}/console<br>${failureLog.replace("\n", "<br>")}"""
-            context.emailext getEmailParams(body, subject, emailList)
-        }
+        return sendRequestFormatted(parameters)
     }
 
-    public def sendEmail(String uuid, String emailList, String filter) {
+    public def sendEmail(uuid, emailList, filter) {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
@@ -156,15 +103,7 @@ class ZafiraClient extends HttpClient{
 		return sendRequestFormatted(parameters)
 	}
 
-	public def sendFailureEmail(String uuid, String emailList) {
-        def suiteOwner = true
-        def suiteRunner = false
-        if(Configuration.get("suiteOwner")){
-            suiteOwner = Configuration.get("suiteOwner")
-        }
-        if(Configuration.get("suiteRunner")){
-            suiteOwner = Configuration.get("suiteRunner")
-        }
+	public def sendFailureEmail(uuid, emailList, suiteOwner, suiteRunner) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
         }
@@ -179,7 +118,7 @@ class ZafiraClient extends HttpClient{
         return sendRequest(parameters)
     }
 
-	public def exportZafiraReport(String uuid) {
+	public def exportZafiraReport(uuid) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
         }
@@ -192,7 +131,7 @@ class ZafiraClient extends HttpClient{
 		return sendRequest(parameters)
 	}
 
-	public def getTestRunByCiRunId(String uuid) {
+	public def getTestRunByCiRunId(uuid) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
         }
@@ -210,7 +149,7 @@ class ZafiraClient extends HttpClient{
 	}
 
 	/** Generates authToken using refreshToken*/
-	protected void getZafiraAuthToken(String refreshToken) {
+	protected void getZafiraAuthToken(refreshToken) {
         logger.debug("refreshToken: " + refreshToken)
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder refreshToken: refreshToken
