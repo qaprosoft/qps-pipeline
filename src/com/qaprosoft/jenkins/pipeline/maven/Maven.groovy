@@ -4,8 +4,15 @@ public class Maven {
 	//TODO: migreate to traits as only it is supported in pipelines
 	// https://issues.jenkins-ci.org/browse/JENKINS-46145
 	
+	
+	protected String getUserHome() {
+		def userHome = context.sh script: "echo $HOME", returnStdout: true
+		logger.info("HOME: ${userHome}")
+	}
+	
 	public void executeMavenGoals(goals) {
 		logger.debug("Maven mixing->executeMavenGoals")
+		def HOME = getUserHome() 
 		context.withMaven(
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
 			maven: 'M3',
@@ -26,6 +33,7 @@ public class Maven {
 	
 	public void executeMavenGoals(goals, mavenSettingsConfig) {
 		logger.info("Maven mixing->executeMavenGoals")
+		def HOME = getUserHome()
 		context.withMaven(
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
 			maven: 'M3',
