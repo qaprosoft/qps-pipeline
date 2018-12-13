@@ -65,8 +65,7 @@ class ZafiraUpdater {
             failureReason = "Aborted by " + getAbortCause(currentBuild)
         }
         def response = zc.abortTestRun(uuid, failureReason)
-        logger.info("DUMP: " + response.dump() )
-        if(!isParamEmpty(response) && response.status == 200){
+        if(!isParamEmpty(response)){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         } else {
             logger.error("UNABLE TO ABORT TESTRUN! Probably run is not registered in Zafira.")
