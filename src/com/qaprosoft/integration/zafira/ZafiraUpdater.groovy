@@ -78,40 +78,31 @@ class ZafiraUpdater {
         }
     }
 
-    public def sendZafiraEmail(uuid, emailList, buildResult) {
+    public def sendZafiraEmail(uuid, emailList) {
         if (!isParamEmpty(emailList)) {
             zc.sendEmail(uuid, emailList, "all")
         }
         String failureEmailList = Configuration.get("failure_email_list")
-        logger.info("FAIL_EMAIL: " + failureEmailList)
-        logger.info("BUILD_RESULT: " + buildResult)
-        logger.info("IS_FAILURE: " + isFailure(buildResult))
-        if (isFailure(buildResult) && !isParamEmpty(failureEmailList)) {
+        def testRun = zc.getTestRunByCiRunId(uuid)
+        if(isParamEmpty(testRun)){
+            logger.error("TestRun is not found in Zafira!")
+            return
+        }
+        if (isFailure(testRun.status) && !isParamEmpty(failureEmailList)) {
             zc.sendEmail(uuid, failureEmailList, "failures")
         }
     }
 
-    public void exportZafiraReport(uuid, workspace, currentBuild) {
+    public void exportZafiraReport(uuid, workspace) {
         //replace existing local emailable-report.html by Zafira content
-        String zafiraReport = zc.exportZafiraReport(uuid)
+        String zafiraReport = zc.getTestRunByCiRunId(uuid)
         if(isParamEmpty(zafiraReport)){
-            logger.error("UNABLE TO EXPORT TESTRUN REPORT! Probably run is not registered in Zafira.")
+            logger.error("UNABLE TO GET TESTRUN! Probably it is not registered in Zafira.")
             return
         }
         logger.debug(zafiraReport)
-
         context.writeFile file: "${workspace}/zafira/report.html", text: zafiraReport
-        //TODO: think about method renaming because in additions it also could redefine job status in Jenkins.
-        // or move below code into another method
-
-        // set job status based on zafira report
-        if (!zafiraReport.contains("PASSED:") && !zafiraReport.contains("PASSED (known issues):") && !zafiraReport.contains("SKIP_ALL:")) {
-            logger.debug("Unable to Find (Passed) or (Passed Known Issues) within the eTAF Report.")
-            currentBuild.result = BuildResult.FAILURE
-        } else if (zafiraReport.contains("SKIP_ALL:")) {
-            currentBuild.result = BuildResult.UNSTABLE
-        }
-    }
+     }
 
     public def sendFailureEmail(uuid, emailList) {
         def suiteOwner = true
@@ -123,6 +114,17 @@ class ZafiraUpdater {
             suiteRunner = Configuration.get("suiteRunner")
         }
         return zc.sendFailureEmail(uuid, emailList, suiteOwner, suiteRunner)
+    }
+
+    public def setBuildResult(uuid, currentBuild) {
+        def testRun = zc.getTestRunByCiRunId(uuid)
+        if(isParamEmpty(testRun)){
+            logger.error("TestRun is not found in Zafira!")
+            return
+        }
+        if(isFailure(testRun.status)){
+            currentBuild.result = BuildResult.FAILURE
+        }
     }
 
     public boolean isZafiraRerun(uuid){

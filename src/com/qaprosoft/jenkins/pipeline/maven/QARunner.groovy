@@ -391,18 +391,17 @@ public class QARunner extends AbstractRunner {
                         }
                         qTestUpdater.updateTestRun(uuid,  isRerun)
                         testRailUpdater.updateTestRun(uuid, isRerun, true)
-                        logger.info("BUILD_DUMP1:\n" + currentBuild.rawBuild.dump() )
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")), currentBuild.result)
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
-                        logger.info("BUILD_DUMP2:\n" + currentBuild.rawBuild.dump() )
                     }
                 } catch (Exception e) {
                     logger.error(Utils.printStackTrace(e))
                     zafiraUpdater.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace(), currentBuild)
+                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
+                    zafiraUpdater.setBuildResult(uuid, currentBuild)
                     publishJenkinsReports()
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     clean()
