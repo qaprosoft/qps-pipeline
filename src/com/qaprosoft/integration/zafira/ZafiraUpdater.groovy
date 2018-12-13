@@ -18,15 +18,19 @@ class ZafiraUpdater {
         logger = new Logger(context)
     }
 
-    public getTestRun(uuid) {
+    /**
+     * Unable to make a calls for this method at intermeddiate state without refactoring
+     * we keep TestRun result using single call for now at the end only.
+     * **/
+    protected def getTestRun(uuid) {
+        def run
         if(isParamEmpty(testRun)) {
-            def testRun = zc.getTestRunByCiRunId(uuid)
-            if (!isParamEmpty(testRun)) {
-                this.testRun = testRun
-            } else {
+            run = zc.getTestRunByCiRunId(uuid)
+            if (isParamEmpty(run)) {
                 logger.error("TestRun is not found in Zafira!")
             }
         }
+        return run
     }
 
     public def queueZafiraTestRun(uuid) {
@@ -91,8 +95,7 @@ class ZafiraUpdater {
     }
 
     public def sendZafiraEmail(uuid, emailList) {
-        getTestRun(uuid)
-        logger.info("1")
+        testRun = getTestRun(uuid)
         if (!isParamEmpty(emailList)) {
             zc.sendEmail(uuid, emailList, "all")
         }
@@ -125,8 +128,7 @@ class ZafiraUpdater {
     }
 
     public def setBuildResult(uuid, currentBuild) {
-        getTestRun(uuid)
-        logger.info("2")
+        testRun = getTestRun(uuid)
         if(isFailure(testRun.status)){
             currentBuild.result = BuildResult.FAILURE
         }
