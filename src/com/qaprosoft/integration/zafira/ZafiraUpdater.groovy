@@ -95,7 +95,7 @@ class ZafiraUpdater {
     }
 
     public def sendZafiraEmail(uuid, emailList) {
-        testRun = getTestRun(uuid)
+        def testRun = getTestRun(uuid)
         if (!isParamEmpty(emailList)) {
             zc.sendEmail(uuid, emailList, "all")
         }
@@ -128,7 +128,7 @@ class ZafiraUpdater {
     }
 
     public def setBuildResult(uuid, currentBuild) {
-        testRun = getTestRun(uuid)
+        def testRun = getTestRun(uuid)
         if(isFailure(testRun.status)){
             currentBuild.result = BuildResult.FAILURE
         }
