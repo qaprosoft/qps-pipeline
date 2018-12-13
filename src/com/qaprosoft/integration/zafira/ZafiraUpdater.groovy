@@ -10,11 +10,20 @@ class ZafiraUpdater {
     private def context
     private ZafiraClient zc
     private Logger logger
+    private def testRun
 
     public ZafiraUpdater(context) {
         this.context = context
         zc = new ZafiraClient(context)
         logger = new Logger(context)
+    }
+
+    public getTestRun(uuid) {
+        if(isParamEmpty(testRun)){
+            testRun = zc.getTestRunByCiRunId(uuid)
+        } else {
+            logger.error("TestRun is not found in Zafira!")
+        }
     }
 
     public def queueZafiraTestRun(uuid) {
@@ -79,23 +88,18 @@ class ZafiraUpdater {
     }
 
     public def sendZafiraEmail(uuid, emailList) {
+        getTestRun(uuid)
         if (!isParamEmpty(emailList)) {
             zc.sendEmail(uuid, emailList, "all")
         }
         String failureEmailList = Configuration.get("failure_email_list")
-        def testRun = zc.getTestRunByCiRunId(uuid)
-        if(isParamEmpty(testRun)){
-            logger.error("TestRun is not found in Zafira!")
-            return
-        }
         if (isFailure(testRun.status) && !isParamEmpty(failureEmailList)) {
             zc.sendEmail(uuid, failureEmailList, "failures")
         }
     }
 
     public void exportZafiraReport(uuid, workspace) {
-        //replace existing local emailable-report.html by Zafira content
-        String zafiraReport = zc.getTestRunByCiRunId(uuid)
+        String zafiraReport = zc.exportZafiraReport(uuid)
         if(isParamEmpty(zafiraReport)){
             logger.error("UNABLE TO GET TESTRUN! Probably it is not registered in Zafira.")
             return
@@ -117,11 +121,7 @@ class ZafiraUpdater {
     }
 
     public def setBuildResult(uuid, currentBuild) {
-        def testRun = zc.getTestRunByCiRunId(uuid)
-        if(isParamEmpty(testRun)){
-            logger.error("TestRun is not found in Zafira!")
-            return
-        }
+        getTestRun(uuid)
         if(isFailure(testRun.status)){
             currentBuild.result = BuildResult.FAILURE
         }
