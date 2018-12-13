@@ -24,7 +24,9 @@ public class Sonar {
 		context.stage('Sonar Scanner') {
 			context.withSonarQubeEnv(sonarQubeEnv) {
 				def goals = "-f ${pomFile} \
-					clean package sonar:sonar -DskipTests \
+					-U clean compile test-compile package sonar:sonar -DskipTests \
+					-Dmaven.test.failure.ignore=true \
+					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
 					-Dsonar.analysis.mode=preview  \
 					-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
