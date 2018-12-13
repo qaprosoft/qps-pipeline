@@ -92,6 +92,7 @@ class ZafiraUpdater {
         //replace existing local emailable-report.html by Zafira content
         String zafiraReport = zc.exportZafiraReport(uuid)
         if(isParamEmpty(zafiraReport)){
+            logger.error("UNABLE TO EXPORT TESTRUN REPORT! Probably run is not registered in Zafira.")
             return
         }
         logger.debug(zafiraReport)

@@ -125,7 +125,7 @@ class ZafiraClient extends HttpClient{
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
-						  validResponseCodes: "200:401",
+						  validResponseCodes: "200:500",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
 
 		return sendRequest(parameters)
