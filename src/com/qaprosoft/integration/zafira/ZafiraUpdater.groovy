@@ -23,7 +23,7 @@ class ZafiraUpdater {
      * we keep TestRun result using single call for now at the end only.
      * **/
     protected def getTestRun(uuid) {
-        def run
+        def run = testRun
         if(isParamEmpty(testRun)) {
             run = zc.getTestRunByCiRunId(uuid)
             if (isParamEmpty(run)) {
