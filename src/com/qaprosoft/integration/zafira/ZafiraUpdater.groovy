@@ -78,6 +78,7 @@ class ZafiraUpdater {
     }
 
     public def sendZafiraEmail(uuid, emailList, buildResult) {
+        logger.info("EMAIL_LIST: ${emailList}")
         if (!isParamEmpty(emailList)) {
             zc.sendEmail(uuid, emailList, "all")
         }
