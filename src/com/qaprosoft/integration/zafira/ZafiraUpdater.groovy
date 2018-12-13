@@ -65,8 +65,8 @@ class ZafiraUpdater {
             failureReason = "Aborted by " + getAbortCause(currentBuild)
         }
         def response = zc.abortTestRun(uuid, failureReason)
-        if(response && response.status == 200){
-            sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
+        if(!isParamEmpty(response) && response.status == 200){
+                sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         } else {
             //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
             def body = bodyHeader + """<br>
@@ -78,7 +78,6 @@ class ZafiraUpdater {
     }
 
     public def sendZafiraEmail(uuid, emailList, buildResult) {
-        logger.info("EMAIL_LIST: ${emailList}")
         if (!isParamEmpty(emailList)) {
             zc.sendEmail(uuid, emailList, "all")
         }
