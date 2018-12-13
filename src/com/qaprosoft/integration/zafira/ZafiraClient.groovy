@@ -71,7 +71,7 @@ class ZafiraClient extends HttpClient{
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
                           requestBody: "${jsonBuilder}",
-						  validResponseCodes: "200:401",
+						  validResponseCodes: "200:500",
 						  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
         return sendRequestFormatted(parameters)
     }
