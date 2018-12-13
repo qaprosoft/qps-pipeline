@@ -65,6 +65,7 @@ class ZafiraUpdater {
             failureReason = "Aborted by " + getAbortCause(currentBuild)
         }
         def response = zc.abortTestRun(uuid, failureReason)
+        logger.info("DUMP: " + response.dump() )
         if(!isParamEmpty(response) && response.status == 200){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         } else {
