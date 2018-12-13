@@ -83,6 +83,9 @@ class ZafiraUpdater {
             zc.sendEmail(uuid, emailList, "all")
         }
         String failureEmailList = Configuration.get("failure_email_list")
+        logger.info("FAIL_EMAIL: " + failureEmailList)
+        logger.info("BUILD_RESULT: " + buildResult)
+        logger.info("IS_FAILURE: " + isFailure(buildResult))
         if (isFailure(buildResult) && !isParamEmpty(failureEmailList)) {
             zc.sendEmail(uuid, failureEmailList, "failures")
         }
