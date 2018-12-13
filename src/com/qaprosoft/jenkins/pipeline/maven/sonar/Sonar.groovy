@@ -21,10 +21,11 @@ public class Sonar {
 			return
 		}
 		
+		// [VD] temporary removed "-U" goal to test PR checker
 		context.stage('Sonar Scanner') {
 			context.withSonarQubeEnv(sonarQubeEnv) {
 				def goals = "-f ${pomFile} \
-					-U clean compile test-compile package sonar:sonar -DskipTests \
+					clean compile test-compile package sonar:sonar -DskipTests \
 					-Dmaven.test.failure.ignore=true \
 					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Dcarina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
