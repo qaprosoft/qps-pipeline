@@ -19,10 +19,13 @@ class ZafiraUpdater {
     }
 
     public getTestRun(uuid) {
-        if(isParamEmpty(testRun)){
-            testRun = zc.getTestRunByCiRunId(uuid)
-        } else {
-            logger.error("TestRun is not found in Zafira!")
+        if(isParamEmpty(testRun)) {
+            def testRun = zc.getTestRunByCiRunId(uuid)
+            if (!isParamEmpty(testRun)) {
+                this.testRun = testRun
+            } else {
+                logger.error("TestRun is not found in Zafira!")
+            }
         }
     }
 
