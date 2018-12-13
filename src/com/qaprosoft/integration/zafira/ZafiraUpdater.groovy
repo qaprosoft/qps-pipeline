@@ -68,7 +68,7 @@ class ZafiraUpdater {
         if(!isParamEmpty(response) && response.status == 200){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         } else {
-            logger.error("UNABLE TO ABORT TESTRUN! Probaly run with such id is not registered in Zafira.")
+            logger.error("UNABLE TO ABORT TESTRUN! Probably run is not registered in Zafira.")
             //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
             def body = bodyHeader + """<br>
                        Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
