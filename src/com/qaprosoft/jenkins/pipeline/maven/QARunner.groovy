@@ -391,10 +391,11 @@ public class QARunner extends AbstractRunner {
                         }
                         qTestUpdater.updateTestRun(uuid,  isRerun)
                         testRailUpdater.updateTestRun(uuid, isRerun, true)
-                        logger.info("BUILD_DUMP:\n" + currentBuild.dump() )
+                        logger.info("BUILD_DUMP1:\n" + currentBuild.rawbuild.dump() )
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")), currentBuild.result)
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
+                        logger.info("BUILD_DUMP2:\n" + currentBuild.rawbuild.dump() )
                     }
                 } catch (Exception e) {
                     logger.error(Utils.printStackTrace(e))
