@@ -391,7 +391,7 @@ public class QARunner extends AbstractRunner {
                         }
                         qTestUpdater.updateTestRun(uuid,  isRerun)
                         testRailUpdater.updateTestRun(uuid, isRerun, true)
-                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")), currentBuild.result)
+                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
                     }
