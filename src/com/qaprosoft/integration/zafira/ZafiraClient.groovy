@@ -42,15 +42,15 @@ class ZafiraClient extends HttpClient{
 	}
 
 	public def smartRerun() {
-//		if (isTokenExpired()) {
-//			getZafiraAuthToken(refreshToken)
-//		}
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
+		}
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder owner: Configuration.get("ci_user_id"),
-                upstreamJobId: Configuration.get("ci_job_id"),
-                upstreamJobBuildNumber: Configuration.get("ci_parent_build"),
-                scmUrl: Configuration.get("scm_url"),
-                hashcode: Configuration.get("hashcode")
+        jsonBuilder owner: Configuration.get("ci_user_id")?Configuration.get("ci_user_id"):"",
+                upstreamJobId: Configuration.get("ci_job_id")?Configuration.get("ci_job_id"):"",
+                upstreamJobBuildNumber: Configuration.get("ci_parent_build")?Configuration.get("ci_parent_build"):"",
+                scmUrl: Configuration.get("scm_url")?Configuration.get("scm_url"):"",
+                hashcode: Configuration.get("hashcode")?Configuration.get("hashcode"):""
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
