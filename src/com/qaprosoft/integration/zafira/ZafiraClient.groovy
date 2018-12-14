@@ -64,6 +64,7 @@ class ZafiraClient extends HttpClient{
                           validResponseCodes: "200:401",
                           url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
                           timeout: 300000]
+		logger.info(formatJson(parameters))
         return sendRequestFormatted(parameters)
 	}
 
