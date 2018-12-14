@@ -38,7 +38,6 @@ abstract class HttpClient {
             return
         }
 
-
         return response.content
     }
 
