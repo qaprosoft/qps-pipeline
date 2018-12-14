@@ -29,7 +29,7 @@ abstract class HttpClient {
         logger.info("PROPS1: " + requestParams)
         /** Catches exceptions in every http call */
         try {
-            response = context.httpRequest requestParams
+            context.httpRequest requestParams
             logger.info("PROPS2: " + response)
         } catch (Exception e) {
             logger.error(printStackTrace(e))

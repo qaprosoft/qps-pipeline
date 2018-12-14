@@ -164,7 +164,7 @@ class ZafiraClient extends HttpClient{
 						  httpMode: 'POST',
                           requestBody: "${jsonBuilder}",
 						  url: this.serviceURL + "/api/auth/refresh"]
-		sendRequestFormatted(parameters)
+		sendRequest(parameters)
 //        Map properties = (Map)sendRequestFormatted(parameters)
 //
 //		authToken = properties.type + " " + properties.accessToken
