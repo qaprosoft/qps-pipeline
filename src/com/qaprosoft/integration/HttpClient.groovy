@@ -26,18 +26,15 @@ abstract class HttpClient {
 
     protected def sendRequest(requestParams) {
         def response = null
-        logger.info("PROPS1: " + requestParams)
         /** Catches exceptions in every http call */
         try {
-            context.httpRequest requestParams
-            logger.info("PROPS2: " + response)
+            response = context.httpRequest requestParams
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
         if(!response || response.status >= 400){
             return
         }
-
         return response.content
     }
 
