@@ -57,15 +57,15 @@ class ZafiraClient extends HttpClient{
 //                upstreamJobBuildNumber: Configuration.get("ci_parent_build"),
 //                scmUrl: null,
 //                hashcode: null
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: "{scmUrl: null}",
-                          validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
-                          timeout: 300000]
-		logger.info(formatJson(parameters))
-        return sendRequest(parameters)
+//        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+//                          contentType: 'APPLICATION_JSON',
+//                          httpMode: 'POST',
+//                          requestBody: "{scmUrl: null}",
+//                          validResponseCodes: "200:401",
+//                          url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
+//                          timeout: 300000]
+//		logger.info(formatJson(parameters))
+//        return sendRequest(parameters)
 	}
 
 	public def abortTestRun(uuid, failureReason) {
