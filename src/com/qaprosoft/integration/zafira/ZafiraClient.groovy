@@ -158,7 +158,7 @@ class ZafiraClient extends HttpClient{
                           requestBody: "${jsonBuilder}",
 						  url: this.serviceURL + "/api/auth/refresh"]
         Map properties = (Map)sendRequestFormatted(parameters)
-        logger.info("PROPS: " + properties.dump())
+
 		authToken = properties.type + " " + properties.accessToken
 		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
 	}
