@@ -34,7 +34,6 @@ public class QARunner extends AbstractRunner {
     protected def currentBuild
     protected def uuid
     protected ZafiraUpdater zafiraUpdater
-    protected ZafiraClient zc
     protected TestRailUpdater testRailUpdater
     protected QTestUpdater qTestUpdater
 
@@ -57,7 +56,6 @@ public class QARunner extends AbstractRunner {
     public QARunner(context) {
         super(context)
         scmClient = new GitHub(context)
-        zc = new ZafiraClient(context)
         zafiraUpdater = new ZafiraUpdater(context)
         testRailUpdater = new TestRailUpdater(context)
         qTestUpdater = new QTestUpdater(context)
@@ -373,10 +371,6 @@ public class QARunner extends AbstractRunner {
         def isRerun = isRerun()
         logger.info("SEARCH: " + isRerun)
         String nodeName = "master"
-
-        context.stage('Rerun Tests'){
-            zc.smartRerun()
-        }
         context.node(nodeName) {
             zafiraUpdater.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
@@ -1076,7 +1070,7 @@ public class QARunner extends AbstractRunner {
 
     public void rerunJobs(){
         context.stage('Rerun Tests'){
-            zc.smartRerun()
+            zafiraUpdater.smartRerun()
         }
     }
 

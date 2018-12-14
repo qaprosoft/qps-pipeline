@@ -45,12 +45,6 @@ class ZafiraClient extends HttpClient{
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
-		logger.info("owner: " + Configuration.get("ci_user_id"))
-		logger.info("upstreamJobId: " + Configuration.get("ci_job_id"))
-		logger.info("upstreamJobBuildNumber: " + Configuration.get("ci_parent_build"))
-		logger.info("scmUrl: " + Configuration.get("scm_url"))
-		logger.info("hashcode: " + Configuration.get("hashcode"))
-
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder owner: Configuration.get("ci_user_id"),
                 upstreamJobId: Configuration.get("ci_job_id"),
@@ -64,7 +58,6 @@ class ZafiraClient extends HttpClient{
                           validResponseCodes: "200:401",
                           url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
                           timeout: 300000]
-		logger.info(formatJson(parameters))
         return sendRequestFormatted(parameters)
 	}
 
@@ -165,7 +158,6 @@ class ZafiraClient extends HttpClient{
                           requestBody: "${jsonBuilder}",
 						  url: this.serviceURL + "/api/auth/refresh"]
         Map properties = (Map)sendRequestFormatted(parameters)
-
 		authToken = properties.type + " " + properties.accessToken
 		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
 	}
