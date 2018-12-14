@@ -35,6 +35,8 @@ abstract class HttpClient {
         if(!response || response.status >= 400){
             return
         }
+        logger.info("PROPS: " + response)
+
         return response.content
     }
 
