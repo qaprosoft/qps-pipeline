@@ -42,6 +42,8 @@ class ZafiraUpdater {
 
     public def smartRerun() {
         def response = zc.smartRerun()
+        logger.info(response.dump())
+        logger.info(response.size().dump())
         if(isParamEmpty(response) || response.size() == 0){
             "No tests for rerun!"
         }
