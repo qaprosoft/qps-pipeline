@@ -46,10 +46,6 @@ class ZafiraUpdater {
             "No tests for rerun!"
         }
         logger.info("Results : " + response.size())
-        logger.info("Tests for rerun: ")
-        response.each { testRun ->
-            logger.info("id: " + testRun.id)
-        }
     }
 
     public def abortTestRun(uuid, currentBuild) {
