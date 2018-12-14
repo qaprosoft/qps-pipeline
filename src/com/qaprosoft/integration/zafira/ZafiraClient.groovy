@@ -60,7 +60,7 @@ class ZafiraClient extends HttpClient{
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
-                          requestBody: "${jsonBuilder}",
+                          requestBody: jsonBuilder,
                           validResponseCodes: "200:401",
                           url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
                           timeout: 300000]
