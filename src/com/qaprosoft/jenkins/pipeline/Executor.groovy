@@ -124,10 +124,10 @@ public class Executor {
         return folderName
     }
 
-    static boolean isFailure(currentBuild) {
+    static boolean isFailure(testRunStatus) {
         boolean failure = false
-        if (currentBuild.result) {
-            failure = "FAILURE".equals(currentBuild.result.name)
+        if(!"PASSED".equals(testRunStatus)){
+            failure = true
         }
         return failure
     }
