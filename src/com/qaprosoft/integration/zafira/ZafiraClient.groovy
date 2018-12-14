@@ -45,6 +45,7 @@ class ZafiraClient extends HttpClient{
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
+		logger.info("PROPS: " + refreshToken)
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder owner: Configuration.get("ci_user_id"),
                 upstreamJobId: Configuration.get("ci_job_id"),
