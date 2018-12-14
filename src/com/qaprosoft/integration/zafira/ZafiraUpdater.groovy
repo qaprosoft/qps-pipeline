@@ -40,12 +40,6 @@ class ZafiraUpdater {
         }
     }
 
-    public def smartRerun() {
-        def response = zc.smartRerun()
-//        logger.info("Results : " + response.size())
-//        logger.info("Tests for rerun: " + formatJson(response))
-    }
-
     public def abortTestRun(uuid, currentBuild) {
         currentBuild.result = BuildResult.FAILURE
         def failureReason = "undefined failure"
