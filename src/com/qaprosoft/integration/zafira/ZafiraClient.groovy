@@ -52,11 +52,11 @@ class ZafiraClient extends HttpClient{
 //		logger.info("hashcode: " + Configuration.get("hashcode"))
 //
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder owner: Configuration.get("ci_user_id"),
+        jsonBuilder owner: null,
                 upstreamJobId: Configuration.get("ci_job_id"),
                 upstreamJobBuildNumber: Configuration.get("ci_parent_build"),
-                scmUrl: Configuration.get("scm_url"),
-                hashcode: Configuration.get("hashcode")
+                scmUrl: null,
+                hashcode: null
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
