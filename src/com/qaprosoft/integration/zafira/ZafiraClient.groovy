@@ -42,30 +42,30 @@ class ZafiraClient extends HttpClient{
 	}
 
 	public def smartRerun() {
-		if (isTokenExpired()) {
-			getZafiraAuthToken(refreshToken)
-		}
-//		logger.info("owner: " + Configuration.get("ci_user_id").dump())
-//		logger.info("upstreamJobId: " + Configuration.get("ci_job_id"))
-//		logger.info("upstreamJobBuildNumber: " + Configuration.get("ci_parent_build"))
-//		logger.info("scmUrl: " + Configuration.get("scm_url"))
-//		logger.info("hashcode: " + Configuration.get("hashcode"))
-//
-//        JsonBuilder jsonBuilder = new JsonBuilder()
-//        jsonBuilder owner: null,
-//                upstreamJobId: Configuration.get("ci_job_id"),
-//                upstreamJobBuildNumber: Configuration.get("ci_parent_build"),
-//                scmUrl: null,
-//                hashcode: null
-//        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-//                          contentType: 'APPLICATION_JSON',
-//                          httpMode: 'POST',
-//                          requestBody: "{scmUrl: null}",
-//                          validResponseCodes: "200:401",
-//                          url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
-//                          timeout: 300000]
-//		logger.info(formatJson(parameters))
-//        return sendRequest(parameters)
+//		if (isTokenExpired()) {
+//			getZafiraAuthToken(refreshToken)
+//		}
+		logger.info("owner: " + Configuration.get("ci_user_id").dump())
+		logger.info("upstreamJobId: " + Configuration.get("ci_job_id"))
+		logger.info("upstreamJobBuildNumber: " + Configuration.get("ci_parent_build"))
+		logger.info("scmUrl: " + Configuration.get("scm_url"))
+		logger.info("hashcode: " + Configuration.get("hashcode"))
+
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder owner: Configuration.get("ci_user_id"),
+                upstreamJobId: Configuration.get("ci_job_id"),
+                upstreamJobBuildNumber: Configuration.get("ci_parent_build"),
+                scmUrl: Configuration.get("scm_url"),
+                hashcode: Configuration.get("hashcode")
+        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'POST',
+                          requestBody: "${jsonBuilder}",
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
+                          timeout: 300000]
+		logger.info(formatJson(parameters))
+        return sendRequestFormatted(parameters)
 	}
 
 	public def abortTestRun(uuid, failureReason) {
@@ -164,11 +164,10 @@ class ZafiraClient extends HttpClient{
 						  httpMode: 'POST',
                           requestBody: "${jsonBuilder}",
 						  url: this.serviceURL + "/api/auth/refresh"]
-		sendRequest(parameters)
-//        Map properties = (Map)sendRequestFormatted(parameters)
-//
-//		authToken = properties.type + " " + properties.accessToken
-//		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
+        Map properties = (Map)sendRequestFormatted(parameters)
+
+		authToken = properties.type + " " + properties.accessToken
+		tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
 	}
 
 }
