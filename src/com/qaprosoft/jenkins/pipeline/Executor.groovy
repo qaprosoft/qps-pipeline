@@ -90,7 +90,7 @@ public class Executor {
     }
 
     static def getObjectResponse(response){
-        return new JsonSlurper().parseText(response)
+        return new JsonSlurperClassic().parseText(response)
     }
 
     static def formatJson(json){
