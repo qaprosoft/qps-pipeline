@@ -42,9 +42,9 @@ class ZafiraClient extends HttpClient{
 	}
 
 	public def smartRerun() {
-//		if (isTokenExpired()) {
-//			getZafiraAuthToken(refreshToken)
-//		}
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
+		}
 		logger.info("owner: " + Configuration.get("ci_user_id").dump())
 		logger.info("upstreamJobId: " + Configuration.get("ci_job_id"))
 		logger.info("upstreamJobBuildNumber: " + Configuration.get("ci_parent_build"))
