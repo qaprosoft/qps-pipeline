@@ -45,20 +45,20 @@ class ZafiraClient extends HttpClient{
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
-        JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder owner: Configuration.get("ci_user_id"),
-                upstreamJobId: Configuration.get("ci_job_id"),
-                upstreamJobBuildNumber: Configuration.get("ci_parent_build"),
-                scmUrl: Configuration.get("scm_url"),
-                hashcode: Configuration.get("hashcode")
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: "${jsonBuilder}",
-                          validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
-                          timeout: 300000]
-        return sendRequestFormatted(parameters)
+//        JsonBuilder jsonBuilder = new JsonBuilder()
+//        jsonBuilder owner: Configuration.get("ci_user_id"),
+//                upstreamJobId: Configuration.get("ci_job_id"),
+//                upstreamJobBuildNumber: Configuration.get("ci_parent_build"),
+//                scmUrl: Configuration.get("scm_url"),
+//                hashcode: Configuration.get("hashcode")
+//        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+//                          contentType: 'APPLICATION_JSON',
+//                          httpMode: 'POST',
+//                          requestBody: "${jsonBuilder}",
+//                          validResponseCodes: "200:401",
+//                          url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
+//                          timeout: 300000]
+//        return sendRequestFormatted(parameters)
 	}
 
 	public def abortTestRun(uuid, failureReason) {
