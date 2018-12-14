@@ -45,7 +45,7 @@ class ZafiraClient extends HttpClient{
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
-		logger.info("owner: " + Configuration.get("ci_user_id").dump())
+		logger.info("owner: " + Configuration.get("ci_user_id"))
 		logger.info("upstreamJobId: " + Configuration.get("ci_job_id"))
 		logger.info("upstreamJobBuildNumber: " + Configuration.get("ci_parent_build"))
 		logger.info("scmUrl: " + Configuration.get("scm_url"))
