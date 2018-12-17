@@ -98,7 +98,7 @@ class TestRailClient extends HttpClient{
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
-                              validResponseCodes: "200:401",
+                              validResponseCodes: "200:404",
                               url: this.serviceURL + "get_user_by_email&email=${userEmail}"]
             return sendRequestFormatted(parameters)
         }
