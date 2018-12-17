@@ -111,6 +111,10 @@ class TestRailUpdater {
     protected def getAssignedToId(){
         Map customParams = integration.customParams
         def assignedToId = trc.getUserIdByEmail(customParams.assignee)
+        if(isParamEmpty(assignedToId)){
+            logger.debug("No users with such email found!")
+            return
+        }
         return assignedToId.id
     }
 
