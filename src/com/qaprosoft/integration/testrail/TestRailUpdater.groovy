@@ -201,6 +201,7 @@ class TestRailUpdater {
                     integration.suiteId = tagInfoArray[1]
                 }
                 testCase.case_id = tagInfoArray[2]
+                logger.debug("ZAFIRA_TEST_RUN_STATUS: ${integrationInfoItem.status}")
                 testCase.status_id = StatusMapper.getTestRailStatus(integrationInfoItem.status)
                 testCase.comment = integrationInfoItem.message
             } else {
