@@ -347,7 +347,7 @@ public class QARunner extends AbstractRunner {
         logger.info("SEARCH: " + isRerun)
         String nodeName = "master"
         context.node(nodeName) {
-//            zafiraUpdater.queueZafiraTestRun(uuid)
+            zafiraUpdater.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
         }
         context.node(nodeName) {
