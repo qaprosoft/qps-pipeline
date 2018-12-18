@@ -131,7 +131,6 @@ class TestRailUpdater {
         filterCases()
     }
 
-
     protected def filterCases(){
         integration.caseResultMap.each { testCase ->
             boolean isValid = false
