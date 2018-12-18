@@ -18,13 +18,13 @@ import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.integration.zafira.ZafiraClient
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
-import hudson.plugins.sonar.SonarGlobalConfiguration
 
 import com.qaprosoft.jenkins.pipeline.maven.Maven
+import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
 
 @Grab('org.testng:testng:6.8.8')
 
-@Mixin(Maven)
+@Mixin([Maven, Sonar])
 public class QARunner extends AbstractRunner {
 
     protected Map dslObjects = [:]
@@ -105,8 +105,15 @@ public class QARunner extends AbstractRunner {
             logger.info("QARunner->onPullRequest")
             scmClient.clonePR()
 
-			compile()
-            performSonarQubeScan()
+			def pomFiles = getProjectPomFiles()
+			pomFiles.each {
+				logger.debug(it.dump())
+				//do compile and scanner for all hogh level pom.xml files
+				
+				// [VD] integrated compilation as part of the sonar PR checker maven goal
+				//compile(it.value)
+				executeSonarPRScan(it.value)
+			}
 
             //TODO: investigate whether we need this piece of code
             //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
@@ -126,7 +133,8 @@ public class QARunner extends AbstractRunner {
 			def goals = "-U clean compile test-compile \
 					-f ${pomFile} \
 					-Dmaven.test.failure.ignore=true \
-					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
+					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+					-Dcarina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
 
 			executeMavenGoals(goals)
 		}
@@ -138,43 +146,6 @@ public class QARunner extends AbstractRunner {
         String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
         scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
     }
-
-	protected void performSonarQubeScan(){
-		performSonarQubeScan("pom.xml")
-	}
-
-    protected void performSonarQubeScan(pomFile){
-		context.stage('Sonar Scanner') {
-	        def sonarQubeEnv = ''
-	        Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
-	            sonarQubeEnv = installation.getName()
-	        }
-            if(sonarQubeEnv.isEmpty()){
-                logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
-                return
-            }
-            context.withSonarQubeEnv(sonarQubeEnv) {
-				def goals = "-f ${pomFile} \
-					clean package sonar:sonar -DskipTests \
-					-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-					-Dsonar.analysis.mode=preview  \
-					-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-					-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-					-Dsonar.projectKey=${Configuration.get("project")} \
-					-Dsonar.projectName=${Configuration.get("project")} \
-					-Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-					-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-					-Dsonar.sources=. \
-					-Dsonar.tests=. \
-					-Dsonar.inclusions=**/src/main/java/** \
-					-Dsonar.test.inclusions=**/src/test/java/** \
-					-Dsonar.java.source=1.8"
-   
-				executeMavenGoals(goals)
-            }
-		}
-    }
-    /** **/
 
     protected void scan() {
 
@@ -203,6 +174,11 @@ public class QARunner extends AbstractRunner {
                 // just create a job
             }
 
+			// TODO: improve scanner and make .jenkinsfile.json not obligatory
+			def pomFiles = getProjectPomFiles()
+			pomFiles.each {
+				logger.info(it.dump())
+			}
 
             def jenkinsFile = ".jenkinsfile.json"
             if (!context.fileExists("${workspace}/${jenkinsFile}")) {
@@ -224,7 +200,6 @@ public class QARunner extends AbstractRunner {
                     subProjectFilter = "**"
                 }
 
-                def prChecker = it.pr_checker
                 def zafiraFilter = it.zafira_filter
                 def suiteFilter = it.suite_filter
 
@@ -1118,4 +1093,29 @@ public class QARunner extends AbstractRunner {
         def port = "8000"
         return port
     }
+	
+	protected def getProjectPomFiles() {
+		def pomFiles = []
+		def files = context.findFiles(glob: "**/pom.xml")
+		
+		if(files.length > 0) {
+			logger.info("Number of pom.xml files to analyze: " + files.length)
+			
+			int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
+			for (int i = 0; i < files.length; i++) {
+				def path = files[i].path
+				int level = path.count("/")
+				logger.debug("file: " + path + "; level: " + level + "; curLevel: " + curLevel)
+				if (level < curLevel) {
+					curLevel = level
+					pomFiles.clear()
+					pomFiles.add(files[i].path)
+				} else if (level == curLevel) {
+					pomFiles.add(files[i].path)
+				}
+			}
+		}
+		logger.info(pomFiles.dump())
+		return pomFiles
+	}
 }
