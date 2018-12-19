@@ -45,7 +45,7 @@ public class TestJobFactory extends PipelineFactory {
             def multilineParameterArray
             if (multilineParameter != null) {
                 logger.info("MULTILINE: " + multilineParameter)
-                multilineParameterArray = multilineParameter.split("\\n")
+                multilineParameterArray = multilineParameter.split("\\r?\\n")
                 scheduling = multilineParameterArray[1]
             }
 			if (scheduling != null) {
