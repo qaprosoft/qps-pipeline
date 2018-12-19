@@ -42,11 +42,12 @@ public class TestJobFactory extends PipelineFactory {
 		pipelineJob.with {
 
 			def scheduling = currentSuite.getParameter("scheduling")
-            logger.info("SCHEDULING: " + scheduling)
+            logger.info("SCHEDULING1: " + scheduling)
 			if (scheduling != null) {
-//                if(scheduling.contains("\\n")){
-//                    scheduling.replace("\\n", "\n")
-//                }
+                if(scheduling.contains("\\n")){
+                    scheduling.replace("\\n", "\n")
+                    logger.info("SCHEDULING2: " + scheduling)
+                }
 				triggers { cron(scheduling) }
 			}
 
