@@ -544,6 +544,7 @@ public class QARunner extends AbstractRunner {
         if(timezone.contains(":")){
             timezone.replace(":", "\n")
         }
+        logger.info("TIMEZONE:\n${timezone}")
 		def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 				-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 		-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
