@@ -44,7 +44,7 @@ public class TestJobFactory extends PipelineFactory {
 			def scheduling = currentSuite.getParameter("scheduling")
             logger.info("SCHEDULING1: " + scheduling)
 			if (scheduling != null) {
-                scheduling.replace(":", "\n")
+                scheduling.replace(":", " \n ")
 				triggers { cron(scheduling) }
 			}
 
