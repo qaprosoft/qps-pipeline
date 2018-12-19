@@ -540,11 +540,6 @@ public class QARunner extends AbstractRunner {
 			//override "null" value by empty to be able to register in cloud version of Zafira
 			buildUserEmail = ""
 		}
-        def timezone = Configuration.get(Configuration.Parameter.TIMEZONE)
-        if(timezone.contains(":")){
-            timezone.replace(":", "\n")
-        }
-        logger.info("TIMEZONE:\n${timezone}")
 		def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 				-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 		-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
@@ -563,7 +558,7 @@ public class QARunner extends AbstractRunner {
 		-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
 		-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
 				  -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
-		-Duser.timezone=${timezone} \
+		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 		clean test -Dqueue_registration=false"
 
 		Configuration.set("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
