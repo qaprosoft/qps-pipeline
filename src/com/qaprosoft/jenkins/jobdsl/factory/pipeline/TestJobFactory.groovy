@@ -40,11 +40,17 @@ public class TestJobFactory extends PipelineFactory {
 
 		def pipelineJob = super.create()
 		pipelineJob.with {
-
 			def scheduling = currentSuite.getParameter("scheduling")
+            def multilineParameter = currentSuite.getParameter("multiline")
+            def multilineParameterArray
+            if (multilineParameter != null) {
+                multilineParameterArray = multilineParameter.split("\n")
+                scheduling = multilineParameterArray[1]
+            }
 			if (scheduling != null) {
 				triggers { cron(scheduling) }
 			}
+
 
 			//** Properties & Parameters Area **//*
 			parameters {
@@ -159,6 +165,9 @@ public class TestJobFactory extends PipelineFactory {
 				configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
 				configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
 
+                if (multilineParameterArray != null){
+                    configure addHiddenParameter('user.timezone', '' , multilineParameterArray[0])
+                }
 				def queue_registration = "true"
 				if (currentSuite.getParameter("jenkinsQueueRegistration") != null) {
 					queue_registration = currentSuite.getParameter("jenkinsQueueRegistration")
