@@ -44,10 +44,9 @@ public class TestJobFactory extends PipelineFactory {
 			def scheduling = currentSuite.getParameter("scheduling")
             logger.info("SCHEDULING1: " + scheduling)
 			if (scheduling != null) {
-                if(scheduling.contains("\\n")){
-                    scheduling.replace("\\n", "\n")
-                    logger.info("SCHEDULING2: " + scheduling)
-                }
+                def array = scheduling.split("\\n")
+
+                scheduling = array[0] + "\n" + array[1]
 				triggers { cron(scheduling) }
 			}
 
