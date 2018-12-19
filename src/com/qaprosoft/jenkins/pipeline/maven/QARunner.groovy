@@ -540,7 +540,7 @@ public class QARunner extends AbstractRunner {
 			//override "null" value by empty to be able to register in cloud version of Zafira
 			buildUserEmail = ""
 		}
-        def timezone = Configuration.get(Configuration.Parameter.TIMEZONE)
+        def timezone = Configuration.get("user.timezone")
         if(timezone.contains(":")){
             timezone.replace(":", "\n")
         }
