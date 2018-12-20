@@ -45,78 +45,82 @@ class TestRailUpdater {
             logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
             return
         }
-
-        integration.milestoneId = getMilestoneId()
-        integration.assignedToId = getAssignedToId()
-
+        def projectId = integration.projectId
+        def suiteId = integration.suiteId
+        def milestoneId = getMilestoneId(projectId)
+        def assignedToId = getAssignedToId()
+        def testRunName = integration.testRunName
+        def createdAfter = integration.createdAfter
         // get all cases from TestRail by project and suite and compare with exported from Zafira
         // only cases available in both maps should be registered later
-        parseCases()
+        parseCases(projectId, suiteId)
 
         def testRun = null
         if(isRerun){
-            testRun = getTestRunId()
+            testRun = getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
             if (isParamEmpty(testRun)) {
                 logger.error("Unable to detect existing run in TestRail for rebuild!")
             }
         }
 
         if(isParamEmpty(testRun)){
-            testRun = addTestRun(includeAll)
+            testRun = addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll)
         }
         addResults(testRun.id)
     }
 
-    protected def getTestRunId(){
+    protected def getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
 		// "-120" to resolve potential time async with testrail upto 2 min
-        def testRuns = trc.getRuns(Math.round(integration.createdAfter/1000) - 120, integration.assignedToId, integration.milestoneId, integration.projectId, integration.suiteId)
+        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 120, assignedToId, milestoneId, projectId, suiteId)
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
-		
 		def run = null
-		
         testRuns.each { Map testRun ->
 //            logger.debug("TEST_RUN: " + formatJson(testRun))
-
-            if(testRun.name.equals(integration.testRunName)){
+            if(testRun.name.equals(testRunName)){
                 integration.testRunId = testRun.id
 				run = testRun
                 return run
             }
         }
-		
 		return run
     }
 
-    protected def getMilestoneId(){
+    protected def getMilestoneId(projectId){
         Map customParams = integration.customParams
-        if(!isParamEmpty(customParams.milestone)){
-
-            def milestoneId = null
-            def milestones = trc.getMilestones(integration.projectId)
-            milestones.each { Map milestone ->
-                if (milestone.name == customParams.milestone) {
-                    milestoneId = milestone.id
-                }
-            }
-            if(!milestoneId ){
-                def milestone = trc.addMilestone(integration.projectId, customParams.milestone)
-                if(!isParamEmpty(milestone)){
-                    milestoneId = milestone.id
-                }
-            }
-            return milestoneId
+        if(!isParamEmpty(customParams.milestone)) {
+            logger.error("No milstone name discovered!")
+            return
         }
+        def milestoneName = customParams.milestone
+        def milestoneId = null
+        def milestones = trc.getMilestones(projectId)
+        milestones.each { Map milestone ->
+            if (milestone.name == milestoneName) {
+                milestoneId = milestone.id
+            }
+        }
+        if(!milestoneId ){
+            def milestone = trc.addMilestone(projectId, milestoneName)
+            if(!isParamEmpty(milestone)){
+                milestoneId = milestone.id
+            }
+        }
+        return milestoneId
     }
 
     protected def getAssignedToId(){
         Map customParams = integration.customParams
         def assignedToId = trc.getUserIdByEmail(customParams.assignee)
+        if(isParamEmpty(assignedToId)){
+            logger.debug("No users with such email found!")
+            return
+        }
         return assignedToId.id
     }
 
-    protected def parseCases(){
+    protected def parseCases(projectId, suiteId){
         Set validTestCases = new HashSet()
-        def cases = trc.getCases(integration.projectId, integration.suiteId)
+        def cases = trc.getCases(projectId, suiteId)
 //        logger.debug("SUITE_CASES: " + formatJson(cases))
         cases.each { testCase ->
             validTestCases.add(testCase.id)
@@ -126,7 +130,6 @@ class TestRailUpdater {
 
         filterCases()
     }
-
 
     protected def filterCases(){
         integration.caseResultMap.each { testCase ->
@@ -171,8 +174,8 @@ class TestRailUpdater {
 //        logger.debug("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
     }
 
-    protected def addTestRun(boolean includeAll){
-        def testRun = trc.addTestRun(integration.suiteId, integration.testRunName, integration.milestoneId, integration.assignedToId, includeAll, integration.caseResultMap.keySet(), integration.projectId)
+    protected def addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, boolean includeAll){
+        def testRun = trc.addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, integration.caseResultMap.keySet(), projectId)
         logger.debug("ADDED TESTRUN:\n" + formatJson(testRun))
         return testRun
     }
@@ -180,10 +183,8 @@ class TestRailUpdater {
     protected def addResults(testRunId){
         integration.testRunId = testRunId
         getTests()
-
         def response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
 //        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
-
     }
     
     protected def parseTagData(){

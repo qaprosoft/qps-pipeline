@@ -107,11 +107,12 @@ class Repository {
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
 			context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
-			removedConfigFilesAction: 'IGNORE',
-			removedJobAction: 'IGNORE',
-			removedViewAction: 'IGNORE',
-			targets: FACTORY_TARGET,
-			ignoreExisting: false
+				sandbox: true,
+				removedConfigFilesAction: 'IGNORE',
+				removedJobAction: 'IGNORE',
+				removedViewAction: 'IGNORE',
+				targets: FACTORY_TARGET,
+				ignoreExisting: false
 
 		}
 	}

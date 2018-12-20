@@ -4,15 +4,19 @@ public class Maven {
 	//TODO: migreate to traits as only it is supported in pipelines
 	// https://issues.jenkins-ci.org/browse/JENKINS-46145
 	
+	def MAVEN_TOOL='M3'
+	
+	
 	public void executeMavenGoals(goals) {
 		logger.debug("Maven mixing->executeMavenGoals")
 		context.withMaven(
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
-			maven: 'M3',
+			maven: "${MAVEN_TOOL}",
 			// Maven settings.xml file defined with the Jenkins Config File Provider Plugin
 			// Maven settings and global settings can also be defined in Jenkins Global Tools Configuration
 			//mavenSettingsConfig: 'settings',
-			mavenLocalRepo: '.repository') {
+			//mavenLocalRepo: ".repository"
+			) {
 	 
 			// Run the maven build
 			
@@ -28,11 +32,10 @@ public class Maven {
 		logger.info("Maven mixing->executeMavenGoals")
 		context.withMaven(
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
-			maven: 'M3',
+			maven: "${MAVEN_TOOL}",
 			// Maven settings.xml file defined with the Jenkins Config File Provider Plugin
 			// Maven settings and global settings can also be defined in Jenkins Global Tools Configuration
-			mavenSettingsConfig: "${mavenSettingsConfig}",
-			mavenLocalRepo: '.repository') {
+			mavenSettingsConfig: "${mavenSettingsConfig}") {
 	 
 			// Run the maven build
 			
@@ -44,11 +47,11 @@ public class Maven {
 		}
 	}
 	
-	public void executeMavenGoals(goals, mavenTool, mavenSettingsConfig, mavenLocalRepo) {
+	public void executeMavenGoals(goals, mavenSettingsConfig, mavenLocalRepo) {
 		logger.info("Maven mixing->executeMavenGoals")
 		context.withMaven(
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
-			maven: "${mavenTool}",
+			maven: "${MAVEN_TOOL}",
 			// Maven settings.xml file defined with the Jenkins Config File Provider Plugin
 			// Maven settings and global settings can also be defined in Jenkins Global Tools Configuration
 			mavenSettingsConfig: "${mavenSettingsConfig}",
