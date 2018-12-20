@@ -44,9 +44,13 @@ public class TestJobFactory extends PipelineFactory {
 			def scheduling = currentSuite.getParameter("scheduling")
             logger.info("SCHEDULING1: " + scheduling)
 			if (scheduling != null) {
-                def array = scheduling.split(":")
-                logger.info(array)
-                scheduling = "TZ=US/Eastern" + "\n" + "H 9-19 * * 1-5"
+                def multilineArray = scheduling.split("::")
+                def multilineValue = ""
+				multilineArray.each { value ->
+					multilineValue = multilineValue + value + "\n"
+
+				}
+                scheduling = multilineValue
 				triggers { cron(scheduling) }
 			}
 
