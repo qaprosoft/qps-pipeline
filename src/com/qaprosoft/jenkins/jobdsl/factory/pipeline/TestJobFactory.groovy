@@ -48,7 +48,7 @@ public class TestJobFactory extends PipelineFactory {
 					multilineArray.each { value ->
 						multilineValue = multilineValue + value + "\n"
 					}
-                    multilineValue = multilineValue.replaceAll(".\$","")
+					multilineValue = multilineValue.replaceAll(".\$","")
 					scheduling = multilineValue
 				}
 				triggers { cron(scheduling) }
