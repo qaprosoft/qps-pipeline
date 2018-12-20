@@ -40,17 +40,17 @@ public class TestJobFactory extends PipelineFactory {
 
 		def pipelineJob = super.create()
 		pipelineJob.with {
-
 			def scheduling = currentSuite.getParameter("scheduling")
-            logger.info("SCHEDULING1: " + scheduling)
 			if (scheduling != null) {
-                def multilineArray = scheduling.split("::")
-                def multilineValue = ""
-				multilineArray.each { value ->
-					multilineValue = multilineValue + value + "\n"
-
+				if(scheduling.contains("::")){
+					def multilineArray = scheduling.split("::")
+					def multilineValue = ""
+					multilineArray.each { value ->
+						multilineValue = multilineValue + value + "\n"
+					}
+					multilineValue.trim()
+					scheduling = multilineValue
 				}
-                scheduling = multilineValue
 				triggers { cron(scheduling) }
 			}
 
