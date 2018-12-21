@@ -6,7 +6,6 @@ public class Maven {
 	
 	def MAVEN_TOOL='M3'
 	
-	
 	public void executeMavenGoals(goals) {
 		logger.debug("Maven mixing->executeMavenGoals")
 		context.withMaven(
@@ -17,14 +16,8 @@ public class Maven {
 			//mavenSettingsConfig: 'settings',
 			//mavenLocalRepo: ".repository"
 			) {
-	 
 			// Run the maven build
-			
-			if (context.isUnix()) {
-				context.sh "'mvn' -B ${goals}"
-			} else {
-				context.bat "mvn -B ${goals}"
-			}
+            buildGoals(goals)
 		}
 	}
 	
@@ -36,14 +29,8 @@ public class Maven {
 			// Maven settings.xml file defined with the Jenkins Config File Provider Plugin
 			// Maven settings and global settings can also be defined in Jenkins Global Tools Configuration
 			mavenSettingsConfig: "${mavenSettingsConfig}") {
-	 
 			// Run the maven build
-			
-			if (context.isUnix()) {
-				context.sh "'mvn' -B ${goals}"
-			} else {
-				context.bat "mvn -B ${goals}"
-			}
+            buildGoals(goals)
 		}
 	}
 	
@@ -56,14 +43,16 @@ public class Maven {
 			// Maven settings and global settings can also be defined in Jenkins Global Tools Configuration
 			mavenSettingsConfig: "${mavenSettingsConfig}",
 			mavenLocalRepo: "${mavenLocalRepo}") {
-	 
 			// Run the maven build
-			
-			if (context.isUnix()) {
-				context.sh "'mvn' -B ${goals}"
-			} else {
-				context.bat "mvn -B ${goals}"
-			}
+            buildGoals(goals)
+		}
+	}
+
+	private def buildGoals(goals) {
+		if (context.isUnix()) {
+			context.sh "'mvn' -B ${goals}"
+		} else {
+			context.bat "mvn -B ${goals}"
 		}
 	}
 }
