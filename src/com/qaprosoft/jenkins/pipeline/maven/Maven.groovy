@@ -3,9 +3,9 @@ package com.qaprosoft.jenkins.pipeline.maven
 public class Maven {
 	//TODO: migreate to traits as only it is supported in pipelines
 	// https://issues.jenkins-ci.org/browse/JENKINS-46145
-	
+
 	def MAVEN_TOOL='M3'
-	
+
 	public void executeMavenGoals(goals) {
 		logger.debug("Maven mixing->executeMavenGoals")
 		context.withMaven(
@@ -17,10 +17,10 @@ public class Maven {
 			//mavenLocalRepo: ".repository"
 			) {
 			// Run the maven build
-            buildGoals(goals)
+			buildGoals(goals)
 		}
 	}
-	
+
 	public void executeMavenGoals(goals, mavenSettingsConfig) {
 		logger.info("Maven mixing->executeMavenGoals")
 		context.withMaven(
@@ -30,7 +30,7 @@ public class Maven {
 			// Maven settings and global settings can also be defined in Jenkins Global Tools Configuration
 			mavenSettingsConfig: "${mavenSettingsConfig}") {
 			// Run the maven build
-            buildGoals(goals)
+			buildGoals(goals)
 		}
 	}
 	
@@ -44,7 +44,7 @@ public class Maven {
 			mavenSettingsConfig: "${mavenSettingsConfig}",
 			mavenLocalRepo: "${mavenLocalRepo}") {
 			// Run the maven build
-            buildGoals(goals)
+			buildGoals(goals)
 		}
 	}
 
