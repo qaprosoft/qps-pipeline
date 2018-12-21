@@ -48,7 +48,7 @@ public class Maven {
 		}
 	}
 
-	private def buildGoals(goals) {
+	protected def buildGoals(goals) {
 		if (context.isUnix()) {
 			context.sh "'mvn' -B ${goals}"
 		} else {
