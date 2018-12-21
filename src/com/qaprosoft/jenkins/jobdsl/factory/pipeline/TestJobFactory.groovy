@@ -108,7 +108,11 @@ public class TestJobFactory extends PipelineFactory {
 					case ~/^.*gui.*$/:
 					// WEB tests specific
 						configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
-						configure addExtensibleChoice('browser', 'gc_BROWSER', 'Select a browser to run tests against.', 'chrome')
+						def browser = 'chrome'
+						if (currentSuite.getParameter("jenkinsDefaultBrowser") != null) {
+							browser = currentSuite.getParameter("jenkinsDefaultBrowser")
+						}
+						configure addExtensibleChoice('browser', 'gc_BROWSER', 'Select a browser to run tests against.', browser)
 						configure addHiddenParameter('browser_version', '', '*')
 						configure addHiddenParameter('os', '', 'NULL')
 						configure addHiddenParameter('os_version', '', '*')
