@@ -1,5 +1,8 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
+import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.Logger
+
 public class Maven {
 	//TODO: migreate to traits as only it is supported in pipelines
 	// https://issues.jenkins-ci.org/browse/JENKINS-46145
@@ -49,6 +52,9 @@ public class Maven {
 	}
 
 	public def buildGoals(goals) {
+		if(context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name())){
+			goals = goals + " --debug"
+		}
 		if (context.isUnix()) {
 			context.sh "'mvn' -B ${goals}"
 		} else {
