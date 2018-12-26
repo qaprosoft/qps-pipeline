@@ -53,7 +53,7 @@ public class Maven {
 
 	public def buildGoals(goals) {
 		if(context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name())){
-			goals = goals + " --debug"
+			goals = goals + " -X -e"
 		}
 		if (context.isUnix()) {
 			context.sh "'mvn' -B ${goals}"
