@@ -2,7 +2,7 @@ package com.qaprosoft
 
 class Logger {
 
-    public enum LogLevel {
+    public static enum LogLevel {
 
         DEBUG(1),
         INFO(2),
