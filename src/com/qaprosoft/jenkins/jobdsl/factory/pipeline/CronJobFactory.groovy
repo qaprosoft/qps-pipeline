@@ -43,7 +43,6 @@ public class CronJobFactory extends PipelineFactory {
                 choiceParam('BuildPriority', [5, 4, 3, 2, 1], "Priority of execution. Lower number means higher priority")
                 choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
             }
-
         }
         return pipelineJob
     }
