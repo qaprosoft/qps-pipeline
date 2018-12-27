@@ -364,8 +364,6 @@ public class QARunner extends AbstractRunner {
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             buildJob()
                         }
-                        qTestUpdater.updateTestRun(uuid,  isRerun)
-                        testRailUpdater.updateTestRun(uuid, isRerun, true)
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
@@ -375,6 +373,8 @@ public class QARunner extends AbstractRunner {
                     zafiraUpdater.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
+                    qTestUpdater.updateTestRun(uuid,  isRerun)
+                    testRailUpdater.updateTestRun(uuid, isRerun, true)
                     zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                     zafiraUpdater.setBuildResult(uuid, currentBuild)
                     publishJenkinsReports()
