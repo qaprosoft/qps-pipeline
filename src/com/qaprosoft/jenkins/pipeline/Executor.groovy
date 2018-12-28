@@ -19,6 +19,10 @@ import org.jenkinsci.plugins.ghprb.GhprbPullRequest
 import org.jenkinsci.plugins.ghprb.GhprbCause
 import org.jenkinsci.plugins.ghprb.Ghprb
 
+import com.cloudbees.plugins.credentials.impl.*
+import com.cloudbees.plugins.credentials.*
+import com.cloudbees.plugins.credentials.domains.*
+
 public class Executor {
 
     static enum BuildResult {
@@ -59,6 +63,11 @@ public class Executor {
                                 reportFiles: reportFiles,
                                 reportName: reportName]
         return reportParameters
+    }
+
+    static def addCredentialsToJenkins(id, description, user, password) {
+        Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
+        SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), c)
     }
 
     static boolean isMobile() {
