@@ -80,7 +80,7 @@ class Repository {
 			def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
 			def organization = Configuration.get("organization")
 			def repo = Configuration.get("repo")
-			def repoFolder = "${organization}/${repo}"
+			def repoFolder = "/${organization}/${repo}"
 			def tokenId = "${organization}-${repo}"
 			def branch = Configuration.get("branch")
 
