@@ -42,7 +42,8 @@ public class PushJobFactory extends PipelineFactory {
 				stringParam('organization', organization, 'Your GitHub organization')
 				stringParam('project', repo, 'GitHub repository for scanning')
 				//TODO: analyze howto support several gc_GIT_BRACH basing on project
-				configure addExtensibleChoice('branch', branch, "Select a GitHub Testing Repository Branch to run against", "master")
+				stringParam('branch', branch, 'Trmporary string branch choice')
+//				configure addExtensibleChoice('branch', branch, "Select a GitHub Testing Repository Branch to run against", "master")
 				booleanParam('onlyUpdated', true, '	If chosen, scan will be performed only in case of any change in *.xml suites.')
 				choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
 				choiceParam('removedJobAction', ['IGNORE', 'DELETE'], '')
