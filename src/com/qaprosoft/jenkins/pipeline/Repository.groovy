@@ -86,7 +86,7 @@ class Repository {
 
 			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
 			
-			addCredentialsToJenkins(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
+			addCredentialsToJenkins(tokenId, "${organization} GitHub token ", tokenId, Configuration.get("token"))
 
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
