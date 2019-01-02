@@ -12,7 +12,6 @@ public class PushJobFactory extends PipelineFactory {
     def scmProjectUrl
 
 	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, branch, scmProjectUrl) {
-
 		this.folder = folder
 		this.pipelineScript = pipelineScript
 		this.name = jobName
@@ -28,7 +27,6 @@ public class PushJobFactory extends PipelineFactory {
 		def pipelineJob = super.create()
 
 		pipelineJob.with {
-			//noinspection GroovyAssignabilityCheck
 			properties {
 				//TODO: add SCM artifacts
 				githubProjectUrl(scmProjectUrl)
@@ -53,14 +51,5 @@ public class PushJobFactory extends PipelineFactory {
 
 		}
 		return pipelineJob
-	}
-
-	protected def getOrganization() {
-		return organization
-	}
-
-	protected def getGitHubAuthId(project) {
-		//TODO: get API GitHub URL from binding
-		return "https://api.github.com : ${project}-token"
 	}
 }
