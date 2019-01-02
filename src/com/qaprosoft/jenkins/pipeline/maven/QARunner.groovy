@@ -15,7 +15,6 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.scm.github.GitHub
-import com.qaprosoft.integration.zafira.ZafiraClient
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 
