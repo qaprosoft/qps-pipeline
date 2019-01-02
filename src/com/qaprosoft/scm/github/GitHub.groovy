@@ -108,7 +108,7 @@ class GitHub implements ISCM {
         context.stage('Checkout GitHub Repository') {
             def branch = Configuration.get("branch")
 			//TODO: [VD] duplicate code in url generation?
-            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("project")}.git")
+            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("repo")}.git")
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', '')
         }
