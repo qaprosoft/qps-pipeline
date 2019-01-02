@@ -21,7 +21,7 @@ class Repository {
     protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
     protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
-	protected Map dslObjects = [:]
+	protected Map dslObjects = new LinkedHashMap()
 
     public Repository(context) {
         this.context = context
