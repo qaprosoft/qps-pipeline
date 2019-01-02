@@ -24,6 +24,7 @@ factories.each{
         factory.load(it.value)
         logger.debug("Factory after load: ${factory.dump()}")
         factory.create()
+        logger.info("I WAS CREATED")
     } catch (Exception e) {
         logger.error(Utils.printStackTrace(e))
         exceptionOccurred = true
