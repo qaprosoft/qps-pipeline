@@ -87,7 +87,7 @@ class Repository {
 			def tokenId = "${organization}-${repo}"
 			def branch = Configuration.get("branch")
 			def repoFolder
-			if(!isParamEmpty(organization) && isParamEmpty(getJenkinsFolderByName(organization))){
+			if(!isParamEmpty(organization)){
 				repoFolder = "${organization}/${repo}"
 			} else {
 				repoFolder = repo
