@@ -34,3 +34,5 @@ if(exceptionOccurred) {
     logger.error("Something went wrong during job creation. Please, check stacktrace for more information.")
     throw new RuntimeException("JobDslException occurred.")
 }
+
+logger.info("END OF THE SCRIPT")
