@@ -99,9 +99,9 @@ class Repository {
 
 			// Support DEV related CI workflow
 			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
-			def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
-
-			registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
+//			def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
+//
+//			registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
 
 //			def pullRequestJobDescription = "Customized pull request verification checker"
 //
