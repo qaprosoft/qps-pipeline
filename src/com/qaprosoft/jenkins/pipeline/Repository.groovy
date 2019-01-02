@@ -43,26 +43,28 @@ class Repository {
 		}
 
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
+		def organization = Configuration.get("organization")
 		def repo = Configuration.get("repo")
-		def newJob = "${Configuration.get("organization")}/${repo}" + "/" + "onPush-" + repo
+		def branch = Configuration.get("branch")
 
-		context.build job: newJob,
+		def jobName = "${organization}/${repo}" + "/" + "onPush-" + repo
+
+		context.build job: jobName,
 		propagate: true,
-		parameters: [
-			context.string(name: 'branch', value: Configuration.get("branch")),
-			context.string(name: 'project', value: repo),
-			context.booleanParam(name: 'onlyUpdated', value: false),
-			context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
-			context.string(name: 'removedJobAction', value: 'DELETE'),
-			context.string(name: 'removedViewAction', value: 'DELETE'),
-		]
+				parameters: [
+						context.string(name: 'organization', value: organization),
+						context.string(name: 'repo', value: repo),
+						context.string(name: 'branch', value: branch),
+						context.booleanParam(name: 'onlyUpdated', value: false),
+						context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
+						context.string(name: 'removedJobAction', value: 'DELETE'),
+						context.string(name: 'removedViewAction', value: 'DELETE'),
+				]
 	}
-
 
 	public void create() {
 		//TODO: incorporate maven project generation based on archetype (carina?)
 		throw new RuntimeException("Not implemented yet!")
-		
 	}
 
 	private void prepare() {
