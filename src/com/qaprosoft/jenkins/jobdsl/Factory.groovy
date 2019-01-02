@@ -33,4 +33,3 @@ if(exceptionOccurred) {
     throw new RuntimeException("JobDslException occurred.")
 }
 
-logger.info("END OF THE SCRIPT")
