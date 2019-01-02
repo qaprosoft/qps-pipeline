@@ -12,6 +12,8 @@ def slurper = new JsonSlurper()
 
 String factoryDataMap = readFileFromWorkspace("factories.json")
 logger.info("FactoryDataMap: ${JsonOutput.prettyPrint(factoryDataMap)}")
+def prettyPrint = JsonOutput.prettyPrint(factoryDataMap)
+logger.debug("factoryDataMap: " + prettyPrint)
 def factories = new HashMap(slurper.parseText(factoryDataMap))
 boolean exceptionOccurred = false
 

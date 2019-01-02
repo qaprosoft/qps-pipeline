@@ -43,30 +43,26 @@ class Repository {
 		}
 
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
-		def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
-		def repo = Configuration.get("repo")
-		def branch = Configuration.get("branch")
+		def project = Configuration.get("repo")
+		def newJob = project + "/" + "onPush-" + project
 
-		def jobName = "${organization}/${repo}" + "/" + "onPush-" + repo
-
-		context.build job: jobName,
+		context.build job: newJob,
 		propagate: true,
-				parameters: [
-						context.string(name: 'organization', value: organization),
-						context.string(name: 'repo', value: repo),
-						context.string(name: 'branch', value: branch),
-						context.booleanParam(name: 'onlyUpdated', value: false),
-						context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
-						context.string(name: 'removedJobAction', value: 'DELETE'),
-						context.string(name: 'removedViewAction', value: 'DELETE'),
-				]
+		parameters: [
+			context.string(name: 'branch', value: Configuration.get("branch")),
+			context.string(name: 'project', value: project),
+			context.booleanParam(name: 'onlyUpdated', value: false),
+			context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
+			context.string(name: 'removedJobAction', value: 'DELETE'),
+			context.string(name: 'removedViewAction', value: 'DELETE'),
+		]
 	}
 
 
 	public void create() {
 		//TODO: incorporate maven project generation based on archetype (carina?)
 		throw new RuntimeException("Not implemented yet!")
-
+		
 	}
 
 	private void prepare() {
@@ -84,7 +80,7 @@ class Repository {
 			def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
 			def organization = Configuration.get("organization")
 			def repo = Configuration.get("repo")
-			def repoFolder = "${organization}/${repo}"
+			def repoFolder = Configuration.get("repo")
 			def tokenId = "${organization}-${repo}"
 			def branch = Configuration.get("branch")
 
@@ -95,7 +91,7 @@ class Repository {
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
 			// TODO: move folder and main trigger job creation onto the createRepository method
-			registerObject("project_folder", new FolderFactory("${organization}/${repo}", ""))
+			registerObject("project_folder", new FolderFactory("${organization}/${repoFolder}", ""))
 
 			// Support DEV related CI workflow
 			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
@@ -105,13 +101,13 @@ class Repository {
 
 			def pullRequestJobDescription = "Customized pull request verification checker"
 
-			registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + repo, pullRequestJobDescription, organization, repo, branch, gitUrl))
+			registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + repo, pullRequestJobDescription, repo, gitUrl))
 
 			def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
 					"- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
 					"- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, organization, repo, branch, gitUrl))
+			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, repo, gitUrl))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)

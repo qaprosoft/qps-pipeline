@@ -6,20 +6,15 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 @InheritConstructors
 public class PullRequestJobFactory extends PipelineFactory {
 
-	def organization
-	def repo
-	def branch
+    def project
     def scmProjectUrl
 
-    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, branch, scmProjectUrl) {
-
+    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, project, scmProjectUrl) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
         this.description = jobDesc
-		this.organization = organization
-		this.repo = repo
-		this.branch = branch
+        this.project = project
         this.scmProjectUrl = scmProjectUrl
     }
 
@@ -27,7 +22,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 		def pipelineJob = super.create()
 		pipelineJob.with {
             parameters {
-                stringParam('repo', repo, 'Your GitHub repository for scanning')
+                stringParam('project', project, 'Your GitHub repository for scanning')
             }
             scm {
                 git {
@@ -42,7 +37,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 				pipelineTriggers {
 					triggers {
 						ghprbTrigger {
-							gitHubAuthId(getGitHubAuthId(repo))
+							gitHubAuthId(getGitHubAuthId(folder))
 							adminlist('')
 							useGitHubHooks(true)
 							triggerPhrase('')
@@ -51,7 +46,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 							displayBuildErrorsOnDownstreamBuilds(false)
 							cron('H/5 * * * *')
 							whitelist('')
-							orgslist(organization)
+							orgslist(getOrganization())
 							blackListLabels('')
 							whiteListLabels('')
 							allowMembersOfWhitelistedOrgsAsAdmin(false)
@@ -74,7 +69,11 @@ public class PullRequestJobFactory extends PipelineFactory {
 		return pipelineJob
 	}
 
-	protected def getGitHubAuthId(repo) {
-		return "https://api.github.com : ${repo}-token"
+	protected def getOrganization() {
+		return 'qaprosoft'
+	}
+
+	protected def getGitHubAuthId(project) {
+		return "https://api.github.com : ${project}-token"
 	}
 }
