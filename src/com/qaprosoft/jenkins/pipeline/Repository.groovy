@@ -95,10 +95,9 @@ class Repository {
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
 			// TODO: move folder and main trigger job creation onto the createRepository method
-			logger.info("ITEMS: " + Jenkins.getInstance().getAllItems())
-//			if(!isParamEmpty(organization) && ){
-//
-//			}
+			if(!isParamEmpty(organization) && !isParamEmpty(getJenkinsFolderByName(organization))){
+				registerObject("organization_folder", new FolderFactory(organization, ""))
+			}
 
 			registerObject("project_folder", new FolderFactory("${organization}/${repo}", ""))
 
