@@ -6,15 +6,20 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 @InheritConstructors
 public class PullRequestJobFactory extends PipelineFactory {
 
-    def project
+	def organization
+	def repo
+	def branch
     def scmProjectUrl
 
-    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, project, scmProjectUrl) {
+    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, branch, scmProjectUrl) {
+
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
         this.description = jobDesc
-        this.project = project
+		this.organization = organization
+		this.repo = repo
+		this.branch = branch
         this.scmProjectUrl = scmProjectUrl
     }
 
@@ -22,7 +27,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 		def pipelineJob = super.create()
 		pipelineJob.with {
             parameters {
-                stringParam('project', project, 'Your GitHub repository for scanning')
+                stringParam('repo', repo, 'Your GitHub repository for scanning')
             }
             scm {
                 git {
@@ -37,7 +42,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 				pipelineTriggers {
 					triggers {
 						ghprbTrigger {
-							gitHubAuthId(getGitHubAuthId(folder))
+							gitHubAuthId(getGitHubAuthId(repo))
 							adminlist('')
 							useGitHubHooks(true)
 							triggerPhrase('')
@@ -46,7 +51,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 							displayBuildErrorsOnDownstreamBuilds(false)
 							cron('H/5 * * * *')
 							whitelist('')
-							orgslist(getOrganization())
+							orgslist(organization)
 							blackListLabels('')
 							whiteListLabels('')
 							allowMembersOfWhitelistedOrgsAsAdmin(false)

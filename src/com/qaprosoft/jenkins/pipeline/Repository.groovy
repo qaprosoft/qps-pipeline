@@ -43,26 +43,30 @@ class Repository {
 		}
 
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
-		def project = Configuration.get("repo")
-		def newJob = project + "/" + "onPush-" + project
+		def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
+		def repo = Configuration.get("repo")
+		def branch = Configuration.get("branch")
 
-		context.build job: newJob,
+		def jobName = "${organization}/${repo}" + "/" + "onPush-" + repo
+
+		context.build job: jobName,
 		propagate: true,
-		parameters: [
-			context.string(name: 'branch', value: Configuration.get("branch")),
-			context.string(name: 'project', value: project),
-			context.booleanParam(name: 'onlyUpdated', value: false),
-			context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
-			context.string(name: 'removedJobAction', value: 'DELETE'),
-			context.string(name: 'removedViewAction', value: 'DELETE'),
-		]
+				parameters: [
+						context.string(name: 'organization', value: organization),
+						context.string(name: 'repo', value: repo),
+						context.string(name: 'branch', value: branch),
+						context.booleanParam(name: 'onlyUpdated', value: false),
+						context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
+						context.string(name: 'removedJobAction', value: 'DELETE'),
+						context.string(name: 'removedViewAction', value: 'DELETE'),
+				]
 	}
 
 
 	public void create() {
 		//TODO: incorporate maven project generation based on archetype (carina?)
 		throw new RuntimeException("Not implemented yet!")
-		
+
 	}
 
 	private void prepare() {
@@ -80,34 +84,39 @@ class Repository {
 			def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
 			def organization = Configuration.get("organization")
 			def repo = Configuration.get("repo")
-			def repoFolder = "/${organization}/${repo}"
+			def repoFolder = "${organization}/${repo}"
 			def tokenId = "${organization}-${repo}"
 			def branch = Configuration.get("branch")
 
 			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
-			
-//			addCredentialsToJenkins(tokenId, "${organization} GitHub token ", tokenId, Configuration.get("token"))
+
+//			addCredentialsToJenkins(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
 
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
 			// TODO: move folder and main trigger job creation onto the createRepository method
-			registerObject("project_folder", new FolderFactory(repoFolder, ""))
+			logger.info("ITEMS: " + Jenkins.getInstance().getAllItems())
+//			if(!isParamEmpty(organization) && ){
+//
+//			}
 
-//			// Support DEV related CI workflow
-//			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
-//			def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
-//
-//			registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
-//
-//			def pullRequestJobDescription = "Customized pull request verification checker"
-//
-//			registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + repo, pullRequestJobDescription, repo, gitUrl))
-//
-//			def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
-//					"- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
-//					"- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
-//
-//			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, repo, gitUrl))
+			registerObject("project_folder", new FolderFactory("${organization}/${repo}", ""))
+
+			// Support DEV related CI workflow
+			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
+			def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
+
+			registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
+
+			def pullRequestJobDescription = "Customized pull request verification checker"
+
+			registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + repo, pullRequestJobDescription, organization, repo, branch, gitUrl))
+
+			def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
+					"- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
+					"- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
+
+			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, organization, repo, branch, gitUrl))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -121,7 +130,6 @@ class Repository {
 				ignoreExisting: false
 
 		}
-		logger.info("END OF THE SCRIPT")
 	}
 	
 	private clean() {
