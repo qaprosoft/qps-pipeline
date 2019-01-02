@@ -121,6 +121,7 @@ class Repository {
 				ignoreExisting: false
 
 		}
+		logger.info("END OF THE SCRIPT")
 	}
 	
 	private clean() {
