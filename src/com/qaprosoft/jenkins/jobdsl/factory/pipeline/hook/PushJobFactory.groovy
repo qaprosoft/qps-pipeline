@@ -55,6 +55,10 @@ public class PushJobFactory extends PipelineFactory {
 		return pipelineJob
 	}
 
+	protected def getOrganization() {
+		return organization
+	}
+
 	protected def getGitHubAuthId(project) {
 		//TODO: get API GitHub URL from binding
 		return "https://api.github.com : ${project}-token"
