@@ -94,7 +94,7 @@ class Repository {
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
 			// TODO: move folder and main trigger job creation onto the createRepository method
-			registerObject("project_folder", new FolderFactory(repoFolder, ""))
+			registerObject("project_folder", new FolderFactory(organization, repo, ""))
 
 			// Support DEV related CI workflow
 			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
