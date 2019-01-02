@@ -99,7 +99,7 @@ class Repository {
 				registerObject("organization_folder", new FolderFactory(organization, ""))
 			}
 
-//			registerObject("project_folder", new FolderFactory(repoFolder, ""))
+			registerObject("project_folder", new FolderFactory(repoFolder, ""))
 //
 //			// Support DEV related CI workflow
 //			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
