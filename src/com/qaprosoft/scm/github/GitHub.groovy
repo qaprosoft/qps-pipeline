@@ -40,7 +40,7 @@ class GitHub implements ISCM {
 
             def fork = parseFork(Configuration.get("fork"))
             def branch = Configuration.get("branch")
-            def project = Configuration.get("project")
+            def repo = Configuration.get("repo")
             def userId = Configuration.get("BUILD_USER_ID")
 
             logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
@@ -71,7 +71,7 @@ class GitHub implements ISCM {
 				}
                 if (token_value != null) {
                     def GITHUB_HOST = Configuration.get(Configuration.Parameter.GITHUB_HOST)
-					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${project}"
+					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${repo}"
                     logger.info("fork repo url: ${gitUrl}")
                     scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', '')
 				} else {
