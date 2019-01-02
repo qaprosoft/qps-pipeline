@@ -12,7 +12,7 @@ def slurper = new JsonSlurper()
 
 String factoryDataMap = readFileFromWorkspace("factories.json")
 logger.info("FactoryDataMap: ${JsonOutput.prettyPrint(factoryDataMap)}")
-def factories = new HashMap(slurper.parseText(factoryDataMap))
+def factories = new LinkedHashMap(slurper.parseText(factoryDataMap))
 boolean exceptionOccurred = false
 
 factories.each{
