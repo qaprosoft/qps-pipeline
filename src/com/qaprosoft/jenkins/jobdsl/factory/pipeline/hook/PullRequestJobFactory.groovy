@@ -74,10 +74,6 @@ public class PullRequestJobFactory extends PipelineFactory {
 		return pipelineJob
 	}
 
-	protected def getOrganization() {
-		return 'qaprosoft'
-	}
-
 	protected def getGitHubAuthId(project) {
 		return "https://api.github.com : ${project}-token"
 	}
