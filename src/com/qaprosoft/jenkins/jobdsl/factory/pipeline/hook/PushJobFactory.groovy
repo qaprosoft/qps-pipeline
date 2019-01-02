@@ -23,7 +23,7 @@ public class PushJobFactory extends PipelineFactory {
 	}
 
 	def create() {
-
+		logger.info("BARANCH: " + branch)
 		def pipelineJob = super.create()
 
 		pipelineJob.with {
