@@ -171,7 +171,7 @@ public class Executor {
 
     static def getJenkinsFolderByName(folderName) {
         def currentJob = null
-        Jenkins.getInstance().getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob).each { job ->
+        Jenkins.getInstance().getAllItems(com.cloudbees.hudson.plugins.folder.Folder).each { job ->
             if (job.displayName == folderName) {
                 currentJob = job
             }
