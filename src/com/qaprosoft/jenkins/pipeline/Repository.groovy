@@ -43,14 +43,14 @@ class Repository {
 		}
 
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
-		def project = Configuration.get("repo")
-		def newJob = project + "/" + "onPush-" + project
+		def repo = Configuration.get("repo")
+		def newJob = "${Configuration.get("organization")}/${repo}" + "/" + "onPush-" + repo
 
 		context.build job: newJob,
 		propagate: true,
 		parameters: [
 			context.string(name: 'branch', value: Configuration.get("branch")),
-			context.string(name: 'project', value: project),
+			context.string(name: 'project', value: repo),
 			context.booleanParam(name: 'onlyUpdated', value: false),
 			context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
 			context.string(name: 'removedJobAction', value: 'DELETE'),
