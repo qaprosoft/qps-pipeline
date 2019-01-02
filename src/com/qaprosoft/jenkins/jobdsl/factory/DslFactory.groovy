@@ -9,7 +9,6 @@ public class DslFactory {
 
     def _dslFactory
     def clazz
-    def logLevel
     Logger logger
 
 	// ATTENTION! this is very important constructor. Please do not override on children level constructor with single argument
