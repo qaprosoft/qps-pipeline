@@ -107,10 +107,6 @@ class Repository {
 
 
 			// TODO: move folder and main trigger job creation onto the createRepository method
-//			if(!isParamEmpty(organization) && isParamEmpty(getJenkinsFolderByName(organization))){
-//
-//			}
-
 
 			// Support DEV related CI workflow
 			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
