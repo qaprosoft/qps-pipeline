@@ -151,11 +151,12 @@ public class QARunner extends AbstractRunner {
 
         context.stage("Scan Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            def project = Configuration.get("project")
-            def jobFolder = Configuration.get("project")
-
+			def organization = Configuration.get("organization")
+            def repo = Configuration.get("repo")
+            def repoFolder = "${organization}/${repo}"
             def branch = Configuration.get("branch")
-            currentBuild.displayName = "#${buildNumber}|${project}|${branch}"
+
+            currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
             def workspace = getWorkspace()
             logger.info("WORKSPACE: ${workspace}")
@@ -182,7 +183,7 @@ public class QARunner extends AbstractRunner {
 
             def jenkinsFile = ".jenkinsfile.json"
             if (!context.fileExists("${workspace}/${jenkinsFile}")) {
-                logger.warn("Skip repository scan as no .jenkinsfile.json discovered! Project: ${project}")
+                logger.warn("Skip repository scan as no .jenkinsfile.json discovered! Project: ${repo}")
                 currentBuild.result = BuildResult.UNSTABLE
                 return
             }
@@ -204,7 +205,7 @@ public class QARunner extends AbstractRunner {
                 def suiteFilter = it.suite_filter
 
 				if (suiteFilter.isEmpty()) {
-					logger.warn("Skip repository scan as no suiteFilter identified! Project: ${project}")
+					logger.warn("Skip repository scan as no suiteFilter identified! Project: ${repo}")
 					return
 				}
 
@@ -226,7 +227,7 @@ public class QARunner extends AbstractRunner {
                 logger.info("testngFolder: " + testngFolder)
 
                 // VIEWS
-                registerObject("cron", new ListViewFactory(jobFolder, 'CRON', '.*cron.*'))
+                registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
                 //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
                 //TODO: create default personalized view here
@@ -259,14 +260,14 @@ public class QARunner extends AbstractRunner {
                             }
 
                             // put standard views factory into the map
-                            registerObject(currentZafiraProject, new ListViewFactory(jobFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
-                            registerObject(suiteOwner, new ListViewFactory(jobFolder, suiteOwner, ".*${suiteOwner}"))
+                            registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+                            registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
 
                             //pipeline job
                             //TODO: review each argument to TestJobFactory and think about removal
                             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-                            def jobDesc = "project: ${project}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                            registerObject(suiteName, new TestJobFactory(jobFolder, getPipelineScript(), project, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+                            def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+                            registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), repo, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 
                             //cron job
                             if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
@@ -274,8 +275,8 @@ public class QARunner extends AbstractRunner {
                                 def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
                                 for (def cronJobName : cronJobNames.split(",")) {
                                     cronJobName = cronJobName.trim()
-                                    def cronDesc = "project: ${project}; type: cron"
-                                    registerObject(cronJobName, new CronJobFactory(jobFolder, getCronPipelineScript(), cronJobName, project, getWorkspace() + "/" + suite.path, cronDesc))
+                                    def cronDesc = "project: ${repo}; type: cron"
+                                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, repo, getWorkspace() + "/" + suite.path, cronDesc))
                                 }
                             }
                         }
