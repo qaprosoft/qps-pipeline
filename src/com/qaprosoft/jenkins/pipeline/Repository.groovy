@@ -82,28 +82,35 @@ class Repository {
 
 		context.stage("Create Repository") {
 			def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+
 			def organization = Configuration.get("organization")
+			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
+
 			def repo = Configuration.get("repo")
-			def tokenId = "${organization}-${repo}"
 			def branch = Configuration.get("branch")
 			def repoFolder
 			if(!isParamEmpty(organization)){
+				if(isParamEmpty(getJenkinsFolderByName(organization))){
+					registerObject("organization_folder", new FolderFactory(organization, ""))
+				}
 				repoFolder = "${organization}/${repo}"
 			} else {
 				repoFolder = repo
 			}
-			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
-
-//			addCredentialsToJenkins(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
 
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
+			registerObject("project_folder", new FolderFactory(repoFolder, ""))
+
+//			def tokenId = "${organization}-${repo}"
+//			addCredentialsToJenkins(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
+
+
 			// TODO: move folder and main trigger job creation onto the createRepository method
 //			if(!isParamEmpty(organization) && isParamEmpty(getJenkinsFolderByName(organization))){
-//				registerObject("organization_folder", new FolderFactory(organization, ""))
+//
 //			}
 
-			registerObject("project_folder", new FolderFactory(repoFolder, ""))
 
 			// Support DEV related CI workflow
 			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
