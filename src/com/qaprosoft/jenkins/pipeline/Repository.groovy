@@ -85,13 +85,13 @@ class Repository {
 			def branch = Configuration.get("branch")
 
 			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
-
-//			addCredentialsToJenkins(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
+			
+			addCredentialsToJenkins(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
 
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
 			// TODO: move folder and main trigger job creation onto the createRepository method
-			registerObject("project_folder", new FolderFactory("${organization}/${repoFolder}", ""))
+			registerObject("project_folder", new FolderFactory(repoFolder, ""))
 
 			// Support DEV related CI workflow
 			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
