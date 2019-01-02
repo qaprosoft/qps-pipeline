@@ -6,15 +6,20 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 @InheritConstructors
 public class PushJobFactory extends PipelineFactory {
 
-	def project
+	def organization
+	def repo
+	def branch
     def scmProjectUrl
 
-	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, project, scmProjectUrl) {
+	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, branch, scmProjectUrl) {
+
 		this.folder = folder
 		this.pipelineScript = pipelineScript
 		this.name = jobName
 		this.description = jobDesc
-		this.project = project
+		this.organization = organization
+		this.repo = repo
+		this.branch = branch
         this.scmProjectUrl = scmProjectUrl
 	}
 
@@ -23,6 +28,7 @@ public class PushJobFactory extends PipelineFactory {
 		def pipelineJob = super.create()
 
 		pipelineJob.with {
+			//noinspection GroovyAssignabilityCheck
 			properties {
 				//TODO: add SCM artifacts
 				githubProjectUrl(scmProjectUrl)
@@ -35,9 +41,10 @@ public class PushJobFactory extends PipelineFactory {
 
 			//TODO: think about other parameters to support DevOps CI operations
 			parameters {
-				stringParam('project', project, 'Your GitHub repository for scanning')
+				stringParam('organization', organization, 'Your GitHub organization')
+				stringParam('project', repo, 'GitHub repository for scanning')
 				//TODO: analyze howto support several gc_GIT_BRACH basing on project
-				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", "master")
+				configure addExtensibleChoice('branch', branch, "Select a GitHub Testing Repository Branch to run against", "master")
 				booleanParam('onlyUpdated', true, '	If chosen, scan will be performed only in case of any change in *.xml suites.')
 				choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
 				choiceParam('removedJobAction', ['IGNORE', 'DELETE'], '')
@@ -46,10 +53,6 @@ public class PushJobFactory extends PipelineFactory {
 
 		}
 		return pipelineJob
-	}
-
-	protected def getOrganization() {
-		return 'qaprosoft'
 	}
 
 	protected def getGitHubAuthId(project) {
