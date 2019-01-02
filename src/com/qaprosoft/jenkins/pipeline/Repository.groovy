@@ -114,9 +114,9 @@ class Repository {
 
 			context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
 				sandbox: true,
-				removedConfigFilesAction: 'IGNORE',
-				removedJobAction: 'IGNORE',
-				removedViewAction: 'IGNORE',
+				removedConfigFilesAction: 'DELETE',
+				removedJobAction: 'DELETE',
+				removedViewAction: 'DELETE',
 				targets: FACTORY_TARGET,
 				ignoreExisting: false
 
