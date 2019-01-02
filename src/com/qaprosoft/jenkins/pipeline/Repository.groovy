@@ -43,8 +43,9 @@ class Repository {
 		}
 
 		// execute new _trigger-<project> to regenerate other views/jobs/etc
-		def organization = Configuration.get("organization")
+		def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
 		def repo = Configuration.get("repo")
+		logger.info("REPO: " + repo)
 		def branch = Configuration.get("branch")
 
 		def jobName = "${organization}/${repo}" + "/" + "onPush-" + repo

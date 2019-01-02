@@ -150,7 +150,7 @@ public class QARunner extends AbstractRunner {
 
         context.stage("Scan Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-			def organization = Configuration.get("organization")
+			def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def repo = Configuration.get("repo")
             def repoFolder = "${organization}/${repo}"
             def branch = Configuration.get("branch")
