@@ -374,8 +374,8 @@ public class QARunner extends AbstractRunner {
                     throw e
                 } finally {
 					currentBuild.rawBuild.getActions(jenkins.model.InterruptedBuildAction.class).each { action ->
-						action.getCauses().each {
-							logger.info("CAUSE_DUMP: " + action.dump())
+						action.getCauses().each { cause ->
+							logger.info("CAUSE_DUMP: " + cause.dump())
 						}
 					}
                     qTestUpdater.updateTestRun(uuid,  isRerun)
