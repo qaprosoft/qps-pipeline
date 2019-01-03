@@ -379,7 +379,7 @@ public class QARunner extends AbstractRunner {
 //						}
 //					}
 					currentBuild.rawBuild.getActions(jenkins.model.InterruptedBuildAction.class).each { action ->
-						logger.info("FIND_CAUSE: " + action.findCause(jenkins.model.CauseOfInterruption$UserInterruption))
+						logger.info("FIND_CAUSE: " + action.findCause(jenkins.model.CauseOfInterruption$UserInterruption.class))
 					}
                     qTestUpdater.updateTestRun(uuid,  isRerun)
                     testRailUpdater.updateTestRun(uuid, isRerun, true)
