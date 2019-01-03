@@ -373,8 +373,10 @@ public class QARunner extends AbstractRunner {
                     zafiraUpdater.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-					currentBuild.rawBuild.getActions(jenkins.model.InterruptedBuildAction.class).getCauses().each { action ->
-						logger.info("ACTION_DUMP: " + action.dump())
+					currentBuild.rawBuild.getActions(jenkins.model.InterruptedBuildAction.class).each { action ->
+						action.getCauses().each {
+							logger.info("CAUSE_DUMP: " + action.dump())
+						}
 					}
                     qTestUpdater.updateTestRun(uuid,  isRerun)
                     testRailUpdater.updateTestRun(uuid, isRerun, true)
