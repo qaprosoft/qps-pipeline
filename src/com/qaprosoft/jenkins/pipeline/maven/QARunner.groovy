@@ -365,13 +365,9 @@ public class QARunner extends AbstractRunner {
                             buildJob()
                         }
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-						currentBuild.rawBuild.getActions(jenkins.model.InterruptedBuildAction.class).each { action ->
-							action.getCauses().each { cause ->
-								if(cause.class.getName().equals("jenkins.model.CauseOfInterruption\$UserInterruption")){
-									zafiraUpdater.abortTestRun(uuid, currentBuild)
-								}
-								logger.info("CAUSE_DUMP: " + cause.dump())
-							}
+						if(!isParamEmpty(getAbortCause(currentBuild))){
+							zafiraUpdater.abortTestRun(uuid, currentBuild)
+							logger.info("CAUSE_DUMP: ")
 						}
 						//TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
