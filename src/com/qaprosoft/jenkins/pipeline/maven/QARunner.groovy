@@ -365,7 +365,15 @@ public class QARunner extends AbstractRunner {
                             buildJob()
                         }
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-                        //TODO: think about seperate stage for uploading jacoco reports
+						currentBuild.rawBuild.getActions(jenkins.model.InterruptedBuildAction.class).each { action ->
+							action.getCauses().each { cause ->
+								if(cause.class.getName().equals("jenkins.model.CauseOfInterruption\$UserInterruption")){
+									zafiraUpdater.abortTestRun(uuid, currentBuild)
+								}
+								logger.info("CAUSE_DUMP: " + cause.dump())
+							}
+						}
+						//TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
                     }
                 } catch (Exception e) {
@@ -373,17 +381,6 @@ public class QARunner extends AbstractRunner {
                     zafiraUpdater.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
-					currentBuild.rawBuild.getActions(jenkins.model.InterruptedBuildAction.class).each { action ->
-						action.getCauses().each { cause ->
-							if(cause.class.getName().equals("jenkins.model.CauseOfInterruption\$UserInterruption")){
-								zafiraUpdater.abortTestRun(uuid, currentBuild)
-							}
-							logger.info("CAUSE_DUMP: " + cause.dump())
-						}
-					}
-//					currentBuild.rawBuild.getActions(jenkins.model.InterruptedBuildAction.class).each { action ->
-//						logger.info("FIND_CAUSE: " + action.findCause(jenkins.model.CauseOfInterruption$UserInterruption.class))
-//					}
                     qTestUpdater.updateTestRun(uuid,  isRerun)
                     testRailUpdater.updateTestRun(uuid, isRerun, true)
                     zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
