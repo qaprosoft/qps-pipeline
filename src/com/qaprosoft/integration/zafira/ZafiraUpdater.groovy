@@ -128,7 +128,7 @@ class ZafiraUpdater {
 
     public def setBuildResult(uuid, currentBuild) {
         def testRun = getTestRun(uuid)
-        if(isFailure(testRun.status)){
+        if(!isParamEmpty(testRun) && isFailure(testRun.status)){
             currentBuild.result = BuildResult.FAILURE
         }
     }
