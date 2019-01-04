@@ -11,6 +11,9 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import groovy.json.JsonOutput
+import com.cloudbees.plugins.credentials.impl.*
+import com.cloudbees.plugins.credentials.*
+import com.cloudbees.plugins.credentials.domains.*
 
 class Repository {
 
@@ -102,7 +105,13 @@ class Repository {
 
 			registerObject("project_folder", new FolderFactory(repoFolder, ""))
 
-//			def tokenId = "${organization}-${repo}"
+			def tokenId = "${organization}-${repo}"
+
+			def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
+
+			credentialsStore.getCredentials(Domain.global()).each { creds ->
+				logger
+			}
 //			addCredentialsToJenkins(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
 
 
