@@ -73,10 +73,10 @@ class TestRailUpdater {
     protected def getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
 		// "-120" to resolve potential time async with testrail upto 2 min
         def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 120, assignedToId, milestoneId, projectId, suiteId)
-//        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
+        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		def run = null
         testRuns.each { Map testRun ->
-//            logger.debug("TEST_RUN: " + formatJson(testRun))
+            logger.debug("TEST_RUN: " + formatJson(testRun))
             if(testRun.name.equals(testRunName)){
                 integration.testRunId = testRun.id
 				run = testRun
@@ -122,12 +122,12 @@ class TestRailUpdater {
     protected def parseCases(projectId, suiteId){
         Set validTestCases = new HashSet()
         def cases = trc.getCases(projectId, suiteId)
-//        logger.debug("SUITE_CASES: " + formatJson(cases))
+        logger.debug("SUITE_CASES: " + formatJson(cases))
         cases.each { testCase ->
             validTestCases.add(testCase.id)
         }
         integration.validTestCases = validTestCases
-//        logger.debug("VALID_CASES: " + formatJson(validTestCases))
+        logger.debug("VALID_CASES: " + formatJson(validTestCases))
 
         filterCases()
     }
@@ -146,12 +146,12 @@ class TestRailUpdater {
                 logger.error("Removed non-existing case: ${testCase.value.case_id}.\nPlease adjust your test code using valid platfrom/language/locale filters for TestRail cases registration.")
             }
         }
-//        logger.debug("CASES_MAP:\n" + formatJson(integration.caseResultMap))
+        logger.debug("CASES_MAP:\n" + formatJson(integration.caseResultMap))
     }
 
     protected def getTests(){
         def tests = trc.getTests(integration.testRunId)
-//        logger.debug("TESTS_MAP:\n" + formatJson(tests))
+        logger.debug("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
             for(validTestCaseId in integration.validTestCases){
                 if(validTestCaseId == test.case_id){
@@ -185,7 +185,7 @@ class TestRailUpdater {
         integration.testRunId = testRunId
         getTests()
         def response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
-//        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
+        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
     }
     
     protected def parseTagData(){
