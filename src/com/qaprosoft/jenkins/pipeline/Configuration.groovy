@@ -87,7 +87,10 @@ public class Configuration {
 
 		//Make sure that URLs have trailing slash
 		TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", ""), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
+		TESTRAIL_ENABLE("enable_testrail", "false"),
+
 		QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
+		QTEST_ENABLE("enable_qtest", "true"),
 
 		private final String key
 		private final String value
