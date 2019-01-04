@@ -90,7 +90,7 @@ public class Configuration {
 		TESTRAIL_ENABLE("testrail_enabled", "false"),
 
 		QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
-		QTEST_ENABLE("qtest_enabled", "true"),
+		QTEST_ENABLE("qtest_enabled", "false"),
 
 		private final String key
 		private final String value
