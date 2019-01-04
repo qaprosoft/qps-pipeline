@@ -66,8 +66,13 @@ public class Executor {
     }
 
     static def addCredentialsToJenkins(id, description, user, password) {
-        Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
-        SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), c)
+        def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
+
+        credentialsStore.getCredentials(Domain.global()).each { creds ->
+            logger
+        }
+//        Credentials newCreds = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
+//        credentialsStore.addCredentials(Domain.global(), newCreds)
     }
 
     static boolean isMobile() {
