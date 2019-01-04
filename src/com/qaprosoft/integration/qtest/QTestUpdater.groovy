@@ -3,6 +3,8 @@ package com.qaprosoft.integration.qtest
 import com.qaprosoft.Logger
 import com.qaprosoft.integration.zafira.IntegrationTag
 import com.qaprosoft.integration.zafira.ZafiraClient
+import com.qaprosoft.jenkins.pipeline.Configuration
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class QTestUpdater {
@@ -22,7 +24,7 @@ class QTestUpdater {
     }
 
     public void updateTestRun(uuid, isRerun) {
-        if (!qTestClient.isAvailable()) {
+        if (!Configuration.get(Configuration.Parameter.QTEST_ENABLE).toBoolean() || !qTestClient.isAvailable()) {
             // do nothing
             return
         }
