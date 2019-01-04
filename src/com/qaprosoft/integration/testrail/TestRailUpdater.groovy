@@ -3,6 +3,7 @@ package com.qaprosoft.integration.testrail
 
 import com.qaprosoft.Logger
 import com.qaprosoft.integration.zafira.StatusMapper
+import com.qaprosoft.jenkins.pipeline.Configuration
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.integration.zafira.ZafiraClient
@@ -24,7 +25,7 @@ class TestRailUpdater {
     }
 
     public void updateTestRun(uuid, isRerun, boolean includeAll) {
-		if (!trc.isAvailable()) {
+		if (!Configuration.get(Configuration.Parameter.TESTRAIL_ENABLE).toBoolean() || !trc.isAvailable()) {
 			// do nothing
 			return
 		}
