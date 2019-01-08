@@ -73,6 +73,24 @@ class TestRailUpdater {
         }
 
         if(isParamEmpty(testRun)){
+            if(!isParamEmpty(testRunName)){
+                logger.info(testRunName.dump())
+            }
+            if(!isParamEmpty(suiteId)){
+                logger.info(suiteId.dump())
+            }
+            if(!isParamEmpty(projectId)){
+                logger.info(projectId.dump())
+            }
+            if(!isParamEmpty(milestoneId)){
+                logger.info(milestoneId.dump())
+            }
+            if(!isParamEmpty(assignedToId)){
+                logger.info(assignedToId.dump())
+            }
+            if(!isParamEmpty(includeAll)){
+                logger.info(includeAll.dump())
+            }
             testRun = addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll)
         }
         addResults(testRun.id)
