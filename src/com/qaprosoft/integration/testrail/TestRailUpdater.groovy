@@ -52,7 +52,13 @@ class TestRailUpdater {
         def suiteId = integration.suiteId
         def milestoneId = getMilestoneId(projectId)
         def assignedToId = getAssignedToId()
-        def testRunName = integration.testRunName
+        def testRunName
+        if(!isParamEmpty(integration.customParams.get("testrail_run_name"))){
+            testRunName = integration.customParams.get("testrail_run_name")
+            isRerun = true
+        } else {
+            testRunName = integration.testRunName
+        }
         def createdAfter = integration.createdAfter
         // get all cases from TestRail by project and suite and compare with exported from Zafira
         // only cases available in both maps should be registered later
