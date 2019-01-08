@@ -76,7 +76,7 @@ class TestRailClient extends HttpClient{
                     name: testRunName,
                     milestone_id: milestoneId,
                     assignedto_id: assignedToId,
-                    include_all: includeAll,
+                    include_all: includeAll.toBoolean(),
                     case_ids: caseIds
         }
         logger.info("TEST_RUN_TO_ADD:\n" + jsonBuilder.toPrettyString())
