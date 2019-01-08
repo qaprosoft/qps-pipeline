@@ -48,28 +48,28 @@ class TestRailUpdater {
         }
         def includeAll = !isParamEmpty(Configuration.get("include_all"))?Configuration.get("include_all"):true
         logger.info("INCLUDE_ALL: " + includeAll)
-//        def projectId = integration.projectId
-//        def suiteId = integration.suiteId
-//        def milestoneId = getMilestoneId(projectId)
-//        def assignedToId = getAssignedToId()
-//        def testRunName = integration.testRunName
-//        def createdAfter = integration.createdAfter
-//        // get all cases from TestRail by project and suite and compare with exported from Zafira
-//        // only cases available in both maps should be registered later
-//        parseCases(projectId, suiteId)
-//
-//        def testRun = null
-//        if(isRerun){
-//            testRun = getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
-//            if (isParamEmpty(testRun)) {
-//                logger.error("Unable to detect existing run in TestRail for rebuild!")
-//            }
-//        }
+        def projectId = integration.projectId
+        def suiteId = integration.suiteId
+        def milestoneId = getMilestoneId(projectId)
+        def assignedToId = getAssignedToId()
+        def testRunName = integration.testRunName
+        def createdAfter = integration.createdAfter
+        // get all cases from TestRail by project and suite and compare with exported from Zafira
+        // only cases available in both maps should be registered later
+        parseCases(projectId, suiteId)
 
-//        if(isParamEmpty(testRun)){
-//            testRun = addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll)
-//        }
-//        addResults(testRun.id)
+        def testRun = null
+        if(isRerun){
+            testRun = getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
+            if (isParamEmpty(testRun)) {
+                logger.error("Unable to detect existing run in TestRail for rebuild!")
+            }
+        }
+
+        if(isParamEmpty(testRun)){
+            testRun = addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll)
+        }
+        addResults(testRun.id)
     }
 
     protected def getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
