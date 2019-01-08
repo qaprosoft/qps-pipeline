@@ -103,7 +103,8 @@ class TestRailUpdater {
 		def run = null
         testRuns.each { Map testRun ->
             logger.info("TEST_RUN: " + formatJson(testRun))
-            if(testRun.name.equals(testRunName)){
+            String correctedName = testRun.name.trim().replaceAll(" +", " ")
+            if(correctedName.equals(testRunName)){
                 integration.testRunId = testRun.id
 				run = testRun
                 return run
