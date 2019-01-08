@@ -85,7 +85,7 @@ public class QARunner extends AbstractRunner {
 
     //Events
     public void onPush() {
-        context.node("master") {
+        context.node("api") {
             context.timestamps {
                 logger.info("QARunner->onPush")
                 prepare()
