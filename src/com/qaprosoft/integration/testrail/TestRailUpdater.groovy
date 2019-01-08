@@ -131,6 +131,8 @@ class TestRailUpdater {
             def milestone = trc.addMilestone(projectId, milestoneName)
             if(!isParamEmpty(milestone)){
                 milestoneId = milestone.id
+            } else {
+                logger.error("Unable to add milestone ${milestoneName}!")
             }
         }
         return milestoneId
