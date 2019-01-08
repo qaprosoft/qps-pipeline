@@ -77,6 +77,7 @@ class TestRailUpdater {
             testRun = addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll)
             if (isParamEmpty(testRun)) {
                 logger.error("Unable to add test run in TestRail!")
+                return
             }
         }
         addResults(testRun.id)
