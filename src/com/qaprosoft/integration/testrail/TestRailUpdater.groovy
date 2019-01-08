@@ -202,7 +202,7 @@ class TestRailUpdater {
 //        logger.debug("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
     }
 
-    protected def addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, boolean includeAll){
+    protected def addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll){
         def testRun = trc.addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, integration.caseResultMap.keySet(), projectId)
         logger.debug("ADDED TESTRUN:\n" + formatJson(testRun))
         return testRun
