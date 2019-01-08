@@ -67,6 +67,7 @@ class TestRailUpdater {
         def testRun = null
         if(isRerun){
             testRun = getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
+			logger.info("TEST_RUN_FOUND: " + testRun)
             if (isParamEmpty(testRun)) {
                 logger.error("Unable to detect existing run in TestRail for rebuild!")
             }
