@@ -24,7 +24,7 @@ class TestRailUpdater {
         logger = new Logger(context)
     }
 
-    public void updateTestRun(uuid, isRerun, boolean includeAll) {
+    public void updateTestRun(uuid, isRerun) {
 		if (!Configuration.get(Configuration.Parameter.TESTRAIL_ENABLE).toBoolean() || !trc.isAvailable()) {
 			// do nothing
 			return
@@ -46,6 +46,7 @@ class TestRailUpdater {
             logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
             return
         }
+        def includeAll = !isParamEmpty(Configuration.get("include_all"))?Configuration.get("include_all"):true
         def projectId = integration.projectId
         def suiteId = integration.suiteId
         def milestoneId = getMilestoneId(projectId)

@@ -377,7 +377,7 @@ public class QARunner extends AbstractRunner {
                     throw e
                 } finally {
                     qTestUpdater.updateTestRun(uuid,  isRerun)
-                    testRailUpdater.updateTestRun(uuid, isRerun, true)
+                    testRailUpdater.updateTestRun(uuid, isRerun)
                     zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                     zafiraUpdater.setBuildResult(uuid, currentBuild)
                     publishJenkinsReports()
