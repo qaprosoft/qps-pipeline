@@ -61,6 +61,7 @@ class TestRailClient extends HttpClient{
 
 
     public def addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, caseIds, projectID) {
+        includeAll = includeAll.toBoolean()
         // default request body without milestone id
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder suite_id: suiteId,
@@ -76,7 +77,7 @@ class TestRailClient extends HttpClient{
                     name: testRunName,
                     milestone_id: milestoneId,
                     assignedto_id: assignedToId,
-                    include_all: includeAll.toBoolean(),
+                    include_all: includeAll,
                     case_ids: caseIds
         }
         logger.info("TEST_RUN_TO_ADD:\n" + jsonBuilder.toPrettyString())
