@@ -115,8 +115,8 @@ class TestRailUpdater {
 
     protected def getMilestoneId(projectId){
         Map customParams = integration.customParams
-        if(!isParamEmpty(customParams.milestone)) {
-            logger.error("No milstone name discovered!")
+        if(isParamEmpty(customParams.milestone)) {
+            logger.error("No milestone name discovered!")
             return
         }
         def milestoneName = customParams.milestone
@@ -131,8 +131,6 @@ class TestRailUpdater {
             def milestone = trc.addMilestone(projectId, milestoneName)
             if(!isParamEmpty(milestone)){
                 milestoneId = milestone.id
-            } else {
-                logger.error("Unable to add milestone ${milestoneName}!")
             }
         }
         return milestoneId
