@@ -9,18 +9,18 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class TestJobFactory extends PipelineFactory {
-	def project
+	def repo
 	def sub_project
 	def zafira_project
 	def suitePath
 	def suiteName
 
 
-	public TestJobFactory(folder, pipelineScript, project, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
+	public TestJobFactory(folder, pipelineScript, repo, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
 		this.folder = folder
         this.description = jobDesc
 		this.pipelineScript = pipelineScript
-		this.project = project
+		this.repo = repo
 		this.sub_project = sub_project
 		this.zafira_project = zafira_project
 		this.suitePath = suitePath
@@ -71,7 +71,7 @@ public class TestJobFactory extends PipelineFactory {
 					}
 				}
 
-				booleanParam('fork', false, "Reuse forked repository for ${project} project.")
+				booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
 				booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
 				def defaultMobilePool = currentSuite.getParameter("jenkinsMobileDefaultPool")
@@ -161,7 +161,7 @@ public class TestJobFactory extends PipelineFactory {
 					gitBranch = currentSuite.getParameter("jenkinsDefaultGitBranch")
 				}
 				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", gitBranch)
-				configure addHiddenParameter('project', '', project)
+				configure addHiddenParameter('repo', '', repo)
 				configure addHiddenParameter('sub_project', '', sub_project)
 				configure addHiddenParameter('zafira_project', '', zafira_project)
 				configure addHiddenParameter('suite', '', suiteName)
