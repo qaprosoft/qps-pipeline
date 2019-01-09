@@ -80,7 +80,7 @@ class TestRailClient extends HttpClient{
                     include_all: includeAll,
                     case_ids: caseIds
         }
-        logger.info("TEST_RUN_TO_ADD:\n" + jsonBuilder.toPrettyString())
+        logger.debug("TEST_RUN_TO_ADD:\n" + jsonBuilder.toPrettyString())
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
