@@ -344,7 +344,6 @@ public class QARunner extends AbstractRunner {
         uuid = getUUID()
         logger.info("UUID: " + uuid)
         def isRerun = isRerun()
-        logger.info("SEARCH: " + isRerun)
         String nodeName = "master"
         context.node(nodeName) {
             zafiraUpdater.queueZafiraTestRun(uuid)
@@ -377,7 +376,7 @@ public class QARunner extends AbstractRunner {
                     throw e
                 } finally {
                     qTestUpdater.updateTestRun(uuid,  isRerun)
-                    testRailUpdater.updateTestRun(uuid, isRerun, true)
+                    testRailUpdater.updateTestRun(uuid, isRerun)
                     zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                     zafiraUpdater.setBuildResult(uuid, currentBuild)
                     publishJenkinsReports()

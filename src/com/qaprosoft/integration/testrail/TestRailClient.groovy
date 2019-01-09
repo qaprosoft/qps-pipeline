@@ -61,6 +61,7 @@ class TestRailClient extends HttpClient{
 
 
     public def addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, caseIds, projectID) {
+        includeAll = includeAll.toBoolean()
         // default request body without milestone id
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder suite_id: suiteId,
@@ -79,6 +80,7 @@ class TestRailClient extends HttpClient{
                     include_all: includeAll,
                     case_ids: caseIds
         }
+        logger.debug("TEST_RUN_TO_ADD:\n" + jsonBuilder.toPrettyString())
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
