@@ -45,7 +45,7 @@ class Repository {
 			}
 		}
 
-		// execute new _trigger-<project> to regenerate other views/jobs/etc
+		// execute new _trigger-<repo> to regenerate other views/jobs/etc
 		def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
 		def repo = Configuration.get("repo")
 		def branch = Configuration.get("branch")
