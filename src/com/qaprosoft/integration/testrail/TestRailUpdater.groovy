@@ -82,8 +82,8 @@ class TestRailUpdater {
     }
 
     protected def getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
-		// "-120" to resolve potential time async with testrail upto 2 min
-        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 120, assignedToId, milestoneId, projectId, suiteId)
+		// "- 60 * 24 * 7" - a week to support adding results into manually created TestRail runs
+        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 24 * 7, assignedToId, milestoneId, projectId, suiteId)
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		def run = null
         testRuns.each { Map testRun ->
