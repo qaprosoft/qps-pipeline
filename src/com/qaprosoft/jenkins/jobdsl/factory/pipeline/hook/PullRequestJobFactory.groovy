@@ -8,10 +8,9 @@ public class PullRequestJobFactory extends PipelineFactory {
 
 	def organization
 	def repo
-	def branch
-    def scmProjectUrl
+    def scmRepoUrl
 
-    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, branch, scmProjectUrl) {
+    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, scmRepoUrl) {
 
         this.folder = folder
         this.pipelineScript = pipelineScript
@@ -19,8 +18,7 @@ public class PullRequestJobFactory extends PipelineFactory {
         this.description = jobDesc
 		this.organization = organization
 		this.repo = repo
-		this.branch = branch
-        this.scmProjectUrl = scmProjectUrl
+        this.scmRepoUrl = scmRepoUrl
     }
 
 	def create() {
@@ -32,17 +30,17 @@ public class PullRequestJobFactory extends PipelineFactory {
             scm {
                 git {
                     remote {
-                        url(scmProjectUrl)
+                        url(scmRepoUrl)
                     }
                 }
             }
 			properties {
-				githubProjectUrl(scmProjectUrl)
+				githubProjectUrl(scmRepoUrl)
 				//TODO: test with removed "cron('H/5 * * * *')"
 				pipelineTriggers {
 					triggers {
 						ghprbTrigger {
-							gitHubAuthId(getGitHubAuthId(repo))
+							gitHubAuthId("https://api.github.com : ${repo}-token")
 							adminlist('')
 							useGitHubHooks(true)
 							triggerPhrase('')
@@ -72,9 +70,5 @@ public class PullRequestJobFactory extends PipelineFactory {
 
 		}
 		return pipelineJob
-	}
-
-	protected def getGitHubAuthId(project) {
-		return "https://api.github.com : ${project}-token"
 	}
 }

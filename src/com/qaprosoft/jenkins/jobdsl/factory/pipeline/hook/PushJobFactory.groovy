@@ -9,9 +9,9 @@ public class PushJobFactory extends PipelineFactory {
 	def organization
 	def repo
 	def branch
-    def scmProjectUrl
+    def scmRepoUrl
 
-	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, branch, scmProjectUrl) {
+	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, branch, scmRepoUrl) {
 		this.folder = folder
 		this.pipelineScript = pipelineScript
 		this.name = jobName
@@ -19,7 +19,7 @@ public class PushJobFactory extends PipelineFactory {
 		this.organization = organization
 		this.repo = repo
 		this.branch = branch
-        this.scmProjectUrl = scmProjectUrl
+        this.scmRepoUrl = scmRepoUrl
 	}
 
 	def create() {
@@ -28,7 +28,7 @@ public class PushJobFactory extends PipelineFactory {
 		pipelineJob.with {
 			properties {
 				//TODO: add SCM artifacts
-				githubProjectUrl(scmProjectUrl)
+				githubProjectUrl(scmRepoUrl)
 				pipelineTriggers {
 					triggers {
 						githubPush()
