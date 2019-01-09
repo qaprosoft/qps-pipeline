@@ -66,7 +66,6 @@ class TestRailUpdater {
         def testRun = null
         if(isRerun){
             testRun = getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
-			logger.info("TEST_RUN_FOUND: " + testRun)
             if (isParamEmpty(testRun)) {
                 logger.error("Unable to detect existing run in TestRail for rebuild!")
             }
@@ -85,10 +84,10 @@ class TestRailUpdater {
     protected def getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
 		// "-120" to resolve potential time async with testrail upto 2 min
         def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 120, assignedToId, milestoneId, projectId, suiteId)
-        logger.info("TEST_RUNS:\n" + formatJson(testRuns))
+//        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		def run = null
         testRuns.each { Map testRun ->
-            logger.debug("TEST_RUN: " + formatJson(testRun))
+//            logger.debug("TEST_RUN: " + formatJson(testRun))
             String correctedName = testRun.name.trim().replaceAll(" +", " ")
             if(correctedName.equals(testRunName)){
                 integration.testRunId = testRun.id
