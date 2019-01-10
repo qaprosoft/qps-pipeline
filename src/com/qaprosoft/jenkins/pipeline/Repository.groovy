@@ -110,7 +110,7 @@ class Repository {
 			def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
 
 			credentialsStore.getCredentials(Domain.global()).each {
-				logger.info("CREDS_FROM_STORE: ${it}")
+				logger.info("CREDS_FROM_STORE: ${it.dump()}")
 			}
 //			addCredentialsToJenkins(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
 
