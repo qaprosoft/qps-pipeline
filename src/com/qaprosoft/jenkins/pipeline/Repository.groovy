@@ -112,6 +112,19 @@ class Repository {
 			credentialsStore.getCredentials(Domain.global()).each {
 				logger.info("CREDS_FROM_STORE: ${it.dump()}")
 			}
+
+			credentialsStore.getCredentials(Domain.global()).each {
+				if(it.id.equals(tokenId)) {
+					credentialsStore.removeCredentials(Domain.global())
+					Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(tokenId, "${organization} GitHub token replased", tokenId, Configuration.get("token"))
+					credentialsStore.addCredentials(Domain.global(), c)
+				}
+			}
+
+			credentialsStore.getCredentials(Domain.global()).each {
+				logger.info("CREDS_FROM_STORE_UPDATED: ${it.dump()}")
+			}
+
 //			addCredentialsToJenkins(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
 
 
