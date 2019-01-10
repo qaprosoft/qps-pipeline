@@ -115,6 +115,9 @@ class Repository {
 
 			GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
 			List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
+			githubAuths.each {
+				logger.info(it.dump())
+			}
 			githubAuths.clear()
 			githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${organization} connection", null, null))
 			descriptor.save()
