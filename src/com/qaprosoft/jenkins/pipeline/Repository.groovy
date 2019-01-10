@@ -105,6 +105,10 @@ class Repository {
 			def credentialsId = "${organization}-${repo}"
 			updateJenkinsCredentials(credentialsId, "${organization} GitHub token", Configuration.get("user"), Configuration.get("token"))
 
+			credentialsStore.getCredentials(Domain.global()).each {
+				logger.info("CREDS: " + it.dump())
+			}
+
 			GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
 			List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
 			githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${organization} connection", null, null))
