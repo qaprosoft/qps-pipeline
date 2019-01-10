@@ -3,6 +3,7 @@ package com.qaprosoft.integration.testrail
 
 import com.qaprosoft.Logger
 import com.qaprosoft.integration.zafira.StatusMapper
+import com.qaprosoft.jenkins.pipeline.Configuration
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.integration.zafira.ZafiraClient
@@ -23,8 +24,8 @@ class TestRailUpdater {
         logger = new Logger(context)
     }
 
-    public void updateTestRun(uuid, isRerun, boolean includeAll) {
-		if (!trc.isAvailable()) {
+    public void updateTestRun(uuid, isRerun) {
+		if (!Configuration.get(Configuration.Parameter.TESTRAIL_ENABLE).toBoolean() || !trc.isAvailable()) {
 			// do nothing
 			return
 		}
@@ -45,11 +46,18 @@ class TestRailUpdater {
             logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
             return
         }
+        def includeAll = !isParamEmpty(Configuration.get("include_all"))?Configuration.get("include_all"):true
         def projectId = integration.projectId
         def suiteId = integration.suiteId
         def milestoneId = getMilestoneId(projectId)
         def assignedToId = getAssignedToId()
-        def testRunName = integration.testRunName
+        def testRunName
+        if(!isParamEmpty(integration.customParams.get("testrail_run_name"))){
+            testRunName = integration.customParams.get("testrail_run_name")
+            isRerun = true
+        } else {
+            testRunName = integration.testRunName
+        }
         def createdAfter = integration.createdAfter
         // get all cases from TestRail by project and suite and compare with exported from Zafira
         // only cases available in both maps should be registered later
@@ -65,18 +73,23 @@ class TestRailUpdater {
 
         if(isParamEmpty(testRun)){
             testRun = addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll)
+            if (isParamEmpty(testRun)) {
+                logger.error("Unable to add test run to TestRail!")
+                return
+            }
         }
         addResults(testRun.id)
     }
 
     protected def getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
-		// "-120" to resolve potential time async with testrail upto 2 min
-        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 120, assignedToId, milestoneId, projectId, suiteId)
+		// "- 60 * 24 * 7" - a week to support adding results into manually created TestRail runs
+        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 24 * 7, assignedToId, milestoneId, projectId, suiteId)
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		def run = null
         testRuns.each { Map testRun ->
 //            logger.debug("TEST_RUN: " + formatJson(testRun))
-            if(testRun.name.equals(testRunName)){
+            String correctedName = testRun.name.trim().replaceAll(" +", " ")
+            if(correctedName.equals(testRunName)){
                 integration.testRunId = testRun.id
 				run = testRun
                 return run
@@ -87,8 +100,8 @@ class TestRailUpdater {
 
     protected def getMilestoneId(projectId){
         Map customParams = integration.customParams
-        if(!isParamEmpty(customParams.milestone)) {
-            logger.error("No milstone name discovered!")
+        if(isParamEmpty(customParams.milestone)) {
+            logger.error("No milestone name discovered!")
             return
         }
         def milestoneName = customParams.milestone
@@ -174,7 +187,7 @@ class TestRailUpdater {
 //        logger.debug("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
     }
 
-    protected def addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, boolean includeAll){
+    protected def addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll){
         def testRun = trc.addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, integration.caseResultMap.keySet(), projectId)
         logger.debug("ADDED TESTRUN:\n" + formatJson(testRun))
         return testRun
