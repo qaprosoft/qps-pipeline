@@ -116,7 +116,7 @@ class Repository {
 			credentialsStore.getCredentials(Domain.global()).each {
 				if(it.id.equals(tokenId.toString())) {
 					credentialsStore.removeCredentials(Domain.global(), it)
-					Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(tokenId, "${organization} GitHub token replased", tokenId, Configuration.get("token"))
+					Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, tokenId, "${organization} GitHub token replased", tokenId, Configuration.get("token"))
 					credentialsStore.addCredentials(Domain.global(), c)
 				}
 			}
