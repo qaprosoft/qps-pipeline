@@ -115,7 +115,7 @@ class Repository {
 
 			GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
 			List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
-			githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${organization} connection", null, "secret"))
+			githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${organization} connection", null, hudson.util.Secret.fromString("secret")))
 			descriptor.save()
 
 			registerObject("project_folder", new FolderFactory(repoFolder, ""))
