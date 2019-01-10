@@ -9,6 +9,8 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
+import jenkins.model.*
+import org.jenkinsci.plugins.ghprb.*
 import groovy.json.JsonOutput
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -100,8 +102,13 @@ class Repository {
 			}
 
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
-			def tokenId = "${organization}-${repo}"
-//			updateJenkinsCredentials(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
+			def credentialsId = "${organization}-${repo}"
+			updateJenkinsCredentials(credentialsId, "${organization} GitHub token", Configuration.get("user"), Configuration.get("token"))
+
+			GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
+			List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
+			githubAuths.add(new GhprbGitHubAuth('https://api.github.com', credentialsId, "${organization} connection", null, null))
+			descriptor.save()
 
 			registerObject("project_folder", new FolderFactory(repoFolder, ""))
 //			 TODO: move folder and main trigger job creation onto the createRepository method
