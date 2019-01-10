@@ -70,11 +70,11 @@ public class Executor {
         credentialsStore.getCredentials(Domain.global()).each {
             if(it.id.equals(tokenId.toString())) {
                 credentialsStore.removeCredentials(Domain.global(), it)
-                Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
-                credentialsStore.addCredentials(Domain.global(), c)
             }
         }
-    }
+		Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
+		credentialsStore.addCredentials(Domain.global(), c)
+	}
 
     static boolean isMobile() {
         def platform = Configuration.get("platform")
