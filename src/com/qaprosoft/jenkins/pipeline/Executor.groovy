@@ -65,9 +65,15 @@ public class Executor {
         return reportParameters
     }
 
-    static def addCredentialsToJenkins(id, description, user, password) {
-        Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
-        SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), c)
+    static def updateJenkinsCredentials(id, description, user, password) {
+        def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
+        credentialsStore.getCredentials(Domain.global()).each {
+            if(it.id.equals(tokenId.toString())) {
+                credentialsStore.removeCredentials(Domain.global(), it)
+                Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
+                credentialsStore.addCredentials(Domain.global(), c)
+            }
+        }
     }
 
     static boolean isMobile() {

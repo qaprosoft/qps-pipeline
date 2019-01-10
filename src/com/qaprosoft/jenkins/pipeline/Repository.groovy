@@ -9,11 +9,9 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
-import static com.qaprosoft.jenkins.pipeline.Executor.*
 import groovy.json.JsonOutput
-import com.cloudbees.plugins.credentials.impl.*
-import com.cloudbees.plugins.credentials.*
-import com.cloudbees.plugins.credentials.domains.*
+
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Repository {
 
@@ -102,61 +100,38 @@ class Repository {
 			}
 
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
-
-//			registerObject("project_folder", new FolderFactory(repoFolder, ""))
-
 			def tokenId = "${organization}-${repo}"
+//			updateJenkinsCredentials(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
 
-			def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
+			registerObject("project_folder", new FolderFactory(repoFolder, ""))
+//			 TODO: move folder and main trigger job creation onto the createRepository method
 
-			credentialsStore.getCredentials(Domain.global()).each {
-				logger.info("CREDS_FROM_STORE: ${it.dump()}")
-			}
+			// Support DEV related CI workflow
+//			TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
+			def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
 
-			credentialsStore.getCredentials(Domain.global()).each {
-				if(it.id.equals(tokenId.toString())) {
-					credentialsStore.removeCredentials(Domain.global(), it)
-					Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
-					credentialsStore.addCredentials(Domain.global(), c)
-				}
-			}
+			registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
 
-			credentialsStore.getCredentials(Domain.global()).each {
-				logger.info("CREDS_FROM_STORE_UPDATED: ${it.dump()}")
-			}
+			def pullRequestJobDescription = "Customized pull request verification checker"
 
-//			addCredentialsToJenkins(tokenId, "${organization} GitHub token", tokenId, Configuration.get("token"))
+			registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + repo, pullRequestJobDescription, organization, repo, gitUrl))
 
+			def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
+					"- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
+					"- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-//			// TODO: move folder and main trigger job creation onto the createRepository method
-//
-//			// Support DEV related CI workflow
-//			//TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
-//			def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
-//
-//			registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
-//
-//			def pullRequestJobDescription = "Customized pull request verification checker"
-//
-//			registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + repo, pullRequestJobDescription, organization, repo, gitUrl))
-//
-//			def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
-//					"- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
-//					"- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
-//
-//			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, organization, repo, branch, gitUrl))
-//
-//			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-//			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-//
-//			context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
-//				sandbox: true,
-//				removedConfigFilesAction: 'IGNORE',
-//				removedJobAction: 'IGNORE',
-//				removedViewAction: 'IGNORE',
-//				targets: FACTORY_TARGET,
-//				ignoreExisting: false
-//
+			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, organization, repo, branch, gitUrl))
+
+			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
+			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+
+			context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
+				sandbox: true,
+				removedConfigFilesAction: 'IGNORE',
+				removedJobAction: 'IGNORE',
+				removedViewAction: 'IGNORE',
+				targets: FACTORY_TARGET,
+				ignoreExisting: false
 		}
 	}
 	
