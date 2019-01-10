@@ -13,6 +13,10 @@ import jenkins.model.*
 import org.jenkinsci.plugins.ghprb.*
 import groovy.json.JsonOutput
 
+import com.cloudbees.plugins.credentials.impl.*
+import com.cloudbees.plugins.credentials.*
+import com.cloudbees.plugins.credentials.domains.*
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Repository {
