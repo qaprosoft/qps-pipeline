@@ -113,10 +113,11 @@ class Repository {
 				logger.info("CREDS: " + it.dump())
 			}
 
-//			GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
-//			List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
-//			githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${organization} connection", null, null))
-//			descriptor.save()
+			GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
+			List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
+			githubAuths.clear()
+			githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${organization} connection", null, null))
+			descriptor.save()
 
 			registerObject("project_folder", new FolderFactory(repoFolder, ""))
 //			 TODO: move folder and main trigger job creation onto the createRepository method
