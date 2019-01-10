@@ -68,7 +68,7 @@ public class Executor {
     static def updateJenkinsCredentials(id, description, user, password) {
         def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
         credentialsStore.getCredentials(Domain.global()).each {
-            if(it.id.equals(tokenId.toString())) {
+            if(it.id.equals(id.toString())) {
                 credentialsStore.removeCredentials(Domain.global(), it)
             }
         }
