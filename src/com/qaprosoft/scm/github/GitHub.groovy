@@ -7,14 +7,14 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 class GitHub implements ISCM {
 
     private def context
-    private def gitSshUrl
+    private def gitHtmlUrl
 	private def credentialsId
     private Logger logger
 
 	public GitHub(context) {
 		this.context = context
         logger = new Logger(context)
-		gitSshUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+		gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
 		credentialsId = "${Configuration.get("organization")}-${Configuration.get("repo")}"
     }
 
@@ -36,9 +36,9 @@ class GitHub implements ISCM {
 
             logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
             logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
-			logger.info("gitSshUrl: " + gitSshUrl)
+			logger.info("gitHtmlUrl: " + gitHtmlUrl)
 
-            def gitUrl = Configuration.resolveVars(gitSshUrl)
+            def gitUrl = Configuration.resolveVars(gitHtmlUrl)
 
             logger.info("GIT_URL: " + gitUrl)
             logger.debug("forked_repo: " + fork)
@@ -89,7 +89,7 @@ class GitHub implements ISCM {
 		context.stage('Checkout GitHub Repository') {
 			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
 			def branch  = Configuration.get("sha1")
-			def gitUrl = Configuration.resolveVars(gitSshUrl)
+			def gitUrl = Configuration.resolveVars(gitHtmlUrl)
             logger.info("GitHub->clonePR\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
 			context.checkout getCheckoutParams(gitUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
 		}
@@ -99,7 +99,7 @@ class GitHub implements ISCM {
         context.stage('Checkout GitHub Repository') {
 			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
             def branch = Configuration.get("branch")
-			def gitUrl = Configuration.resolveVars(gitSshUrl)
+			def gitUrl = Configuration.resolveVars(gitHtmlUrl)
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', credentialsId)
         }
