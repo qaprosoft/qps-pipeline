@@ -19,7 +19,7 @@ public class TestJobFactory extends PipelineFactory {
 
 	public TestJobFactory(folder, pipelineScript, repo, organization, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
 		this.folder = folder
-        this.description = jobDesc
+		this.description = jobDesc
 		this.pipelineScript = pipelineScript
 		this.repo = repo
 		this.organization = organization
