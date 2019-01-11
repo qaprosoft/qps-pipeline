@@ -13,9 +13,6 @@ import jenkins.model.*
 import org.jenkinsci.plugins.ghprb.*
 import groovy.json.JsonOutput
 
-import com.cloudbees.plugins.credentials.impl.*
-import com.cloudbees.plugins.credentials.*
-import com.cloudbees.plugins.credentials.domains.*
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
@@ -92,7 +89,6 @@ class Repository {
 
 			def organization = Configuration.get("organization")
 			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
-
 			def repo = Configuration.get("repo")
 			def branch = Configuration.get("branch")
 			def repoFolder
@@ -139,6 +135,7 @@ class Repository {
 				removedViewAction: 'IGNORE',
 				targets: FACTORY_TARGET,
 				ignoreExisting: false
+
 		}
 	}
 	

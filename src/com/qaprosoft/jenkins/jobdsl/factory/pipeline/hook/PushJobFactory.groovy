@@ -9,7 +9,7 @@ public class PushJobFactory extends PipelineFactory {
 	def organization
 	def repo
 	def branch
-    def scmRepoUrl
+	def scmRepoUrl
 
 	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, branch, scmRepoUrl) {
 		this.folder = folder
@@ -19,7 +19,7 @@ public class PushJobFactory extends PipelineFactory {
 		this.organization = organization
 		this.repo = repo
 		this.branch = branch
-        this.scmRepoUrl = scmRepoUrl
+		this.scmRepoUrl = scmRepoUrl
 	}
 
 	def create() {

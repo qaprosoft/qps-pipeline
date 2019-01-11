@@ -8,13 +8,15 @@ class GitHub implements ISCM {
 
     private def context
     private def gitHtmlUrl
+    private def gitSshUrl
 	private def credentialsId
-    private Logger logger
+	private Logger logger
 
 	public GitHub(context) {
 		this.context = context
         logger = new Logger(context)
 		gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+		gitSshUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("project")}"
 		credentialsId = "${Configuration.get("organization")}-${Configuration.get("repo")}"
     }
 
@@ -30,10 +32,7 @@ class GitHub implements ISCM {
             def branch = Configuration.get("branch")
             def repo = Configuration.get("repo")
             def userId = Configuration.get("BUILD_USER_ID")
-
-//			Uses valid gitHub organization instead of default
 			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
-
             logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
             logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
 			logger.info("gitHtmlUrl: " + gitHtmlUrl)
@@ -44,7 +43,6 @@ class GitHub implements ISCM {
             logger.debug("forked_repo: " + fork)
 
 			Map scmVars
-
 			if (!fork) {
                 scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', credentialsId)
 			} else {

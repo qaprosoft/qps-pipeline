@@ -62,25 +62,25 @@ public class Executor {
         return reportParameters
     }
 
-    static def updateJenkinsCredentials(id, description, user, password) {
-        def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
-        credentialsStore.getCredentials(Domain.global()).each {
-            if(it.id.equals(id.toString())) {
-                credentialsStore.removeCredentials(Domain.global(), it)
-            }
-        }
+	static def updateJenkinsCredentials(id, description, user, password) {
+		def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
+		credentialsStore.getCredentials(Domain.global()).each {
+			if(it.id.equals(id.toString())) {
+				credentialsStore.removeCredentials(Domain.global(), it)
+			}
+		}
 		Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
 		credentialsStore.addCredentials(Domain.global(), c)
 	}
 
-    static def createPRChecker(credentialsId) {
-        GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
-        List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
+	static def createPRChecker(credentialsId) {
+		GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
+		List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
 //        Removes all autocreated by plugin checkers
 //        githubAuths.clear()
-        githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${credentialsId} connection", null, null))
-        descriptor.save()
-    }
+		githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${credentialsId} connection", null, null))
+		descriptor.save()
+	}
 
     static boolean isMobile() {
         def platform = Configuration.get("platform")
@@ -175,6 +175,16 @@ public class Executor {
         def currentJob = null
         Jenkins.getInstance().getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob).each { job ->
             if (job.displayName == jobName) {
+                currentJob = job
+            }
+        }
+        return currentJob
+    }
+
+    static def getJenkinsFolderByName(folderName) {
+        def currentJob = null
+        Jenkins.getInstance().getAllItems(com.cloudbees.hudson.plugins.folder.Folder).each { job ->
+            if (job.displayName == folderName) {
                 currentJob = job
             }
         }
