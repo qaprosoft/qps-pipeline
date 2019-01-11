@@ -11,7 +11,6 @@ public class PullRequestJobFactory extends PipelineFactory {
 	def scmRepoUrl
 
 	public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, scmRepoUrl) {
-
 		this.folder = folder
 		this.pipelineScript = pipelineScript
 		this.name = jobName
