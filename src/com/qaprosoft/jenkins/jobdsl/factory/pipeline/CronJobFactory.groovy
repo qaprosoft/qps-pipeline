@@ -13,7 +13,7 @@ public class CronJobFactory extends PipelineFactory {
     def organization
     def suitePath
 
-    public CronJobFactory(folder, pipelineScript, cronJobName, repo, suitePath, jobDesc) {
+    public CronJobFactory(folder, pipelineScript, cronJobName, repo, organization, suitePath, jobDesc) {
 
         this.folder = folder
 		this.pipelineScript = pipelineScript
