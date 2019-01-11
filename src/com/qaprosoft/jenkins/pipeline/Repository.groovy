@@ -50,11 +50,10 @@ class Repository {
 		def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
 		def repo = Configuration.get("repo")
 		def branch = Configuration.get("branch")
-
 		def jobName = "${organization}/${repo}" + "/" + "onPush-" + repo
 
 		context.build job: jobName,
-		propagate: true,
+				propagate: true,
 				parameters: [
 						context.string(name: 'organization', value: organization),
 						context.string(name: 'repo', value: repo),
@@ -86,7 +85,6 @@ class Repository {
 
 		context.stage("Create Repository") {
 			def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-
 			def organization = Configuration.get("organization")
 			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
 			def repo = Configuration.get("repo")
@@ -100,7 +98,6 @@ class Repository {
 			} else {
 				repoFolder = repo
 			}
-
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 			def credentialsId = "${organization}-${repo}"
 			updateJenkinsCredentials(credentialsId, "${organization} GitHub token", Configuration.get("user"), Configuration.get("token"))
