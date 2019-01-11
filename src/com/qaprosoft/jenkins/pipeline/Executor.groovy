@@ -15,9 +15,6 @@ import java.nio.file.Paths
 
 import static java.util.UUID.randomUUID
 import org.jenkinsci.plugins.ghprb.*
-import org.jenkinsci.plugins.ghprb.GhprbPullRequest
-import org.jenkinsci.plugins.ghprb.GhprbCause
-import org.jenkinsci.plugins.ghprb.Ghprb
 
 import com.cloudbees.plugins.credentials.impl.*
 import com.cloudbees.plugins.credentials.*
@@ -178,16 +175,6 @@ public class Executor {
         def currentJob = null
         Jenkins.getInstance().getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob).each { job ->
             if (job.displayName == jobName) {
-                currentJob = job
-            }
-        }
-        return currentJob
-    }
-
-    static def getJenkinsFolderByName(folderName) {
-        def currentJob = null
-        Jenkins.getInstance().getAllItems(com.cloudbees.hudson.plugins.folder.Folder).each { job ->
-            if (job.displayName == folderName) {
                 currentJob = job
             }
         }

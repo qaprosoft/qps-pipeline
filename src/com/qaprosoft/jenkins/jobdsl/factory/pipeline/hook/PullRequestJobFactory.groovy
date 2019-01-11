@@ -8,40 +8,40 @@ public class PullRequestJobFactory extends PipelineFactory {
 
 	def organization
 	def repo
-    def scmRepoUrl
+	def scmRepoUrl
 
-    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, scmRepoUrl) {
+	public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, scmRepoUrl) {
 
-        this.folder = folder
-        this.pipelineScript = pipelineScript
-        this.name = jobName
-        this.description = jobDesc
+		this.folder = folder
+		this.pipelineScript = pipelineScript
+		this.name = jobName
+		this.description = jobDesc
 		this.organization = organization
 		this.repo = repo
-        this.scmRepoUrl = scmRepoUrl
-    }
+		this.scmRepoUrl = scmRepoUrl
+	}
 
 	def create() {
 		def pipelineJob = super.create()
 		pipelineJob.with {
-            parameters {
+			parameters {
 				stringParam('organization', organization, 'GitHub organization')
-                stringParam('repo', repo, 'Your GitHub repository for scanning')
-            }
-            scm {
-                git {
-                    remote {
-                        url(scmRepoUrl)
-                    }
-                }
-            }
+				stringParam('repo', repo, 'Your GitHub repository for scanning')
+			}
+			scm {
+				git {
+					remote {
+						url(scmRepoUrl)
+					}
+				}
+			}
 			properties {
 				githubProjectUrl(scmRepoUrl)
 				//TODO: test with removed "cron('H/5 * * * *')"
 				pipelineTriggers {
 					triggers {
 						ghprbTrigger {
-							gitHubAuthId("https://api.github.com : ${repo}-token")
+							gitHubAuthId(getGitHubAuthId(folder))
 							adminlist('')
 							useGitHubHooks(true)
 							triggerPhrase('')
@@ -71,5 +71,9 @@ public class PullRequestJobFactory extends PipelineFactory {
 
 		}
 		return pipelineJob
+	}
+
+	protected def getGitHubAuthId(project) {
+		return "https://api.github.com : ${project}-token"
 	}
 }
