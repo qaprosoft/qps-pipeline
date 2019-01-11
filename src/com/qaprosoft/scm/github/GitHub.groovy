@@ -14,7 +14,6 @@ class GitHub implements ISCM {
 	public GitHub(context) {
 		this.context = context
         logger = new Logger(context)
-		Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
 		gitSshUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
 		credentialsId = "${Configuration.get("organization")}-${Configuration.get("repo")}"
     }
@@ -32,17 +31,20 @@ class GitHub implements ISCM {
             def repo = Configuration.get("repo")
             def userId = Configuration.get("BUILD_USER_ID")
 
+//			Uses valid gitHub organization instead of default
+			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
+
             logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
             logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
+			logger.info("gitSshUrl: " + gitSshUrl)
 
-            logger.info("gitSshUrl: " + gitSshUrl)
             def gitUrl = Configuration.resolveVars(gitSshUrl)
-			
-			logger.info("gitUrl: " + gitUrl)
-            def scmVars = [:]
 
             logger.info("GIT_URL: " + gitUrl)
             logger.debug("forked_repo: " + fork)
+
+			Map scmVars
+
 			if (!fork) {
                 scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', credentialsId)
 			} else {
@@ -85,6 +87,7 @@ class GitHub implements ISCM {
 
 	public def clonePR(){
 		context.stage('Checkout GitHub Repository') {
+			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
 			def branch  = Configuration.get("sha1")
 			def gitUrl = Configuration.resolveVars(gitSshUrl)
             logger.info("GitHub->clonePR\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
@@ -94,9 +97,9 @@ class GitHub implements ISCM {
 
     public def clonePush() {
         context.stage('Checkout GitHub Repository') {
+			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
             def branch = Configuration.get("branch")
-			//TODO: [VD] duplicate code in url generation?
-            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("repo")}.git")
+			def gitUrl = Configuration.resolveVars(gitSshUrl)
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', credentialsId)
         }
