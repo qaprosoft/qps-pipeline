@@ -7,27 +7,15 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 class GitHub implements ISCM {
 
     private def context
-    private def gitHtmlUrl
     private def gitSshUrl
+	private def credentialsId
     private Logger logger
 
 	public GitHub(context) {
 		this.context = context
         logger = new Logger(context)
-        // gitHtmlUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
-        // gitSshUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("repo")}")
-		gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
 		gitSshUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-        //TODO: investigate how we can remove such harcoded https repo urls
-        if (Configuration.get("repo").equals("carina-demo")) {
-            //sample public carina-demo repo should be cloned using https only!
-            gitSshUrl = "https://github.com/qaprosoft/carina-demo.git"
-        }
-        if (Configuration.get("repo").equals("carina")) {
-            //sample public carina repo should be cloned using https only!
-            gitSshUrl = "https://github.com/qaprosoft/carina.git"
-        }
-
+		credentialsId = "${Configuration.get("organization")}-${Configuration.get("repo")}"
     }
 
     public def clone() {
@@ -55,7 +43,7 @@ class GitHub implements ISCM {
             logger.info("GIT_URL: " + gitUrl)
             logger.debug("forked_repo: " + fork)
 			if (!fork) {
-                scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', '')
+                scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', credentialsId)
 			} else {
 				def token_name = 'token_' + "${userId}"
                 logger.debug("token_name: " + token_name)
@@ -73,7 +61,7 @@ class GitHub implements ISCM {
                     def GITHUB_HOST = Configuration.get(Configuration.Parameter.GITHUB_HOST)
 					gitUrl = "https://${token_value}@${GITHUB_HOST}/${userId}/${repo}"
                     logger.info("fork repo url: ${gitUrl}")
-                    scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', '')
+                    scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', credentialsId)
 				} else {
 					throw new RuntimeException("Unable to run from fork repo as ${token_name} token is not registered on CI!")
 				}
@@ -90,13 +78,12 @@ class GitHub implements ISCM {
 	public def clone(gitUrl, branch, subFolder) {
 		context.stage('Checkout GitHub Repository') {
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
-            context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false, '', '')
+            context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false, '', credentialsId)
 		}
 	}
 
 	public def clonePR(){
 		context.stage('Checkout GitHub Repository') {
-			def credentialsId = "${Configuration.get("organization")}-${Configuration.get("repo")}"
 			def branch  = Configuration.get("sha1")
 			def gitUrl = Configuration.resolveVars(gitSshUrl)
             logger.info("GitHub->clonePR\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
@@ -110,7 +97,7 @@ class GitHub implements ISCM {
 			//TODO: [VD] duplicate code in url generation?
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_SSH_URL)}/${Configuration.get("repo")}.git")
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
-            context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', '')
+            context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', credentialsId)
         }
     }
 
