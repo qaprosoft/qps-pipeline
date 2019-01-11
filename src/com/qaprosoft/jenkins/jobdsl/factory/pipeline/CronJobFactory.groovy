@@ -10,14 +10,17 @@ import groovy.transform.InheritConstructors
 public class CronJobFactory extends PipelineFactory {
 
     def repo
+    def organization
     def suitePath
 
     public CronJobFactory(folder, pipelineScript, cronJobName, repo, suitePath, jobDesc) {
+
         this.folder = folder
 		this.pipelineScript = pipelineScript
         this.description = jobDesc
         this.name = cronJobName
         this.repo = repo
+        this.organization = organization
         this.suitePath = suitePath
     }
 
@@ -36,6 +39,7 @@ public class CronJobFactory extends PipelineFactory {
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
                 configure addHiddenParameter('repo', '', repo)
+                configure addHiddenParameter('organization', '', organization)
                 configure addHiddenParameter('ci_parent_url', '', '')
                 configure addHiddenParameter('ci_parent_build', '', '')
                 configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", "master")

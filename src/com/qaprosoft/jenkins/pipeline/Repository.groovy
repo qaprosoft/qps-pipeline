@@ -108,11 +108,6 @@ class Repository {
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 			def credentialsId = "${organization}-${repo}"
 			updateJenkinsCredentials(credentialsId, "${organization} GitHub token", Configuration.get("user"), Configuration.get("token"))
-
-			SystemCredentialsProvider.getInstance().getStore().getCredentials(Domain.global()).each {
-				logger.info("CREDS: " + it.dump())
-			}
-
 //			createPRChecker(credentialsId)
 
 			registerObject("project_folder", new FolderFactory(repoFolder, ""))
