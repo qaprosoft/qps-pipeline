@@ -14,6 +14,7 @@ class GitHub implements ISCM {
 	public GitHub(context) {
 		this.context = context
         logger = new Logger(context)
+		Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
 		gitSshUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
 		credentialsId = "${Configuration.get("organization")}-${Configuration.get("repo")}"
     }
