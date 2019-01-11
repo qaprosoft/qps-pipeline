@@ -15,7 +15,6 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.scm.github.GitHub
-import com.qaprosoft.integration.zafira.ZafiraClient
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 
@@ -151,11 +150,10 @@ public class QARunner extends AbstractRunner {
 
         context.stage("Scan Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-			def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
+            def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def repo = Configuration.get("repo")
             def repoFolder = "${organization}/${repo}"
             def branch = Configuration.get("branch")
-
             currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
             def workspace = getWorkspace()
