@@ -76,6 +76,15 @@ public class Executor {
 		credentialsStore.addCredentials(Domain.global(), c)
 	}
 
+    static def createPRChecker(credentialsId) {
+        GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
+        List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
+//        Removes all autocreated by plugin checkers
+//        githubAuths.clear()
+        githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${credentialsId} connection", null, null))
+        descriptor.save()
+    }
+
     static boolean isMobile() {
         def platform = Configuration.get("platform")
         return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
