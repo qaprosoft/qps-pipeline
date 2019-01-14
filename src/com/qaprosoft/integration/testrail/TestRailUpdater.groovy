@@ -88,7 +88,7 @@ class TestRailUpdater {
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		def run = null
         testRuns.each { Map testRun ->
-//            logger.debug("TEST_RUN: " + formatJson(testRun))
+            logger.debug("TEST_RUN: " + formatJson(testRun))
             String correctedName = testRun.name.trim().replaceAll(" +", " ")
             if(correctedName.equals(testRunName)){
                 integration.testRunId = testRun.id
@@ -198,7 +198,7 @@ class TestRailUpdater {
         integration.testRunId = testRunId
         getTests()
         def response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
-//        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
+        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
     }
     
     protected def parseTagData(){
