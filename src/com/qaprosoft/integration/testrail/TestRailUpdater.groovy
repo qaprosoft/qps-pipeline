@@ -83,16 +83,16 @@ class TestRailUpdater {
 
     protected def getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
 		// "- 60 * 24 * 7" - a week to support adding results into manually created TestRail runs
-        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 24 * 7, assignedToId, milestoneId, projectId, suiteId)
+        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 60 * 24 * 7, assignedToId, milestoneId, projectId, suiteId)
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		def run = null
-        testRuns.each { Map testRun ->
+        for(Map testRun in testRuns){
 //            logger.debug("TEST_RUN: " + formatJson(testRun))
             String correctedName = testRun.name.trim().replaceAll(" +", " ")
             if(correctedName.equals(testRunName)){
                 integration.testRunId = testRun.id
-				run = testRun
-                return run
+                run = testRun
+                break
             }
         }
 		return run

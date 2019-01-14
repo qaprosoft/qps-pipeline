@@ -141,8 +141,7 @@ public class TestJobFactory extends PipelineFactory {
 						//TODO: hardcode auto_screenshots=true for iOS until we fix video recording
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						//TODO: enable video as only issue with Appiym and xrecord utility is fixed
-						//booleanParam('enableVideo', enableVideo, 'Enable video recording')
-						configure addHiddenParameter('enableVideo', 'Disable video recording until issue with Appium is resolved', 'false')
+						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'iOS')
 						break;
