@@ -165,7 +165,7 @@ class TestRailUpdater {
 
     protected def getTests(){
         def tests = trc.getTests(integration.testRunId)
-//        logger.debug("TESTS_MAP:\n" + formatJson(tests))
+        logger.debug("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
             for(validTestCaseId in integration.validTestCases){
                 if(validTestCaseId == test.case_id){
