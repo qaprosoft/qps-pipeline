@@ -64,6 +64,7 @@ class TestRailUpdater {
         parseCases(projectId, suiteId)
 
         logger.info("IS_RERUN2: " + isRerun)
+        logger.info("TEST_RUN_NAME: " + testRunName)
         def testRun = null
         if(isRerun){
             testRun = getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
