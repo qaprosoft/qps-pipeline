@@ -63,6 +63,7 @@ class TestRailUpdater {
         // only cases available in both maps should be registered later
         parseCases(projectId, suiteId)
 
+        logger.info("IS_RERUN2: " + isRerun)
         def testRun = null
         if(isRerun){
             testRun = getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
