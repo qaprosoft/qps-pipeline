@@ -38,7 +38,9 @@ public class PushJobFactory extends PipelineFactory {
 
 			//TODO: think about other parameters to support DevOps CI operations
 			parameters {
-				configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
+				if(organization != null){
+					configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
+				}
 				stringParam('repo', repo, 'GitHub repository for scanning')
 				//TODO: analyze howto support several gc_GIT_BRACH basing on project
 				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", branch)

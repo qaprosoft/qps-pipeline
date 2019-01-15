@@ -163,9 +163,7 @@ public class TestJobFactory extends PipelineFactory {
 				}
 				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", gitBranch)
 				configure addHiddenParameter('repo', '', repo)
-				if(organization != null){
-					configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
-				}
+				configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
 				configure addHiddenParameter('sub_project', '', sub_project)
 				configure addHiddenParameter('zafira_project', '', zafira_project)
 				configure addHiddenParameter('suite', '', suiteName)
