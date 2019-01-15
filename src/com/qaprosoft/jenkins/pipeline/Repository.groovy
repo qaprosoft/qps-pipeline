@@ -55,6 +55,7 @@ class Repository {
 		}
 		List jobParams = new ArrayList()
 		if(!isParamEmpty(Configuration.get("organization"))){
+			logger.info("I'VE ADDED ORGANIZATION")
 			jobParams.add(context.string(name: 'organization', value: organization))
 		}
 		jobParams.add(context.string(name: 'repo', value: repo))
