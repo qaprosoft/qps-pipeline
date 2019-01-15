@@ -153,7 +153,7 @@ public class QARunner extends AbstractRunner {
             def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def repo = Configuration.get("repo")
             def repoFolder = repo
-            logger.info(getWorkspace())
+            logger.info("FOLDER: " + parseFolderName(getWorkspace()))
             if(!isParamEmpty(getJenkinsFolderByName(organization))){
                 repoFolder = "${organization}/" + repoFolder
             }
