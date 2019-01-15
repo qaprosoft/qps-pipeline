@@ -94,7 +94,7 @@ class GitHub implements ISCM {
 
     public def clonePush() {
         context.stage('Checkout GitHub Repository') {
-            def branch = Configuration.get("branch")
+			def branch = Configuration.get("branch")
 			def gitUrl = Configuration.resolveVars(gitHtmlUrl)
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', credentialsId)
