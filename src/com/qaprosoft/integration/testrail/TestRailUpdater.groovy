@@ -54,7 +54,7 @@ class TestRailUpdater {
         def testRunName
         if(!isParamEmpty(integration.customParams.get("testrail_run_name"))){
             testRunName = integration.customParams.get("testrail_run_name")
-			assignedToId = null
+            assignedToId = null
             isRerun = true
         } else {
             testRunName = integration.testRunName
