@@ -73,7 +73,7 @@ class QTestUpdater {
                 logger.debug("UPLOADED_RESULTS: " + formatJson(results))
             } else {
                 testRun = getTestRun(projectId, suiteId, testCase.case_id)
-//                logger.debug("TEST_RUN: " + formatJson(testRun))
+                logger.debug("TEST_RUN: " + formatJson(testRun))
                 if(isParamEmpty(testRun)){
                     logger.error("Unable to get QTest testRun.")
                     return
