@@ -85,10 +85,10 @@ class TestRailUpdater {
     protected def getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
 		// "- 60 * 24 * 7" - a week to support adding results into manually created TestRail runs
         def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 60 * 24 * 7, assignedToId, milestoneId, projectId, suiteId)
-        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
+//        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		def run = null
         for(Map testRun in testRuns){
-            logger.debug("TEST_RUN: " + formatJson(testRun))
+//            logger.debug("TEST_RUN: " + formatJson(testRun))
             String correctedName = testRun.name.trim().replaceAll(" +", " ")
             if(correctedName.equals(testRunName)){
                 integration.testRunId = testRun.id
@@ -159,12 +159,12 @@ class TestRailUpdater {
                 logger.error("Removed non-existing case: ${testCase.value.case_id}.\nPlease adjust your test code using valid platfrom/language/locale filters for TestRail cases registration.")
             }
         }
-        logger.debug("CASES_MAP:\n" + formatJson(integration.caseResultMap))
+//        logger.debug("CASES_MAP:\n" + formatJson(integration.caseResultMap))
     }
 
     protected def getTests(){
         def tests = trc.getTests(integration.testRunId)
-        logger.debug("TESTS_MAP:\n" + formatJson(tests))
+//        logger.debug("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
             for(validTestCaseId in integration.validTestCases){
                 if(validTestCaseId == test.case_id){
@@ -198,7 +198,7 @@ class TestRailUpdater {
         integration.testRunId = testRunId
         getTests()
         def response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
-        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
+//        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
     }
     
     protected def parseTagData(){
