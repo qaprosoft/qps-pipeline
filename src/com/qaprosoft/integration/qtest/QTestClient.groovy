@@ -82,6 +82,7 @@ class QTestClient extends HttpClient{
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder name: name,
                 test_case: [id: testCaseId]
+        logger.info("REQUEST_PARAMS: " + jsonBuilder.toString())
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
