@@ -9,8 +9,6 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
-import jenkins.model.*
-import org.jenkinsci.plugins.ghprb.*
 import groovy.json.JsonOutput
 
 
