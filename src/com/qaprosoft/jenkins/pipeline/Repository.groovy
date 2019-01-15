@@ -94,9 +94,10 @@ class Repository {
 			if(!isParamEmpty(organization)){
 				Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
 				if(isParamEmpty(getJenkinsFolderByName(organization))){
+					logger.info("I SHOULDN'T BE HERE")
 					registerObject("organization_folder", new FolderFactory(organization, ""))
 				}
-
+				repoFolder = "${organization}/${repo}"
 			} else {
 				repoFolder = repo
 			}
