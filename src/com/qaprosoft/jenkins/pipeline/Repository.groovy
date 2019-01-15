@@ -56,7 +56,7 @@ class Repository {
 		context.build job: jobName,
 				propagate: true,
 				parameters: [
-						context.string(name: 'organization', value: organization),
+						context.string(name: 'organization', value: Configuration.get("organization")),
 						context.string(name: 'repo', value: repo),
 						context.string(name: 'branch', value: branch),
 						context.booleanParam(name: 'onlyUpdated', value: false),
