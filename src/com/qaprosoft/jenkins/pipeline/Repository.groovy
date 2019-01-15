@@ -49,7 +49,7 @@ class Repository {
 		def repo = Configuration.get("repo")
 		def branch = Configuration.get("branch")
 		def jobName = "${repo}" + "/" + "onPush-" + repo
-		if(!isParamEmpty(getJenkinsFolderByName(organization))){
+		if(!isParamEmpty(Configuration.get("organization")) && !isParamEmpty(getJenkinsFolderByName(organization))){
 			jobName = "${organization}/" + jobName
 		}
 		context.build job: jobName,
