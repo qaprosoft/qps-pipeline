@@ -152,7 +152,10 @@ public class QARunner extends AbstractRunner {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def repo = Configuration.get("repo")
-            def repoFolder = "${organization}/${repo}"
+            def repoFolder = repo
+            if(!isParamEmpty(getJenkinsFolderByName(organization))){
+                repoFolder = "${organization}/" + repoFolder
+            }
             def branch = Configuration.get("branch")
             currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 

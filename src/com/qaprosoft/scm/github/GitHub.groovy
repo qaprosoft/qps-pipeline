@@ -3,6 +3,7 @@ package com.qaprosoft.scm.github
 import com.qaprosoft.Logger
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.Configuration
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class GitHub implements ISCM {
 
@@ -32,7 +33,6 @@ class GitHub implements ISCM {
             def branch = Configuration.get("branch")
             def repo = Configuration.get("repo")
             def userId = Configuration.get("BUILD_USER_ID")
-			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
 			logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
 			logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
 			logger.info("gitHtmlUrl: " + gitHtmlUrl)
@@ -85,7 +85,6 @@ class GitHub implements ISCM {
 
 	public def clonePR(){
 		context.stage('Checkout GitHub Repository') {
-			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
 			def branch  = Configuration.get("sha1")
 			def gitUrl = Configuration.resolveVars(gitHtmlUrl)
             logger.info("GitHub->clonePR\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
@@ -95,8 +94,7 @@ class GitHub implements ISCM {
 
     public def clonePush() {
         context.stage('Checkout GitHub Repository') {
-			Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get("organization"))
-            def branch = Configuration.get("branch")
+			def branch = Configuration.get("branch")
 			def gitUrl = Configuration.resolveVars(gitHtmlUrl)
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', credentialsId)
