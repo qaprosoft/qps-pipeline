@@ -49,7 +49,6 @@ class Repository {
 		def repo = Configuration.get("repo")
 		def branch = Configuration.get("branch")
 		def jobName = "${repo}" + "/" + "onPush-" + repo
-		logger.info("ORGANIZTN: " + Configuration.get("organization"))
 		if(!isParamEmpty(Configuration.get("organization")) && !isParamEmpty(getJenkinsFolderByName(organization))){
 			jobName = "${organization}/" + jobName
 		}
