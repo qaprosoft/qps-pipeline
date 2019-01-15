@@ -51,15 +51,7 @@ class Repository {
 		def repo = Configuration.get("repo")
 		def branch = Configuration.get("branch")
 		def jobName = "${repo}" + "/" + "onPush-" + repo
-		logger.info(jobName)
-		Jenkins.getInstance().getAllItems(com.cloudbees.hudson.plugins.folder.Folder).each { job ->
-			logger.info(job.dump())
-//			if (job.displayName == jobName) {
-//				currentJob = job
-//			}
-		}
-		if(isParamEmpty(getJenkinsJobByName(jobName))){
-			logger.info("???")
+		if(!isParamEmpty(getJenkinsFolderByName(organization))){
 			jobName = "${organization}/" + jobName
 		}
 		context.build job: jobName,
@@ -102,7 +94,6 @@ class Repository {
 			if(!isParamEmpty(organization)){
 				Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
 				if(isParamEmpty(getJenkinsFolderByName(organization))){
-					logger.info("I SHOULDN'T BE HERE")
 					registerObject("organization_folder", new FolderFactory(organization, ""))
 				}
 				repoFolder = "${organization}/${repo}"
