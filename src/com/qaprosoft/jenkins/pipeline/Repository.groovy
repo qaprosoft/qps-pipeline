@@ -53,17 +53,20 @@ class Repository {
 		if(!isParamEmpty(Configuration.get("organization")) && !isParamEmpty(getJenkinsFolderByName(organization))){
 			jobName = "${organization}/" + jobName
 		}
+		List jobParams = new ArrayList()
+		if(!isParamEmpty(Configuration.get("organization"))){
+			jobParams.add(context.string(name: 'organization', value: organization))
+		}
+		jobParams.add(context.string(name: 'repo', value: repo))
+		jobParams.add(context.string(name: 'branch', value: branch))
+		jobParams.add(context.booleanParam(name: 'onlyUpdated', value: false))
+		jobParams.add(context.string(name: 'removedConfigFilesAction', value: 'DELETE'))
+		jobParams.add(context.string(name: 'removedJobAction', value: 'DELETE'))
+		jobParams.add(context.string(name: 'removedViewAction', value: 'DELETE'))
+
 		context.build job: jobName,
 				propagate: true,
-				parameters: [
-						context.string(name: 'organization', value: Configuration.get("organization")),
-						context.string(name: 'repo', value: repo),
-						context.string(name: 'branch', value: branch),
-						context.booleanParam(name: 'onlyUpdated', value: false),
-						context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
-						context.string(name: 'removedJobAction', value: 'DELETE'),
-						context.string(name: 'removedViewAction', value: 'DELETE'),
-				]
+				parameters: jobParams
 	}
 
 
