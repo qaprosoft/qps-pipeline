@@ -18,7 +18,7 @@ class GitHub implements ISCM {
         logger = new Logger(context)
 		gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
 		gitSshUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("project")}"
-		credentialsId = "${Configuration.get("organization")}-${Configuration.get("repo")}"
+		credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
     }
 
     public def clone() {
