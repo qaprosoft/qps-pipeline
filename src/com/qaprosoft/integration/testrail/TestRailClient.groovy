@@ -23,13 +23,13 @@ class TestRailClient extends HttpClient{
 	}
 
     public def getRuns(createdAfter, createdBy, milestoneId, projectId, suiteId) {
-		def requestArgs = "get_runs/${projectId}&created_after=${createdAfter}&suite_id=${suiteId}"
+        def requestArgs = "get_runs/${projectId}&created_after=${createdAfter}&suite_id=${suiteId}"
         if (!isParamEmpty(createdBy)) {
             requestArgs = requestArgs + "&created_by=${createdBy}"
         }
-		if (!isParamEmpty(milestoneId)) {
-			requestArgs = requestArgs + "&milestone_id=${milestoneId}"
-		}
+        if (!isParamEmpty(milestoneId)) {
+            requestArgs = requestArgs + "&milestone_id=${milestoneId}"
+        }
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
                               contentType: 'APPLICATION_JSON',
