@@ -52,7 +52,7 @@ class Repository {
 		def branch = Configuration.get("branch")
 		def jobName = "${repo}" + "/" + "onPush-" + repo
 		logger.info(jobName)
-		Jenkins.getInstance().getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob).each { job ->
+		Jenkins.getInstance().getAllItems(com.cloudbees.hudson.plugins.folder.Folder).each { job ->
 			logger.info(job.dump())
 //			if (job.displayName == jobName) {
 //				currentJob = job
