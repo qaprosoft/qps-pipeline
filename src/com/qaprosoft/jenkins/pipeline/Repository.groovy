@@ -50,8 +50,10 @@ class Repository {
 		def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
 		def repo = Configuration.get("repo")
 		def branch = Configuration.get("branch")
-		def jobName = "${organization}/${repo}" + "/" + "onPush-" + repo
-
+		def jobName = "${repo}" + "/" + "onPush-" + repo
+		if(isParamEmpty(getJenkinsJobByName(jobName))){
+			jobName = "${organization}/" + jobName
+		}
 		context.build job: jobName,
 				propagate: true,
 				parameters: [
@@ -94,7 +96,7 @@ class Repository {
 				if(isParamEmpty(getJenkinsFolderByName(organization))){
 					registerObject("organization_folder", new FolderFactory(organization, ""))
 				}
-				repoFolder = "${organization}/${repo}"
+
 			} else {
 				repoFolder = repo
 			}
