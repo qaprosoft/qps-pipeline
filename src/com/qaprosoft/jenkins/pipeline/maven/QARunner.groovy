@@ -363,6 +363,7 @@ public class QARunner extends AbstractRunner {
                             buildJob()
                         }
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+                        sendCustomizedEmail()
 						if(!isParamEmpty(getAbortCause(currentBuild))){
 							zafiraUpdater.abortTestRun(uuid, currentBuild)
 						}
@@ -389,6 +390,11 @@ public class QARunner extends AbstractRunner {
     // Possible to override in private pipelines
     protected boolean isRerun(){
         return zafiraUpdater.isZafiraRerun(uuid)
+    }
+
+    // Possible to override in private pipelines
+    protected def sendCustomizedEmail(){
+        //Do nothing in default implementation
     }
 
     protected String chooseNode() {
