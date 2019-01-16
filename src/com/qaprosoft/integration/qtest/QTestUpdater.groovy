@@ -88,13 +88,6 @@ class QTestUpdater {
                 return
             }
             logger.debug("UPLOADED_RESULTS: " + formatJson(results))
-//                def log = qTestClient.getLog(projectId, testRun.id)
-//                if(isParamEmpty(log)){
-//                    logger.error("Unable to get QTest testRun logs.")
-//                    return
-//                }
-//                logger.debug("STATUS: " + testCase.status)
-//                qTestClient.updateResults(testCase.status, new Date(startedAt),  new Date(finishedAt), testRun.id, projectId, log.id)
         }
     }
 
