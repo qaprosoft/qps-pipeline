@@ -23,7 +23,7 @@ class QTestUpdater {
         logger = new Logger(context)
     }
 
-    public void updateTestRun(uuid, isRerun) {
+    public void updateTestRun(uuid) {
         if (!Configuration.get(Configuration.Parameter.QTEST_ENABLE).toBoolean() || !qTestClient.isAvailable()) {
             // do nothing
             return
@@ -70,8 +70,12 @@ class QTestUpdater {
             if(!isParamEmpty(testCaseName)){
                 testRunName = testCaseName
             }
-            if(!isRerun){
 
+            testRun = getTestRun(projectId, suiteId, testCase.case_id, testRunName)
+            logger.debug("TEST_RUN: " + formatJson(testRun))
+            if(isParamEmpty(testRun)){
+                logger.error("Unable to get QTest testRun.")
+                logger.info("Adding new QTest testRun...")
                 testRun = qTestClient.addTestRun(projectId, suiteId, testCase.case_id, testRunName)
                 if(isParamEmpty(testRun)){
                     logger.error("Unable to add QTest testRun.")
@@ -84,12 +88,6 @@ class QTestUpdater {
                 }
                 logger.debug("UPLOADED_RESULTS: " + formatJson(results))
             } else {
-                testRun = getTestRun(projectId, suiteId, testCase.case_id, testRunName)
-                logger.debug("TEST_RUN: " + formatJson(testRun))
-                if(isParamEmpty(testRun)){
-                    logger.error("Unable to get QTest testRun.")
-                    return
-                }
                 def log = qTestClient.getLog(projectId, testRun.id)
                 if(isParamEmpty(log)){
                     logger.error("Unable to get QTest testRun logs.")
