@@ -53,6 +53,17 @@ class QTestClient extends HttpClient{
         }
     }
 
+    public def getTestCase(projectId, testCaseId) {
+        context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200",
+                              url: this.serviceURL + "projects/${projectId}/test-cases/${testCaseId}"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
     public def getLog(projectId, testRunId) {
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
