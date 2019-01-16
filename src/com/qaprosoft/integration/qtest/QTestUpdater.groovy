@@ -73,29 +73,28 @@ class QTestUpdater {
 
             testRun = getTestRun(projectId, suiteId, testCase.case_id, testRunName)
             logger.debug("TEST_RUN: " + formatJson(testRun))
-            if(isParamEmpty(testRun)){
+            if(isParamEmpty(testRun)) {
                 logger.error("Unable to get QTest testRun.")
                 logger.info("Adding new QTest testRun...")
                 testRun = qTestClient.addTestRun(projectId, suiteId, testCase.case_id, testRunName)
-                if(isParamEmpty(testRun)){
+                if (isParamEmpty(testRun)) {
                     logger.error("Unable to add QTest testRun.")
                     return
                 }
-                def results = qTestClient.uploadResults(testCase.status, new Date(startedAt),  new Date(finishedAt), testRun.id, testRun.name,  projectId)
-                if(isParamEmpty(results)){
-                    logger.error("Unable to add results for QTest TestRun.")
-                    return
-                }
-                logger.debug("UPLOADED_RESULTS: " + formatJson(results))
-            } else {
-                def log = qTestClient.getLog(projectId, testRun.id)
-                if(isParamEmpty(log)){
-                    logger.error("Unable to get QTest testRun logs.")
-                    return
-                }
-                logger.debug("STATUS: " + testCase.status)
-                qTestClient.updateResults(testCase.status, new Date(startedAt),  new Date(finishedAt), testRun.id, projectId, log.id)
             }
+            def results = qTestClient.uploadResults(testCase.status, new Date(startedAt),  new Date(finishedAt), testRun.id, testRun.name,  projectId)
+            if(isParamEmpty(results)){
+                logger.error("Unable to add results for QTest TestRun.")
+                return
+            }
+            logger.debug("UPLOADED_RESULTS: " + formatJson(results))
+//                def log = qTestClient.getLog(projectId, testRun.id)
+//                if(isParamEmpty(log)){
+//                    logger.error("Unable to get QTest testRun logs.")
+//                    return
+//                }
+//                logger.debug("STATUS: " + testCase.status)
+//                qTestClient.updateResults(testCase.status, new Date(startedAt),  new Date(finishedAt), testRun.id, projectId, log.id)
         }
     }
 
