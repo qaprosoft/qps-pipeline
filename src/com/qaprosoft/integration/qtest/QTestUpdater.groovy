@@ -135,8 +135,8 @@ class QTestUpdater {
         integration.testInfo.each { testInfo ->
             String[] tagInfoArray = testInfo.tagValue.split("-")
             Map testCase = new HashMap()
-            if (!testCaseResultMap.get(tagInfoArray[1])) {
-                if (!parsedIntegrationData.projectId) {
+            if (isParamEmpty(testCaseResultMap.get(tagInfoArray[1]))) {
+                if (isParamEmpty(parsedIntegrationData.projectId)) {
                     parsedIntegrationData.projectId = tagInfoArray[0]
                 }
                 testCase.case_id = tagInfoArray[1]
