@@ -17,7 +17,7 @@ class StatusMapper {
     enum ZafiraStatus {
         PASSED(1),
         FAILED(5),
-        SKIPPED(4),
+        SKIPPED(2),
         ABORTED(3),
         QUEUED(3),
         final int value

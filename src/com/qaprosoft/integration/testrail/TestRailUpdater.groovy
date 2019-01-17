@@ -41,7 +41,6 @@ class TestRailUpdater {
         // convert uuid to project_id, suite_id and testcases related maps
         integration = parseTagData(integration)
 
-        logger.info("PARSED")
         if(isParamEmpty(integration.projectId)){
             logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
             return
