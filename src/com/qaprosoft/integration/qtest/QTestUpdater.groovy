@@ -131,7 +131,7 @@ class QTestUpdater {
 
     protected def parseTagData(){
         Map testCaseResultMap = new HashMap<>()
-        integration.integrationInfo.each { integrationInfoItem ->
+        integration.testInfo.each { integrationInfoItem ->
             String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
             Map testCase = new HashMap()
             if (!testCaseResultMap.get(tagInfoArray[1])) {

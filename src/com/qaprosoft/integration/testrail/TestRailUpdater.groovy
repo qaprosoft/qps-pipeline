@@ -206,7 +206,7 @@ class TestRailUpdater {
     protected def parseTagData(integration){
         def parsedIntegrationData = integration
         Map testCaseResultMap = new HashMap<>()
-        integration.integrationInfo.each { testInfo ->
+        integration.testInfo.each { testInfo ->
             String[] tagInfoArray = testInfo.tagValue.split("-")
             Map testCase = new HashMap()
             if (!testCaseResultMap.get(tagInfoArray[2])) {
@@ -218,7 +218,7 @@ class TestRailUpdater {
                 testCase.status_id = StatusMapper.getTestRailStatus(testInfo.status)
                 testCase.comment = testInfo.message
 //                testCase.testURL = "${integration.zafiraServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
-            } else {
+            } else {F
                 testCase = testCaseResultMap.get(tagInfoArray[2])
             }
             testCase.defects = getDefectsString(testCase.defects, testInfo.defectId)
