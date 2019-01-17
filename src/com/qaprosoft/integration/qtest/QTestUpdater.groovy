@@ -81,7 +81,8 @@ class QTestUpdater {
                     return
                 }
             }
-            def results = qTestClient.uploadResults(testCase.status, new Date(startedAt),  new Date(finishedAt), testRun.id, testRun.name,  projectId)
+            def testLogsNote = "${testCase.testURL}\n\n${testCase.comment}"
+            def results = qTestClient.uploadResults(testCase.status, new Date(startedAt),  new Date(finishedAt), testRun.id, testRun.name,  projectId, testLogsNote)
             if(isParamEmpty(results)){
                 logger.error("Unable to add results for QTest TestRun.")
                 return
