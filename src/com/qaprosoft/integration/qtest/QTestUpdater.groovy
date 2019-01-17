@@ -14,7 +14,6 @@ class QTestUpdater {
     private ZafiraClient zc
     private QTestClient qTestClient
     private Logger logger
-    private integration
 
     public QTestUpdater(context) {
         this.context = context
@@ -29,7 +28,7 @@ class QTestUpdater {
             return
         }
         // export all tag related metadata from Zafira
-        integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
+        def integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
         logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
         if(isParamEmpty(integration)){
@@ -37,7 +36,7 @@ class QTestUpdater {
             return
         }
         // convert uuid to project_id, suite_id and testcases related maps
-        integration = parseTagData()
+        integration = parseTagData(integration)
 
         if(isParamEmpty(integration.projectId)){
             logger.error("Unable to detect QTest project_id!\n" + formatJson(integration))
@@ -129,23 +128,25 @@ class QTestUpdater {
         return testCaseName
     }
 
-    protected def parseTagData(){
+    protected def parseTagData(integration){
+        def parsedIntegrationData = integration
         Map testCaseResultMap = new HashMap<>()
-        integration.testInfo.each { integrationInfoItem ->
-            String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
+        integration.testInfo.each { testInfo ->
+            String[] tagInfoArray = testInfo.tagValue.split("-")
             Map testCase = new HashMap()
             if (!testCaseResultMap.get(tagInfoArray[1])) {
-                if (!integration.projectId) {
-                    integration.projectId = tagInfoArray[0]
+                if (!parsedIntegrationData.projectId) {
+                    parsedIntegrationData.projectId = tagInfoArray[0]
                 }
                 testCase.case_id = tagInfoArray[1]
-                testCase.status = integrationInfoItem.status
+                testCase.status = testInfo.status
+                testCase.testURL = "${integration.zafiraServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[1])
             }
             testCaseResultMap.put(tagInfoArray[1], testCase)
         }
-        integration.caseResultMap = testCaseResultMap
-        return integration
+        parsedIntegrationData.caseResultMap = testCaseResultMap
+        return parsedIntegrationData
     }
 }
