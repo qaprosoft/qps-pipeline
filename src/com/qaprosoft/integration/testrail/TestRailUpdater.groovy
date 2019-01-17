@@ -178,7 +178,7 @@ class TestRailUpdater {
                     def testCase = caseResultMap.get(testCaseId)
                     if(!isParamEmpty(testCase)){
                         resultToAdd.status_id = testCase.status_id
-                        resultToAdd.comment = "${testCase.testURL}\n\n${testCase.comment}"
+                        resultToAdd.comment = testCase.testURL + "\n\n" + testCase.comment
                         resultToAdd.defects = testCase.defects
                         if (resultToAdd.status_id != 3) {
                             filteredTestResultMap.put(resultToAdd.test_id, resultToAdd)
