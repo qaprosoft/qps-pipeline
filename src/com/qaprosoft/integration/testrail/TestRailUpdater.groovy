@@ -41,6 +41,7 @@ class TestRailUpdater {
         // convert uuid to project_id, suite_id and testcases related maps
         integration = parseTagData(integration)
 
+        logger.info("PARSED")
         if(isParamEmpty(integration.projectId)){
             logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
             return
@@ -203,25 +204,27 @@ class TestRailUpdater {
     }
     
     protected def parseTagData(integration){
+        def parsedIntegrationData = integration
         Map testCaseResultMap = new HashMap<>()
-        integration.integrationInfo.each { integrationInfoItem ->
-            String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
+        integration.integrationInfo.each { testInfo ->
+            String[] tagInfoArray = testInfo.tagValue.split("-")
             Map testCase = new HashMap()
             if (!testCaseResultMap.get(tagInfoArray[2])) {
-                if (!integration.projectId) {
-                    integration.projectId = tagInfoArray[0]
-                    integration.suiteId = tagInfoArray[1]
+                if (!parsedIntegrationData.projectId) {
+                    parsedIntegrationData.projectId = tagInfoArray[0]
+                    parsedIntegrationData.suiteId = tagInfoArray[1]
                 }
                 testCase.case_id = tagInfoArray[2]
-                testCase.status_id = StatusMapper.getTestRailStatus(integrationInfoItem.status)
-                testCase.comment = integrationInfoItem.message
+                testCase.status_id = StatusMapper.getTestRailStatus(testInfo.status)
+                testCase.comment = testInfo.message
+//                testCase.testURL = "${integration.zafiraServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
             } else {
                 testCase = testCaseResultMap.get(tagInfoArray[2])
             }
-            testCase.defects = getDefectsString(testCase.defects, integrationInfoItem.defectId)
+            testCase.defects = getDefectsString(testCase.defects, testInfo.defectId)
             testCaseResultMap.put(tagInfoArray[2], testCase)
         }
-        integration.caseResultMap = testCaseResultMap
-        return integration
+        parsedIntegrationData.caseResultMap = testCaseResultMap
+        return parsedIntegrationData
     }
 }
