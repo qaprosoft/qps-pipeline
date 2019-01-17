@@ -176,10 +176,11 @@ class TestRailUpdater {
                     Map resultToAdd = new HashMap()
                     resultToAdd.test_id = test.id
                     String testCaseId = test.case_id.toString()
-                    if(!isParamEmpty(caseResultMap.get(testCaseId))){
-                        resultToAdd.status_id = caseResultMap.get(testCaseId).status_id
-                        resultToAdd.comment = caseResultMap.get(testCaseId).comment
-                        resultToAdd.defects = caseResultMap.get(testCaseId).defects
+                    def testCase = caseResultMap.get(testCaseId)
+                    if(!isParamEmpty(testCase)){
+                        resultToAdd.status_id = testCase.status_id
+                        resultToAdd.comment = "${testCase.testURL}\n\n${testCase.comment}"
+                        resultToAdd.defects = testCase.defects
                         if (resultToAdd.status_id != 3) {
                             filteredTestResultMap.put(resultToAdd.test_id, resultToAdd)
                         }
