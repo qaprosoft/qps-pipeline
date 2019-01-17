@@ -49,11 +49,12 @@ class TestRailUpdater {
         def includeAll = !isParamEmpty(Configuration.get("include_all"))?Configuration.get("include_all"):true
         def projectId = integration.projectId
         def suiteId = integration.suiteId
-        def milestoneId = getMilestoneId(projectId)
-        def assignedToId = getAssignedToId()
+        Map customParams = integration.customParams
+        def milestoneId = getMilestoneId(projectId, customParams)
+        def assignedToId = getAssignedToId(customParams)
         def testRunName
-        if(!isParamEmpty(integration.customParams.get("testrail_run_name"))){
-            testRunName = integration.customParams.get("testrail_run_name")
+        if(!isParamEmpty(customParams.testrail_run_name)){
+            testRunName = customParams.testrail_run_name
             assignedToId = null
             isRerun = true
         } else {
@@ -64,43 +65,42 @@ class TestRailUpdater {
         // only cases available in both maps should be registered later
         parseCases(projectId, suiteId)
 
-        def testRun = null
+        def testRailRunId = null
         if(isRerun){
-            testRun = getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
-            if (isParamEmpty(testRun)) {
-                logger.error("Unable to detect existing run in TestRail for rebuild!")
-            }
+            testRailRunId = getTestRailRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
         }
 
-        if(isParamEmpty(testRun)){
-            testRun = addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll)
-            if (isParamEmpty(testRun)) {
+        if(isParamEmpty(testRailRunId)){
+            def newTestRailRun = addTestRailRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll)
+            if (isParamEmpty(newTestRailRun)) {
                 logger.error("Unable to add test run to TestRail!")
                 return
             }
+            testRailRunId = newTestRailRun.id
         }
-        addResults(testRun.id)
+        addResults(testRailRunId.id)
     }
 
-    protected def getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
-		// "- 60 * 24 * 7" - a week to support adding results into manually created TestRail runs
+    protected def getTestRailRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
+		// "- 60 * 60 * 24 * 7" - a week to support adding results into manually created TestRail runs
         def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 60 * 24 * 7, assignedToId, milestoneId, projectId, suiteId)
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
-		def run = null
+		def testRunId = null
         for(Map testRun in testRuns){
 //            logger.debug("TEST_RUN: " + formatJson(testRun))
             String correctedName = testRun.name.trim().replaceAll(" +", " ")
             if(correctedName.equals(testRunName)){
-                integration.testRunId = testRun.id
-                run = testRun
+                testRunId = testRun.id
                 break
             }
         }
-		return run
+        if (isParamEmpty(testRunId)) {
+            logger.error("Unable to detect run in TestRail!")
+        }
+		return testRunId
     }
 
-    protected def getMilestoneId(projectId){
-        Map customParams = integration.customParams
+    protected def getMilestoneId(projectId, customParams){
         if(isParamEmpty(customParams.milestone)) {
             logger.error("No milestone name discovered!")
             return
@@ -113,17 +113,16 @@ class TestRailUpdater {
                 milestoneId = milestone.id
             }
         }
-        if(!milestoneId ){
-            def milestone = trc.addMilestone(projectId, milestoneName)
-            if(!isParamEmpty(milestone)){
-                milestoneId = milestone.id
+        if(isParamEmpty(milestoneId)){
+            def newMilestone = trc.addMilestone(projectId, milestoneName)
+            if(!isParamEmpty(newMilestone)){
+                milestoneId = newMilestone.id
             }
         }
         return milestoneId
     }
 
-    protected def getAssignedToId(){
-        Map customParams = integration.customParams
+    protected def getAssignedToId(customParams){
         def assignedToId = trc.getUserIdByEmail(customParams.assignee)
         if(isParamEmpty(assignedToId)){
             logger.debug("No users with such email found!")
@@ -162,8 +161,8 @@ class TestRailUpdater {
 //        logger.debug("CASES_MAP:\n" + formatJson(integration.caseResultMap))
     }
 
-    protected def getTests(){
-        def tests = trc.getTests(integration.testRunId)
+    protected def getTests(testRunId){
+        def tests = trc.getTests(testRunId)
 //        logger.debug("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
             for(validTestCaseId in integration.validTestCases){
@@ -188,16 +187,15 @@ class TestRailUpdater {
 //        logger.debug("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
     }
 
-    protected def addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll){
+    protected def addTestRailRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll){
         def testRun = trc.addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, integration.caseResultMap.keySet(), projectId)
         logger.debug("ADDED TESTRUN:\n" + formatJson(testRun))
         return testRun
     }
 
     protected def addResults(testRunId){
-        integration.testRunId = testRunId
-        getTests()
-        def response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
+        getTests(testRunId)
+        def response = trc.addResultsForTests(testRunId, integration.testResultMap.values())
 //        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
     }
     
