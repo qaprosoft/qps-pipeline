@@ -63,7 +63,7 @@ class QTestUpdater {
             }
             suiteId = testSuite.id
         }
-        integration.caseResultMap.values().each { testCase ->
+        integration.testCasesMap.values().each { testCase ->
             def testRun
             def testCaseName = getTestCaseName(projectId, testCase.case_id)
             if(!isParamEmpty(testCaseName)){
@@ -118,7 +118,7 @@ class QTestUpdater {
         }
     }
 
-    protected def getTestCaseName(projectId, caseId){
+    protected def getTestCaseName(projectId, casePid){
         def testCaseName = null
         def testCase = qTestClient.getTestCase(projectId, caseId)
         if(isParamEmpty(testCase)){
@@ -131,24 +131,23 @@ class QTestUpdater {
 
     protected def parseTagData(integration){
         def parsedIntegrationData = integration
-        logger.info("PROJECT_ID: " + parsedIntegrationData.projectId)
-        Map testCaseResultMap = new HashMap<>()
+        Map testCasesMap = new HashMap<>()
         integration.testInfo.each { testInfo ->
             String[] tagInfoArray = testInfo.tagValue.split("-")
-            Map testCase = new HashMap()
-            if (isParamEmpty(testCaseResultMap.get(tagInfoArray[1]))) {
+            def projectId = tagInfoArray[0]
+            def testCaseId = tagInfoArray[1]
+            if (isParamEmpty(testCasesMap.get(testCaseId))) {
                 if (isParamEmpty(parsedIntegrationData.projectId)) {
-                    parsedIntegrationData.projectId = tagInfoArray[0]
+                    parsedIntegrationData.projectId = projectId
                 }
-                testCase.case_id = tagInfoArray[1]
+                Map testCase = new HashMap()
+                testCase.case_id = testCaseId
                 testCase.status = testInfo.status
                 testCase.testURL = "${integration.zafiraServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
-            } else {
-                testCase = testCaseResultMap.get(tagInfoArray[1])
+                testCasesMap.put(testCaseId, testCase)
             }
-            testCaseResultMap.put(tagInfoArray[1], testCase)
         }
-        parsedIntegrationData.caseResultMap = testCaseResultMap
+        parsedIntegrationData.testCasesMap = testCasesMap
         return parsedIntegrationData
     }
 }
