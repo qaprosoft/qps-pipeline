@@ -118,7 +118,7 @@ class QTestUpdater {
         }
     }
 
-    protected def getTestCaseName(projectId, casePid){
+    protected def getTestCaseName(projectId, caseId){
         def testCaseName = null
         def testCase = qTestClient.getTestCase(projectId, caseId)
         if(isParamEmpty(testCase)){
