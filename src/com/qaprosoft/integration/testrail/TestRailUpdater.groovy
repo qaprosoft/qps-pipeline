@@ -187,7 +187,6 @@ class TestRailUpdater {
                 }
             }
         }
-//        logger.debug("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
         return filteredTestResultMap
     }
 
