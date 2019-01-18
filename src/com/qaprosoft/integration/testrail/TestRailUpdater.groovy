@@ -49,7 +49,7 @@ class TestRailUpdater {
         def projectId = integration.projectId
         def suiteId = integration.suiteId
         Map customParams = integration.customParams
-        Map caseResultMap = integration.caseResultMap
+        Map caseResultMap = integration.testCasesMap
         Map testResultMap = new HashMap<>()
         def milestoneId = getMilestoneId(projectId, customParams)
         def assignedToId = getAssignedToId(customParams)
@@ -162,7 +162,6 @@ class TestRailUpdater {
             }
         }
         return filteredCaseResultMap
-//        logger.debug("CASES_MAP:\n" + formatJson(integration.caseResultMap))
     }
 
     protected def filterTests(testRunId, testRailCaseIds, testResultMap, caseResultMap){
@@ -204,27 +203,30 @@ class TestRailUpdater {
     }
     
     protected def parseTagData(integration){
-        def parsedIntegrationData = integration
-        Map testCaseResultMap = new HashMap<>()
+        def parsedIntegrationInfo = integration
+        Map testCasesMap = new HashMap<>()
         integration.testInfo.each { testInfo ->
             String[] tagInfoArray = testInfo.tagValue.split("-")
+            def projectId = tagInfoArray[0]
+            def testSuiteId = tagInfoArray[1]
+            def testCaseId = tagInfoArray[2]
             Map testCase = new HashMap()
-            if (!testCaseResultMap.get(tagInfoArray[2])) {
-                if (!parsedIntegrationData.projectId) {
-                    parsedIntegrationData.projectId = tagInfoArray[0]
-                    parsedIntegrationData.suiteId = tagInfoArray[1]
+            if (isParamEmpty(testCasesMap.get(testCaseId))) {
+                if (isParamEmpty(parsedIntegrationInfo.projectId)) {
+                    parsedIntegrationInfo.projectId = projectId
+                    parsedIntegrationInfo.suiteId = testSuiteId
                 }
-                testCase.case_id = tagInfoArray[2]
+                testCase.case_id = testCaseId
                 testCase.status_id = StatusMapper.getTestRailStatus(testInfo.status)
                 testCase.comment = testInfo.message
                 testCase.testURL = "${integration.zafiraServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
-            } else {F
-                testCase = testCaseResultMap.get(tagInfoArray[2])
+            } else {
+                testCase = testCasesMap.get(testCaseId)
             }
             testCase.defects = getDefectsString(testCase.defects, testInfo.defectId)
-            testCaseResultMap.put(tagInfoArray[2], testCase)
+            testCasesMap.put(testCaseId, testCase)
         }
-        parsedIntegrationData.caseResultMap = testCaseResultMap
-        return parsedIntegrationData
+        parsedIntegrationInfo.testCasesMap = testCasesMap
+        return parsedIntegrationInfo
     }
 }
