@@ -130,15 +130,15 @@ class QTestUpdater {
     }
 
     protected def parseTagData(integration){
-        def parsedIntegrationData = integration
+        def parsedIntegrationInfo = integration
         Map testCasesMap = new HashMap<>()
         integration.testInfo.each { testInfo ->
             String[] tagInfoArray = testInfo.tagValue.split("-")
             def projectId = tagInfoArray[0]
             def testCaseId = tagInfoArray[1]
             if (isParamEmpty(testCasesMap.get(testCaseId))) {
-                if (isParamEmpty(parsedIntegrationData.projectId)) {
-                    parsedIntegrationData.projectId = projectId
+                if (isParamEmpty(parsedIntegrationInfo.projectId)) {
+                    parsedIntegrationInfo.projectId = projectId
                 }
                 Map testCase = new HashMap()
                 testCase.case_id = testCaseId
@@ -147,7 +147,7 @@ class QTestUpdater {
                 testCasesMap.put(testCaseId, testCase)
             }
         }
-        parsedIntegrationData.testCasesMap = testCasesMap
-        return parsedIntegrationData
+        parsedIntegrationInfo.testCasesMap = testCasesMap
+        return parsedIntegrationInfo
     }
 }
