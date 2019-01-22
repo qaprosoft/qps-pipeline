@@ -364,7 +364,7 @@ public class QARunner extends AbstractRunner {
                         }
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
                         sendCustomizedEmail()
-						if(!isParamEmpty(getAbortCause(currentBuild))){
+						if(!isParamEmpty(this.getAbortCause(currentBuild))){
 							zafiraUpdater.abortTestRun(uuid, currentBuild)
 						}
 						//TODO: think about seperate stage for uploading jacoco reports
@@ -385,6 +385,23 @@ public class QARunner extends AbstractRunner {
                 }
             }
         }
+    }
+
+    private String getAbortCause(currentBuild)
+    {
+        def abortCause = ''
+        def actions = currentBuild.getRawBuild().getActions(jenkins.model.InterruptedBuildAction)
+        logger.info("ACTIONS: " + actions)
+        for (action in actions) {
+            logger.info("ACTION_DUMP: " + action.dump())
+            // on cancellation, report who cancelled the build
+            for (cause in action.getCauses()) {
+                logger.info("CAUSE_DUMP: " + cause.dump())
+                abortCause = cause.getUser().getDisplayName()
+            }
+        }
+
+        return abortCause
     }
 
     // Possible to override in private pipelines
