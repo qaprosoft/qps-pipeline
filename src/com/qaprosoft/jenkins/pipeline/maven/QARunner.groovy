@@ -131,7 +131,7 @@ public class QARunner extends AbstractRunner {
 			// and PR can be marked as fail due to the compilation failure!
 			def goals = "-U clean compile test-compile \
 					-f ${pomFile} \
-					-Dmaven.test.failure.ignore=true \
+					-Dmaven.test.failure.ignore=false \
 					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Dcarina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
 
@@ -550,7 +550,7 @@ public class QARunner extends AbstractRunner {
 		def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 				-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 		-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
-		-Dmaven.test.failure.ignore=true \
+		-Dmaven.test.failure.ignore=false \
 		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
 		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
 		-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
