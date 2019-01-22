@@ -38,8 +38,7 @@ public class Runner extends AbstractRunner {
             scmClient.clonePR()
 
             context.stage('Maven Compile') {
-                def goals = "clean compile test-compile \
-						 -f pom.xml -Dmaven.test.failure.ignore=true"
+                def goals = "clean compile test-compile -f pom.xml"
 
                 executeMavenGoals(goals)
             }
