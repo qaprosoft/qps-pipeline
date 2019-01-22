@@ -26,7 +26,6 @@ public class Sonar {
 			context.withSonarQubeEnv(sonarQubeEnv) {
 				def goals = "-U -f ${pomFile} \
 					clean compile test-compile package sonar:sonar -DskipTests \
-					-Dmaven.test.failure.ignore=true \
 					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Dcarina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
