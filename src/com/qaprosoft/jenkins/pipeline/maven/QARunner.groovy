@@ -364,9 +364,6 @@ public class QARunner extends AbstractRunner {
                         }
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
                         sendCustomizedEmail()
-						if(!isParamEmpty(getAbortCause(currentBuild))){
-							zafiraUpdater.abortTestRun(uuid, currentBuild)
-						}
 						//TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
                     }
