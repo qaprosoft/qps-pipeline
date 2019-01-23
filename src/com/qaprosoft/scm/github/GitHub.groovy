@@ -37,8 +37,7 @@ class GitHub implements ISCM {
 			logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
 			logger.info("gitHtmlUrl: " + gitHtmlUrl)
 
-//            def gitUrl = Configuration.resolveVars(gitHtmlUrl)
-            def gitUrl = "https://tsvrko@bitbucket.org/tsvrko/carina-demo.git"
+            def gitUrl = Configuration.resolveVars(gitHtmlUrl)
 
             logger.info("GIT_URL: " + gitUrl)
             logger.debug("forked_repo: " + fork)
