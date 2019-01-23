@@ -86,11 +86,6 @@ public class TestJobFactory extends PipelineFactory {
 					autoScreenshot = currentSuite.getParameter("jenkinsAutoScreenshot").toBoolean()
 				}
 
-				def keepAllScreenshots = true
-				if (currentSuite.getParameter("jenkinsKeepAllScreenshots") != null) {
-					keepAllScreenshots = currentSuite.getParameter("jenkinsKeepAllScreenshots").toBoolean()
-				}
-
 				def enableVideo = true
 				if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
 					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
