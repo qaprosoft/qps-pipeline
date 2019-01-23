@@ -105,11 +105,11 @@ class TestRailUpdater {
     }
 
     protected def getMilestoneId(projectId, customParams){
-        if(isParamEmpty(customParams.milestone)) {
+        if(isParamEmpty(customParams.testrail_milestone)) {
             logger.error("No milestone name discovered!")
             return
         }
-        def milestoneName = customParams.milestone
+        def milestoneName = customParams.testrail_milestone
         def milestoneId = null
         def milestones = trc.getMilestones(projectId)
         milestones.each { Map milestone ->
@@ -127,7 +127,7 @@ class TestRailUpdater {
     }
 
     protected def getAssignedToId(customParams){
-        def assignedToId = trc.getUserIdByEmail(customParams.assignee)
+        def assignedToId = trc.getUserIdByEmail(customParams.testrail_assignee)
         if(isParamEmpty(assignedToId)){
             logger.debug("No users with such email found!")
             return
