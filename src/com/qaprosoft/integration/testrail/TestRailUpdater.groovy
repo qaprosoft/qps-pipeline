@@ -54,10 +54,10 @@ class TestRailUpdater {
         def milestoneId = getMilestoneId(projectId, customParams)
         def assignedToId
         def createdBy = getAssignedToId(null)
-        if(isParamEmpty(customParams.testrail_assignee)){
+        if(isParamEmpty(customParams.assignee)){
             assignedToId = createdBy
         } else {
-            assignedToId = getAssignedToId(customParams.testrail_assignee)
+            assignedToId = getAssignedToId(customParams.assignee)
         }
         def testRunName
         if(!isParamEmpty(customParams.testrail_run_name)){
@@ -111,11 +111,11 @@ class TestRailUpdater {
     }
 
     protected def getMilestoneId(projectId, customParams){
-        if(isParamEmpty(customParams.testrail_milestone)) {
+        if(isParamEmpty(customParams.milestone)) {
             logger.error("No milestone name discovered!")
             return
         }
-        def milestoneName = customParams.testrail_milestone
+        def milestoneName = customParams.milestone
         def milestoneId = null
         def milestones = trc.getMilestones(projectId)
         milestones.each { Map milestone ->
