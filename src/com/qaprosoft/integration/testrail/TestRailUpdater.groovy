@@ -87,7 +87,7 @@ class TestRailUpdater {
             }
             testRailRunId = newTestRailRun.id
         }
-        testResultMap = filterTests(testRailRunId, testRailCaseIds, testResultMap, filteredCaseResultMap)
+        testResultMap = filterTests(testRailRunId, assignedToId, testRailCaseIds, testResultMap, filteredCaseResultMap)
         addResults(testRailRunId, testResultMap)
     }
 
@@ -170,7 +170,7 @@ class TestRailUpdater {
         return filteredCaseResultMap
     }
 
-    protected def filterTests(testRunId, testRailCaseIds, testResultMap, caseResultMap){
+    protected def filterTests(testRunId, assignedToId, testRailCaseIds, testResultMap, caseResultMap){
         Map filteredTestResultMap = testResultMap
         def tests = trc.getTests(testRunId)
 //        logger.debug("TESTS_MAP:\n" + formatJson(tests))
@@ -185,6 +185,7 @@ class TestRailUpdater {
                         resultToAdd.status_id = testCase.status_id
                         resultToAdd.comment = testCase.testURL + "\n\n" + testCase.comment
                         resultToAdd.defects = testCase.defects
+                        resultToAdd.assignedto_id = assignedToId
                         if (resultToAdd.status_id != 3) {
                             filteredTestResultMap.put(resultToAdd.test_id, resultToAdd)
                         }
