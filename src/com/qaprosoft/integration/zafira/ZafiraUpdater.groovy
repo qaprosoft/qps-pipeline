@@ -81,7 +81,7 @@ class ZafiraUpdater {
         }
         def response = zc.abortTestRun(uuid, failureReason)
         if(!isParamEmpty(response)){
-            if(response.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
+            if(!response.status.equals(StatusMapper.ZafiraStatus.ABORTED)){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
             } else {
                 sendFailureEmail(uuid, Configuration.get("email_list"))
