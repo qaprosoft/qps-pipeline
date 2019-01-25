@@ -79,7 +79,9 @@ class ZafiraUpdater {
             subject = getFailureSubject(FailureCause.ABORTED, jobName, env, buildNumber)
             failureReason = "Aborted by " + getAbortCause(currentBuild)
         }
+        logger.info("I AM HERE!")
         def response = zc.abortTestRun(uuid, failureReason)
+        logger.info("RESPONSE: " + formatJson(response))
         if(!isParamEmpty(response)){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         } else {
