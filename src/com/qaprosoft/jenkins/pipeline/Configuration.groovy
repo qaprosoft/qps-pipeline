@@ -43,7 +43,7 @@ public class Configuration {
 		QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", "git@github.com:qaprosoft/qps-pipeline.git"),
 		ADMIN_EMAILS("ADMIN_EMAILS", mustOverride),
 
-		GITHUB_HOST("GITHUB_HOST", "bitbucket.org"),
+		GITHUB_HOST("GITHUB_HOST", "github.com"),
 		GITHUB_API_URL("GITHUB_API_URL", "https://api.\${GITHUB_HOST}/"),
 		GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft"),
 		GITHUB_HTML_URL("GITHUB_HTML_URL", "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}"),
