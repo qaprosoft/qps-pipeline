@@ -17,7 +17,7 @@ import groovy.transform.InheritConstructors
     @Override
     protected void build() {
         logger.info("SBTRunner->runJob")
-        context.node("sbt") {
+        context.node("performance") {
 
             context.wrap([$class: 'BuildUser']) {
                 try {
@@ -25,8 +25,12 @@ import groovy.transform.InheritConstructors
 
                         scmClient.clone()
 
+                        def sbtHome = tool 'SBT'
+
+
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
-                            context.sh Configuration.get("sbt_cmd")
+                            context.sh "${sbtHome} ${args}"
+
                         }
                     }
                 } catch (Exception e) {
@@ -48,6 +52,12 @@ import groovy.transform.InheritConstructors
     @Override
      public void onPullRequest(){
         //TODO: implement in future
+    }
+
+    protected void publishJenkinsReports() {
+        context.stage('Results') {
+            context.gatlingArchive()
+        }
     }
 
 
