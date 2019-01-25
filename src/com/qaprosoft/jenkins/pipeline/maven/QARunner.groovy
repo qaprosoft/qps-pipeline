@@ -341,46 +341,47 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
-        def isRerun = isRerun()
-        String nodeName = "master"
-        context.node(nodeName) {
-            zafiraUpdater.queueZafiraTestRun(uuid)
-            nodeName = chooseNode()
-        }
-        context.node(nodeName) {
-
-            context.wrap([$class: 'BuildUser']) {
-                try {
-                    context.timestamps {
-
-                        prepareBuild(currentBuild)
-                        scmClient.clone()
-
-                        downloadResources()
-
-                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
-                            buildJob()
-                        }
-                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-                        sendCustomizedEmail()
-						//TODO: think about seperate stage for uploading jacoco reports
-                        publishJacocoReport()
-                    }
-                } catch (Exception e) {
-                    logger.error(Utils.printStackTrace(e))
-                    zafiraUpdater.abortTestRun(uuid, currentBuild)
-                    throw e
-                } finally {
-                    qTestUpdater.updateTestRun(uuid)
-                    testRailUpdater.updateTestRun(uuid, isRerun)
-                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
-                    zafiraUpdater.setBuildResult(uuid, currentBuild)
-                    publishJenkinsReports()
-                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    clean()
-                }
-            }
-        }
+        testRailUpdater.updateTestRun(uuid, false)
+//        def isRerun = isRerun()
+//        String nodeName = "master"
+//        context.node(nodeName) {
+//            zafiraUpdater.queueZafiraTestRun(uuid)
+//            nodeName = chooseNode()
+//        }
+//        context.node(nodeName) {
+//
+//            context.wrap([$class: 'BuildUser']) {
+//                try {
+//                    context.timestamps {
+//
+//                        prepareBuild(currentBuild)
+//                        scmClient.clone()
+//
+//                        downloadResources()
+//
+//                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
+//                            buildJob()
+//                        }
+//                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+//                        sendCustomizedEmail()
+//						//TODO: think about seperate stage for uploading jacoco reports
+//                        publishJacocoReport()
+//                    }
+//                } catch (Exception e) {
+//                    logger.error(Utils.printStackTrace(e))
+//                    zafiraUpdater.abortTestRun(uuid, currentBuild)
+//                    throw e
+//                } finally {
+//                    qTestUpdater.updateTestRun(uuid)
+//                    testRailUpdater.updateTestRun(uuid, isRerun)
+//                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
+//                    zafiraUpdater.setBuildResult(uuid, currentBuild)
+//                    publishJenkinsReports()
+//                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
+//                    clean()
+//                }
+//            }
+//        }
     }
 
     // Possible to override in private pipelines
