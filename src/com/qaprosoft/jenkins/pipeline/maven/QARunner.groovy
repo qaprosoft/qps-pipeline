@@ -438,20 +438,8 @@ public class QARunner extends AbstractRunner {
 
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
 
-        String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
-
-        context.stage('Preparation') {
-            setBuildName(carinaCoreVersion)
-
-            if (isMobile()) {
-                //this is mobile test
-                prepareForMobile()
-            }
-        }
-    }
-
-    protected void setBuildName(carinaCoreVersion) {
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+        String carinaCoreVersion = getCarinaCoreVersion()
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
@@ -475,6 +463,28 @@ public class QARunner extends AbstractRunner {
             currentBuild.displayName += "|${browserVersion}"
         }
         currentBuild.description = "${suite}"
+
+        context.stage('Preparation') {
+            setBuildName(carinaCoreVersion)
+
+            if (isMobile()) {
+                //this is mobile test
+                prepareForMobile()
+            }
+        }
+    }
+
+    protected String getCarinaCoreVersion() {
+        def carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
+        def overrideFields = Configuration.get("overrideFields").toLowerCase()
+
+        if (overrideFields.contains("carina_core_version")) {
+            def findCoreVersion = overrideFields.toLowerCase().find(/(?<=carina_core_version=)([^,]*)/)
+            if (!isParamEmpty(findCoreVersion)) {
+                carinaCoreVersion = findCoreVersion
+            }
+        }
+        return carinaCoreVersion
     }
 
      protected void prepareForMobile() {
@@ -605,15 +615,7 @@ public class QARunner extends AbstractRunner {
 		}
 
 		//append again overrideFields to make sure they are declared at the end
-        def overrideFields = Configuration.get("overrideFields")
-		goals = goals + " " + overrideFields
-
-        if (overrideFields.toLowerCase().contains("carina_core_version")) {
-            def findCoreVersion = overrideFields.toLowerCase().find(/(?<=carina_core_version=)([^,]*)/)
-            if (!isParamEmpty(findCoreVersion)) {
-                setBuildName(findCoreVersion)
-            }
-        }
+		goals = goals + " " + Configuration.get("overrideFields")
 
 		logger.debug("goals: ${goals}")
 
