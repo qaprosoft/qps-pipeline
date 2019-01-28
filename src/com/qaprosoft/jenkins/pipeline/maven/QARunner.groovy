@@ -441,7 +441,7 @@ public class QARunner extends AbstractRunner {
         String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
 
         context.stage('Preparation') {
-            checkAndUpdateBuildName(carinaCoreVersion)
+            setBuildName(carinaCoreVersion)
 
             if (isMobile()) {
                 //this is mobile test
@@ -450,7 +450,7 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected void checkAndUpdateBuildName(carinaCoreVersion) {
+    protected void setBuildName(carinaCoreVersion) {
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
@@ -611,7 +611,7 @@ public class QARunner extends AbstractRunner {
         if (overrideFields.toLowerCase().contains("carina_core_version")) {
             def findCoreVersion = overrideFields.toLowerCase().find(/(?<=carina_core_version=)([^,]*)/)
             if (!isParamEmpty(findCoreVersion)) {
-                checkAndUpdateBuildName(findCoreVersion)
+                setBuildName(findCoreVersion)
             }
         }
 
