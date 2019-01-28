@@ -109,7 +109,7 @@ class ZafiraClient extends HttpClient{
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder recipients: emailList
-		logger.info(jsonBuilder.toString())
+		logger.debug(jsonBuilder.toString())
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
