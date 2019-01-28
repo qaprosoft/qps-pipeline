@@ -81,7 +81,11 @@ class ZafiraUpdater {
         }
         def response = zc.abortTestRun(uuid, failureReason)
         if(!isParamEmpty(response)){
+            if(response.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
+            } else {
+                sendFailureEmail(uuid, Configuration.get("email_list"))
+            }
         } else {
             logger.error("UNABLE TO ABORT TESTRUN! Probably run is not registered in Zafira.")
             //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira

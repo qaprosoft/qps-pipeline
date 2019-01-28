@@ -52,11 +52,17 @@ class TestRailUpdater {
         Map caseResultMap = integration.testCasesMap
         Map testResultMap = new HashMap<>()
         def milestoneId = getMilestoneId(projectId, customParams)
-        def assignedToId = getAssignedToId(customParams)
+        def assignedToId
+        def createdBy = getAssignedToId(null)
+        if(isParamEmpty(customParams.assignee)){
+            assignedToId = createdBy
+        } else {
+            assignedToId = getAssignedToId(customParams.assignee)
+        }
         def testRunName
         if(!isParamEmpty(customParams.testrail_run_name)){
             testRunName = customParams.testrail_run_name
-            assignedToId = null
+            createdBy = null
             isRerun = true
         } else {
             testRunName = integration.testRunName
@@ -70,7 +76,7 @@ class TestRailUpdater {
 
         def testRailRunId = null
         if(isRerun){
-            testRailRunId = getTestRailRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
+            testRailRunId = getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter)
         }
 
         if(isParamEmpty(testRailRunId)){
@@ -81,13 +87,13 @@ class TestRailUpdater {
             }
             testRailRunId = newTestRailRun.id
         }
-        testResultMap = filterTests(testRailRunId, testRailCaseIds, testResultMap, filteredCaseResultMap)
+        testResultMap = filterTests(testRailRunId, assignedToId, testRailCaseIds, testResultMap, filteredCaseResultMap)
         addResults(testRailRunId, testResultMap)
     }
 
-    protected def getTestRailRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
+    protected def getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter){
 		// "- 60 * 60 * 24 * 7" - a week to support adding results into manually created TestRail runs
-        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 60 * 24 * 7, assignedToId, milestoneId, projectId, suiteId)
+        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 60 * 24 * 7, createdBy, milestoneId, projectId, suiteId)
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		def testRunId = null
         for(Map testRun in testRuns){
@@ -126,8 +132,8 @@ class TestRailUpdater {
         return milestoneId
     }
 
-    protected def getAssignedToId(customParams){
-        def assignedToId = trc.getUserIdByEmail(customParams.assignee)
+    protected def getAssignedToId(testRailAssignee){
+        def assignedToId = trc.getUserIdByEmail(testRailAssignee)
         if(isParamEmpty(assignedToId)){
             logger.debug("No users with such email found!")
             return
@@ -164,7 +170,7 @@ class TestRailUpdater {
         return filteredCaseResultMap
     }
 
-    protected def filterTests(testRunId, testRailCaseIds, testResultMap, caseResultMap){
+    protected def filterTests(testRunId, assignedToId, testRailCaseIds, testResultMap, caseResultMap){
         Map filteredTestResultMap = testResultMap
         def tests = trc.getTests(testRunId)
 //        logger.debug("TESTS_MAP:\n" + formatJson(tests))
@@ -179,6 +185,7 @@ class TestRailUpdater {
                         resultToAdd.status_id = testCase.status_id
                         resultToAdd.comment = testCase.testURL + "\n\n" + testCase.comment
                         resultToAdd.defects = testCase.defects
+                        resultToAdd.assignedto_id = assignedToId
                         if (resultToAdd.status_id != 3) {
                             filteredTestResultMap.put(resultToAdd.test_id, resultToAdd)
                         }
