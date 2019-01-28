@@ -438,8 +438,20 @@ public class QARunner extends AbstractRunner {
 
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
 
-        String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
         String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
+
+        context.stage('Preparation') {
+            checkAndUpdateBuildName(carinaCoreVersion)
+
+            if (isMobile()) {
+                //this is mobile test
+                prepareForMobile()
+            }
+        }
+    }
+
+    protected void checkAndUpdateBuildName(carinaCoreVersion) {
+        String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
@@ -449,27 +461,20 @@ public class QARunner extends AbstractRunner {
         //TODO: improve carina to detect browser_version on the fly
         String browserVersion = Configuration.get("browser_version")
 
-        context.stage('Preparation') {
-            currentBuild.displayName = "#${buildNumber}|${suite}|${env}|${branch}"
-            if (!isParamEmpty("${carinaCoreVersion}")) {
-                currentBuild.displayName += "|" + "${carinaCoreVersion}"
-            }
-            if (!isParamEmpty(devicePool)) {
-                currentBuild.displayName += "|${devicePool}"
-            }
-            if (!isParamEmpty(Configuration.get("browser"))) {
-                currentBuild.displayName += "|${browser}"
-            }
-            if (!isParamEmpty(Configuration.get("browser_version"))) {
-                currentBuild.displayName += "|${browserVersion}"
-            }
-            currentBuild.description = "${suite}"
-
-            if (isMobile()) {
-                //this is mobile test
-                prepareForMobile()
-            }
+        currentBuild.displayName = "#${buildNumber}|${suite}|${env}|${branch}"
+        if (!isParamEmpty("${carinaCoreVersion}")) {
+            currentBuild.displayName += "|" + "${carinaCoreVersion}"
         }
+        if (!isParamEmpty(devicePool)) {
+            currentBuild.displayName += "|${devicePool}"
+        }
+        if (!isParamEmpty(Configuration.get("browser"))) {
+            currentBuild.displayName += "|${browser}"
+        }
+        if (!isParamEmpty(Configuration.get("browser_version"))) {
+            currentBuild.displayName += "|${browserVersion}"
+        }
+        currentBuild.description = "${suite}"
     }
 
      protected void prepareForMobile() {
@@ -600,7 +605,15 @@ public class QARunner extends AbstractRunner {
 		}
 
 		//append again overrideFields to make sure they are declared at the end
-		goals = goals + " " + Configuration.get("overrideFields")
+        def overrideFields = Configuration.get("overrideFields")
+		goals = goals + " " + overrideFields
+
+        if (overrideFields.toLowerCase().contains("carina_core_version")) {
+            def findCoreVersion = overrideFields.toLowerCase().find(/(?<=carina_core_version=)([^,]*)/)
+            if (!isParamEmpty(findCoreVersion)) {
+                checkAndUpdateBuildName(findCoreVersion)
+            }
+        }
 
 		logger.debug("goals: ${goals}")
 
