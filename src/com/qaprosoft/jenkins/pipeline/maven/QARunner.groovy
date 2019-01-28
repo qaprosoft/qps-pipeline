@@ -740,9 +740,9 @@ public class QARunner extends AbstractRunner {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
                         def currentSuite = parsePipeline(workspace + "/" + files[i].path)
-                        if (!currentSuite) {
+                        if (currentSuite == null) {
                             currentBuild.result = BuildResult.FAILURE
-                            return
+                            continue
                         }
                         def supportedLocales = getPipelineLocales(currentSuite)
                         if (supportedLocales.size() > 0) {
