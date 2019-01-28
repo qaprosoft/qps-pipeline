@@ -449,24 +449,22 @@ public class QARunner extends AbstractRunner {
         //TODO: improve carina to detect browser_version on the fly
         String browserVersion = Configuration.get("browser_version")
 
-        currentBuild.displayName = "#${buildNumber}|${suite}|${env}|${branch}"
-        if (!isParamEmpty("${carinaCoreVersion}")) {
-            currentBuild.displayName += "|" + "${carinaCoreVersion}"
-        }
-        if (!isParamEmpty(devicePool)) {
-            currentBuild.displayName += "|${devicePool}"
-        }
-        if (!isParamEmpty(Configuration.get("browser"))) {
-            currentBuild.displayName += "|${browser}"
-        }
-        if (!isParamEmpty(Configuration.get("browser_version"))) {
-            currentBuild.displayName += "|${browserVersion}"
-        }
-        currentBuild.description = "${suite}"
-
         context.stage('Preparation') {
-            setBuildName(carinaCoreVersion)
-
+            currentBuild.displayName = "#${buildNumber}|${suite}|${env}|${branch}"
+            if (!isParamEmpty("${carinaCoreVersion}")) {
+                currentBuild.displayName += "|" + "${carinaCoreVersion}"
+            }
+            if (!isParamEmpty(devicePool)) {
+                currentBuild.displayName += "|${devicePool}"
+            }
+            if (!isParamEmpty(Configuration.get("browser"))) {
+                currentBuild.displayName += "|${browser}"
+            }
+            if (!isParamEmpty(Configuration.get("browser_version"))) {
+                currentBuild.displayName += "|${browserVersion}"
+            }
+            currentBuild.description = "${suite}"
+            
             if (isMobile()) {
                 //this is mobile test
                 prepareForMobile()
