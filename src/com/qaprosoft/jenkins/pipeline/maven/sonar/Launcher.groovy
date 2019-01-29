@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline.maven.sonar
 import com.qaprosoft.Logger
 import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.pipeline.maven.QARunner
 import com.qaprosoft.selenium.grid.ProxyInfo
 import org.testng.xml.Parser
 
@@ -31,6 +32,7 @@ class Launcher {
             context.timestamps {
                 prepare()
                 scan()
+                new QARunner().runJob()
                 clean()
             }
         }
@@ -365,5 +367,11 @@ class Launcher {
 
     protected String getWorkspace() {
         return context.pwd()
+    }
+
+    protected clean() {
+        context.stage('Wipe out Workspace') {
+            context.deleteDir()
+        }
     }
 }
