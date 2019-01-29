@@ -6,7 +6,6 @@ import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import com.qaprosoft.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors
-import jp.ikedam.jenkins.plugins.extensible_choice_parameter.GlobalTextareaChoiceListProvider
 
 @InheritConstructors
 public class TestJobFactory extends PipelineFactory {
