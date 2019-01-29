@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.maven.sonar
+package com.qaprosoft.jenkins.pipeline.maven
 
 import com.qaprosoft.Logger
 import com.qaprosoft.Utils
