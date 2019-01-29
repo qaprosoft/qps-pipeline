@@ -39,9 +39,7 @@ public class TestJobFactory extends PipelineFactory {
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
 		logger.info("JenkinsJobName: ${name}")
-		logger.info("EXTNSN: " + jenkins.model.Jenkins.instance.getExtensionList(jp.ikedam.jenkins.plugins.extensible_choice_parameter.GlobalTextareaChoiceListProvider.DescriptorImpl.class).dump())
-		def mavenDesc = jenkins.model.Jenkins.instance.getExtensionList(jp.ikedam.jenkins.plugins.extensible_choice_parameter.GlobalTextareaChoiceListProvider.DescriptorImpl.class)[0]
-		logger.info(mavenDesc.dump())
+
 		def pipelineJob = super.create()
 		pipelineJob.with {
 			def scheduling = currentSuite.getParameter("scheduling")
