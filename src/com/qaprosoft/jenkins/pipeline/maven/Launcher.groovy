@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
+@Grab('org.testng:testng:6.8.8')
 import com.qaprosoft.Logger
 import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
