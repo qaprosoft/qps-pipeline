@@ -10,6 +10,7 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.scm.ISCM
 import com.qaprosoft.scm.github.GitHub
 import org.testng.xml.XmlSuite
+import static java.util.UUID.randomUUID
 
 class Launcher {
 
@@ -113,7 +114,6 @@ class Launcher {
                         continue
                     }
                     logger.info("suite: " + suite.path)
-                    def suiteOwner = "anonymous"
                     try {
                         def suitePath = getWorkspace() + "/" + suite.path
                         initRun(suitePath, suiteName, repo, organization, sub_project, zafira_project)
@@ -236,31 +236,28 @@ class Launcher {
         Configuration.set("suite", suiteName)
         Configuration.set("ci_parent_url", '')
         Configuration.set("ci_parent_build", '')
-        Configuration.set("ci_parent_url", '')
-
-        configure addHiddenParameter('ci_parent_url', '', '')
-        configure addHiddenParameter('ci_parent_build', '', '')
-        configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
-        configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
+        Configuration.set("ci_run_id", randomUUID())
+        Configuration.set("BuildPriority", "3")
 
         def queue_registration = "true"
         if (currentSuite.getParameter("jenkinsQueueRegistration") != null) {
             queue_registration = currentSuite.getParameter("jenkinsQueueRegistration")
         }
-        configure addHiddenParameter('queue_registration', '', queue_registration)
+
+        Configuration.set("queue_registration", queue_registration)
 
         def threadCount = '1'
         if (currentSuite.toXml().contains("jenkinsDefaultThreadCount")) {
             threadCount = currentSuite.getParameter("jenkinsDefaultThreadCount")
         }
-        stringParam('thread_count', threadCount, 'number of threads, number')
 
+        Configuration.set("thread_count", threadCount)
+        Configuration.set("email_list", currentSuite.getParameter("jenkinsEmail").toString())
 
-        stringParam('email_list', currentSuite.getParameter("jenkinsEmail").toString(), 'List of Users to be emailed after the test')
         if (currentSuite.toXml().contains("jenkinsFailedEmail")) {
-            configure addHiddenParameter('failure_email_list', '', currentSuite.getParameter("jenkinsFailedEmail").toString())
+            Configuration.set("failure_email_list", currentSuite.getParameter("jenkinsFailedEmail").toString())
         } else {
-            configure addHiddenParameter('failure_email_list', '', '')
+            Configuration.set("failure_email_list", '')
         }
 
         def retryCount = 0
@@ -268,45 +265,44 @@ class Launcher {
             retryCount = currentSuite.getParameter("jenkinsDefaultRetryCount").toInteger()
         }
 
-        if (retryCount != 0) {
-            choiceParam('retry_count', [retryCount, 0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
-        } else {
-            choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
-        }
+        Configuration.set("retry_count", retryCount)
 
-        booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
-        def customFields = getCustomFields(currentSuite)
-        configure addHiddenParameter('overrideFields', '' , customFields)
+//        if (retryCount != 0) {
+//            Configuration.set("retry_count", 0)
+//            choiceParam('retry_count', [retryCount, 0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
+//        } else {
+//            choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
+//        }
 
-        def paramsMap = [:]
-        paramsMap = currentSuite.getAllParameters()
-        logger.info("ParametersMap: ${paramsMap}")
-        for (param in paramsMap) {
-            // read each param and parse for generating custom project fields
-            //	<parameter name="stringParam::name::desc" value="value" />
-            //	<parameter name="stringParam::name" value="value" />
-            logger.debug("Parameter: ${param}")
-            def delimiter = "::"
-            if (param.key.contains(delimiter)) {
-                def (type, name, desc) = param.key.split(delimiter)
-                switch(type.toLowerCase()) {
-                    case "hiddenparam":
-                        configure addHiddenParameter(name, desc, param.value)
-                        break
-                    case "stringparam":
-                        stringParam(name, param.value, desc)
-                        break
-                    case "choiceparam":
-                        choiceParam(name, Arrays.asList(param.value.split(',')), desc)
-                        break
-                    case "booleanparam":
-                        booleanParam(name, param.value.toBoolean(), desc)
-                        break
-                    default:
-                        break
-                }
-            }
-        }
+        Configuration.set("rerun_failures", "false")
+//        def customFields = getCustomFields(currentSuite)
+//        Configuration.set("overrideFields", customFields)
+
+//        def paramsMap = currentSuite.getAllParameters()
+//        logger.info("ParametersMap: ${paramsMap}")
+//        for (param in paramsMap) {
+//            logger.debug("Parameter: ${param}")
+//            def delimiter = "::"
+//            if (param.key.contains(delimiter)) {
+//                def (type, name, desc) = param.key.split(delimiter)
+//                switch(type.toLowerCase()) {
+//                    case "hiddenparam":
+//                        configure addHiddenParameter(name, desc, param.value)
+//                        break
+//                    case "stringparam":
+//                        stringParam(name, param.value, desc)
+//                        break
+//                    case "choiceparam":
+//                        choiceParam(name, Arrays.asList(param.value.split(',')), desc)
+//                        break
+//                    case "booleanparam":
+//                        booleanParam(name, param.value.toBoolean(), desc)
+//                        break
+//                    default:
+//                        break
+//                }
+//            }
+//        }
     }
 
     protected String getCustomFields(currentSuite) {
