@@ -266,10 +266,10 @@ class Launcher {
 
         def retryCount = 0
         if (currentSuite.getParameter("jenkinsDefaultRetryCount") != null) {
-            retryCount = currentSuite.getParameter("jenkinsDefaultRetryCount").toInteger()
+            retryCount = currentSuite.getParameter("jenkinsDefaultRetryCount")
         }
 
-        Configuration.set("retry_count", retryCount)
+        Configuration.set("retry_count", retryCount.toString())
 
 //        if (retryCount != 0) {
 //            Configuration.set("retry_count", 0)
