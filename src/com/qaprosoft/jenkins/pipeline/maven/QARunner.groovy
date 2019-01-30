@@ -560,7 +560,6 @@ public class QARunner extends AbstractRunner {
 		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
 		-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
 		-Dzafira_enabled=true \
-		-Dzafira_rerun_failures=${Configuration.get("rerun_failures")} \
 		-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 		-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
 		-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
@@ -572,6 +571,11 @@ public class QARunner extends AbstractRunner {
 				  -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
 		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 		clean test -Dqueue_registration=false"
+
+        def rerunFailures = Configuration.get("rerun_failures")
+        if(isParamEmpty(rerunFailures)){
+            defaultBaseMavenGoals = defaultBaseMavenGoals + " -Dzafira_rerun_failures=${rerunFailures}"
+        }
 
 		Configuration.set("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
