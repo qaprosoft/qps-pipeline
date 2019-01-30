@@ -240,7 +240,7 @@ class Launcher {
         Configuration.set("suite", suiteName)
         Configuration.set("ci_parent_url", '')
         Configuration.set("ci_parent_build", '')
-        Configuration.set("ci_run_id", randomUUID())
+        Configuration.set("ci_run_id", randomUUID().toString())
         Configuration.set("BuildPriority", "3")
 
         def queue_registration = "true"
