@@ -5,6 +5,8 @@ import com.qaprosoft.Utils
 import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 import com.qaprosoft.integration.zafira.ZafiraUpdater
+import org.apache.ivy.util.ConfigurationUtils
+import org.testng.xml.Parser
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
@@ -20,6 +22,8 @@ import groovy.json.JsonOutput
 
 import com.qaprosoft.jenkins.pipeline.maven.Maven
 import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
+
+import static java.util.UUID.randomUUID
 
 @Grab('org.testng:testng:6.8.8')
 
@@ -148,15 +152,16 @@ public class QARunner extends AbstractRunner {
     protected void scan() {
 
         context.stage("Scan Repository") {
+            def workspace = getWorkspace()
+            logger.info("WORKSPACE: ${workspace}")
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def repo = Configuration.get("repo")
-            def repoFolder = parseFolderName(getWorkspace())
+            def repoFolder = parseFolderName(workspace)
             def branch = Configuration.get("branch")
-            currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+            def suiteName = Configuration.get("suite")
 
-            def workspace = getWorkspace()
-            logger.info("WORKSPACE: ${workspace}")
+            currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
             def removedConfigFilesAction = Configuration.get("removedConfigFilesAction")
             def removedJobAction = Configuration.get("removedJobAction")
@@ -232,52 +237,60 @@ public class QARunner extends AbstractRunner {
                 // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
                 def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
                 for (File suite : suites) {
-                    if (!suite.path.endsWith(".xml")) {
-                        continue
+                    def suitePath = workspace + "/" + suite.path
+                    if(!isParamEmpty(suiteName)){
+                        if (!suite.path.endsWith(".xml") || !suite.path.contains(suiteName + ".xml")) {
+                            continue
+                        }
+                    } else {
+                        if (!suite.path.endsWith(".xml")) {
+                            continue
+                        }
+                        suiteName = suite.path
+                        suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
+
                     }
-                    logger.info("suite: " + suite.path)
-                    def suiteOwner = "anonymous"
-
-                    def suiteName = suite.path
-                    suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
-
                     try {
-                        XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
-                        if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
-                            logger.info("suite name: " + suiteName)
-                            logger.info("suite path: " + suite.path)
+                        XmlSuite currentSuite = parseSuite(suitePath)
+                        if(isParamEmpty(Configuration.get("launcher"))){
+                            if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
+                                logger.info("suite name: " + suiteName)
+                                logger.info("suite path: " + suite.path)
 
-                            if (currentSuite.toXml().contains("suiteOwner")) {
-                                suiteOwner = currentSuite.getParameter("suiteOwner")
-                            }
+                                def suiteOwner = "anonymous"
+                                if (currentSuite.toXml().contains("suiteOwner")) {
+                                    suiteOwner = currentSuite.getParameter("suiteOwner")
+                                }
 
-							def currentZafiraProject = zafira_project
-                            if (currentSuite.toXml().contains("zafira_project")) {
-                                currentZafiraProject = currentSuite.getParameter("zafira_project")
-                            }
+                                def currentZafiraProject = zafira_project
+                                if (currentSuite.toXml().contains("zafira_project")) {
+                                    currentZafiraProject = currentSuite.getParameter("zafira_project")
+                                }
 
-                            // put standard views factory into the map
-                            registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
-                            registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
+                                // put standard views factory into the map
+                                registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+                                registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
 
-                            //pipeline job
-                            //TODO: review each argument to TestJobFactory and think about removal
-                            //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-                            def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                            registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), repo, organization, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+                                //pipeline job
+                                //TODO: review each argument to TestJobFactory and think about removal
+                                //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+                                def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+                                registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), repo, organization, sub_project, currentZafiraProject, currentSuite, suiteName, jobDesc))
 
-                            //cron job
-                            if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
-                                    && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().isEmpty()) {
-                                def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
-                                for (def cronJobName : cronJobNames.split(",")) {
-                                    cronJobName = cronJobName.trim()
-                                    def cronDesc = "project: ${repo}; type: cron"
-                                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, repo, organization, getWorkspace() + "/" + suite.path, cronDesc))
+                                //cron job
+                                if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
+                                        && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().isEmpty()) {
+                                    def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
+                                    for (def cronJobName : cronJobNames.split(",")) {
+                                        cronJobName = cronJobName.trim()
+                                        def cronDesc = "project: ${repo}; type: cron"
+                                        registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, repo, organization, currentSuite, cronDesc))
+                                    }
                                 }
                             }
+                        } else {
+                            initRun(currentSuite, suiteName, repo, organization, sub_project, zafira_project)
                         }
-
                     } catch (FileNotFoundException e) {
                         logger.error("ERROR! Unable to find suite: " + suite.path)
                         logger.error(Utils.printStackTrace(e))
@@ -300,6 +313,177 @@ public class QARunner extends AbstractRunner {
                         ignoreExisting: false
             }
         }
+    }
+
+    def initRun(currentSuite, suiteName, repo, organization, sub_project, zafira_project) {
+        logger.info("Extracting parameters from xml suite...")
+
+        def env = currentSuite.getParameter("jenkinsEnvironments")
+        if (env != null) {
+            Configuration.set("env", env)
+        } else {
+            Configuration.set("env", "DEMO")
+        }
+
+        Configuration.set("fork", "false")
+        Configuration.set("debug", "false")
+
+        def defaultMobilePool = currentSuite.getParameter("jenkinsMobileDefaultPool")
+        if (defaultMobilePool == null) {
+            defaultMobilePool = "ANY"
+        }
+
+        def autoScreenshot = false
+        if (currentSuite.getParameter("jenkinsAutoScreenshot") != null) {
+            autoScreenshot = currentSuite.getParameter("jenkinsAutoScreenshot").toBoolean()
+        }
+
+        def enableVideo = true
+        if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
+            enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
+        }
+
+        def jobType = suiteName
+        if (currentSuite.getParameter("jenkinsJobType") != null) {
+            jobType = currentSuite.getParameter("jenkinsJobType")
+        }
+        logger.info("JobType: ${jobType}")
+        switch(jobType.toLowerCase()) {
+            case ~/^(?!.*web).*api.*$/:
+                // API tests specific
+                Configuration.set("platform", "API")
+                break
+            case ~/^.*web.*$/:
+            case ~/^.*gui.*$/:
+                // WEB tests specific
+                //TODO: extract castom capabilities from global choice and not to add ef it is NULL
+                Configuration.set("custom_capabilities", "NULL")
+                def browser = 'chrome'
+                if (currentSuite.getParameter("jenkinsDefaultBrowser") != null) {
+                    browser = currentSuite.getParameter("jenkinsDefaultBrowser")
+                }
+                Configuration.set("browser", browser)
+                Configuration.set("browser_version", "*")
+                Configuration.set("os", 'NULL')
+                Configuration.set("os_version", "*")
+                Configuration.set("auto_screenshot", autoScreenshot)
+                Configuration.set("enableVideo", enableVideo)
+                Configuration.set("platform", "*")
+                break
+//            case ~/^.*android.*$/:
+//                choiceParam('devicePool', getDevices('ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+//                //TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
+//                //stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
+//                booleanParam('recoveryMode', false, 'Restart application between retries')
+//                booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+//                booleanParam('enableVideo', enableVideo, 'Enable video recording')
+//                configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
+//                configure addHiddenParameter('platform', '', 'ANDROID')
+//                break
+//            case ~/^.*ios.*$/:
+//                //TODO:  Need to adjust this for virtual as well.
+//                choiceParam('devicePool', getDevices('iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
+//                //TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
+//                //stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
+//                booleanParam('recoveryMode', false, 'Restart application between retries')
+//                //TODO: hardcode auto_screenshots=true for iOS until we fix video recording
+//                booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+//                //TODO: enable video as only issue with Appiym and xrecord utility is fixed
+//                booleanParam('enableVideo', enableVideo, 'Enable video recording')
+//                configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
+//                configure addHiddenParameter('platform', '', 'iOS')
+//                break
+            default:
+                Configuration.set("auto_screenshot", "false")
+                Configuration.set("platform", "*")
+                break
+        }
+
+        def nodeLabel
+        if (currentSuite.toXml().contains("jenkinsNodeLabel")) {
+            nodeLabel = currentSuite.getParameter("jenkinsNodeLabel")
+            Configuration.set("node_label", nodeLabel)
+        }
+
+        def gitBranch = "master"
+        if (currentSuite.getParameter("jenkinsDefaultGitBranch") != null) {
+            gitBranch = currentSuite.getParameter("jenkinsDefaultGitBranch")
+        }
+        Configuration.set("branch", gitBranch)
+        Configuration.set("repo", repo)
+        Configuration.set("GITHUB_ORGANIZATION", organization)
+        Configuration.set("sub_project", sub_project)
+        Configuration.set("zafira_project", zafira_project)
+        Configuration.set("suite", suiteName)
+        Configuration.set("ci_parent_url", '')
+        Configuration.set("ci_parent_build", '')
+        Configuration.set("ci_run_id", randomUUID().toString())
+        Configuration.set("BuildPriority", "3")
+
+        def queue_registration = "true"
+        if (currentSuite.getParameter("jenkinsQueueRegistration") != null) {
+            queue_registration = currentSuite.getParameter("jenkinsQueueRegistration")
+        }
+
+        Configuration.set("queue_registration", queue_registration)
+
+        def threadCount = '1'
+        if (currentSuite.toXml().contains("jenkinsDefaultThreadCount")) {
+            threadCount = currentSuite.getParameter("jenkinsDefaultThreadCount")
+        }
+
+        Configuration.set("thread_count", threadCount)
+        Configuration.set("email_list", currentSuite.getParameter("jenkinsEmail").toString())
+
+        if (currentSuite.toXml().contains("jenkinsFailedEmail")) {
+            Configuration.set("failure_email_list", currentSuite.getParameter("jenkinsFailedEmail").toString())
+        } else {
+            Configuration.set("failure_email_list", '')
+        }
+
+        def retryCount = 0
+        if (currentSuite.getParameter("jenkinsDefaultRetryCount") != null) {
+            retryCount = currentSuite.getParameter("jenkinsDefaultRetryCount")
+        }
+
+        Configuration.set("retry_count", retryCount.toString())
+
+//        if (retryCount != 0) {
+//            Configuration.set("retry_count", 0)
+//            choiceParam('retry_count', [retryCount, 0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
+//        } else {
+//            choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
+//        }
+
+        Configuration.set("rerun_failures", "false")
+//        def customFields = getCustomFields(currentSuite)
+//        Configuration.set("overrideFields", customFields)
+
+//        def paramsMap = currentSuite.getAllParameters()
+//        logger.info("ParametersMap: ${paramsMap}")
+//        for (param in paramsMap) {
+//            logger.debug("Parameter: ${param}")
+//            def delimiter = "::"
+//            if (param.key.contains(delimiter)) {
+//                def (type, name, desc) = param.key.split(delimiter)
+//                switch(type.toLowerCase()) {
+//                    case "hiddenparam":
+//                        configure addHiddenParameter(name, desc, param.value)
+//                        break
+//                    case "stringparam":
+//                        stringParam(name, param.value, desc)
+//                        break
+//                    case "choiceparam":
+//                        choiceParam(name, Arrays.asList(param.value.split(',')), desc)
+//                        break
+//                    case "booleanparam":
+//                        booleanParam(name, param.value.toBoolean(), desc)
+//                        break
+//                    default:
+//                        break
+//                }
+//            }
+//        }
     }
 
     protected clean() {
