@@ -528,6 +528,9 @@ public class QARunner extends AbstractRunner {
         logger.info("UUID: " + uuid)
         def isRerun = isRerun()
         String nodeName = "master"
+        if(!isParamEmpty(Configuration.get("launcher"))){
+            scan()
+        }
         context.node(nodeName) {
             zafiraUpdater.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
