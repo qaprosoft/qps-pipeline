@@ -20,6 +20,7 @@ class Launcher {
     protected ISCM scmClient
     protected Logger logger
     protected def currentBuild
+    protected Configuration configuration = new Configuration(context)
 
     public Launcher(context) {
         this.context = context
