@@ -17,10 +17,9 @@ class GitHub implements ISCM {
 		this.context = context
         logger = new Logger(context)
 		gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-		gitSshUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("project")}"
 		credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
     }
-
+    
     public def clone() {
         clone(true)
     }
@@ -133,6 +132,10 @@ class GitHub implements ISCM {
             //context.sh "curl -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${repo}/pulls/${ghprbPullId}/merge?access_token=${context.env.PASSWORD}"
             context.sh "curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${repo}/pulls/${ghprbPullId}/merge"
         }
+    }
+    
+    public def setUrl(url) {
+        gitHtmlUrl = url
     }
 
     private boolean parseFork(fork) {

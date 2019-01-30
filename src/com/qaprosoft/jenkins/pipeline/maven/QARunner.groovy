@@ -5,8 +5,6 @@ import com.qaprosoft.Utils
 import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 import com.qaprosoft.integration.zafira.ZafiraUpdater
-import org.apache.ivy.util.ConfigurationUtils
-import org.testng.xml.Parser
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
@@ -22,8 +20,6 @@ import groovy.json.JsonOutput
 
 import com.qaprosoft.jenkins.pipeline.maven.Maven
 import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
-
-import static java.util.UUID.randomUUID
 
 @Grab('org.testng:testng:6.8.8')
 
@@ -77,6 +73,9 @@ public class QARunner extends AbstractRunner {
     //Methods
     public void build() {
         logger.info("QARunner->build")
+        if(!isParamEmpty(Configuration.get("scmURL"))){
+            scmClient.setUrl(Configuration.get("scmURL"))
+        }
         if (jobType.equals(JobType.JOB)) {
             runJob()
         }
@@ -152,16 +151,20 @@ public class QARunner extends AbstractRunner {
     protected void scan() {
 
         context.stage("Scan Repository") {
-            def workspace = getWorkspace()
-            logger.info("WORKSPACE: ${workspace}")
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+            def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
             def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def repo = Configuration.get("repo")
-            def repoFolder = parseFolderName(workspace)
+            def repoFolder = parseFolderName(getWorkspace())
             def branch = Configuration.get("branch")
-            def suiteName = Configuration.get("suite")
-
             currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+
+            def workspace = getWorkspace()
+            logger.info("WORKSPACE: ${workspace}")
+
+            def removedConfigFilesAction = Configuration.get("removedConfigFilesAction")
+            def removedJobAction = Configuration.get("removedJobAction")
+            def removedViewAction = Configuration.get("removedViewAction")
 
             // Support DEV related CI workflow
             //TODO: analyze if we need 3 system object declarations
@@ -232,79 +235,75 @@ public class QARunner extends AbstractRunner {
 
                 // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
                 def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
-                generateJobs(suites, suiteName, repo, organization, sub_project, zafira_project, testngFolder)
-
-            }
-        }
-    }
-
-    def generateJobs(suites, suiteName, repo, organization, sub_project, zafira_project, testngFolder){
-        for (File suite : suites) {
-            if (!suite.path.endsWith(".xml")) {
-                continue
-            }
-            def suiteOwner = "anonymous"
-
-            suiteName = suite.path
-            suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
-
-            try {
-                XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
-                if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
-                    logger.info("suite name: " + suiteName)
-                    logger.info("suite path: " + suite.path)
-
-                    if (currentSuite.toXml().contains("suiteOwner")) {
-                        suiteOwner = currentSuite.getParameter("suiteOwner")
+                for (File suite : suites) {
+                    if (!suite.path.endsWith(".xml")) {
+                        continue
                     }
+                    logger.info("suite: " + suite.path)
+                    def suiteOwner = "anonymous"
 
-                    def currentZafiraProject = zafira_project
-                    if (currentSuite.toXml().contains("zafira_project")) {
-                        currentZafiraProject = currentSuite.getParameter("zafira_project")
-                    }
+                    def suiteName = suite.path
+                    suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
 
-                    // put standard views factory into the map
-                    registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
-                    registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
+                    try {
+                        XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
+                        if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
+                            logger.info("suite name: " + suiteName)
+                            logger.info("suite path: " + suite.path)
 
-                    //pipeline job
-                    //TODO: review each argument to TestJobFactory and think about removal
-                    //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-                    def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                    registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), repo, organization, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+                            if (currentSuite.toXml().contains("suiteOwner")) {
+                                suiteOwner = currentSuite.getParameter("suiteOwner")
+                            }
 
-                    //cron job
-                    if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
-                            && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().isEmpty()) {
-                        def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
-                        for (def cronJobName : cronJobNames.split(",")) {
-                            cronJobName = cronJobName.trim()
-                            def cronDesc = "project: ${repo}; type: cron"
-                            registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, repo, organization, getWorkspace() + "/" + suite.path, cronDesc))
+							def currentZafiraProject = zafira_project
+                            if (currentSuite.toXml().contains("zafira_project")) {
+                                currentZafiraProject = currentSuite.getParameter("zafira_project")
+                            }
+
+                            // put standard views factory into the map
+                            registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+                            registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
+
+                            //pipeline job
+                            //TODO: review each argument to TestJobFactory and think about removal
+                            //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+                            def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+                            registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+
+                            //cron job
+                            if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
+                                    && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().isEmpty()) {
+                                def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
+                                for (def cronJobName : cronJobNames.split(",")) {
+                                    cronJobName = cronJobName.trim()
+                                    def cronDesc = "project: ${repo}; type: cron"
+                                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, getWorkspace() + "/" + suite.path, cronDesc))
+                                }
+                            }
                         }
+
+                    } catch (FileNotFoundException e) {
+                        logger.error("ERROR! Unable to find suite: " + suite.path)
+                        logger.error(Utils.printStackTrace(e))
+                    } catch (Exception e) {
+                        logger.error("ERROR! Unable to parse suite: " + suite.path)
+                        logger.error(Utils.printStackTrace(e))
                     }
+
                 }
 
-            } catch (FileNotFoundException e) {
-                logger.error("ERROR! Unable to find suite: " + suite.path)
-                logger.error(Utils.printStackTrace(e))
-            } catch (Exception e) {
-                logger.error("ERROR! Unable to parse suite: " + suite.path)
-                logger.error(Utils.printStackTrace(e))
+                // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
+                context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+                logger.info("factoryTarget: " + FACTORY_TARGET)
+                //TODO: test carefully auto-removal for jobs/views and configs
+                context.jobDsl additionalClasspath: additionalClasspath,
+                        removedConfigFilesAction: removedConfigFilesAction,
+                        removedJobAction: removedJobAction,
+                        removedViewAction: removedViewAction,
+                        targets: FACTORY_TARGET,
+                        ignoreExisting: false
             }
-
         }
-
-        // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-        context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-        logger.info("factoryTarget: " + FACTORY_TARGET)
-        //TODO: test carefully auto-removal for jobs/views and configs
-        context.jobDsl additionalClasspath: additionalClasspath,
-                removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
-                removedJobAction: Configuration.get("removedJobAction"),
-                removedViewAction: Configuration.get("removedViewAction"),
-                targets: FACTORY_TARGET,
-                ignoreExisting: false
     }
 
     protected clean() {
@@ -342,7 +341,7 @@ public class QARunner extends AbstractRunner {
         this.additionalClasspath = additionalClasspath
     }
 
-    public void runJob() {
+    protected void runJob() {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
@@ -444,7 +443,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
 
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String carinaCoreVersion = getCarinaCoreVersion()
+        String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
@@ -475,23 +474,6 @@ public class QARunner extends AbstractRunner {
                 prepareForMobile()
             }
         }
-    }
-
-    protected String getCarinaCoreVersion() {
-        def carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
-        def overrideFields = Configuration.get("overrideFields")
-        if(isParamEmpty(overrideFields)){
-            return
-        }
-        overrideFields = overrideFields.toLowerCase()
-
-        if (overrideFields.contains("carina_core_version")) {
-            def findCoreVersion = overrideFields.toLowerCase().find(/(?<=carina_core_version=)([^,]*)/)
-            if (!isParamEmpty(findCoreVersion)) {
-                carinaCoreVersion = findCoreVersion
-            }
-        }
-        return carinaCoreVersion
     }
 
      protected void prepareForMobile() {
@@ -622,10 +604,8 @@ public class QARunner extends AbstractRunner {
 		}
 
 		//append again overrideFields to make sure they are declared at the end
-        def overrideFields = Configuration.get("overrideFields")
-        if(!isParamEmpty(overrideFields)){
-            goals = goals + " " + Configuration.get("overrideFields")
-        }
+		goals = goals + " " + Configuration.get("overrideFields")
+
 		logger.debug("goals: ${goals}")
 
 		def suiteName = null

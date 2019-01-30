@@ -13,4 +13,6 @@ public interface ISCM {
 	public def mergePR()
 
 	public def clonePush()
+
+	public def setUrl(url)
 }
