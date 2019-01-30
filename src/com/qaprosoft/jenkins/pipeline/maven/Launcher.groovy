@@ -34,7 +34,7 @@ class Launcher {
             context.timestamps {
                 prepare()
                 scan()
-                new QARunner().runJob()
+                new QARunner(context).runJob()
                 clean()
             }
         }
