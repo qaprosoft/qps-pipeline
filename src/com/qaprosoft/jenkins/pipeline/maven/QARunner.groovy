@@ -662,7 +662,11 @@ public class QARunner extends AbstractRunner {
 
     protected String getCarinaCoreVersion() {
         def carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
-        def overrideFields = Configuration.get("overrideFields").toLowerCase()
+        def overrideFields = Configuration.get("overrideFields")
+        if(isParamEmpty(overrideFields)){
+            return
+        }
+        overrideFields = overrideFields.toLowerCase()
 
         if (overrideFields.contains("carina_core_version")) {
             def findCoreVersion = overrideFields.toLowerCase().find(/(?<=carina_core_version=)([^,]*)/)
