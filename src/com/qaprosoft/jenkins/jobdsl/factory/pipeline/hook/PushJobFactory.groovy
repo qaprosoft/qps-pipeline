@@ -6,16 +6,18 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 @InheritConstructors
 public class PushJobFactory extends PipelineFactory {
 
+	def host
 	def organization
 	def repo
 	def branch
 	def scmRepoUrl
 
-	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, branch, scmRepoUrl) {
+	public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl) {
 		this.folder = folder
 		this.pipelineScript = pipelineScript
 		this.name = jobName
 		this.description = jobDesc
+		this.host = host
 		this.organization = organization
 		this.repo = repo
 		this.branch = branch
@@ -38,6 +40,7 @@ public class PushJobFactory extends PipelineFactory {
 
 			//TODO: think about other parameters to support DevOps CI operations
 			parameters {
+				configure addHiddenParameter('GITHUB_HOST', '', host)
 				configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
 				stringParam('repo', repo, 'GitHub repository for scanning')
 				//TODO: analyze howto support several gc_GIT_BRACH basing on project
