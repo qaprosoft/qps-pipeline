@@ -301,17 +301,18 @@ public class QARunner extends AbstractRunner {
                     }
 
                 }
-
-                // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-                context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-                logger.info("factoryTarget: " + FACTORY_TARGET)
-                //TODO: test carefully auto-removal for jobs/views and configs
-                context.jobDsl additionalClasspath: additionalClasspath,
-                        removedConfigFilesAction: removedConfigFilesAction,
-                        removedJobAction: removedJobAction,
-                        removedViewAction: removedViewAction,
-                        targets: FACTORY_TARGET,
-                        ignoreExisting: false
+                if(isParamEmpty(Configuration.get("launcher"))){
+                    // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
+                    context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+                    logger.info("factoryTarget: " + FACTORY_TARGET)
+                    //TODO: test carefully auto-removal for jobs/views and configs
+                    context.jobDsl additionalClasspath: additionalClasspath,
+                            removedConfigFilesAction: removedConfigFilesAction,
+                            removedJobAction: removedJobAction,
+                            removedViewAction: removedViewAction,
+                            targets: FACTORY_TARGET,
+                            ignoreExisting: false
+                }
             }
         }
     }
