@@ -818,8 +818,10 @@ public class QARunner extends AbstractRunner {
 		}
 
 		//append again overrideFields to make sure they are declared at the end
-		goals = goals + " " + Configuration.get("overrideFields")
-
+        def overrideFields = Configuration.get("overrideFields")
+        if(!isParamEmpty(overrideFields)){
+            goals = goals + " " + Configuration.get("overrideFields")
+        }
 		logger.debug("goals: ${goals}")
 
 		def suiteName = null
@@ -829,7 +831,6 @@ public class QARunner extends AbstractRunner {
 			suiteName = Configuration.get("suite").replace("/", "\\")
 		}
 
-        logger.info("11111111")
 		return "${goals} -Dsuite=${suiteName}"
 	}
 
