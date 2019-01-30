@@ -829,6 +829,7 @@ public class QARunner extends AbstractRunner {
 			suiteName = Configuration.get("suite").replace("/", "\\")
 		}
 
+        logger.info("11111111")
 		return "${goals} -Dsuite=${suiteName}"
 	}
 
