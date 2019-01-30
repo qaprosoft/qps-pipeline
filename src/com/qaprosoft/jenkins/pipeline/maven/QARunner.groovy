@@ -403,6 +403,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("node", defaultNode) //master is default node to execute job
 
         if(isParamEmpty(Configuration.get("platform"))){
+            Configuration.set("platform", defaultNode)
             return defaultNode
         }
 
