@@ -317,8 +317,8 @@ public class QARunner extends AbstractRunner {
             }
             logger.info("suite: " + suite.path)
             try {
-                def suitePath = getWorkspace() + "/" + suite.path
-                initRun(suitePath, suiteName, repo, organization, sub_project, zafira_project)
+                XmlSuite currentSuite = parseSuite(getWorkspace() + "/" + suite.path)
+                initRun(currentSuite, suiteName, repo, organization, sub_project, zafira_project)
             } catch (FileNotFoundException e) {
                 logger.error("ERROR! Unable to find suite: " + suite.path)
                 logger.error(Utils.printStackTrace(e))
