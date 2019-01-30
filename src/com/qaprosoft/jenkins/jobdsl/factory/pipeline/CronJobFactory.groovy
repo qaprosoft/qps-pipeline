@@ -2,8 +2,6 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 @Grab('org.testng:testng:6.8.8')
 
-import org.testng.xml.Parser
-import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
@@ -11,9 +9,9 @@ public class CronJobFactory extends PipelineFactory {
 
     def repo
     def organization
-    def suitePath
+    def currentSuite
 
-    public CronJobFactory(folder, pipelineScript, cronJobName, repo, organization, suitePath, jobDesc) {
+    public CronJobFactory(folder, pipelineScript, cronJobName, repo, organization, currentSuite, jobDesc) {
 
         this.folder = folder
 		this.pipelineScript = pipelineScript
@@ -21,19 +19,12 @@ public class CronJobFactory extends PipelineFactory {
         this.name = cronJobName
         this.repo = repo
         this.organization = organization
-        this.suitePath = suitePath
+        this.currentSuite = currentSuite
     }
 
     def create() {
 
-        def xmlFile = new Parser(suitePath)
-        xmlFile.setLoadClasses(false)
-
-        List<XmlSuite> suiteXml = xmlFile.parseToList()
-        XmlSuite currentSuite = suiteXml.get(0)
-
         def pipelineJob = super.create()
-
         pipelineJob.with {
 
             parameters {
