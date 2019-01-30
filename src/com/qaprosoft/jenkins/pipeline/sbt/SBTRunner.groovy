@@ -61,7 +61,7 @@ class SBTRunner extends AbstractRunner {
     protected void publishJenkinsReports() {
         context.stage('Results') {
             context.gatlingArchive()
-            context.archiveArtifacts 'target/gatling/*'
+            context.archiveArtifacts 'target/gatling/*/'
         }
     }
 
