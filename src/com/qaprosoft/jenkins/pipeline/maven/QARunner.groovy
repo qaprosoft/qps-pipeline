@@ -253,6 +253,7 @@ public class QARunner extends AbstractRunner {
                     try {
                         XmlSuite currentSuite = parseSuite(suitePath)
                         if(isParamEmpty(Configuration.get("launcher"))){
+                            logger.info("I AM HERE")
                             if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
                                 logger.info("suite name: " + suiteName)
                                 logger.info("suite path: " + suite.path)
