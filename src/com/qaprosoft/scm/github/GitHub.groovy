@@ -134,7 +134,7 @@ class GitHub implements ISCM {
         }
     }
     
-    public def setHtmlUrl(url) {
+    public def setUrl(url) {
         gitHtmlUrl = url
     }
 
