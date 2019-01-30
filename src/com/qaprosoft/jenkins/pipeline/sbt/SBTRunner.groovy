@@ -2,20 +2,21 @@ package com.qaprosoft.jenkins.pipeline.sbt
 
 import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.AbstractRunner
 import groovy.transform.InheritConstructors
 
+
 @InheritConstructors
- class SBTRunner extends AbstractRunner {
+class SBTRunner extends AbstractRunner {
 
     public SBTRunner(context) {
         super(context)
         scmClient = new GitHub(context)
-
-        currentBuild = context.currentBuild
     }
 
     @Override
-    protected void build() {
+    public void build() {
         logger.info("SBTRunner->runJob")
         context.node("performance") {
 
@@ -23,15 +24,18 @@ import groovy.transform.InheritConstructors
                 try {
                     context.timestamps {
 
+                        context.env.getEnvironment()
+
                         scmClient.clone()
 
-                        def sbtHome = tool 'SBT'
+                        def sbtHome = context.tool 'SBT'
 
+                        def args = Configuration.get("args")
 
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
-                            context.sh "${sbtHome} ${args}"
-
+                            context.sh "${sbtHome}/bin/sbt ${args}"
                         }
+
                     }
                 } catch (Exception e) {
                     logger.error(Utils.printStackTrace(e))
@@ -45,12 +49,12 @@ import groovy.transform.InheritConstructors
     }
 
     @Override
-     public void onPush(){
+    public void onPush(){
         //TODO: implement in future
     }
 
     @Override
-     public void onPullRequest(){
+    public void onPullRequest(){
         //TODO: implement in future
     }
 
@@ -60,5 +64,10 @@ import groovy.transform.InheritConstructors
         }
     }
 
+    protected clean() {
+        context.stage('Wipe out Workspace') {
+            context.deleteDir()
+        }
+    }
 
 }
