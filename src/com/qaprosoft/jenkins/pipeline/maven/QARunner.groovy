@@ -380,8 +380,8 @@ public class QARunner extends AbstractRunner {
                 Configuration.set("browser_version", "*")
                 Configuration.set("os", 'NULL')
                 Configuration.set("os_version", "*")
-                Configuration.set("auto_screenshot", autoScreenshot)
-                Configuration.set("enableVideo", enableVideo)
+                Configuration.set("auto_screenshot", autoScreenshot.toString())
+                Configuration.set("enableVideo", enableVideo.toString())
                 Configuration.set("platform", "*")
                 break
 //            case ~/^.*android.*$/:
