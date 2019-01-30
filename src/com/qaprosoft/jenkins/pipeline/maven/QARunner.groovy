@@ -399,7 +399,12 @@ public class QARunner extends AbstractRunner {
 
     protected String chooseNode() {
 
-        Configuration.set("node", "master") //master is default node to execute job
+        String defaultNode = "qa"
+        Configuration.set("node", defaultNode) //master is default node to execute job
+
+        if(isParamEmpty(Configuration.get("platform"))){
+            return defaultNode
+        }
 
         //TODO: handle browserstack etc integration here?
         switch(Configuration.get("platform").toLowerCase()) {
