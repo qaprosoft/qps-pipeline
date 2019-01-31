@@ -404,6 +404,7 @@ public class QARunner extends AbstractRunner {
 
         if(isParamEmpty(Configuration.get("platform"))){
             Configuration.set("platform", defaultNode)
+            logger.info("111")
             return defaultNode
         }
 
@@ -484,8 +485,9 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-     protected void prepareForMobile() {
-         logger.info("Runner->prepareForMobile")
+    protected void prepareForMobile() {
+        logger.info("Runner->prepareForMobile")
+
         def devicePool = Configuration.get("devicePool")
         def defaultPool = Configuration.get("DefaultPool")
         def platform = Configuration.get("platform")
@@ -514,7 +516,6 @@ public class QARunner extends AbstractRunner {
         //TODO: move it to the global jenkins variable
         Configuration.set("capabilities.newCommandTimeout", "180")
         Configuration.set("java.awt.headless", "true")
-
     }
 
     protected void prepareForAndroid() {
