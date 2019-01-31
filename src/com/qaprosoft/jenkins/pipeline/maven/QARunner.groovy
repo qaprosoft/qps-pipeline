@@ -576,7 +576,7 @@ public class QARunner extends AbstractRunner {
 		clean test -Dqueue_registration=false"
 
         def rerunFailures = Configuration.get("rerun_failures")
-        if(isParamEmpty(rerunFailures)){
+        if(!isParamEmpty(rerunFailures)){
             defaultBaseMavenGoals = defaultBaseMavenGoals + " -Dzafira_rerun_failures=${rerunFailures}"
         }
 
