@@ -455,22 +455,24 @@ public class QARunner extends AbstractRunner {
         String env = Configuration.get("env")
         String devicePool = Configuration.get("devicePool")
         String browser = Configuration.get("browser")
-
         //TODO: improve carina to detect browser_version on the fly
         String browserVersion = Configuration.get("browser_version")
 
         context.stage('Preparation') {
-            currentBuild.displayName = "#${buildNumber}|${suite}|${env}|${branch}"
-            if (!isParamEmpty("${carinaCoreVersion}")) {
+            currentBuild.displayName = "#${buildNumber}|${suite}|${branch}"
+            if (!isParamEmpty(env)) {
+                currentBuild.displayName += "|" + "${env}"
+            }
+            if (!isParamEmpty(carinaCoreVersion)) {
                 currentBuild.displayName += "|" + "${carinaCoreVersion}"
             }
             if (!isParamEmpty(devicePool)) {
                 currentBuild.displayName += "|${devicePool}"
             }
-            if (!isParamEmpty(Configuration.get("browser"))) {
+            if (!isParamEmpty(browser)) {
                 currentBuild.displayName += "|${browser}"
             }
-            if (!isParamEmpty(Configuration.get("browser_version"))) {
+            if (!isParamEmpty(browserVersion)) {
                 currentBuild.displayName += "|${browserVersion}"
             }
             currentBuild.description = "${suite}"
