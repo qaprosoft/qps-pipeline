@@ -377,7 +377,7 @@ public class QARunner extends AbstractRunner {
                     throw e
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    logger.info("BUILD_DMP: " + currentBuild.dump())
+                    logger.info("BUILD_DMP: " + currentBuild.rawBuild.dump())
                     qTestUpdater.updateTestRun(uuid)
                     testRailUpdater.updateTestRun(uuid, isRerun)
                     zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
