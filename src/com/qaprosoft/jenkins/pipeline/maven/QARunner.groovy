@@ -483,6 +483,7 @@ public class QARunner extends AbstractRunner {
             }
             currentBuild.description = "${suite}"
 
+            logger.info(Configuration.get("platform"))
             logger.info("IS_MOBILE: " + isMobile())
             if (isMobile()) {
                 //this is mobile test
