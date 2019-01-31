@@ -392,6 +392,10 @@ public class QARunner extends AbstractRunner {
         if(isParamEmpty(Configuration.get("platform"))){
             Configuration.set("platform", "*") //init default platform for launcher
         }
+        if(isParamEmpty(Configuration.get("browser"))){
+            Configuration.set("browser", "NULL") //init default platform for launcher
+        }
+
     }
 
     // Possible to override in private pipelines
