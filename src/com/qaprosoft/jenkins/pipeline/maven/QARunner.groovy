@@ -348,6 +348,7 @@ public class QARunner extends AbstractRunner {
         def isRerun = isRerun()
         String nodeName = "master"
         context.node(nodeName) {
+            zafiraUpdater.queueZafiraTestRun(uuid)
             initJobParams()
             nodeName = chooseNode()
         }
@@ -356,7 +357,6 @@ public class QARunner extends AbstractRunner {
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
-                        zafiraUpdater.queueZafiraTestRun(uuid)
 
                         prepareBuild(currentBuild)
                         scmClient.clone()
