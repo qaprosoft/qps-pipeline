@@ -345,6 +345,7 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
+        Configuration.set("ci_run_id", uuid)
         def isRerun = isRerun()
         String nodeName = "master"
         context.node(nodeName) {
