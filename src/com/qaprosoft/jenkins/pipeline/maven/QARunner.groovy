@@ -348,7 +348,7 @@ public class QARunner extends AbstractRunner {
         def isRerun = isRerun()
         String nodeName = "master"
         context.node(nodeName) {
-            zafiraUpdater.queueZafiraTestRun(uuid)
+            initJobParams()
             nodeName = chooseNode()
         }
         context.node(nodeName) {
@@ -356,6 +356,7 @@ public class QARunner extends AbstractRunner {
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
+                        zafiraUpdater.queueZafiraTestRun(uuid)
 
                         prepareBuild(currentBuild)
                         scmClient.clone()
@@ -387,6 +388,12 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    protected def initJobParams(){
+        if(isParamEmpty(Configuration.get("platform"))){
+            Configuration.set("platform", "*") //init default platform for launcher
+        }
+    }
+
     // Possible to override in private pipelines
     protected boolean isRerun(){
         return zafiraUpdater.isZafiraRerun(uuid)
@@ -401,12 +408,6 @@ public class QARunner extends AbstractRunner {
 
         String defaultNode = "qa"
         Configuration.set("node", defaultNode) //master is default node to execute job
-
-        if(isParamEmpty(Configuration.get("platform"))){
-            Configuration.set("platform", defaultNode)
-            logger.info("111")
-            return defaultNode
-        }
 
         //TODO: handle browserstack etc integration here?
         switch(Configuration.get("platform").toLowerCase()) {
