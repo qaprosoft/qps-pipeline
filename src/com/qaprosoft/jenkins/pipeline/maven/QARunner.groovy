@@ -395,7 +395,6 @@ public class QARunner extends AbstractRunner {
         if(isParamEmpty(Configuration.get("browser"))){
             Configuration.set("browser", "NULL") //init default platform for launcher
         }
-
     }
 
     // Possible to override in private pipelines
@@ -482,9 +481,6 @@ public class QARunner extends AbstractRunner {
                 currentBuild.displayName += "|${browserVersion}"
             }
             currentBuild.description = "${suite}"
-
-            logger.info(Configuration.get("platform"))
-            logger.info("IS_MOBILE: " + isMobile())
             if (isMobile()) {
                 //this is mobile test
                 prepareForMobile()
