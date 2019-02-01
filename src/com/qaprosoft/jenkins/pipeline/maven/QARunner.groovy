@@ -455,7 +455,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
 
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
+        String carinaCoreVersion = getCarinaCoreVersion()
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
@@ -492,9 +492,21 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    protected String getCarinaCoreVersion() {
+        def carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
+        def overrideFields = Configuration.get("overrideFields").toLowerCase()
+
+        if (overrideFields.contains("carina_core_version")) {
+            def findCoreVersion = overrideFields.toLowerCase().find(/(?<=carina_core_version=)([^,]*)/)
+            if (!isParamEmpty(findCoreVersion)) {
+                carinaCoreVersion = findCoreVersion
+            }
+        }
+        return carinaCoreVersion
+    }
+
     protected void prepareForMobile() {
         logger.info("Runner->prepareForMobile")
-
         def devicePool = Configuration.get("devicePool")
         def defaultPool = Configuration.get("DefaultPool")
         def platform = Configuration.get("platform")
