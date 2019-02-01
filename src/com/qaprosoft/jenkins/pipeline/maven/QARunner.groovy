@@ -73,6 +73,9 @@ public class QARunner extends AbstractRunner {
     //Methods
     public void build() {
         logger.info("QARunner->build")
+        if(!isParamEmpty(Configuration.get("scmURL"))){
+            scmClient.setUrl(Configuration.get("scmURL"))
+        }
         if (jobType.equals(JobType.JOB)) {
             runJob()
         }
@@ -149,6 +152,7 @@ public class QARunner extends AbstractRunner {
 
         context.stage("Scan Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+            def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
             def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def repo = Configuration.get("repo")
             def repoFolder = parseFolderName(getWorkspace())
@@ -264,7 +268,7 @@ public class QARunner extends AbstractRunner {
                             //TODO: review each argument to TestJobFactory and think about removal
                             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                            registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), repo, organization, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+                            registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
 
                             //cron job
                             if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
@@ -273,7 +277,7 @@ public class QARunner extends AbstractRunner {
                                 for (def cronJobName : cronJobNames.split(",")) {
                                     cronJobName = cronJobName.trim()
                                     def cronDesc = "project: ${repo}; type: cron"
-                                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, repo, organization, getWorkspace() + "/" + suite.path, cronDesc))
+                                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, getWorkspace() + "/" + suite.path, cronDesc))
                                 }
                             }
                         }
@@ -345,6 +349,7 @@ public class QARunner extends AbstractRunner {
         String nodeName = "master"
         context.node(nodeName) {
             zafiraUpdater.queueZafiraTestRun(uuid)
+            initJobParams()
             nodeName = chooseNode()
         }
         context.node(nodeName) {
@@ -371,15 +376,24 @@ public class QARunner extends AbstractRunner {
                     zafiraUpdater.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
+                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     qTestUpdater.updateTestRun(uuid)
                     testRailUpdater.updateTestRun(uuid, isRerun)
                     zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                     zafiraUpdater.setBuildResult(uuid, currentBuild)
                     publishJenkinsReports()
-                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     clean()
                 }
             }
+        }
+    }
+
+    protected def initJobParams(){
+        if(isParamEmpty(Configuration.get("platform"))){
+            Configuration.set("platform", "*") //init default platform for launcher
+        }
+        if(isParamEmpty(Configuration.get("browser"))){
+            Configuration.set("browser", "NULL") //init default platform for launcher
         }
     }
 
@@ -395,7 +409,8 @@ public class QARunner extends AbstractRunner {
 
     protected String chooseNode() {
 
-        Configuration.set("node", "master") //master is default node to execute job
+        String defaultNode = "qa"
+        Configuration.set("node", defaultNode) //master is default node to execute job
 
         //TODO: handle browserstack etc integration here?
         switch(Configuration.get("platform").toLowerCase()) {
@@ -445,26 +460,27 @@ public class QARunner extends AbstractRunner {
         String env = Configuration.get("env")
         String devicePool = Configuration.get("devicePool")
         String browser = Configuration.get("browser")
-
         //TODO: improve carina to detect browser_version on the fly
         String browserVersion = Configuration.get("browser_version")
 
         context.stage('Preparation') {
-            currentBuild.displayName = "#${buildNumber}|${suite}|${env}|${branch}"
-            if (!isParamEmpty("${carinaCoreVersion}")) {
+            currentBuild.displayName = "#${buildNumber}|${suite}|${branch}"
+            if (!isParamEmpty(env)) {
+                currentBuild.displayName += "|" + "${env}"
+            }
+            if (!isParamEmpty(carinaCoreVersion)) {
                 currentBuild.displayName += "|" + "${carinaCoreVersion}"
             }
             if (!isParamEmpty(devicePool)) {
                 currentBuild.displayName += "|${devicePool}"
             }
-            if (!isParamEmpty(Configuration.get("browser"))) {
+            if (!isParamEmpty(browser)) {
                 currentBuild.displayName += "|${browser}"
             }
-            if (!isParamEmpty(Configuration.get("browser_version"))) {
+            if (!isParamEmpty(browserVersion)) {
                 currentBuild.displayName += "|${browserVersion}"
             }
             currentBuild.description = "${suite}"
-            
             if (isMobile()) {
                 //this is mobile test
                 prepareForMobile()
@@ -485,8 +501,8 @@ public class QARunner extends AbstractRunner {
         return carinaCoreVersion
     }
 
-     protected void prepareForMobile() {
-         logger.info("Runner->prepareForMobile")
+    protected void prepareForMobile() {
+        logger.info("Runner->prepareForMobile")
         def devicePool = Configuration.get("devicePool")
         def defaultPool = Configuration.get("DefaultPool")
         def platform = Configuration.get("platform")
@@ -515,7 +531,6 @@ public class QARunner extends AbstractRunner {
         //TODO: move it to the global jenkins variable
         Configuration.set("capabilities.newCommandTimeout", "180")
         Configuration.set("java.awt.headless", "true")
-
     }
 
     protected void prepareForAndroid() {
@@ -563,7 +578,6 @@ public class QARunner extends AbstractRunner {
 		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
 		-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
 		-Dzafira_enabled=true \
-		-Dzafira_rerun_failures=${Configuration.get("rerun_failures")} \
 		-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 		-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
 		-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
@@ -575,6 +589,11 @@ public class QARunner extends AbstractRunner {
 				  -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
 		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 		clean test -Dqueue_registration=false"
+
+        def rerunFailures = Configuration.get("rerun_failures")
+        if(!isParamEmpty(rerunFailures)){
+            defaultBaseMavenGoals = defaultBaseMavenGoals + " -Dzafira_rerun_failures=${rerunFailures}"
+        }
 
 		Configuration.set("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 

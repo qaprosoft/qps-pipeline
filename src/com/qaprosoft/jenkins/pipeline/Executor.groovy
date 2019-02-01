@@ -35,7 +35,7 @@ public class Executor {
 
     static String getUUID() {
 		def ci_run_id = Configuration.get("ci_run_id")
-		if (ci_run_id == null || ci_run_id.isEmpty()) {
+		if (isParamEmpty(ci_run_id)) {
 			ci_run_id = randomUUID() as String
 		}
 		return ci_run_id
