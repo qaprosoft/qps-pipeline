@@ -625,7 +625,7 @@ public class QARunner extends AbstractRunner {
 					Configuration.get("browser") + "-" + Configuration.get("env") + "\""
 			uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
 			startBrowserStackLocal(uniqueBrowserInstance)
-			goals += " -Dcapabilities.project=" + Configuration.get("project")
+			goals += " -Dcapabilities.project=" + Configuration.get("repo")
 			goals += " -Dcapabilities.build=" + uniqueBrowserInstance
 			goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
 			goals += " -Dapp_version=browserStack"
@@ -668,7 +668,12 @@ public class QARunner extends AbstractRunner {
                 context.unzip dir: "/var/tmp", glob: "", zipFile: browserStackLocation + ".zip"
                 context.sh "chmod +x " + browserStackLocation
             }
-            context.sh browserStackLocation + " --key " + accessKey + " --local-identifier " + uniqueBrowserInstance + " --force-local " + " &"
+            //TODO: [VD] use valid status and stderr object after develping such functionality on pipeline level: https://issues.jenkins-ci.org/browse/JENKINS-44930
+            def logFile = "/var/tmp/BrowserStackLocal.log"
+            def browserStackLocalStart = browserStackLocation + " --key ${accessKey} --local-identifier ${uniqueBrowserInstance} --force-local > ${logFile} 2>&1 &"
+            context.sh(browserStackLocalStart)
+            context.sh("sleep 3")
+            logger.info("BrowserStack Local proxy statrup output:\n" + context.readFile(logFile).trim())
         } else {
             def browserStackLocation = "C:\\tmp\\BrowserStackLocal"
             if (!context.fileExists(browserStackLocation + ".exe")) {
@@ -748,7 +753,7 @@ public class QARunner extends AbstractRunner {
 
             def workspace = getWorkspace()
             logger.info("WORKSPACE: " + workspace)
-            def project = Configuration.get("project")
+            def project = Configuration.get("repo")
             def jenkinsFile = ".jenkinsfile.json"
 
             if (!context.fileExists("${jenkinsFile}")) {
