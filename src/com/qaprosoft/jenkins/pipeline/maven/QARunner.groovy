@@ -668,7 +668,7 @@ public class QARunner extends AbstractRunner {
                 context.unzip dir: "/var/tmp", glob: "", zipFile: browserStackLocation + ".zip"
                 context.sh "chmod +x " + browserStackLocation
             }
-            def browserStackLocalStart = browserStackLocation + " --key " + accessKey + " --local-identifier " + uniqueBrowserInstance + " --force-local " + " &""
+            def browserStackLocalStart = browserStackLocation + " --key " + accessKey + " --local-identifier " + uniqueBrowserInstance + " --force-local &"
             def browserStackLocalOutput = context.sh script: "${browserStackLocalStart}", returnStdout: true
             logger.info("BrowserStack Local Proxy startup output: ${browserStackLocalOutput}")
         } else {
