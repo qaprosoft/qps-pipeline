@@ -669,6 +669,7 @@ public class QARunner extends AbstractRunner {
                 context.sh "chmod +x " + browserStackLocation
             }
             def browserStackLocalStart = browserStackLocation + " --key " + accessKey + " --local-identifier " + uniqueBrowserInstance + " --force-local 2>&1 &"
+            logger.info("browserStackLocalStart: ${browserStackLocalStart}")
             def browserStackLocalOutput = context.sh script: "${browserStackLocalStart}", returnStdout: true
             logger.info("BrowserStack Local Proxy startup output: ${browserStackLocalOutput}")
         } else {
