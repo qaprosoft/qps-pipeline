@@ -671,7 +671,7 @@ public class QARunner extends AbstractRunner {
             def logFile = "/var/tmp/${uniqueBrowserInstance}.log"
             def browserStackLocalStart = browserStackLocation + " --key ${accessKey} --local-identifier ${uniqueBrowserInstance} --force-local > ${logFile} 2>&1 &"
             def status = context.sh script: "${browserStackLocalStart}", returnStatus: true
-            logger.info("BrowserStack Local proxy statrup output:\n" + readFile(logFile).trim())
+            logger.info("BrowserStack Local proxy statrup output:\n" + context.readFile(logFile).trim())
         } else {
             def browserStackLocation = "C:\\tmp\\BrowserStackLocal"
             if (!context.fileExists(browserStackLocation + ".exe")) {
