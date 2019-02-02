@@ -625,7 +625,7 @@ public class QARunner extends AbstractRunner {
 					Configuration.get("browser") + "-" + Configuration.get("env") + "\""
 			uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
 			startBrowserStackLocal(uniqueBrowserInstance)
-			goals += " -Dcapabilities.project=" + Configuration.get("project")
+			goals += " -Dcapabilities.project=" + Configuration.get("repo")
 			goals += " -Dcapabilities.build=" + uniqueBrowserInstance
 			goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
 			goals += " -Dapp_version=browserStack"
@@ -748,7 +748,7 @@ public class QARunner extends AbstractRunner {
 
             def workspace = getWorkspace()
             logger.info("WORKSPACE: " + workspace)
-            def project = Configuration.get("project")
+            def project = Configuration.get("repo")
             def jenkinsFile = ".jenkinsfile.json"
 
             if (!context.fileExists("${jenkinsFile}")) {
