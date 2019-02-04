@@ -1,9 +1,9 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-@Grab('org.testng:testng:6.8.8')
+@Grab('org.testng:testng:6.9.9')
 
-import org.testng.xml.Parser;
-import org.testng.xml.XmlSuite;
+import static com.qaprosoft.Utils.*
+import org.testng.xml.XmlSuite
 import com.qaprosoft.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors
 
@@ -33,11 +33,8 @@ public class TestJobFactory extends PipelineFactory {
 
 	def create() {
         logger.info("TestJobFactory->create")
-		def xmlFile = new Parser(suitePath)
-		xmlFile.setLoadClasses(false)
 
-		List<XmlSuite> suiteXml = xmlFile.parseToList()
-		XmlSuite currentSuite = suiteXml.get(0)
+		XmlSuite currentSuite = parseSuite(suitePath)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
 		logger.info("JenkinsJobName: ${name}")
@@ -63,7 +60,7 @@ public class TestJobFactory extends PipelineFactory {
 
 				//** Requires Active Choices Plug-in v1.2+ **//*
 				//** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **//*
-				if (currentSuite.toXml().contains("jenkinsGroups")) {
+				if (!isParamEmpty(currentSuite.getParameter("jenkinsGroups"))) {
 					activeChoiceParam("groups") {
 						description("Please select test group(s) to run")
 						filterable()
@@ -149,7 +146,7 @@ public class TestJobFactory extends PipelineFactory {
 				}
 
 				def nodeLabel = ""
-				if (currentSuite.toXml().contains("jenkinsNodeLabel")) {
+				if (!isParamEmpty(currentSuite.getParameter("jenkinsNodeLabel"))) {
 					nodeLabel = currentSuite.getParameter("jenkinsNodeLabel")
 					configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
 				}
@@ -177,14 +174,14 @@ public class TestJobFactory extends PipelineFactory {
 				configure addHiddenParameter('queue_registration', '', queue_registration)
 
 				def threadCount = '1'
-				if (currentSuite.toXml().contains("jenkinsDefaultThreadCount")) {
+				if (!isParamEmpty(currentSuite.getParameter("jenkinsDefaultThreadCount"))) {
 					threadCount = currentSuite.getParameter("jenkinsDefaultThreadCount")
 				}
 				stringParam('thread_count', threadCount, 'number of threads, number')
 
 
 				stringParam('email_list', currentSuite.getParameter("jenkinsEmail").toString(), 'List of Users to be emailed after the test')
-				if (currentSuite.toXml().contains("jenkinsFailedEmail")) {
+				if (!isParamEmpty(currentSuite.getParameter("jenkinsFailedEmail"))) {
 					configure addHiddenParameter('failure_email_list', '', currentSuite.getParameter("jenkinsFailedEmail").toString())
 				} else {
 					configure addHiddenParameter('failure_email_list', '', '')
