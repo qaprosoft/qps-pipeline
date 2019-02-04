@@ -1,6 +1,6 @@
 package com.qaprosoft
 
-@Grab('org.testng:testng:6.8.8')
+@Grab('org.testng:testng:6.14.3')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
 
