@@ -5,6 +5,7 @@ import com.qaprosoft.Logger
 import com.qaprosoft.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.Configuration
 
+import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.integration.zafira.ZafiraClient
 import com.qaprosoft.integration.zafira.IntegrationTag
