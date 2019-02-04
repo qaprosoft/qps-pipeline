@@ -15,10 +15,10 @@ public class TestJobFactory extends PipelineFactory {
 	def organization
 	def sub_project
 	def zafira_project
-	def suitePath
+	def currentSuite
 	def suiteName
 
-	public TestJobFactory(folder, pipelineScript, host, repo, organization, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
+	public TestJobFactory(folder, pipelineScript, host, repo, organization, sub_project, zafira_project, currentSuite, suiteName, jobDesc) {
 		this.folder = folder
 		this.description = jobDesc
 		this.pipelineScript = pipelineScript
@@ -27,17 +27,17 @@ public class TestJobFactory extends PipelineFactory {
 		this.organization = organization
 		this.sub_project = sub_project
 		this.zafira_project = zafira_project
-		this.suitePath = suitePath
+		this.currentSuite = currentSuite
 		this.suiteName = suiteName
 	}
 
 	def create() {
         logger.info("TestJobFactory->create")
-		def xmlFile = new Parser(suitePath)
-		xmlFile.setLoadClasses(false)
-
-		List<XmlSuite> suiteXml = xmlFile.parseToList()
-		XmlSuite currentSuite = suiteXml.get(0)
+//		def xmlFile = new Parser(suitePath)
+//		xmlFile.setLoadClasses(false)
+//
+//		List<XmlSuite> suiteXml = xmlFile.parseToList()
+//		XmlSuite currentSuite = suiteXml.get(0)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
 		logger.info("JenkinsJobName: ${name}")
