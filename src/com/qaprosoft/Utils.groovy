@@ -8,6 +8,8 @@ import org.apache.log4j.Logger
 
 class Utils {
 
+    private static final Logger logger = Logger.getLogger(Utils.class);
+
     static def printStackTrace(Exception e) {
         def stringStacktrace = ""
         e.getStackTrace().each { traceLine ->
@@ -23,9 +25,9 @@ class Utils {
     static XmlSuite parseSuite(String path) {
         def xmlFile = new Parser(path)
         xmlFile.setLoadClasses(false)
-
         List<XmlSuite> suiteXml = xmlFile.parseToList()
         XmlSuite currentSuite = suiteXml.get(0)
+        logger.info(currentSuite)
         return currentSuite
     }
 
