@@ -4,6 +4,7 @@ package com.qaprosoft
 @Grab('org.apache.logging.log4j:log4j-api:2.11.1')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
+
 import org.apache.log4j.Logger
 
 class Utils {
@@ -29,6 +30,14 @@ class Utils {
         XmlSuite currentSuite = suiteXml.get(0)
         logger.info("APACHE: " + currentSuite)
         return currentSuite
+    }
+
+    static boolean isParamEmpty(value) {
+        if (value == null) {
+            return true
+        }  else {
+            return value.toString().isEmpty() || value.toString().equalsIgnoreCase("NULL")
+        }
     }
 
 }
