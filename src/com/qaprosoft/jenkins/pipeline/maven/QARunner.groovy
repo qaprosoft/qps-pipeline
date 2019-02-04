@@ -163,10 +163,6 @@ public class QARunner extends AbstractRunner {
             def workspace = getWorkspace()
             logger.info("WORKSPACE: ${workspace}")
 
-            def removedConfigFilesAction = Configuration.get("removedConfigFilesAction")
-            def removedJobAction = Configuration.get("removedJobAction")
-            def removedViewAction = Configuration.get("removedViewAction")
-
             // Support DEV related CI workflow
             //TODO: analyze if we need 3 system object declarations
 
@@ -246,16 +242,17 @@ public class QARunner extends AbstractRunner {
                     def currentSuitePath = workspace + "/" + suitePath
 
                     XmlSuite currentSuite = parsePipeline(currentSuitePath)
-                    if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
+                    if (!isParamEmpty(currentSuite.getParameter("jenkinsJobCreation")) && currentSuite.getParameter("jenkinsJobCreation").toBoolean()) {
+
                         logger.info("suite name: " + suiteName)
                         logger.info("suite path: " + suitePath)
 
-                        if (currentSuite.toXml().contains("suiteOwner")) {
+                        if (!isParamEmpty(currentSuite.getParameter("suiteOwner"))) {
                             suiteOwner = currentSuite.getParameter("suiteOwner")
                         }
 
                         def currentZafiraProject = zafira_project
-                        if (currentSuite.toXml().contains("zafira_project")) {
+                        if (!isParamEmpty(currentSuite.getParameter("zafira_project"))) {
                             currentZafiraProject = currentSuite.getParameter("zafira_project")
                         }
 
@@ -287,9 +284,9 @@ public class QARunner extends AbstractRunner {
                 logger.info("factoryTarget: " + FACTORY_TARGET)
                 //TODO: test carefully auto-removal for jobs/views and configs
                 context.jobDsl additionalClasspath: additionalClasspath,
-                        removedConfigFilesAction: removedConfigFilesAction,
-                        removedJobAction: removedJobAction,
-                        removedViewAction: removedViewAction,
+                        removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
+                        removedJobAction: Configuration.get("removedJobAction"),
+                        removedViewAction: Configuration.get("removedViewAction"),
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
             }
@@ -362,7 +359,7 @@ public class QARunner extends AbstractRunner {
                         publishJacocoReport()
                     }
                 } catch (Exception e) {
-                    logger.error(Utils.printStackTrace(e))
+                    logger.error(printStackTrace(e))
                     zafiraUpdater.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
@@ -732,7 +729,7 @@ public class QARunner extends AbstractRunner {
             }
         } catch (Exception e) {
             logger.error("Exception occurred while publishing Jenkins report.")
-            logger.error(Utils.printStackTrace(e))
+            logger.error(printStackTrace(e))
         }
      }
 
@@ -766,7 +763,7 @@ public class QARunner extends AbstractRunner {
                 if(files.length > 0) {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
-                        def currentSuite = parsePipeline(workspace + "/" + files[i].path)
+                        XmlSuite currentSuite = parsePipeline(workspace + "/" + files[i].path)
                         if (currentSuite == null) {
                             currentBuild.result = BuildResult.FAILURE
                             continue
@@ -1062,7 +1059,7 @@ public class QARunner extends AbstractRunner {
                         parameters: jobParams,
                         wait: waitJob
             } catch (Exception e) {
-                logger.error(Utils.printStackTrace(e))
+                logger.error(printStackTrace(e))
                 def body = "Unable to start job via cron! " + e.getMessage()
                 def subject = "JOBSTART FAILURE: " + entry.get("jobName")
                 def to = entry.get("email_list") + "," + Configuration.get("email_list")
