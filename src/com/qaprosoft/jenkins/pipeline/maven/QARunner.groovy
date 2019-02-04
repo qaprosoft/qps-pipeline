@@ -21,7 +21,7 @@ import groovy.json.JsonOutput
 import com.qaprosoft.jenkins.pipeline.maven.Maven
 import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
 
-@Grab('org.testng:testng:6.9.9')
+@Grab('org.testng:testng:7.0.0-beta3')
 
 @Mixin([Maven, Sonar])
 public class QARunner extends AbstractRunner {

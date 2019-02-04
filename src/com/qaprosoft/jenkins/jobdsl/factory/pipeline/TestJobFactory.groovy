@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-@Grab('org.testng:testng:6.9.9')
+@Grab('org.testng:testng:7.0.0-beta3')
 
 import static com.qaprosoft.Utils.*
 import org.testng.xml.XmlSuite
