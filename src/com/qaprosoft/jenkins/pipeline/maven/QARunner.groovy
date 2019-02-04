@@ -268,7 +268,7 @@ public class QARunner extends AbstractRunner {
                             //TODO: review each argument to TestJobFactory and think about removal
                             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                            registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
+                            registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, sub_project, currentZafiraProject, currentSuite, suiteName, jobDesc))
 
                             //cron job
                             if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
@@ -277,7 +277,7 @@ public class QARunner extends AbstractRunner {
                                 for (def cronJobName : cronJobNames.split(",")) {
                                     cronJobName = cronJobName.trim()
                                     def cronDesc = "project: ${repo}; type: cron"
-                                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, getWorkspace() + "/" + suite.path, cronDesc))
+                                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuite, cronDesc))
                                 }
                             }
                         }
