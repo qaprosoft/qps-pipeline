@@ -1,10 +1,10 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
 
-import com.qaprosoft.Utils
 import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 import com.qaprosoft.integration.zafira.ZafiraUpdater
+import org.testng.xml.Parser
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import static com.qaprosoft.Utils.*
@@ -802,7 +802,7 @@ public class QARunner extends AbstractRunner {
         logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
-            currentSuite = parseSuite(filePath)
+            currentSuite = this.parseSuite(filePath)
         } catch (FileNotFoundException e) {
             logger.error("ERROR! Unable to find suite: " + filePath)
             logger.error(printStackTrace(e))
@@ -810,6 +810,14 @@ public class QARunner extends AbstractRunner {
             logger.error("ERROR! Unable to parse suite: " + filePath)
             logger.error(printStackTrace(e))
         }
+        return currentSuite
+    }
+
+    protected def XmlSuite parseSuite(String path) {
+        def xmlFile = new Parser(path)
+        xmlFile.setLoadClasses(false)
+        List<XmlSuite> suiteXml = xmlFile.parseToList()
+        XmlSuite currentSuite = suiteXml.get(0)
         return currentSuite
     }
 
