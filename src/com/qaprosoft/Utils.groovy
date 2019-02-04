@@ -1,7 +1,7 @@
 package com.qaprosoft
 
 @Grab('org.testng:testng:6.8.8')
-@Grab('org.apache.logging.log4j:log4j:2.10.0')
+@Grab('org.apache.logging.log4j:log4j-api:jar:2.11.1')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
 import org.apache.log4j.Logger
