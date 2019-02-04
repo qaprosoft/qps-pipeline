@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.pipeline
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-@Grab('org.testng:testng:7.0.0-beta3')
+@Grab('org.testng:testng:6.9.9')
 import groovy.json.JsonSlurperClassic
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
