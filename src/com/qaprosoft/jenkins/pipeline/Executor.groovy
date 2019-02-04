@@ -120,15 +120,6 @@ public class Executor {
         return builder.toPrettyString()
     }
 
-    static XmlSuite parseSuite(String path) {
-        def xmlFile = new Parser(path)
-        xmlFile.setLoadClasses(false)
-
-        List<XmlSuite> suiteXml = xmlFile.parseToList()
-        XmlSuite currentSuite = suiteXml.get(0)
-        return currentSuite
-    }
-
     static def parseFolderName(workspace) {
         def folderName = ""
 

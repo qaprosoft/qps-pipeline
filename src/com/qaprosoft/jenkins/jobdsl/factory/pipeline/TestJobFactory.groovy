@@ -2,8 +2,8 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 @Grab('org.testng:testng:6.8.8')
 
-import org.testng.xml.Parser;
-import org.testng.xml.XmlSuite;
+import static com.qaprosoft.Utils.*
+import org.testng.xml.XmlSuite
 import com.qaprosoft.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors
 
@@ -15,10 +15,10 @@ public class TestJobFactory extends PipelineFactory {
 	def organization
 	def sub_project
 	def zafira_project
-	def currentSuite
+	def suitePath
 	def suiteName
 
-	public TestJobFactory(folder, pipelineScript, host, repo, organization, sub_project, zafira_project, currentSuite, suiteName, jobDesc) {
+	public TestJobFactory(folder, pipelineScript, host, repo, organization, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
 		this.folder = folder
 		this.description = jobDesc
 		this.pipelineScript = pipelineScript
@@ -27,17 +27,14 @@ public class TestJobFactory extends PipelineFactory {
 		this.organization = organization
 		this.sub_project = sub_project
 		this.zafira_project = zafira_project
-		this.currentSuite = currentSuite
+		this.suitePath = suitePath
 		this.suiteName = suiteName
 	}
 
 	def create() {
         logger.info("TestJobFactory->create")
-//		def xmlFile = new Parser(suitePath)
-//		xmlFile.setLoadClasses(false)
-//
-//		List<XmlSuite> suiteXml = xmlFile.parseToList()
-//		XmlSuite currentSuite = suiteXml.get(0)
+
+		XmlSuite currentSuite = parseSuite(suitePath)
 
 		this.name = currentSuite.getParameter("jenkinsJobName").toString()
 		logger.info("JenkinsJobName: ${name}")
