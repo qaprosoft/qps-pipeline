@@ -1,15 +1,10 @@
 package com.qaprosoft
 
 @Grab('org.testng:testng:6.8.8')
-@Grab('org.apache.logging.log4j:log4j-api:2.11.1')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
 
-import org.apache.log4j.Logger
-
 class Utils {
-
-    private static final Logger logger = Logger.getLogger(Utils.class);
 
     static def printStackTrace(Exception e) {
         def stringStacktrace = ""
