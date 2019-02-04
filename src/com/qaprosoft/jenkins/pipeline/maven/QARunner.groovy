@@ -1,12 +1,12 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
 
-import com.qaprosoft.Utils
 import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 import com.qaprosoft.integration.zafira.ZafiraUpdater
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
+import static com.qaprosoft.Utils.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
@@ -21,7 +21,7 @@ import groovy.json.JsonOutput
 import com.qaprosoft.jenkins.pipeline.maven.Maven
 import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
 
-@Grab('org.testng:testng:6.8.8')
+@Grab('org.testng:testng:6.9.9')
 
 @Mixin([Maven, Sonar])
 public class QARunner extends AbstractRunner {
@@ -162,10 +162,6 @@ public class QARunner extends AbstractRunner {
             def workspace = getWorkspace()
             logger.info("WORKSPACE: ${workspace}")
 
-            def removedConfigFilesAction = Configuration.get("removedConfigFilesAction")
-            def removedJobAction = Configuration.get("removedJobAction")
-            def removedViewAction = Configuration.get("removedViewAction")
-
             // Support DEV related CI workflow
             //TODO: analyze if we need 3 system object declarations
 
@@ -239,57 +235,46 @@ public class QARunner extends AbstractRunner {
                     if (!suite.path.endsWith(".xml")) {
                         continue
                     }
-                    logger.info("suite: " + suite.path)
                     def suiteOwner = "anonymous"
+                    def suitePath = suite.path
+                    def suiteName = suitePath.substring(suitePath.lastIndexOf(testngFolder) + testngFolder.length(), suitePath.indexOf(".xml"))
+                    def currentSuitePath = workspace + "/" + suitePath
 
-                    def suiteName = suite.path
-                    suiteName = suiteName.substring(suiteName.lastIndexOf(testngFolder) + testngFolder.length(), suiteName.indexOf(".xml"))
+                    XmlSuite currentSuite = parsePipeline(currentSuitePath)
+                    if (!isParamEmpty(currentSuite.getParameter("jenkinsJobCreation")) && currentSuite.getParameter("jenkinsJobCreation").toBoolean()) {
 
-                    try {
-                        XmlSuite currentSuite = parseSuite(workspace + "/" + suite.path)
-                        if (currentSuite.toXml().contains("jenkinsJobCreation") && currentSuite.getParameter("jenkinsJobCreation").contains("true")) {
-                            logger.info("suite name: " + suiteName)
-                            logger.info("suite path: " + suite.path)
+                        logger.info("suite name: " + suiteName)
+                        logger.info("suite path: " + suitePath)
 
-                            if (currentSuite.toXml().contains("suiteOwner")) {
-                                suiteOwner = currentSuite.getParameter("suiteOwner")
-                            }
-
-							def currentZafiraProject = zafira_project
-                            if (currentSuite.toXml().contains("zafira_project")) {
-                                currentZafiraProject = currentSuite.getParameter("zafira_project")
-                            }
-
-                            // put standard views factory into the map
-                            registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
-                            registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
-
-                            //pipeline job
-                            //TODO: review each argument to TestJobFactory and think about removal
-                            //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-                            def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                            registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, sub_project, currentZafiraProject, getWorkspace() + "/" + suite.path, suiteName, jobDesc))
-
-                            //cron job
-                            if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
-                                    && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().isEmpty()) {
-                                def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
-                                for (def cronJobName : cronJobNames.split(",")) {
-                                    cronJobName = cronJobName.trim()
-                                    def cronDesc = "project: ${repo}; type: cron"
-                                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, getWorkspace() + "/" + suite.path, cronDesc))
-                                }
-                            }
+                        if (!isParamEmpty(currentSuite.getParameter("suiteOwner"))) {
+                            suiteOwner = currentSuite.getParameter("suiteOwner")
                         }
 
-                    } catch (FileNotFoundException e) {
-                        logger.error("ERROR! Unable to find suite: " + suite.path)
-                        logger.error(Utils.printStackTrace(e))
-                    } catch (Exception e) {
-                        logger.error("ERROR! Unable to parse suite: " + suite.path)
-                        logger.error(Utils.printStackTrace(e))
-                    }
+                        def currentZafiraProject = zafira_project
+                        if (!isParamEmpty(currentSuite.getParameter("zafira_project"))) {
+                            currentZafiraProject = currentSuite.getParameter("zafira_project")
+                        }
 
+                        // put standard views factory into the map
+                        registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+                        registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
+
+                        //pipeline job
+                        //TODO: review each argument to TestJobFactory and think about removal
+                        //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+                        def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+                        registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, sub_project, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+
+                        //cron job
+                        if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
+                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
+                            for (def cronJobName : cronJobNames.split(",")) {
+                                cronJobName = cronJobName.trim()
+                                def cronDesc = "project: ${repo}; type: cron"
+                                registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
+                            }
+                        }
+                    }
                 }
 
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
@@ -297,9 +282,9 @@ public class QARunner extends AbstractRunner {
                 logger.info("factoryTarget: " + FACTORY_TARGET)
                 //TODO: test carefully auto-removal for jobs/views and configs
                 context.jobDsl additionalClasspath: additionalClasspath,
-                        removedConfigFilesAction: removedConfigFilesAction,
-                        removedJobAction: removedJobAction,
-                        removedViewAction: removedViewAction,
+                        removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
+                        removedJobAction: Configuration.get("removedJobAction"),
+                        removedViewAction: Configuration.get("removedViewAction"),
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
             }
@@ -372,7 +357,7 @@ public class QARunner extends AbstractRunner {
                         publishJacocoReport()
                     }
                 } catch (Exception e) {
-                    logger.error(Utils.printStackTrace(e))
+                    logger.error(printStackTrace(e))
                     zafiraUpdater.abortTestRun(uuid, currentBuild)
                     throw e
                 } finally {
@@ -742,7 +727,7 @@ public class QARunner extends AbstractRunner {
             }
         } catch (Exception e) {
             logger.error("Exception occurred while publishing Jenkins report.")
-            logger.error(Utils.printStackTrace(e))
+            logger.error(printStackTrace(e))
         }
      }
 
@@ -776,7 +761,7 @@ public class QARunner extends AbstractRunner {
                 if(files.length > 0) {
                     logger.info("Number of Test Suites to Scan Through: " + files.length)
                     for (int i = 0; i < files.length; i++) {
-                        def currentSuite = parsePipeline(workspace + "/" + files[i].path)
+                        XmlSuite currentSuite = parsePipeline(workspace + "/" + files[i].path)
                         if (currentSuite == null) {
                             currentBuild.result = BuildResult.FAILURE
                             continue
@@ -819,10 +804,10 @@ public class QARunner extends AbstractRunner {
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
             logger.error("ERROR! Unable to find suite: " + filePath)
-            logger.error(Utils.printStackTrace(e))
+            logger.error(printStackTrace(e))
         } catch (Exception e) {
             logger.error("ERROR! Unable to parse suite: " + filePath)
-            logger.error(Utils.printStackTrace(e))
+            logger.error(printStackTrace(e))
         }
         return currentSuite
     }
@@ -1072,7 +1057,7 @@ public class QARunner extends AbstractRunner {
                         parameters: jobParams,
                         wait: waitJob
             } catch (Exception e) {
-                logger.error(Utils.printStackTrace(e))
+                logger.error(printStackTrace(e))
                 def body = "Unable to start job via cron! " + e.getMessage()
                 def subject = "JOBSTART FAILURE: " + entry.get("jobName")
                 def to = entry.get("email_list") + "," + Configuration.get("email_list")

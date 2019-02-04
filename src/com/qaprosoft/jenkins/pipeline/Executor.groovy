@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.pipeline
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-@Grab('org.testng:testng:6.8.8')
+@Grab('org.testng:testng:6.9.9')
 import groovy.json.JsonSlurperClassic
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
@@ -14,6 +14,7 @@ import java.nio.file.PathMatcher
 import java.nio.file.Paths
 
 import static java.util.UUID.randomUUID
+import static com.qaprosoft.Utils.*
 import org.jenkinsci.plugins.ghprb.*
 import com.cloudbees.plugins.credentials.impl.*
 import com.cloudbees.plugins.credentials.*
@@ -96,15 +97,7 @@ public class Executor {
         }
         return subProjectFolder
     }
-	
-    static boolean isParamEmpty(value) {
-		if (value == null) {
-			return true
-		}  else {
-			return value.toString().isEmpty() || value.toString().equalsIgnoreCase("NULL")
-		}
-    }
-	
+
     static Object parseJSON(String path) {
         def inputFile = new File(path)
         def content = new JsonSlurperClassic().parseFile(inputFile, 'UTF-8')
@@ -118,15 +111,6 @@ public class Executor {
     static def formatJson(json){
         JsonBuilder builder = new JsonBuilder(json)
         return builder.toPrettyString()
-    }
-
-    static XmlSuite parseSuite(String path) {
-        def xmlFile = new Parser(path)
-        xmlFile.setLoadClasses(false)
-
-        List<XmlSuite> suiteXml = xmlFile.parseToList()
-        XmlSuite currentSuite = suiteXml.get(0)
-        return currentSuite
     }
 
     static def parseFolderName(workspace) {
