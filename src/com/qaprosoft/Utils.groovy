@@ -28,7 +28,6 @@ class Utils {
         xmlFile.setLoadClasses(false)
         List<XmlSuite> suiteXml = xmlFile.parseToList()
         XmlSuite currentSuite = suiteXml.get(0)
-        logger.info("APACHE: " + currentSuite)
         return currentSuite
     }
 

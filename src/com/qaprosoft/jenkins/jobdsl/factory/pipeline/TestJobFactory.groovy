@@ -60,7 +60,7 @@ public class TestJobFactory extends PipelineFactory {
 
 				//** Requires Active Choices Plug-in v1.2+ **//*
 				//** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **//*
-				if (currentSuite.toXml().contains("jenkinsGroups")) {
+				if (!isParamEmpty(currentSuite.getParameter("jenkinsGroups"))) {
 					activeChoiceParam("groups") {
 						description("Please select test group(s) to run")
 						filterable()
@@ -146,7 +146,7 @@ public class TestJobFactory extends PipelineFactory {
 				}
 
 				def nodeLabel = ""
-				if (currentSuite.toXml().contains("jenkinsNodeLabel")) {
+				if (!isParamEmpty(currentSuite.getParameter("jenkinsNodeLabel"))) {
 					nodeLabel = currentSuite.getParameter("jenkinsNodeLabel")
 					configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
 				}
@@ -174,14 +174,14 @@ public class TestJobFactory extends PipelineFactory {
 				configure addHiddenParameter('queue_registration', '', queue_registration)
 
 				def threadCount = '1'
-				if (currentSuite.toXml().contains("jenkinsDefaultThreadCount")) {
+				if (!isParamEmpty(currentSuite.getParameter("jenkinsDefaultThreadCount"))) {
 					threadCount = currentSuite.getParameter("jenkinsDefaultThreadCount")
 				}
 				stringParam('thread_count', threadCount, 'number of threads, number')
 
 
 				stringParam('email_list', currentSuite.getParameter("jenkinsEmail").toString(), 'List of Users to be emailed after the test')
-				if (currentSuite.toXml().contains("jenkinsFailedEmail")) {
+				if (!isParamEmpty(currentSuite.getParameter("jenkinsFailedEmail"))) {
 					configure addHiddenParameter('failure_email_list', '', currentSuite.getParameter("jenkinsFailedEmail").toString())
 				} else {
 					configure addHiddenParameter('failure_email_list', '', '')

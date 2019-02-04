@@ -267,9 +267,8 @@ public class QARunner extends AbstractRunner {
                         registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, sub_project, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
 
                         //cron job
-                        if (!currentSuite.getParameter("jenkinsRegressionPipeline").toString().contains("null")
-                                && !currentSuite.getParameter("jenkinsRegressionPipeline").toString().isEmpty()) {
-                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
+                        if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
+                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
                             for (def cronJobName : cronJobNames.split(",")) {
                                 cronJobName = cronJobName.trim()
                                 def cronDesc = "project: ${repo}; type: cron"
