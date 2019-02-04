@@ -1,10 +1,11 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-@Grab('org.testng:testng:6.8.8')
+@Grab('org.testng:testng:6.9.9')
 
-import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
+
+import static com.qaprosoft.Utils.parseSuite
 
 @InheritConstructors
 public class CronJobFactory extends PipelineFactory {
@@ -28,11 +29,7 @@ public class CronJobFactory extends PipelineFactory {
 
     def create() {
 
-        def xmlFile = new Parser(suitePath)
-        xmlFile.setLoadClasses(false)
-
-        List<XmlSuite> suiteXml = xmlFile.parseToList()
-        XmlSuite currentSuite = suiteXml.get(0)
+        XmlSuite currentSuite = parseSuite(suitePath)
 
         def pipelineJob = super.create()
 

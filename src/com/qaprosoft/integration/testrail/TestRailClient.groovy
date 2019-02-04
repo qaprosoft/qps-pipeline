@@ -3,7 +3,6 @@ package com.qaprosoft.integration.testrail
 import com.qaprosoft.integration.HttpClient
 
 import static com.qaprosoft.Utils.*
-import static com.qaprosoft.jenkins.pipeline.Executor.*
 import groovy.json.JsonBuilder
 import com.qaprosoft.jenkins.pipeline.Configuration
 
