@@ -191,8 +191,8 @@ public class QARunner extends AbstractRunner {
                 }
                 zafiraProject = getZafiraProject(subProjectFilter)
 
-                def xmlText = new XmlSlurper().parse(pomFile)
-                logger.info(xmlText)
+                def pom = context.readMavenPom file: pomFile
+                logger.info(pom)
 
 
             }
