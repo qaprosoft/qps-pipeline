@@ -109,7 +109,7 @@ public class QARunner extends AbstractRunner {
 
 			def pomFiles = getProjectPomFiles()
 			pomFiles.each {
-				logger.debug(it.dump())
+				logger.debug(it)
 				//do compile and scanner for all hogh level pom.xml files
 				
 				// [VD] integrated compilation as part of the sonar PR checker maven goal
@@ -175,7 +175,7 @@ public class QARunner extends AbstractRunner {
 			// TODO: improve scanner and make .jenkinsfile.json not obligatory
 			def pomFiles = getProjectPomFiles()
 			pomFiles.each {
-				logger.info(it.dump())
+				logger.info(it)
 			}
 
             def jenkinsFile = ".jenkinsfile.json"
@@ -299,6 +299,30 @@ public class QARunner extends AbstractRunner {
 
     protected String getWorkspace() {
         return context.pwd()
+    }
+
+    protected def getProjectPomFiles() {
+        def pomFiles = []
+        def files = context.findFiles(glob: "**/pom.xml")
+
+        if(files.length > 0) {
+            logger.info("Number of pom.xml files to analyze: " + files.length)
+
+            int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
+            for (pomFile in files) {
+                def path = pomFile.path
+                int level = path.count("/")
+                logger.debug("file: " + path + "; level: " + level + "; curLevel: " + curLevel)
+                if (level < curLevel) {
+                    curLevel = level
+                    pomFiles.clear()
+                    pomFiles.add(pomFile.path)
+                } else if (level == curLevel) {
+                    pomFiles.add(pomFile.path)
+                }
+            }
+        }
+        return pomFiles
     }
 
     protected String getPipelineScript() {
@@ -1118,28 +1142,4 @@ public class QARunner extends AbstractRunner {
         return port
     }
 	
-	protected def getProjectPomFiles() {
-		def pomFiles = []
-		def files = context.findFiles(glob: "**/pom.xml")
-		
-		if(files.length > 0) {
-			logger.info("Number of pom.xml files to analyze: " + files.length)
-			
-			int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
-			for (int i = 0; i < files.length; i++) {
-				def path = files[i].path
-				int level = path.count("/")
-				logger.debug("file: " + path + "; level: " + level + "; curLevel: " + curLevel)
-				if (level < curLevel) {
-					curLevel = level
-					pomFiles.clear()
-					pomFiles.add(files[i].path)
-				} else if (level == curLevel) {
-					pomFiles.add(files[i].path)
-				}
-			}
-		}
-		logger.info(pomFiles.dump())
-		return pomFiles
-	}
 }
