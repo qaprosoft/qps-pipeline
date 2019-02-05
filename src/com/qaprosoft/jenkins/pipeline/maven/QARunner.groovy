@@ -190,9 +190,10 @@ public class QARunner extends AbstractRunner {
                 def pom = context.readMavenPom file: pomFile
                 pom.build.plugins.each { plugin ->
                     if (plugin.artifactId.contains("surefire")) {
-//                    def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
-                        def suiteXmlFile = plugin.configuration.getChild("suiteXmlFile")
-                    logger.info(suiteXmlFile)
+                        def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
+                        def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
+                        def suitePath = suiteXmlFile.value
+                        logger.info(suitePath)
 
                     }
                 }
