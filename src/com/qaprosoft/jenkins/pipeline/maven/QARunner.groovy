@@ -183,24 +183,25 @@ public class QARunner extends AbstractRunner {
                 def subProjectFilter
                 def zafiraProject
 
-                if(pomFiles.size() == 1){
-                    subProject = "."
-                    subProjectFilter = "**"
-                } else {
-                    subProject = Paths.get(pomFile).getParent()
-                    subProjectFilter = subProject
-                }
-                zafiraProject = getZafiraProject(subProjectFilter)
-
-                def pom = context.readMavenPom file: pomFile
-                pom.build.plugins.each { plugin ->
-                    if (plugin.artifactId.contains("surefire")) {
-                    def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
-                        def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
-                    logger.info(suiteXmlFile)
-
-                    }
-                }
+                logger.info(Paths.get(pomFile).getParent())
+//                if(pomFiles.size() == 1){
+//                    subProject = "."
+//                    subProjectFilter = "**"
+//                } else {
+//                    subProject = Paths.get(pomFile).getParent()
+//                    subProjectFilter = subProject
+//                }
+//                zafiraProject = getZafiraProject(subProjectFilter)
+//
+//                def pom = context.readMavenPom file: pomFile
+//                pom.build.plugins.each { plugin ->
+//                    if (plugin.artifactId.contains("surefire")) {
+//                    def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
+//                        def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
+//                    logger.info(suiteXmlFile)
+//
+//                    }
+//                }
             }
 
             subProjects.each {
