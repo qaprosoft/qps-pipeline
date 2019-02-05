@@ -193,7 +193,12 @@ public class QARunner extends AbstractRunner {
                 zafiraProject = getZafiraProject(subProjectFilter)
 
                 def pom = context.readMavenPom file: pomFile
-                pom.build.plugins.each {
+                pom.build.plugins.each { plugin ->
+                    if(plugin.artifactId.contains("surefire")) {
+                        plugin.configuration.suiteXmlFiles.each { suiteXmlFile ->
+                            logger.info(suiteXmlFile)
+                        }
+                    }
                     logger.info(it.dump())
                 }
 
