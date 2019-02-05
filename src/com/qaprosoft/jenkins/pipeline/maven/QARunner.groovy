@@ -19,6 +19,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.scm.github.GitHub
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
+import org.apache.maven.model.Model
 
 import com.qaprosoft.jenkins.pipeline.maven.Maven
 import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
@@ -192,7 +193,8 @@ public class QARunner extends AbstractRunner {
                 zafiraProject = getZafiraProject(subProjectFilter)
 
                 def pom = context.readMavenPom file: pomFile
-                logger.info(pom)
+                logger.info(pom.version)
+
 
 
             }
