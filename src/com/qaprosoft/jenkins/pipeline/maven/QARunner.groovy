@@ -178,18 +178,22 @@ public class QARunner extends AbstractRunner {
 			def pomFiles = getProjectPomFiles()
             pomFiles.each { pomFile ->
 
-                logger.info("POM: " + pomFile.dump())
-                logger.info("SUB_PROJECT: " + Paths.get(pomFile).getParent())
+                def subProject
+                def subProjectFilter
+                def zafiraProperties
+
+                if(pomFiles.size() == 1){
+                    subProject = "."
+                    subProjectFilter = "**"
+                } else {
+                    subProject = Paths.get(pomFile).getParent()
+                    subProjectFilter = subProject
+                }
+                zafiraProperties = context.findFiles glob: subProjectFilter + "/**/zafira.properties"
+                logger.info("ZAFIRA_PROPERTIES: " + zafiraProperties)
+
             }
             subProjects.each {
-                logger.info("sub_project: " + it)
-
-                def sub_project = it.name
-
-                def subProjectFilter = it.name
-                if (sub_project.equals(".")) {
-                    subProjectFilter = "**"
-                }
 
                 def zafiraFilter = it.zafira_filter
                 def suiteFilter = it.suite_filter
