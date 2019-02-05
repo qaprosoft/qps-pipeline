@@ -194,9 +194,8 @@ public class QARunner extends AbstractRunner {
 
                 def pomContent  = context.readFile pomFile
                 def config = new XmlParser().parseText(pomContent)
-                config.children().each {
-                    logger.info(it.dump())
-                }
+                logger.info(config['maven-surefire-plugin'])
+
 //                config.build.plugins.plugin.each {
 //                    logger.info(it.dump())
 //                }
