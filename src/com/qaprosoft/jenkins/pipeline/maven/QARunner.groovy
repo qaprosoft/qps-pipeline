@@ -180,7 +180,7 @@ public class QARunner extends AbstractRunner {
 
                 def subProject
                 def subProjectFilter
-                def zafiraProperties
+                def zafiraProject
 
                 if(pomFiles.size() == 1){
                     subProject = "."
@@ -189,29 +189,22 @@ public class QARunner extends AbstractRunner {
                     subProject = Paths.get(pomFile).getParent()
                     subProjectFilter = subProject
                 }
-                zafiraProperties = context.findFiles glob: subProjectFilter.toString() + "/**/zafira.properties"
-                logger.info("ZAFIRA_PROPERTIES: " + zafiraProperties)
+                zafiraProject = getZafiraProject(subProjectFilter)
+
+                def xmlText = new XmlSlurper().parse(pomFile)
+                logger.info(xmlText)
+
 
             }
+
             subProjects.each {
 
-                def zafiraFilter = it.zafira_filter
                 def suiteFilter = it.suite_filter
 
 				if (suiteFilter.isEmpty()) {
 					logger.warn("Skip repository scan as no suiteFilter identified! Project: ${repo}")
 					return
 				}
-
-                def zafira_project = 'unknown'
-                def zafiraProperties = context.findFiles(glob: subProjectFilter + "/" + zafiraFilter)
-                for (File file : zafiraProperties) {
-                    def props = context.readProperties file: file.path
-                    if (props['zafira_project'] != null) {
-                        zafira_project = props['zafira_project']
-                    }
-                }
-                logger.info("zafira_project: ${zafira_project}")
 
                 if (suiteFilter.endsWith("/")) {
                     //remove last character if it is slash
@@ -296,6 +289,19 @@ public class QARunner extends AbstractRunner {
 
     protected String getWorkspace() {
         return context.pwd()
+    }
+
+    def getZafiraProject(subProjectFilter){
+        def zafiraProject = "unknown"
+        def zafiraProperties = context.findFiles glob: subProjectFilter.toString() + "/**/zafira.properties"
+        zafiraProperties.each {
+            Map properties  = context.readProperties file: it.path
+            if(!isParamEmpty(properties.zafira_project)){
+                zafiraProject = properties.zafira_project
+                logger.info("ZafiraProject: " + zafiraProject)
+            }
+        }
+        return zafiraProject
     }
 
     protected def getProjectPomFiles() {
