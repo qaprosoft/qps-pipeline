@@ -194,7 +194,7 @@ public class QARunner extends AbstractRunner {
 
                 def pom = context.readMavenPom file: pomFile
                 pom.build.plugins.each { plugin ->
-                    logger.info(plugin.dump())
+                    logger.info(plugin.getConfiguration().dump())
                     logger.info(plugin.configuration.dump())
                     def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
 //                    def config = new XmlParser().parseText(plugin.configuration.toString)
