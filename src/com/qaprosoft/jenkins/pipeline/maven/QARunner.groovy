@@ -183,93 +183,19 @@ public class QARunner extends AbstractRunner {
                 def subProject
                 def subProjectFilter
                 def zafiraProject
+                def testNGFolderName
 
                 subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent():"."
                 subProjectFilter = subProject.equals(".")?"**":subProject
                 zafiraProject = getZafiraProject(subProjectFilter)
+                testNGFolderName = getTestNgFolderName(pomFile)
 
-                def pom = context.readMavenPom file: pomFile
-                pom.build.plugins.each { plugin ->
-                    if (plugin.artifactId.contains("surefire")) {
-                        def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
-                        def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
-                        Path suitePath = Paths.get(suiteXmlFile.value).getParent()
-                        def testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
-                        logger.info("TestNG folder name" + testNGFolderName)
-                    }
-                }
-            }
-
-            subProjects.each {
-
-                def suiteFilter = it.suite_filter
-
-				if (suiteFilter.isEmpty()) {
-					logger.warn("Skip repository scan as no suiteFilter identified! Project: ${repo}")
-					return
-				}
-
-                if (suiteFilter.endsWith("/")) {
-                    //remove last character if it is slash
-                    suiteFilter = suiteFilter[0..-2]
-                }
-                def testngFolder = suiteFilter.substring(suiteFilter.lastIndexOf("/"), suiteFilter.length()) + "/"
-                logger.info("testngFolder: " + testngFolder)
 
                 // VIEWS
                 registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
                 //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
-                //TODO: create default personalized view here
-
-                // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
-                def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
-                for (File suite : suites) {
-                    if (!suite.path.endsWith(".xml")) {
-                        continue
-                    }
-                    def suiteOwner = "anonymous"
-                    def suitePath = suite.path
-                    def suiteName = suitePath.substring(suitePath.lastIndexOf(testngFolder) + testngFolder.length(), suitePath.indexOf(".xml"))
-                    def currentSuitePath = workspace + "/" + suitePath
-
-                    XmlSuite currentSuite = parsePipeline(currentSuitePath)
-                    if (!isParamEmpty(currentSuite.getParameter("jenkinsJobCreation")) && currentSuite.getParameter("jenkinsJobCreation").toBoolean()) {
-
-                        logger.info("suite name: " + suiteName)
-                        logger.info("suite path: " + suitePath)
-
-                        if (!isParamEmpty(currentSuite.getParameter("suiteOwner"))) {
-                            suiteOwner = currentSuite.getParameter("suiteOwner")
-                        }
-
-                        def currentZafiraProject = zafira_project
-                        if (!isParamEmpty(currentSuite.getParameter("zafira_project"))) {
-                            currentZafiraProject = currentSuite.getParameter("zafira_project")
-                        }
-
-                        // put standard views factory into the map
-                        registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
-                        registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
-
-                        //pipeline job
-                        //TODO: review each argument to TestJobFactory and think about removal
-                        //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-                        def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                        registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, sub_project, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
-
-                        //cron job
-                        if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
-                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
-                            for (def cronJobName : cronJobNames.split(",")) {
-                                cronJobName = cronJobName.trim()
-                                def cronDesc = "project: ${repo}; type: cron"
-                                registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
-                            }
-                        }
-                    }
-                }
-
+                initJobs(subProjectFilter, testNGFolderName, zafiraProject, repoFolder, host, repo, organization, subProject)
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
                 logger.info("factoryTarget: " + FACTORY_TARGET)
@@ -305,6 +231,72 @@ public class QARunner extends AbstractRunner {
             }
         }
         return zafiraProject
+    }
+
+    def getTestNgFolderName(pomFile){
+        def testNGFolderName = null
+        def pom = context.readMavenPom file: pomFile
+        pom.build.plugins.each { plugin ->
+            if (plugin.artifactId.contains("surefire")) {
+                def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
+                def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
+                Path suitePath = Paths.get(suiteXmlFile.value).getParent()
+                testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
+                logger.info("TestNG folder name: " + testNGFolderName)
+            }
+        }
+        return testNGFolderName
+    }
+
+    def initJobs(subProjectFilter, testNGFolderName, zafiraProject, repoFolder, host, repo, organization, subProject) {
+        def suites = context.findFiles(glob: subProjectFilter.toString() + "/**/" + testNGFolderName + "/**")
+        for (File suite : suites) {
+            if (!suite.path.endsWith(".xml")) {
+                continue
+            }
+            def suiteOwner = "anonymous"
+            def suitePath = suite.path
+            Path convertedSuitePath = Paths.get(suitePath)
+            def suiteName = convertedSuitePath.getName(convertedSuitePath.getNameCount() - 1)
+            def currentSuitePath = workspace + "/" + suitePath
+
+            XmlSuite currentSuite = parsePipeline(currentSuitePath)
+            if (!isParamEmpty(currentSuite.getParameter("jenkinsJobCreation")) && currentSuite.getParameter("jenkinsJobCreation").toBoolean()) {
+
+                logger.info("suite name: " + suiteName)
+                logger.info("suite path: " + suitePath)
+
+                if (!isParamEmpty(currentSuite.getParameter("suiteOwner"))) {
+                    suiteOwner = currentSuite.getParameter("suiteOwner")
+                }
+
+                def currentZafiraProject = zafiraProject
+                if (!isParamEmpty(currentSuite.getParameter("zafira_project"))) {
+                    currentZafiraProject = currentSuite.getParameter("zafira_project")
+                }
+
+                // put standard views factory into the map
+                registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+                registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
+
+                //pipeline job
+                //TODO: review each argument to TestJobFactory and think about removal
+                //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+                def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+                registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+
+                //cron job
+                if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
+                    def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
+                    for (def cronJobName : cronJobNames.split(",")) {
+                        cronJobName = cronJobName.trim()
+                        def cronDesc = "project: ${repo}; type: cron"
+                        registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
+                    }
+                }
+            }
+        }
+
     }
 
     protected def getProjectPomFiles() {
