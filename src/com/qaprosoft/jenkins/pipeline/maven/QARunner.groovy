@@ -194,7 +194,7 @@ public class QARunner extends AbstractRunner {
 
                 def pomContent  = context.readFile pomFile
                 def config = new XmlParser().parseText(pomContent)
-                config.build.plugins.each {
+                config.build.plugins.plugin.each {
                     logger.info(it.dump())
                 }
 //                def pom = context.readMavenPom file: pomFile
