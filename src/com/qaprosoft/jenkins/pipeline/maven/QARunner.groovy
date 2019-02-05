@@ -5,6 +5,8 @@ import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 import com.qaprosoft.integration.zafira.ZafiraUpdater
 
+import java.nio.file.Paths
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import static com.qaprosoft.Utils.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
@@ -177,6 +179,7 @@ public class QARunner extends AbstractRunner {
             pomFiles.each { pomFile ->
 
                 logger.info("POM: " + pomFile.dump())
+                logger.info("SUB_PROJECT: " + Paths.get(pomFile.value).getParent().getFileName())
             }
             subProjects.each {
                 logger.info("sub_project: " + it)
