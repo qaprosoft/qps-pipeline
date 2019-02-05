@@ -192,15 +192,16 @@ public class QARunner extends AbstractRunner {
                 }
                 zafiraProject = getZafiraProject(subProjectFilter)
 
-                def pomContent  = context.readFile pomFile
-                def config = new XmlParser().parseText(pomContent)
-                logger.info(config['maven-surefire-plugin'])
+//                def pomContent  = context.readFile pomFile
+//                def config = new XmlParser().parseText(pomContent)
+//                logger.info(config['maven-surefire-plugin'])
 
 //                config.build.plugins.plugin.each {
 //                    logger.info(it.dump())
 //                }
-//                def pom = context.readMavenPom file: pomFile
-//                pom.build.plugins.each { plugin ->
+                def pom = context.readMavenPom file: pomFile
+                pom.build.plugins.each { plugin ->
+                    logger.info(plugin.dump())
 //                    logger.info(plugin.getConfiguration().dump())
 //                    logger.info(plugin.configuration.dump())
 //                    def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
@@ -210,10 +211,7 @@ public class QARunner extends AbstractRunner {
 //                        plugin.configuration.suiteXmlFiles.each { suiteXmlFile ->
 //                            logger.info(suiteXmlFile)
 //                        }
-//                    }
-//                }
-
-
+                    }
 
             }
 
