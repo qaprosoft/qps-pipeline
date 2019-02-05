@@ -183,14 +183,11 @@ public class QARunner extends AbstractRunner {
                 def subProjectFilter
                 def zafiraProject
 
-                logger.info(Paths.get(pomFile).getParent())
-//                if(pomFiles.size() == 1){
-//                    subProject = "."
-//                    subProjectFilter = "**"
-//                } else {
-//                    subProject = Paths.get(pomFile).getParent()
-//                    subProjectFilter = subProject
-//                }
+                subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent():"."
+                subProjectFilter = subProject.equals(".")?"**":subProject
+                logger.info(subProject)
+                logger.info(subProjectFilter)
+
 //                zafiraProject = getZafiraProject(subProjectFilter)
 //
 //                def pom = context.readMavenPom file: pomFile
