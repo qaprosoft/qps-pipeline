@@ -193,7 +193,7 @@ public class QARunner extends AbstractRunner {
                         def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
                         def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
                         def suitePath = suiteXmlFile.value
-                        logger.info(suitePath)
+                        logger.info(Paths.get(suitePath).getParent())
 
                     }
                 }
