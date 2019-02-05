@@ -193,7 +193,7 @@ public class QARunner extends AbstractRunner {
                 zafiraProject = getZafiraProject(subProjectFilter)
 
                 def pom = context.readMavenPom file: pomFile
-                logger.info(pom.version)
+                logger.info(pom.build.plugins)
 
 
 
