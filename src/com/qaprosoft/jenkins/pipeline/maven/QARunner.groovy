@@ -192,21 +192,12 @@ public class QARunner extends AbstractRunner {
                 }
                 zafiraProject = getZafiraProject(subProjectFilter)
 
-//                def pomContent  = context.readFile pomFile
-//                def config = new XmlParser().parseText(pomContent)
-//                logger.info(config['maven-surefire-plugin'])
-
-//                config.build.plugins.plugin.each {
-//                    logger.info(it.dump())
-//                }
                 def pom = context.readMavenPom file: pomFile
                 pom.build.plugins.each { plugin ->
                     if (plugin.artifactId.contains("surefire")) {
-
                         logger.info(plugin.configuration.dump())
-//                    def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
-//                    def config = new XmlParser().parseText(plugin.configuration.toString)
-//                    logger.info(suiteXmlFiles)
+                    def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
+                    logger.info(suiteXmlFiles)
 
                     }
                 }
