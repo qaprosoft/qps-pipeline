@@ -195,8 +195,7 @@ public class QARunner extends AbstractRunner {
                         def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
                         Path suitePath = Paths.get(suiteXmlFile.value).getParent()
                         def testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
-                        def testNGDir = context.findFiles glob: subProjectFilter.toString() + "/**/" + testNGFolderName
-                        logger.info(testNGDir)
+                        logger.info("TestNG folder name" + testNGFolderName)
                     }
                 }
             }
