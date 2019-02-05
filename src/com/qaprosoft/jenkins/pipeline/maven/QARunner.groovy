@@ -5,6 +5,7 @@ import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 import com.qaprosoft.integration.zafira.ZafiraUpdater
 
+import java.nio.file.Path
 import java.nio.file.Paths
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -192,9 +193,9 @@ public class QARunner extends AbstractRunner {
                     if (plugin.artifactId.contains("surefire")) {
                         def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
                         def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
-                        def suitePath = suiteXmlFile.value
-                        logger.info(Paths.get(suitePath).getParent())
-
+                        Path suitePath = Paths.get(suiteXmlFile.value)
+                        def testNGFolderName = suitePath.getName(suitePath.getNameCount())
+                        logger.info(testNGFolderName)
                     }
                 }
             }
