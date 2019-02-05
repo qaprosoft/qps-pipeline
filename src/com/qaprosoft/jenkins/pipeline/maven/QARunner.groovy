@@ -194,7 +194,7 @@ public class QARunner extends AbstractRunner {
 
                 def pom = context.readMavenPom file: pomFile
                 pom.build.plugins.each { plugin ->
-                    def config = new XmlParser().parseText(plugin.configuration.suiteXmlFiles)
+                    def config = new XmlParser().parseText(plugin.configuration)
                     logger.info(config)
                     if(plugin.artifactId.contains("surefire")) {
                         plugin.configuration.suiteXmlFiles.each { suiteXmlFile ->
