@@ -189,12 +189,6 @@ public class QARunner extends AbstractRunner {
                 subProjectFilter = subProject.equals(".")?"**":subProject
                 zafiraProject = getZafiraProject(subProjectFilter)
                 testNGFolderName = getTestNgFolderName(pomFile)
-
-
-                // VIEWS
-                registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
-                //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
-
                 initJobs(subProjectFilter, testNGFolderName, zafiraProject, repoFolder, host, repo, organization, subProject)
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -249,6 +243,10 @@ public class QARunner extends AbstractRunner {
     }
 
     def initJobs(subProjectFilter, testNGFolderName, zafiraProject, repoFolder, host, repo, organization, subProject) {
+        // VIEWS
+        registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
+        //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
+
         def suites = context.findFiles(glob: subProjectFilter.toString() + "/**/" + testNGFolderName + "/**")
         for (File suite : suites) {
             if (!suite.path.endsWith(".xml")) {
