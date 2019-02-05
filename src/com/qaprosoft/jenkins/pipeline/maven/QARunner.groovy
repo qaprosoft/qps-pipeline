@@ -179,7 +179,7 @@ public class QARunner extends AbstractRunner {
             pomFiles.each { pomFile ->
 
                 logger.info("POM: " + pomFile.dump())
-                logger.info("SUB_PROJECT: " + Paths.get(pomFile.value).getParent().getFileName())
+                logger.info("SUB_PROJECT: " + Paths.get(pomFile.value).getParent())
             }
             subProjects.each {
                 logger.info("sub_project: " + it)
