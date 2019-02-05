@@ -193,7 +193,7 @@ public class QARunner extends AbstractRunner {
                     if (plugin.artifactId.contains("surefire")) {
                         def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
                         def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
-                        Path suitePath = Paths.get(suiteXmlFile.value)
+                        Path suitePath = Paths.get(suiteXmlFile.value).getParent()
                         logger.info(suitePath.getNameCount())
                         def testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
                         logger.info(testNGFolderName)
