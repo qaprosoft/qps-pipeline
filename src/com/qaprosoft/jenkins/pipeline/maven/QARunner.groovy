@@ -189,6 +189,8 @@ public class QARunner extends AbstractRunner {
                     subProject = Paths.get(pomFile).getParent()
                     subProjectFilter = subProject
                 }
+                logger.info(subProjectFilter.dump())
+                logger.info("GLOB: " + subProjectFilter + "/**/zafira.properties")
                 zafiraProperties = context.findFiles glob: subProjectFilter + "/**/zafira.properties"
                 logger.info("ZAFIRA_PROPERTIES: " + zafiraProperties)
 
