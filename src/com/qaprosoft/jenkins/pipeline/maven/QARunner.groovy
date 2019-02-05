@@ -174,20 +174,10 @@ public class QARunner extends AbstractRunner {
 
 			// TODO: improve scanner and make .jenkinsfile.json not obligatory
 			def pomFiles = getProjectPomFiles()
-			pomFiles.each {
-				logger.info(it)
-			}
+            pomFiles.each { pomFile ->
 
-            def jenkinsFile = ".jenkinsfile.json"
-            if (!context.fileExists("${workspace}/${jenkinsFile}")) {
-                logger.warn("Skip repository scan as no .jenkinsfile.json discovered! Project: ${repo}")
-                currentBuild.result = BuildResult.UNSTABLE
-                return
+                logger.info("POM: " + pomFile.dump())
             }
-
-            Object subProjects = parseJSON("${workspace}/${jenkinsFile}").sub_projects
-
-            logger.info("PARSED: " + subProjects)
             subProjects.each {
                 logger.info("sub_project: " + it)
 
@@ -321,6 +311,7 @@ public class QARunner extends AbstractRunner {
                     pomFiles.add(pomFile.path)
                 }
             }
+            logger.info(pomFiles)
         }
         return pomFiles
     }
