@@ -153,6 +153,7 @@ public class QARunner extends AbstractRunner {
             def repo = Configuration.get("repo")
             def repoFolder = parseFolderName(getWorkspace())
             def branch = Configuration.get("branch")
+
             currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
             def workspace = getWorkspace()
