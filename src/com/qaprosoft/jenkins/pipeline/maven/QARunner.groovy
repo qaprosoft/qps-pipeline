@@ -204,8 +204,6 @@ public class QARunner extends AbstractRunner {
                     Path objectSuitePath = Paths.get(suitePath)
                     def suiteName = objectSuitePath.getFileName()
                     def currentSuitePath = workspace + "/" + suitePath
-//                    logger.info("CONCAT_PATH: " + currentSuitePath)
-//                    logger.info("OBJECT_PATH: " + suite.getAbsolutePath())
                     XmlSuite currentSuite = parsePipeline(currentSuitePath)
                     if (getBooleanParameter("jenkinsJobCreation", currentSuite)) {
 
@@ -215,9 +213,9 @@ public class QARunner extends AbstractRunner {
                         def suiteOwner = setSuiteParameterIfExists("anonymous", "suiteOwner", currentSuite)
                         def currentZafiraProject = setSuiteParameterIfExists(zafiraProject, "zafira_project", currentSuite)
 
-//                        // put standard views factory into the map
-//                        registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
-//                        registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
+                        // put standard views factory into the map
+                        registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+                        registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
 //
 //                        //pipeline job
 //                        //TODO: review each argument to TestJobFactory and think about removal
