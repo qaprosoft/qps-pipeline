@@ -174,19 +174,15 @@ public class QARunner extends AbstractRunner {
 			def pomFiles = getProjectPomFiles("")
             for(pomFile in pomFiles){
 
-                def subProject
-                def subProjectFilter
-                def zafiraProject
-                def testNGFolderName
-
-                subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
-                subProjectFilter = subProject.equals(".")?"**":subProject
-                zafiraProject = getZafiraProject(subProjectFilter)
-                testNGFolderName = getTestNgFolderName(pomFile)
+                def testNGFolderName = getTestNgFolderName(pomFile)
                 if (isParamEmpty(testNGFolderName)){
                     logger.error("No testNG folder was discovered in ${pomFile}.")
                 }
-                def dslObjects = generateCiObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
+
+                def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
+                def subProjectFilter = subProject.equals(".")?"**":subProject
+                def zafiraProject = getZafiraProject(subProjectFilter)
+                def dslObjects = generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
 
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -273,7 +269,7 @@ public class QARunner extends AbstractRunner {
         return zafiraProject
     }
 
-    def generateCiObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter){
+    def generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter){
         Map dslObjects = new HashMap()
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
