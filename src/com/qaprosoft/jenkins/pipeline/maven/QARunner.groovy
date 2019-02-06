@@ -332,7 +332,7 @@ public class QARunner extends AbstractRunner {
                 registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc), dslObjects)
 
                 //cron job
-                if (isParameterPresent("jenkinsRegressionPipeline", currentSuite)) {
+                if (isParameterExists("jenkinsRegressionPipeline", currentSuite)) {
                     def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
                     for (def cronJobName : cronJobNames.split(",")) {
                         cronJobName = cronJobName.trim()

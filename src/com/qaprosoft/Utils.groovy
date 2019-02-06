@@ -46,7 +46,7 @@ class Utils {
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
 
-    static boolean isParameterPresent(parameter, currentSuite){
+    static boolean isParameterExists(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter))
     }
 }
