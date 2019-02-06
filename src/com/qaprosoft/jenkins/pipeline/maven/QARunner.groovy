@@ -171,40 +171,35 @@ public class QARunner extends AbstractRunner {
 //            }
 
 
-            def files = context.findFiles(glob: "**/pom.xml")
-            files.each {
-                logger.info("TOP_LEVEL POM: " + it)
-            }
+			def pomFiles = getProjectPomFiles("")
+            for(pomFile in pomFiles){
 
-//			def pomFiles = getProjectPomFiles()
-//            for(pomFile in pomFiles){
-//
-//                def subProject
-//                def subProjectFilter
-//                def zafiraProject
-//                def testNGFolderName
-//
-//                subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
-//                subProjectFilter = subProject.equals(".")?"**":subProject
-//                zafiraProject = getZafiraProject(subProjectFilter)
-//                testNGFolderName = getTestNgFolderName(pomFile)
-//                if (isParamEmpty(testNGFolderName)){
-//                    logger.error("No testNG folder was discovered in ${pomFile}.")
-//                }
-//                def dslObjects = generateCiObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
-//
-//                // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-//                context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-//                logger.info("factoryTarget: " + FACTORY_TARGET)
-//                //TODO: test carefully auto-removal for jobs/views and configs
-//                context.jobDsl additionalClasspath: additionalClasspath,
-//                        removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
-//                        removedJobAction: Configuration.get("removedJobAction"),
-//                        removedViewAction: Configuration.get("removedViewAction"),
-//                        targets: FACTORY_TARGET,
-//                        ignoreExisting: false
-//
-//            }
+                def subProject
+                def subProjectFilter
+                def zafiraProject
+                def testNGFolderName
+
+                subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
+                subProjectFilter = subProject.equals(".")?"**":subProject
+                zafiraProject = getZafiraProject(subProjectFilter)
+                testNGFolderName = getTestNgFolderName(pomFile)
+                if (isParamEmpty(testNGFolderName)){
+                    logger.error("No testNG folder was discovered in ${pomFile}.")
+                }
+                def dslObjects = generateCiObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
+
+                // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
+                context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+                logger.info("factoryTarget: " + FACTORY_TARGET)
+                //TODO: test carefully auto-removal for jobs/views and configs
+                context.jobDsl additionalClasspath: additionalClasspath,
+                        removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
+                        removedJobAction: Configuration.get("removedJobAction"),
+                        removedViewAction: Configuration.get("removedViewAction"),
+                        targets: FACTORY_TARGET,
+                        ignoreExisting: false
+
+            }
         }
     }
 
@@ -224,9 +219,9 @@ public class QARunner extends AbstractRunner {
         return pomFiles
     }
 
-    protected def getProjectPomFiles() {
+    protected def getProjectPomFiles(subDirectory) {
         def pomFiles = []
-        def files = context.findFiles(glob: "**/pom.xml")
+        def files = context.findFiles(glob: subDirectory + "**/pom.xml")
 
         if(files.length > 0) {
             logger.info("Number of pom.xml files to analyze: " + files.length)
