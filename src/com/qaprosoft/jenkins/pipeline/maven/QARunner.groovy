@@ -243,9 +243,12 @@ public class QARunner extends AbstractRunner {
     def getTestNgFolderName(pomFile) {
         def testNGFolderName = null
         def pom = context.readMavenPom file: pomFile
-        pom.build.plugins.each { plugin ->
+        for (plugin in pom.build.plugins){
             if (plugin.artifactId.contains("surefire")) {
                 def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
+                if(isParamEmpty(suiteXmlFiles)){
+                    break
+                }
                 def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
                 Path suitePath = Paths.get(suiteXmlFile.value).getParent()
                 testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
