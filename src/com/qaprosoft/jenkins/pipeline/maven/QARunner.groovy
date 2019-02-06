@@ -177,7 +177,7 @@ public class QARunner extends AbstractRunner {
                 def subProjectFilter = subProject.equals(".")?"**":subProject
                 def testNGFolderName = searchTestNgFolderName(subProject, pomFile)
                 def zafiraProject = getZafiraProject(subProjectFilter)
-                dslObjects = generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
+                generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
 
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
