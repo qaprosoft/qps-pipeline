@@ -175,7 +175,7 @@ public class QARunner extends AbstractRunner {
 
 			// TODO: improve scanner and make .jenkinsfile.json not obligatory
 			def pomFiles = getProjectPomFiles()
-            pomFiles.each { pomFile ->
+            for(pomFile in pomFiles){
 
                 def subProject
                 def subProjectFilter
