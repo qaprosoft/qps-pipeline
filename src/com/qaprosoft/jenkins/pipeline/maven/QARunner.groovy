@@ -170,7 +170,7 @@ public class QARunner extends AbstractRunner {
 //                // just create a job
 //            }
 
-            def poms = getProjectPomFiles(".")
+            def poms = getProjectPomFiles("")
             logger.info("POMS: " + poms)
 //			def pomFiles = getTopLevelPomFiles()
 //            for(pomFile in pomFiles){
