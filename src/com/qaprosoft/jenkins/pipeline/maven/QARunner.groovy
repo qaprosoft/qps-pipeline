@@ -170,43 +170,44 @@ public class QARunner extends AbstractRunner {
 //                // just create a job
 //            }
 
-
-			def pomFiles = getTopLevelPomFiles()
-            for(pomFile in pomFiles){
-                def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
-                def subProjectFilter = subProject.equals(".")?"**":subProject
-                def testNGFolderName = getTestNgFolderName(pomFile)
-                if(isParamEmpty(testNGFolderName)){
-                    def innerPoms = getProjectPomFiles(subProject)
-                    logger.info(innerPoms)
-                    for(pom in innerPoms){
-                        if(!pom.path.equals(pomFile)){
-                            testNGFolderName = getTestNgFolderName(pom.path)
-                            if(!isParamEmpty(testNGFolderName)){
-                                break
-                            }
-                        }
-                    }
-                }
-                if (isParamEmpty(testNGFolderName)){
-                    logger.error("No testNG folder was discovered in ${pomFile}.")
-                }
-
-                def zafiraProject = getZafiraProject(subProjectFilter)
-                def dslObjects = generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
-
-                // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-                context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-                logger.info("factoryTarget: " + FACTORY_TARGET)
-                //TODO: test carefully auto-removal for jobs/views and configs
-                context.jobDsl additionalClasspath: additionalClasspath,
-                        removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
-                        removedJobAction: Configuration.get("removedJobAction"),
-                        removedViewAction: Configuration.get("removedViewAction"),
-                        targets: FACTORY_TARGET,
-                        ignoreExisting: false
-
-            }
+            def poms = getProjectPomFiles(".")
+            logger.info("POMS: " + poms)
+//			def pomFiles = getTopLevelPomFiles()
+//            for(pomFile in pomFiles){
+//                def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
+//                def subProjectFilter = subProject.equals(".")?"**":subProject
+//                def testNGFolderName = getTestNgFolderName(pomFile)
+//                if(isParamEmpty(testNGFolderName)){
+//                    def innerPoms = getProjectPomFiles(subProject)
+//                    logger.info(innerPoms)
+//                    for(pom in innerPoms){
+//                        if(!pom.path.equals(pomFile)){
+//                            testNGFolderName = getTestNgFolderName(pom.path)
+//                            if(!isParamEmpty(testNGFolderName)){
+//                                break
+//                            }
+//                        }
+//                    }
+//                }
+//                if (isParamEmpty(testNGFolderName)){
+//                    logger.error("No testNG folder was discovered in ${pomFile}.")
+//                }
+//
+//                def zafiraProject = getZafiraProject(subProjectFilter)
+//                def dslObjects = generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
+//
+//                // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
+//                context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+//                logger.info("factoryTarget: " + FACTORY_TARGET)
+//                //TODO: test carefully auto-removal for jobs/views and configs
+//                context.jobDsl additionalClasspath: additionalClasspath,
+//                        removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
+//                        removedJobAction: Configuration.get("removedJobAction"),
+//                        removedViewAction: Configuration.get("removedViewAction"),
+//                        targets: FACTORY_TARGET,
+//                        ignoreExisting: false
+//
+//            }
         }
     }
 
