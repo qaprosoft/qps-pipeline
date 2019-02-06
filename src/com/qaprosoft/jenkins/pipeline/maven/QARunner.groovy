@@ -157,8 +157,8 @@ public class QARunner extends AbstractRunner {
             def branch = Configuration.get("branch")
             currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
-//            def workspace = getWorkspace()
-//            logger.info("WORKSPACE: ${workspace}")
+            def workspace = getWorkspace()
+            logger.info("WORKSPACE: ${workspace}")
 //
 //            // Support DEV related CI workflow
 //            //TODO: analyze if we need 3 system object declarations
