@@ -183,57 +183,33 @@ public class QARunner extends AbstractRunner {
                 def subProject
                 def subProjectFilter
                 def zafiraProject
+                def testNGFolderName
 
                 subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent():"."
                 subProjectFilter = subProject.equals(".")?"**":subProject
                 zafiraProject = getZafiraProject(subProjectFilter)
-
-                def pom = context.readMavenPom file: pomFile
-                pom.build.plugins.each { plugin ->
-                    if (plugin.artifactId.contains("surefire")) {
-                        def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
-                        def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
-                        Path suitePath = Paths.get(suiteXmlFile.value).getParent()
-                        def testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
-                        def testNGDir = context.findFiles glob: subProjectFilter.toString() + "/**/" + testNGFolderName + "/"
-                        logger.info(testNGDir)
-                    }
+                testNGFolderName = getTestNgFolderName(pomFile)
+                if (isParamEmpty(testNGFolderName)){
+                    logger.error("No testNG folder was discovered in ${pomFile}.")
                 }
-            }
-
-            subProjects.each {
-
-                def suiteFilter = it.suite_filter
-
-				if (suiteFilter.isEmpty()) {
-					logger.warn("Skip repository scan as no suiteFilter identified! Project: ${repo}")
-					return
-				}
-
-                if (suiteFilter.endsWith("/")) {
-                    //remove last character if it is slash
-                    suiteFilter = suiteFilter[0..-2]
-                }
-                def testngFolder = suiteFilter.substring(suiteFilter.lastIndexOf("/"), suiteFilter.length()) + "/"
-                logger.info("testngFolder: " + testngFolder)
-
                 // VIEWS
                 registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
                 //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
                 //TODO: create default personalized view here
-
+                def suites = context.findFiles glob: subProjectFilter.toString() + "/**/" + testNGFolderName + "/**"
                 // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
-                def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
                 for (File suite : suites) {
-                    if (!suite.path.endsWith(".xml")) {
-                        continue
-                    }
                     def suiteOwner = "anonymous"
                     def suitePath = suite.path
-                    def suiteName = suitePath.substring(suitePath.lastIndexOf(testngFolder) + testngFolder.length(), suitePath.indexOf(".xml"))
+                    if (!suitePath.endsWith(".xml")) {
+                        continue
+                    }
+                    Path objectSuitePath = Paths.get(suitePath)
+                    def suiteName = objectSuitePath.getFileName()
                     def currentSuitePath = workspace + "/" + suitePath
-
+                    logger.info("CONCAT_PATH: " + currentSuitePath)
+                    logger.info("OBJECT_PATH: " + objectSuitePath.toAbsolutePath())
                     XmlSuite currentSuite = parsePipeline(currentSuitePath)
                     if (!isParamEmpty(currentSuite.getParameter("jenkinsJobCreation")) && currentSuite.getParameter("jenkinsJobCreation").toBoolean()) {
 
@@ -271,6 +247,12 @@ public class QARunner extends AbstractRunner {
                     }
                 }
 
+
+            }
+
+            subProjects.each {
+
+
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
                 logger.info("factoryTarget: " + FACTORY_TARGET)
@@ -293,6 +275,22 @@ public class QARunner extends AbstractRunner {
 
     protected String getWorkspace() {
         return context.pwd()
+    }
+
+    def getTestNgFolderName(pomFile) {
+        def testNGFolderName = null
+        def pom = context.readMavenPom file: pomFile
+        pom.build.plugins.each { plugin ->
+            if (plugin.artifactId.contains("surefire")) {
+                def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
+                def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
+                Path suitePath = Paths.get(suiteXmlFile.value).getParent()
+                testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
+                logger.info(testNGFolderName)
+            }
+        }
+
+        return testNGFolderName
     }
 
     def getZafiraProject(subProjectFilter){
