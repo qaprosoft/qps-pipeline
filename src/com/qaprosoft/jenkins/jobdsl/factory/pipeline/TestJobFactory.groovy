@@ -75,26 +75,12 @@ public class TestJobFactory extends PipelineFactory {
 				booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
 				booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
-				def defaultMobilePool = currentSuite.getParameter("jenkinsMobileDefaultPool")
-				if (defaultMobilePool == null) {
-					defaultMobilePool = "ANY"
-				}
-
-				def autoScreenshot = false
-				if (currentSuite.getParameter("jenkinsAutoScreenshot") != null) {
-					autoScreenshot = currentSuite.getParameter("jenkinsAutoScreenshot").toBoolean()
-				}
-
-				def enableVideo = true
-				if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
-					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
-				}
-
-				def jobType = suiteName
-				if (currentSuite.getParameter("jenkinsJobType") != null) {
-					jobType = currentSuite.getParameter("jenkinsJobType")
-				}
+				def defaultMobilePool = setSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
+				def autoScreenshot = setSuiteBooleanParameter(false, "jenkinsAutoScreenshot", currentSuite)
+				def enableVideo = setSuiteBooleanParameter(true, "jenkinsEnableVideo", currentSuite)
+				def jobType = setSuiteParameter(suiteName, "jenkinsJobType", currentSuite)
                 logger.info("JobType: ${jobType}")
+
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
@@ -145,16 +131,12 @@ public class TestJobFactory extends PipelineFactory {
 						break;
 				}
 
-				def nodeLabel = ""
-				if (!isParamEmpty(currentSuite.getParameter("jenkinsNodeLabel"))) {
-					nodeLabel = currentSuite.getParameter("jenkinsNodeLabel")
+				def nodeLabel = setSuiteParameter("", "jenkinsNodeLabel", currentSuite)
+				if (!isParamEmpty(nodeLabel)) {
 					configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
 				}
+				def gitBranch = setSuiteParameter("master", "jenkinsDefaultGitBranch", currentSuite)
 
-				def gitBranch = "master"
-				if (currentSuite.getParameter("jenkinsDefaultGitBranch") != null) {
-					gitBranch = currentSuite.getParameter("jenkinsDefaultGitBranch")
-				}
 				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", gitBranch)
 				configure addHiddenParameter('repo', '', repo)
 				configure addHiddenParameter('GITHUB_HOST', '', host)
@@ -167,25 +149,17 @@ public class TestJobFactory extends PipelineFactory {
 				configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
 				configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
 
-				def queue_registration = "true"
-				if (currentSuite.getParameter("jenkinsQueueRegistration") != null) {
-					queue_registration = currentSuite.getParameter("jenkinsQueueRegistration")
-				}
-				configure addHiddenParameter('queue_registration', '', queue_registration)
+				def queueRegistration = setSuiteBooleanParameter(true, "jenkinsQueueRegistration", currentSuite)
+				configure addHiddenParameter('queue_registration', '', queueRegistration)
 
-				def threadCount = '1'
-				if (!isParamEmpty(currentSuite.getParameter("jenkinsDefaultThreadCount"))) {
-					threadCount = currentSuite.getParameter("jenkinsDefaultThreadCount")
-				}
+				def threadCount = setSuiteParameter("1", "jenkinsDefaultThreadCount", currentSuite)
 				stringParam('thread_count', threadCount, 'number of threads, number')
 
+				def emailList = setSuiteParameter("", "jenkinsEmail", currentSuite)
+				stringParam('email_list', emailList, 'List of Users to be emailed after the test')
 
-				stringParam('email_list', currentSuite.getParameter("jenkinsEmail").toString(), 'List of Users to be emailed after the test')
-				if (!isParamEmpty(currentSuite.getParameter("jenkinsFailedEmail"))) {
-					configure addHiddenParameter('failure_email_list', '', currentSuite.getParameter("jenkinsFailedEmail").toString())
-				} else {
-					configure addHiddenParameter('failure_email_list', '', '')
-				}
+				def failedEmailList = setSuiteParameter("", "jenkinsFailedEmail", currentSuite)
+				configure addHiddenParameter('failure_email_list', '', failedEmailList)
 
 				def retryCount = 0
 				if (currentSuite.getParameter("jenkinsDefaultRetryCount") != null) {
