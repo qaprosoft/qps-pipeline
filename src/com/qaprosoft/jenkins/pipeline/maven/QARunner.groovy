@@ -215,25 +215,25 @@ public class QARunner extends AbstractRunner {
                         def suiteOwner = setSuiteParameterIfExists("anonymous", "suiteOwner", currentSuite)
                         def currentZafiraProject = setSuiteParameterIfExists(zafiraProject, "zafira_project", currentSuite)
 
-                        // put standard views factory into the map
-                        registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
-                        registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
-
-                        //pipeline job
-                        //TODO: review each argument to TestJobFactory and think about removal
-                        //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-                        def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                        registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
-
-                        //cron job
-                        if (isParameterPresent("jenkinsRegressionPipeline", currentSuite)) {
-                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
-                            for (def cronJobName : cronJobNames.split(",")) {
-                                cronJobName = cronJobName.trim()
-                                def cronDesc = "project: ${repo}; type: cron"
-                                registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
-                            }
-                        }
+//                        // put standard views factory into the map
+//                        registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+//                        registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
+//
+//                        //pipeline job
+//                        //TODO: review each argument to TestJobFactory and think about removal
+//                        //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+//                        def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+//                        registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+//
+//                        //cron job
+//                        if (isParameterPresent("jenkinsRegressionPipeline", currentSuite)) {
+//                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
+//                            for (def cronJobName : cronJobNames.split(",")) {
+//                                cronJobName = cronJobName.trim()
+//                                def cronDesc = "project: ${repo}; type: cron"
+//                                registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
+//                            }
+//                        }
                     }
                 }
                 logger.info("DSLOBJ: " + dslObjects)
