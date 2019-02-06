@@ -207,7 +207,7 @@ public class QARunner extends AbstractRunner {
 //                    logger.info("CONCAT_PATH: " + currentSuitePath)
 //                    logger.info("OBJECT_PATH: " + suite.getAbsolutePath())
                     XmlSuite currentSuite = parsePipeline(currentSuitePath)
-                    if (getBooleanParameter("jenkinsJobCreation")) {
+                    if (getBooleanParameter("jenkinsJobCreation", currentSuite)) {
 
                         logger.info("suite name: " + suiteName)
                         logger.info("suite path: " + suitePath)
@@ -226,7 +226,7 @@ public class QARunner extends AbstractRunner {
                         registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
 
                         //cron job
-                        if (isParameterPresent("jenkinsRegressionPipeline")) {
+                        if (isParameterPresent("jenkinsRegressionPipeline", currentSuite)) {
                             def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
                             for (def cronJobName : cronJobNames.split(",")) {
                                 cronJobName = cronJobName.trim()
