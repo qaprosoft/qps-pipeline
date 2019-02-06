@@ -34,10 +34,18 @@ class Utils {
         }
     }
 
-    static boolean setSuiteParameterIfExists(defaultValue, parameterName, currentSuite){
+    static boolean setSuiteParameter(defaultValue, parameterName, currentSuite){
         def value = defaultValue
         if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
             value = currentSuite.getParameter(parameterName)
+        }
+        return value
+    }
+
+    static boolean setSuiteBooleanParameter(defaultValue, parameterName, currentSuite){
+        boolean value = defaultValue
+        if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
+            value = currentSuite.getParameter(parameterName).toBoolean()
         }
         return value
     }

@@ -105,7 +105,7 @@ public class QARunner extends AbstractRunner {
             logger.info("QARunner->onPullRequest")
             scmClient.clonePR()
 
-			def pomFiles = getTopLevelPomFiles()
+			def pomFiles = getProjectPomFiles()
 			pomFiles.each {
 				logger.debug(it)
 				//do compile and scanner for all hogh level pom.xml files
@@ -169,7 +169,7 @@ public class QARunner extends AbstractRunner {
 //                // just create a job
 //            }
 
-            def pomFiles = getTopLevelPomFiles()
+            def pomFiles = getProjectPomFiles()
             for(pomFile in pomFiles){
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
@@ -209,7 +209,7 @@ public class QARunner extends AbstractRunner {
         return context.pwd()
     }
 
-    protected def getTopLevelPomFiles() {
+    protected def getProjectPomFiles() {
         def pomFiles = []
         def files = context.findFiles(glob: "**/pom.xml")
 
@@ -234,7 +234,7 @@ public class QARunner extends AbstractRunner {
         return pomFiles
     }
 
-    protected def getProjectPomFiles(subDirectory) {
+    protected def getSubProjectPomFiles(subDirectory) {
         if(!isParamEmpty(subDirectory)){
             subDirectory = subDirectory + "/"
         }
@@ -264,7 +264,7 @@ public class QARunner extends AbstractRunner {
 
     def searchTestNgFolderName(subProject, pomFile) {
         def testNGFolderName = null
-        def internalPoms = getProjectPomFiles(subProject)
+        def internalPoms = getSubProjectPomFiles(subProject)
         logger.info(internalPoms)
         for(internalPom in internalPoms){
             if(!internalPom.path.equals(pomFile)){
@@ -316,8 +316,8 @@ public class QARunner extends AbstractRunner {
                 logger.info("suite name: " + suiteName)
                 logger.info("suite path: " + suitePath)
 
-                def suiteOwner = setSuiteParameterIfExists("anonymous", "suiteOwner", currentSuite)
-                def currentZafiraProject = setSuiteParameterIfExists(zafiraProject, "zafira_project", currentSuite)
+                def suiteOwner = setSuiteParameter("anonymous", "suiteOwner", currentSuite)
+                def currentZafiraProject = setSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
                 // put standard views factory into the map
                 registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"), dslObjects)
