@@ -305,7 +305,7 @@ public class QARunner extends AbstractRunner {
         // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
         for (File suite : suites) {
             Path suitePath = Paths.get(suite.path)
-            def suiteName = objectSuitePath.getFileName().toString()
+            def suiteName = suitePath.getFileName().toString()
             if (!suitePath.getFileName().getText().contains(".xml")) {
                 continue
             }
