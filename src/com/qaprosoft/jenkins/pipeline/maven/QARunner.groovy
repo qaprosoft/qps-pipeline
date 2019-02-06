@@ -107,7 +107,7 @@ public class QARunner extends AbstractRunner {
             logger.info("QARunner->onPullRequest")
             scmClient.clonePR()
 
-			def pomFiles = getProjectPomFiles()
+			def pomFiles = getTopLevelPomFiles()
 			pomFiles.each {
 				logger.debug(it)
 				//do compile and scanner for all hogh level pom.xml files
@@ -171,16 +171,25 @@ public class QARunner extends AbstractRunner {
 //            }
 
 
-			def pomFiles = getProjectPomFiles("")
+			def pomFiles = getTopLevelPomFiles()
             for(pomFile in pomFiles){
-
+                def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
+                def subProjectFilter = subProject.equals(".")?"**":subProject
                 def testNGFolderName = getTestNgFolderName(pomFile)
+                if(isParamEmpty(testNGFolderName)){
+                    def innerPoms = getProjectPomFiles(subProject)
+                    logger.info(innerPoms)
+                    for(pom in innerPoms){
+                        testNGFolderName = getTestNgFolderName(pom)
+                        if(!isParamEmpty(testNGFolderName)){
+                            break
+                        }
+                    }
+                }
                 if (isParamEmpty(testNGFolderName)){
                     logger.error("No testNG folder was discovered in ${pomFile}.")
                 }
 
-                def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
-                def subProjectFilter = subProject.equals(".")?"**":subProject
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 def dslObjects = generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
 
@@ -211,13 +220,7 @@ public class QARunner extends AbstractRunner {
 
     protected def getTopLevelPomFiles() {
         def pomFiles = []
-
-        return pomFiles
-    }
-
-    protected def getProjectPomFiles(subDirectory) {
-        def pomFiles = []
-        def files = context.findFiles(glob: subDirectory + "**/pom.xml")
+        def files = getProjectPomFiles("")
 
         if(files.length > 0) {
             logger.info("Number of pom.xml files to analyze: " + files.length)
@@ -239,6 +242,14 @@ public class QARunner extends AbstractRunner {
         }
         return pomFiles
     }
+
+    protected def getProjectPomFiles(subDirectory) {
+        if(!isParamEmpty(subDirectory)){
+            subDirectory = subDirectory + "/"
+        }
+        return context.findFiles(glob: subDirectory + "**/pom.xml")
+    }
+
 
     def getTestNgFolderName(pomFile) {
         def testNGFolderName = null
