@@ -222,16 +222,16 @@ public class QARunner extends AbstractRunner {
                         //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                         def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
                         registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
-
-                        //cron job
-                        if (isParameterPresent("jenkinsRegressionPipeline", currentSuite)) {
-                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
-                            for (def cronJobName : cronJobNames.split(",")) {
-                                cronJobName = cronJobName.trim()
-                                def cronDesc = "project: ${repo}; type: cron"
-                                registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
-                            }
-                        }
+//
+//                        //cron job
+//                        if (isParameterPresent("jenkinsRegressionPipeline", currentSuite)) {
+//                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
+//                            for (def cronJobName : cronJobNames.split(",")) {
+//                                cronJobName = cronJobName.trim()
+//                                def cronDesc = "project: ${repo}; type: cron"
+//                                registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
+//                            }
+//                        }
                     }
                 }
                 logger.info("DSLOBJ: " + dslObjects)
