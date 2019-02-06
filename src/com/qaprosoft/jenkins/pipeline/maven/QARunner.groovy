@@ -171,6 +171,7 @@ public class QARunner extends AbstractRunner {
 
             def pomFiles = getProjectPomFiles()
             for(pomFile in pomFiles){
+                // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
                 def testNGFolderName = parseTestNgFolderName(pomFile)
@@ -242,7 +243,7 @@ public class QARunner extends AbstractRunner {
     }
 
     def parseTestNgFolderName(pomFile) {
-        def testNGFolderName = null
+        def testNGFolderName = "testng_suites"
         def pom = context.readMavenPom file: pomFile
         for (plugin in pom.build.plugins){
             if (plugin.artifactId.contains("surefire")) {
