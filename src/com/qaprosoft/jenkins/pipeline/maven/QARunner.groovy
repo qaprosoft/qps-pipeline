@@ -209,7 +209,7 @@ public class QARunner extends AbstractRunner {
                     def suiteName = objectSuitePath.getFileName()
                     def currentSuitePath = workspace + "/" + suitePath
                     logger.info("CONCAT_PATH: " + currentSuitePath)
-                    logger.info("OBJECT_PATH: " + suite.getAbsolutePath())
+                    logger.info("OBJECT_PATH: " + suite.getAbsoluteFile())
                     XmlSuite currentSuite = parsePipeline(currentSuitePath)
                     if (!isParamEmpty(currentSuite.getParameter("jenkinsJobCreation")) && currentSuite.getParameter("jenkinsJobCreation").toBoolean()) {
 
