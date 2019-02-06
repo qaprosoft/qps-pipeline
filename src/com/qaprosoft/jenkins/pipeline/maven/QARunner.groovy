@@ -191,7 +191,7 @@ public class QARunner extends AbstractRunner {
                 testNGFolderName = getTestNgFolderName(pomFile)
                 initJobs(subProjectFilter, testNGFolderName, zafiraProject, repoFolder, host, repo, organization, subProject)
                 logger.info("1111")
-                logger.info(formatJson(JsonOutput.toJson(dslObjects)))
+                logger.info(dslObjects)
             }
             // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
