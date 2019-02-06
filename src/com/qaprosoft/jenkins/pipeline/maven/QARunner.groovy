@@ -236,13 +236,6 @@ public class QARunner extends AbstractRunner {
                         }
                     }
                 }
-
-
-            }
-
-            subProjects.each {
-
-
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
                 logger.info("factoryTarget: " + FACTORY_TARGET)
@@ -253,6 +246,7 @@ public class QARunner extends AbstractRunner {
                         removedViewAction: Configuration.get("removedViewAction"),
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
+
             }
         }
     }
