@@ -180,9 +180,11 @@ public class QARunner extends AbstractRunner {
                     def innerPoms = getProjectPomFiles(subProject)
                     logger.info(innerPoms)
                     for(pom in innerPoms){
-                        testNGFolderName = getTestNgFolderName(pom)
-                        if(!isParamEmpty(testNGFolderName)){
-                            break
+                        if(pom != pomFile){
+                            testNGFolderName = getTestNgFolderName(pom)
+                            if(!isParamEmpty(testNGFolderName)){
+                                break
+                            }
                         }
                     }
                 }
