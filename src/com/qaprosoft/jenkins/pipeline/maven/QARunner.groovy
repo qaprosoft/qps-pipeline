@@ -170,11 +170,11 @@ public class QARunner extends AbstractRunner {
 //                // just create a job
 //            }
 
-			def pomFiles = getTopLevelPomFiles()
+            def pomFiles = getTopLevelPomFiles()
             for(pomFile in pomFiles){
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
-                def testNGFolderName = getTestNgFolderName(pomFile)
+                def testNGFolderName = parseTestNgFolderName(pomFile)
                 if(isParamEmpty(testNGFolderName)){
                     testNGFolderName = searchTestNgFolderName(subProject, pomFile)
                 }
@@ -242,8 +242,7 @@ public class QARunner extends AbstractRunner {
         return context.findFiles(glob: subDirectory + "**/pom.xml")
     }
 
-
-    def getTestNgFolderName(pomFile) {
+    def parseTestNgFolderName(pomFile) {
         def testNGFolderName = null
         def pom = context.readMavenPom file: pomFile
         for (plugin in pom.build.plugins){
@@ -270,7 +269,7 @@ public class QARunner extends AbstractRunner {
         logger.info(internalPoms)
         for(internalPom in internalPoms){
             if(!internalPom.path.equals(pomFile)){
-                testNGFolderName = getTestNgFolderName(internalPom.path)
+                testNGFolderName = parseTestNgFolderName(internalPom.path)
                 if(!isParamEmpty(testNGFolderName)){
                     break
                 }
