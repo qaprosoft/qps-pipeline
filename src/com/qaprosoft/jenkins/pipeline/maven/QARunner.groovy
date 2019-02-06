@@ -306,7 +306,7 @@ public class QARunner extends AbstractRunner {
         for (File suite : suites) {
             Path suitePath = Paths.get(suite.path)
             def suiteName = suitePath.getFileName().toString()
-            if (!suitePath.getFileName().toString().contains(".xml")) {
+            if (!suiteName.contains(".xml")) {
                 continue
             }
             def currentSuitePath = workspace + "/" + suitePath.toString()
