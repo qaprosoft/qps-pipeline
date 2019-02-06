@@ -258,6 +258,9 @@ public class QARunner extends AbstractRunner {
         def pom = context.readMavenPom file: pomFile
         for (plugin in pom.build.plugins){
             if (plugin.artifactId.contains("surefire")) {
+                if(isParamEmpty(plugin.configuration)){
+                    break
+                }
                 def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
                 if(isParamEmpty(suiteXmlFiles)){
                     break
