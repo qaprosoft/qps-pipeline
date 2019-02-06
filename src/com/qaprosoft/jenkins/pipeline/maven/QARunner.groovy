@@ -171,7 +171,7 @@ public class QARunner extends AbstractRunner {
 //            }
 
 
-            def files = context.findFiles(glob: repo + "/**/pom.xml")
+            def files = context.findFiles(glob: "**/pom.xml")
             files.each {
                 logger.info("TOP_LEVEL POM: " + it)
             }
