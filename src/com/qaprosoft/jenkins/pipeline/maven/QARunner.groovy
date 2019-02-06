@@ -1,15 +1,10 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
-
+import static com.qaprosoft.jenkins.pipeline.Executor.*
+import static com.qaprosoft.Utils.*
 import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 import com.qaprosoft.integration.zafira.ZafiraUpdater
-
-import java.nio.file.Path
-import java.nio.file.Paths
-
-import static com.qaprosoft.jenkins.pipeline.Executor.*
-import static com.qaprosoft.Utils.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
@@ -17,10 +12,13 @@ import com.qaprosoft.jenkins.pipeline.AbstractRunner
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
+import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
 import com.qaprosoft.scm.github.GitHub
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
-import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
+import java.nio.file.Path
+import java.nio.file.Paths
+
 
 @Grab('org.testng:testng:6.8.8')
 
