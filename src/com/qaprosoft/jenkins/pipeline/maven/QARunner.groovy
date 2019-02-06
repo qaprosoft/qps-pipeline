@@ -182,7 +182,7 @@ public class QARunner extends AbstractRunner {
                 def zafiraProject
                 def testNGFolderName
 
-                subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent():"."
+                subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 subProjectFilter = subProject.equals(".")?"**":subProject
                 zafiraProject = getZafiraProject(subProjectFilter)
                 testNGFolderName = getTestNgFolderName(pomFile)
@@ -194,7 +194,7 @@ public class QARunner extends AbstractRunner {
                 //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
                 //TODO: create default personalized view here
-                def suites = context.findFiles glob: subProjectFilter.toString() + "/**/" + testNGFolderName + "/**"
+                def suites = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
                 // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
                 for (File suite : suites) {
                     def suitePath = suite.path
@@ -216,22 +216,22 @@ public class QARunner extends AbstractRunner {
                         // put standard views factory into the map
                         registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
                         registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
-//
-//                        //pipeline job
-//                        //TODO: review each argument to TestJobFactory and think about removal
-//                        //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-//                        def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-//                        registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
-//
-//                        //cron job
-//                        if (isParameterPresent("jenkinsRegressionPipeline", currentSuite)) {
-//                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
-//                            for (def cronJobName : cronJobNames.split(",")) {
-//                                cronJobName = cronJobName.trim()
-//                                def cronDesc = "project: ${repo}; type: cron"
-//                                registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
-//                            }
-//                        }
+
+                        //pipeline job
+                        //TODO: review each argument to TestJobFactory and think about removal
+                        //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+                        def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+                        registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+
+                        //cron job
+                        if (isParameterPresent("jenkinsRegressionPipeline", currentSuite)) {
+                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
+                            for (def cronJobName : cronJobNames.split(",")) {
+                                cronJobName = cronJobName.trim()
+                                def cronDesc = "project: ${repo}; type: cron"
+                                registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
+                            }
+                        }
                     }
                 }
                 logger.info("DSLOBJ: " + dslObjects)
