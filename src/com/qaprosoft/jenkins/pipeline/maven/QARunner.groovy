@@ -20,9 +20,6 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.scm.github.GitHub
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
-import org.apache.maven.model.Model
-
-import com.qaprosoft.jenkins.pipeline.maven.Maven
 import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
 
 @Grab('org.testng:testng:6.8.8')
@@ -200,7 +197,6 @@ public class QARunner extends AbstractRunner {
                 def suites = context.findFiles glob: subProjectFilter.toString() + "/**/" + testNGFolderName + "/**"
                 // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
                 for (File suite : suites) {
-                    def suiteOwner = "anonymous"
                     def suitePath = suite.path
                     if (!suitePath.endsWith(".xml")) {
                         continue
@@ -208,23 +204,16 @@ public class QARunner extends AbstractRunner {
                     Path objectSuitePath = Paths.get(suitePath)
                     def suiteName = objectSuitePath.getFileName()
                     def currentSuitePath = workspace + "/" + suitePath
-                    logger.info("CONCAT_PATH: " + currentSuitePath)
-                    logger.info(suite.dump())
-                    logger.info("OBJECT_PATH: " + objectSuitePath.toAbsolutePath())
+//                    logger.info("CONCAT_PATH: " + currentSuitePath)
+//                    logger.info("OBJECT_PATH: " + suite.getAbsolutePath())
                     XmlSuite currentSuite = parsePipeline(currentSuitePath)
-                    if (!isParamEmpty(currentSuite.getParameter("jenkinsJobCreation")) && currentSuite.getParameter("jenkinsJobCreation").toBoolean()) {
+                    if (getBooleanParameter("jenkinsJobCreation")) {
 
                         logger.info("suite name: " + suiteName)
                         logger.info("suite path: " + suitePath)
 
-                        if (!isParamEmpty(currentSuite.getParameter("suiteOwner"))) {
-                            suiteOwner = currentSuite.getParameter("suiteOwner")
-                        }
-
-                        def currentZafiraProject = zafira_project
-                        if (!isParamEmpty(currentSuite.getParameter("zafira_project"))) {
-                            currentZafiraProject = currentSuite.getParameter("zafira_project")
-                        }
+                        def suiteOwner = setSuiteParameterIfExists("anonymous", "suiteOwner", currentSuite)
+                        def currentZafiraProject = setSuiteParameterIfExists(zafiraProject, "zafira_project", currentSuite)
 
                         // put standard views factory into the map
                         registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
@@ -234,10 +223,10 @@ public class QARunner extends AbstractRunner {
                         //TODO: review each argument to TestJobFactory and think about removal
                         //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                         def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                        registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, sub_project, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+                        registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
 
                         //cron job
-                        if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
+                        if (isParameterPresent("jenkinsRegressionPipeline")) {
                             def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
                             for (def cronJobName : cronJobNames.split(",")) {
                                 cronJobName = cronJobName.trim()
