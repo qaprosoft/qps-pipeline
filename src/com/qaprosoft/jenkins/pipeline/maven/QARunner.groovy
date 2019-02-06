@@ -25,6 +25,7 @@ import java.nio.file.Paths
 @Mixin([Maven, Sonar])
 public class QARunner extends AbstractRunner {
 
+    protected Map dslObjects = new HashMap()
     protected def pipelineLibrary = "QPS-Pipeline"
     protected def runnerClass = "com.qaprosoft.jenkins.pipeline.maven.QARunner"
     protected def onlyUpdated = false
@@ -176,7 +177,7 @@ public class QARunner extends AbstractRunner {
                 def subProjectFilter = subProject.equals(".")?"**":subProject
                 def testNGFolderName = searchTestNgFolderName(subProject, pomFile)
                 def zafiraProject = getZafiraProject(subProjectFilter)
-                def dslObjects = generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
+                dslObjects = generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
 
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -285,13 +286,13 @@ public class QARunner extends AbstractRunner {
     }
 
     def generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter){
-        Map dslObjects = new HashMap()
+        Map objects = new HashMap()
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
 
         // VIEWS
-        registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'), dslObjects)
+        registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
         //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
         //TODO: create default personalized view here
@@ -314,14 +315,14 @@ public class QARunner extends AbstractRunner {
                 def currentZafiraProject = setSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
                 // put standard views factory into the map
-                registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"), dslObjects)
-                registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"), dslObjects)
+                registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+                registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
 
                 //pipeline job
                 //TODO: review each argument to TestJobFactory and think about removal
                 //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                 def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc), dslObjects)
+                registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
 
                 //cron job
                 if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
@@ -329,12 +330,12 @@ public class QARunner extends AbstractRunner {
                     for (def cronJobName : cronJobNames.split(",")) {
                         cronJobName = cronJobName.trim()
                         def cronDesc = "project: ${repo}; type: cron"
-                        registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc), dslObjects)
+                        registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
                     }
                 }
             }
         }
-        return dslObjects
+        return objects
     }
 
     protected String getPipelineScript() {
@@ -345,7 +346,7 @@ public class QARunner extends AbstractRunner {
         return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
     }
 
-    protected void registerObject(name, object, dslObjects) {
+    protected void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
             logger.warn("WARNING! key ${name} already defined and will be replaced!")
             logger.info("Old Item: ${dslObjects.get(name).dump()}")
