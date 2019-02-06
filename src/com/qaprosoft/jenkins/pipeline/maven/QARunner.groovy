@@ -174,14 +174,7 @@ public class QARunner extends AbstractRunner {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
-                def testNGFolderName = parseTestNgFolderName(pomFile)
-                if(isParamEmpty(testNGFolderName)){
-                    testNGFolderName = searchTestNgFolderName(subProject, pomFile)
-                }
-                if (isParamEmpty(testNGFolderName)){
-                    logger.error("No testNG folder was discovered in ${subProject}.")
-                    return
-                }
+                def testNGFolderName = searchTestNgFolderName(subProject, pomFile)
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 def dslObjects = generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
 
@@ -243,7 +236,7 @@ public class QARunner extends AbstractRunner {
     }
 
     def parseTestNgFolderName(pomFile) {
-        def testNGFolderName = "testng_suites"
+        def testNGFolderName = null
         def pom = context.readMavenPom file: pomFile
         for (plugin in pom.build.plugins){
             if (plugin.artifactId.contains("surefire")) {
@@ -264,7 +257,7 @@ public class QARunner extends AbstractRunner {
     }
 
     def searchTestNgFolderName(subProject, pomFile) {
-        def testNGFolderName = null
+        def testNGFolderName = "testng_suites"
         def internalPoms = getSubProjectPomFiles(subProject)
         logger.info(internalPoms)
         for(internalPom in internalPoms){
