@@ -286,7 +286,6 @@ public class QARunner extends AbstractRunner {
     }
 
     def generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter){
-        Map objects = new HashMap()
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
@@ -335,7 +334,6 @@ public class QARunner extends AbstractRunner {
                 }
             }
         }
-        return objects
     }
 
     protected String getPipelineScript() {
