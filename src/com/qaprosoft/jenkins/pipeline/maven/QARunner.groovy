@@ -224,7 +224,7 @@ public class QARunner extends AbstractRunner {
                     pomFiles.add(pomFile.path)
                 }
             }
-            logger.info(pomFiles)
+            logger.info("PROJECT POMS: " + pomFiles)
         }
         return pomFiles
     }
@@ -233,7 +233,6 @@ public class QARunner extends AbstractRunner {
         if(".".equals(subDirectory)){
             subDirectory = ""
         }
-        logger.info("SUBD: " + subDirectory)
         return context.findFiles(glob: subDirectory + "**/pom.xml")
     }
 
@@ -261,7 +260,7 @@ public class QARunner extends AbstractRunner {
     def searchTestNgFolderName(subProject) {
         def testNGFolderName = "testng_suites"
         def poms = getSubProjectPomFiles(subProject)
-        logger.info(poms)
+        logger.info("SUBPROJECT POMS: " + poms)
         for(pom in poms){
             testNGFolderName = parseTestNgFolderName(pom.path)
             if(!isParamEmpty(testNGFolderName)){
