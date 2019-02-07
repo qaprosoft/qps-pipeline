@@ -4,18 +4,18 @@ import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
-import java.text.SimpleDateFormat
 import java.util.Date
 import groovy.transform.InheritConstructors
-import java.time.*
+import java.text.SimpleDateFormat
 
 
 @InheritConstructors
 class SBTRunner extends AbstractRunner {
 
-    Date date = new Date(System.currentTimeMillis())
-    String sdf = new SimpleDateFormat("yyyyMMddHHmmss")
-    SimpleDateFormat curDate = sdf.format(date)
+
+    def date = new Date()
+    def sdf = new SimpleDateFormat("MMddyyyyHHmmss")
+    String curDate=sdf.format(date)
     String randomArchiveName = "happypathload" + curDate +".zip"
 
     public SBTRunner(context) {
