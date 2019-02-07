@@ -43,8 +43,11 @@ public class TestJobFactory extends PipelineFactory {
 		pipelineJob.with {
 
 			//** Triggers **//*
-			triggers {
-				cron(parseSheduling(currentSuite.getParameter("scheduling")))
+			def scheduling = currentSuite.getParameter("scheduling")
+			if (scheduling != null) {
+				triggers {
+					cron(parseSheduling(scheduling))
+				}
 			}
 
 			//** Properties & Parameters Area **//*
@@ -179,16 +182,15 @@ public class TestJobFactory extends PipelineFactory {
 	}
 
 	protected def parseSheduling(scheduling){
-		if(!isParamEmpty(scheduling) && scheduling.contains("::")){
+		if(scheduling.contains("::")){
 			def multilineArray = scheduling.split("::")
 			def multilineValue = ""
 			multilineArray.each { value ->
 				multilineValue = multilineValue + value + "\n"
 			}
 			scheduling = multilineValue
-		} else {
-			scheduling = ""
 		}
+		logger.info("SDL: " + scheduling)
 		return scheduling
 	}
 
