@@ -32,7 +32,7 @@ public class TestJobFactory extends PipelineFactory {
 	}
 
 	def create() {
-        logger.info("TestJobFactory->create")
+		logger.info("TestJobFactory->create")
 
 		XmlSuite currentSuite = parseSuite(suitePath)
 
@@ -71,17 +71,17 @@ public class TestJobFactory extends PipelineFactory {
 				}
 
 				def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
-                def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
-                def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
+				def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
+				def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
 
 				switch(getSuiteParameter(suiteName, "jenkinsJobType", currentSuite).toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
-					// API tests specific
+						// API tests specific
 						configure addHiddenParameter('platform', '', 'API')
 						break
 					case ~/^.*web.*$/:
 					case ~/^.*gui.*$/:
-					// WEB tests specific
+						// WEB tests specific
 						configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
 						def browser = 'chrome'
 						if (currentSuite.getParameter("jenkinsDefaultBrowser") != null) {
@@ -143,18 +143,18 @@ public class TestJobFactory extends PipelineFactory {
 				configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
 				stringParam('thread_count', getSuiteParameter("1", "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
 				stringParam('email_list', currentSuite.getParameter("jenkinsEmail").toString(), 'List of Users to be emailed after the test')
- 			    configure addHiddenParameter('failure_email_list', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
+				configure addHiddenParameter('failure_email_list', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
 				choiceParam('retry_count', getRetryCountArray(currentSuite), 'Number of Times to Retry a Failed Test')
 				booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
 				configure addHiddenParameter('overrideFields', '' , getCustomFields(currentSuite))
 
 				Map paramsMap = currentSuite.getAllParameters()
-                logger.info("ParametersMap: ${paramsMap}")
+				logger.info("ParametersMap: ${paramsMap}")
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
 					//	<parameter name="stringParam::name::desc" value="value" />
 					//	<parameter name="stringParam::name" value="value" />
-                    logger.debug("Parameter: ${param}")
+					logger.debug("Parameter: ${param}")
 					def delimiter = "::"
 					if (param.key.contains(delimiter)) {
 						def (type, name, desc) = param.key.split(delimiter)
@@ -195,9 +195,9 @@ public class TestJobFactory extends PipelineFactory {
 
 	protected def getRetryCountArray(currentSuite){
 		def retryCount = getSuiteParameter(0, "jenkinsDefaultRetryCount", currentSuite).toInteger()
-        List retryCountList = new ArrayList(Arrays.asList(0, 1, 2, 3))
+		List retryCountList = new ArrayList(Arrays.asList(0, 1, 2, 3))
 		if (retryCount != 0) {
-            retryCountList.add(0, retryCount)
+			retryCountList.add(0, retryCount)
 		}
 		return retryCountList
 	}
@@ -214,25 +214,25 @@ public class TestJobFactory extends PipelineFactory {
 
 		return prepCustomFields
 	}
-	
+
 	protected def getDevices(String platform) {
 		def proxyInfo = new ProxyInfo(_dslFactory)
 		return proxyInfo.getDevicesList(platform)
 	}
 
 	protected String listToString(currentSuite, parameterName) {
-        def list = getGenericSplit(currentSuite, parameterName)
-        def prepList = 'return ['
+		def list = getGenericSplit(currentSuite, parameterName)
+		def prepList = 'return ['
 
-        if (!list.isEmpty()) {
-            for (String l : list) {
-                prepList = prepList + '"' + l + '", '
-            }
-            prepList = prepList.take(prepList.length() - 2)
-        }
-        
-        prepList = prepList + ']'
+		if (!list.isEmpty()) {
+			for (String l : list) {
+				prepList = prepList + '"' + l + '", '
+			}
+			prepList = prepList.take(prepList.length() - 2)
+		}
 
-        return prepList
-    }
+		prepList = prepList + ']'
+
+		return prepList
+	}
 }
