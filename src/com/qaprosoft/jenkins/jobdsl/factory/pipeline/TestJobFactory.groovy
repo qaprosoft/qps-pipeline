@@ -43,10 +43,9 @@ public class TestJobFactory extends PipelineFactory {
 		pipelineJob.with {
 
 			//** Triggers **//*
-			def scheduling = currentSuite.getParameter("scheduling")
 			if (scheduling != null) {
 				triggers {
-					cron(parseSheduling(scheduling))
+					cron(parseSheduling(currentSuite.getParameter("scheduling")))
 				}
 			}
 
@@ -182,7 +181,7 @@ public class TestJobFactory extends PipelineFactory {
 	}
 
 	protected def parseSheduling(scheduling){
-		if(scheduling.contains("::")){
+		if(!isParamEmpty(scheduling) && scheduling.contains("::")){
 			def multilineArray = scheduling.split("::")
 			def multilineValue = ""
 			multilineArray.each { value ->
