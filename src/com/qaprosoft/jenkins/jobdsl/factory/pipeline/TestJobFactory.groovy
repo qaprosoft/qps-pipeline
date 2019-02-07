@@ -36,27 +36,25 @@ public class TestJobFactory extends PipelineFactory {
 
 		XmlSuite currentSuite = parseSuite(suitePath)
 
-		this.name = currentSuite.getParameter("jenkinsJobName").toString()
+		this.name = currentSuite.getParameter("jenkinsJobName")
 		logger.info("JenkinsJobName: ${name}")
 
 		def pipelineJob = super.create()
 		pipelineJob.with {
+
+			//** Triggers **//*
 			def scheduling = currentSuite.getParameter("scheduling")
 			if (scheduling != null) {
-				if(scheduling.contains("::")){
-					def multilineArray = scheduling.split("::")
-					def multilineValue = ""
-					multilineArray.each { value ->
-						multilineValue = multilineValue + value + "\n"
-					}
-					scheduling = multilineValue
+				triggers {
+					cron(parseSheduling(scheduling))
 				}
-				triggers { cron(scheduling) }
 			}
 
 			//** Properties & Parameters Area **//*
 			parameters {
 				choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
+				booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
+				booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
 				//** Requires Active Choices Plug-in v1.2+ **//*
 				//** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **//*
@@ -72,20 +70,15 @@ public class TestJobFactory extends PipelineFactory {
 					}
 				}
 
-				booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
-				booleanParam('debug', false, 'Check to start tests in remote debug mode.')
-
-				logger.info("SUITE_NAME: " + suiteName)
-				def jobType = getSuiteParameter(suiteName, "jenkinsJobType", currentSuite).toLowerCase()
-				logger.info("JobType: ${jobType}")
 				def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
 				def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite)
 				def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite)
-				switch(jobType) {
+
+				switch(getSuiteParameter(suiteName, "jenkinsJobType", currentSuite).toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
 						configure addHiddenParameter('platform', '', 'API')
-						break;
+						break
 					case ~/^.*web.*$/:
 					case ~/^.*gui.*$/:
 					// WEB tests specific
@@ -101,22 +94,22 @@ public class TestJobFactory extends PipelineFactory {
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('platform', '', '*')
-						break;
+						break
 					case ~/^.*android.*$/:
 						choiceParam('devicePool', getDevices('ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
-						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
+						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
 						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'ANDROID')
-						break;
+						break
 					case ~/^.*ios.*$/:
 						//TODO:  Need to adjust this for virtual as well.
 						choiceParam('devicePool', getDevices('iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
-						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage;\n2.2.0.3741.45 - exact version you would like to use")
+						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage\n2.2.0.3741.45 - exact version you would like to use")
 						booleanParam('recoveryMode', false, 'Restart application between retries')
 						//TODO: hardcode auto_screenshots=true for iOS until we fix video recording
 						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
@@ -124,24 +117,19 @@ public class TestJobFactory extends PipelineFactory {
 						booleanParam('enableVideo', enableVideo, 'Enable video recording')
 						configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
 						configure addHiddenParameter('platform', '', 'iOS')
-						break;
+						break
 					default:
 						booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
 						configure addHiddenParameter('platform', '', '*')
-						break;
+						break
 				}
 
-				def nodeLabel = ""
-				if (!isParamEmpty(currentSuite.getParameter("jenkinsNodeLabel"))) {
-					nodeLabel = currentSuite.getParameter("jenkinsNodeLabel")
+				def nodeLabel = getSuiteParameter("", "jenkinsNodeLabel", currentSuite)
+				if(!isParamEmpty(nodeLabel)){
 					configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
 				}
 
-				def gitBranch = "master"
-				if (currentSuite.getParameter("jenkinsDefaultGitBranch") != null) {
-					gitBranch = currentSuite.getParameter("jenkinsDefaultGitBranch")
-				}
-				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", gitBranch)
+				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", getSuiteParameter("master", "jenkinsDefaultGitBranch", currentSuite))
 				configure addHiddenParameter('repo', '', repo)
 				configure addHiddenParameter('GITHUB_HOST', '', host)
 				configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
@@ -152,44 +140,15 @@ public class TestJobFactory extends PipelineFactory {
 				configure addHiddenParameter('ci_parent_build', '', '')
 				configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
 				configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-
-				def queue_registration = "true"
-				if (currentSuite.getParameter("jenkinsQueueRegistration") != null) {
-					queue_registration = currentSuite.getParameter("jenkinsQueueRegistration")
-				}
-				configure addHiddenParameter('queue_registration', '', queue_registration)
-
-				def threadCount = '1'
-				if (!isParamEmpty(currentSuite.getParameter("jenkinsDefaultThreadCount"))) {
-					threadCount = currentSuite.getParameter("jenkinsDefaultThreadCount")
-				}
-				stringParam('thread_count', threadCount, 'number of threads, number')
-
-
+				configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
+				stringParam('thread_count', getSuiteParameter("1", "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
 				stringParam('email_list', currentSuite.getParameter("jenkinsEmail").toString(), 'List of Users to be emailed after the test')
-				if (!isParamEmpty(currentSuite.getParameter("jenkinsFailedEmail"))) {
-					configure addHiddenParameter('failure_email_list', '', currentSuite.getParameter("jenkinsFailedEmail").toString())
-				} else {
-					configure addHiddenParameter('failure_email_list', '', '')
-				}
-
-				def retryCount = 0
-				if (currentSuite.getParameter("jenkinsDefaultRetryCount") != null) {
-					retryCount = currentSuite.getParameter("jenkinsDefaultRetryCount").toInteger()
-				}
-
-				if (retryCount != 0) {
-					choiceParam('retry_count', [retryCount, 0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
-				} else {
-					choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
-				}
-
+ 			    configure addHiddenParameter('failure_email_list', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
+				choiceParam('retry_count', getRetryCountArray(currentSuite), 'Number of Times to Retry a Failed Test')
 				booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
-				def customFields = getCustomFields(currentSuite)
-				configure addHiddenParameter('overrideFields', '' , customFields)
+				configure addHiddenParameter('overrideFields', '' , getCustomFields(currentSuite))
 
-				def paramsMap = [:]
-				paramsMap = currentSuite.getAllParameters()
+				Map paramsMap = currentSuite.getAllParameters()
                 logger.info("ParametersMap: ${paramsMap}")
 				for (param in paramsMap) {
 					// read each param and parse for generating custom project fields
@@ -220,6 +179,27 @@ public class TestJobFactory extends PipelineFactory {
 			}
 		}
 		return pipelineJob
+	}
+
+	protected def parseSheduling(scheduling){
+		if(scheduling.contains("::")){
+			def multilineArray = scheduling.split("::")
+			def multilineValue = ""
+			multilineArray.each { value ->
+				multilineValue = multilineValue + value + "\n"
+			}
+			scheduling = multilineValue
+		}
+		return scheduling
+	}
+
+	protected def getRetryCountArray(currentSuite){
+		def retryCount = getSuiteParameter(0, "jenkinsDefaultRetryCount", currentSuite).toInteger()
+		def retryCountArray = [0, 1, 2, 3]
+		if (retryCount != 0) {
+			retryCountArray.add(0, retryCountArray)
+		}
+		return retryCountArray
 	}
 
 	protected String getCustomFields(currentSuite) {
