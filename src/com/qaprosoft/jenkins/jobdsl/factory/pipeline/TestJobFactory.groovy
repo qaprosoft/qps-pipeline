@@ -44,7 +44,6 @@ public class TestJobFactory extends PipelineFactory {
 
 			//** Triggers **//*
 			def scheduling = currentSuite.getParameter("scheduling")
-			logger.info("scheduling: " + scheduling)
 			if (scheduling != null) {
 				triggers {
 					cron(parseSheduling(scheduling))
@@ -72,8 +71,8 @@ public class TestJobFactory extends PipelineFactory {
 				}
 
 				def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
-				boolean autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
-				boolean enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
+                def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
+                def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
 
 				switch(getSuiteParameter(suiteName, "jenkinsJobType", currentSuite).toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
@@ -191,7 +190,6 @@ public class TestJobFactory extends PipelineFactory {
 			}
 			scheduling = multilineValue
 		}
-		logger.info("SDL: " + scheduling)
 		return scheduling
 	}
 
