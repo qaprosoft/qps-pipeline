@@ -175,7 +175,7 @@ public class QARunner extends AbstractRunner {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
-                def testNGFolderName = searchTestNgFolderName(subProject)
+                def testNGFolderName = searchTestNgFolderName(subProject).toString()
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
 
@@ -262,7 +262,7 @@ public class QARunner extends AbstractRunner {
         def poms = getSubProjectPomFiles(subProject)
         logger.info("SUBPROJECT POMS: " + poms)
         for(pom in poms){
-            testNGFolderName = parseTestNgFolderName(pom.path).toString()
+            testNGFolderName = parseTestNgFolderName(pom.path)
             if(!isParamEmpty(testNGFolderName)){
                 break
             }
