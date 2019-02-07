@@ -75,10 +75,6 @@ public class TestJobFactory extends PipelineFactory {
 				booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
 				booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
-				def defaultMobilePool = currentSuite.getParameter("jenkinsMobileDefaultPool")
-				if (defaultMobilePool == null) {
-					defaultMobilePool = "ANY"
-				}
 
 				def autoScreenshot = false
 				if (currentSuite.getParameter("jenkinsAutoScreenshot") != null) {
@@ -95,6 +91,8 @@ public class TestJobFactory extends PipelineFactory {
 					jobType = currentSuite.getParameter("jenkinsJobType")
 				}
                 logger.info("JobType: ${jobType}")
+
+				def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
 				switch(jobType.toLowerCase()) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
