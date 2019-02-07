@@ -4,6 +4,7 @@ import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
+import org.apache.commons.lang.RandomStringUtils
 import groovy.transform.InheritConstructors
 
 
