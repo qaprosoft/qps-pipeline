@@ -195,11 +195,11 @@ public class TestJobFactory extends PipelineFactory {
 
 	protected def getRetryCountArray(currentSuite){
 		def retryCount = getSuiteParameter(0, "jenkinsDefaultRetryCount", currentSuite).toInteger()
-		def retryCountArray = [0, 1, 2, 3]
+        List retryCountList = new ArrayList(0, 1, 2, 3)
 		if (retryCount != 0) {
-			retryCountArray.add(0, retryCountArray)
+            retryCountList.add(0, retryCountList)
 		}
-		return retryCountArray
+		return retryCountList
 	}
 
 	protected String getCustomFields(currentSuite) {
