@@ -15,7 +15,7 @@ class SBTRunner extends AbstractRunner {
 
     Date date = new Date()
     String sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
-    String curDate = sdf.format(date).replaceAll("-","")
+    SimpleDateFormat curDate = sdf.format(date).replaceAll("-","")
     String randomArchiveName = "happypathload" + curDate +".zip"
 
     public SBTRunner(context) {
