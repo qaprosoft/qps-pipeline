@@ -319,7 +319,9 @@ public class QARunner extends AbstractRunner {
                 //TODO: review each argument to TestJobFactory and think about removal
                 //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                 def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                registerObject(suitePath.toString(), new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+                def temp = new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc)
+                logger.info(temp.dump())
+                registerObject(suitePath.toString(), temp)
 
                 //cron job
                 if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
