@@ -43,10 +43,8 @@ public class TestJobFactory extends PipelineFactory {
 		pipelineJob.with {
 
 			//** Triggers **//*
-			if (scheduling != null) {
-				triggers {
-					cron(parseSheduling(currentSuite.getParameter("scheduling")))
-				}
+			triggers {
+				cron(parseSheduling(currentSuite.getParameter("scheduling")))
 			}
 
 			//** Properties & Parameters Area **//*
