@@ -13,9 +13,9 @@ import java.time.*
 @InheritConstructors
 class SBTRunner extends AbstractRunner {
 
-    Date date = new Date()
-    String sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
-    SimpleDateFormat curDate = sdf.format(date).replaceAll("-","")
+    Date date = new Date(System.currentTimeMillis())
+    String sdf = new SimpleDateFormat("yyyyMMddHHmmss")
+    SimpleDateFormat curDate = sdf.format(date)
     String randomArchiveName = "happypathload" + curDate +".zip"
 
     public SBTRunner(context) {
