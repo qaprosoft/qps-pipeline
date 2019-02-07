@@ -304,6 +304,7 @@ public class QARunner extends AbstractRunner {
             }
             suiteName = suiteName.split(".xml")[0]
             def currentSuitePath = workspace + "/" + suitePath.toString()
+            logger.info("CRNTS: " + currentSuitePath)
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
             if (getBooleanParameterValue("jenkinsJobCreation", currentSuite)) {
 
