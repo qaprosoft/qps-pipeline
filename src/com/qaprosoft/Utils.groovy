@@ -34,7 +34,7 @@ class Utils {
         }
     }
 
-    static boolean setSuiteParameter(defaultValue, parameterName, currentSuite){
+    static def getSuiteParameter(defaultValue, parameterName, currentSuite){
         def value = defaultValue
         if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
             value = currentSuite.getParameter(parameterName)
@@ -42,15 +42,7 @@ class Utils {
         return value
     }
 
-    static boolean setSuiteBooleanParameter(defaultValue, parameterName, currentSuite){
-        boolean value = defaultValue
-        if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
-            value = currentSuite.getParameter(parameterName).toBoolean()
-        }
-        return value
-    }
-
-    static boolean getBooleanParameter(parameter, currentSuite){
+    static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
 }
