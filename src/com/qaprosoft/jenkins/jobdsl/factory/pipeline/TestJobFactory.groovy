@@ -75,6 +75,7 @@ public class TestJobFactory extends PipelineFactory {
 				booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
 				booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
+				logger.info("SUITE_NAME: " + suiteName)
 				def jobType = getSuiteParameter(suiteName, "jenkinsJobType", currentSuite).toLowerCase()
 				logger.info("JobType: ${jobType}")
 				def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
