@@ -250,7 +250,7 @@ public class QARunner extends AbstractRunner {
                 }
                 def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
                 Path suitePath = Paths.get(suiteXmlFile.value).getParent()
-                testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1).toString()
+                testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
                 logger.info(testNGFolderName)
             }
         }
@@ -262,7 +262,7 @@ public class QARunner extends AbstractRunner {
         def poms = getSubProjectPomFiles(subProject)
         logger.info("SUBPROJECT POMS: " + poms)
         for(pom in poms){
-            testNGFolderName = parseTestNgFolderName(pom.path)
+            testNGFolderName = parseTestNgFolderName(pom.path).toString()
             if(!isParamEmpty(testNGFolderName)){
                 break
             }
