@@ -6,14 +6,17 @@ import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
 import org.apache.commons.lang.RandomStringUtils
 import groovy.transform.InheritConstructors
+import java.time.*
 
 
 @InheritConstructors
 class SBTRunner extends AbstractRunner {
 
-    int randomStringLength = 10
-    String charset = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join()
-    String randomArchiveName = "happypathload"+RandomStringUtils.random(randomStringLength, charset.toCharArray())
+  //  int randomStringLength = 10
+  //  String charset = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join()
+    LocalDateTime t = LocalDateTime.now();
+    String time = t as String
+    String randomArchiveName = "happypathload"+ t +".zip"
 
     public SBTRunner(context) {
         super(context)
