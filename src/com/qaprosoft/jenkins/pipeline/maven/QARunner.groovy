@@ -230,8 +230,8 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def getSubProjectPomFiles(subDirectory) {
-        if(!isParamEmpty(subDirectory)){
-            subDirectory = subDirectory + "/"
+        if(".".equals(subDirectory)){
+            subDirectory = ""
         }
         logger.info("SUBD: " + subDirectory)
         return context.findFiles(glob: subDirectory + "**/pom.xml")
