@@ -309,8 +309,8 @@ public class QARunner extends AbstractRunner {
                 logger.info("suite name: " + suiteName)
                 logger.info("suite path: " + suitePath)
 
-                def suiteOwner = setSuiteParameter("anonymous", "suiteOwner", currentSuite)
-                def currentZafiraProject = setSuiteParameter(zafiraProject, "zafira_project", currentSuite)
+                def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
+                def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
                 // put standard views factory into the map
                 registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
