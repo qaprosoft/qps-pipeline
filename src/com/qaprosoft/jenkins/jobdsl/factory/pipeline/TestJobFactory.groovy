@@ -199,7 +199,7 @@ public class TestJobFactory extends PipelineFactory {
 		if (retryCount != 0) {
             retryCountList.add(0, retryCountList)
 		}
-		return retryCountList
+		return retryCountList.toArray()
 	}
 
 	protected String getCustomFields(currentSuite) {
