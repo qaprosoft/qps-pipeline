@@ -186,6 +186,8 @@ public class TestJobFactory extends PipelineFactory {
 				multilineValue = multilineValue + value + "\n"
 			}
 			scheduling = multilineValue
+		} else {
+			scheduling = ""
 		}
 		return scheduling
 	}
