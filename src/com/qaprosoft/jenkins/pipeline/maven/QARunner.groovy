@@ -297,13 +297,12 @@ public class QARunner extends AbstractRunner {
         logger.info("SUITES: " + suites)
         // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
         for (File suite : suites) {
-            Path suitePath = Paths.get(suite.path)
-            def suiteName = suitePath.getFileName().toString()
+            def suitePath = suite.path
             if (!suiteName.contains(".xml")) {
                 continue
             }
-            suiteName = suiteName.split(".xml")[0]
-            def currentSuitePath = workspace + "/" + suitePath.toString()
+            def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length(), suitePath.indexOf(".xml"))
+            def currentSuitePath = workspace + "/" + suitePath
             logger.info("CRNTS: " + currentSuitePath)
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
             if (getBooleanParameterValue("jenkinsJobCreation", currentSuite)) {
