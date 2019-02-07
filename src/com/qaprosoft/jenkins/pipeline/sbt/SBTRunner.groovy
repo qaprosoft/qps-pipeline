@@ -62,7 +62,7 @@ class SBTRunner extends AbstractRunner {
         context.stage('Results') {
             context.gatlingArchive()
             context.archiveArtifacts 'target/gatling/*/'
-            context.s3CopyArtifact buildSelector: lastCompleted(), excludeFilter: '', filter: '*', flatten: false, optional: false, projectName: 'loadTesting/Gatling-load-testing', target: 'jenkins-mobile-artifacts/loadTestingReports'
+            context.s3CopyArtifact context.buildSelector: lastCompleted(), context.excludeFilter: '', context.filter: '*', context.flatten: false, context.optional: false, context.projectName: 'loadTesting/Gatling-load-testing', context.target: 'jenkins-mobile-artifacts/loadTestingReports'
         }
     }
 
