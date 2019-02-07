@@ -10,6 +10,10 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 class SBTRunner extends AbstractRunner {
 
+    int randomStringLength = 10
+    String charset = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join()
+    String randomArchiveName = "happypathload"+RandomStringUtils.random(randomStringLength, charset.toCharArray())
+
     public SBTRunner(context) {
         super(context)
         scmClient = new GitHub(context)
@@ -61,7 +65,8 @@ class SBTRunner extends AbstractRunner {
     protected void publishJenkinsReports() {
         context.stage('Results') {
             context.gatlingArchive()
-            context.archiveArtifacts 'target/gatling/*/'
+        //    context.archiveArtifacts 'target/gatling/*/'
+            context.zip archive: true, dir: 'target/gatling/*/', glob: '', zipFile: randomArchiveName
             context.s3CopyArtifact buildSelector: context.lastCompleted(), excludeFilter: '', filter: '*', flatten: false, optional: false, projectName: 'loadTesting/Gatling-load-testing', target: 'jenkins-mobile-artifacts/loadTestingReports'
         }
     }
