@@ -42,7 +42,7 @@ class Utils {
         return value
     }
 
-    static boolean getBooleanParameter(parameter, currentSuite){
+    static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
 }
