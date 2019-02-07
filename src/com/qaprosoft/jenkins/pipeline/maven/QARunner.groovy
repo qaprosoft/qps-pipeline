@@ -320,7 +320,7 @@ public class QARunner extends AbstractRunner {
                 //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                 def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
                 def temp = new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc)
-                logger.info(temp.dump())
+                logger.info("FACTORY: " + temp.dump())
                 registerObject(suitePath.toString(), temp)
 
                 //cron job
