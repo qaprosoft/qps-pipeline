@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 
 
 @InheritConstructors
-class SBTRunner extends AbstractRunner {
+class SBTMainRunner extends AbstractRunner {
 
 
     def date = new Date()
@@ -36,6 +36,8 @@ class SBTRunner extends AbstractRunner {
 
                         scmClient.clone()
 
+                        context.copyArtifacts filter: '*.zip', fingerprintArtifacts: true, projectName: 'loadTesting/Gatling-load-testing', selector: lastCompleted(), target: 'target/gatling'
+
                         def sbtHome = context.tool 'SBT'
 
                         def args = Configuration.get("args")
@@ -49,7 +51,6 @@ class SBTRunner extends AbstractRunner {
                     logger.error(Utils.printStackTrace(e))
                     throw e
                 } finally {
-                    publishJenkinsReports()
                     clean()
                 }
             }
@@ -64,15 +65,6 @@ class SBTRunner extends AbstractRunner {
     @Override
     public void onPullRequest(){
         //TODO: implement in future
-    }
-
-    protected void publishJenkinsReports() {
-        context.stage('Results') {
-            context.gatlingArchive()
-        //    context.archiveArtifacts 'target/gatling/*/'
-            context.zip archive: true, dir: 'target/gatling/', glob: '', zipFile: randomArchiveName
-        //    context.s3CopyArtifact buildSelector: context.lastCompleted(), excludeFilter: '', filter: '*.zip', flatten: false, optional: false, projectName: 'loadTesting/Gatling-load-testing', target: 'jenkins-mobile-artifacts'
-        }
     }
 
     protected clean() {
