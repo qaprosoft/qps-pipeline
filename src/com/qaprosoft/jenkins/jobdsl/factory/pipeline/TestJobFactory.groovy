@@ -75,25 +75,12 @@ public class TestJobFactory extends PipelineFactory {
 				booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
 				booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
-
-				def autoScreenshot = false
-				if (currentSuite.getParameter("jenkinsAutoScreenshot") != null) {
-					autoScreenshot = currentSuite.getParameter("jenkinsAutoScreenshot").toBoolean()
-				}
-
-				def enableVideo = true
-				if (currentSuite.getParameter("jenkinsEnableVideo") != null) {
-					enableVideo = currentSuite.getParameter("jenkinsEnableVideo").toBoolean()
-				}
-
-				def jobType = suiteName
-				if (currentSuite.getParameter("jenkinsJobType") != null) {
-					jobType = currentSuite.getParameter("jenkinsJobType")
-				}
-                logger.info("JobType: ${jobType}")
-
+				def jobType = getSuiteParameter(suiteName, "jenkinsJobType", currentSuite).toLowerCase()
+				logger.info("JobType: ${jobType}")
 				def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
-				switch(jobType.toLowerCase()) {
+				def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite)
+				def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite)
+				switch(jobType) {
 					case ~/^(?!.*web).*api.*$/:
 					// API tests specific
 						configure addHiddenParameter('platform', '', 'API')
