@@ -10,8 +10,7 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 class SBTMainRunner extends AbstractRunner {
 
-
-    public SBTRunner(context) {
+    public SBTMainRunner(context) {
         super(context)
         scmClient = new GitHub(context)
     }
