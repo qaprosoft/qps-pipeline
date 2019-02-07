@@ -4,7 +4,8 @@ import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
-import org.apache.commons.lang.RandomStringUtils
+import java.text.SimpleDateFormat
+import java.util.Date
 import groovy.transform.InheritConstructors
 import java.time.*
 
@@ -12,11 +13,9 @@ import java.time.*
 @InheritConstructors
 class SBTRunner extends AbstractRunner {
 
-  //  int randomStringLength = 10
-  //  String charset = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join()
-    LocalDateTime t = LocalDateTime.now();
-    String time = t as String
-    String randomArchiveName = "happypathload"+ t +".zip"
+    Date date = new Date();
+    String sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+    String randomArchiveName = "happypathload" + sdf.format(date) +".zip"
 
     public SBTRunner(context) {
         super(context)
