@@ -4,19 +4,12 @@ import com.qaprosoft.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
-import java.util.Date
 import groovy.transform.InheritConstructors
-import java.text.SimpleDateFormat
 
 
 @InheritConstructors
 class SBTMainRunner extends AbstractRunner {
 
-
-    def date = new Date()
-    def sdf = new SimpleDateFormat("yyyyMMddHHmmss")
-    String curDate=sdf.format(date)
-    String randomArchiveName = "loadTestingReports" + curDate +".zip"
 
     public SBTRunner(context) {
         super(context)
@@ -36,11 +29,11 @@ class SBTMainRunner extends AbstractRunner {
 
                         scmClient.clone()
 
-                        context.copyArtifacts filter: '*.zip', fingerprintArtifacts: true, projectName: 'loadTesting/Gatling-load-testing', selector: lastCompleted(), target: 'target/gatling'
-
                         def sbtHome = context.tool 'SBT'
 
                         def args = Configuration.get("args")
+
+                        context.copyArtifacts filter: '*.zip', fingerprintArtifacts: true, projectName: 'loadTesting/Gatling-load-testing', selector: lastCompleted(), target: 'target/gatling'
 
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             context.sh "${sbtHome}/bin/sbt ${args}"
