@@ -294,6 +294,7 @@ public class QARunner extends AbstractRunner {
 
         //TODO: create default personalized view here
         def suites = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
+        logger.info("SUITES: " + suites)
         // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
         for (File suite : suites) {
             Path suitePath = Paths.get(suite.path)
@@ -319,9 +320,7 @@ public class QARunner extends AbstractRunner {
                 //TODO: review each argument to TestJobFactory and think about removal
                 //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                 def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                def temp = new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc)
-                logger.info("FACTORY: " + temp.dump())
-                registerObject(suitePath.toString(), temp)
+                registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
 
                 //cron job
                 if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
