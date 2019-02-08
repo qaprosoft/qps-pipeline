@@ -303,7 +303,6 @@ public class QARunner extends AbstractRunner {
             }
             def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length(), suitePath.indexOf(".xml"))
             def currentSuitePath = workspace + "/" + suitePath
-            logger.info("CRNTS: " + currentSuitePath)
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
             if (getBooleanParameterValue("jenkinsJobCreation", currentSuite)) {
 
@@ -321,7 +320,7 @@ public class QARunner extends AbstractRunner {
                 //TODO: review each argument to TestJobFactory and think about removal
                 //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                 def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+                registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
 
                 //cron job
                 if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
