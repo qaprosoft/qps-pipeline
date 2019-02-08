@@ -303,7 +303,7 @@ public class QARunner extends AbstractRunner {
             if (!suitePath.contains(".xml")) {
                 continue
             }
-            def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName + "/") + testNGFolderName.length(), suitePath.indexOf(".xml"))
+            def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
             logger.info("SUITE_NAME: " + suiteName)
             def currentSuitePath = workspace + "/" + suitePath
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
