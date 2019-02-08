@@ -176,6 +176,7 @@ public class QARunner extends AbstractRunner {
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
                 def testNGFolderName = searchTestNgFolderName(subProject).toString()
+                logger.info("TESTNGFLDR: " + testNGFolderName)
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
 
