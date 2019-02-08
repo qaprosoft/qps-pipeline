@@ -238,8 +238,9 @@ public class QARunner extends AbstractRunner {
 
     def parseTestNgFolderName(pomFile) {
         def testNGFolderName = null
-        logger.info("PMFL: " + pomFile)
         def pom = context.readMavenPom file: pomFile
+        logger.info("PMFL: " + pom)
+
         for (plugin in pom.build.plugins){
             if (plugin.artifactId.contains("surefire")) {
                 if(isParamEmpty(plugin.configuration)){
