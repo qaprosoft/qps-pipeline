@@ -232,6 +232,8 @@ public class QARunner extends AbstractRunner {
     protected def getSubProjectPomFiles(subDirectory) {
         if(".".equals(subDirectory)){
             subDirectory = ""
+        } else {
+            subDirectory = subDirectory + "/"
         }
         return context.findFiles(glob: subDirectory + "**/pom.xml")
     }
@@ -239,8 +241,6 @@ public class QARunner extends AbstractRunner {
     def parseTestNgFolderName(pomFile) {
         def testNGFolderName = null
         def pom = context.readMavenPom file: pomFile
-        logger.info("PMFL: " + pom)
-
         for (plugin in pom.build.plugins){
             if (plugin.artifactId.contains("surefire")) {
                 if(isParamEmpty(plugin.configuration)){
@@ -251,7 +251,6 @@ public class QARunner extends AbstractRunner {
                     break
                 }
                 def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
-                logger.info(suiteXmlFile.value)
                 Path suitePath = Paths.get(suiteXmlFile.value).getParent()
                 testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
                 logger.info(testNGFolderName)
@@ -266,7 +265,6 @@ public class QARunner extends AbstractRunner {
         logger.info("SUBPROJECT POMS: " + poms)
         for(pom in poms){
             testNGFolderName = parseTestNgFolderName(pom.path)
-            logger.info("TESTNGFLDR: " + testNGFolderName)
             if(!isParamEmpty(testNGFolderName)){
                 break
             }
