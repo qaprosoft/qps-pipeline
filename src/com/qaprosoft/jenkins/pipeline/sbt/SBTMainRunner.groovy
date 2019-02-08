@@ -43,7 +43,7 @@ class SBTMainRunner extends AbstractRunner {
                     logger.error(Utils.printStackTrace(e))
                     throw e
                 } finally {
-               //     clean()
+                    clean()
                 }
             }
         }
