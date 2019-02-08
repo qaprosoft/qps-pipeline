@@ -243,6 +243,7 @@ public class QARunner extends AbstractRunner {
 
         for (plugin in pom.build.plugins){
             if (plugin.artifactId.contains("surefire")) {
+                logger.info("111")
                 if(isParamEmpty(plugin.configuration)){
                     break
                 }
