@@ -176,7 +176,6 @@ public class QARunner extends AbstractRunner {
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
                 def testNGFolderName = searchTestNgFolderName(subProject).toString()
-                logger.info("TESTNGFLDR: " + testNGFolderName)
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
 
@@ -239,6 +238,7 @@ public class QARunner extends AbstractRunner {
 
     def parseTestNgFolderName(pomFile) {
         def testNGFolderName = null
+        logger.info("PMFL: " + pomFile)
         def pom = context.readMavenPom file: pomFile
         for (plugin in pom.build.plugins){
             if (plugin.artifactId.contains("surefire")) {
