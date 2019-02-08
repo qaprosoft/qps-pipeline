@@ -1,12 +1,10 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
-
+import static com.qaprosoft.jenkins.pipeline.Executor.*
+import static com.qaprosoft.Utils.*
 import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 import com.qaprosoft.integration.zafira.ZafiraUpdater
-
-import static com.qaprosoft.jenkins.pipeline.Executor.*
-import static com.qaprosoft.Utils.*
 import com.qaprosoft.jenkins.pipeline.browserstack.OS
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
@@ -14,19 +12,20 @@ import com.qaprosoft.jenkins.pipeline.AbstractRunner
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
+import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
 import com.qaprosoft.scm.github.GitHub
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
+import java.nio.file.Path
+import java.nio.file.Paths
 
-import com.qaprosoft.jenkins.pipeline.maven.Maven
-import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
 
 @Grab('org.testng:testng:6.8.8')
 
 @Mixin([Maven, Sonar])
 public class QARunner extends AbstractRunner {
 
-    protected Map dslObjects = [:]
+    protected Map dslObjects = new HashMap()
     protected def pipelineLibrary = "QPS-Pipeline"
     protected def runnerClass = "com.qaprosoft.jenkins.pipeline.maven.QARunner"
     protected def onlyUpdated = false
@@ -109,7 +108,7 @@ public class QARunner extends AbstractRunner {
 
 			def pomFiles = getProjectPomFiles()
 			pomFiles.each {
-				logger.debug(it.dump())
+				logger.debug(it)
 				//do compile and scanner for all hogh level pom.xml files
 				
 				// [VD] integrated compilation as part of the sonar PR checker maven goal
@@ -152,130 +151,33 @@ public class QARunner extends AbstractRunner {
 
         context.stage("Scan Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
-            def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def repo = Configuration.get("repo")
             def repoFolder = parseFolderName(getWorkspace())
             def branch = Configuration.get("branch")
+
             currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
             def workspace = getWorkspace()
             logger.info("WORKSPACE: ${workspace}")
+//
+//            // Support DEV related CI workflow
+//            //TODO: analyze if we need 3 system object declarations
+//
+//            def jenkinsFileOrigin = "Jenkinsfile"
+//            if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
+//                //TODO: figure our howto work with Jenkinsfile
+//                // this is the repo with already available pipeline script in Jenkinsfile
+//                // just create a job
+//            }
 
-            // Support DEV related CI workflow
-            //TODO: analyze if we need 3 system object declarations
-
-            def jenkinsFileOrigin = "Jenkinsfile"
-            if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
-                //TODO: figure our howto work with Jenkinsfile
-                // this is the repo with already available pipeline script in Jenkinsfile
-                // just create a job
-            }
-
-			// TODO: improve scanner and make .jenkinsfile.json not obligatory
-			def pomFiles = getProjectPomFiles()
-			pomFiles.each {
-				logger.info(it.dump())
-			}
-
-            def jenkinsFile = ".jenkinsfile.json"
-            if (!context.fileExists("${workspace}/${jenkinsFile}")) {
-                logger.warn("Skip repository scan as no .jenkinsfile.json discovered! Project: ${repo}")
-                currentBuild.result = BuildResult.UNSTABLE
-                return
-            }
-
-            Object subProjects = parseJSON("${workspace}/${jenkinsFile}").sub_projects
-
-            logger.info("PARSED: " + subProjects)
-            subProjects.each {
-                logger.info("sub_project: " + it)
-
-                def sub_project = it.name
-
-                def subProjectFilter = it.name
-                if (sub_project.equals(".")) {
-                    subProjectFilter = "**"
-                }
-
-                def zafiraFilter = it.zafira_filter
-                def suiteFilter = it.suite_filter
-
-				if (suiteFilter.isEmpty()) {
-					logger.warn("Skip repository scan as no suiteFilter identified! Project: ${repo}")
-					return
-				}
-
-                def zafira_project = 'unknown'
-                def zafiraProperties = context.findFiles(glob: subProjectFilter + "/" + zafiraFilter)
-                for (File file : zafiraProperties) {
-                    def props = context.readProperties file: file.path
-                    if (props['zafira_project'] != null) {
-                        zafira_project = props['zafira_project']
-                    }
-                }
-                logger.info("zafira_project: ${zafira_project}")
-
-                if (suiteFilter.endsWith("/")) {
-                    //remove last character if it is slash
-                    suiteFilter = suiteFilter[0..-2]
-                }
-                def testngFolder = suiteFilter.substring(suiteFilter.lastIndexOf("/"), suiteFilter.length()) + "/"
-                logger.info("testngFolder: " + testngFolder)
-
-                // VIEWS
-                registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
-                //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
-
-                //TODO: create default personalized view here
-
-                // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
-                def suites = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
-                for (File suite : suites) {
-                    if (!suite.path.endsWith(".xml")) {
-                        continue
-                    }
-                    def suiteOwner = "anonymous"
-                    def suitePath = suite.path
-                    def suiteName = suitePath.substring(suitePath.lastIndexOf(testngFolder) + testngFolder.length(), suitePath.indexOf(".xml"))
-                    def currentSuitePath = workspace + "/" + suitePath
-
-                    XmlSuite currentSuite = parsePipeline(currentSuitePath)
-                    if (!isParamEmpty(currentSuite.getParameter("jenkinsJobCreation")) && currentSuite.getParameter("jenkinsJobCreation").toBoolean()) {
-
-                        logger.info("suite name: " + suiteName)
-                        logger.info("suite path: " + suitePath)
-
-                        if (!isParamEmpty(currentSuite.getParameter("suiteOwner"))) {
-                            suiteOwner = currentSuite.getParameter("suiteOwner")
-                        }
-
-                        def currentZafiraProject = zafira_project
-                        if (!isParamEmpty(currentSuite.getParameter("zafira_project"))) {
-                            currentZafiraProject = currentSuite.getParameter("zafira_project")
-                        }
-
-                        // put standard views factory into the map
-                        registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
-                        registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
-
-                        //pipeline job
-                        //TODO: review each argument to TestJobFactory and think about removal
-                        //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-                        def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                        registerObject(suiteName, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, sub_project, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
-
-                        //cron job
-                        if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
-                            def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
-                            for (def cronJobName : cronJobNames.split(",")) {
-                                cronJobName = cronJobName.trim()
-                                def cronDesc = "project: ${repo}; type: cron"
-                                registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
-                            }
-                        }
-                    }
-                }
+            def pomFiles = getProjectPomFiles()
+            for(pomFile in pomFiles){
+                // Ternary operation to get subproject path. "." means that no subfolder is detected
+                def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
+                def subProjectFilter = subProject.equals(".")?"**":subProject
+                def testNGFolderName = searchTestNgFolderName(subProject).toString()
+                def zafiraProject = getZafiraProject(subProjectFilter)
+                generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
 
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -287,6 +189,7 @@ public class QARunner extends AbstractRunner {
                         removedViewAction: Configuration.get("removedViewAction"),
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
+
             }
         }
     }
@@ -299,6 +202,140 @@ public class QARunner extends AbstractRunner {
 
     protected String getWorkspace() {
         return context.pwd()
+    }
+
+    protected def getProjectPomFiles() {
+        def pomFiles = []
+        def files = context.findFiles(glob: "**/pom.xml")
+
+        if(files.length > 0) {
+            logger.info("Number of pom.xml files to analyze: " + files.length)
+
+            int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
+            for (pomFile in files) {
+                def path = pomFile.path
+                int level = path.count("/")
+                logger.debug("file: " + path + "; level: " + level + "; curLevel: " + curLevel)
+                if (level < curLevel) {
+                    curLevel = level
+                    pomFiles.clear()
+                    pomFiles.add(pomFile.path)
+                } else if (level == curLevel) {
+                    pomFiles.add(pomFile.path)
+                }
+            }
+            logger.info("PROJECT POMS: " + pomFiles)
+        }
+        return pomFiles
+    }
+
+    protected def getSubProjectPomFiles(subDirectory) {
+        if(".".equals(subDirectory)){
+            subDirectory = ""
+        } else {
+            subDirectory = subDirectory + "/"
+        }
+        return context.findFiles(glob: subDirectory + "**/pom.xml")
+    }
+
+    def parseTestNgFolderName(pomFile) {
+        def testNGFolderName = null
+        def pom = context.readMavenPom file: pomFile
+        for (plugin in pom.build.plugins){
+            if (plugin.artifactId.contains("surefire")) {
+                if(isParamEmpty(plugin.configuration)){
+                    break
+                }
+                def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
+                if(isParamEmpty(suiteXmlFiles)){
+                    break
+                }
+                def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
+                Path suitePath = Paths.get(suiteXmlFile.value).getParent()
+                testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
+                logger.info(testNGFolderName)
+            }
+        }
+        return testNGFolderName
+    }
+
+    def searchTestNgFolderName(subProject) {
+        def testNGFolderName = "testng_suites"
+        def poms = getSubProjectPomFiles(subProject)
+        logger.info("SUBPROJECT POMS: " + poms)
+        for(pom in poms){
+            testNGFolderName = parseTestNgFolderName(pom.path)
+            if(!isParamEmpty(testNGFolderName)){
+                break
+            }
+        }
+        return testNGFolderName
+    }
+
+    def getZafiraProject(subProjectFilter){
+        def zafiraProject = "unknown"
+        def zafiraProperties = context.findFiles glob: subProjectFilter + "/**/zafira.properties"
+        zafiraProperties.each {
+            Map properties  = context.readProperties file: it.path
+            if(!isParamEmpty(properties.zafira_project)){
+                zafiraProject = properties.zafira_project
+                logger.info("ZafiraProject: " + zafiraProject)
+            }
+        }
+        return zafiraProject
+    }
+
+    def generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter){
+        def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
+        def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
+        def repo = Configuration.get("repo")
+
+        // VIEWS
+        registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
+        //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
+
+        //TODO: create default personalized view here
+        def suites = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
+        logger.info("SUITES: " + suites)
+        // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
+        for (File suite : suites) {
+            def suitePath = suite.path
+            if (!suitePath.contains(".xml")) {
+                continue
+            }
+            def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
+            logger.info("SUITE_NAME: " + suiteName)
+            def currentSuitePath = workspace + "/" + suitePath
+            XmlSuite currentSuite = parsePipeline(currentSuitePath)
+            if (getBooleanParameterValue("jenkinsJobCreation", currentSuite)) {
+
+                logger.info("suite name: " + suiteName)
+                logger.info("suite path: " + suitePath)
+
+                def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
+                def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
+
+                // put standard views factory into the map
+                registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+                registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
+
+                //pipeline job
+                //TODO: review each argument to TestJobFactory and think about removal
+                //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+                def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+                registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+
+                //cron job
+                if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
+                    def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
+                    for (def cronJobName : cronJobNames.split(",")) {
+                        cronJobName = cronJobName.trim()
+                        def cronDesc = "project: ${repo}; type: cron"
+                        registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
+                    }
+                }
+            }
+        }
     }
 
     protected String getPipelineScript() {
@@ -1118,28 +1155,4 @@ public class QARunner extends AbstractRunner {
         return port
     }
 	
-	protected def getProjectPomFiles() {
-		def pomFiles = []
-		def files = context.findFiles(glob: "**/pom.xml")
-		
-		if(files.length > 0) {
-			logger.info("Number of pom.xml files to analyze: " + files.length)
-			
-			int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
-			for (int i = 0; i < files.length; i++) {
-				def path = files[i].path
-				int level = path.count("/")
-				logger.debug("file: " + path + "; level: " + level + "; curLevel: " + curLevel)
-				if (level < curLevel) {
-					curLevel = level
-					pomFiles.clear()
-					pomFiles.add(files[i].path)
-				} else if (level == curLevel) {
-					pomFiles.add(files[i].path)
-				}
-			}
-		}
-		logger.info(pomFiles.dump())
-		return pomFiles
-	}
 }
