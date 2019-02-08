@@ -264,6 +264,7 @@ public class QARunner extends AbstractRunner {
         logger.info("SUBPROJECT POMS: " + poms)
         for(pom in poms){
             testNGFolderName = parseTestNgFolderName(pom.path)
+            logger.info("TESTNGFLDR: " + testNGFolderName)
             if(!isParamEmpty(testNGFolderName)){
                 break
             }
