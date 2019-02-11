@@ -68,11 +68,13 @@ class SBTRunner extends AbstractRunner {
     }
 
     protected void publishJenkinsReports() {
+        def mails = Configuration.get("mails").toString()
         context.stage('Results') {
             context.gatlingArchive()
             //    context.archiveArtifacts 'target/gatling/*/'
             context.zip archive: true, dir: 'target/gatling/', glob: '', zipFile: randomArchiveName
             //    context.s3CopyArtifact buildSelector: context.lastCompleted(), excludeFilter: '', filter: '*.zip', flatten: false, optional: false, projectName: 'loadTesting/Gatling-load-testing', target: 'jenkins-mobile-artifacts'
+            context.emailext body: "${context.currentBuild.currentResult}: Job ${context.env.JOB_NAME} build ${context.env.BUILD_NUMBER}\n More info at: ${context.env.BUILD_URL}", subject: "Jenkins Build ${context.currentBuild.currentResult}: Job ${context.env.JOB_NAME}", to: "${mails}"
         }
     }
 
