@@ -15,8 +15,8 @@ class SBTRunner extends AbstractRunner {
 
     def date = new Date()
     def sdf = new SimpleDateFormat("yyyyMMddHHmmss")
-    String curDate=sdf.format(date)
-    String randomArchiveName = "loadTestingReports" + curDate +".zip"
+    String curDate = sdf.format(date)
+    String randomArchiveName = "loadTestingReports" + curDate + ".zip"
 
     public SBTRunner(context) {
         super(context)
@@ -51,33 +51,41 @@ class SBTRunner extends AbstractRunner {
                 } finally {
                     publishJenkinsReports()
                     clean()
+                    uploadResultsToS3()
                 }
             }
         }
     }
 
     @Override
-    public void onPush(){
+    public void onPush() {
         //TODO: implement in future
     }
 
     @Override
-    public void onPullRequest(){
+    public void onPullRequest() {
         //TODO: implement in future
     }
 
     protected void publishJenkinsReports() {
         context.stage('Results') {
             context.gatlingArchive()
-        //    context.archiveArtifacts 'target/gatling/*/'
+            //    context.archiveArtifacts 'target/gatling/*/'
             context.zip archive: true, dir: 'target/gatling/', glob: '', zipFile: randomArchiveName
-        //    context.s3CopyArtifact buildSelector: context.lastCompleted(), excludeFilter: '', filter: '*.zip', flatten: false, optional: false, projectName: 'loadTesting/Gatling-load-testing', target: 'jenkins-mobile-artifacts'
+            //    context.s3CopyArtifact buildSelector: context.lastCompleted(), excludeFilter: '', filter: '*.zip', flatten: false, optional: false, projectName: 'loadTesting/Gatling-load-testing', target: 'jenkins-mobile-artifacts'
         }
     }
 
-    protected clean() {
+    protected void clean() {
         context.stage('Wipe out Workspace') {
             context.deleteDir()
+        }
+    }
+
+    protected void uploadResultsToS3() {
+        def needToUpload = Configuration.get("needToUpload")
+        if (needToUpload) {
+            context.build job: 'loadTesting/Upload-Results-To-S3'
         }
     }
 
