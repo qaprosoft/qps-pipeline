@@ -54,7 +54,7 @@ class ZafiraUpdater {
         String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
         String env = Configuration.get("env")
 
-        def bodyHeader = "<p>Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
+        def bodyHeader = "Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}</p>"
         def subject = getFailureSubject(FailureCause.UNRECOGNIZED_FAILURE, jobName, env, buildNumber)
         def failureLog = ""
 
@@ -65,16 +65,16 @@ class ZafiraUpdater {
             failureReason = URLEncoder.encode("${FailureCause.COMPILATION_FAILURE}:\n" + failureLog, "UTF-8")
         } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
             currentBuild.result = BuildResult.ABORTED
-            bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
+            bodyHeader = "Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
             subject = getFailureSubject(FailureCause.TIMED_OUT, jobName, env, buildNumber)
             failureReason = "Aborted by timeout"
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = BuildResult.ABORTED
-            bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
+            bodyHeader = "Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
             subject = getFailureSubject(FailureCause.ABORTED, jobName, env, buildNumber)
             failureReason = "Aborted by " + getAbortCause(currentBuild)
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
-            bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
+            bodyHeader = "Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
             subject = getFailureSubject(FailureCause.BUILD_FAILURE, jobName, env, buildNumber)
             failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
             failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE}:\n" + failureLog, "UTF-8")
@@ -89,7 +89,7 @@ class ZafiraUpdater {
         } else {
             logger.error("UNABLE TO ABORT TESTRUN! Probably run is not registered in Zafira.")
             //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
-            def body = "${bodyHeader}\nRebuild: ${jobBuildUrl}/rebuild/parameterized\nZafiraReport: ${jobBuildUrl}/ZafiraReport\nConsole: ${jobBuildUrl}/console<br>${failureLog}"
+            def body = "${bodyHeader}\nRebuild: ${jobBuildUrl}/rebuild/parameterized\nZafiraReport: ${jobBuildUrl}/ZafiraReport\nConsole: ${jobBuildUrl}/console\n${failureLog}"
             context.emailext getEmailParams(body, subject, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         }
     }
