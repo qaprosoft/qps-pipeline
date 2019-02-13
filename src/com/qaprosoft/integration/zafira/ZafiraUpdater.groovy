@@ -68,16 +68,16 @@ class ZafiraUpdater {
             bodyHeader = "<p>Unable to continue tests due to the abort by timeout ${jobBuildUrl}</p>"
             subject = getFailureSubject(FailureCause.TIMED_OUT, jobName, env, buildNumber)
             failureReason = "Aborted by timeout"
-        } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
-            bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
-            subject = getFailureSubject(FailureCause.BUILD_FAILURE, jobName, env, buildNumber)
-            failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
-            failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE}:\n" + failureLog, "UTF-8")
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = BuildResult.ABORTED
             bodyHeader = "<p>Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${jobBuildUrl}</p>"
             subject = getFailureSubject(FailureCause.ABORTED, jobName, env, buildNumber)
             failureReason = "Aborted by " + getAbortCause(currentBuild)
+        } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
+            bodyHeader = "<p>Unable to execute tests due to the build failure. ${jobBuildUrl}</p>"
+            subject = getFailureSubject(FailureCause.BUILD_FAILURE, jobName, env, buildNumber)
+            failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
+            failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE}:\n" + failureLog, "UTF-8")
         }
         def response = zc.abortTestRun(uuid, failureReason)
         if(!isParamEmpty(response)){
