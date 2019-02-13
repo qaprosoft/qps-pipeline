@@ -176,8 +176,8 @@ public class Executor {
         return currentJob
     }
 
-    static String getFailureSubject(cause, jobName, env, buildNumber){
-        return "${cause}: ${jobName} - ${env} - Build # ${buildNumber}!"
+    static String getFailureSubject(String cause, jobName, env, buildNumber){
+        return "${cause.replace("_", " ")}: ${jobName} - ${env} - Build # ${buildNumber}!"
     }
 
     static String getLogDetailsForEmail(currentBuild, logPattern){
