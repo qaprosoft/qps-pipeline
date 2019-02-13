@@ -27,11 +27,16 @@ public class Executor {
     }
 
     static enum FailureCause {
-        UNRECOGNIZED_FAILURE,
-        COMPILATION_FAILURE,
-        TIMED_OUT,
-        BUILD_FAILURE,
-        ABORTED
+        UNRECOGNIZED_FAILURE("UNRECOGNIZED FAILURE"),
+        COMPILATION_FAILURE("COMPILATION FAILURE"),
+        TIMED_OUT("TIMED OUT"),
+        BUILD_FAILURE("BUILD FAILURE"),
+        ABORTED("ABORTED")
+
+        final String value
+        FailureCause(String value) {
+            this.value = value
+        }
     }
 
     static String getUUID() {
