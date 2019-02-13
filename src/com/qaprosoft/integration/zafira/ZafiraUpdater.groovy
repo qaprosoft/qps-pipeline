@@ -55,29 +55,29 @@ class ZafiraUpdater {
         String env = Configuration.get("env")
 
         def bodyHeader = "Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}\n"
-        def subject = getFailureSubject(FailureCause.UNRECOGNIZED_FAILURE, jobName, env, buildNumber)
+        def subject = getFailureSubject(FailureCause.UNRECOGNIZED_FAILURE.value, jobName, env, buildNumber)
         def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
             bodyHeader = "Unable to execute tests due to the compilation failure. ${jobBuildUrl}\n"
-            subject = getFailureSubject(FailureCause.COMPILATION_FAILURE, jobName, env, buildNumber)
+            subject = getFailureSubject(FailureCause.COMPILATION_FAILURE.value, jobName, env, buildNumber)
             failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
-            failureReason = URLEncoder.encode("${FailureCause.COMPILATION_FAILURE}:\n" + failureLog, "UTF-8")
+            failureReason = URLEncoder.encode("${FailureCause.COMPILATION_FAILURE.value}:\n" + failureLog, "UTF-8")
         } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
             currentBuild.result = BuildResult.ABORTED
             bodyHeader = "Unable to continue tests due to the abort by timeout ${jobBuildUrl}\n"
-            subject = getFailureSubject(FailureCause.TIMED_OUT, jobName, env, buildNumber)
+            subject = getFailureSubject(FailureCause.TIMED_OUT.value, jobName, env, buildNumber)
             failureReason = "Aborted by timeout"
         } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = BuildResult.ABORTED
             bodyHeader = "Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${jobBuildUrl}\n"
-            subject = getFailureSubject(FailureCause.ABORTED, jobName, env, buildNumber)
+            subject = getFailureSubject(FailureCause.ABORTED.value, jobName, env, buildNumber)
             failureReason = "Aborted by " + getAbortCause(currentBuild)
         } else if (currentBuild.rawBuild.log.contains("BUILD FAILURE")) {
             bodyHeader = "Unable to execute tests due to the build failure. ${jobBuildUrl}\n"
-            subject = getFailureSubject(FailureCause.BUILD_FAILURE, jobName, env, buildNumber)
+            subject = getFailureSubject(FailureCause.BUILD_FAILURE.value, jobName, env, buildNumber)
             failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
-            failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE}:\n" + failureLog, "UTF-8")
+            failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE.value}:\n" + failureLog, "UTF-8")
         }
         def response = zc.abortTestRun(uuid, failureReason)
         if(!isParamEmpty(response)){
