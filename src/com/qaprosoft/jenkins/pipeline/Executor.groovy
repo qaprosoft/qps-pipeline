@@ -177,7 +177,7 @@ public class Executor {
     }
 
     static String getFailureSubject(cause, jobName, env, buildNumber){
-        return "${cause.replace("_", " ")}: ${jobName} - ${env} - Build # ${buildNumber}!"
+        return "${cause.toString().replace("_", " ")}: ${jobName} - ${env} - Build # ${buildNumber}!"
     }
 
     static String getLogDetailsForEmail(currentBuild, logPattern){
