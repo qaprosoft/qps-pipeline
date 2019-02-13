@@ -92,7 +92,7 @@ class ZafiraUpdater {
             def body = bodyHeader + """<br>
                        Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
                   ZafiraReport: ${jobBuildUrl}/ZafiraReport<br>
-		               Console: ${jobBuildUrl}/console<br>${failureReason}"""
+		               Console: ${jobBuildUrl}/console<br>${failureLog}"""
             context.emailext getEmailParams(body, subject, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         }
     }
