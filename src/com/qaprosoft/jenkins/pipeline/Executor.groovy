@@ -176,7 +176,7 @@ public class Executor {
         return currentJob
     }
 
-    static String getFailureSubject(String cause, jobName, env, buildNumber){
+    static String getFailureSubject(cause, jobName, env, buildNumber){
         return "${cause.replace("_", " ")}: ${jobName} - ${env} - Build # ${buildNumber}!"
     }
 
