@@ -18,7 +18,7 @@ class GitHub implements ISCM {
         logger = new Logger(context)
 		gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         
-        if ("${GITHUB_HOST}".toLowerCase().contains("bitbucket")) {
+        if (Configuration.get("GITHUB_HOST").toLowerCase().contains("bitbucket")) {
             gitHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
             logger.debug("redefined github url for bitbucket: " + gitHtmlUrl)
         }
