@@ -89,10 +89,7 @@ class ZafiraUpdater {
         } else {
             logger.error("UNABLE TO ABORT TESTRUN! Probably run is not registered in Zafira.")
             //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
-            def body = bodyHeader + """<br>
-                       Rebuild: ${jobBuildUrl}/rebuild/parameterized<br>
-                  ZafiraReport: ${jobBuildUrl}/ZafiraReport<br>
-		               Console: ${jobBuildUrl}/console<br>${failureLog}"""
+            def body = "${bodyHeader}\nRebuild: ${jobBuildUrl}/rebuild/parameterized\nZafiraReport: ${jobBuildUrl}/ZafiraReport\nConsole: ${jobBuildUrl}/console<br>${failureLog}"
             context.emailext getEmailParams(body, subject, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         }
     }
