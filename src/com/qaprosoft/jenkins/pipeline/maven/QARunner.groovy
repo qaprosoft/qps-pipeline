@@ -476,7 +476,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
 
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String carinaCoreVersion = getCarinaCoreVersion()
+        String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
