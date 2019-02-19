@@ -211,6 +211,7 @@ public class Configuration {
 
 	public static void remove(String key) {
 		vars.remove(key)
+		params.remove(key)
 	}
 
 }
