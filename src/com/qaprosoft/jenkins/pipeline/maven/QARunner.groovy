@@ -681,7 +681,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected String getOverriddenFields(overrideFields) {
-        def overrideFieldsValues = overrideFields.split("")
+        def overrideFieldsValues = overrideFields.split(",")
         def parsedOverrideFields = ""
         if (!isParamEmpty(overrideFields)) {
             for (String customField : overrideFieldsValues) {
