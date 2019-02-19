@@ -682,10 +682,11 @@ public class QARunner extends AbstractRunner {
 
     protected String getOverriddenFields(overrideFields) {
         def overrideFieldsValues = overrideFields.split(",")
+        logger.info("OVRDARRAY: " + overrideFieldsValues)
         def parsedOverrideFields = ""
         if (!isParamEmpty(overrideFields)) {
             for (String customField : overrideFieldsValues) {
-                parsedOverrideFields = parsedOverrideFields + " -D" + customField.trim()
+                parsedOverrideFields += " -D" + customField.trim()
             }
         }
         return parsedOverrideFields
