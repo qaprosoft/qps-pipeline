@@ -146,7 +146,7 @@ public class TestJobFactory extends PipelineFactory {
 				configure addHiddenParameter('failure_email_list', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
 				choiceParam('retry_count', getRetryCountArray(currentSuite), 'Number of Times to Retry a Failed Test')
 				booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
-				configure addHiddenParameter('overrideFields', '' , getCustomFields(currentSuite))
+				configure addHiddenParameter('overrideFields', '' , getSuiteParameter("", "overrideFields", currentSuite))
 
 				Map paramsMap = currentSuite.getAllParameters()
 				logger.info("ParametersMap: ${paramsMap}")
@@ -200,19 +200,6 @@ public class TestJobFactory extends PipelineFactory {
 			retryCountList.add(0, retryCount)
 		}
 		return retryCountList
-	}
-
-	protected String getCustomFields(currentSuite) {
-		def overrideFields = getGenericSplit(currentSuite, "overrideFields")
-		def prepCustomFields = ""
-
-		if (!overrideFields.isEmpty()) {
-			for (String customField : overrideFields) {
-				prepCustomFields = prepCustomFields + " -D" + customField
-			}
-		}
-
-		return prepCustomFields
 	}
 
 	protected def getDevices(String platform) {
