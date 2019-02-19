@@ -152,7 +152,22 @@ public class Configuration {
 			context.println(param)
 		}
 
-		//3. TODO: investigate how private pipeline can override those values
+		//3. Replace vars and/or params with overrideFields values
+		def overriddenFieldValues = params.get("overrideFields").split(",")
+		for(value in overriddenFieldValues){
+			def keyValueArray = value.trim().split("=")
+			def parameterName = keyValueArray[0]
+			def parameterValue = keyValueArray[1]
+			if(vars.get(parameterName)){
+				vars.put(parameterName, parameterValue)
+			} else if (vars.get(parameterName.toUpperCase())){
+				vars.put(parameterName.toUpperCase(), parameterValue)
+			} else {
+				params.put(parameterName, parameterValue)
+			}
+		}
+
+		//4. TODO: investigate how private pipeline can override those values
 		// public static void set(Map args) - ???
 	}
 

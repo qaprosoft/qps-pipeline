@@ -653,9 +653,6 @@ public class QARunner extends AbstractRunner {
 			goals += " -Dapp_version=browserStack"
 		}
 
-		//append again overrideFields to make sure they are declared at the end
-		goals = goals + " " + getOverriddenFields(Configuration.get("overrideFields"))
-
 		logger.debug("goals: ${goals}")
 
 		def suiteName = null
@@ -678,18 +675,6 @@ public class QARunner extends AbstractRunner {
 			def pomFile = getMavenPomFile()
 			executeMavenGoals("-U ${goals} -f ${pomFile}")
         }
-    }
-
-    protected String getOverriddenFields(overrideFields) {
-        def overrideFieldsValues = overrideFields.split(",")
-        logger.info("OVRDARRAY: " + overrideFieldsValues)
-        def parsedOverrideFields = ""
-        if (!isParamEmpty(overrideFields)) {
-            for (String customField : overrideFieldsValues) {
-                parsedOverrideFields += " -D" + customField.trim()
-            }
-        }
-        return parsedOverrideFields
     }
 
     protected void startBrowserStackLocal(String uniqueBrowserInstance) {
