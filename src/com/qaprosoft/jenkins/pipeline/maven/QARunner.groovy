@@ -510,18 +510,18 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected String getCarinaCoreVersion() {
-        def carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
-        def overrideFields = Configuration.get("overrideFields").toLowerCase()
-
-        if (overrideFields.contains("carina_core_version")) {
-            def findCoreVersion = overrideFields.toLowerCase().find(/(?<=carina_core_version=)([^,]*)/)
-            if (!isParamEmpty(findCoreVersion)) {
-                carinaCoreVersion = findCoreVersion
-            }
-        }
-        return carinaCoreVersion
-    }
+//    protected String getCarinaCoreVersion() {
+//        def carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
+//        def overrideFields = Configuration.get("overrideFields").toLowerCase()
+//
+//        if (overrideFields.contains("carina_core_version")) {
+//            def findCoreVersion = overrideFields.toLowerCase().find(/(?<=carina_core_version=)([^,]*)/)
+//            if (!isParamEmpty(findCoreVersion)) {
+//                carinaCoreVersion = findCoreVersion
+//            }
+//        }
+//        return carinaCoreVersion
+//    }
 
     protected void prepareForMobile() {
         logger.info("Runner->prepareForMobile")
@@ -620,6 +620,8 @@ public class QARunner extends AbstractRunner {
 		Configuration.set("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
 		def goals = Configuration.resolveVars(defaultBaseMavenGoals)
+
+        Configuration.remove("overrideFields")
 
 		//register all obligatory vars
 		Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
