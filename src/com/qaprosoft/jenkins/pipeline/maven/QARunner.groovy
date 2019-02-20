@@ -415,6 +415,7 @@ public class QARunner extends AbstractRunner {
                 it.comment.contains("Update")
                 return true
             }
+            logger.info("2")
             return false
         }
     }
