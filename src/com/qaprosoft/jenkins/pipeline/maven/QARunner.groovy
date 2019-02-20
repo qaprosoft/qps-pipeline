@@ -408,13 +408,10 @@ public class QARunner extends AbstractRunner {
 
     public def searchCommitMessages() {
         def changeLogSets = currentBuild.rawBuild.changeSets
-        logger.info("CHANGE_LOG_SETS: " + changeLogSets.dump())
-        changeLogSets.any {
-            def commit = it.getItems().find {
+        return changeLogSets.any {
+            !isParamEmpty(it.getItems().find {
                 it.comment.contains("Update")
-            }
-            logger.info("COMMIT: " + commit.dump())
-
+            })
         }
     }
 
