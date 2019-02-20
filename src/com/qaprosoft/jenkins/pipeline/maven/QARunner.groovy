@@ -1,8 +1,5 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import static com.qaprosoft.Utils.*
 import com.qaprosoft.integration.testrail.TestRailUpdater
@@ -21,7 +18,8 @@ import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 import java.nio.file.Path
 import java.nio.file.Paths
-
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 @Grab('org.testng:testng:6.8.8')
 
