@@ -371,15 +371,7 @@ public class QARunner extends AbstractRunner {
         context.node(nodeName) {
 
             scmClient.clonePush()
-            def changeLogSets = currentBuild.rawBuild.changeSets
-            logger.info("CHANGE_LOG_SETS: " + changeLogSets.dump())
-            changeLogSets.find { changeLogSet ->
-                for (entry in changeLogSet.getItems()) {
-                    if(!isParamEmpty(entry.comment) && entry.comment.contains("Update"))
-                        logger.info("1")
-                        return true
-                }
-            }
+            logger.info("searchrs: " + searchCommitMessages())
 //            context.wrap([$class: 'BuildUser']) {
 //                try {
 //                    context.timestamps {
@@ -411,6 +403,18 @@ public class QARunner extends AbstractRunner {
 //                    clean()
 //                }
 //            }
+        }
+    }
+
+    public def searchCommitMessages() {
+        def changeLogSets = currentBuild.rawBuild.changeSets
+        logger.info("CHANGE_LOG_SETS: " + changeLogSets.dump())
+        changeLogSets.each { changeLogSet ->
+            changeLogSet.getItems().find {
+                logger.info("1")
+                it.comment.contains("Update")
+            }
+            logger.info("2")
         }
     }
 
