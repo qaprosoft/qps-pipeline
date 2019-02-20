@@ -18,7 +18,8 @@ import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 import java.nio.file.Path
 import java.nio.file.Paths
-
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 @Grab('org.testng:testng:6.8.8')
 
@@ -239,28 +240,21 @@ public class QARunner extends AbstractRunner {
     }
 
     def parseTestNgFolderName(pomFile) {
-        def testNGFolderName = null
-        def pom = context.readMavenPom file: pomFile
-        for (plugin in pom.build.plugins){
-            if (plugin.artifactId.contains("surefire")) {
-                if(isParamEmpty(plugin.configuration)){
-                    break
-                }
-                def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
-                if(isParamEmpty(suiteXmlFiles)){
-                    break
-                }
-                def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
-                Path suitePath = Paths.get(suiteXmlFile.value).getParent()
+        def testNGFolderName = "testng_suites"
+        String pom = context.readFile pomFile
+        String tagName = "suiteXmlFile"
+        Matcher matcher = Pattern.compile(".*" + tagName + ".*").matcher(pom)
+        if(matcher.find()){
+            def suiteXmlPath = pom.substring(pom.lastIndexOf("<" + tagName + ">") + tagName.length() + 2, pom.indexOf("</" + tagName + ">".toString()))
+            Path suitePath = Paths.get(suiteXmlPath).getParent()
                 testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
-                logger.info(testNGFolderName)
-            }
+                logger.info("TestNG folder name: " + testNGFolderName)
         }
         return testNGFolderName
     }
 
     def searchTestNgFolderName(subProject) {
-        def testNGFolderName = "testng_suites"
+        def testNGFolderName = null
         def poms = getSubProjectPomFiles(subProject)
         logger.info("SUBPROJECT POMS: " + poms)
         for(pom in poms){
