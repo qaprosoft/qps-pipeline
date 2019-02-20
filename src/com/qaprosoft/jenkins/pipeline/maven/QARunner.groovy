@@ -371,7 +371,7 @@ public class QARunner extends AbstractRunner {
         context.node(nodeName) {
 
             scmClient.clonePush()
-            logger.info("searchrs: " + findInCommitMessage(currentBuild, "Update"))
+            logger.info("searchrs: " + isChangeSetContains(currentBuild, "Update"))
 //            context.wrap([$class: 'BuildUser']) {
 //                try {
 //                    context.timestamps {
@@ -403,14 +403,6 @@ public class QARunner extends AbstractRunner {
 //                    clean()
 //                }
 //            }
-        }
-    }
-
-    public def findInCommitMessage(currentBuild, stringValue) {
-        return currentBuild.rawBuild.changeSets.any {
-            it.getItems().find {
-                it.comment.contains(stringValue)
-            }
         }
     }
 
