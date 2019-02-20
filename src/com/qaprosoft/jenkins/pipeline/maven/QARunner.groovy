@@ -373,9 +373,11 @@ public class QARunner extends AbstractRunner {
             scmClient.clonePush()
             def changeLogSets = currentBuild.rawBuild.changeSets
             logger.info("CHANGE_LOG_SETS: " + changeLogSets.dump())
-            changeLogSets.each { changeLogSet ->
+            changeLogSets.find { changeLogSet ->
                 for (entry in changeLogSet.getItems()) {
-                    logger.info("ENTRY: " + entry.dump())
+                    if(!isParamEmpty(entry.comment) && entry.comment.contains("Update"))
+                        logger.info("1")
+                        return true
                 }
             }
 //            context.wrap([$class: 'BuildUser']) {
