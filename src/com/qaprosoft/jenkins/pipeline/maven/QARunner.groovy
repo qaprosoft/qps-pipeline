@@ -408,9 +408,9 @@ public class QARunner extends AbstractRunner {
 
     public def findInCommitMessage(currentBuild, stringValue) {
         return currentBuild.rawBuild.changeSets.any {
-            !isParamEmpty(it.getItems().find {
+            it.getItems().find {
                 it.comment.contains(stringValue)
-            })
+            }
         }
     }
 
