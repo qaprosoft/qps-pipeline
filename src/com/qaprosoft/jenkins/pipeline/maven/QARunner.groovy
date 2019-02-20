@@ -248,8 +248,7 @@ public class QARunner extends AbstractRunner {
         Pattern pattern = Pattern.compile(patternString)
         Matcher matcher = pattern.matcher(pom)
         if(matcher.find()){
-            logger.info("I SHOULD BE HERE")
-            def suiteXmlPath = pom.substring(pom.lastIndexOf("<${patternString}>"), pom.indexOf("</${patternString}>"))
+            def suiteXmlPath = pom.substring(pom.lastIndexOf("<${patternString}>".toString()), pom.indexOf("</${patternString}>".toString()))
             logger.info("PTH: " + suiteXmlPath)
         }
 
