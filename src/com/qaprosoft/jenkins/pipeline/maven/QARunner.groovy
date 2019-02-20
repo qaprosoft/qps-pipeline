@@ -247,8 +247,7 @@ public class QARunner extends AbstractRunner {
         String patternString = ".*suiteXmlFile.*"
         Pattern pattern = Pattern.compile(patternString)
         Matcher matcher = pattern.matcher(pom)
-        logger.info(matcher.find())
-        if(matcher.matches()){
+        if(matcher.find()){
             logger.info("I SHOULD BE HERE")
             def suiteXmlPath = pom.substring(pom.lastIndexOf("<${patternString}>"), pom.indexOf("</${patternString}>"))
             logger.info("PTH: " + suiteXmlPath)
