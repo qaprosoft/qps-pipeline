@@ -309,16 +309,12 @@ public class Executor {
         return isRequired
     }
 
-    @NonCPS
-    static def getPushAuthorEmail(currentBuild) {
-        def authorEmail = ''
-        def changeLogSets = currentBuild.rawBuild.changeSets
-        changeLogSets.each { changeLogSet ->
-            for (entry in changeLogSet.getItems()) {
-                authorEmail =  entry.getAuthorEmail()
+    static def isChangeSetContains(currentBuild, stringValue) {
+        return currentBuild.rawBuild.changeSets.any {
+            it.getItems().find {
+                it.comment.contains(stringValue)
             }
         }
-        return authorEmail
     }
 
     /** Checks if current job started as rebuild */
