@@ -250,25 +250,10 @@ public class QARunner extends AbstractRunner {
         Matcher matcher = pattern.matcher(pom)
         if(matcher.find()){
             def suiteXmlPath = pom.substring(pom.lastIndexOf("<" + tagName + ">") + tagName.length() + 2, pom.indexOf("</" + tagName + ">".toString()))
-            logger.info("PTH: " + suiteXmlPath)
+            Path suitePath = Paths.get(suiteXmlPath).getParent()
+                testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
+                logger.info("TestNG folder name: " + testNGFolderName)
         }
-
-//        def pom = context.readMavenPom file: pomFile
-//        for (plugin in pom.build.plugins){
-//            if (plugin.artifactId.contains("surefire")) {
-//                if(isParamEmpty(plugin.configuration)){
-//                    break
-//                }
-//                def suiteXmlFiles = plugin.configuration.getChild("suiteXmlFiles")
-//                if(isParamEmpty(suiteXmlFiles)){
-//                    break
-//                }
-//                def suiteXmlFile = suiteXmlFiles.getChild("suiteXmlFile")
-//                Path suitePath = Paths.get(suiteXmlFile.value).getParent()
-//                testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
-//                logger.info(testNGFolderName)
-//            }
-//        }
         return testNGFolderName
     }
 
