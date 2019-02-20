@@ -2,32 +2,34 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 @Grab('org.testng:testng:6.8.8')
 
-import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
+
+import static com.qaprosoft.Utils.parseSuite
 
 @InheritConstructors
 public class CronJobFactory extends PipelineFactory {
 
-    def project
+    def host
+    def repo
+    def organization
     def suitePath
 
-    public CronJobFactory(folder, pipelineScript, cronJobName, project, suitePath, jobDesc) {
+    public CronJobFactory(folder, pipelineScript, cronJobName, host, repo, organization, suitePath, jobDesc) {
+
         this.folder = folder
 		this.pipelineScript = pipelineScript
         this.description = jobDesc
         this.name = cronJobName
-        this.project = project
+        this.host = host
+        this.repo = repo
+        this.organization = organization
         this.suitePath = suitePath
     }
 
     def create() {
 
-        def xmlFile = new Parser(suitePath)
-        xmlFile.setLoadClasses(false)
-
-        List<XmlSuite> suiteXml = xmlFile.parseToList()
-        XmlSuite currentSuite = suiteXml.get(0)
+        XmlSuite currentSuite = parseSuite(suitePath)
 
         def pipelineJob = super.create()
 
@@ -35,7 +37,9 @@ public class CronJobFactory extends PipelineFactory {
 
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
-                configure addHiddenParameter('project', '', project)
+                configure addHiddenParameter('repo', '', repo)
+                configure addHiddenParameter('GITHUB_HOST', '', host)
+                configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
                 configure addHiddenParameter('ci_parent_url', '', '')
                 configure addHiddenParameter('ci_parent_build', '', '')
                 configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", "master")

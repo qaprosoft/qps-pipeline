@@ -26,15 +26,14 @@ public class Sonar {
 			context.withSonarQubeEnv(sonarQubeEnv) {
 				def goals = "-U -f ${pomFile} \
 					clean compile test-compile package sonar:sonar -DskipTests \
-					-Dmaven.test.failure.ignore=true \
 					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Dcarina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
 					-Dsonar.analysis.mode=preview  \
 					-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
 					-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-					-Dsonar.projectKey=${Configuration.get("project")} \
-					-Dsonar.projectName=${Configuration.get("project")} \
+					-Dsonar.projectKey=${Configuration.get("repo")} \
+					-Dsonar.projectName=${Configuration.get("repo")} \
 					-Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
 					-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
 					-Dsonar.sources=. \
