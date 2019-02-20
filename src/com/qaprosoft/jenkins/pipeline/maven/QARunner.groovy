@@ -1,5 +1,8 @@
 package com.qaprosoft.jenkins.pipeline.maven
 
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import static com.qaprosoft.Utils.*
 import com.qaprosoft.integration.testrail.TestRailUpdater
@@ -240,8 +243,14 @@ public class QARunner extends AbstractRunner {
 
     def parseTestNgFolderName(pomFile) {
         def testNGFolderName = null
-        def pom = context.readFile pomFile
-        logger.info(pom.dump())
+        String pom = context.readFile pomFile
+        String patternString = "suiteXmlFile"
+        Pattern pattern = Pattern.compile(patternString)
+        Matcher matcher = pattern.matcher(pom)
+        if(matcher.matches()){
+            def suiteXmlPath = pom.substring(pom.lastIndexOf("<${patternString}>"), pom.indexOf("</${patternString}>"))
+            logger.info("PTH: " + suiteXmlPath)
+        }
 
 //        def pom = context.readMavenPom file: pomFile
 //        for (plugin in pom.build.plugins){
