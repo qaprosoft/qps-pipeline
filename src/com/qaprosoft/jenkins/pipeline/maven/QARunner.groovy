@@ -244,10 +244,14 @@ public class QARunner extends AbstractRunner {
     def parseTestNgFolderName(pomFile) {
         def testNGFolderName = null
         String pom = context.readFile pomFile
+        logger.info(pom)
         String patternString = ".*suiteXmlFile.*"
         Pattern pattern = Pattern.compile(patternString)
+        logger.info(pattern.dump())
         Matcher matcher = pattern.matcher(pom)
+        logger.info(matcher.dump())
         if(matcher.matches()){
+            logger.info("I SHOULD BE HERE")
             def suiteXmlPath = pom.substring(pom.lastIndexOf("<${patternString}>"), pom.indexOf("</${patternString}>"))
             logger.info("PTH: " + suiteXmlPath)
         }
