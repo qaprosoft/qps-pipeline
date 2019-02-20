@@ -4,7 +4,7 @@ import com.qaprosoft.Logger
 import com.qaprosoft.integration.zafira.IntegrationTag
 import com.qaprosoft.integration.zafira.ZafiraClient
 import com.qaprosoft.jenkins.pipeline.Configuration
-
+import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class QTestUpdater {
@@ -14,7 +14,6 @@ class QTestUpdater {
     private ZafiraClient zc
     private QTestClient qTestClient
     private Logger logger
-    private integration
 
     public QTestUpdater(context) {
         this.context = context
@@ -23,13 +22,13 @@ class QTestUpdater {
         logger = new Logger(context)
     }
 
-    public void updateTestRun(uuid, isRerun) {
+    public void updateTestRun(uuid) {
         if (!Configuration.get(Configuration.Parameter.QTEST_ENABLE).toBoolean() || !qTestClient.isAvailable()) {
             // do nothing
             return
         }
         // export all tag related metadata from Zafira
-        integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
+        def integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
         logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
         if(isParamEmpty(integration)){
@@ -37,21 +36,26 @@ class QTestUpdater {
             return
         }
         // convert uuid to project_id, suite_id and testcases related maps
-        integration = parseTagData()
+        integration = parseTagData(integration)
 
         if(isParamEmpty(integration.projectId)){
             logger.error("Unable to detect QTest project_id!\n" + formatJson(integration))
             return
         }
         def projectId = integration.projectId
-        def cycleId = getCycleId(projectId)
+        def testRunName = integration.testRunName
+        def cycleName = integration.customParams.cycle_name
+        def startedAt = integration.startedAt
+        def finishedAt = integration.finishedAt
+        def cycleId = getCycleId(projectId, cycleName)
         if(isParamEmpty(cycleId)){
             logger.error("No dedicated QTest cycle detected.")
             return
         }
-        def suiteId = getTestSuiteId(projectId, cycleId)
+        def env = integration.env
+        def suiteId = getTestSuiteId(projectId, cycleId, env)
         if(isParamEmpty(suiteId)){
-            def testSuite = qTestClient.addTestSuite(projectId, cycleId, integration.platform)
+            def testSuite = qTestClient.addTestSuite(projectId, cycleId, env)
             logger.info("SUITE: " + formatJson(testSuite))
             if(isParamEmpty(testSuite)){
                 logger.error("Unable to register QTest testSuite.")
@@ -59,82 +63,91 @@ class QTestUpdater {
             }
             suiteId = testSuite.id
         }
-        integration.caseResultMap.values().each { testCase ->
+        integration.testCasesMap.values().each { testCase ->
             def testRun
-            if(!isRerun){
-                testRun = qTestClient.addTestRun(projectId, suiteId, testCase.case_id, integration.testRunName)
-                if(isParamEmpty(testRun)){
+            def testCaseName = getTestCaseName(projectId, testCase.case_id)
+            if(!isParamEmpty(testCaseName)){
+                testRunName = testCaseName
+            }
+
+            testRun = getTestRun(projectId, suiteId, testCase.case_id, testRunName)
+            logger.debug("TEST_RUN: " + formatJson(testRun))
+            if(isParamEmpty(testRun)) {
+                logger.error("Unable to get QTest testRun.")
+                logger.info("Adding new QTest testRun...")
+                testRun = qTestClient.addTestRun(projectId, suiteId, testCase.case_id, testRunName)
+                if (isParamEmpty(testRun)) {
                     logger.error("Unable to add QTest testRun.")
                     return
                 }
-                def results = qTestClient.uploadResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, testRun.name,  projectId)
-                if(isParamEmpty(results)){
-                    logger.error("Unable to add results for QTest TestRun.")
-                    return
-                }
-                logger.debug("UPLOADED_RESULTS: " + formatJson(results))
-            } else {
-                testRun = getTestRun(projectId, suiteId, testCase.case_id)
-//                logger.debug("TEST_RUN: " + formatJson(testRun))
-                if(isParamEmpty(testRun)){
-                    logger.error("Unable to get QTest testRun.")
-                    return
-                }
-                def log = qTestClient.getLog(projectId, testRun.id)
-                if(isParamEmpty(log)){
-                    logger.error("Unable to get QTest testRun logs.")
-                    return
-                }
-                logger.debug("STATUS: " + testCase.status)
-                qTestClient.updateResults(testCase.status, new Date(integration.startedAt),  new Date(integration.finishedAt), testRun.id, projectId, log.id)
             }
+            def testLogsNote = testCase.testURL + "\n\n" + testCase.comment
+            def results = qTestClient.uploadResults(testCase.status, new Date(startedAt),  new Date(finishedAt), testRun.id, testRun.name,  projectId, testLogsNote)
+            if(isParamEmpty(results)){
+                logger.error("Unable to add results for QTest TestRun.")
+                return
+            }
+            logger.debug("UPLOADED_RESULTS: " + formatJson(results))
         }
     }
 
-     protected def getCycleId(projectId){
+    protected def getCycleId(projectId, cycleName){
         def cycles = qTestClient.getCycles(projectId)
         for(cycle in cycles){
-            if(cycle.name == integration.customParams.cycle_name){
+            if(cycle.name == cycleName){
                 return cycle.id
             }
         }
     }
 
-    protected def getTestSuiteId(projectId, cycleId){
+    protected def getTestSuiteId(projectId, cycleId, platform){
         def suites = qTestClient.getTestSuites(projectId, cycleId)
         for(suite in suites){
-            if(suite.name == integration.platform){
+            if(suite.name == platform){
                 return suite.id
             }
         }
     }
 
-    protected def getTestRun(projectId, suiteId, caseId){
+    protected def getTestRun(projectId, suiteId, caseId, testRunName){
         def runs = qTestClient.getTestRuns(projectId, suiteId)
         for(run in runs){
-            if(run.name.equals(integration.testRunName) && run.test_case.id == Integer.valueOf(caseId)){
+            if(run.name.equals(testRunName) && run.test_case.id == Integer.valueOf(caseId)){
                 return run
             }
         }
     }
 
-    protected def parseTagData(){
-        Map testCaseResultMap = new HashMap<>()
-        integration.integrationInfo.each { integrationInfoItem ->
-            String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
-            Map testCase = new HashMap()
-            if (!testCaseResultMap.get(tagInfoArray[1])) {
-                if (!integration.projectId) {
-                    integration.projectId = tagInfoArray[0]
-                }
-                testCase.case_id = tagInfoArray[1]
-                testCase.status = integrationInfoItem.status
-            } else {
-                testCase = testCaseResultMap.get(tagInfoArray[1])
-            }
-            testCaseResultMap.put(tagInfoArray[1], testCase)
+    protected def getTestCaseName(projectId, caseId){
+        def testCaseName = null
+        def testCase = qTestClient.getTestCase(projectId, caseId)
+        if(isParamEmpty(testCase)){
+            logger.error("Unable to get QTest testCase.")
+        } else {
+            testCaseName = testCase.name
         }
-        integration.caseResultMap = testCaseResultMap
-        return integration
+        return testCaseName
+    }
+
+    protected def parseTagData(integration){
+        def parsedIntegrationInfo = integration
+        Map testCasesMap = new HashMap<>()
+        integration.testInfo.each { testInfo ->
+            String[] tagInfoArray = testInfo.tagValue.split("-")
+            def projectId = tagInfoArray[0]
+            def testCaseId = tagInfoArray[1]
+            if (isParamEmpty(testCasesMap.get(testCaseId))) {
+                if (isParamEmpty(parsedIntegrationInfo.projectId)) {
+                    parsedIntegrationInfo.projectId = projectId
+                }
+                Map testCase = new HashMap()
+                testCase.case_id = testCaseId.trim()
+                testCase.status = testInfo.status
+                testCase.testURL = "${integration.zafiraServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
+                testCasesMap.put(testCaseId, testCase)
+            }
+        }
+        parsedIntegrationInfo.testCasesMap = testCasesMap
+        return parsedIntegrationInfo
     }
 }

@@ -6,43 +6,44 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 @InheritConstructors
 public class PullRequestJobFactory extends PipelineFactory {
 
+	def host
 	def organization
 	def repo
-	def branch
-    def scmProjectUrl
+	def scmRepoUrl
 
-    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, organization, repo, branch, scmProjectUrl) {
-
-        this.folder = folder
-        this.pipelineScript = pipelineScript
-        this.name = jobName
-        this.description = jobDesc
+	public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, scmRepoUrl) {
+		this.folder = folder
+		this.pipelineScript = pipelineScript
+		this.name = jobName
+		this.description = jobDesc
+		this.host = host
 		this.organization = organization
 		this.repo = repo
-		this.branch = branch
-        this.scmProjectUrl = scmProjectUrl
-    }
+		this.scmRepoUrl = scmRepoUrl
+	}
 
 	def create() {
 		def pipelineJob = super.create()
 		pipelineJob.with {
-            parameters {
-                stringParam('repo', repo, 'Your GitHub repository for scanning')
-            }
-            scm {
-                git {
-                    remote {
-                        url(scmProjectUrl)
-                    }
-                }
-            }
+			parameters {
+				configure addHiddenParameter('GITHUB_HOST', '', host)
+				configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
+				stringParam('repo', repo, 'Your GitHub repository for scanning')
+			}
+			scm {
+				git {
+					remote {
+						url(scmRepoUrl)
+					}
+				}
+			}
 			properties {
-				githubProjectUrl(scmProjectUrl)
+				githubProjectUrl(scmRepoUrl)
 				//TODO: test with removed "cron('H/5 * * * *')"
 				pipelineTriggers {
 					triggers {
 						ghprbTrigger {
-							gitHubAuthId(getGitHubAuthId(repo))
+							gitHubAuthId(getGitHubAuthId(folder))
 							adminlist('')
 							useGitHubHooks(true)
 							triggerPhrase('')

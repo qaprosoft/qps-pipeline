@@ -5,6 +5,7 @@ import com.qaprosoft.Logger
 import com.qaprosoft.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.Configuration
 
+import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.integration.zafira.ZafiraClient
 import com.qaprosoft.integration.zafira.IntegrationTag
@@ -15,7 +16,6 @@ class TestRailUpdater {
     private ZafiraClient zc
     private TestRailClient trc
     private Logger logger
-    private integration
 
     public TestRailUpdater(context) {
         this.context = context
@@ -31,7 +31,7 @@ class TestRailUpdater {
 		}
 		
         // export all tag related metadata from Zafira
-        integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
+        def integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
         logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
         if(isParamEmpty(integration)){
@@ -40,7 +40,7 @@ class TestRailUpdater {
         }
 
         // convert uuid to project_id, suite_id and testcases related maps
-        integration = parseTagData()
+        integration = parseTagData(integration)
 
         if(isParamEmpty(integration.projectId)){
             logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
@@ -49,57 +49,73 @@ class TestRailUpdater {
         def includeAll = !isParamEmpty(Configuration.get("include_all"))?Configuration.get("include_all"):true
         def projectId = integration.projectId
         def suiteId = integration.suiteId
-        def milestoneId = getMilestoneId(projectId)
-        def assignedToId = getAssignedToId()
+        Map customParams = integration.customParams
+        Map caseResultMap = integration.testCasesMap
+        Map testResultMap = new HashMap<>()
+        def milestoneId = getMilestoneId(projectId, customParams)
+        def assignedToId
+        def createdBy = getAssignedToId(null)
+        if(isParamEmpty(customParams.assignee)){
+            assignedToId = createdBy
+        } else {
+            assignedToId = getAssignedToId(customParams.assignee)
+        }
         def testRunName
-        if(!isParamEmpty(integration.customParams.get("testrail_run_name"))){
-            testRunName = integration.customParams.get("testrail_run_name")
+        if(!isParamEmpty(customParams.testrail_run_name)){
+            testRunName = customParams.testrail_run_name
+            createdBy = null
             isRerun = true
         } else {
             testRunName = integration.testRunName
         }
         def createdAfter = integration.createdAfter
+
         // get all cases from TestRail by project and suite and compare with exported from Zafira
         // only cases available in both maps should be registered later
-        parseCases(projectId, suiteId)
+        def testRailCaseIds = parseCases(projectId, suiteId)
+        def filteredCaseResultMap = filterCaseResultMap(caseResultMap, testRailCaseIds)
 
-        def testRun = null
+        def testRailRunId = null
         if(isRerun){
-            testRun = getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter)
-            if (isParamEmpty(testRun)) {
-                logger.error("Unable to detect existing run in TestRail for rebuild!")
-            }
+            testRailRunId = getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter, Configuration.get("testrail_search_interval"))
         }
 
-        if(isParamEmpty(testRun)){
-            testRun = addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll)
-            if (isParamEmpty(testRun)) {
+        if(isParamEmpty(testRailRunId)){
+            def newTestRailRun = addTestRailRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll, filteredCaseResultMap)
+            if (isParamEmpty(newTestRailRun)) {
                 logger.error("Unable to add test run to TestRail!")
                 return
             }
+            testRailRunId = newTestRailRun.id
         }
-        addResults(testRun.id)
+        testResultMap = filterTests(testRailRunId, assignedToId, testRailCaseIds, testResultMap, filteredCaseResultMap)
+        addResults(testRailRunId, testResultMap)
     }
 
-    protected def getTestRunId(testRunName, assignedToId, milestoneId, projectId, suiteId, createdAfter){
-		// "- 60 * 24 * 7" - a week to support adding results into manually created TestRail runs
-        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 24 * 7, assignedToId, milestoneId, projectId, suiteId)
+    protected def getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter, searchInterval){
+		// "- 60 * 60 * 24 * defaultSearchInterval" - an interval to support adding results into manually created TestRail runs
+        int defaultSearchInterval = 7
+        if(!isParamEmpty(searchInterval)){
+            defaultSearchInterval = searchInterval.toInteger()
+        }
+        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 60 * 24 * defaultSearchInterval, createdBy, milestoneId, projectId, suiteId)
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
-		def run = null
-        testRuns.each { Map testRun ->
+		def testRunId = null
+        for(Map testRun in testRuns){
 //            logger.debug("TEST_RUN: " + formatJson(testRun))
             String correctedName = testRun.name.trim().replaceAll(" +", " ")
             if(correctedName.equals(testRunName)){
-                integration.testRunId = testRun.id
-				run = testRun
-                return run
+                testRunId = testRun.id
+                break
             }
         }
-		return run
+        if (isParamEmpty(testRunId)) {
+            logger.error("Unable to detect run in TestRail!")
+        }
+		return testRunId
     }
 
-    protected def getMilestoneId(projectId){
-        Map customParams = integration.customParams
+    protected def getMilestoneId(projectId, customParams){
         if(isParamEmpty(customParams.milestone)) {
             logger.error("No milestone name discovered!")
             return
@@ -112,18 +128,17 @@ class TestRailUpdater {
                 milestoneId = milestone.id
             }
         }
-        if(!milestoneId ){
-            def milestone = trc.addMilestone(projectId, milestoneName)
-            if(!isParamEmpty(milestone)){
-                milestoneId = milestone.id
+        if(isParamEmpty(milestoneId)){
+            def newMilestone = trc.addMilestone(projectId, milestoneName)
+            if(!isParamEmpty(newMilestone)){
+                milestoneId = newMilestone.id
             }
         }
         return milestoneId
     }
 
-    protected def getAssignedToId(){
-        Map customParams = integration.customParams
-        def assignedToId = trc.getUserIdByEmail(customParams.assignee)
+    protected def getAssignedToId(testRailAssignee){
+        def assignedToId = trc.getUserIdByEmail(testRailAssignee)
         if(isParamEmpty(assignedToId)){
             logger.debug("No users with such email found!")
             return
@@ -132,97 +147,101 @@ class TestRailUpdater {
     }
 
     protected def parseCases(projectId, suiteId){
-        Set validTestCases = new HashSet()
+        Set testRailCaseIds = new HashSet()
         def cases = trc.getCases(projectId, suiteId)
 //        logger.debug("SUITE_CASES: " + formatJson(cases))
         cases.each { testCase ->
-            validTestCases.add(testCase.id)
+            testRailCaseIds.add(testCase.id)
         }
-        integration.validTestCases = validTestCases
 //        logger.debug("VALID_CASES: " + formatJson(validTestCases))
-
-        filterCases()
+        return testRailCaseIds
     }
 
-    protected def filterCases(){
-        integration.caseResultMap.each { testCase ->
+    protected def filterCaseResultMap(caseResultMap, testRailCaseIds){
+        def filteredCaseResultMap = caseResultMap
+        caseResultMap.each { testCase ->
             boolean isValid = false
-            for(validTestCaseId in integration.validTestCases){
-                if(validTestCaseId.toString().equals(testCase.value.case_id)){
+            for(testRailCaseId in testRailCaseIds){
+                if(testRailCaseId.toString().equals(testCase.value.case_id)){
                     isValid = true
                     break
                 }
             }
             if(!isValid){
-                integration.caseResultMap.remove(testCase.value.case_id)
+                filteredCaseResultMap.remove(testCase.value.case_id)
                 logger.error("Removed non-existing case: ${testCase.value.case_id}.\nPlease adjust your test code using valid platfrom/language/locale filters for TestRail cases registration.")
             }
         }
-//        logger.debug("CASES_MAP:\n" + formatJson(integration.caseResultMap))
+        return filteredCaseResultMap
     }
 
-    protected def getTests(){
-        def tests = trc.getTests(integration.testRunId)
+    protected def filterTests(testRunId, assignedToId, testRailCaseIds, testResultMap, caseResultMap){
+        Map filteredTestResultMap = testResultMap
+        def tests = trc.getTests(testRunId)
 //        logger.debug("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
-            for(validTestCaseId in integration.validTestCases){
-                if(validTestCaseId == test.case_id){
-                    Map testResult = new HashMap()
-                    testResult.test_id = test.id
+            for(testRailCaseId in testRailCaseIds){
+                if(testRailCaseId == test.case_id){
+                    Map resultToAdd = new HashMap()
+                    resultToAdd.test_id = test.id
                     String testCaseId = test.case_id.toString()
-                    if(!isParamEmpty(integration.caseResultMap.get(testCaseId))){
-                        testResult.status_id = integration.caseResultMap.get(testCaseId).status_id
-                        testResult.comment = integration.caseResultMap.get(testCaseId).comment
-                        testResult.defects = integration.caseResultMap.get(testCaseId).defects
-                        if (testResult.status_id != 3) {
-                            integration.testResultMap.put(testResult.test_id, testResult)
-                            integration.caseResultMap.remove(testCaseId)
+                    def testCase = caseResultMap.get(testCaseId)
+                    if(!isParamEmpty(testCase)){
+                        resultToAdd.status_id = testCase.status_id
+                        resultToAdd.comment = testCase.testURL + "\n\n" + testCase.comment
+                        resultToAdd.defects = testCase.defects
+                        resultToAdd.assignedto_id = assignedToId
+                        if (resultToAdd.status_id != 3) {
+                            filteredTestResultMap.put(resultToAdd.test_id, resultToAdd)
                         }
                         break
                     }
                 }
             }
         }
-
-//        logger.debug("TESTS_MAP2:\n" + formatJson(integration.testResultMap))
+        return filteredTestResultMap
     }
 
-    protected def addTestRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll){
-        def testRun = trc.addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, integration.caseResultMap.keySet(), projectId)
+    protected def addTestRailRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll, caseResultMap){
+        def testRun = trc.addTestRun(suiteId, testRunName, milestoneId, assignedToId, includeAll, caseResultMap.keySet(), projectId)
         logger.debug("ADDED TESTRUN:\n" + formatJson(testRun))
         return testRun
     }
 
-    protected def addResults(testRunId){
-        integration.testRunId = testRunId
-        getTests()
-        def response = trc.addResultsForTests(integration.testRunId, integration.testResultMap.values())
+    protected def addResults(testRunId, testResultMap){
+        def response = trc.addResultsForTests(testRunId, testResultMap.values())
 //        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
     }
     
-    protected def parseTagData(){
-        Map testCaseResultMap = new HashMap<>()
-        integration.integrationInfo.each { integrationInfoItem ->
-            String[] tagInfoArray = integrationInfoItem.tagValue.split("-")
-            Map testCase = new HashMap()
-            if (!testCaseResultMap.get(tagInfoArray[2])) {
-                if (!integration.projectId) {
-                    integration.projectId = tagInfoArray[0]
-                    integration.suiteId = tagInfoArray[1]
-                }
-                testCase.case_id = tagInfoArray[2]
-                testCase.status_id = StatusMapper.getTestRailStatus(integrationInfoItem.status)
-                testCase.comment = integrationInfoItem.message
-            } else {
-                testCase = testCaseResultMap.get(tagInfoArray[2])
+    protected def parseTagData(integration){
+        def parsedIntegrationInfo = integration
+        Map testCasesMap = new HashMap<>()
+        for(testInfo in integration.testInfo){
+            String[] tagInfoArray = testInfo.tagValue.split("-")
+            if(tagInfoArray.size() < 3){
+                logger.error("Invalid integration tag, test with id ${testInfo.id} won't be pushed in testrail.")
+                continue
             }
-            testCase.defects = getDefectsString(testCase.defects, integrationInfoItem.defectId)
-            testCaseResultMap.put(tagInfoArray[2], testCase)
+            def projectId = tagInfoArray[0]
+            def testSuiteId = tagInfoArray[1]
+            def testCaseId = tagInfoArray[2]
+            Map testCase = new HashMap()
+            if (isParamEmpty(testCasesMap.get(testCaseId))) {
+                if (isParamEmpty(parsedIntegrationInfo.projectId)) {
+                    parsedIntegrationInfo.projectId = projectId
+                    parsedIntegrationInfo.suiteId = testSuiteId
+                }
+                testCase.case_id = testCaseId
+                testCase.status_id = StatusMapper.getTestRailStatus(testInfo.status)
+                testCase.comment = testInfo.message
+                testCase.testURL = "${integration.zafiraServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
+            } else {
+                testCase = testCasesMap.get(testCaseId)
+            }
+            testCase.defects = getDefectsString(testCase.defects, testInfo.defectId)
+            testCasesMap.put(testCaseId, testCase)
         }
-        integration.caseResultMap = testCaseResultMap
-        Map testResultMap = new HashMap<>()
-        integration.testResultMap = testResultMap
-
-        return integration
+        parsedIntegrationInfo.testCasesMap = testCasesMap
+        return parsedIntegrationInfo
     }
 }

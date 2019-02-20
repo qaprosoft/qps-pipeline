@@ -20,6 +20,8 @@ class StatusMapper {
         SKIPPED(3),
         ABORTED(3),
         QUEUED(3),
+        IN_PROGRESS(3),
+
         final int value
         ZafiraStatus(int value) {
             this.value = value
