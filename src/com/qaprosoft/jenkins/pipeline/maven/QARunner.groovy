@@ -240,7 +240,7 @@ public class QARunner extends AbstractRunner {
     }
 
     def parseTestNgFolderName(pomFile) {
-        def testNGFolderName = null
+        def testNGFolderName = "testng_suites"
         String pom = context.readFile pomFile
         String tagName = "suiteXmlFile"
         Matcher matcher = Pattern.compile(".*" + tagName + ".*").matcher(pom)
@@ -254,7 +254,7 @@ public class QARunner extends AbstractRunner {
     }
 
     def searchTestNgFolderName(subProject) {
-        def testNGFolderName = "testng_suites"
+        def testNGFolderName = null
         def poms = getSubProjectPomFiles(subProject)
         logger.info("SUBPROJECT POMS: " + poms)
         for(pom in poms){
