@@ -577,8 +577,8 @@ public class QARunner extends AbstractRunner {
     }
 
     protected String getMavenGoals() {
-		def buildUserEmail = Configuration.get("BUILD_USER_EMAIL")?Configuration.get("BUILD_USER_EMAIL"):""
-		def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+        def buildUserEmail = Configuration.get("BUILD_USER_EMAIL")?Configuration.get("BUILD_USER_EMAIL"):""
+        def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 				-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 		-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
@@ -609,19 +609,19 @@ public class QARunner extends AbstractRunner {
         addVideoStreamingCapability("Video streaming was enabled.", "capabilities.enableVNC", "true")
         addBrowserStackGoals()
 
-		def goals = Configuration.resolveVars(defaultBaseMavenGoals)
+        def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
-		//register all obligatory vars
-		Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
-		//register all params after vars to be able to override
-		Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+        //register all obligatory vars
+        Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+        //register all params after vars to be able to override
+        Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
 
         goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
         goals += getOptionalCapability("deploy_to_local_repo", " install")
 
-		logger.debug("goals: ${goals}")
-		return goals
-	}
+        logger.debug("goals: ${goals}")
+        return goals
+    }
 
     protected def addVideoStreamingCapability(message, capabilityName, capabilityValue) {
         def node  = Configuration.get("node")
