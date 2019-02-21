@@ -338,13 +338,6 @@ public class Executor {
 
     }
 
-    static def enableVideoStreaming(node, message, capability, goals) {
-        if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {
-            goals += capability
-        }
-        return goals
-    }
-
     static def getDefectsString(String defects, String newDefects){
         if(isParamEmpty(defects)){
             defects = newDefects
