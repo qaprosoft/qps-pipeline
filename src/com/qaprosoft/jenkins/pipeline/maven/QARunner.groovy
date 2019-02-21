@@ -593,6 +593,7 @@ public class QARunner extends AbstractRunner {
 			//override "null" value by empty to be able to register in cloud version of Zafira
 			buildUserEmail = ""
 		}
+        Configuration.remove("overrideFields")
 		def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 				-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 		-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
@@ -620,8 +621,6 @@ public class QARunner extends AbstractRunner {
 		Configuration.set("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
 
 		def goals = Configuration.resolveVars(defaultBaseMavenGoals)
-
-        Configuration.remove("overrideFields")
 
 		//register all obligatory vars
 		Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
