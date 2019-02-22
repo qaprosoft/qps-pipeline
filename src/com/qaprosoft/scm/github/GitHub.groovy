@@ -16,7 +16,14 @@ class GitHub implements ISCM {
 	public GitHub(context) {
 		this.context = context
         logger = new Logger(context)
-		gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+        def scmHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
+        if(scmHost.contains("github")){
+            gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+        } else if(scmHost.contains("bitbucket")) {
+            gitHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+        } else {
+            throw new RuntimeException("Unsupported SCM system!")
+        }
 		credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
     }
     
