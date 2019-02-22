@@ -141,7 +141,7 @@ class QTestUpdater {
                     parsedIntegrationInfo.projectId = projectId
                 }
                 Map testCase = new HashMap()
-                testCase.case_id = testCaseId
+                testCase.case_id = testCaseId.trim()
                 testCase.status = testInfo.status
                 testCase.testURL = "${integration.zafiraServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
                 testCasesMap.put(testCaseId, testCase)
