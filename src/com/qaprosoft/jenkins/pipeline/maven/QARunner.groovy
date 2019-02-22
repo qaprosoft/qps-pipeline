@@ -608,6 +608,7 @@ public class QARunner extends AbstractRunner {
                 "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE")
         addVideoStreamingCapability("Video streaming was enabled.", "capabilities.enableVNC", "true")
         addBrowserStackGoals()
+        Configuration.remove('overrideFields')
 
         def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
