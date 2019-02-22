@@ -5,6 +5,7 @@ import com.qaprosoft.Logger
 import com.qaprosoft.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.Configuration
 
+import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.integration.zafira.ZafiraClient
 import com.qaprosoft.integration.zafira.IntegrationTag
@@ -76,7 +77,7 @@ class TestRailUpdater {
 
         def testRailRunId = null
         if(isRerun){
-            testRailRunId = getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter)
+            testRailRunId = getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter, Configuration.get("testrail_search_interval"))
         }
 
         if(isParamEmpty(testRailRunId)){
@@ -91,9 +92,13 @@ class TestRailUpdater {
         addResults(testRailRunId, testResultMap)
     }
 
-    protected def getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter){
-		// "- 60 * 60 * 24 * 7" - a week to support adding results into manually created TestRail runs
-        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 60 * 24 * 7, createdBy, milestoneId, projectId, suiteId)
+    protected def getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter, searchInterval){
+		// "- 60 * 60 * 24 * defaultSearchInterval" - an interval to support adding results into manually created TestRail runs
+        int defaultSearchInterval = 7
+        if(!isParamEmpty(searchInterval)){
+            defaultSearchInterval = searchInterval.toInteger()
+        }
+        def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 60 * 24 * defaultSearchInterval, createdBy, milestoneId, projectId, suiteId)
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
 		def testRunId = null
         for(Map testRun in testRuns){
