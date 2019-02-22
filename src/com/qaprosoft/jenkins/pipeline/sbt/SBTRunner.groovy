@@ -89,5 +89,4 @@ class SBTRunner extends AbstractRunner {
             context.build job: 'loadTesting/Upload-Results-To-S3'
         }
     }
-
 }
