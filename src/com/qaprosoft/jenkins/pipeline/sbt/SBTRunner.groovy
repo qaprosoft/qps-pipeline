@@ -86,7 +86,7 @@ class SBTRunner extends AbstractRunner {
     protected void uploadResultsToS3() {
         def needToUpload = Configuration.get("needToUpload").toString().toBoolean()
         if (needToUpload) {
-            context.build job: 'loadTesting/Upload-Results-To-S3'
+            context.build job: 'loadTesting/Upload-Results-To-S3', wait: false
         }
     }
 }
