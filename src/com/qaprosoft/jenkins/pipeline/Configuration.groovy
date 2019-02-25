@@ -136,20 +136,12 @@ public class Configuration {
 			vars.put("vnc_port", "443")
 		}
 
-		for (var in vars) {
-			context.println(var)
-		}
-
 		// 2. Load all job parameters into unmodifiable map
 		def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
 		for (param in jobParams) {
 			if (param.value != null) {
 				params.put(param.name, param.value)
 			}
-		}
-
-		for (param in params) {
-			context.println(param)
 		}
 
 		//3. Replace vars and/or params with overrideFields values
@@ -169,6 +161,13 @@ public class Configuration {
 			}
 		}
 
+		for (var in vars) {
+			context.println(var)
+		}
+
+		for (param in params) {
+			context.println(param)
+		}
 		//4. TODO: investigate how private pipeline can override those values
 		// public static void set(Map args) - ???
 	}
