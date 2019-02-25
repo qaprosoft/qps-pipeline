@@ -146,14 +146,22 @@ class Repository {
 		def pipelineLibrary = Configuration.get("pipelineLibrary")
 		def runnerClass = Configuration.get("runnerClass")
 
-		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
+        }
 	}
 
 	private String getOnPushScript() {
 		def pipelineLibrary = Configuration.get("pipelineLibrary")
 		def runnerClass = Configuration.get("runnerClass")
 
-		return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
+        }
 	}
 
     private void registerObject(name, object) {

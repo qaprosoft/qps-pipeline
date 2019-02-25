@@ -333,11 +333,19 @@ public class QARunner extends AbstractRunner {
     }
 
     protected String getPipelineScript() {
-        return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+        }
     }
 
     protected String getCronPipelineScript() {
-        return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
+        }
     }
 
     protected void registerObject(name, object) {
