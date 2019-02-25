@@ -240,7 +240,7 @@ public class QARunner extends AbstractRunner {
     }
 
     def parseTestNgFolderName(pomFile) {
-        def testNGFolderName = "testng_suites"
+        def testNGFolderName = null
         String pom = context.readFile pomFile
         String tagName = "suiteXmlFile"
         Matcher matcher = Pattern.compile(".*" + tagName + ".*").matcher(pom)
