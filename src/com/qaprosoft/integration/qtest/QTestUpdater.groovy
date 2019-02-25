@@ -52,7 +52,9 @@ class QTestUpdater {
             logger.error("No dedicated QTest cycle detected.")
             return
         }
-        cycleId = getSubCycleId(cycleId, projectId)
+        if(projectId.toInteger() == 10){
+            cycleId = getSubCycleId(cycleId, projectId)
+        }
         def env = integration.env
         def suiteId = getTestSuiteId(projectId, cycleId, env)
         if(isParamEmpty(suiteId)){
