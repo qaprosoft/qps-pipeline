@@ -31,6 +31,17 @@ class QTestClient extends HttpClient{
         }
     }
 
+    public def getSubCycles(cycleId, projectId) {
+        context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200",
+                              url: this.serviceURL + "projects/${projectId}/test-cycles?parentId=${cycleId}&parentType=test-cycle"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
     public def getTestSuites(projectId, cycleId) {
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
@@ -71,6 +82,21 @@ class QTestClient extends HttpClient{
                               httpMode: 'GET',
                               validResponseCodes: "200",
                               url: this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/test-logs/last-run"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
+    public def addTestCycle(projectId, cycleId, name) {
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder name: name
+        logger.debug("REQUEST_PARAMS: " + jsonBuilder.toString())
+        context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'POST',
+                              requestBody: "${jsonBuilder}",
+                              validResponseCodes: "200",
+                              url: this.serviceURL + "projects/${projectId}/test-cycles?parentId=${cycleId}&parentType=test-cycle"]
             return sendRequestFormatted(parameters)
         }
     }
