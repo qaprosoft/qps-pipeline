@@ -478,7 +478,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
 
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String carinaCoreVersion = getCarinaCoreVersion()
+        String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
@@ -510,19 +510,6 @@ public class QARunner extends AbstractRunner {
                 prepareForMobile()
             }
         }
-    }
-
-    protected String getCarinaCoreVersion() {
-        def carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
-        def overrideFields = Configuration.get("overrideFields").toLowerCase()
-
-        if (overrideFields.contains("carina_core_version")) {
-            def findCoreVersion = overrideFields.toLowerCase().find(/(?<=carina_core_version=)([^,]*)/)
-            if (!isParamEmpty(findCoreVersion)) {
-                carinaCoreVersion = findCoreVersion
-            }
-        }
-        return carinaCoreVersion
     }
 
     protected void prepareForMobile() {
@@ -589,13 +576,17 @@ public class QARunner extends AbstractRunner {
 		executeMavenGoals("-B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION")
 */	}
 
-	protected String getMavenGoals() {
-		def buildUserEmail = Configuration.get("BUILD_USER_EMAIL")
-		if(buildUserEmail == null) {
-			//override "null" value by empty to be able to register in cloud version of Zafira
-			buildUserEmail = ""
-		}
-		def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+    protected void buildJob() {
+        context.stage('Run Test Suite') {
+            def goals = getMavenGoals()
+            def pomFile = getMavenPomFile()
+            executeMavenGoals("-U ${goals} -f ${pomFile}")
+        }
+    }
+
+    protected String getMavenGoals() {
+        def buildUserEmail = Configuration.get("BUILD_USER_EMAIL")?Configuration.get("BUILD_USER_EMAIL"):""
+        def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 				-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 		-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
@@ -614,72 +605,72 @@ public class QARunner extends AbstractRunner {
 		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 		clean test -Dqueue_registration=false"
 
-        def rerunFailures = Configuration.get("rerun_failures")
-        if(!isParamEmpty(rerunFailures)){
-            defaultBaseMavenGoals = defaultBaseMavenGoals + " -Dzafira_rerun_failures=${rerunFailures}"
+        addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
+        addCapability("suite", suiteName)
+        addOptionalCapability("rerun_failures", "", "rerun_failures", Configuration.get("rerun_failures"))
+        addOptionalCapability("enableVideo", "Video recording was enabled.", "capabilities.enableVideo", "true")
+        // [VD] getting debug host works only on specific nodes which are detecetd by chooseNode.
+        // on this stage this method is not fucntion properly!
+        //TODO: move 8000 port into the global var
+        addOptionalCapability("debug", "Enabling remote debug on ${getDebugHost()}:${getDebugPort()}", "maven.surefire.debug",
+                "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE")
+        addVideoStreamingCapability("Video streaming was enabled.", "capabilities.enableVNC", "true")
+        addBrowserStackGoals()
+
+        def goals = Configuration.resolveVars(defaultBaseMavenGoals)
+
+        //register all obligatory vars
+        Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+        //register all params after vars to be able to override
+        Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+
+        goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
+        goals += getOptionalCapability("deploy_to_local_repo", " install")
+
+        logger.debug("goals: ${goals}")
+        return goals
+    }
+
+    protected def addVideoStreamingCapability(message, capabilityName, capabilityValue) {
+        def node  = Configuration.get("node")
+        if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {
+            logger.info(message)
+            Configuration.set(capabilityName, capabilityValue)
         }
+    }
 
-		Configuration.set("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
+    protected def addCapability(capabilityName, capabilityValue){
+        Configuration.set(capabilityName, capabilityValue)
+    }
 
-		def goals = Configuration.resolveVars(defaultBaseMavenGoals)
-
-		//register all obligatory vars
-		Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
-
-		//register all params after vars to be able to override
-		Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
-
-		goals = enableVideoStreaming(Configuration.get("node"), "Video streaming was enabled.", " -Dcapabilities.enableVNC=true ", goals)
-		goals = addOptionalParameter("enableVideo", "Video recording was enabled.", " -Dcapabilities.enableVideo=true ", goals)
-		goals = addOptionalParameter(Configuration.get(Configuration.Parameter.JACOCO_ENABLE), "Jacoco tool was enabled.", " jacoco:instrument ", goals)
-
-		//TODO: move 8000 port into the global var
-		def mavenDebug=" -Dmaven.surefire.debug=\"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE\" "
-
-		if (Configuration.get("debug") && Configuration.get("debug").toBoolean()) {
-			// [VD] getting debug host works only on specific nodes which are detecetd by chooseNode.
-			// on this stage this method is not fucntion properly!
-			goals = addOptionalParameter("debug", "Enabling remote debug on ${getDebugHost()}:${getDebugPort()}", mavenDebug, goals)
-		}
-		goals = addOptionalParameter("deploy_to_local_repo", "Enabling deployment of tests jar to local repo.", " install", goals)
-
-		//browserstack goals
-		if (isBrowserStackRun()) {
-			def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
-					Configuration.get("browser") + "-" + Configuration.get("env") + "\""
-			uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
-			startBrowserStackLocal(uniqueBrowserInstance)
-			goals += " -Dcapabilities.project=" + Configuration.get("repo")
-			goals += " -Dcapabilities.build=" + uniqueBrowserInstance
-			goals += " -Dcapabilities.browserstack.localIdentifier=" + uniqueBrowserInstance
-			goals += " -Dapp_version=browserStack"
-		}
-
-		//append again overrideFields to make sure they are declared at the end
-		goals = goals + " " + Configuration.get("overrideFields")
-
-		logger.debug("goals: ${goals}")
-
-		def suiteName = null
-		if (context.isUnix()) {
-			suiteName = Configuration.get("suite").replace("\\", "/")
-		} else {
-			suiteName = Configuration.get("suite").replace("/", "\\")
-		}
-
-		return "${goals} -Dsuite=${suiteName}"
-	}
-
-	protected String getMavenPomFile() {
-		return getSubProjectFolder() + "/pom.xml"
-	}
-
-    protected void buildJob() {
-        context.stage('Run Test Suite') {
-			def goals = getMavenGoals()
-			def pomFile = getMavenPomFile()
-			executeMavenGoals("-U ${goals} -f ${pomFile}")
+    protected def addOptionalCapability(parameter, message, capabilityName, capabilityValue) {
+        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
+            logger.info(message)
+            Configuration.set(capabilityName, capabilityValue)
         }
+    }
+
+    protected def getOptionalCapability(parameter, capabilityName) {
+        return Configuration.get(parameter) && Configuration.get(parameter).toBoolean()?capabilityName:""
+    }
+
+    protected def addBrowserStackGoals(){
+        //browserstack goals
+        if (isBrowserStackRunning()) {
+            def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
+                    Configuration.get("browser") + "-" + Configuration.get("env") + "\""
+            uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
+            startBrowserStackLocal(uniqueBrowserInstance)
+            Configuration.set("capabilities.project", Configuration.get("repo"))
+            Configuration.set("capabilities.build", uniqueBrowserInstance)
+            Configuration.set("capabilities.browserstack.localIdentifier", uniqueBrowserInstance)
+            Configuration.set("app_version", "browserStack")
+        }
+    }
+
+    protected boolean isBrowserStackRunning() {
+        def customCapabilities = Configuration.get("custom_capabilities")?Configuration.get("custom_capabilities"):""
+        return customCapabilities.toLowerCase().contains("browserstack")
     }
 
     protected void startBrowserStackLocal(String uniqueBrowserInstance) {
@@ -709,6 +700,19 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    protected def getSuiteName() {
+        def suiteName
+        if (context.isUnix()) {
+            suiteName = Configuration.get("suite").replace("\\", "/")
+        } else {
+            suiteName = Configuration.get("suite").replace("/", "\\")
+        }
+        return suiteName
+    }
+
+    protected String getMavenPomFile() {
+        return getSubProjectFolder() + "/pom.xml"
+    }
 
     //TODO: move into valid jacoco related package
     protected void publishJacocoReport() {
@@ -1125,25 +1129,6 @@ public class QARunner extends AbstractRunner {
                       onlyStable: false,
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
-    }
-
-    protected boolean isBrowserStackRun() {
-		boolean res = false
-		def customCapabilities = Configuration.get("custom_capabilities")
-		if (!isParamEmpty(customCapabilities)) {
-			if (customCapabilities.toLowerCase().contains("browserstack")) {
-				res = true
-			}
-		}
-		return res
-	}
-
-    protected def addOptionalParameter(parameter, message, capability, goals) {
-        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
-            logger.debug(message)
-            goals += capability
-        }
-        return goals
     }
 
     // Possible to override in private pipelines

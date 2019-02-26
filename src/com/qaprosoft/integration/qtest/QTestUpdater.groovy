@@ -52,6 +52,9 @@ class QTestUpdater {
             logger.error("No dedicated QTest cycle detected.")
             return
         }
+        if(projectId.toInteger() == 10){
+            cycleId = getSubCycleId(cycleId, projectId)
+        }
         def env = integration.env
         def suiteId = getTestSuiteId(projectId, cycleId, env)
         if(isParamEmpty(suiteId)){
@@ -98,6 +101,32 @@ class QTestUpdater {
                 return cycle.id
             }
         }
+    }
+
+    protected def getSubCycleId(cycleId, projectId){
+        def subCycleId = null
+        def os = Configuration.get("capabilities.os")
+        def os_version = Configuration.get("capabilities.os_version")
+        if(!isParamEmpty(os) && !isParamEmpty(os_version)){
+            def subCycleName = os + "-" + os_version + "-" + Configuration.get("capabilities.browser")
+            def subCycles = qTestClient.getSubCycles(cycleId, projectId)
+            for(subCycle in subCycles){
+                if(subCycle.name == subCycleName){
+                    subCycleId = subCycle.id
+                }
+            }
+            if(isParamEmpty(subCycleId)){
+                def newSubCycle = qTestClient.addTestCycle(projectId, cycleId, subCycleName)
+                if(isParamEmpty(newSubCycle)){
+                    logger.error("Unable to add new cycle.")
+                    return
+                }
+                subCycleId = newSubCycle.id
+            }
+        } else {
+            subCycleId = cycleId
+        }
+        return subCycleId
     }
 
     protected def getTestSuiteId(projectId, cycleId, platform){
