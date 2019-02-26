@@ -107,11 +107,8 @@ class QTestUpdater {
         def subCycleId = null
         def os = Configuration.get("capabilities.os")
         def os_version = Configuration.get("capabilities.os_version")
-        logger.info("OS: " + os)
-        logger.info("OS_VERSION: " + os_version)
         if(!isParamEmpty(os) && !isParamEmpty(os_version)){
             def subCycleName = os + "-" + os_version + "-" + Configuration.get("capabilities.browser")
-            logger.info("subCycleName: " + subCycleName)
             def subCycles = qTestClient.getSubCycles(cycleId, projectId)
             for(subCycle in subCycles){
                 if(subCycle.name == subCycleName){
@@ -127,7 +124,6 @@ class QTestUpdater {
                 subCycleId = newSubCycle.id
             }
         } else {
-            logger.info("I SHOULN'T BE HERE")
             subCycleId = cycleId
         }
         return subCycleId
