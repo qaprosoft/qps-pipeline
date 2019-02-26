@@ -12,6 +12,8 @@ public class Maven {
 	public void executeMavenGoals(goals) {
 		logger.debug("Maven mixing->executeMavenGoals")
 		context.withMaven(
+			//EXPLICIT: Only the Maven publishers explicitly configured in "withMaven(options:...)" are used.
+			publisherStrategy: 'EXPLICIT',
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
 			maven: "${MAVEN_TOOL}",
 			// Maven settings.xml file defined with the Jenkins Config File Provider Plugin
@@ -27,6 +29,8 @@ public class Maven {
 	public void executeMavenGoals(goals, mavenSettingsConfig) {
 		logger.info("Maven mixing->executeMavenGoals")
 		context.withMaven(
+			//EXPLICIT: Only the Maven publishers explicitly configured in "withMaven(options:...)" are used.
+			publisherStrategy: 'EXPLICIT',
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
 			maven: "${MAVEN_TOOL}",
 			// Maven settings.xml file defined with the Jenkins Config File Provider Plugin
@@ -40,6 +44,8 @@ public class Maven {
 	public void executeMavenGoals(goals, mavenSettingsConfig, mavenLocalRepo) {
 		logger.info("Maven mixing->executeMavenGoals")
 		context.withMaven(
+			//EXPLICIT: Only the Maven publishers explicitly configured in "withMaven(options:...)" are used.
+			publisherStrategy: 'EXPLICIT',
 			// Maven installation declared in the Jenkins "Global Tool Configuration"
 			maven: "${MAVEN_TOOL}",
 			// Maven settings.xml file defined with the Jenkins Config File Provider Plugin
