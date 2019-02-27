@@ -59,7 +59,7 @@ class ZafiraUpdater {
         def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            bodyHeader = "Unable to execute tests due to the compilation failure. ${jobBuildUrl}\n"
+            bodyHeader = "Unable to execute tests due to the compilation failure. ${jobBuildUrl}\\n"
             subject = getFailureSubject(FailureCause.COMPILATION_FAILURE.value, jobName, env, buildNumber)
             failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
             failureReason = URLEncoder.encode("${FailureCause.COMPILATION_FAILURE.value}:\n" + failureLog, "UTF-8")
@@ -90,7 +90,7 @@ class ZafiraUpdater {
             logger.error("Unable to abort testrun! Probably run is not registered in Zafira.")
             //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
             def body = "${bodyHeader}\nRebuild: ${jobBuildUrl}/rebuild/parameterized\nZafiraReport: ${jobBuildUrl}/ZafiraReport\n\nConsole: ${jobBuildUrl}/console\n${failureLog}"
-            body.replaceAll("\n", "<p>")
+//            body.replaceAll("\n", "<p>")
             context.emailext getEmailParams(body, subject, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         }
     }
