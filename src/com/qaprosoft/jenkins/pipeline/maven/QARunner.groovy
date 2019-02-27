@@ -794,7 +794,7 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runCron")
         context.node("master") {
             scmClient.clone()
-
+            listPipelines = []
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repo = Configuration.get("repo")
             def branch = Configuration.get("branch")
