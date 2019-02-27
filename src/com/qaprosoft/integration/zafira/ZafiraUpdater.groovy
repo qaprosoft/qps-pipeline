@@ -59,7 +59,7 @@ class ZafiraUpdater {
         def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            bodyHeader = "Unable to execute tests due to the compilation failure. ${jobBuildUrl}\\n"
+            bodyHeader = "Unable to execute tests due to the compilation failure. ${jobBuildUrl}\n"
             subject = getFailureSubject(FailureCause.COMPILATION_FAILURE.value, jobName, env, buildNumber)
             failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
             failureReason = URLEncoder.encode("${FailureCause.COMPILATION_FAILURE.value}:\n" + failureLog, "UTF-8")
