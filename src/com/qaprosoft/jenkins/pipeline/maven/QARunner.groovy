@@ -886,7 +886,7 @@ public class QARunner extends AbstractRunner {
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
-                    for (def supportedBrowser : supportedBrowsers.split(",")) {
+                    for (def supportedBrowser : supportedBrowsers?.split(",")) {
                         /* supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
                            supportedBrowser - splitted single browser name from supportedBrowsers
                            currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
