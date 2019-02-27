@@ -849,7 +849,7 @@ public class QARunner extends AbstractRunner {
     protected void generatePipeline(XmlSuite currentSuite) {
 
         def jobName = currentSuite.getParameter("jenkinsJobName").toString()
-        if (!getBooleanParameterValue(currentSuite.getParameter("jenkinsJobCreation"))) {
+        if (!getBooleanParameterValue("jenkinsJobCreation", currentSuite)) {
             //no need to proceed as jenkinsJobCreation=false
             return
         }
