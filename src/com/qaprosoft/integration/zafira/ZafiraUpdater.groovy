@@ -54,12 +54,12 @@ class ZafiraUpdater {
         String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
         String env = Configuration.get("env")
 
-        def bodyHeader = "Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}\n"
+        def bodyHeader = "Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}" + "\n"
         def subject = getFailureSubject(FailureCause.UNRECOGNIZED_FAILURE.value, jobName, env, buildNumber)
         def failureLog = ""
 
         if (currentBuild.rawBuild.log.contains("COMPILATION ERROR : ")) {
-            bodyHeader = "Unable to execute tests due to the compilation failure. ${jobBuildUrl}\n"
+            bodyHeader = "Unable to execute tests due to the compilation failure. ${jobBuildUrl}" + "\n"
             subject = getFailureSubject(FailureCause.COMPILATION_FAILURE.value, jobName, env, buildNumber)
             failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
             failureReason = URLEncoder.encode("${FailureCause.COMPILATION_FAILURE.value}:\n" + failureLog, "UTF-8")
