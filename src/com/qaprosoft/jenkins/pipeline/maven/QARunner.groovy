@@ -875,9 +875,9 @@ public class QARunner extends AbstractRunner {
         def orderNum = getJobExecutionOrderNumber(currentSuite)
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")
         def supportedEnvs = getSuiteParameter(currentSuite.getParameter("jenkinsEnvironments"), "jenkinsPipelineEnvironments", currentSuite)
+        def currentEnvs = getCronEnv(currentSuite)
         def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
 
-        def currentEnvs = getCronEnv(currentSuite)
         def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
 
         // override suite email_list from params if defined
@@ -910,7 +910,7 @@ public class QARunner extends AbstractRunner {
 
         if (!regressionPipelines.contains("null")) {
             for (def pipeName : regressionPipelines.split(",")) {
-                if (!pipelineJobName.equals(pipeName)) {
+                if (!Configuration.get(Configuration.Parameter.JOB_BASE_NAME).equals(pipeName)) {
                     //launch test only if current pipeName exists among regressionPipelines
                     continue
                 }
