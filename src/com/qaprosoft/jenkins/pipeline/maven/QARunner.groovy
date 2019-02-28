@@ -888,7 +888,6 @@ public class QARunner extends AbstractRunner {
                            supportedBrowser - splitted single browser name from supportedBrowsers
                            currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
                         Map supportedBrowserValues = getSupportedBrowserValues(currentBrowser, supportedBrowser)
-                        logger.info("BROSR: " + supportedBrowserValues)
                         if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
                             logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                             continue
@@ -1055,6 +1054,7 @@ public class QARunner extends AbstractRunner {
         valuesMap.browser_version = browserVersion
         valuesMap.os = os
         valuesMap.os_version = osVersion
+        return valuesMap
     }
 
     protected def executeStages() {
