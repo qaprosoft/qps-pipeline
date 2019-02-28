@@ -854,9 +854,6 @@ public class QARunner extends AbstractRunner {
             return
         }
 
-//        def overrideFields = Configuration.get("overrideFields")
-//
-//        def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers")
 //        def currentBrowser = !isParamEmpty(Configuration.get("browser"))?Configuration.get("browser"):"NULL"
 //
 //        def logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
@@ -873,11 +870,7 @@ public class QARunner extends AbstractRunner {
         def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
         def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
         def priorityNum = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
-
-        //def overrideFields = currentSuite.getParameter("overrideFields").toString()
-        def overrideFields = Configuration.get("overrideFields")
-
-        String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
+        def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers")
         String logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnv(s): ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
 
         def currentBrowser = Configuration.get("browser")
@@ -956,7 +949,7 @@ public class QARunner extends AbstractRunner {
                             pipelineMap.put("BuildPriority", priorityNum)
                             putNotNullWithSplit(pipelineMap, "emailList", emailList)
                             putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-                            putNotNull(pipelineMap, "overrideFields", overrideFields)
+                            putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
                             putNotNull(pipelineMap, "queue_registration", queueRegistration)
 //                                logger.debug("initialized ${filePath} suite to pipeline run...")
                             registerPipeline(currentSuite, pipelineMap)
