@@ -854,9 +854,6 @@ public class QARunner extends AbstractRunner {
             return
         }
 
-//        def regressionPipelines = currentSuite.getParameter("jenkinsRegressionPipeline")
-//        def jobExecutionOrderNumber = getJobExecutionOrderNumber(currentSuite)
-//        def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")
 //        def supportedEnvs = getSuiteParameter(currentSuite.getParameter("jenkinsEnvironments"), "jenkinsPipelineEnvironments", currentSuite)
 //        def currentEnvs = getCronEnv(currentSuite)
 //        // override default queue_registration value
@@ -877,11 +874,8 @@ public class QARunner extends AbstractRunner {
 
         def regressionPipelines = currentSuite.getParameter("jenkinsRegressionPipeline")
         def orderNum = getJobExecutionOrderNumber(currentSuite)
-        def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode").toString()
-        def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
-        if (isParamEmpty(supportedEnvs)) {
-            supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
-        }
+        def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")
+        def supportedEnvs = getSuiteParameter(currentSuite.getParameter("jenkinsEnvironments"), "jenkinsPipelineEnvironments", currentSuite)
         def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
         if(!isParamEmpty(queueRegistration)){
             logger.info("override queue_registration to: " + queueRegistration)
