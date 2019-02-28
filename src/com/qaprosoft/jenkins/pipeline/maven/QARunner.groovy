@@ -865,7 +865,7 @@ public class QARunner extends AbstractRunner {
         def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers")?currentSuite.getParameter("jenkinsPipelineBrowsers"):""
         def currentBrowser = !isParamEmpty(Configuration.get("browser"))?Configuration.get("browser"):"NULL"
         def logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
-                "jobExecutionOrderNumber: ${jobExecutionOrderNumber};\n	email_list: ${emailList};\n	" +
+                "jobExecutionOrderNumber: ${orderNum};\n	email_list: ${emailList};\n	" +
                 "supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	" +
                 "supportedBrowsers: ${supportedBrowsers};\n\tcurrentBrowser: ${currentBrowser};"
         logger.info(logLine)
