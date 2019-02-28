@@ -976,6 +976,18 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    protected def getOrderNum(suite){
+        def orderNum = suite.getParameter("jenkinsJobExecutionOrder").toString()
+        if (orderNum.equals("null")) {
+            orderNum = "0"
+            logger.info("specify by default '0' order - start asap")
+        } else if (orderNum.equals("ordered")) {
+            orderedJobExecNum++
+            orderNum = orderedJobExecNum.toString()
+        }
+        return orderNum
+    }
+
 //    protected void generatePipeline(XmlSuite currentSuite) {
 //
 //        def jobName = currentSuite.getParameter("jenkinsJobName").toString()
