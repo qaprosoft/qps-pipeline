@@ -877,11 +877,13 @@ public class QARunner extends AbstractRunner {
             }
             for (def currentEnv : currentEnvs.split(",")) {
                 for (def supportedEnv : supportedEnvs.split(",")) {
-                    if (!currentEnv.equals(supportedEnv) && !isParamEmpty(currentEnv)) {
+//                        logger.debug("supportedEnv: " + supportedEnv)
+                    if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
                         logger.info("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
+
                     for (def supportedBrowser : supportedBrowsers.split(",")) {
                         // supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
                         // supportedBrowser - splitted single browser name from supportedBrowsers
