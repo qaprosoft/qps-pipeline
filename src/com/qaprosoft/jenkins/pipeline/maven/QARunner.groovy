@@ -854,7 +854,6 @@ public class QARunner extends AbstractRunner {
             return
         }
 
-//        def supportedEnvs = getSuiteParameter(currentSuite.getParameter("jenkinsEnvironments"), "jenkinsPipelineEnvironments", currentSuite)
 //        def currentEnvs = getCronEnv(currentSuite)
 //        // override default queue_registration value
 //        def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
@@ -876,11 +875,7 @@ public class QARunner extends AbstractRunner {
         def orderNum = getJobExecutionOrderNumber(currentSuite)
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")
         def supportedEnvs = getSuiteParameter(currentSuite.getParameter("jenkinsEnvironments"), "jenkinsPipelineEnvironments", currentSuite)
-        def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
-        if(!isParamEmpty(queueRegistration)){
-            logger.info("override queue_registration to: " + queueRegistration)
-            Configuration.set("queue_registration", queueRegistration)
-        }
+        def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
 
         def currentEnvs = getCronEnv(currentSuite)
         def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
@@ -902,7 +897,7 @@ public class QARunner extends AbstractRunner {
         def overrideFields = Configuration.get("overrideFields")
 
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
-        String logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
+        String logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnv(s): ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
 
         def currentBrowser = Configuration.get("browser")
 
@@ -981,7 +976,7 @@ public class QARunner extends AbstractRunner {
                             putNotNullWithSplit(pipelineMap, "emailList", emailList)
                             putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                             putNotNull(pipelineMap, "overrideFields", overrideFields)
-                            putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
+                            putNotNull(pipelineMap, "queue_registration", queueRegistration)
 //                                logger.debug("initialized ${filePath} suite to pipeline run...")
                             registerPipeline(currentSuite, pipelineMap)
                         }
