@@ -982,11 +982,11 @@ public class QARunner extends AbstractRunner {
         def mappedStages = [:]
 
         boolean parallelMode = true
-        def stageName = getStageName(jobParams)
         //combine jobs with similar priority into the single paralle stage and after that each stage execute in parallel
         String beginOrder = "0"
         String curOrder = ""
         for (Map jobParams : listPipelines) {
+            def stageName = getStageName(jobParams)
             boolean propagateJob = true
             if (jobParams.get("executionMode").contains("continue")) {
                 //do not interrupt pipeline/cron if any child job failed
