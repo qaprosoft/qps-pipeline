@@ -827,9 +827,11 @@ public class QARunner extends AbstractRunner {
                 currentBuild.result = BuildResult.FAILURE
                 continue
             }
-//            generateMultilingualPipeline(currentSuite)
-//            if(!multilingualMode)
+            if(!isParamEmpty(currentSuite.getParameter("jenkinsPipelineLocales"))){
+                generateMultilingualPipeline(currentSuite)
+            } else {
                 generatePipeline(currentSuite)
+            }
         }
     }
 
