@@ -987,7 +987,6 @@ public class QARunner extends AbstractRunner {
         String beginOrder = "0"
         String curOrder = ""
         for (Map jobParams : listPipelines) {
-            def stageName = getStageName(jobParams)
             boolean propagateJob = true
             if (jobParams.get("executionMode").toString().contains("continue")) {
                 //do not interrupt pipeline/cron if any child job failed
@@ -1006,7 +1005,7 @@ public class QARunner extends AbstractRunner {
             if (curOrder.toInteger() > 0) {
                 waitJob = true
             }
-
+            def stageName = getStageName(jobParams)
             if (curOrder.equals(beginOrder)) {
                 logger.debug("colect into order: ${curOrder}; job: ${stageName}")
                 mappedStages[stageName] = buildOutStages(jobParams, waitJob, propagateJob)
@@ -1058,7 +1057,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def buildOutStage(Map entry, boolean waitJob, boolean propagateJob) {
-        context.stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))) {
+        context.stage(getStageName(entry)) {
             logger.debug("Dynamic Stage Created For: " + entry.get("jobName"))
             logger.debug("Checking EmailList: " + entry.get("emailList"))
 
