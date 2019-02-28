@@ -870,9 +870,9 @@ public class QARunner extends AbstractRunner {
                 "supportedBrowsers: ${supportedBrowsers};\n\tcurrentBrowser: ${currentBrowser};"
         logger.info(logLine)
 
-        for (def pipeName : regressionPipelines?.split(",")) {
-            if (!Configuration.get(Configuration.Parameter.JOB_BASE_NAME).equals(pipeName)) {
-                //launch test only if current pipeName exists among regressionPipelines
+        for (def regressionPipeline : regressionPipelines?.split(",")) {
+            if (!Configuration.get(Configuration.Parameter.JOB_BASE_NAME).equals(regressionPipeline)) {
+                //launch test only if current regressionPipeline exists among regressionPipelines
                 continue
             }
             for (def currentEnv : currentEnvs.split(",")) {
@@ -924,7 +924,7 @@ public class QARunner extends AbstractRunner {
                         putNotNull(pipelineMap, "browser_version", browserVersion)
                         putNotNull(pipelineMap, "os", os)
                         putNotNull(pipelineMap, "os_version", osVersion)
-                        pipelineMap.put("name", pipeName)
+                        pipelineMap.put("name", regressionPipeline)
                         pipelineMap.put("branch", Configuration.get("branch"))
                         pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
                         pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
