@@ -878,37 +878,16 @@ public class QARunner extends AbstractRunner {
             for (def currentEnv : currentEnvs.split(",")) {
                 for (def supportedEnv : supportedEnvs.split(",")) {
 //                        logger.debug("supportedEnv: " + supportedEnv)
-                    if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
+                    if (!currentEnv.equals(supportedEnv) && !isParamEmpty(currentEnv)) {
                         logger.info("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
-
                     for (def supportedBrowser : supportedBrowsers.split(",")) {
-                        // supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
-                        // supportedBrowser - splitted single browser name from supportedBrowsers
-                        def browser = currentBrowser
-                        def browserVersion = null
-                        def os = null
-                        def osVersion = null
-
-                        String browserInfo = supportedBrowser
-                        if (supportedBrowser.contains("-")) {
-                            def systemInfoArray = supportedBrowser.split("-")
-                            String osInfo = systemInfoArray[0]
-                            os = OS.getName(osInfo)
-                            osVersion = OS.getVersion(osInfo)
-                            browserInfo = systemInfoArray[1]
-                        }
-                        def browserInfoArray = browserInfo.split(" ")
-                        browser = browserInfoArray[0]
-                        if (browserInfoArray.size() > 1) {
-                            browserVersion = browserInfoArray[1]
-                        }
-
-                        // currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
-
-//                            logger.debug("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
+                        /* supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
+                           supportedBrowser - splitted single browser name from supportedBrowsers
+                           currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
+                        Map supportedBrowserValues = getSupportedBrowserValues(currentBrowser, supportedBrowser)
                         if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
                             logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                             continue
@@ -920,10 +899,7 @@ public class QARunner extends AbstractRunner {
 
                         // put all not NULL args into the pipelineMap for execution
                         putMap(pipelineMap, pipelineLocaleMap)
-                        putNotNull(pipelineMap, "browser", browser)
-                        putNotNull(pipelineMap, "browser_version", browserVersion)
-                        putNotNull(pipelineMap, "os", os)
-                        putNotNull(pipelineMap, "os_version", osVersion)
+                        putMap(pipelineMap, supportedBrowserValues)
                         pipelineMap.put("name", regressionPipeline)
                         pipelineMap.put("branch", Configuration.get("branch"))
                         pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
