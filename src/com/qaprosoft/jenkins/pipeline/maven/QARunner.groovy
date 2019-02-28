@@ -986,26 +986,19 @@ public class QARunner extends AbstractRunner {
         //combine jobs with similar priority into the single paralle stage and after that each stage execute in parallel
         String beginOrder = "0"
         String curOrder = ""
-        for (Map entry : listPipelines) {
-            def stageName
-            if(multilingualMode && entry.get("locale")){
-                stageName = String.format("Stage: %s Environment: %s Browser: %s Locale: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"), entry.get("locale"))
-            } else {
-                stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
-            }
-            logger.info("stageName: ${stageName}")
-
+        for (Map jobParams : listPipelines) {
+            def stageName = getStageName(jobParams)
             boolean propagateJob = true
-            if (entry.get("executionMode").toString().contains("continue")) {
+            if (jobParams.get("executionMode").toString().contains("continue")) {
                 //do not interrupt pipeline/cron if any child job failed
                 propagateJob = false
             }
-            if (entry.get("executionMode").toString().contains("abort")) {
+            if (jobParams.get("executionMode").toString().contains("abort")) {
                 //interrupt pipeline/cron and return fail status to piepeline if any child job failed
                 propagateJob = true
             }
 
-            curOrder = entry.get("order")
+            curOrder = jobParams.get("order")
             logger.debug("beginOrder: ${beginOrder}; curOrder: ${curOrder}")
 
             // do not wait results for jobs with default order "0". For all the rest we should wait results between phases
@@ -1016,7 +1009,7 @@ public class QARunner extends AbstractRunner {
 
             if (curOrder.equals(beginOrder)) {
                 logger.debug("colect into order: ${curOrder}; job: ${stageName}")
-                mappedStages[stageName] = buildOutStages(entry, waitJob, propagateJob)
+                mappedStages[stageName] = buildOutStages(jobParams, waitJob, propagateJob)
             } else {
                 context.parallel mappedStages
 
@@ -1025,7 +1018,7 @@ public class QARunner extends AbstractRunner {
                 beginOrder = curOrder
 
                 //add existing pipeline as new one in the current stage
-                mappedStages[stageName] = buildOutStages(entry, waitJob, propagateJob)
+                mappedStages[stageName] = buildOutStages(jobParams, waitJob, propagateJob)
             }
         }
 
@@ -1034,6 +1027,27 @@ public class QARunner extends AbstractRunner {
             context.parallel mappedStages
         }
 
+    }
+
+    protected def getStageName(jobParams) {
+        def stageName = ""
+        String jobName = jobParams.get("jobName")
+        String env = jobParams.get("env")
+        String browser = jobParams.get("browser")
+        String locale = jobParams.get("locale")
+        if (!isParamEmpty(jobName)) {
+            stageName += "Stage: ${jobName} "
+        }
+        if (!isParamEmpty(env)) {
+            stageName += "Environment: ${env} "
+        }
+        if (!isParamEmpty(browser)) {
+            stageName += "Browser: ${browser} "
+        }
+        if (!isParamEmpty(locale) && multilingualMode) {
+            stageName += "Locale: ${locale} "
+        }
+        return stageName
     }
 
     protected def buildOutStages(Map entry, boolean waitJob, boolean propagateJob) {
