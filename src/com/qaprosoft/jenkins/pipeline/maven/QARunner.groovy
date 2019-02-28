@@ -821,7 +821,7 @@ public class QARunner extends AbstractRunner {
     protected def generatePipeLineList(subProjectFilter, testNGFolderName){
         def files = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
         for (file in files){
-            logger.info("Number of Test Suites to Scan Through: " + files.length)
+            logger.debug("Number of Test Suites to Scan Through: " + files.length)
             XmlSuite currentSuite = parsePipeline(workspace + "/" + file.path)
             if (currentSuite == null) {
                 currentBuild.result = BuildResult.FAILURE
@@ -875,6 +875,7 @@ public class QARunner extends AbstractRunner {
                 //launch test only if current regressionPipeline exists among regressionPipelines
                 continue
             }
+            logger.info("1111:" + regressionPipeline)
             for (def currentEnv : currentEnvs.split(",")) {
                 for (def supportedEnv : supportedEnvs.split(",")) {
 //                        logger.debug("supportedEnv: " + supportedEnv)
