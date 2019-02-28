@@ -871,11 +871,11 @@ public class QARunner extends AbstractRunner {
         logger.info(logLine)
 
         for (def regressionPipeline : regressionPipelines?.split(",")) {
+            logger.info("1111:" + regressionPipeline)
             if (!Configuration.get(Configuration.Parameter.JOB_BASE_NAME).equals(regressionPipeline)) {
                 //launch test only if current regressionPipeline exists among regressionPipelines
                 continue
             }
-            logger.info("1111:" + regressionPipeline)
             for (def currentEnv : currentEnvs.split(",")) {
                 for (def supportedEnv : supportedEnvs.split(",")) {
 //                        logger.debug("supportedEnv: " + supportedEnv)
