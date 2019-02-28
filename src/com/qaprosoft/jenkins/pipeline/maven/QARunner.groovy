@@ -827,8 +827,8 @@ public class QARunner extends AbstractRunner {
                 currentBuild.result = BuildResult.FAILURE
                 continue
             }
-            generateMultilingualPipeline(currentSuite)
-            if(!multilingualMode)
+//            generateMultilingualPipeline(currentSuite)
+//            if(!multilingualMode)
                 generatePipeline(currentSuite)
         }
     }
