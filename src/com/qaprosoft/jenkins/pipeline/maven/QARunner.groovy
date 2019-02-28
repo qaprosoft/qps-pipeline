@@ -871,7 +871,7 @@ public class QARunner extends AbstractRunner {
         def logLine = "supportedPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
                 "jobExecutionOrderNumber: ${jobExecutionOrderNumber};\n	email_list: ${emailList};\n	" +
                 "supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	" +
-                "supportedBrowsers: ${supportedBrowsers};\n currentBrowser: ${currentBrowser};"
+                "supportedBrowsers: ${supportedBrowsers};\n\tcurrentBrowser: ${currentBrowser};"
         logger.info(logLine)
 
         for (def regressionPipelineName : regressionPipelines?.split(",")) {
