@@ -888,15 +888,11 @@ public class QARunner extends AbstractRunner {
                            supportedBrowser - splitted single browser name from supportedBrowsers
                            currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
                         Map supportedBrowserValues = getSupportedBrowserValues(currentBrowser, supportedBrowser)
-                        if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
+                        if (!currentBrowser.equals(supportedBrowser) && !isParamEmpty(currentBrowser)) {
                             logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                             continue
                         }
-
-//                            logger.info("adding ${filePath} suite to pipeline run...")
-
                         def pipelineMap = [:]
-
                         // put all not NULL args into the pipelineMap for execution
                         putMap(pipelineMap, pipelineLocaleMap)
                         putMap(pipelineMap, supportedBrowserValues)
@@ -914,7 +910,6 @@ public class QARunner extends AbstractRunner {
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                         putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
                         putNotNull(pipelineMap, "queue_registration", queueRegistration)
-//                                logger.debug("initialized ${filePath} suite to pipeline run...")
                         registerPipeline(currentSuite, pipelineMap)
                     }
                 }
@@ -933,80 +928,6 @@ public class QARunner extends AbstractRunner {
         }
         return orderNum
     }
-
-//    protected void generatePipeline(XmlSuite currentSuite) {
-//
-//        def jobName = currentSuite.getParameter("jenkinsJobName").toString()
-//        if (!getBooleanParameterValue("jenkinsJobCreation", currentSuite)) {
-//            //no need to proceed as jenkinsJobCreation=false
-//            return
-//        }
-//        def regressionPipelines = currentSuite.getParameter("jenkinsRegressionPipeline")
-//        def jobExecutionOrderNumber = getJobExecutionOrderNumber(currentSuite)
-//        def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")
-//        def supportedEnvs = getSuiteParameter(currentSuite.getParameter("jenkinsEnvironments"), "jenkinsPipelineEnvironments", currentSuite)
-//        def currentEnvs = getCronEnv(currentSuite)
-//        // override default queue_registration value
-//        def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
-//        // override suite email_list from params if defined
-//        def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
-//        def priorityNumber = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
-//        def overrideFields = Configuration.get("overrideFields")
-//
-//        def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers")
-//        def currentBrowser = !isParamEmpty(Configuration.get("browser"))?Configuration.get("browser"):"NULL"
-//
-//        def logLine = "supportedPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
-//                "jobExecutionOrderNumber: ${jobExecutionOrderNumber};\n	email_list: ${emailList};\n	" +
-//                "supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	" +
-//                "supportedBrowsers: ${supportedBrowsers};\n\tcurrentBrowser: ${currentBrowser};"
-//        logger.info(logLine)
-//
-//        for (def regressionPipelineName : regressionPipelines?.split(",")) {
-//            if (!Configuration.get(Configuration.Parameter.JOB_BASE_NAME).equals(regressionPipelineName)) {
-//                //launch test only if current pipeName exists among supportedPipelines
-//                continue
-//            }
-//            for (def currentEnv : currentEnvs.split(",")) {
-//                for (def supportedEnv : supportedEnvs.split(",")) {
-//                    if (!currentEnv.equals(supportedEnv) && !isParamEmpty(currentEnv)) {
-//                        logger.info("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
-//                        //launch test only if current suite support cron regression execution for current env
-//                        continue
-//                    }
-//                    for (def supportedBrowser : supportedBrowsers?.split(",")) {
-//                        /* supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
-//                           supportedBrowser - splitted single browser name from supportedBrowsers
-//                           currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
-//                        Map supportedBrowserValues = getSupportedBrowserValues(currentBrowser, supportedBrowser)
-//                        if (!currentBrowser.equals(supportedBrowser) && !isParamEmpty(currentBrowser)) {
-//                            logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
-//                            continue
-//                        }
-//                        def pipelineMap = [:]
-//                        // put all not NULL args into the pipelineMap for execution
-//                        putMap(pipelineMap, pipelineLocaleMap)
-//                        putMap(pipelineMap, supportedBrowserValues)
-//                        pipelineMap.put("name", regressionPipelineName)
-//                        pipelineMap.put("branch", Configuration.get("branch"))
-//                        pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
-//                        pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
-//                        pipelineMap.put("retry_count", Configuration.get("retry_count"))
-//                        putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
-//                        pipelineMap.put("jobName", jobName)
-//                        pipelineMap.put("env", supportedEnv)
-//                        pipelineMap.put("order", jobExecutionOrderNumber)
-//                        pipelineMap.put("BuildPriority", priorityNumber)
-//                        putNotNullWithSplit(pipelineMap, "emailList", emailList)
-//                        putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-//                        putNotNull(pipelineMap, "overrideFields", overrideFields)
-//                        putNotNull(pipelineMap, "queue_registration", queueRegistration)
-//                        registerPipeline(currentSuite, pipelineMap)
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     protected def getJobExecutionOrderNumber(suite){
         def orderNum = suite.getParameter("jenkinsJobExecutionOrder")
@@ -1033,9 +954,9 @@ public class QARunner extends AbstractRunner {
     protected getSupportedBrowserValues(currentBrowser, supportedBrowser){
         def valuesMap = [:]
         def browser = currentBrowser
-        def browserVersion = null
-        def os = null
-        def osVersion = null
+        def browserVersion = ""
+        def os = ""
+        def osVersion = ""
 
         String browserInfo = supportedBrowser
         if (supportedBrowser.contains("-")) {
