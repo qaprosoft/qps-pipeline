@@ -1041,8 +1041,8 @@ public class QARunner extends AbstractRunner {
         if (!isParamEmpty(env)) {
             stageName += "Environment: ${env} "
         }
-        logger.info("BRSR: " + browser)
         if (!isParamEmpty(browser)) {
+            logger.info("BRSR: " + browser.dump())
             stageName += "Browser: ${browser} "
         }
         if (!isParamEmpty(locale) && multilingualMode) {
