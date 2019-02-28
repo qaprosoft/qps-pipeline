@@ -854,12 +854,6 @@ public class QARunner extends AbstractRunner {
             return
         }
 
-//        def currentEnvs = getCronEnv(currentSuite)
-//        // override default queue_registration value
-//        def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
-//        // override suite email_list from params if defined
-//        def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
-//        def priorityNumber = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
 //        def overrideFields = Configuration.get("overrideFields")
 //
 //        def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers")
@@ -877,21 +871,8 @@ public class QARunner extends AbstractRunner {
         def supportedEnvs = getSuiteParameter(currentSuite.getParameter("jenkinsEnvironments"), "jenkinsPipelineEnvironments", currentSuite)
         def currentEnvs = getCronEnv(currentSuite)
         def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
-
-        def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
-
-        // override suite email_list from params if defined
-        def emailList = currentSuite.getParameter("jenkinsEmail").toString()
-        def paramEmailList = Configuration.get("email_list")
-        if (paramEmailList != null && !paramEmailList.isEmpty()) {
-            emailList = paramEmailList
-        }
-
-        def priorityNum = "5"
-        def curPriorityNum = Configuration.get("BuildPriority")
-        if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
-            priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
-        }
+        def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
+        def priorityNum = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
 
         //def overrideFields = currentSuite.getParameter("overrideFields").toString()
         def overrideFields = Configuration.get("overrideFields")
