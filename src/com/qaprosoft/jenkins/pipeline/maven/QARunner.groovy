@@ -853,8 +853,30 @@ public class QARunner extends AbstractRunner {
             //no need to proceed as jenkinsJobCreation=false
             return
         }
-        def supportedPipelines = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
-        def orderNum = getOrderNum(currentSuite)
+
+//        def regressionPipelines = currentSuite.getParameter("jenkinsRegressionPipeline")
+//        def jobExecutionOrderNumber = getJobExecutionOrderNumber(currentSuite)
+//        def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")
+//        def supportedEnvs = getSuiteParameter(currentSuite.getParameter("jenkinsEnvironments"), "jenkinsPipelineEnvironments", currentSuite)
+//        def currentEnvs = getCronEnv(currentSuite)
+//        // override default queue_registration value
+//        def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
+//        // override suite email_list from params if defined
+//        def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
+//        def priorityNumber = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
+//        def overrideFields = Configuration.get("overrideFields")
+//
+//        def supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers")
+//        def currentBrowser = !isParamEmpty(Configuration.get("browser"))?Configuration.get("browser"):"NULL"
+//
+//        def logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
+//                "jobExecutionOrderNumber: ${jobExecutionOrderNumber};\n	email_list: ${emailList};\n	" +
+//                "supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	" +
+//                "supportedBrowsers: ${supportedBrowsers};\n\tcurrentBrowser: ${currentBrowser};"
+//        logger.info(logLine)
+
+        def regressionPipelines = currentSuite.getParameter("jenkinsRegressionPipeline")
+        def orderNum = getJobExecutionOrderNumber(currentSuite)
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode").toString()
         def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
         if (isParamEmpty(supportedEnvs)) {
@@ -886,7 +908,7 @@ public class QARunner extends AbstractRunner {
         def overrideFields = Configuration.get("overrideFields")
 
         String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
-        String logLine = "supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
+        String logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
 
         def currentBrowser = Configuration.get("browser")
 
@@ -897,10 +919,10 @@ public class QARunner extends AbstractRunner {
         logLine += "	currentBrowser: ${currentBrowser};\n"
         logger.info(logLine)
 
-        if (!supportedPipelines.contains("null")) {
-            for (def pipeName : supportedPipelines.split(",")) {
+        if (!regressionPipelines.contains("null")) {
+            for (def pipeName : regressionPipelines.split(",")) {
                 if (!pipelineJobName.equals(pipeName)) {
-                    //launch test only if current pipeName exists among supportedPipelines
+                    //launch test only if current pipeName exists among regressionPipelines
                     continue
                 }
                 for (def currentEnv : currentEnvs.split(",")) {
