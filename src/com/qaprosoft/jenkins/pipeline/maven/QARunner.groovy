@@ -982,45 +982,39 @@ public class QARunner extends AbstractRunner {
         def mappedStages = [:]
 
         boolean parallelMode = true
-
+        def stageName = getStageName(jobParams)
         //combine jobs with similar priority into the single paralle stage and after that each stage execute in parallel
         String beginOrder = "0"
         String curOrder = ""
         for (Map jobParams : listPipelines) {
             boolean propagateJob = true
-            if (jobParams.get("executionMode").toString().contains("continue")) {
+            if (jobParams.get("executionMode").contains("continue")) {
                 //do not interrupt pipeline/cron if any child job failed
                 propagateJob = false
             }
-            if (jobParams.get("executionMode").toString().contains("abort")) {
+            if (jobParams.get("executionMode").contains("abort")) {
                 //interrupt pipeline/cron and return fail status to piepeline if any child job failed
                 propagateJob = true
             }
-
             curOrder = jobParams.get("order")
             logger.debug("beginOrder: ${beginOrder}; curOrder: ${curOrder}")
-
             // do not wait results for jobs with default order "0". For all the rest we should wait results between phases
             boolean waitJob = false
             if (curOrder.toInteger() > 0) {
                 waitJob = true
             }
-            def stageName = getStageName(jobParams)
             if (curOrder.equals(beginOrder)) {
                 logger.debug("colect into order: ${curOrder}; job: ${stageName}")
                 mappedStages[stageName] = buildOutStages(jobParams, waitJob, propagateJob)
             } else {
                 context.parallel mappedStages
-
                 //reset mappedStages to empty after execution
                 mappedStages = [:]
                 beginOrder = curOrder
-
                 //add existing pipeline as new one in the current stage
                 mappedStages[stageName] = buildOutStages(jobParams, waitJob, propagateJob)
             }
         }
-
         if (!mappedStages.isEmpty()) {
             logger.debug("launch jobs with order: ${curOrder}")
             context.parallel mappedStages
@@ -1073,7 +1067,6 @@ public class QARunner extends AbstractRunner {
                     }
                 }
             }
-
             for (param in entry) {
                 jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
             }
