@@ -1,8 +1,8 @@
-package com.qaprosoft.integration.qtest
+package com.qaprosoft.jenkins.pipeline.integration.qtest
 
 import com.qaprosoft.Logger
-import com.qaprosoft.integration.zafira.IntegrationTag
-import com.qaprosoft.integration.zafira.ZafiraClient
+import com.qaprosoft.jenkins.pipeline.integration.zafira.IntegrationTag
+import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraClient
 import com.qaprosoft.jenkins.pipeline.Configuration
 import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*

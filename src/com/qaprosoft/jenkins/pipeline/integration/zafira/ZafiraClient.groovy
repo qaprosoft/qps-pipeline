@@ -1,9 +1,7 @@
-package com.qaprosoft.integration.zafira
+package com.qaprosoft.jenkins.pipeline.integration.zafira
 
-import com.qaprosoft.integration.HttpClient
+import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 import groovy.json.JsonBuilder
-
-import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.Configuration
 
 class ZafiraClient extends HttpClient{

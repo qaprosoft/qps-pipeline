@@ -1,9 +1,8 @@
-package com.qaprosoft.scm.github
+package com.qaprosoft.jenkins.pipeline.scm.github
 
 import com.qaprosoft.Logger
-import com.qaprosoft.scm.ISCM
+import com.qaprosoft.jenkins.pipeline.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.Configuration
-import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class GitHub implements ISCM {
 

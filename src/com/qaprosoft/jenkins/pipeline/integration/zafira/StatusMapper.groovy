@@ -1,4 +1,4 @@
-package com.qaprosoft.integration.zafira
+package com.qaprosoft.jenkins.pipeline.integration.zafira
 
 class StatusMapper {
 
