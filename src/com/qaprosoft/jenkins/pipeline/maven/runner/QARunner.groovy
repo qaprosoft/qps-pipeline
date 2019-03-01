@@ -4,9 +4,9 @@ import com.qaprosoft.jenkins.pipeline.maven.Maven
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import static com.qaprosoft.Utils.*
-import com.qaprosoft.integration.testrail.TestRailUpdater
-import com.qaprosoft.integration.qtest.QTestUpdater
-import com.qaprosoft.integration.zafira.ZafiraUpdater
+import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
+import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
+import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.BrowserStackOS
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
