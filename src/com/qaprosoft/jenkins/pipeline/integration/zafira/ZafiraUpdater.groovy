@@ -1,4 +1,4 @@
-package com.qaprosoft.integration.zafira
+package com.qaprosoft.jenkins.pipeline.integration.zafira
 
 import com.qaprosoft.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration

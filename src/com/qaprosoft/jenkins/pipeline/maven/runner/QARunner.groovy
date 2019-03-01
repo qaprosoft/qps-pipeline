@@ -1,11 +1,13 @@
-package com.qaprosoft.jenkins.pipeline.maven
+package com.qaprosoft.jenkins.pipeline.maven.runner
+
+import com.qaprosoft.jenkins.pipeline.maven.Maven
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import static com.qaprosoft.Utils.*
 import com.qaprosoft.integration.testrail.TestRailUpdater
 import com.qaprosoft.integration.qtest.QTestUpdater
 import com.qaprosoft.integration.zafira.ZafiraUpdater
-import com.qaprosoft.jenkins.pipeline.browserstack.OS
+import com.qaprosoft.jenkins.pipeline.BrowserStackOS
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.AbstractRunner
@@ -13,7 +15,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
-import com.qaprosoft.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.scm.github.GitHub
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 import java.nio.file.Path
@@ -28,7 +30,7 @@ public class QARunner extends AbstractRunner {
 
     protected Map dslObjects = new HashMap()
     protected def pipelineLibrary = "QPS-Pipeline"
-    protected def runnerClass = "com.qaprosoft.jenkins.pipeline.maven.QARunner"
+    protected def runnerClass = "com.qaprosoft.jenkins.pipeline.maven.runner.QARunner"
     protected def onlyUpdated = false
     protected def currentBuild
     protected def uuid
@@ -964,8 +966,8 @@ public class QARunner extends AbstractRunner {
         if (supportedBrowser.contains("-")) {
             def systemInfoArray = supportedBrowser.split("-")
             String osInfo = systemInfoArray[0]
-            os = OS.getName(osInfo)
-            osVersion = OS.getVersion(osInfo)
+            os = BrowserStackOS.getName(osInfo)
+            osVersion = BrowserStackOS.getVersion(osInfo)
             browserInfo = systemInfoArray[1]
         }
         def browserInfoArray = browserInfo.split(" ")

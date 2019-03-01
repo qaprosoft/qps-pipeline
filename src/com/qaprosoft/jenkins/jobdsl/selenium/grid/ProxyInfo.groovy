@@ -1,4 +1,4 @@
-package com.qaprosoft.selenium.grid
+package com.qaprosoft.jenkins.jobdsl.selenium.grid
 
 import com.qaprosoft.Logger
 import com.qaprosoft.Utils

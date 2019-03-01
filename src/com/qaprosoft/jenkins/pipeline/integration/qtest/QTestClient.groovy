@@ -1,6 +1,6 @@
-package com.qaprosoft.integration.qtest
+package com.qaprosoft.jenkins.pipeline.integration.qtest
 
-import com.qaprosoft.integration.HttpClient
+import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 import com.qaprosoft.jenkins.pipeline.Configuration
 import groovy.json.JsonBuilder
 import static com.qaprosoft.jenkins.pipeline.Executor.*

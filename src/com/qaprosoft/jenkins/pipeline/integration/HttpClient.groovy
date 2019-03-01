@@ -1,4 +1,4 @@
-package com.qaprosoft.integration
+package com.qaprosoft.jenkins.pipeline.integration
 
 import com.qaprosoft.Logger
 

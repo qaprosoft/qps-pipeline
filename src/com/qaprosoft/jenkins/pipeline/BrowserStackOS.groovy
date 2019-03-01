@@ -1,6 +1,6 @@
-package com.qaprosoft.jenkins.pipeline.browserstack
+package com.qaprosoft.jenkins.pipeline
 
-enum OS {
+enum BrowserStackOS {
 
     WINDOWS_10("Windows 10", "Windows", '10'),
     WINDOWS_8_1("Windows 8.1", "Windows", '8.1'),
@@ -21,7 +21,7 @@ enum OS {
     private final String name
     private final String version
 
-    OS(os, name, version) {
+    BrowserStackOS(os, name, version) {
         this.os = os
         this.name = name
         this.version = version

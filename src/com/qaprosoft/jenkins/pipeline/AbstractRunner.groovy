@@ -1,7 +1,7 @@
 package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.Logger
-import com.qaprosoft.scm.ISCM
+import com.qaprosoft.jenkins.pipeline.scm.ISCM
 
 public abstract class AbstractRunner {
     protected def context
