@@ -6,9 +6,10 @@ class Gradle {
         context.stage('Gradle Build') {
             logger.debug("Gradle mixin->buildGradle")
             if (context.isUnix()) {
-                context.sh 'cp config/gradle.properties .'
-                context.sh 'chmod +x gradlew'
-                context.sh './gradlew build'
+                context.sh 'java --version'
+//                context.sh 'cp config/gradle.properties .'
+//                context.sh 'chmod +x gradlew'
+//                context.sh './gradlew build'
             } else {
                 context.bat 'gradlew.bat build'
             }
