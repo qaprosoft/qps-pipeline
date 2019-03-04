@@ -3,7 +3,6 @@ package com.qaprosoft.jenkins.pipeline.gradle
 class Gradle {
 
     public void buildGradle(){
-        logger.info("111")
         context.stage('Gradle Build') {
             logger.info("Gradle mixin->buildGradle")
             if (context.isUnix()) {
