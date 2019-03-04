@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.pipeline.gradle
 
 class Gradle {
 
-    public void build(){
+    public void buildGradle(){
         context.stage('Gradle Build') {
             if (context.isUnix()) {
                 context.sh './gradlew clean build'
