@@ -6,7 +6,7 @@ class Gradle {
         context.stage('Gradle Build') {
             logger.info("Gradle mixin->buildGradle")
             if (context.isUnix()) {
-                context.sh './gradlew clean build'
+                context.sh 'gradlew clean build'
             } else {
                 context.bat 'gradlew.bat clean build'
             }
