@@ -159,7 +159,6 @@ public class TestJobFactory extends PipelineFactory {
 					logger.debug("Parameter: ${param}")
 					def delimiter = "::"
 					if (param.key.contains(delimiter)) {
-						logger.info("PARAMETR: " + param)
 						def (type, name, desc) = param.key.split(delimiter)
 						switch(type.toLowerCase()) {
 							case "hiddenparam":
