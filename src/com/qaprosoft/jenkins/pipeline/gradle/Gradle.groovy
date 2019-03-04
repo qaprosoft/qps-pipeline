@@ -8,9 +8,9 @@ class Gradle {
             if (context.isUnix()) {
                 context.sh 'cp config/gradle.properties .'
                 context.sh 'chmod +x gradlew'
-                context.sh './gradlew clean build'
+                context.sh './gradlew build'
             } else {
-                context.bat 'gradlew.bat clean build'
+                context.bat 'gradlew.bat build'
             }
         }
 
@@ -19,9 +19,9 @@ class Gradle {
     public void performGradleSonarqubeScan(){
         context.stage("Gradle Sonar Scan") {
             if (context.isUnix()) {
-                context.sh './gradlew clean sonarqube'
+                context.sh './gradlew sonarqube'
             } else {
-                context.bat 'gradlew.bat clean sonarqube'
+                context.bat 'gradlew.bat sonarqube'
             }
         }
     }
