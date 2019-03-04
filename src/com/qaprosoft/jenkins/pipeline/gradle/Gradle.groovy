@@ -4,7 +4,7 @@ class Gradle {
 
     public void buildGradle(){
         context.stage('Gradle Build') {
-            logger.info("Gradle mixin->buildGradle")
+            logger.debug("Gradle mixin->buildGradle")
             if (context.isUnix()) {
                 context.sh 'cp config/gradle.properties .'
                 context.sh 'chmod +x gradlew'
