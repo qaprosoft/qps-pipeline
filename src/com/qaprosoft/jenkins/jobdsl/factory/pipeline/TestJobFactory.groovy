@@ -39,8 +39,6 @@ public class TestJobFactory extends PipelineFactory {
 		this.name = currentSuite.getParameter("jenkinsJobName")
 		logger.info("JenkinsJobName: ${name}")
 
-		logger.debug("testrail_search_interval: ${currentSuite.getParameter("testrail_search_interval")}")
-
 		def pipelineJob = super.create()
 		pipelineJob.with {
 
