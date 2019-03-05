@@ -2,23 +2,20 @@ package com.qaprosoft.jenkins.pipeline.docker
 
 class Docker {
 
-    def buildDocker(){
+    def buildDocker(version){
         context.stage('Docker Build') {
-            context.steps{
-                context.script {
-                    dockerImage = context.docker.build(registry + ":${version}", "--build-arg version=${version} .")
-                }
-            }
+            dockerImage = context.docker.build(registry + ":${version}", "--build-arg version=${version} .")
         }
     }
+}
 
-    stage('Deploy Image') {
-        steps{
-            script {
-                docker.withRegistry('', registryCredentials) {
-                    dockerImage.push()
-                }
-            }
-        }
-    }
+//    stage('Deploy Image') {
+//        steps{
+//            script {
+//                docker.withRegistry('', registryCredentials) {
+//                    dockerImage.push()
+//                }
+//            }
+//        }
+//    }
 }
