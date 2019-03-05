@@ -239,20 +239,6 @@ public class QARunner extends AbstractRunner {
         return context.findFiles(glob: subDirectory + "**/pom.xml")
     }
 
-    def parseTestNgFolderName(pomFile) {
-        def testNGFolderName = null
-        String pom = context.readFile pomFile
-        String tagName = "suiteXmlFile"
-        Matcher matcher = Pattern.compile(".*" + tagName + ".*").matcher(pom)
-        if(matcher.find()){
-            def suiteXmlPath = pom.substring(pom.lastIndexOf("<" + tagName + ">") + tagName.length() + 2, pom.indexOf("</" + tagName + ">".toString()))
-            Path suitePath = Paths.get(suiteXmlPath).getParent()
-                testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
-                logger.info("TestNG folder name: " + testNGFolderName)
-        }
-        return testNGFolderName
-    }
-
     def searchTestNgFolderName(subProject) {
         def testNGFolderName = null
         def poms = getSubProjectPomFiles(subProject)
@@ -262,6 +248,20 @@ public class QARunner extends AbstractRunner {
             if(!isParamEmpty(testNGFolderName)){
                 break
             }
+        }
+        return testNGFolderName
+    }
+
+    def parseTestNgFolderName(pomFile) {
+        def testNGFolderName = null
+        String pom = context.readFile pomFile
+        String tagName = "suiteXmlFile"
+        Matcher matcher = Pattern.compile(".*" + tagName + ".*").matcher(pom)
+        if(matcher.find()){
+            def suiteXmlPath = pom.substring(pom.lastIndexOf("<" + tagName + ">") + tagName.length() + 2, pom.indexOf("</" + tagName + ">".toString()))
+            Path suitePath = Paths.get(suiteXmlPath).getParent()
+            testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
+            logger.info("TestNG folder name: " + testNGFolderName)
         }
         return testNGFolderName
     }
@@ -332,6 +332,21 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    protected XmlSuite parsePipeline(filePath){
+        logger.debug("filePath: " + filePath)
+        XmlSuite currentSuite = null
+        try {
+            currentSuite = parseSuite(filePath)
+        } catch (FileNotFoundException e) {
+            logger.error("ERROR! Unable to find suite: " + filePath)
+            logger.error(printStackTrace(e))
+        } catch (Exception e) {
+            logger.error("ERROR! Unable to parse suite: " + filePath)
+            logger.error(printStackTrace(e))
+        }
+        return currentSuite
+    }
+
     protected String getPipelineScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
@@ -392,7 +407,7 @@ public class QARunner extends AbstractRunner {
                         }
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
                         sendCustomizedEmail()
-						//TODO: think about seperate stage for uploading jacoco reports
+                        //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
                     }
                 } catch (Exception e) {
@@ -412,22 +427,22 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected def initJobParams(){
-        if(isParamEmpty(Configuration.get("platform"))){
+    protected def initJobParams() {
+        if (isParamEmpty(Configuration.get("platform"))) {
             Configuration.set("platform", "*") //init default platform for launcher
         }
-        if(isParamEmpty(Configuration.get("browser"))){
+        if (isParamEmpty(Configuration.get("browser"))) {
             Configuration.set("browser", "NULL") //init default platform for launcher
         }
     }
 
     // Possible to override in private pipelines
-    protected boolean isRerun(){
+    protected boolean isRerun() {
         return zafiraUpdater.isZafiraRerun(uuid)
     }
 
     // Possible to override in private pipelines
-    protected def sendCustomizedEmail(){
+    protected def sendCustomizedEmail() {
         //Do nothing in default implementation
     }
 
@@ -437,7 +452,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("node", defaultNode) //master is default node to execute job
 
         //TODO: handle browserstack etc integration here?
-        switch(Configuration.get("platform").toLowerCase()) {
+        switch (Configuration.get("platform").toLowerCase()) {
             case "api":
                 logger.info("Suite Type: API")
                 Configuration.set("node", "api")
@@ -574,7 +589,8 @@ public class QARunner extends AbstractRunner {
 		logger.info("pomFile: " + pomFile)
 		
 		executeMavenGoals("-B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION")
-*/	}
+*/
+    }
 
     protected void buildJob() {
         context.stage('Run Test Suite') {
@@ -585,7 +601,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected String getMavenGoals() {
-        def buildUserEmail = Configuration.get("BUILD_USER_EMAIL")?Configuration.get("BUILD_USER_EMAIL"):""
+        def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 				-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 		-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
@@ -620,9 +636,9 @@ public class QARunner extends AbstractRunner {
         def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
         //register all obligatory vars
-        Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+        Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
         //register all params after vars to be able to override
-        Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\""}
+        Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
 
         goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
         goals += getOptionalCapability("deploy_to_local_repo", " install")
@@ -632,14 +648,14 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def addVideoStreamingCapability(message, capabilityName, capabilityValue) {
-        def node  = Configuration.get("node")
+        def node = Configuration.get("node")
         if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {
             logger.info(message)
             Configuration.set(capabilityName, capabilityValue)
         }
     }
 
-    protected def addCapability(capabilityName, capabilityValue){
+    protected def addCapability(capabilityName, capabilityValue) {
         Configuration.set(capabilityName, capabilityValue)
     }
 
@@ -651,10 +667,10 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def getOptionalCapability(parameter, capabilityName) {
-        return Configuration.get(parameter) && Configuration.get(parameter).toBoolean()?capabilityName:""
+        return Configuration.get(parameter) && Configuration.get(parameter).toBoolean() ? capabilityName : ""
     }
 
-    protected def addBrowserStackGoals(){
+    protected def addBrowserStackGoals() {
         //browserstack goals
         if (isBrowserStackRunning()) {
             def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
@@ -669,7 +685,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected boolean isBrowserStackRunning() {
-        def customCapabilities = Configuration.get("custom_capabilities")?Configuration.get("custom_capabilities"):""
+        def customCapabilities = Configuration.get("custom_capabilities") ? Configuration.get("custom_capabilities") : ""
         return customCapabilities.toLowerCase().contains("browserstack")
     }
 
@@ -716,28 +732,28 @@ public class QARunner extends AbstractRunner {
 
     //TODO: move into valid jacoco related package
     protected void publishJacocoReport() {
-        def JACOCO_ENABLE = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-        if (!JACOCO_ENABLE) {
+        def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+        if (!jacocoEnable) {
             logger.warn("do not publish any content to AWS S3 if integration is disabled")
             return
         }
 
-        def JACOCO_BUCKET = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
-        def JOB_NAME = Configuration.get(Configuration.Parameter.JOB_NAME)
-        def BUILD_NUMBER = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+        def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+        def jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
+        def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
 
         def files = context.findFiles(glob: '**/jacoco.exec')
-        if(files.length == 1) {
+        if (files.length == 1) {
             context.archiveArtifacts artifacts: '**/jacoco.exec', fingerprint: true, allowEmptyArchive: true
             // https://github.com/jenkinsci/pipeline-aws-plugin#s3upload
             //TODO: move region 'us-west-1' into the global var 'JACOCO_REGION'
-            context.withAWS(region: 'us-west-1',credentials:'aws-jacoco-token') {
-                context.s3Upload(bucket:"$JACOCO_BUCKET", path:"$JOB_NAME/$BUILD_NUMBER/jacoco-it.exec", includePathPattern:'**/jacoco.exec')
+            context.withAWS(region: 'us-west-1', credentials: 'aws-jacoco-token') {
+                context.s3Upload(bucket: "$jacocoBucket", path: "$jobName/$buildNumber/jacoco-it.exec", includePathPattern: '**/jacoco.exec')
             }
         }
     }
 
-     //Overriden in private pipeline
+    //Overriden in private pipeline
     protected def overrideRecipients(emailList) {
         return emailList
     }
@@ -762,223 +778,141 @@ public class QARunner extends AbstractRunner {
                 }
                 def reportDir = parentFile.getPath()
                 logger.info("Report File Found, Publishing " + reports[i].path)
-                if (i > 0){
+                if (i > 0) {
                     def reportIndex = "_" + i
                     reportName = reportName + reportIndex
                 }
-                context.publishHTML getReportParameters(reportDir, reports[i].name, reportName )
+                context.publishHTML getReportParameters(reportDir, reports[i].name, reportName)
             }
         } catch (Exception e) {
             logger.error("Exception occurred while publishing Jenkins report.")
             logger.error(printStackTrace(e))
         }
-     }
+    }
 
     protected void runCron() {
         logger.info("QARunner->runCron")
         context.node("master") {
             scmClient.clone()
+            listPipelines = []
+            def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+            def repo = Configuration.get("repo")
+            def branch = Configuration.get("branch")
 
-            def workspace = getWorkspace()
-            logger.info("WORKSPACE: " + workspace)
-            def project = Configuration.get("repo")
-            def jenkinsFile = ".jenkinsfile.json"
+            currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
-            if (!context.fileExists("${jenkinsFile}")) {
-                logger.warn("no .jenkinsfile.json discovered! Scanner will use default qps-pipeline logic for project: ${project}")
-            }
-
-            def suiteFilter = "src/test/resources/**"
-            Object subProjects = parseJSON(workspace + "/" + jenkinsFile).sub_projects
-            subProjects.each {
-                listPipelines = []
-                suiteFilter = it.suite_filter
-                def sub_project = it.name
-
-                def subProjectFilter = sub_project
-                if (sub_project.equals(".")) {
-                    subProjectFilter = "**"
+            def pomFiles = getProjectPomFiles()
+            for(pomFile in pomFiles){
+                // Ternary operation to get subproject path. "." means that no subfolder is detected
+                def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
+                def subProjectFilter = subProject.equals(".")?"**":subProject
+                def testNGFolderName = searchTestNgFolderName(subProject).toString()
+                generatePipeLineList(subProjectFilter, testNGFolderName)
+                logger.info "Finished Dynamic Mapping:"
+                listPipelines = sortPipelineList(listPipelines)
+                listPipelines.each { pipeline ->
+                    logger.info(pipeline.toString())
                 }
-
-                def files = context.findFiles(glob: subProjectFilter + "/" + suiteFilter + "/**")
-                if(files.length > 0) {
-                    logger.info("Number of Test Suites to Scan Through: " + files.length)
-                    for (int i = 0; i < files.length; i++) {
-                        XmlSuite currentSuite = parsePipeline(workspace + "/" + files[i].path)
-                        if (currentSuite == null) {
-                            currentBuild.result = BuildResult.FAILURE
-                            continue
-                        }
-                        def supportedLocales = getPipelineLocales(currentSuite)
-                        if (supportedLocales.size() > 0) {
-                            multilingualMode = true
-                            supportedLocales.each { locale ->
-                                pipelineLocaleMap.put("locale", locale.key)
-                                pipelineLocaleMap.put("language", locale.value)
-                                generatePipeline(currentSuite)
-                            }
-                            pipelineLocaleMap.clear()
-                        } else {
-                            generatePipeline(currentSuite)
-                        }
-                    }
-                    logger.info "Finished Dynamic Mapping:"
-                    listPipelines.each { pipeline ->
-                        logger.info(pipeline.toString())
-                    }
-                    listPipelines = sortPipelineList(listPipelines)
-                    logger.debug("Finished Dynamic Mapping Sorted Order:")
-                    listPipelines.each { pipeline ->
-                        logger.debug(pipeline.toString())
-                    }
-                    executeStages()
-                } else {
-                    logger.error("No Test Suites Found to Scan...")
-                }
+                executeStages()
             }
         }
-
     }
 
-     protected XmlSuite parsePipeline(filePath){
-        logger.debug("filePath: " + filePath)
-        XmlSuite currentSuite = null
-        try {
-            currentSuite = parseSuite(filePath)
-        } catch (FileNotFoundException e) {
-            logger.error("ERROR! Unable to find suite: " + filePath)
-            logger.error(printStackTrace(e))
-        } catch (Exception e) {
-            logger.error("ERROR! Unable to parse suite: " + filePath)
-            logger.error(printStackTrace(e))
+    protected def generatePipeLineList(subProjectFilter, testNGFolderName){
+        def files = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
+        for (file in files){
+            logger.debug("Number of Test Suites to Scan Through: " + files.length)
+            XmlSuite currentSuite = parsePipeline(workspace + "/" + file.path)
+            if (currentSuite == null) {
+                currentBuild.result = BuildResult.FAILURE
+                continue
+            }
+            if(!isParamEmpty(currentSuite.getParameter("jenkinsPipelineLocales"))){
+                generateMultilingualPipeline(currentSuite)
+            } else {
+                generatePipeline(currentSuite)
+            }
         }
-        return currentSuite
+    }
+
+    protected def generateMultilingualPipeline(currentSuite){
+        def supportedLocales = getPipelineLocales(currentSuite)
+        if (supportedLocales.size() > 0){
+            multilingualMode = true
+            supportedLocales.each { locale ->
+                pipelineLocaleMap.put("locale", locale.key)
+                pipelineLocaleMap.put("language", locale.value)
+                generatePipeline(currentSuite)
+            }
+            pipelineLocaleMap.clear()
+        }
     }
 
     protected void generatePipeline(XmlSuite currentSuite) {
 
-        def jobName = currentSuite.getParameter("jenkinsJobName").toString()
-        def jobCreated = currentSuite.getParameter("jenkinsJobCreation")
-        if (jobCreated != null && !jobCreated.toBoolean()) {
+        def jobName = currentSuite.getParameter("jenkinsJobName")
+        if (!getBooleanParameterValue("jenkinsJobCreation", currentSuite)) {
             //no need to proceed as jenkinsJobCreation=false
             return
         }
-        def supportedPipelines = currentSuite.getParameter("jenkinsRegressionPipeline").toString()
-        def orderNum = getOrderNum(currentSuite)
-        def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode").toString()
-        def supportedEnvs = currentSuite.getParameter("jenkinsPipelineEnvironments").toString()
-		if (isParamEmpty(supportedEnvs)) {
-			supportedEnvs = currentSuite.getParameter("jenkinsEnvironments").toString()
-		}
-        def queueRegistration = currentSuite.getParameter("jenkinsQueueRegistration")
-        if(!isParamEmpty(queueRegistration)){
-            logger.info("override queue_registration to: " + queueRegistration)
-            Configuration.set("queue_registration", queueRegistration)
-        }
 
+        def regressionPipelines = !isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))?currentSuite.getParameter("jenkinsRegressionPipeline"):""
+        def orderNum = getJobExecutionOrderNumber(currentSuite)
+        def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")
+        def supportedEnvs = getSuiteParameter(currentSuite.getParameter("jenkinsEnvironments"), "jenkinsPipelineEnvironments", currentSuite)
         def currentEnvs = getCronEnv(currentSuite)
-        def pipelineJobName = Configuration.get(Configuration.Parameter.JOB_BASE_NAME)
-
-        // override suite email_list from params if defined
-        def emailList = currentSuite.getParameter("jenkinsEmail").toString()
-        def paramEmailList = Configuration.get("email_list")
-        if (paramEmailList != null && !paramEmailList.isEmpty()) {
-            emailList = paramEmailList
-        }
-
-        def priorityNum = "5"
-        def curPriorityNum = Configuration.get("BuildPriority")
-        if (curPriorityNum != null && !curPriorityNum.isEmpty()) {
-            priorityNum = curPriorityNum //lowest priority for pipeline/cron jobs. So manually started jobs has higher priority among CI queue
-        }
-
-        //def overrideFields = currentSuite.getParameter("overrideFields").toString()
-        def overrideFields = Configuration.get("overrideFields")
-
-        String supportedBrowsers = currentSuite.getParameter("jenkinsPipelineBrowsers").toString()
-        String logLine = "supportedPipelines: ${supportedPipelines};\n	jobName: ${jobName};\n	orderNum: ${orderNum};\n	email_list: ${emailList};\n	supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	supportedBrowsers: ${supportedBrowsers};\n"
-
-        def currentBrowser = Configuration.get("browser")
-
-        if (currentBrowser == null || currentBrowser.isEmpty()) {
-            currentBrowser = "NULL"
-        }
-
-        logLine += "	currentBrowser: ${currentBrowser};\n"
+        def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
+        def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
+        def priorityNum = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
+        def supportedBrowsers = !isParamEmpty(currentSuite.getParameter("jenkinsPipelineBrowsers"))?currentSuite.getParameter("jenkinsPipelineBrowsers"):""
+        def currentBrowser = !isParamEmpty(Configuration.get("browser"))?Configuration.get("browser"):"NULL"
+        def logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
+                "jobExecutionOrderNumber: ${orderNum};\n	email_list: ${emailList};\n	" +
+                "supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	" +
+                "supportedBrowsers: ${supportedBrowsers};\n\tcurrentBrowser: ${currentBrowser};"
         logger.info(logLine)
 
-        if (!supportedPipelines.contains("null")) {
-            for (def pipeName : supportedPipelines.split(",")) {
-                if (!pipelineJobName.equals(pipeName)) {
-                    //launch test only if current pipeName exists among supportedPipelines
-                    continue
-                }
-                for (def currentEnv : currentEnvs.split(",")) {
-                    for (def supportedEnv : supportedEnvs.split(",")) {
+        for (def regressionPipeline : regressionPipelines?.split(",")) {
+            if (!Configuration.get(Configuration.Parameter.JOB_BASE_NAME).equals(regressionPipeline)) {
+                //launch test only if current regressionPipeline exists among regressionPipelines
+                continue
+            }
+            for (def currentEnv : currentEnvs.split(",")) {
+                for (def supportedEnv : supportedEnvs.split(",")) {
 //                        logger.debug("supportedEnv: " + supportedEnv)
-                        if (!currentEnv.equals(supportedEnv) && !currentEnv.toString().equals("null")) {
-                            logger.info("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
-                            //launch test only if current suite support cron regression execution for current env
+                    if (!currentEnv.equals(supportedEnv) && !isParamEmpty(currentEnv)) {
+                        logger.info("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
+                        //launch test only if current suite support cron regression execution for current env
+                        continue
+                    }
+                    for (def supportedBrowser : supportedBrowsers.split(",")) {
+                        /* supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
+                           supportedBrowser - splitted single browser name from supportedBrowsers
+                           currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
+                        Map supportedBrowserValues = getSupportedBrowserValues(currentBrowser, supportedBrowser)
+                        if (!currentBrowser.equals(supportedBrowser) && !isParamEmpty(currentBrowser)) {
+                            logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                             continue
                         }
-
-                        for (def supportedBrowser : supportedBrowsers.split(",")) {
-                            // supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
-                            // supportedBrowser - splitted single browser name from supportedBrowsers
-                            def browser = currentBrowser
-                            def browserVersion = null
-                            def os = null
-                            def osVersion = null
-
-                            String browserInfo = supportedBrowser
-                            if (supportedBrowser.contains("-")) {
-                                def systemInfoArray = supportedBrowser.split("-")
-                                String osInfo = systemInfoArray[0]
-                                os = OS.getName(osInfo)
-                                osVersion = OS.getVersion(osInfo)
-                                browserInfo = systemInfoArray[1]
-                            }
-                            def browserInfoArray = browserInfo.split(" ")
-                            browser = browserInfoArray[0]
-                            if (browserInfoArray.size() > 1) {
-                                browserVersion = browserInfoArray[1]
-                            }
-
-                            // currentBrowser - explicilty selected browser on cron/pipeline level to execute tests
-
-//                            logger.debug("supportedBrowser: ${supportedBrowser}; currentBrowser: ${currentBrowser}; ")
-                            if (!currentBrowser.equals(supportedBrowser) && !currentBrowser.toString().equals("NULL")) {
-                                logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
-                                continue
-                            }
-
-//                            logger.info("adding ${filePath} suite to pipeline run...")
-
-                            def pipelineMap = [:]
-
-                            // put all not NULL args into the pipelineMap for execution
-                            putMap(pipelineMap, pipelineLocaleMap)
-                            putNotNull(pipelineMap, "browser", browser)
-                            putNotNull(pipelineMap, "browser_version", browserVersion)
-                            putNotNull(pipelineMap, "os", os)
-                            putNotNull(pipelineMap, "os_version", osVersion)
-                            pipelineMap.put("name", pipeName)
-                            pipelineMap.put("branch", Configuration.get("branch"))
-                            pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
-                            pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
-                            pipelineMap.put("retry_count", Configuration.get("retry_count"))
-                            putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
-                            pipelineMap.put("jobName", jobName)
-                            pipelineMap.put("env", supportedEnv)
-                            pipelineMap.put("order", orderNum)
-                            pipelineMap.put("BuildPriority", priorityNum)
-                            putNotNullWithSplit(pipelineMap, "emailList", emailList)
-                            putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-                            putNotNull(pipelineMap, "overrideFields", overrideFields)
-                            putNotNull(pipelineMap, "queue_registration", Configuration.get("queue_registration"))
-//                                logger.debug("initialized ${filePath} suite to pipeline run...")
-                            registerPipeline(currentSuite, pipelineMap)
-                        }
+                        def pipelineMap = [:]
+                        // put all not NULL args into the pipelineMap for execution
+                        putMap(pipelineMap, pipelineLocaleMap)
+                        putMap(pipelineMap, supportedBrowserValues)
+                        pipelineMap.put("name", regressionPipeline)
+                        pipelineMap.put("branch", Configuration.get("branch"))
+                        pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
+                        pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
+                        pipelineMap.put("retry_count", Configuration.get("retry_count"))
+                        putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
+                        pipelineMap.put("jobName", jobName)
+                        pipelineMap.put("env", supportedEnv)
+                        pipelineMap.put("order", orderNum)
+                        pipelineMap.put("BuildPriority", priorityNum)
+                        putNotNullWithSplit(pipelineMap, "emailList", emailList)
+                        putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+                        putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
+                        putNotNull(pipelineMap, "queue_registration", queueRegistration)
+                        registerPipeline(currentSuite, pipelineMap)
                     }
                 }
             }
@@ -997,6 +931,18 @@ public class QARunner extends AbstractRunner {
         return orderNum
     }
 
+    protected def getJobExecutionOrderNumber(suite){
+        def orderNum = suite.getParameter("jenkinsJobExecutionOrder")
+        if (isParamEmpty(orderNum)) {
+            orderNum = 0
+            logger.info("specify by default '0' order - start asap")
+        } else if (orderNum.equals("ordered")) {
+            orderedJobExecNum++
+            orderNum = orderedJobExecNum
+        }
+        return orderNum.toString()
+    }
+
     protected def getCronEnv(currentSuite) {
         //currentSuite is need to override action in private pipelines
         return Configuration.get("env")
@@ -1007,62 +953,96 @@ public class QARunner extends AbstractRunner {
         listPipelines.add(pipelineMap)
     }
 
+    protected getSupportedBrowserValues(currentBrowser, supportedBrowser){
+        def valuesMap = [:]
+        def browser = currentBrowser
+        def browserVersion = ""
+        def os = ""
+        def osVersion = ""
+
+        String browserInfo = supportedBrowser
+        if (supportedBrowser.contains("-")) {
+            def systemInfoArray = supportedBrowser.split("-")
+            String osInfo = systemInfoArray[0]
+            os = OS.getName(osInfo)
+            osVersion = OS.getVersion(osInfo)
+            browserInfo = systemInfoArray[1]
+        }
+        def browserInfoArray = browserInfo.split(" ")
+        browser = browserInfoArray[0]
+        if (browserInfoArray.size() > 1) {
+            browserVersion = browserInfoArray[1]
+        }
+        valuesMap.browser = browser
+        valuesMap.browser_version = browserVersion
+        valuesMap.os = os
+        valuesMap.os_version = osVersion
+        return valuesMap
+    }
+
     protected def executeStages() {
         def mappedStages = [:]
 
         boolean parallelMode = true
-
         //combine jobs with similar priority into the single paralle stage and after that each stage execute in parallel
         String beginOrder = "0"
         String curOrder = ""
-        for (Map entry : listPipelines) {
-            def stageName
-            if(multilingualMode && entry.get("locale")){
-                stageName = String.format("Stage: %s Environment: %s Browser: %s Locale: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"), entry.get("locale"))
-            } else {
-                stageName = String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))
-            }
-            logger.info("stageName: ${stageName}")
-
+        for (Map jobParams : listPipelines) {
+            def stageName = getStageName(jobParams)
             boolean propagateJob = true
-            if (entry.get("executionMode").toString().contains("continue")) {
+            if (jobParams.get("executionMode").contains("continue")) {
                 //do not interrupt pipeline/cron if any child job failed
                 propagateJob = false
             }
-            if (entry.get("executionMode").toString().contains("abort")) {
+            if (jobParams.get("executionMode").contains("abort")) {
                 //interrupt pipeline/cron and return fail status to piepeline if any child job failed
                 propagateJob = true
             }
-
-            curOrder = entry.get("order")
+            curOrder = jobParams.get("order")
             logger.debug("beginOrder: ${beginOrder}; curOrder: ${curOrder}")
-
             // do not wait results for jobs with default order "0". For all the rest we should wait results between phases
             boolean waitJob = false
             if (curOrder.toInteger() > 0) {
                 waitJob = true
             }
-
             if (curOrder.equals(beginOrder)) {
                 logger.debug("colect into order: ${curOrder}; job: ${stageName}")
-                mappedStages[stageName] = buildOutStages(entry, waitJob, propagateJob)
+                mappedStages[stageName] = buildOutStages(jobParams, waitJob, propagateJob)
             } else {
                 context.parallel mappedStages
-
                 //reset mappedStages to empty after execution
                 mappedStages = [:]
                 beginOrder = curOrder
-
                 //add existing pipeline as new one in the current stage
-                mappedStages[stageName] = buildOutStages(entry, waitJob, propagateJob)
+                mappedStages[stageName] = buildOutStages(jobParams, waitJob, propagateJob)
             }
         }
-
         if (!mappedStages.isEmpty()) {
             logger.debug("launch jobs with order: ${curOrder}")
             context.parallel mappedStages
         }
 
+    }
+
+    protected def getStageName(jobParams) {
+        def stageName = ""
+        String jobName = jobParams.get("jobName")
+        String env = jobParams.get("env")
+        String browser = jobParams.get("browser")
+        String locale = jobParams.get("locale")
+        if (!isParamEmpty(jobName)) {
+            stageName += "Stage: ${jobName} "
+        }
+        if (!isParamEmpty(env)) {
+            stageName += "Environment: ${env} "
+        }
+        if (!isParamEmpty(browser)) {
+            stageName += "Browser: ${browser} "
+        }
+        if (!isParamEmpty(locale) && multilingualMode) {
+            stageName += "Locale: ${locale} "
+        }
+        return stageName
     }
 
     protected def buildOutStages(Map entry, boolean waitJob, boolean propagateJob) {
@@ -1072,7 +1052,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def buildOutStage(Map entry, boolean waitJob, boolean propagateJob) {
-        context.stage(String.format("Stage: %s Environment: %s Browser: %s", entry.get("jobName"), entry.get("env"), entry.get("browser"))) {
+        context.stage(getStageName(entry)) {
             logger.debug("Dynamic Stage Created For: " + entry.get("jobName"))
             logger.debug("Checking EmailList: " + entry.get("emailList"))
 
@@ -1088,7 +1068,6 @@ public class QARunner extends AbstractRunner {
                     }
                 }
             }
-
             for (param in entry) {
                 jobParams.add(context.string(name: param.getKey(), value: param.getValue()))
             }
