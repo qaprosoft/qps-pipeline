@@ -2,11 +2,9 @@ package com.qaprosoft.jenkins.pipeline.gradle
 
 class Gradle {
 
-    public void execute(){
+    public void buildGradle(){
         context.stage('Gradle Build') {
             logger.debug("Gradle mixin->buildGradle")
-            context.env.JAVA_HOME = "/usr/lib/jvm/java-11-oracle"
-            context.env.PATH = "${context.env.JAVA_HOME}/bin:${context.env.PATH}"
             if (context.isUnix()) {
                 context.sh 'java -version'
                 context.sh 'cp config/gradle.properties .'
