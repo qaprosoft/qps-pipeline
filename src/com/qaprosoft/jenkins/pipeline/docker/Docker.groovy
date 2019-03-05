@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.pipeline.docker
 
 class Docker {
 
-    def buildDocker(version){
+    def buildDocker(version, registry){
         context.stage('Docker Build') {
             dockerImage = context.docker.build(registry + ":${version}", "--build-arg version=${version} .")
         }
