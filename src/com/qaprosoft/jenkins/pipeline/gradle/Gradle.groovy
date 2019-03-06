@@ -7,7 +7,7 @@ class Gradle {
             logger.debug("Gradle mixin->buildGradle")
             if (context.isUnix()) {
                 context.sh 'chmod a+x gradlew'
-                context.sh 'cp ./config/gradle.$environment.properties ./gradle.properties'
+                context.sh 'cp ./config/gradle.properties ./gradle.properties'
                 context.sh "./gradlew clean build -P version=${version}"
             } else {
                 context.bat 'gradlew.bat build'
