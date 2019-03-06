@@ -380,6 +380,12 @@ public class QARunner extends AbstractRunner {
         this.additionalClasspath = additionalClasspath
     }
 
+    public def getSettingsFileProviderContent(fileId){
+        context.configFileProvider([context.configFile(fileId: fileId, variable: "MAVEN_SETTINGS")]) {
+            context.readFile context.env.MAVEN_SETTINGS
+        }
+    }
+
     protected void runJob() {
         logger.info("QARunner->runJob")
         uuid = getUUID()
@@ -392,14 +398,13 @@ public class QARunner extends AbstractRunner {
             nodeName = chooseNode()
         }
         context.node(nodeName) {
-
+            def configFile = getSettingsFileProviderContent('1fd85d4b-04be-44a1-9df3-3d750fad6ca0')
+            logger.info(configFile)
 //            def inputFile = new File()
 //            def inputFile = context.writeFile file: workspace + "/tmp/settings.xml", text: ""
 //            logger.info(inputFile.dump())
-            def configFile = context.configFileProvider([context.configFile(fileId: '1fd85d4b-04be-44a1-9df3-3d750fad6ca0', variable: "MAVEN_SETTINGS")]) {
-                String pom = context.readFile context.env.MAVEN_SETTINGS
-                logger.info(pom)
-            }
+
+
 
 //            context.wrap([$class: 'BuildUser']) {
 //                try {
