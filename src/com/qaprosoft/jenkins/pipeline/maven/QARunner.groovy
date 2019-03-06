@@ -393,37 +393,44 @@ public class QARunner extends AbstractRunner {
         }
         context.node(nodeName) {
 
-            context.wrap([$class: 'BuildUser']) {
-                try {
-                    context.timestamps {
+            def inputFile = new File(workspace + "/tmp/settings.xml")
+            def configFile = context.configFileProvider([context.configFile(fileId: '1fd85d4b-04be-44a1-9df3-3d750fad6ca0', variable: inputFile)])
+            logger.info(configFile)
+//                    {
+//                        sh 'mvn -s $MAVEN_SETTINGS clean package'
+//                    }
 
-                        prepareBuild(currentBuild)
-                        scmClient.clone()
-
-                        downloadResources()
-
-                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
-                            buildJob()
-                        }
-                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-                        sendCustomizedEmail()
-                        //TODO: think about seperate stage for uploading jacoco reports
-                        publishJacocoReport()
-                    }
-                } catch (Exception e) {
-                    logger.error(printStackTrace(e))
-                    zafiraUpdater.abortTestRun(uuid, currentBuild)
-                    throw e
-                } finally {
-                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    qTestUpdater.updateTestRun(uuid)
-                    testRailUpdater.updateTestRun(uuid, isRerun)
-                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
-                    zafiraUpdater.setBuildResult(uuid, currentBuild)
-                    publishJenkinsReports()
-                    clean()
-                }
-            }
+//            context.wrap([$class: 'BuildUser']) {
+//                try {
+//                    context.timestamps {
+//
+//                        prepareBuild(currentBuild)
+//                        scmClient.clone()
+//
+//                        downloadResources()
+//
+//                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
+//                            buildJob()
+//                        }
+//                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+//                        sendCustomizedEmail()
+//                        //TODO: think about seperate stage for uploading jacoco reports
+//                        publishJacocoReport()
+//                    }
+//                } catch (Exception e) {
+//                    logger.error(printStackTrace(e))
+//                    zafiraUpdater.abortTestRun(uuid, currentBuild)
+//                    throw e
+//                } finally {
+//                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
+//                    qTestUpdater.updateTestRun(uuid)
+//                    testRailUpdater.updateTestRun(uuid, isRerun)
+//                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
+//                    zafiraUpdater.setBuildResult(uuid, currentBuild)
+//                    publishJenkinsReports()
+//                    clean()
+//                }
+//            }
         }
     }
 
