@@ -380,12 +380,6 @@ public class QARunner extends AbstractRunner {
         this.additionalClasspath = additionalClasspath
     }
 
-    public def getSettingsFileProviderContent(fileId){
-        context.configFileProvider([context.configFile(fileId: fileId, variable: "MAVEN_SETTINGS")]) {
-            context.readFile context.env.MAVEN_SETTINGS
-        }
-    }
-
     protected void runJob() {
         logger.info("QARunner->runJob")
         uuid = getUUID()
@@ -398,45 +392,37 @@ public class QARunner extends AbstractRunner {
             nodeName = chooseNode()
         }
         context.node(nodeName) {
-            def configFile = getSettingsFileProviderContent('1fd85d4b-04be-44a1-9df3-3d750fad6ca0')
-            logger.info(configFile)
-//            def inputFile = new File()
-//            def inputFile = context.writeFile file: workspace + "/tmp/settings.xml", text: ""
-//            logger.info(inputFile.dump())
+            context.wrap([$class: 'BuildUser']) {
+                try {
+                    context.timestamps {
 
+                        prepareBuild(currentBuild)
+                        scmClient.clone()
 
+                        downloadResources()
 
-//            context.wrap([$class: 'BuildUser']) {
-//                try {
-//                    context.timestamps {
-//
-//                        prepareBuild(currentBuild)
-//                        scmClient.clone()
-//
-//                        downloadResources()
-//
-//                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
-//                            buildJob()
-//                        }
-//                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-//                        sendCustomizedEmail()
-//                        //TODO: think about seperate stage for uploading jacoco reports
-//                        publishJacocoReport()
-//                    }
-//                } catch (Exception e) {
-//                    logger.error(printStackTrace(e))
-//                    zafiraUpdater.abortTestRun(uuid, currentBuild)
-//                    throw e
-//                } finally {
-//                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-//                    qTestUpdater.updateTestRun(uuid)
-//                    testRailUpdater.updateTestRun(uuid, isRerun)
-//                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
-//                    zafiraUpdater.setBuildResult(uuid, currentBuild)
-//                    publishJenkinsReports()
-//                    clean()
-//                }
-//            }
+                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
+                            buildJob()
+                        }
+                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+                        sendCustomizedEmail()
+                        //TODO: think about seperate stage for uploading jacoco reports
+                        publishJacocoReport()
+                    }
+                } catch (Exception e) {
+                    logger.error(printStackTrace(e))
+                    zafiraUpdater.abortTestRun(uuid, currentBuild)
+                    throw e
+                } finally {
+                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
+                    qTestUpdater.updateTestRun(uuid)
+                    testRailUpdater.updateTestRun(uuid, isRerun)
+                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
+                    zafiraUpdater.setBuildResult(uuid, currentBuild)
+                    publishJenkinsReports()
+                    clean()
+                }
+            }
         }
     }
 
@@ -1121,6 +1107,12 @@ public class QARunner extends AbstractRunner {
                       onlyStable: false,
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
+    }
+
+    def getSettingsFileProviderContent(fileId){
+        context.configFileProvider([context.configFile(fileId: fileId, variable: "MAVEN_SETTINGS")]) {
+            context.readFile context.env.MAVEN_SETTINGS
+        }
     }
 
     // Possible to override in private pipelines
