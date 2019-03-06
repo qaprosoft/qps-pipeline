@@ -397,8 +397,9 @@ public class QARunner extends AbstractRunner {
 //            def inputFile = context.writeFile file: workspace + "/tmp/settings.xml", text: ""
 //            logger.info(inputFile.dump())
             def configFile = context.configFileProvider([context.configFile(fileId: '1fd85d4b-04be-44a1-9df3-3d750fad6ca0', variable: "MAVEN_SETTINGS")]) {
-                String pom = context.readFile '$MAVEN_SETTINGS'
-                logger.info(pom)
+                logger.info(it.dump())
+//                String pom = context.readFile '$MAVEN_SETTINGS'
+//                logger.info(pom)
             }
 
 //            context.wrap([$class: 'BuildUser']) {
