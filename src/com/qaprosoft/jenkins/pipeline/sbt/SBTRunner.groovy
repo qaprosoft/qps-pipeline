@@ -52,6 +52,7 @@ class SBTRunner extends AbstractRunner {
                     publishJenkinsReports()
                     clean()
                     uploadResultsToS3()
+                    publishResultsInSlack()
                 }
             }
         }
