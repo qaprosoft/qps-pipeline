@@ -392,7 +392,6 @@ public class QARunner extends AbstractRunner {
             nodeName = chooseNode()
         }
         context.node(nodeName) {
-
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
@@ -1108,6 +1107,12 @@ public class QARunner extends AbstractRunner {
                       onlyStable: false,
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
+    }
+
+    def getSettingsFileProviderContent(fileId){
+        context.configFileProvider([context.configFile(fileId: fileId, variable: "MAVEN_SETTINGS")]) {
+            context.readFile context.env.MAVEN_SETTINGS
+        }
     }
 
     // Possible to override in private pipelines
