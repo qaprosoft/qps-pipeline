@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.pipeline.integration.testrail
 
 import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 
-import static com.qaprosoft.Utils.*
+import static com.qaprosoft.jenkins.Utils.*
 import groovy.json.JsonBuilder
 import com.qaprosoft.jenkins.pipeline.Configuration
 

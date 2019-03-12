@@ -14,7 +14,7 @@ import java.nio.file.PathMatcher
 import java.nio.file.Paths
 
 import static java.util.UUID.randomUUID
-import static com.qaprosoft.Utils.*
+import static com.qaprosoft.jenkins.Utils.*
 import org.jenkinsci.plugins.ghprb.*
 import com.cloudbees.plugins.credentials.impl.*
 import com.cloudbees.plugins.credentials.*

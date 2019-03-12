@@ -1,11 +1,10 @@
 package com.qaprosoft.jenkins.pipeline.integration.testrail
 
 
-import com.qaprosoft.Logger
+import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.Configuration
 
-import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraClient
 import com.qaprosoft.jenkins.pipeline.integration.zafira.IntegrationTag

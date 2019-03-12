@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.docker
+package com.qaprosoft.jenkins.pipeline.tools.docker
 
 class Docker {
 

@@ -1,17 +1,15 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.Logger
-
+import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.scm.ISCM
-import com.qaprosoft.jenkins.pipeline.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import groovy.json.JsonOutput
 
-import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Repository {
@@ -20,7 +18,7 @@ class Repository {
     protected ISCM scmClient
     protected Logger logger
     protected Configuration configuration = new Configuration(context)
-    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
+    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
     protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
 	protected Map dslObjects = new LinkedHashMap()

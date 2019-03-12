@@ -1,8 +1,8 @@
-package com.qaprosoft.jenkins.pipeline.maven.sonar
+package com.qaprosoft.jenkins.pipeline.tools.maven.sonar
 
 import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
-import com.qaprosoft.jenkins.pipeline.maven.Maven
+import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 
 @Mixin(Maven)
 public class Sonar {

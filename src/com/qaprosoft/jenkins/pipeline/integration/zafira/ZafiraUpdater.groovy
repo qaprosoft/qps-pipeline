@@ -1,8 +1,8 @@
 package com.qaprosoft.jenkins.pipeline.integration.zafira
 
-import com.qaprosoft.Logger
+import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
-import static com.qaprosoft.Utils.*
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class ZafiraUpdater {

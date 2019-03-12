@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.scm
+package com.qaprosoft.jenkins.pipeline.tools.scm
 
 public interface ISCM {
 

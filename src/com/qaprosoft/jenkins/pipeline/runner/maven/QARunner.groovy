@@ -1,21 +1,21 @@
-package com.qaprosoft.jenkins.pipeline.maven.runner
+package com.qaprosoft.jenkins.pipeline.runner.maven
 
-import com.qaprosoft.jenkins.pipeline.maven.Maven
+import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
-import static com.qaprosoft.Utils.*
+
 import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
 import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
-import com.qaprosoft.jenkins.pipeline.BrowserStackOS
+import com.qaprosoft.jenkins.pipeline.runner.browserstack.BrowserStackOS
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.AbstractRunner
+import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
-import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
-import com.qaprosoft.jenkins.pipeline.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 import java.nio.file.Path
@@ -30,7 +30,7 @@ public class QARunner extends AbstractRunner {
 
     protected Map dslObjects = new HashMap()
     protected def pipelineLibrary = "QPS-Pipeline"
-    protected def runnerClass = "com.qaprosoft.jenkins.pipeline.maven.runner.QARunner"
+    protected def runnerClass = "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner"
     protected def onlyUpdated = false
     protected def currentBuild
     protected def uuid

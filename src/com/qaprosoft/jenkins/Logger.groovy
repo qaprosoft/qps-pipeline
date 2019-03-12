@@ -1,4 +1,4 @@
-package com.qaprosoft
+package com.qaprosoft.jenkins
 
 class Logger {
 

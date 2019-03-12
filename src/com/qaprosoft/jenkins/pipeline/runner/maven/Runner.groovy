@@ -1,14 +1,13 @@
-package com.qaprosoft.jenkins.pipeline.maven.runner
+package com.qaprosoft.jenkins.pipeline.runner.maven
 
-import com.qaprosoft.Logger
-import com.qaprosoft.jenkins.pipeline.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.AbstractRunner
+import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
-
-import com.qaprosoft.jenkins.pipeline.maven.Maven
-import com.qaprosoft.jenkins.pipeline.maven.sonar.Sonar
+import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
+import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 
 @Mixin([Maven, Sonar])
 public class Runner extends AbstractRunner {

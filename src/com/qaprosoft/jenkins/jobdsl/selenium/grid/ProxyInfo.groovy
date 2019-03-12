@@ -1,7 +1,7 @@
 package com.qaprosoft.jenkins.jobdsl.selenium.grid
 
-import com.qaprosoft.Logger
-import com.qaprosoft.Utils
+import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.Utils
 import groovy.json.JsonSlurper
 
 class ProxyInfo {
