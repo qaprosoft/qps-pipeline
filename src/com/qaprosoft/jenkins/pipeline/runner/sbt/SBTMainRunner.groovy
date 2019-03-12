@@ -1,9 +1,9 @@
-package com.qaprosoft.jenkins.pipeline.maven.runner.sbt
+package com.qaprosoft.jenkins.pipeline.runner.sbt
 
-import com.qaprosoft.Utils
+import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.AbstractRunner
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 import groovy.transform.InheritConstructors
 
 

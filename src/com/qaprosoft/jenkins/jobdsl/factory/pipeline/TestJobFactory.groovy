@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 @Grab('org.testng:testng:6.8.8')
 
-import static com.qaprosoft.Utils.*
+import static com.qaprosoft.jenkins.Utils.*
 import org.testng.xml.XmlSuite
 import com.qaprosoft.jenkins.jobdsl.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors

@@ -1,7 +1,7 @@
-package com.qaprosoft.jenkins.pipeline.maven
+package com.qaprosoft.jenkins.pipeline.tools.maven
 
-import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.Logger
+
+import com.qaprosoft.jenkins.Logger
 
 public class Maven {
 	//TODO: migreate to traits as only it is supported in pipelines
