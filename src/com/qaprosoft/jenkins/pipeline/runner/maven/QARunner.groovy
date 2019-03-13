@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.pipeline.runner.maven
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
-
+import static com.qaprosoft.jenkins.Utils.*
 import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
 import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
