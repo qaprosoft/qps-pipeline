@@ -69,7 +69,9 @@ public class TestJobFactory extends PipelineFactory {
 						}
 					}
 				}
-
+				if(currentSuite.getParameter("jenkinsDisableJob")?.toBoolean()){
+					disabled()
+				}
 				def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
 				def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
 				def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
