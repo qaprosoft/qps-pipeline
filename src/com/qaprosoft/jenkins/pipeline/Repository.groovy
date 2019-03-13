@@ -11,6 +11,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import static com.qaprosoft.jenkins.Utils.*
 import groovy.json.JsonOutput
 
+import static com.qaprosoft.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Repository {

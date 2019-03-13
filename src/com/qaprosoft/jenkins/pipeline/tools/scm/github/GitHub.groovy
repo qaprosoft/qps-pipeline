@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline.tools.scm.github
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.Configuration
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class GitHub implements ISCM {
 
