@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins.pipeline.integration
 
 import com.qaprosoft.jenkins.Logger
 
+import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 abstract class HttpClient {

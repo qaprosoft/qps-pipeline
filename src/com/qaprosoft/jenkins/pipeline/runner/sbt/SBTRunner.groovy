@@ -4,6 +4,7 @@ import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
+import java.util.Date
 import groovy.transform.InheritConstructors
 import java.text.SimpleDateFormat
 
@@ -51,6 +52,7 @@ class SBTRunner extends AbstractRunner {
                     publishJenkinsReports()
                     clean()
                     uploadResultsToS3()
+                    publishResultsInSlack()
                 }
             }
         }
@@ -87,5 +89,9 @@ class SBTRunner extends AbstractRunner {
         if (needToUpload) {
             context.build job: 'loadTesting/Upload-Results-To-S3', wait: false
         }
+    }
+
+    protected void publishResultsInSlack() {
+        context.build job: 'loadTesting/Publish-Results-To-Slack', wait: false
     }
 }
