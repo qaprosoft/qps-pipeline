@@ -69,7 +69,7 @@ public class TestJobFactory extends PipelineFactory {
 						}
 					}
 				}
-				if(currentSuite.getParameter("jenkinsDisableJob")?.toBoolean()){
+				if(currentSuite.getParameter("jenkinsJobDisabled")?.toBoolean()){
 					disabled()
 				}
 				def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
