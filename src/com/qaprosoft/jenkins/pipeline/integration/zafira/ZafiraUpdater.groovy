@@ -4,6 +4,7 @@ import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
+import static com.qaprosoft.jenkins.Utils.*
 
 class ZafiraUpdater {
 
