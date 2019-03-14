@@ -621,7 +621,7 @@ public class QARunner extends AbstractRunner {
 		-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
 				  -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
 		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
-		clean test -Dqueue_registration=false"
+		clean test"
 
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
         addCapability("suite", suiteName)
@@ -1110,6 +1110,12 @@ public class QARunner extends AbstractRunner {
                       onlyStable: false,
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
+    }
+
+    def getSettingsFileProviderContent(fileId){
+        context.configFileProvider([context.configFile(fileId: fileId, variable: "MAVEN_SETTINGS")]) {
+            context.readFile context.env.MAVEN_SETTINGS
+        }
     }
 
     // Possible to override in private pipelines
