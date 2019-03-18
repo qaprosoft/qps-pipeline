@@ -135,7 +135,9 @@ class ZafiraUpdater {
     }
 
     public def sendSlackNotification(uuid, channels) {
-        return zc.sendSlackNotification(uuid, channels)
+        if (!isParamEmpty(channels)){
+            return zc.sendSlackNotification(uuid, channels)
+        }
     }
 
     public boolean isZafiraRerun(uuid){
