@@ -419,6 +419,7 @@ public class QARunner extends AbstractRunner {
                     testRailUpdater.updateTestRun(uuid, isRerun)
                     zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                     zafiraUpdater.setBuildResult(uuid, currentBuild)
+                    zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                     publishJenkinsReports()
                     clean()
                 }
