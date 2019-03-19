@@ -2,7 +2,6 @@ package com.qaprosoft.integration.zafira
 
 import com.qaprosoft.integration.HttpClient
 import groovy.json.JsonBuilder
-
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import com.qaprosoft.jenkins.pipeline.Configuration
 
@@ -91,7 +90,19 @@ class ZafiraClient extends HttpClient{
 		return sendRequest(parameters)
     }
 
-	public def exportTagData(uuid, tagName) {
+    public def sendSlackNotification(uuid, channels) {
+        if (isTokenExpired()) {
+            getZafiraAuthToken(refreshToken)
+        }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'GET',
+                          validResponseCodes: "200",
+                          url: this.serviceURL + "/api/slack/testrun/${uuid}/finish?channels=${channels}"]
+        return sendRequest(parameters)
+    }
+
+    public def exportTagData(uuid, tagName) {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
