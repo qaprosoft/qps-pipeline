@@ -136,6 +136,12 @@ class ZafiraUpdater {
         }
     }
 
+    public def sendSlackNotification(uuid, channels) {
+        if (!isParamEmpty(channels)){
+            return zc.sendSlackNotification(uuid, channels)
+        }
+    }
+
     public boolean isZafiraRerun(uuid){
         return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
     }
