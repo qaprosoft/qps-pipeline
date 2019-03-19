@@ -39,8 +39,6 @@ public class TestJobFactory extends PipelineFactory {
 		this.name = currentSuite.getParameter("jenkinsJobName")
 		logger.info("JenkinsJobName: ${name}")
 
-		logger.info("testrail_search_interval: ${currentSuite.getParameter("testrail_search_interval")}")
-
 		def pipelineJob = super.create()
 		pipelineJob.with {
 
@@ -140,6 +138,7 @@ public class TestJobFactory extends PipelineFactory {
 				configure addHiddenParameter('suite', '', suiteName)
 				configure addHiddenParameter('ci_parent_url', '', '')
 				configure addHiddenParameter('ci_parent_build', '', '')
+                configure addHiddenParameter('slack_channels', '', getSuiteParameter("", "jenkinsSlackChannels", currentSuite))
 				configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
 				configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
 				configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
@@ -160,7 +159,6 @@ public class TestJobFactory extends PipelineFactory {
 					logger.debug("Parameter: ${param}")
 					def delimiter = "::"
 					if (param.key.contains(delimiter)) {
-						logger.info("PARAMETR: " + param)
 						def (type, name, desc) = param.key.split(delimiter)
 						switch(type.toLowerCase()) {
 							case "hiddenparam":
