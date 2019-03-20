@@ -160,9 +160,10 @@ class ZafiraClient extends HttpClient{
 			getZafiraAuthToken(refreshToken)
 		}
 		JsonBuilder jsonBuilder = new JsonBuilder()
-		jsonBuilder repo: Configuration.get("repo"),
+		jsonBuilder jobParameters: jobParameters,
+                repo: Configuration.get("repo"),
 				jobURL: Configuration.get(Configuration.Parameter.JOB_URL),
-				jobParameters: jobParameters
+
 		logger.info("RQST: " + jsonBuilder.toString())
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
