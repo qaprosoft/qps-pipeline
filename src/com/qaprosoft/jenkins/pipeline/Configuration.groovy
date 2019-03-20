@@ -150,6 +150,7 @@ public class Configuration {
 		context.println("overrideFields: " + overriddenFieldValues)
 		if(overriddenFieldValues){
 			for(value in overriddenFieldValues.split(",")){
+				context.println(value)
 				def keyValueArray = value.trim().split("=")
 				def parameterName = keyValueArray[0]
 				def parameterValue = keyValueArray[1]
