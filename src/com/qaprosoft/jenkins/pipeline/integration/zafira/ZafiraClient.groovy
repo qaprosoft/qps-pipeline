@@ -161,7 +161,7 @@ class ZafiraClient extends HttpClient{
 		}
 		JsonBuilder jsonBuilder = new JsonBuilder()
 		jsonBuilder jobParameters: jobParameters,
-				jobURL: Configuration.get(Configuration.Parameter.JOB_URL),
+				jobUrl: Configuration.get(Configuration.Parameter.JOB_URL),
 				repo: Configuration.get("repo")
 
 		logger.info("RQST: " + jsonBuilder.toString())
