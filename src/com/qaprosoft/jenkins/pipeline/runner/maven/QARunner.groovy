@@ -398,46 +398,46 @@ public class QARunner extends AbstractRunner {
             }
         }
         context.node(nodeName) {
-            zafiraUpdater.createLauncher(jobParameters)
-//            zafiraUpdater.queueZafiraTestRun(uuid)
-//            initJobParams()
-//            nodeName = chooseNode()
+//            zafiraUpdater.createLauncher(jobParameters)
+            zafiraUpdater.queueZafiraTestRun(uuid)
+            initJobParams()
+            nodeName = chooseNode()
         }
-//        context.node(nodeName) {
-//
-//            context.wrap([$class: 'BuildUser']) {
-//                try {
-//                    context.timestamps {
-//
-//                        prepareBuild(currentBuild)
-//                        scmClient.clone()
-//
-//                        downloadResources()
-//
-//                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
-//                            buildJob()
-//                        }
-//                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-//                        sendCustomizedEmail()
-//                        //TODO: think about seperate stage for uploading jacoco reports
-//                        publishJacocoReport()
-//                    }
-//                } catch (Exception e) {
-//                    logger.error(printStackTrace(e))
-//                    zafiraUpdater.abortTestRun(uuid, currentBuild)
-//                    throw e
-//                } finally {
-//                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-//                    qTestUpdater.updateTestRun(uuid)
-//                    testRailUpdater.updateTestRun(uuid, isRerun)
-//                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
-//                    zafiraUpdater.setBuildResult(uuid, currentBuild)
-//                    zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
-//                    publishJenkinsReports()
-//                    clean()
-//                }
-//            }
-//        }
+        context.node(nodeName) {
+
+            context.wrap([$class: 'BuildUser']) {
+                try {
+                    context.timestamps {
+
+                        prepareBuild(currentBuild)
+                        scmClient.clone()
+
+                        downloadResources()
+
+                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
+                            buildJob()
+                        }
+                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+                        sendCustomizedEmail()
+                        //TODO: think about seperate stage for uploading jacoco reports
+                        publishJacocoReport()
+                    }
+                } catch (Exception e) {
+                    logger.error(printStackTrace(e))
+                    zafiraUpdater.abortTestRun(uuid, currentBuild)
+                    throw e
+                } finally {
+                    //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
+                    qTestUpdater.updateTestRun(uuid)
+                    testRailUpdater.updateTestRun(uuid, isRerun)
+                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
+                    zafiraUpdater.setBuildResult(uuid, currentBuild)
+                    zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                    publishJenkinsReports()
+                    clean()
+                }
+            }
+        }
     }
 
     protected def initJobParams() {
