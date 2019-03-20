@@ -12,7 +12,7 @@ class ZafiraUpdater {
     private Logger logger
     private def testRun
 
-    public ZafiraUpdater(context) {
+    ZafiraUpdater(context) {
         this.context = context
         zc = new ZafiraClient(context)
         logger = new Logger(context)
@@ -33,7 +33,7 @@ class ZafiraUpdater {
         return run
     }
 
-    public def queueZafiraTestRun(uuid) {
+    def queueZafiraTestRun(uuid) {
         if(isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
             if(isParamEmpty(Configuration.get('test_run_rules'))){
                 def response = zc.queueZafiraTestRun(uuid)
@@ -42,12 +42,12 @@ class ZafiraUpdater {
          }
     }
 
-    public def smartRerun() {
+    def smartRerun() {
         def response = zc.smartRerun()
         logger.info("Results : " + response.size())
     }
 
-    public def abortTestRun(uuid, currentBuild) {
+    def abortTestRun(uuid, currentBuild) {
         currentBuild.result = BuildResult.FAILURE
         def failureReason = "undefined failure"
 
@@ -96,7 +96,7 @@ class ZafiraUpdater {
         }
     }
 
-    public def sendZafiraEmail(uuid, emailList) {
+    def sendZafiraEmail(uuid, emailList) {
         def testRun = getTestRun(uuid)
         if (!isParamEmpty(emailList)) {
             zc.sendEmail(uuid, emailList, "all")
@@ -107,7 +107,7 @@ class ZafiraUpdater {
         }
     }
 
-    public void exportZafiraReport(uuid, workspace) {
+    void exportZafiraReport(uuid, workspace) {
         String zafiraReport = zc.exportZafiraReport(uuid)
         if(isParamEmpty(zafiraReport)){
             logger.error("UNABLE TO GET TESTRUN! Probably it is not registered in Zafira.")
@@ -117,7 +117,7 @@ class ZafiraUpdater {
         context.writeFile file: "${workspace}/zafira/report.html", text: zafiraReport
      }
 
-    public def sendFailureEmail(uuid, emailList) {
+    def sendFailureEmail(uuid, emailList) {
         def suiteOwner = true
         def suiteRunner = false
         if(Configuration.get("suiteOwner")){
@@ -129,21 +129,24 @@ class ZafiraUpdater {
         return zc.sendFailureEmail(uuid, emailList, suiteOwner, suiteRunner)
     }
 
-    public def setBuildResult(uuid, currentBuild) {
+    def setBuildResult(uuid, currentBuild) {
         def testRun = getTestRun(uuid)
         if(!isParamEmpty(testRun) && isFailure(testRun.status)){
             currentBuild.result = BuildResult.FAILURE
         }
     }
 
-    public def sendSlackNotification(uuid, channels) {
+    def sendSlackNotification(uuid, channels) {
         if (!isParamEmpty(channels)){
             return zc.sendSlackNotification(uuid, channels)
         }
     }
 
-    public boolean isZafiraRerun(uuid){
+    boolean isZafiraRerun(uuid){
         return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
     }
 
+    def createLauncher(jobParameters) {
+        return zc.createLauncher(jobParameters)
+    }
 }
