@@ -152,14 +152,16 @@ public class Configuration {
 			for(value in overriddenFieldValues.split(",")){
 				context.println(value)
 				def keyValueArray = value.trim().split("=")
-				def parameterName = keyValueArray[0]
-				def parameterValue = keyValueArray[1]
-				if(vars.get(parameterName)){
-					vars.put(parameterName, parameterValue)
-				} else if (vars.get(parameterName.toUpperCase())){
-					vars.put(parameterName.toUpperCase(), parameterValue)
-				} else {
-					params.put(parameterName, parameterValue)
+				if(keyValueArray.size() > 1){
+					def parameterName = keyValueArray[0]
+					def parameterValue = keyValueArray[1]
+					if(vars.get(parameterName)){
+						vars.put(parameterName, parameterValue)
+					} else if (vars.get(parameterName.toUpperCase())){
+						vars.put(parameterName.toUpperCase(), parameterValue)
+					} else {
+						params.put(parameterName, parameterValue)
+					}
 				}
 			}
 		}
