@@ -155,14 +155,14 @@ class ZafiraClient extends HttpClient{
 		return sendRequestFormatted(parameters)
 	}
 
-	public def createLauncher(jobParameters) {
+	public def createLauncher(jobParameters, jobUrl, repo) {
 		if (isTokenExpired()) {
 			getZafiraAuthToken(refreshToken)
 		}
 		JsonBuilder jsonBuilder = new JsonBuilder()
 		jsonBuilder jobParameters: jobParameters,
-				jobUrl: Configuration.get(Configuration.Parameter.JOB_URL),
-				repo: Configuration.get("repo")
+				jobUrl: jobUrl,
+				repo: repo
 
 		logger.info("RQST: " + jsonBuilder.toString())
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],

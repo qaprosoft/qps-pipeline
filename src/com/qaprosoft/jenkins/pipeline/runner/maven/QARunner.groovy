@@ -194,9 +194,12 @@ public class QARunner extends AbstractRunner {
                         ignoreExisting: false
             }
             currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
-                logger.info(it.dump())
+                def jobUrl = Jenkins.instance.getRootUrl() + it.jobName
                 def job = Jenkins.instance.getItemByFullName(it.jobName)
-                logger.info(job.dump())
+                job.properties.each {
+                    logger.info(it.dump())
+                }
+                zafiraUpdater.createLauncher(getJobParameters(currentBuild), jobUrl, repo)
             }
         }
     }
@@ -394,7 +397,6 @@ public class QARunner extends AbstractRunner {
         String nodeName = "master"
 
         context.node(nodeName) {
-            zafiraUpdater.createLauncher(getJobParameters(currentBuild))
             zafiraUpdater.queueZafiraTestRun(uuid)
             initJobParams()
             nodeName = chooseNode()
