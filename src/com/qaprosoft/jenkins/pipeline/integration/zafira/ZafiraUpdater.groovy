@@ -146,7 +146,7 @@ class ZafiraUpdater {
         return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
     }
 
-    def createLauncher(jobParameters) {
-        return zc.createLauncher(jobParameters)
+    def createLauncher(jobParameters, jobUrl, repo) {
+        return zc.createLauncher(jobParameters, jobUrl, repo)
     }
 }
