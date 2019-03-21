@@ -196,11 +196,20 @@ public class QARunner extends AbstractRunner {
             currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
                 def jobUrl = Jenkins.instance.getRootUrl() + it.jobName
                 def job = Jenkins.instance.getItemByFullName(it.jobName)
-                def parameters = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
-                parameters.each {
-                    logger.info(it.dump())
+                def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
+                Map parameters = [:]
+                parameterDefinitions.each { parameterDefinition ->
+                    def value
+                    if(parameterDefinition instanceof jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition){
+                        value = parameterDefinition.choiceListProvider.getDefaultChoice()
+                    } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
+                        value = parameterDefinition.choices[0]
+                    }  else {
+                        value = parameterDefinition.defaultValue
+                    }
+                    parameters.put(parameterDefinition.name, value)
                 }
-
+                logger.info(parameters)
 //                zafiraUpdater.createLauncher(parameters, jobUrl, repo)
             }
         }
