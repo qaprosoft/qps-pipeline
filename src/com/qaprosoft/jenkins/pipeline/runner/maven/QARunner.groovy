@@ -209,7 +209,7 @@ public class QARunner extends AbstractRunner {
                     }
                     parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
                 }
-                zafiraUpdater.createLauncher(parameters, jobUrl, repo)
+                zafiraUpdater.createLauncher(parameters, jobUrl + "/", repo)
             }
         }
     }
