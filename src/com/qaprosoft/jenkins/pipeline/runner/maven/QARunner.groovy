@@ -193,7 +193,7 @@ public class QARunner extends AbstractRunner {
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
             }
-            currentBuild.rawBuild.getAction(GeneratedJobsBuildAction).each {
+            currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).each {
                 logger.info(it.dump())
             }
         }
