@@ -186,16 +186,14 @@ public class QARunner extends AbstractRunner {
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
                 logger.info("factoryTarget: " + FACTORY_TARGET)
                 //TODO: test carefully auto-removal for jobs/views and configs
-                def res = context.jobDsl additionalClasspath: additionalClasspath,
+                context.jobDsl additionalClasspath: additionalClasspath,
                         removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
                         removedJobAction: Configuration.get("removedJobAction"),
                         removedViewAction: Configuration.get("removedViewAction"),
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
-
-                logger.info("RESLTS: " + res)
-
             }
+            logger.info(currentBuild.rawBuild.dump())
         }
     }
 
@@ -390,15 +388,9 @@ public class QARunner extends AbstractRunner {
         logger.info("UUID: " + uuid)
         def isRerun = isRerun()
         String nodeName = "master"
-        Map jobParameters = [:]
-        def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
-        for (param in jobParams) {
-            if (!isParamEmpty(param.value) && !(param instanceof com.wangyin.parameter.WHideParameterValue)) {
-                jobParameters.put(param.name, param.value)
-            }
-        }
+
         context.node(nodeName) {
-//            zafiraUpdater.createLauncher(jobParameters)
+            zafiraUpdater.createLauncher(getJobParameters(currentBuild))
             zafiraUpdater.queueZafiraTestRun(uuid)
             initJobParams()
             nodeName = chooseNode()
