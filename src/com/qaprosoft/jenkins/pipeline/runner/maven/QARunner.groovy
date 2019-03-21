@@ -195,7 +195,9 @@ public class QARunner extends AbstractRunner {
             }
             Jenkins.getInstance().getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob).each { job ->
                 def jobName = job.name
-                def parentName = job?.parent[0]
+                def parentName = job.parent?.each{
+                    it.dump()
+                }
                 logger.info(parentName)
                 logger.info(job.parent?.dump())
 //                if (job.displayName == jobName) {
