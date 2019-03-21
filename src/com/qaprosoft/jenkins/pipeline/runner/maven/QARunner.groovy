@@ -193,7 +193,9 @@ public class QARunner extends AbstractRunner {
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
             }
-            logger.info(currentBuild.rawBuild.dump())
+            currentBuild.rawBuild.getAction(GeneratedJobsBuildAction).each {
+                logger.info(it.dump())
+            }
         }
     }
 
