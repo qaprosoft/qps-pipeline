@@ -394,7 +394,7 @@ public class QARunner extends AbstractRunner {
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
             logger.info(param.dump())
-            if (!isParamEmpty(param.value)) {
+            if (!isParamEmpty(param.value) && !(param instanceof com.wangyin.parameter.WHideParameterValue)) {
                 jobParameters.put(param.name, param.value)
             }
         }
