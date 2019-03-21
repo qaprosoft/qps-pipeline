@@ -207,7 +207,7 @@ public class QARunner extends AbstractRunner {
                     }  else {
                         value = parameterDefinition.defaultValue
                     }
-                    parameters.put(parameterDefinition.name, value)
+                    parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
                 }
                 logger.info(parameters)
 //                zafiraUpdater.createLauncher(parameters, jobUrl, repo)
