@@ -393,18 +393,16 @@ public class QARunner extends AbstractRunner {
         Map jobParameters = [:]
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
-
             if (!isParamEmpty(param.value) && !(param instanceof com.wangyin.parameter.WHideParameterValue)) {
                 jobParameters.put(param.name, param.value)
             }
-            logger.info(jobParameters)
         }
-//        context.node(nodeName) {
-////            zafiraUpdater.createLauncher(jobParameters)
+        context.node(nodeName) {
+            zafiraUpdater.createLauncher(jobParameters)
 //            zafiraUpdater.queueZafiraTestRun(uuid)
 //            initJobParams()
 //            nodeName = chooseNode()
-//        }
+        }
 //        context.node(nodeName) {
 //
 //            context.wrap([$class: 'BuildUser']) {
