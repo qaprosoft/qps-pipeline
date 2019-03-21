@@ -193,20 +193,10 @@ public class QARunner extends AbstractRunner {
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
             }
-            Jenkins.getInstance().getAllItems(com.cloudbees.hudson.plugins.folder.Folder).each { job ->
-                logger.info(job.dump())
-//                def jobName = job.name
-//                def parentName = job.parent?.name
-//                logger.info("PARENT NAME: " + parentName)
-//                logger.info(job.parent?.dump())
-//                if (job.displayName == jobName) {
-//                    currentJob = job
-//                }
-            }
             currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
                 logger.info(it.dump())
                 def job = Jenkins.instance.getItemByFullName(it.jobName)
-                logger.info(job)
+                logger.info(job.dump())
             }
         }
     }
