@@ -205,7 +205,7 @@ public class QARunner extends AbstractRunner {
             }
             currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
                 logger.info(it.dump())
-                def job = getJenkinsJobByName(it.jobName)
+                def job = Jenkins.instance.getItemByFullName(it.jobName)
                 logger.info(job)
             }
         }
