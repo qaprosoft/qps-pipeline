@@ -196,8 +196,10 @@ public class QARunner extends AbstractRunner {
             currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
                 def jobUrl = Jenkins.instance.getRootUrl() + it.jobName
                 def job = Jenkins.instance.getItemByFullName(it.jobName)
-                job.properties.each {
-                    logger.info(it.dump())
+                job.properties.each { property ->
+                    if(property instanceof ParametersDefinitionProperty){
+                        logger.info(it.dump())
+                    }
                 }
                 zafiraUpdater.createLauncher(getJobParameters(currentBuild), jobUrl, repo)
             }
