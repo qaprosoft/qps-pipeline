@@ -193,6 +193,12 @@ public class QARunner extends AbstractRunner {
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
             }
+            Jenkins.getInstance().getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob).each { job ->
+                logger.info(job.dump())
+//                if (job.displayName == jobName) {
+//                    currentJob = job
+//                }
+            }
             currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
                 logger.info(it.dump())
                 def job = getJenkinsJobByName(it.jobName)
