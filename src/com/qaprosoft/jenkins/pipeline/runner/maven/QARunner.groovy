@@ -194,7 +194,8 @@ public class QARunner extends AbstractRunner {
                         ignoreExisting: false
             }
             currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
-                def jobUrl = Jenkins.instance.getRootUrl() + it.jobName
+                def currentJobUrl = Configuration.get(Configuration.Parameter.JOB_URL)
+                def jobUrl = currentJobUrl.substring(0, currentJobUrl.lastIndexOf("/job/")) + it.jobName.substring(it.jobName.lastIndexOf("/"))
                 def job = Jenkins.instance.getItemByFullName(it.jobName)
                 def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
                 Map parameters = [:]
@@ -209,7 +210,7 @@ public class QARunner extends AbstractRunner {
                     }
                     parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
                 }
-                zafiraUpdater.createLauncher(parameters, jobUrl + "/", repo)
+                zafiraUpdater.createLauncher(parameters, jobUrl, repo)
             }
         }
     }
