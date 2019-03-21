@@ -160,6 +160,15 @@ public class Executor {
         return supportedLocales
     }
 
+    static def getJobParameters(currentBuild){
+        Map jobParameters = [:]
+        def jobParams = currentBuild.rawBuild.getAction(ParametersAction)
+        for (param in jobParams) {
+            if (param.value != null) {
+                jobParameters.put(param.name, param.value)
+            }
+        }
+    }
 
     static def getJenkinsJobByName(jobName) {
         def currentJob = null
