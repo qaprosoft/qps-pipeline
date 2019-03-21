@@ -193,11 +193,12 @@ public class QARunner extends AbstractRunner {
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
             }
-            Jenkins.getInstance().getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob).each { job ->
-                def jobName = job.name
-                def parentName = job.parent?.name
-                logger.info("PARENT NAME: " + parentName)
-                logger.info(job.parent?.dump())
+            Jenkins.getInstance().getAllItems(com.cloudbees.hudson.plugins.folder.Folder).each { job ->
+                logger.info(job.dump())
+//                def jobName = job.name
+//                def parentName = job.parent?.name
+//                logger.info("PARENT NAME: " + parentName)
+//                logger.info(job.parent?.dump())
 //                if (job.displayName == jobName) {
 //                    currentJob = job
 //                }
