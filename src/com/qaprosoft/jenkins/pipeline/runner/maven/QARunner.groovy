@@ -197,7 +197,10 @@ public class QARunner extends AbstractRunner {
                 def jobUrl = Jenkins.instance.getRootUrl() + it.jobName
                 def job = Jenkins.instance.getItemByFullName(it.jobName)
                 def parameters = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
-                logger.info(parameters)
+                parameters.each {
+                    logger.info(it.dump())
+                }
+
 //                zafiraUpdater.createLauncher(parameters, jobUrl, repo)
             }
         }
