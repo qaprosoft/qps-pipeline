@@ -338,13 +338,13 @@ public class QARunner extends AbstractRunner {
                         registerObject("API_VIEW", new ListViewFactory(repoFolder, "API", "", ".*(?i)api.*"))
                         break
                     case ~/^.*web.*$/:
-                        registerObject("WEB_VIEW", new ListViewFactory(repoFolder, "WEB", "", ".*(?i).web.*"))
+                        registerObject("WEB_VIEW", new ListViewFactory(repoFolder, "WEB", "", ".*(?i)web.*"))
                         break
                     case ~/^.*android.*$/:
-                        registerObject("ANDROID_VIEW", new ListViewFactory(repoFolder, "ANDROID", "", ".*(?i).android.*"))
+                        registerObject("ANDROID_VIEW", new ListViewFactory(repoFolder, "ANDROID", "", ".*(?i)android.*"))
                         break
                     case ~/^.*ios.*$/:
-                        registerObject("IOS_VIEW", new ListViewFactory(repoFolder, "IOS", "", ".*(?i).ios.*"))
+                        registerObject("IOS_VIEW", new ListViewFactory(repoFolder, "IOS", "", ".*(?i)ios.*"))
                         break
                 }
 
