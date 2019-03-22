@@ -991,13 +991,15 @@ public class QARunner extends AbstractRunner {
         for (Map jobParams : listPipelines) {
             def stageName = getStageName(jobParams)
             boolean propagateJob = true
-            if (jobParams.get("executionMode").contains("continue")) {
-                //do not interrupt pipeline/cron if any child job failed
-                propagateJob = false
-            }
-            if (jobParams.get("executionMode").contains("abort")) {
-                //interrupt pipeline/cron and return fail status to piepeline if any child job failed
-                propagateJob = true
+            if (!isParamEmpty(jobParams.get("executionMode"))) {
+                if (jobParams.get("executionMode").contains("continue")) {
+                    //do not interrupt pipeline/cron if any child job failed
+                    propagateJob = false
+                }
+                if (jobParams.get("executionMode").contains("abort")) {
+                    //interrupt pipeline/cron and return fail status to piepeline if any child job failed
+                    propagateJob = true
+                }
             }
             curOrder = jobParams.get("order")
             logger.debug("beginOrder: ${beginOrder}; curOrder: ${curOrder}")
