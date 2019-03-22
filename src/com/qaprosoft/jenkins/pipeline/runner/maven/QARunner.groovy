@@ -335,7 +335,7 @@ public class QARunner extends AbstractRunner {
 
                 switch(suiteName.toLowerCase()){
                     case ~/^.*api.*$/:
-                        registerObject("API_VIEW", new ListViewFactory(repoFolder, "API", "", ".*api.*"))
+                        registerObject("API_VIEW", new ListViewFactory(repoFolder, "API", "", ".*(?i)api.*"))
                         break
                     case ~/^.*web.*$/:
                         registerObject("WEB_VIEW", new ListViewFactory(repoFolder, "WEB", "", ".*(?i).web.*"))
