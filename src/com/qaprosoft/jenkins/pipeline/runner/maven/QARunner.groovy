@@ -333,6 +333,21 @@ public class QARunner extends AbstractRunner {
                 registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
                 registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
 
+                switch(suiteName.toLowerCase()){
+                    case ~/^.*api.*$/:
+                        registerObject("API_VIEW", new ListViewFactory(repoFolder, "API", "", "(?i).api."))
+                        break
+                    case ~/^.*web.*$/:
+                        registerObject("WEB_VIEW", new ListViewFactory(repoFolder, "WEB", "", "(?i).web."))
+                        break
+                    case ~/^.*android.*$/:
+                        registerObject("ANDROID_VIEW", new ListViewFactory(repoFolder, "ANDROID", "", "(?i).android."))
+                        break
+                    case ~/^.*ios.*$/:
+                        registerObject("IOS_VIEW", new ListViewFactory(repoFolder, "IOS", "", "(?i).ios."))
+                        break
+                }
+
                 //pipeline job
                 //TODO: review each argument to TestJobFactory and think about removal
                 //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
