@@ -117,6 +117,7 @@ public class QARunner extends AbstractRunner {
 
                 def prop = user.getProperty(jenkins.security.ApiTokenProperty.class)
                 def result
+                logger.info(prop.apiToken)
                 if(prop.apiToken == null){
                     result = prop.tokenStore.generateNewToken("token-created-by-script")
                     user.save()
