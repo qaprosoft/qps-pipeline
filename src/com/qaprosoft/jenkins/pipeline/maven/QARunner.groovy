@@ -804,6 +804,8 @@ public class QARunner extends AbstractRunner {
 
             def pomFiles = getProjectPomFiles()
             for(pomFile in pomFiles){
+                // clear list of pipelines for each sub-project
+                listPipelines.clear()
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
@@ -821,8 +823,9 @@ public class QARunner extends AbstractRunner {
 
     protected def generatePipeLineList(subProjectFilter, testNGFolderName){
         def files = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
+        logger.info("Number of Test Suites to Scan Through: " + files.length)
         for (file in files){
-            logger.debug("Number of Test Suites to Scan Through: " + files.length)
+            logger.info("Current suite path: " + file.path)
             XmlSuite currentSuite = parsePipeline(workspace + "/" + file.path)
             if (currentSuite == null) {
                 currentBuild.result = BuildResult.FAILURE
