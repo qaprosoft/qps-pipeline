@@ -95,7 +95,7 @@ public class QARunner extends AbstractRunner {
                 def userName = "test"
                 def password = "123456"
                 def instance = Jenkins.getInstance()
-                def user = instance.securityRealm.createAccount(userName, password)
+                User user = instance.securityRealm.createAccount(userName, password)
                 def strategy = instance.getAuthorizationStrategy()
                 strategy.add(Item.BUILD, 	   userName)
                 strategy.add(Item.CANCEL,  	   userName)
