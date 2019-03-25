@@ -94,7 +94,7 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
             context.timestamps {
                 logger.info("QARunner->onPush")
-                def userName = "test1"
+                def userName = "test2"
                 def password = "123456"
                 def instance = Jenkins.getInstance()
                 def user = instance.securityRealm.createAccount(userName, password)
