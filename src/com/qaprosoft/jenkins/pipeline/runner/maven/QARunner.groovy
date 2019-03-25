@@ -112,7 +112,7 @@ public class QARunner extends AbstractRunner {
                 strategy.add(View.CREATE ,  userName)
                 strategy.add(View.CONFIGURE ,  userName)
 
-                def prop = user.getProperty(ApiTokenProperty.class)
+                def prop = user.getProperty(jenkins.security.ApiTokenProperty.class)
 
                 logger.info(prop.dump())
                 instance.save()
