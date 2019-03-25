@@ -117,11 +117,11 @@ public class QARunner extends AbstractRunner {
 
                 def prop = user.getProperty(jenkins.security.ApiTokenProperty.class)
                 def result
-//                if(prop.apiToken == null){
-//                    result = prop.tokenStore.generateNewToken("token-created-by-script")
-//                    user.save()
-//                }
-                logger.info(prop.dump())
+                if(prop.apiToken == null){
+                    result = prop.tokenStore.generateNewToken("token-created-by-script")
+                    user.save()
+                }
+                logger.info(result)
 
 //                prepare()
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
