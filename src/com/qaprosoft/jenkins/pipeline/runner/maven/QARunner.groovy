@@ -95,7 +95,7 @@ public class QARunner extends AbstractRunner {
                 def userName = "test1"
                 def password = "123456"
                 def instance = Jenkins.getInstance()
-                User user = instance.securityRealm.createAccount(userName, password)
+                def user = instance.securityRealm.createAccount(userName, password)
                 def strategy = instance.getAuthorizationStrategy()
                 strategy.add(Item.BUILD, 	   userName)
                 strategy.add(Item.CANCEL,  	   userName)
@@ -106,7 +106,8 @@ public class QARunner extends AbstractRunner {
                 strategy.add(Item.READ      ,  userName)
                 strategy.add(Item.WORKSPACE ,  userName)
                 instance.save()
-                def token = jenkins.security.ApiTokenProperty.DescriptorImpl.newInstance(user)
+                def descriptor = jenkins.security.ApiTokenProperty.DescriptorImpl
+                def token = descriptor.newInstance(user)
                 logger.info(token.dump())
 //                prepare()
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
