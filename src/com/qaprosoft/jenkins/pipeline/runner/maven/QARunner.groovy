@@ -421,14 +421,12 @@ public class QARunner extends AbstractRunner {
         logger.info("UUID: " + uuid)
         def isRerun = isRerun()
         String nodeName = "master"
-
         context.node(nodeName) {
             zafiraUpdater.queueZafiraTestRun(uuid)
             initJobParams()
             nodeName = chooseNode()
         }
         context.node(nodeName) {
-
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
@@ -641,6 +639,7 @@ public class QARunner extends AbstractRunner {
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 				-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
+				-Dmaven.test.failure.ignore=true \
 		-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
 		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
@@ -840,6 +839,8 @@ public class QARunner extends AbstractRunner {
 
             def pomFiles = getProjectPomFiles()
             for(pomFile in pomFiles){
+                // clear list of pipelines for each sub-project
+                listPipelines.clear()
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
@@ -857,8 +858,9 @@ public class QARunner extends AbstractRunner {
 
     protected def generatePipeLineList(subProjectFilter, testNGFolderName){
         def files = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
+        logger.info("Number of Test Suites to Scan Through: " + files.length)
         for (file in files){
-            logger.debug("Number of Test Suites to Scan Through: " + files.length)
+            logger.info("Current suite path: " + file.path)
             XmlSuite currentSuite = parsePipeline(workspace + "/" + file.path)
             if (currentSuite == null) {
                 currentBuild.result = BuildResult.FAILURE
