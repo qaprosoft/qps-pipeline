@@ -104,7 +104,6 @@ public class QARunner extends AbstractRunner {
                 strategy.add(Item.DELETE    ,  userName)
                 strategy.add(Item.DISCOVER  ,  userName)
                 strategy.add(Item.READ      ,  userName)
-                strategy.add(Item.MOVE      ,  userName)
                 strategy.add(Item.WORKSPACE ,  userName)
                 strategy.add(View.READ ,  userName)
                 strategy.add(View.DELETE ,  userName)
