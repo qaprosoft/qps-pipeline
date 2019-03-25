@@ -108,14 +108,14 @@ public class QARunner extends AbstractRunner {
                 instance.save()
                 def token = jenkins.security.ApiTokenProperty.DescriptorImpl.newInstance(user)
                 logger.info(token.dump())
-                prepare()
-                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-                    return
-                }
-                //TODO: implement repository scan and QA jobs recreation
-                scan()
-                clean()
+//                prepare()
+//                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+//                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
+//                    return
+//                }
+//                //TODO: implement repository scan and QA jobs recreation
+//                scan()
+//                clean()
             }
         }
     }
