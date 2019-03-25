@@ -111,11 +111,16 @@ public class QARunner extends AbstractRunner {
                 strategy.add(View.DELETE ,  userName)
                 strategy.add(View.CREATE ,  userName)
                 strategy.add(View.CONFIGURE ,  userName)
+                instance.save()
 
                 def prop = user.getProperty(jenkins.security.ApiTokenProperty.class)
+                def result
+                if(prop.apiToken == null){
+                    result = prop.tokenStore.generateNewToken("token-created-by-script")
+                    user.save()
+                }
+                logger.info(result.dump())
 
-                logger.info(prop.dump())
-                instance.save()
 //                prepare()
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
 //                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
