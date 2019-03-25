@@ -119,7 +119,7 @@ public class QARunner extends AbstractRunner {
                     result = prop.tokenStore.generateNewToken("token-created-by-script")
                     user.save()
                 }
-                logger.info(result.dump())
+                logger.info(result.plainValue)
 
 //                prepare()
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
