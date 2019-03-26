@@ -109,11 +109,10 @@ public class QARunner extends AbstractRunner {
                 strategy.add(View.DELETE ,  userName)
                 strategy.add(View.CREATE ,  userName)
                 strategy.add(View.CONFIGURE ,  userName)
-                User u = User.getById('admin', true)
                 logger.info(User.getById('admin', false))
 
-//                def token = Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).newInstance(user)
-//                logger.info(token.dump())
+                def token = Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).newInstance(User.getById('admin', false))
+                logger.info(token.dump())
 //                env.BUILD_USER_ID
 //                instance.save()
 //                prepare()
