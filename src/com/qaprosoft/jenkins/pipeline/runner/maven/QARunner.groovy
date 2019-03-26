@@ -92,7 +92,7 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
             context.timestamps {
                 logger.info("QARunner->onPush")
-                def userName = "test17"
+                def userName = "test18"
                 def password = "123456"
                 def instance = Jenkins.getInstance()
                 def user = instance.securityRealm.createAccount(userName, password)
@@ -109,10 +109,8 @@ public class QARunner extends AbstractRunner {
                 strategy.add(View.DELETE ,  userName)
                 strategy.add(View.CREATE ,  userName)
                 strategy.add(View.CONFIGURE ,  userName)
-                def token =  Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, user.toString() + '_token')
-                logger.info(token.jsonObject.data.tokenName)
-                logger.info(token.jsonObject.data.tokenValue)
-                //svaeInZafira(token)
+                def token =  Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, user.toString() + '_token').jsonObject.data
+                //saveInZafira(token.tokenName, token.tokenValue)
                 logger.info(token.dump())
 //                env.BUILD_USER_ID
 //                instance.save()
