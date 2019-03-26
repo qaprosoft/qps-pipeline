@@ -92,18 +92,9 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
             context.timestamps {
                 logger.info("QARunner->onPush")
-                def userName = "test20"
-                def password = "123456"
-                def instance = Jenkins.getInstance()
-                def user = instance.securityRealm.createAccount(userName, password)
-                def strategy = instance.getAuthorizationStrategy()
-                strategy.add(hudson.model.Hudson.READ, userName)
-//                def token =  Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, user.toString() + '_token').jsonObject.data
-                //saveInZafira(token.tokenName, token.tokenValue)
-//                logger.info(token.dump())
-//                env.BUILD_USER_ID
-//                instance.save()
-//                prepare()
+                prepare()
+                def permissions =  Jenkins.instance.getDescriptorByType(com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.DescriptorImpl.class).getPermissionScope()
+                logger.info(permissions)
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
 //                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
 //                    return
@@ -204,6 +195,10 @@ public class QARunner extends AbstractRunner {
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
             }
+
+
+
+
             currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
                 def currentJobUrl = Configuration.get(Configuration.Parameter.JOB_URL)
                 def jobUrl = currentJobUrl.substring(0, currentJobUrl.lastIndexOf("/job/") + "/job/".length()) + it.jobName.substring(it.jobName.lastIndexOf("/"))
@@ -224,6 +219,17 @@ public class QARunner extends AbstractRunner {
                 zafiraUpdater.createLauncher(parameters, jobUrl, repo)
             }
         }
+    }
+
+    protected def createUserWithPermissions(){
+        def userName = "test20"
+        def password = "123456"
+        def instance = Jenkins.getInstance()
+        def user = instance.securityRealm.createAccount(userName, password)
+        def strategy = instance.getAuthorizationStrategy()
+        strategy.add(hudson.model.Hudson.READ, userName)
+//                def token =  Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, user.toString() + '_token').jsonObject.data
+        //saveInZafira(token.tokenName, token.tokenValue)
     }
 
     protected clean() {
