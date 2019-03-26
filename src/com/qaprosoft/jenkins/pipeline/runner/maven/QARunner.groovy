@@ -97,7 +97,8 @@ public class QARunner extends AbstractRunner {
                 def instance = Jenkins.getInstance()
                 def user = instance.securityRealm.createAccount(userName, password)
                 def strategy = instance.getAuthorizationStrategy()
-                strategy.add(hudson.security.Permission.READ, userName)
+                logger.info(hudson.security.Permission.getAll())
+//                strategy.add(hudson.security.Permission.READ, userName)
 //                def token =  Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, user.toString() + '_token').jsonObject.data
                 //saveInZafira(token.tokenName, token.tokenValue)
 //                logger.info(token.dump())
