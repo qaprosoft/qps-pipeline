@@ -103,7 +103,7 @@ public class QARunner extends AbstractRunner {
                 //saveInZafira(token.tokenName, token.tokenValue)
 //                logger.info(token.dump())
 //                env.BUILD_USER_ID
-//                instance.save()
+                instance.save()
 //                prepare()
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
 //                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
