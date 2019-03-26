@@ -110,7 +110,7 @@ public class QARunner extends AbstractRunner {
                 strategy.add(View.CREATE ,  userName)
                 strategy.add(View.CONFIGURE ,  userName)
                 logger.info(User.get(Jenkins.getAuthentication()))
-                logger.info(Jenkins.getDescriptorByType(jenkins.security.ApiTokenProperty.class).dump())
+                logger.info(Jenkins.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).dump())
 
 //                def descriptor = jenkins.security.ApiTokenProperty.DescriptorImpl.newInstance(user, userName + "_token")
 //                logger.info(token.dump())
