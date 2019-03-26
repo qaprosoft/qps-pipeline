@@ -112,7 +112,7 @@ public class QARunner extends AbstractRunner {
                 logger.info(User.get(Jenkins.getAuthentication()))
                 logger.info(Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).dump())
 
-                def token = Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).newInstance(user, userName + "_token")
+                def token = Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).newInstance(user)
                 logger.info(token)
 //                instance.save()
 //                prepare()
