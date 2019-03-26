@@ -762,6 +762,7 @@ public class QARunner extends AbstractRunner {
         context.stage('Results') {
             publishReport('**/zafira/report.html', "ZafiraReport")
             publishReport('**/artifacts/**', 'Artifacts')
+            publishReport('**/*.dump', 'Artifacts')
             publishReport('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReport('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
         }
