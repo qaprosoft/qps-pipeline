@@ -113,7 +113,7 @@ public class QARunner extends AbstractRunner {
                 logger.info(Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).dump())
 
                 def token = Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).newInstance(user)
-                logger.info(token)
+                logger.info(token.dump())
 //                instance.save()
 //                prepare()
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
