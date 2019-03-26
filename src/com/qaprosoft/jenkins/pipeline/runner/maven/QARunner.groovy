@@ -92,18 +92,17 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
             context.timestamps {
                 logger.info("QARunner->onPush")
-                def userName = "test19"
+                def userName = "test20"
                 def password = "123456"
                 def instance = Jenkins.getInstance()
                 def user = instance.securityRealm.createAccount(userName, password)
                 def strategy = instance.getAuthorizationStrategy()
-                logger.info(hudson.security.Permission.getAll())
                 strategy.add(hudson.model.Hudson.READ, userName)
 //                def token =  Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, user.toString() + '_token').jsonObject.data
                 //saveInZafira(token.tokenName, token.tokenValue)
 //                logger.info(token.dump())
 //                env.BUILD_USER_ID
-                instance.save()
+//                instance.save()
 //                prepare()
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
 //                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
