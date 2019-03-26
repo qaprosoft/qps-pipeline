@@ -94,9 +94,8 @@ public class QARunner extends AbstractRunner {
                 logger.info("QARunner->onPush")
                 prepare()
                 def permissions =  Jenkins.instance.getDescriptorByType(com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.DescriptorImpl.class).getPermissionScope()
-                logger.info(permissions.containers.element.dump())
                 permissions.containers.each {
-                    logger.info(it)
+                    logger.info(it.dump())
                 }
 
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
