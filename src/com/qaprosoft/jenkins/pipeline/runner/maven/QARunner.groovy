@@ -92,7 +92,7 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
             context.timestamps {
                 logger.info("QARunner->onPush")
-                def userName = "test1"
+                def userName = "test17"
                 def password = "123456"
                 def instance = Jenkins.getInstance()
                 def user = instance.securityRealm.createAccount(userName, password)
@@ -112,7 +112,7 @@ public class QARunner extends AbstractRunner {
                 def adminUser = User.getById('admin', false)
                 logger.info(adminUser)
                 def descriptor = Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class)
-                def token =  Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(adminUser, adminUser.toString() + '_token')
+                def token =  Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, user.toString() + '_token')
 //                def token = descriptor.newInstance(User.getById('admin', false))
                 logger.info(token.dump())
 //                env.BUILD_USER_ID
