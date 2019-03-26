@@ -22,8 +22,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import jenkins.security.*
-import jenkins.security.apitoken.*
 
 @Grab('org.testng:testng:6.8.8')
 
@@ -94,12 +92,10 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
             context.timestamps {
                 logger.info("QARunner->onPush")
-                def userName = "test2"
+                def userName = "test1"
                 def password = "123456"
                 def instance = Jenkins.getInstance()
                 def user = instance.securityRealm.createAccount(userName, password)
-                logger.info(user.dump())
-
                 def strategy = instance.getAuthorizationStrategy()
                 strategy.add(Item.BUILD, 	   userName)
                 strategy.add(Item.CANCEL,  	   userName)
@@ -113,17 +109,10 @@ public class QARunner extends AbstractRunner {
                 strategy.add(View.DELETE ,  userName)
                 strategy.add(View.CREATE ,  userName)
                 strategy.add(View.CONFIGURE ,  userName)
-                instance.save()
-
-                def prop = user.getProperty(jenkins.security.ApiTokenProperty.class)
-                def result
-                logger.info(prop.apiToken)
-                if(prop.apiToken == null){
-                    result = prop.tokenStore.generateNewToken("token-created-by-script")
-                    user.save()
-                }
-                logger.info(result)
-
+                logger.info(Jenkins.getAuthentication())
+//                def descriptor = jenkins.security.ApiTokenProperty.DescriptorImpl.newInstance(user, userName + "_token")
+//                logger.info(token.dump())
+//                instance.save()
 //                prepare()
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
 //                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
