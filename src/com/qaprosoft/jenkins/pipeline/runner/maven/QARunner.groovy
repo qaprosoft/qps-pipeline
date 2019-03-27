@@ -102,6 +102,48 @@ public class QARunner extends AbstractRunner {
                     it instanceof com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
                 }
                 authprop.setInheritanceStrategy(new org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy())
+                def user = "test17"
+                def permissionsArray =
+                        ['com.cloudbees.plugins.credentials.CredentialsProvider.Create:test17',
+                         'com.cloudbees.plugins.credentials.CredentialsProvider.Delete:test17',
+                         'com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:test17',
+                         'com.cloudbees.plugins.credentials.CredentialsProvider.Update:test17',
+                         'com.cloudbees.plugins.credentials.CredentialsProvider.View:test17',
+                         'com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin.Jobs:test17',
+                         'hudson.model.Item.Build:test17',
+                         'hudson.model.Item.Cancel:test17',
+                         'hudson.model.Item.Configure:test17',
+                         'hudson.model.Item.Create:test17',
+                         'hudson.model.Item.Delete:test17',
+                         'hudson.model.Item.Discover:test17',
+                         'hudson.model.Item.Move:test17',
+                         'hudson.model.Item.Read:test17',
+                         'hudson.model.Item.Workspace:test17',
+                         'hudson.model.Run.Delete:test17',
+                         'hudson.model.Run.Replay:test17',
+                         'hudson.model.Run.Update:test17',
+                         'hudson.model.View.Configure:test17',
+                         'hudson.model.View.Create:test17',
+                         'hudson.model.View.Delete:test17',
+                         'hudson.model.Item.Cancel:test17',
+                         'hudson.model.Item.Configure:test17',
+                         'hudson.model.Item.Create:test17',
+                         'hudson.model.Item.Delete:test17',
+                         'hudson.model.Item.Discover:test17',
+                         'hudson.model.Item.Move:test17',
+                         'hudson.model.Item.Read:test17',
+                         'hudson.model.Item.Workspace:test17',
+                         'hudson.model.Run.Delete:test17',
+                         'hudson.model.Run.Replay:test17',
+                         'hudson.model.Run.Update:test17',
+                         'hudson.model.View.Configure:test17',
+                         'hudson.model.View.Create:test17',
+                         'hudson.model.View.Delete:test17',
+                         'hudson.model.View.Read:test17',
+                         'hudson.scm.SCM.Tag:test17']
+                permissionsArray.each {
+                    authprop.add(it, user)
+                }
 //                authprop.grantedPermissions.each {
 //                    logger.info(authprop.dump())
 //                }
