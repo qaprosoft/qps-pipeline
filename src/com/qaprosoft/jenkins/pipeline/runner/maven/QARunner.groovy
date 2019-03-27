@@ -120,13 +120,13 @@ public class QARunner extends AbstractRunner {
                          hudson.model.Item.WORKSPACE,
                          hudson.model.Run.DELETE,
                          hudson.model.Run.UPDATE,
-//                         hudson.model.VIEW.CONFIGURE,
-//                         hudson.model.VIEW.CREATE,
-//                         hudson.model.VIEW.DELETE,
-                         hudson.model.VIEW.READ,
+                         hudson.model.View.CONFIGURE,
+                         hudson.model.View.CREATE,
+                         hudson.model.View.DELETE,
+                         hudson.model.View.READ,
                          hudson.scm.SCM.TAG]
                 permissionsArray.each {
-                    authprop.add(Class.forName(it), user)
+                    authprop.add(it, user)
                 }
 //                authprop.grantedPermissions.each {
 //                    logger.info(authprop.dump())
