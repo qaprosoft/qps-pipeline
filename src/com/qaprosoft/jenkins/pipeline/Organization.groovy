@@ -4,7 +4,6 @@ import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.Repository
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
 import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
@@ -26,6 +25,7 @@ class Organization {
     protected def organization
     protected Configuration configuration = new Configuration(context)
 
+    //TODO: get zafira properties
     public Organization(context) {
         this.context = context
         repository = new Repository(context)
@@ -34,7 +34,7 @@ class Organization {
         zafiraUpdater = new ZafiraUpdater(context)
         repo = Configuration.get("repo")
         organization = Configuration.get("organization")
-        onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
+        onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean() //to remove
         currentBuild = context.currentBuild
     }
 
@@ -44,7 +44,8 @@ class Organization {
             context.timestamps {
                 prepare()
                 repository.register()
-                provideSecurity()
+                createLauncher(getLatestOnPushBuild())
+                setSecurity()
                 clean()
             }
         }
@@ -56,13 +57,13 @@ class Organization {
         return job.getBuilds().get(0)
     }
 
-    protected def provideSecurity(){
-        def userName = "${organization}_${repo}_user"
+    protected def setSecurity(){
+        def userName = "${organization}-user"
         createJenkinsUser(userName)
         grantUserBaseGlobalPermissions(userName)
         setUserFolderPermissions(organization, userName)
-        createLauncher(getLatestOnPushBuild())
         def token = generateAPIToken(userName)
+        //TODO: register token in zafira by tenancy/org
         logger.info(token.dump())
     }
 
@@ -100,6 +101,7 @@ class Organization {
     }
 
     def createJenkinsUser(userName){
+        //TODO: check registration if user exists and reuse password
         def password = UUID.randomUUID()
         return Jenkins.instance.securityRealm.createAccount(userName, "123456")
     }
@@ -119,6 +121,7 @@ class Organization {
             it instanceof AuthorizationMatrixProperty
         }
         authProperty.setInheritanceStrategy(new NonInheritingStrategy())
+        //TODO: find move permission if necessary
         def permissionsArray = [com.cloudbees.plugins.credentials.CredentialsProvider.CREATE,
                                 com.cloudbees.plugins.credentials.CredentialsProvider.DELETE,
                                 com.cloudbees.plugins.credentials.CredentialsProvider.MANAGE_DOMAINS,
