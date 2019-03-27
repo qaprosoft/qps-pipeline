@@ -93,7 +93,8 @@ public class QARunner extends AbstractRunner {
             context.timestamps {
                 logger.info("QARunner->onPush")
                 prepare()
-                def permissions =  Jenkins.instance.getDescriptorByType(com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.DescriptorImpl.class).getPermissionScope()
+                def permissions =  Jenkins.instance.getDescriptorByType(com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.DescriptorImpl.class).getGrantedPermissions()
+                logger.info(permissions)
                 permissions.containers.each {
                     logger.info(it.dump())
                 }
