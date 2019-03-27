@@ -94,7 +94,7 @@ public class QARunner extends AbstractRunner {
                 logger.info("QARunner->onPush")
                 prepare()
 //                def permissions =  Jenkins.instance.getDescriptorByType(com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.DescriptorImpl.class)
-                def folder = getJenkinsFolderByName("qaprosoft")
+                def folder = getJenkinsFolderByName("qaprosoft").getProperty('com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty')
                 logger.info(folder.dump())
 //                def permissions = com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.getGrantedPermissions()
 //                logger.info(permissions)
