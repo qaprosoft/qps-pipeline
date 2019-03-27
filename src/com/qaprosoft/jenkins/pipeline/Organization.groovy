@@ -23,6 +23,7 @@ class Organization {
     protected def onlyUpdated = false
     protected def currentBuild
     protected def repo
+    protected def organization
     protected Configuration configuration = new Configuration(context)
 
     public Organization(context) {
@@ -32,6 +33,7 @@ class Organization {
         logger = new Logger(context)
         zafiraUpdater = new ZafiraUpdater(context)
         repo = Configuration.get("repo")
+        organization = Configuration.get("organization")
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         currentBuild = context.currentBuild
     }
@@ -42,8 +44,8 @@ class Organization {
             context.timestamps {
                 prepare()
                 repository.register()
-                def jobName = "${repo}" + "/" + "onPush-" + repo
-                def job = getJenkinsJobByName(jobName)
+                def jobName = "${organization}/${repo}/onPush-${repo}"
+                def job = Jenkins.instance.getItemByFullName(jobName)
                 logger.info(job.dump())
                 clean()
             }
