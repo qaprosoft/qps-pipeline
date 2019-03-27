@@ -44,7 +44,7 @@ class Organization {
             context.timestamps {
                 prepare()
                 repository.register()
-                def jobName = "${organization}/${repo}/onPush-${repo}"
+                def jobName = "${organization}/${repo}/onPush-${repo}/156"
                 def job = Jenkins.instance.getItemByFullName(jobName)
                 logger.info(job.dump())
                 clean()
