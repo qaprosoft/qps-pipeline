@@ -90,13 +90,13 @@ public class QARunner extends AbstractRunner {
             context.timestamps {
                 logger.info("QARunner->onPush")
                 prepare()
-//                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-//                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-//                    return
-//                }
-//                //TODO: implement repository scan and QA jobs recreation
-//                scan()
-//                clean()
+                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
+                    return
+                }
+                //TODO: implement repository scan and QA jobs recreation
+                scan()
+                clean()
             }
         }
     }
