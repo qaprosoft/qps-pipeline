@@ -123,7 +123,7 @@ public class QARunner extends AbstractRunner {
 //                         hudson.model.VIEW.CONFIGURE,
 //                         hudson.model.VIEW.CREATE,
 //                         hudson.model.VIEW.DELETE,
-//                         hudson.model.VIEW.READ,
+                         hudson.model.VIEW.READ,
                          hudson.scm.SCM.TAG]
                 permissionsArray.each {
                     authprop.add(Class.forName(it), user)
