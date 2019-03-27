@@ -93,11 +93,14 @@ public class QARunner extends AbstractRunner {
             context.timestamps {
                 logger.info("QARunner->onPush")
                 prepare()
-                def permissions =  Jenkins.instance.getDescriptorByType(com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.class).getGrantedPermissions()
-                logger.info(permissions)
-                permissions.containers.each {
-                    logger.info(it.dump())
-                }
+//                def permissions =  Jenkins.instance.getDescriptorByType(com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.DescriptorImpl.class)
+                def folder = getJenkinsFolderByName("qaprosoft")
+                logger.info(folder.dump())
+//                def permissions = com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.getGrantedPermissions()
+//                logger.info(permissions)
+//                permissions.containers.each {
+//                    logger.info(it.dump())
+//                }
 
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
 //                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
