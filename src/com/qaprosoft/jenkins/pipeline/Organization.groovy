@@ -44,17 +44,30 @@ class Organization {
             context.timestamps {
                 prepare()
                 repository.register()
-                def jobName = "${organization}/${repo}/onPush-${repo}"
-                def job = Jenkins.instance.getItemByFullName(jobName)
-                def build = job.getBuilds().get(0)
-                logger.info(build.dump())
+                provideSecurity()
                 clean()
             }
         }
     }
 
-    protected def createLauncher(repo){
-        currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
+    protected def getLatestOnPushBuild(){
+        def jobName = "${organization}/${repo}/onPush-${repo}"
+        def job = Jenkins.instance.getItemByFullName(jobName)
+        return job.getBuilds().get(0)
+    }
+
+    protected def provideSecurity(){
+        def userName = "${organization}_${repo}_user"
+        createJenkinsUser(userName)
+        grantUserBaseGlobalPermissions(userName)
+        setUserFolderPermissions(organization, userName)
+        createLauncher(getLatestOnPushBuild())
+        def token = generateAPIToken(userName)
+        logger.info(token.dump())
+    }
+
+    protected def createLauncher(build){
+        build.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
             def currentJobUrl = Configuration.get(Configuration.Parameter.JOB_URL)
             def jobUrl = currentJobUrl.substring(0, currentJobUrl.lastIndexOf("/job/") + "/job/".length()) + it.jobName.substring(it.jobName.lastIndexOf("/"))
             def parameters = getParametersMap(it.jobName)
@@ -80,9 +93,10 @@ class Organization {
         return parameters
     }
 
-    def generateAPIToken(user){
+    def generateAPIToken(userName){
         //saveInZafira(token.tokenName, token.tokenValue)
-        return Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, user.getId() + '_token').jsonObject.data
+        def user = User.getById(userName, false)
+        return Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, userName + '_token').jsonObject.data
     }
 
     def createJenkinsUser(userName){
