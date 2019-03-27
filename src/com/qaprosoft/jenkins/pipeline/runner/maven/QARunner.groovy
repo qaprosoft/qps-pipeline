@@ -133,7 +133,6 @@ public class QARunner extends AbstractRunner {
                          hudson.model.Item.READ,
                          hudson.model.Item.WORKSPACE,
                          hudson.model.Run.DELETE,
-                         hudson.model.Run.REPLAY,
                          hudson.model.Run.UPDATE,
                          hudson.model.VIEW.CONFIGURE,
                          hudson.model.VIEW.CREATE,
