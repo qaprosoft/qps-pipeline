@@ -120,6 +120,7 @@ public class QARunner extends AbstractRunner {
                          hudson.model.Item.WORKSPACE,
                          hudson.model.Run.DELETE,
                          hudson.model.Run.UPDATE,
+                         org.jenkinsci.plugins.workflow.cps.replay.ReplayAction.REPLAY,
                          hudson.model.View.CONFIGURE,
                          hudson.model.View.CREATE,
                          hudson.model.View.DELETE,
