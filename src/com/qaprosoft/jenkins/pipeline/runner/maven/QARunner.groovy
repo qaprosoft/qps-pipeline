@@ -94,7 +94,6 @@ public class QARunner extends AbstractRunner {
                 logger.info("QARunner->onPush")
                 prepare()
 //                def permissions =  Jenkins.instance.getDescriptorByType(com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.DescriptorImpl.class)
-                setInheritanceStrategy
                 def folder = getJenkinsFolderByName("qaprosoft")
                 folder.setInheritanceStrategy(new org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy())
                 def descriptors =  org.jenkinsci.plugins.matrixauth.inheritance.InheritanceStrategyDescriptor.getApplicableDescriptors(com.cloudbees.hudson.plugins.folder.Folder.class)
