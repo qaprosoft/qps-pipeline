@@ -95,16 +95,13 @@ public class QARunner extends AbstractRunner {
                 prepare()
 //                def permissions =  Jenkins.instance.getDescriptorByType(com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.DescriptorImpl.class)
                 def folder = getJenkinsFolderByName("qaprosoft")
-                folder.setInheritanceStrategy(new org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy())
-                def descriptors =  org.jenkinsci.plugins.matrixauth.inheritance.InheritanceStrategyDescriptor.getApplicableDescriptors(com.cloudbees.hudson.plugins.folder.Folder.class)
+//                def descriptors =  org.jenkinsci.plugins.matrixauth.inheritance.InheritanceStrategyDescriptor.getApplicableDescriptors(com.cloudbees.hudson.plugins.folder.Folder.class)
 
-                logger.info(descriptors)
-//                folder.setInheritanceStrategy()
-//                def properties = getJenkinsFolderByName("qaprosoft").properties
-////                ('com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty')
-//                def authprop = properties.find {
-//                    it instanceof com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
-//                }
+                def properties = getJenkinsFolderByName("qaprosoft").properties
+                def authprop = properties.find {
+                    it instanceof com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
+                }
+                authprop.setInheritanceStrategy(new org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy())
 //                authprop.grantedPermissions.each {
 //                    logger.info(authprop.dump())
 //                }
