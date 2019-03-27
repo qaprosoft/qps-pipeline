@@ -60,11 +60,8 @@ public class QARunner extends AbstractRunner {
         zafiraUpdater = new ZafiraUpdater(context)
         testRailUpdater = new TestRailUpdater(context)
         qTestUpdater = new QTestUpdater(context)
-
         currentBuild = context.currentBuild
-        if (Configuration.get("onlyUpdated") != null) {
-            onlyUpdated = Configuration.get("onlyUpdated").toBoolean()
-        }
+        onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
     }
 
     public QARunner(context, jobType) {
@@ -93,52 +90,6 @@ public class QARunner extends AbstractRunner {
             context.timestamps {
                 logger.info("QARunner->onPush")
                 prepare()
-//                def permissions =  Jenkins.instance.getDescriptorByType(com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.DescriptorImpl.class)
-                def folder = getJenkinsFolderByName("qaprosoft")
-//                def descriptors =  org.jenkinsci.plugins.matrixauth.inheritance.InheritanceStrategyDescriptor.getApplicableDescriptors(com.cloudbees.hudson.plugins.folder.Folder.class)
-
-                def properties = getJenkinsFolderByName("qaprosoft").properties
-                def authprop = properties.find {
-                    it instanceof com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
-                }
-                authprop.setInheritanceStrategy(new org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy())
-                def user = "test17"
-                def permissionsArray =
-                        [com.cloudbees.plugins.credentials.CredentialsProvider.CREATE,
-                         com.cloudbees.plugins.credentials.CredentialsProvider.DELETE,
-                         com.cloudbees.plugins.credentials.CredentialsProvider.MANAGE_DOMAINS,
-                         com.cloudbees.plugins.credentials.CredentialsProvider.UPDATE,
-                         com.cloudbees.plugins.credentials.CredentialsProvider.VIEW,
-                         com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin.MANAGE_ITEMS_OWNERSHIP,
-                         hudson.model.Item.BUILD,
-                         hudson.model.Item.CANCEL,
-                         hudson.model.Item.CONFIGURE,
-                         hudson.model.Item.CREATE,
-                         hudson.model.Item.DELETE,
-                         hudson.model.Item.DISCOVER,
-                         hudson.model.Item.READ,
-                         hudson.model.Item.WORKSPACE,
-                         hudson.model.Run.DELETE,
-                         hudson.model.Run.UPDATE,
-                         org.jenkinsci.plugins.workflow.cps.replay.ReplayAction.REPLAY,
-                         hudson.model.View.CONFIGURE,
-                         hudson.model.View.CREATE,
-                         hudson.model.View.DELETE,
-                         hudson.model.View.READ,
-                         hudson.scm.SCM.TAG]
-                permissionsArray.each {
-                    authprop.add(it, user)
-                }
-//                authprop.grantedPermissions.each {
-//                    logger.info(authprop.dump())
-//                }
-
-//                def permissions = com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty.getGrantedPermissions()
-//                logger.info(permissions)
-//                permissions.containers.each {
-//                    logger.info(it.dump())
-//                }
-
 //                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
 //                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
 //                    return
@@ -239,42 +190,9 @@ public class QARunner extends AbstractRunner {
                         targets: FACTORY_TARGET,
                         ignoreExisting: false
             }
-
-
-
-
-            currentBuild.rawBuild.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
-                def currentJobUrl = Configuration.get(Configuration.Parameter.JOB_URL)
-                def jobUrl = currentJobUrl.substring(0, currentJobUrl.lastIndexOf("/job/") + "/job/".length()) + it.jobName.substring(it.jobName.lastIndexOf("/"))
-                def job = Jenkins.instance.getItemByFullName(it.jobName)
-                def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
-                Map parameters = [:]
-                parameterDefinitions.each { parameterDefinition ->
-                    def value
-                    if(parameterDefinition instanceof jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition){
-                        value = parameterDefinition.choiceListProvider.getDefaultChoice()
-                    } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
-                        value = parameterDefinition.choices[0]
-                    }  else {
-                        value = parameterDefinition.defaultValue
-                    }
-                    parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
-                }
-                zafiraUpdater.createLauncher(parameters, jobUrl, repo)
-            }
         }
     }
 
-    protected def createUserWithPermissions(){
-        def userName = "test20"
-        def password = "123456"
-        def instance = Jenkins.getInstance()
-        def user = instance.securityRealm.createAccount(userName, password)
-        def strategy = instance.getAuthorizationStrategy()
-        strategy.add(hudson.model.Hudson.READ, userName)
-//                def token =  Jenkins.instance.getDescriptorByType(jenkins.security.ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, user.toString() + '_token').jsonObject.data
-        //saveInZafira(token.tokenName, token.tokenValue)
-    }
 
     protected clean() {
         context.stage('Wipe out Workspace') {
