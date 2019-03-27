@@ -99,7 +99,7 @@ public class QARunner extends AbstractRunner {
                 def authprop = properties.find {
                     it instanceof com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
                 }
-                authprop.each {
+                authprop.grantedPermissions.each {
                     logger.info(authprop.dump())
                 }
 
