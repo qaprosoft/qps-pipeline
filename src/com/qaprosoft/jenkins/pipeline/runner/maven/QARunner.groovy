@@ -109,7 +109,7 @@ public class QARunner extends AbstractRunner {
                          com.cloudbees.plugins.credentials.CredentialsProvider.MANAGE_DOMAINS,
                          com.cloudbees.plugins.credentials.CredentialsProvider.UPDATE,
                          com.cloudbees.plugins.credentials.CredentialsProvider.VIEW,
-                         com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin.JOBS,
+                         com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin.Jobs,
                          hudson.model.Item.BUILD,
                          hudson.model.Item.CANCEL,
                          hudson.model.Item.CONFIGURE,
