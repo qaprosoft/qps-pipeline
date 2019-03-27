@@ -22,6 +22,7 @@ class Organization {
     protected ZafiraUpdater zafiraUpdater
     protected def onlyUpdated = false
     protected def currentBuild
+    protected def repo
     protected Configuration configuration = new Configuration(context)
 
     public Organization(context) {
@@ -30,6 +31,7 @@ class Organization {
         scmClient = new GitHub(context)
         logger = new Logger(context)
         zafiraUpdater = new ZafiraUpdater(context)
+        repo = Configuration.get("repo")
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         currentBuild = context.currentBuild
     }
@@ -40,6 +42,9 @@ class Organization {
             context.timestamps {
                 prepare()
                 repository.register()
+                def jobName = "${repo}" + "/" + "onPush-" + repo
+                def job = getJenkinsJobByName(jobName)
+                logger.info(job.dump())
                 clean()
             }
         }
