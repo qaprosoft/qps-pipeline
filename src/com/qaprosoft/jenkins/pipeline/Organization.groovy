@@ -97,8 +97,10 @@ class Organization {
     def generateAPIToken(userName){
         //saveInZafira(token.tokenName, token.tokenValue)
         def user = User.getById(userName, false)
-        def props = user.getAllProperties()
-        logger.info("PROPS: " + props)
+        def token = user.getAllProperties().find {
+            it instanceof ApiTokenProperty
+        }
+        logger.info("TOKEN: " + token.dump())
         return Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, userName + '_token').jsonObject.data
     }
 
