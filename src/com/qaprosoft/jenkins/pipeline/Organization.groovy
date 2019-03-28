@@ -106,7 +106,6 @@ class Organization {
 
     def createJenkinsUser(userName){
         def password = UUID.randomUUID().toString()
-        logger.info("USER_GET: " + User.getById(userName, false))
         return !isParamEmpty(User.getById(userName, false))?User.getById(userName, false):Jenkins.instance.securityRealm.createAccount(userName, password)
     }
 
@@ -145,6 +144,7 @@ class Organization {
                                 hudson.model.Item.EXTENDED_READ,
                                 hudson.model.Item.READ,
                                 hudson.model.Item.WORKSPACE,
+                                com.cloudbees.hudson.plugins.folder.relocate.RelocationAction.RELOCATE,
                                 hudson.model.Run.DELETE,
                                 hudson.model.Run.UPDATE,
                                 org.jenkinsci.plugins.workflow.cps.replay.ReplayAction.REPLAY,
