@@ -174,6 +174,34 @@ class ZafiraClient extends HttpClient{
 		return sendRequestFormatted(parameters)
 	}
 
+	public def getJenkinsSettings() {
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
+		}
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'GET',
+						  validResponseCodes: "200:401",
+						  url: this.serviceURL + "/api/settings/tool/JENKINS?decrypt=false"]
+		return sendRequestFormatted(parameters)
+	}
+
+	public def updateJenkinsConfig(jenkinsSettingsList) {
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
+		}
+		JsonBuilder jsonBuilder = new JsonBuilder(jenkinsSettingsList)
+
+		logger.info("RQST: " + jsonBuilder.toString())
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'PUT',
+						  requestBody: "${jsonBuilder}",
+						  validResponseCodes: "200:401",
+						  url: this.serviceURL + "/api/settings/tool"]
+		return sendRequestFormatted(parameters)
+	}
+
 	protected boolean isTokenExpired() {
 		return authToken == null || System.currentTimeMillis() > tokenExpTime
 	}

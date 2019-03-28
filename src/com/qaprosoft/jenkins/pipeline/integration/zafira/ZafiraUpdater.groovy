@@ -149,4 +149,19 @@ class ZafiraUpdater {
     def createLauncher(jobParameters, jobUrl, repo) {
         return zc.createLauncher(jobParameters, jobUrl, repo)
     }
+
+    def registerTokenInZafira(userName, tokenValue){
+        def jenkinsSettingsList = zc.getJenkinsSettings()
+        jenkinsSettingsList.each {
+            switch (it.name) {
+                case "JENKINS_USER" :
+                    it.value = userName
+                    break
+                case "JENKINS_API_TOKEN_OR_PASSWORD":
+                    it.value = tokenValue
+                    break
+            }
+        }
+        zc.updateJenkinsConfig(jenkinsSettingsList)
+    }
 }
