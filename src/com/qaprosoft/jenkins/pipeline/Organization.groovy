@@ -58,7 +58,7 @@ class Organization {
     }
 
     protected def setSecurity(){
-        def userName = "${organization}-user"
+        def userName = organization + "-user"
         createJenkinsUser(userName)
         grantUserBaseGlobalPermissions(userName)
         setUserFolderPermissions(organization, userName)
@@ -101,7 +101,7 @@ class Organization {
     }
 
     def createJenkinsUser(userName){
-        def password = UUID.randomUUID()
+        def password = UUID.randomUUID().toString()
 //        logger.info("USER_GET: " + User.getById(userName, false))
         logger.info("USER_CREATE: " + Jenkins.instance.securityRealm.createAccount(userName, password))
         def user =  Jenkins.instance.securityRealm.createAccount(userName, password)
