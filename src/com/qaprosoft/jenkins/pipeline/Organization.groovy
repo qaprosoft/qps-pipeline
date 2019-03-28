@@ -97,10 +97,13 @@ class Organization {
     def generateAPIToken(userName){
         //saveInZafira(token.tokenName, token.tokenValue)
         def user = User.getById(userName, false)
-//        def token = user.getAllProperties().find {
-//            it instanceof ApiTokenProperty
-//        }
-//        logger.info("TOKEN: " + token.tokenStore.getTokenListSortedByName() ())
+        def token = user.getAllProperties().find {
+            it instanceof ApiTokenProperty
+        }
+        if(!isParamEmpty(token)){
+            logger.info("User already has associated token.")
+            return
+        }
         return Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, userName + '_token').jsonObject.data
     }
 
@@ -128,7 +131,6 @@ class Organization {
             folder.properties.add(authProperty)
         }
         authProperty.setInheritanceStrategy(new NonInheritingStrategy())
-        //TODO: find move permission if necessary
         def permissionsArray = [com.cloudbees.plugins.credentials.CredentialsProvider.CREATE,
                                 com.cloudbees.plugins.credentials.CredentialsProvider.DELETE,
                                 com.cloudbees.plugins.credentials.CredentialsProvider.MANAGE_DOMAINS,
