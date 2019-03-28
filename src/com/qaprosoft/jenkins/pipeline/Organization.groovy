@@ -58,7 +58,7 @@ class Organization {
     }
 
     protected def setSecurity(){
-        def userName = organization + "-user1"
+        def userName = organization + "-user"
         createJenkinsUser(userName)
         grantUserBaseGlobalPermissions(userName)
         setUserFolderPermissions(organization, userName)
