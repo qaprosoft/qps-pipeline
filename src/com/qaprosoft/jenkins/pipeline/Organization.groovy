@@ -63,8 +63,9 @@ class Organization {
         grantUserBaseGlobalPermissions(userName)
         setUserFolderPermissions(organization, userName)
         def token = generateAPIToken(userName)
-        //TODO: register token in zafira by tenancy/org
-        logger.info(token.dump())
+        if(!isParamEmpty(token)){
+            registerTokenInZafira(userName, token.tokenValue)
+        }
     }
 
     protected def createLauncher(build){
@@ -95,7 +96,6 @@ class Organization {
     }
 
     def generateAPIToken(userName){
-        //saveInZafira(token.tokenName, token.tokenValue)
         def user = User.getById(userName, false)
         def token = user.getAllProperties().find {
             it instanceof ApiTokenProperty
@@ -159,6 +159,10 @@ class Organization {
             authProperty.add(it, userName)
         }
         folder.save()
+    }
+
+    def registerTokenInZafira(tokenName, tokenValue){
+
     }
 
     protected void prepare() {
