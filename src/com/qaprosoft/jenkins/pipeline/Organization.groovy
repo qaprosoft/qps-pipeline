@@ -101,9 +101,7 @@ class Organization {
     }
 
     def createJenkinsUser(userName){
-        //TODO: check registration if user exists and reuse password
-        def password = UUID.randomUUID()
-        return Jenkins.instance.securityRealm.createAccount(userName, "123456")
+        return User.getById(userName, true)
     }
 
     def grantUserBaseGlobalPermissions(userName){
@@ -119,6 +117,10 @@ class Organization {
         }
         def authProperty = folder.properties.find {
             it instanceof AuthorizationMatrixProperty
+        }
+        if (authProperty == null){
+            authProperty = new AuthorizationMatrixProperty()
+            folder.properties.put(authProperty)
         }
         authProperty.setInheritanceStrategy(new NonInheritingStrategy())
         //TODO: find move permission if necessary
@@ -147,6 +149,7 @@ class Organization {
         permissionsArray.each {
             authProperty.add(it, userName)
         }
+        folder.save()
     }
 
     protected void prepare() {
