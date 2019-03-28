@@ -142,6 +142,7 @@ class Organization {
                                 hudson.model.Item.CREATE,
                                 hudson.model.Item.DELETE,
                                 hudson.model.Item.DISCOVER,
+                                hudson.model.Item.EXTENDED_READ,
                                 hudson.model.Item.READ,
                                 hudson.model.Item.WORKSPACE,
                                 hudson.model.Run.DELETE,
