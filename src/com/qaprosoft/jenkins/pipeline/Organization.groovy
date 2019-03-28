@@ -100,10 +100,10 @@ class Organization {
         def token = user.getAllProperties().find {
             it instanceof ApiTokenProperty
         }
-        if(!isParamEmpty(token)){
-            logger.info("User already has associated token.")
-            return
-        }
+//        if(!isParamEmpty(token)){
+//            logger.info("User already has associated token.")
+//            return
+//        }
         return Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, userName + '_token').jsonObject.data
     }
 
