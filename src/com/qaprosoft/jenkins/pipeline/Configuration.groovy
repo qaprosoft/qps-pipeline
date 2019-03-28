@@ -188,7 +188,7 @@ public class Configuration {
 		if (params.get(paramName) != null || params.get(paramName.toUpperCase()) != null) {
 			return params.get(paramName)
 		}
-		return vars.get(paramName)?vars.get(paramName):vars.get(paramName.toUpperCase())
+		return vars.get(paramName)
 	}
 
 	public static void set(Parameter param, String value) {

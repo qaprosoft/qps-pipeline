@@ -14,7 +14,7 @@ class ZafiraClient extends HttpClient{
 
     public ZafiraClient(context) {
         super(context)
-        serviceURL = Configuration.get("ZAFIRA_SERVICE_URL")
+        serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
         refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
     }
 
