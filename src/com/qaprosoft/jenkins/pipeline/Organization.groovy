@@ -102,6 +102,7 @@ class Organization {
 
     def createJenkinsUser(userName){
         def password = UUID.randomUUID().toString()
+        logger.info("USER_GET: " + User.getById(userName, false))
         return !isParamEmpty(User.getById(userName, false))?User.getById(userName, false):Jenkins.instance.securityRealm.createAccount(userName, password)
     }
 
