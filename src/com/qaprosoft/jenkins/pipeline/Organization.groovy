@@ -102,7 +102,11 @@ class Organization {
 
     def createJenkinsUser(userName){
         def password = UUID.randomUUID()
-        return  User.getById(userName, false)?User.getById(userName, false):Jenkins.instance.securityRealm.createAccount(userName, password)
+        logger.info("USER_GET: " + User.getById(userName, false))
+        logger.info("USER_CREATE: " + Jenkins.instance.securityRealm.createAccount(userName, password))
+        def user =  User.getById(userName, false)?User.getById(userName, false):Jenkins.instance.securityRealm.createAccount(userName, password)
+
+        return user
     }
 
     def grantUserBaseGlobalPermissions(userName){
