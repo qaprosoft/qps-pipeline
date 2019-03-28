@@ -101,7 +101,7 @@ class Organization {
     }
 
     def createJenkinsUser(userName){
-//        def password = UUID.randomUUID()
+        def password = UUID.randomUUID()
 //        logger.info("USER_GET: " + User.getById(userName, false))
         logger.info("USER_CREATE: " + Jenkins.instance.securityRealm.createAccount(userName, password))
         def user =  Jenkins.instance.securityRealm.createAccount(userName, password)
