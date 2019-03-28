@@ -184,10 +184,11 @@ public class Configuration {
 
 	@NonCPS
 	public static String get(String paramName) {
-		if (params.get(paramName) != null) {
+		paramName = paramName.toLowerCase()
+		if (params.get(paramName) != null || params.get(paramName.toUpperCase()) != null) {
 			return params.get(paramName)
 		}
-		return vars.get(paramName)
+		return vars.get(paramName)?vars.get(paramName):vars.get(paramName.toUpperCase())
 	}
 
 	public static void set(Parameter param, String value) {
