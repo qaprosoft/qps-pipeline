@@ -96,7 +96,7 @@ class Organization {
 
     def generateAPIToken(userName){
         //saveInZafira(token.tokenName, token.tokenValue)
-//        def user = User.getById(userName, false)
+        def user = User.getById(userName, false)
 //        def token = user.getAllProperties().find {
 //            it instanceof ApiTokenProperty
 //        }
