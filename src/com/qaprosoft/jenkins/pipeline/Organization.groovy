@@ -120,7 +120,7 @@ class Organization {
         }
         if (authProperty == null){
             authProperty = new AuthorizationMatrixProperty()
-            folder.properties.put(authProperty)
+            folder.properties.add(authProperty)
         }
         authProperty.setInheritanceStrategy(new NonInheritingStrategy())
         //TODO: find move permission if necessary
