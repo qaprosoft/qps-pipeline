@@ -100,7 +100,7 @@ class Organization {
         def token = user.getAllProperties().find {
             it instanceof ApiTokenProperty
         }
-        logger.info("TOKEN: " + token.tokenStore.getLegacyToken())
+        logger.info("TOKEN: " + token.tokenStore.getTokenListSortedByName() ())
         return Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, userName + '_token').jsonObject.data
     }
 
