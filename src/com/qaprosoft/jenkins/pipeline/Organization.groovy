@@ -161,8 +161,8 @@ class Organization {
         folder.save()
     }
 
-    def registerTokenInZafira(tokenName, tokenValue){
-
+    def registerTokenInZafira(userName, tokenValue){
+        zafiraUpdater.registerTokenInZafira(userName, tokenValue)
     }
 
     protected void prepare() {
