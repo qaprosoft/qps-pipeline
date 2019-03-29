@@ -73,7 +73,7 @@ class Organization {
     protected def createLauncher(build){
         build.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
             def currentJobUrl = Configuration.get(Configuration.Parameter.JOB_URL)
-            def jobUrl = currentJobUrl.substring(0, currentJobUrl.lastIndexOf("/job/") + "/job/".length()) + Paths.get(name).getFileName().toString()
+            def jobUrl = currentJobUrl.substring(0, currentJobUrl.lastIndexOf("/job/") + "/job/".length()) + Paths.get(it.jobName).getFileName().toString()
             def parameters = getParametersMap(it.jobName)
             zafiraUpdater.createLauncher(parameters, jobUrl, repo)
         }
