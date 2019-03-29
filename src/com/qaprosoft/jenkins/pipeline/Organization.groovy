@@ -8,7 +8,7 @@ import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixPropert
 import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import jenkins.security.ApiTokenProperty
-
+import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import java.nio.file.Paths
 
 import static com.qaprosoft.jenkins.Utils.*
@@ -71,7 +71,7 @@ class Organization {
     }
 
     protected def createLauncher(build){
-        build.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
+        build.getAction(GeneratedJobsBuildAction).modifiedObjects.each {
             def currentJobUrl = Configuration.get(Configuration.Parameter.JOB_URL)
             def jobUrl = currentJobUrl.substring(0, currentJobUrl.lastIndexOf("/job/") + "/job/".length()) + Paths.get(it.jobName).getFileName().toString()
             def parameters = getParametersMap(it.jobName)
