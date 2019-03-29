@@ -74,7 +74,7 @@ class Organization {
         build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
             String separator = "/job/"
             String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split(separator)[0]
-            def jobUrl = job.jobName.splt("/").each {
+            def jobUrl = job.jobName.split("/").each {
                 jenkinsUrl += separator + it
             }
             def parameters = getParametersMap(job.jobName)
