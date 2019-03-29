@@ -71,10 +71,13 @@ class Organization {
     }
 
     protected def createLauncher(build){
-        build.getAction(GeneratedJobsBuildAction).modifiedObjects.each {
-            def currentJobUrl = Configuration.get(Configuration.Parameter.JOB_URL)
-            def jobUrl = currentJobUrl.substring(0, currentJobUrl.lastIndexOf("/job/") + "/job/".length()) + Paths.get(it.jobName).getFileName().toString()
-            def parameters = getParametersMap(it.jobName)
+        build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
+            String separator = "/job/"
+            String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split(separator)[0]
+            def jobUrl = job.jobName.splt("/").each {
+                jenkinsUrl += separator + it
+            }
+            def parameters = getParametersMap(job.jobName)
             zafiraUpdater.createLauncher(parameters, jobUrl, repo)
         }
     }
