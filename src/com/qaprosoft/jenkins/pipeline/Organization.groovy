@@ -9,6 +9,8 @@ import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import jenkins.security.ApiTokenProperty
 
+import java.nio.file.Paths
+
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
@@ -71,7 +73,7 @@ class Organization {
     protected def createLauncher(build){
         build.getAction(javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction).modifiedObjects.each {
             def currentJobUrl = Configuration.get(Configuration.Parameter.JOB_URL)
-            def jobUrl = currentJobUrl.substring(0, currentJobUrl.lastIndexOf("/job/") + "/job/".length()) + it.jobName.substring(it.jobName.lastIndexOf("/"))
+            def jobUrl = currentJobUrl.substring(0, currentJobUrl.lastIndexOf("/job/") + "/job/".length()) + Paths.get(name).getFileName().toString()
             def parameters = getParametersMap(it.jobName)
             zafiraUpdater.createLauncher(parameters, jobUrl, repo)
         }
