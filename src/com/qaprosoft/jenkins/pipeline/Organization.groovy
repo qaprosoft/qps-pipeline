@@ -115,6 +115,7 @@ class Organization {
         if(isParamEmpty(token)){
             token = Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, tokenName).jsonObject.data
         }
+        logger.info(token.dump())
         def tokenStats = ApiTokenStats.findTokenStatsById(token.tokenUuid)
 //        def tokenStats = token.tokenStats.SingleTokenStats.getNumDaysUse()
         logger.info(tokenStats.dump())
