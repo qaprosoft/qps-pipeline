@@ -895,7 +895,7 @@ public class QARunner extends AbstractRunner {
                         /* supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
                            supportedBrowser - splitted single browser name from supportedBrowsers
                            currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
-                        Map supportedConfigurations = getSupportedConfigurations(supportedBrowsers)
+                        Map supportedConfigurations = getSupportedConfigurations(supportedBrowser)
                         if (!currentBrowser.equals(supportedBrowser) && !isParamEmpty(currentBrowser)) {
                             logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                             continue
