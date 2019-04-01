@@ -9,7 +9,7 @@ import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import jenkins.security.ApiTokenProperty
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
-
+import com.wangyin.parameter.WHideParameterDefinition
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
