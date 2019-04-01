@@ -9,6 +9,7 @@ import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import jenkins.security.ApiTokenProperty
 import jenkins.security.apitoken.ApiTokenStore
+import jenkins.security.apitoken.ApiTokenStats
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import java.nio.file.Paths
 
@@ -114,7 +115,8 @@ class Organization {
         if(isParamEmpty(token)){
             token = Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, tokenName).jsonObject.data
         }
-        def tokenStats = token.tokenStats.SingleTokenStats.getNumDaysUse()
+        def tokenStats = ApiTokenStats.findTokenStatsById(token.uuid)
+//        def tokenStats = token.tokenStats.SingleTokenStats.getNumDaysUse()
         logger.info(tokenStats.dump())
         return token
     }
