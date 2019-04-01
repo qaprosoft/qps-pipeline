@@ -24,9 +24,9 @@ class Organization {
     protected def currentBuild
     protected def repo
     protected def organization
+    protected def securityEnabled
     protected Configuration configuration = new Configuration(context)
 
-    //TODO: get zafira properties
     public Organization(context) {
         this.context = context
         repository = new Repository(context)
@@ -35,7 +35,7 @@ class Organization {
         zafiraUpdater = new ZafiraUpdater(context)
         repo = Configuration.get("repo")
         organization = Configuration.get("organization")
-        onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean() //to remove
+        securityEnabled = Configuration.get("security_enabled")?.toBoolean()
         currentBuild = context.currentBuild
     }
 
@@ -46,7 +46,9 @@ class Organization {
                 prepare()
                 repository.register()
                 createLauncher(getLatestOnPushBuild())
-//                setSecurity()
+                if(securityEnabled){
+                    setSecurity()
+                }
                 clean()
             }
         }
@@ -81,7 +83,7 @@ class Organization {
         }
     }
 
-    private def getParametersMap(jobName) {
+    protected def getParametersMap(jobName) {
         def job = Jenkins.instance.getItemByFullName(jobName)
         def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
         Map parameters = [:]
@@ -99,7 +101,7 @@ class Organization {
         return parameters
     }
 
-    def getAPIToken(userName){
+    protected def getAPIToken(userName){
         def token = null
         def tokenName = userName + '_token'
         def user = User.getById(userName, false)
@@ -115,17 +117,17 @@ class Organization {
         return token
     }
 
-    def createJenkinsUser(userName){
+    protected def createJenkinsUser(userName){
         def password = UUID.randomUUID().toString()
         return !isParamEmpty(User.getById(userName, false))?User.getById(userName, false):Jenkins.instance.securityRealm.createAccount(userName, password)
     }
 
-    def grantUserBaseGlobalPermissions(userName){
+    protected def grantUserBaseGlobalPermissions(userName){
         def authStrategy = Jenkins.instance.getAuthorizationStrategy()
         authStrategy.add(hudson.model.Hudson.READ, userName)
     }
 
-    def setUserFolderPermissions(folderName, userName) {
+    protected def setUserFolderPermissions(folderName, userName) {
         def folder = getJenkinsFolderByName(folderName)
         if(folder == null){
             logger.error("No folder ${folderName} was detected.")
@@ -169,7 +171,7 @@ class Organization {
         folder.save()
     }
 
-    def registerTokenInZafira(userName, tokenValue){
+    protected def registerTokenInZafira(userName, tokenValue){
         zafiraUpdater.registerTokenInZafira(userName, tokenValue)
     }
 
