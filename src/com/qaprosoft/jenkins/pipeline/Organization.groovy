@@ -8,6 +8,7 @@ import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixPropert
 import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import jenkins.security.ApiTokenProperty
+import jenkins.security.apitoken.ApiTokenStore
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import java.nio.file.Paths
 
@@ -105,6 +106,9 @@ class Organization {
         def token = user.getAllProperties().find {
             it instanceof ApiTokenProperty
         }
+        def tokenStore = token.getTokenStore()
+        ApiTokenStore.HashedToken existingLegacyToken = tokenStore.getLegacyToken()
+        logger.info(existingLegacyToken)
 //        if(!isParamEmpty(token)){
 //            logger.info("User already has associated token.")
 //            return
