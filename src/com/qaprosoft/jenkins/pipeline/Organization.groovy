@@ -108,7 +108,7 @@ class Organization {
         def token = user.getAllProperties().find {
             if(it instanceof ApiTokenProperty){
                 it.getTokenList().find {
-                    it.dump()
+                    logger.info(it.dump())
                     tokenName.equals(it.name)
                 }
             }
