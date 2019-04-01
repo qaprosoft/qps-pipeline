@@ -98,7 +98,7 @@ public class TestJobFactory extends PipelineFactory {
 					case ~/^.*android.*$/:
 						choiceParam('devicePool', getDevices('ANDROID'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
                         if (getSuiteParameter("false", "jenkinsMobileWeb", currentSuite).toBoolean()) {
-                                choiceParam('deviceBrowser', "chrome", "Select the mobile browser a Test will run against.")
+                                choiceParam('deviceBrowser', ["chrome"], "Select the mobile browser a Test will run against.")
                         }
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage\n2.2.0.3741.45 - exact version you would like to use")
@@ -112,7 +112,7 @@ public class TestJobFactory extends PipelineFactory {
 						//TODO:  Need to adjust this for virtual as well.
 						choiceParam('devicePool', getDevices('iOS'), "Select the Device a Test will run against.  ALL - Any available device, PHONE - Any available phone, TABLET - Any tablet")
                         if (getSuiteParameter("false", "jenkinsMobileWeb", currentSuite).toBoolean()) {
-                            choiceParam('deviceBrowser', "safari", "Select the mobile browser a Test will run against.")
+                            choiceParam('deviceBrowser', ["safari"], "Select the mobile browser a Test will run against.")
                         }
 						//TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
 						//stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage\n2.2.0.3741.45 - exact version you would like to use")
