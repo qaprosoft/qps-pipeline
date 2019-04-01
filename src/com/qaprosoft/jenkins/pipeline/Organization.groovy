@@ -111,12 +111,12 @@ class Organization {
                 }
             }
         }
-        logger.info(token.dump())
-//        if(!isParamEmpty(token)){
-//            logger.info("User already has associated token.")
-//            return
-//        }
-        return Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, tokenName).jsonObject.data
+        if(isParamEmpty(token)){
+            token = Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, tokenName).jsonObject.data
+        }
+        def tokenStats = token.tokenStats.SingleTokenStats.getNumDaysUse()
+        logger.info(tokenStats.dump())
+        return token
     }
 
     def createJenkinsUser(userName){
