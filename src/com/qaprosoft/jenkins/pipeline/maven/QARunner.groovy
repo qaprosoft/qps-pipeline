@@ -968,11 +968,15 @@ public class QARunner extends AbstractRunner {
         // devicePool:Samsung Galaxy S8, platform: ANDROID, platformVersion: 9, deviceBrowser: chrome
         
         for (def config : jenkinsPipelineBrowsers.split(",")) {
+            if (config == null) {
+                logger.warn("Supported config data is NULL!")
+                continue;
+            }
             config = config.trim()
-            logger.info("config: " + config)
-            def name = config.split(":")[0]
+            //TODO: handle NPE for trim operations
+            def name = config.split(":")[0].trim()
             logger.info("name: " + name)
-            def value = config.split(":")[1]
+            def value = config.split(":")[1].trim()
             logger.info("value: " + value)
             valuesMap[name] = value
         }
