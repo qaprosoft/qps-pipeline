@@ -105,15 +105,18 @@ class Organization {
     def generateAPIToken(userName){
         def tokenName = userName + '_token'
         def user = User.getById(userName, false)
-        def token = user.getAllProperties().find { apiTokenProperty ->
-            if(apiTokenProperty instanceof ApiTokenProperty){
-                apiTokenProperty.getTokenList().find { token ->
-                    logger.info(token.dump())
-                    tokenName.equals(token.name)
-                }
-            }
+        def apiTokenProperty = user.getAllProperties().find {
+            it instanceof ApiTokenProperty
         }
-        logger.info(token.dump())
+        if(apiTokenProperty){
+            def token = apiTokenProperty.getTokenList().find { token ->
+                logger.info(token.dump())
+                tokenName.equals(token.name)
+            }
+            logger.info(token.dump())
+        }
+
+
         if(isParamEmpty(token)){
             token = Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, tokenName).jsonObject.data
         }
