@@ -889,11 +889,12 @@ public class QARunner extends AbstractRunner {
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
-                    for (def supportedBrowser : supportedBrowsers.split(",")) {
+                    for (def supportedBrowser : supportedBrowsers.split(";")) {
+                        supportedBrowser = supportedBrowser.trim()
                         /* supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
                            supportedBrowser - splitted single browser name from supportedBrowsers
                            currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
-                        Map supportedBrowserValues = getSupportedBrowserValues(currentBrowser, supportedBrowser)
+                        Map supportedConfigurations = getSupportedConfigurations()
                         if (!currentBrowser.equals(supportedBrowser) && !isParamEmpty(currentBrowser)) {
                             logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
                             continue
@@ -901,7 +902,7 @@ public class QARunner extends AbstractRunner {
                         def pipelineMap = [:]
                         // put all not NULL args into the pipelineMap for execution
                         putMap(pipelineMap, pipelineLocaleMap)
-                        putMap(pipelineMap, supportedBrowserValues)
+                        putMap(pipelineMap, supportedConfigurations)
                         pipelineMap.put("name", regressionPipeline)
                         pipelineMap.put("branch", Configuration.get("branch"))
                         pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
@@ -957,30 +958,20 @@ public class QARunner extends AbstractRunner {
         listPipelines.add(pipelineMap)
     }
 
-    protected getSupportedBrowserValues(currentBrowser, supportedBrowser){
+    protected getSupportedConfigurations(jenkinsPipelineBrowsers){
         def valuesMap = [:]
-        def browser = currentBrowser
-        def browserVersion = ""
-        def os = ""
-        def osVersion = ""
-
-        String browserInfo = supportedBrowser
-        if (supportedBrowser.contains("-")) {
-            def systemInfoArray = supportedBrowser.split("-")
-            String osInfo = systemInfoArray[0]
-            os = OS.getName(osInfo)
-            osVersion = OS.getVersion(osInfo)
-            browserInfo = systemInfoArray[1]
+        // browser: chrome; browser: firefox;
+        // browser: chrome, browser_version: 74;
+        // os:Windows, os_version:10, browser:chrome, browser_version:72;
+        // device:Samsung Galaxy S8, os_version:7.0
+        // devicePool:Samsung Galaxy S8, platform: ANDROID, platformVersion: 9, deviceBrowser: chrome
+        
+        for (def config : jenkinsPipelineBrowsers.split(",")) {
+            config = config.trim()
+            def name = config.split(":")[0]
+            def value = config.split(":")[1]
+            valuesMap[name] = value
         }
-        def browserInfoArray = browserInfo.split(" ")
-        browser = browserInfoArray[0]
-        if (browserInfoArray.size() > 1) {
-            browserVersion = browserInfoArray[1]
-        }
-        valuesMap.browser = browser
-        valuesMap.browser_version = browserVersion
-        valuesMap.os = os
-        valuesMap.os_version = osVersion
         return valuesMap
     }
 
