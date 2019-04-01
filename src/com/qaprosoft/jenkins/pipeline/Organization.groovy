@@ -64,10 +64,10 @@ class Organization {
         grantUserBaseGlobalPermissions(userName)
         setUserFolderPermissions(organization, userName)
         def token = getAPIToken(userName)
-        logger.info(token.dump())
-//        if(!isParamEmpty(token)){
+        if(token != null){
+            logger.info(token.dump())
 //            registerTokenInZafira(userName, token.tokenValue)
-//        }
+        }
     }
 
     protected def createLauncher(build){
