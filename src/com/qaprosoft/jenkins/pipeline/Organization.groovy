@@ -66,9 +66,9 @@ class Organization {
         grantUserBaseGlobalPermissions(userName)
         setUserFolderPermissions(organization, userName)
         def token = generateAPIToken(userName)
-        if(!isParamEmpty(token)){
-            registerTokenInZafira(userName, token.tokenValue)
-        }
+//        if(!isParamEmpty(token)){
+//            registerTokenInZafira(userName, token.tokenValue)
+//        }
     }
 
     protected def createLauncher(build){
@@ -107,8 +107,8 @@ class Organization {
             it instanceof ApiTokenProperty
         }
         def tokenStore = token.getTokenStore()
-        ApiTokenStore.HashedToken existingLegacyToken = tokenStore.getLegacyToken()
-        logger.info(existingLegacyToken)
+//        ApiTokenStore.HashedToken existingLegacyToken = tokenStore.getLegacyToken()
+        logger.info("token_list: ", token.getTokenList())
 //        if(!isParamEmpty(token)){
 //            logger.info("User already has associated token.")
 //            return
