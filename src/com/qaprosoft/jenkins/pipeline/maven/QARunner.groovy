@@ -1035,6 +1035,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def getStageName(jobParams) {
+        // Put into this nethod all unique pipeline stage params otherwise less jobs then needed are launched!
         def stageName = ""
         String jobName = jobParams.get("jobName")
         String env = jobParams.get("env")
@@ -1043,6 +1044,7 @@ public class QARunner extends AbstractRunner {
         
         String browser = jobParams.get("browser")
         String browser_version = jobParams.get("browser_version")
+        String screenResolution = jobParams.get("capabilities.screenResolution")
         String locale = jobParams.get("locale")
         if (!isParamEmpty(jobName)) {
             stageName += "Stage: ${jobName} "
@@ -1061,6 +1063,10 @@ public class QARunner extends AbstractRunner {
         }
         if (!isParamEmpty(browser_version)) {
             stageName += "Browser version: ${browser_version} "
+        }
+        
+        if (!isParamEmpty(screenResolution)) {
+            stageName += "Resolution: ${screenResolution} "
         }
         
         if (!isParamEmpty(locale) && multilingualMode) {
