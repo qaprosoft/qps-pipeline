@@ -65,8 +65,7 @@ class Organization {
         setUserFolderPermissions(organization, userName)
         def token = getAPIToken(userName)
         if(token != null){
-            logger.info(token.dump())
-//            registerTokenInZafira(userName, token.tokenValue)
+            registerTokenInZafira(userName, token.tokenValue)
         }
     }
 
