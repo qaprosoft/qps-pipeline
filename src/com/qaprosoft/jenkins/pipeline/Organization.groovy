@@ -96,7 +96,9 @@ class Organization {
             }  else {
                 value = parameterDefinition.defaultValue
             }
-            parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
+            if(!(parameterDefinition instanceof WHideParameterDefinition)) {
+                parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
+            }
         }
         return parameters
     }
