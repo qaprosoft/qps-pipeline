@@ -105,11 +105,11 @@ class Organization {
     def generateAPIToken(userName){
         def tokenName = userName + '_token'
         def user = User.getById(userName, false)
-        def token = user.getAllProperties().find {
-            if(it instanceof ApiTokenProperty){
-                it.getTokenList().find {
-                    logger.info(it.dump())
-                    tokenName.equals(it.name)
+        def token = user.getAllProperties().find { apiTokenProperty ->
+            if(apiTokenProperty instanceof ApiTokenProperty){
+                apiTokenProperty.getTokenList().find { token ->
+                    logger.info(token.dump())
+                    tokenName.equals(token.name)
                 }
             }
         }
