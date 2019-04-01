@@ -116,9 +116,7 @@ class Organization {
         } else {
             token = Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, tokenName).jsonObject.data
         }
-        def tokenStats = ApiTokenStats.SingleTokenStats.findTokenStatsById(token.uuid)
-//        def tokenStats = token.tokenStats.SingleTokenStats.getNumDaysUse()
-        logger.info(tokenStats.dump())
+        logger.info(token.dump())
         return token
     }
 
