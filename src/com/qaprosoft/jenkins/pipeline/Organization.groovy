@@ -113,6 +113,7 @@ class Organization {
                 }
             }
         }
+        logger.info(token.dump())
         if(isParamEmpty(token)){
             token = Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, tokenName).jsonObject.data
         }
