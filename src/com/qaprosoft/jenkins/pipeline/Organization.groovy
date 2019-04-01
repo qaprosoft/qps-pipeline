@@ -48,7 +48,7 @@ class Organization {
                 prepare()
                 repository.register()
                 createLauncher(getLatestOnPushBuild())
-//                setSecurity()
+                setSecurity()
                 clean()
             }
         }
@@ -102,21 +102,21 @@ class Organization {
     }
 
     def generateAPIToken(userName){
+        def tokenName = userName + '_token'
         def user = User.getById(userName, false)
         def token = user.getAllProperties().find {
-            it instanceof ApiTokenProperty
+            if(it instanceof ApiTokenProperty){
+                it.getTokenList().find {
+                    tokenName.equals(it.name)
+                }
+            }
         }
-        def tokenStore = token.getTokenStore()
-//        ApiTokenStore.HashedToken existingLegacyToken = tokenStore.getLegacyToken()
-        token.getTokenList().each {
-            logger.info(it.dump())
-        }
-
+        logger.info(token.dump())
 //        if(!isParamEmpty(token)){
 //            logger.info("User already has associated token.")
 //            return
 //        }
-        return Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, userName + '_token').jsonObject.data
+        return Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, tokenName).jsonObject.data
     }
 
     def createJenkinsUser(userName){
