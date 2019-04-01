@@ -969,10 +969,14 @@ public class QARunner extends AbstractRunner {
         
         for (def config : jenkinsPipelineBrowsers.split(",")) {
             config = config.trim()
+            logger.info("config: " + config)
             def name = config.split(":")[0]
+            logger.info("name: " + name)
             def value = config.split(":")[1]
+            logger.info("value: " + value)
             valuesMap[name] = value
         }
+        logger.info("valuesMap: " + valuesMap.dump())
         return valuesMap
     }
 
