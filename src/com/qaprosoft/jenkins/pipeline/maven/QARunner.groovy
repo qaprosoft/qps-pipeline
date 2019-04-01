@@ -959,7 +959,7 @@ public class QARunner extends AbstractRunner {
         listPipelines.add(pipelineMap)
     }
 
-    protected getSupportedConfigurations(jenkinsPipelineBrowsers){
+    protected getSupportedConfigurations(configDetails){
         def valuesMap = [:]
         // browser: chrome; browser: firefox;
         // browser: chrome, browser_version: 74;
@@ -967,7 +967,7 @@ public class QARunner extends AbstractRunner {
         // device:Samsung Galaxy S8, os_version:7.0
         // devicePool:Samsung Galaxy S8, platform: ANDROID, platformVersion: 9, deviceBrowser: chrome
         
-        for (def config : jenkinsPipelineBrowsers.split(",")) {
+        for (def config : configDetails.split(",")) {
             if (config == null) {
                 logger.warn("Supported config data is NULL!")
                 continue;
@@ -980,7 +980,7 @@ public class QARunner extends AbstractRunner {
             logger.info("value: " + value)
             valuesMap[name] = value
         }
-        logger.info("valuesMap: " + valuesMap.dump())
+        logger.info("valuesMap: " + valuesMap)
         return valuesMap
     }
 
@@ -1034,7 +1034,11 @@ public class QARunner extends AbstractRunner {
         def stageName = ""
         String jobName = jobParams.get("jobName")
         String env = jobParams.get("env")
+        String devicePool = jobParams.get("devicePool")
+        String deviceBrowser = jobParams.get("deviceBrowser")
+        
         String browser = jobParams.get("browser")
+        String browser_version = jobParams.get("browser_version")
         String locale = jobParams.get("locale")
         if (!isParamEmpty(jobName)) {
             stageName += "Stage: ${jobName} "
@@ -1042,9 +1046,19 @@ public class QARunner extends AbstractRunner {
         if (!isParamEmpty(env)) {
             stageName += "Environment: ${env} "
         }
+        if (!isParamEmpty(devicePool)) {
+            stageName += "Device: ${devicePool} "
+        }
+        if (!isParamEmpty(deviceBrowser)) {
+            stageName += "Browser: ${deviceBrowser} "
+        }
         if (!isParamEmpty(browser)) {
             stageName += "Browser: ${browser} "
         }
+        if (!isParamEmpty(browser_version)) {
+            stageName += "Browser version: ${browser_version} "
+        }
+        
         if (!isParamEmpty(locale) && multilingualMode) {
             stageName += "Locale: ${locale} "
         }
