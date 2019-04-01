@@ -891,6 +891,7 @@ public class QARunner extends AbstractRunner {
                     }
                     for (def supportedBrowser : supportedBrowsers.split(";")) {
                         supportedBrowser = supportedBrowser.trim()
+                        logger.info("supportedConfig: ${supportedBrowser}")
                         /* supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
                            supportedBrowser - splitted single browser name from supportedBrowsers
                            currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
