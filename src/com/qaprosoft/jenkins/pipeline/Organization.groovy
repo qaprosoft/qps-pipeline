@@ -96,7 +96,8 @@ class Organization {
             }  else {
                 value = parameterDefinition.defaultValue
             }
-            if(!(parameterDefinition instanceof WHideParameterDefinition) || !parameterDefinition.name.equals("ci_run_id")) {
+            if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")) {
+                logger.info(parameterDefinition.name)
                 parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
             }
         }
