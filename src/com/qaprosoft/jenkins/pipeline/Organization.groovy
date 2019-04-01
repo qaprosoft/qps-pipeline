@@ -8,10 +8,7 @@ import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixPropert
 import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import jenkins.security.ApiTokenProperty
-import jenkins.security.apitoken.ApiTokenStore
-import jenkins.security.apitoken.ApiTokenStats
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
-import java.nio.file.Paths
 
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -66,7 +63,8 @@ class Organization {
         createJenkinsUser(userName)
         grantUserBaseGlobalPermissions(userName)
         setUserFolderPermissions(organization, userName)
-        def token = generateAPIToken(userName)
+        def token = getAPIToken(userName)
+        logger.info(token.dump())
 //        if(!isParamEmpty(token)){
 //            registerTokenInZafira(userName, token.tokenValue)
 //        }
@@ -102,7 +100,7 @@ class Organization {
         return parameters
     }
 
-    def generateAPIToken(userName){
+    def getAPIToken(userName){
         def token
         def tokenName = userName + '_token'
         def user = User.getById(userName, false)
@@ -116,7 +114,6 @@ class Organization {
         } else {
             token = Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, tokenName).jsonObject.data
         }
-        logger.info(token.dump())
         return token
     }
 
