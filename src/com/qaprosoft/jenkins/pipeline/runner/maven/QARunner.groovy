@@ -332,7 +332,6 @@ public class QARunner extends AbstractRunner {
                 //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
                 def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
                 registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
-
                 //cron job
                 if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
                     def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
