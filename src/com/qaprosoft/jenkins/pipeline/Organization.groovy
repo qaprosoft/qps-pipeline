@@ -107,11 +107,10 @@ class Organization {
         def apiTokenProperty = user.getAllProperties().find {
             it instanceof ApiTokenProperty
         }
-        if(apiTokenProperty){
-            token = apiTokenProperty.getTokenList().find {
-                tokenName.equals(it.name)
-            }
-        } else {
+        token = apiTokenProperty?.getTokenList()?.find {
+            tokenName.equals(it.name)
+        }
+        if (!token) {
             token = Jenkins.instance.getDescriptorByType(ApiTokenProperty.DescriptorImpl.class).doGenerateNewToken(user, tokenName).jsonObject.data
         }
         return token
