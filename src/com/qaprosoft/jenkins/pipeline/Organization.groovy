@@ -48,7 +48,7 @@ class Organization {
                 prepare()
                 repository.register()
                 createLauncher(getLatestOnPushBuild())
-                setSecurity()
+//                setSecurity()
                 clean()
             }
         }
