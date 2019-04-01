@@ -26,7 +26,7 @@ public class LauncherJobFactory extends PipelineFactory {
 			parameters {
 				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "GitHub repository branch to run against", "master")
 				configure stringParam('suite', 'api', "TestNG suite file name (without \".xml\" extension)")
-				configure stringParam('overrideFields', '-Dplatform=API -Dthread_count=5' , "Custom parameters to run job with")
+				configure stringParam('overrideFields', 'platform=API,xthread_count=5' , "Custom parameters to run job with")
 				configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
 				configure addHiddenParameter('queue_registration', '', "false")
 			}
