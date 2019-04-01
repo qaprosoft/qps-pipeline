@@ -108,7 +108,10 @@ class Organization {
         }
         def tokenStore = token.getTokenStore()
 //        ApiTokenStore.HashedToken existingLegacyToken = tokenStore.getLegacyToken()
-        logger.info("token_list: ", token.getTokenList().dump())
+        token.getTokenList().each {
+            logger.info(it.dump())
+        }
+
 //        if(!isParamEmpty(token)){
 //            logger.info("User already has associated token.")
 //            return
