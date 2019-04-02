@@ -45,7 +45,8 @@ class Organization {
             context.timestamps {
                 prepare()
                 repository.register()
-                createLauncher(getLatestOnPushBuild())
+                createLaunchers(getLatestOnPushBuild())
+                createSystemLaunchers()
                 if(securityEnabled){
                     setSecurity()
                 }
@@ -71,15 +72,9 @@ class Organization {
         }
     }
 
-    protected def createLauncher(build){
+    protected def createLaunchers(build){
         build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
-            String separator = "/job/"
-            String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split(separator)[0]
-            job.jobName.split("/").each {
-                jenkinsUrl += separator + it
-            }
-            def parameters = getParametersMap(job.jobName)
-            zafiraUpdater.createLauncher(parameters, jenkinsUrl, repo)
+            generateLauncher(job)
         }
     }
 
@@ -102,6 +97,29 @@ class Organization {
             }
         }
         return parameters
+    }
+
+    protected def createSystemLaunchers(){
+        context.currentBuild.rawBuild.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
+            if(job.jobName.contains("onPush") || job.jobName.contains("Launcher")){
+                generateLauncher(job)
+            }
+        }
+    }
+
+    protected def generateLauncher(job){
+        def jobUrl = getJobUrl(job)
+        def parameters = getParametersMap(job.jobName)
+        zafiraUpdater.createLauncher(parameters, jobUrl, repo)
+    }
+
+    protected def getJobUrl(job){
+        String separator = "/job/"
+        String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split(separator)[0]
+        job.jobName.split("/").each {
+            jenkinsUrl += separator + it
+        }
+        return jenkinsUrl
     }
 
     protected def getAPIToken(userName){
