@@ -406,6 +406,7 @@ public class QARunner extends AbstractRunner {
     protected def generateLauncher(job){
         def jobUrl = getJobUrl(job)
         def parameters = getParametersMap(job.jobName)
+        def repo = Configuration.get("repo")
         zafiraUpdater.createLauncher(parameters, jobUrl, repo)
     }
 
