@@ -206,6 +206,15 @@ public class Executor {
         return failureLog
     }
 
+    static def getJobUrl(job){
+        String separator = "/job/"
+        String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split(separator)[0]
+        job.jobName.split("/").each {
+            jenkinsUrl += separator + it
+        }
+        return jenkinsUrl
+    }
+
     static String getBuildUser(currentBuild) {
         try {
             return currentBuild.rawBuild.getCause(hudson.model.Cause.UserIdCause).getUserId()

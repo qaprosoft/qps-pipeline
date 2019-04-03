@@ -45,7 +45,6 @@ class Organization {
             context.timestamps {
                 prepare()
                 repository.register()
-                createLaunchers(getLatestOnPushBuild())
                 createSystemJobs()
                 if(securityEnabled){
                     setSecurity()
@@ -72,54 +71,12 @@ class Organization {
         }
     }
 
-    protected def createLaunchers(build){
-        build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
-            generateLauncher(job)
-        }
-    }
-
-    protected def getParametersMap(jobName) {
-        def job = Jenkins.instance.getItemByFullName(jobName)
-        def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
-        Map parameters = [:]
-        parameterDefinitions.each { parameterDefinition ->
-            def value
-            if(parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
-                value = parameterDefinition.choiceListProvider.getDefaultChoice()
-            } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
-                value = parameterDefinition.choices[0]
-            }  else {
-                value = parameterDefinition.defaultValue
-            }
-            if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")) {
-                logger.info(parameterDefinition.name)
-                parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
-            }
-        }
-        return parameters
-    }
-
     protected def createSystemJobs(){
         context.currentBuild.rawBuild.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
             if(job.jobName.contains("onPush") || job.jobName.contains("Launcher")){
                 zafiraUpdater.createJob(getJobUrl(job))
             }
         }
-    }
-
-    protected def generateLauncher(job){
-        def jobUrl = getJobUrl(job)
-        def parameters = getParametersMap(job.jobName)
-        zafiraUpdater.createLauncher(parameters, jobUrl, repo)
-    }
-
-    protected def getJobUrl(job){
-        String separator = "/job/"
-        String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split(separator)[0]
-        job.jobName.split("/").each {
-            jenkinsUrl += separator + it
-        }
-        return jenkinsUrl
     }
 
     protected def getAPIToken(userName){
