@@ -46,7 +46,7 @@ class Organization {
                 prepare()
                 repository.register()
                 createLaunchers(getLatestOnPushBuild())
-                createSystemLaunchers()
+                createSystemJobs()
                 if(securityEnabled){
                     setSecurity()
                 }
@@ -99,10 +99,10 @@ class Organization {
         return parameters
     }
 
-    protected def createSystemLaunchers(){
+    protected def createSystemJobs(){
         context.currentBuild.rawBuild.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
             if(job.jobName.contains("onPush") || job.jobName.contains("Launcher")){
-                generateLauncher(job)
+                zafiraUpdater.createJob(getJobUrl(job))
             }
         }
     }
