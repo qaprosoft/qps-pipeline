@@ -164,13 +164,30 @@ class ZafiraClient extends HttpClient{
 				jobUrl: jobUrl,
 				repo: repo
 
-		logger.info("RQST: " + jsonBuilder.toString())
+		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
 						  requestBody: "${jsonBuilder}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/launchers/job"]
+		return sendRequestFormatted(parameters)
+	}
+
+	public def createJob(jobUrl) {
+		if (isTokenExpired()) {
+			getZafiraAuthToken(refreshToken)
+		}
+		JsonBuilder jsonBuilder = new JsonBuilder()
+		jsonBuilder jobUrlValue: jobUrl
+		
+		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
+		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
+						  contentType: 'APPLICATION_JSON',
+						  httpMode: 'POST',
+						  requestBody: "${jsonBuilder}",
+						  validResponseCodes: "200:401",
+						  url: this.serviceURL + "/api/jobs/url"]
 		return sendRequestFormatted(parameters)
 	}
 
@@ -192,7 +209,7 @@ class ZafiraClient extends HttpClient{
 		}
 		JsonBuilder jsonBuilder = new JsonBuilder(jenkinsSettingsList)
 
-		logger.info("RQST: " + jsonBuilder.toString())
+		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'PUT',
