@@ -22,6 +22,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import com.wangyin.parameter.WHideParameterDefinition
+import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 
 @Grab('org.testng:testng:6.8.8')
 
