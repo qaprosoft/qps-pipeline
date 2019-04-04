@@ -7,7 +7,6 @@ import static com.qaprosoft.jenkins.Utils.*
 import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
 import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
-import com.qaprosoft.jenkins.pipeline.runner.browserstack.BrowserStackOS
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
