@@ -8,6 +8,9 @@ import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixPropert
 import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jenkins.security.ApiTokenProperty
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
+import com.wangyin.parameter.WHideParameterDefinition
+import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
+
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
@@ -71,10 +74,40 @@ class Organization {
 
     protected def createSystemJobs(){
         context.currentBuild.rawBuild.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
-            if(job.jobName.contains("onPush") || job.jobName.contains("Launcher")){
+            if(job.jobName.contains("Launcher")){
                 zafiraUpdater.createJob(getJobUrl(job))
+            } else if (job.jobName.contains("onPush")){
+                generateLauncher(job)
             }
         }
+    }
+
+    protected def generateLauncher(job){
+        def jobUrl = getJobUrl(job)
+        def parameters = getParametersMap(job.jobName)
+        def repo = Configuration.get("repo")
+        zafiraUpdater.createLauncher(parameters, jobUrl, repo)
+    }
+
+    protected def getParametersMap(jobName) {
+        def job = Jenkins.instance.getItemByFullName(jobName)
+        def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
+        Map parameters = [:]
+        parameterDefinitions.each { parameterDefinition ->
+            def value
+            if(parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
+                value = parameterDefinition.choiceListProvider.getDefaultChoice()
+            } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
+                value = parameterDefinition.choices[0]
+            }  else {
+                value = parameterDefinition.defaultValue
+            }
+            if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")) {
+                logger.info(parameterDefinition.name)
+                parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
+            }
+        }
+        return parameters
     }
 
     protected def getAPIToken(userName){
