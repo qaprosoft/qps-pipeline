@@ -1,17 +1,17 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.Logger
-
+import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.scm.ISCM
-import com.qaprosoft.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import groovy.json.JsonOutput
 
-import static com.qaprosoft.Utils.*
+import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Repository {
@@ -20,8 +20,10 @@ class Repository {
     protected ISCM scmClient
     protected Logger logger
     protected Configuration configuration = new Configuration(context)
-    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/jobdsl/Factory.groovy"
+    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
     protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
+	protected def pipelineLibrary
+	protected def runnerClass
 
 	protected Map dslObjects = new LinkedHashMap()
 
@@ -30,6 +32,8 @@ class Repository {
         //TODO: howto register repository not at github?
         scmClient = new GitHub(context)
         logger = new Logger(context)
+		pipelineLibrary = Configuration.get("pipelineLibrary")
+		runnerClass =  Configuration.get("runnerClass")
     }
 
 	public void register() {
@@ -122,7 +126,7 @@ class Repository {
 					"- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
 			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl))
-
+			registerObject("launcher_job", new LauncherJobFactory(repoFolder, getPipelineScript(), "Launcher", "Custom job launcher"))
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
@@ -143,9 +147,6 @@ class Repository {
 
 
 	private String getOnPullRequestScript() {
-		def pipelineLibrary = Configuration.get("pipelineLibrary")
-		def runnerClass = Configuration.get("runnerClass")
-
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
         } else {
@@ -154,14 +155,19 @@ class Repository {
 	}
 
 	private String getOnPushScript() {
-		def pipelineLibrary = Configuration.get("pipelineLibrary")
-		def runnerClass = Configuration.get("runnerClass")
-
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
         }
+	}
+
+	protected String getPipelineScript() {
+		if ("QPS-Pipeline".equals(pipelineLibrary)) {
+			return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+		} else {
+			return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+		}
 	}
 
     private void registerObject(name, object) {
