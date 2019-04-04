@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins
 
+import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.Utils
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 

@@ -147,10 +147,8 @@ public class Configuration {
 
 		//3. Replace vars and/or params with overrideFields values
 		def overriddenFieldValues = params.get("overrideFields")
-		context.println("overrideFields: " + overriddenFieldValues)
 		if(overriddenFieldValues){
 			for(value in overriddenFieldValues.split(",")){
-				context.println(value)
 				def keyValueArray = value.trim().split("=")
 				if(keyValueArray.size() > 1){
 					def parameterName = keyValueArray[0]
