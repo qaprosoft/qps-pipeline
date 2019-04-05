@@ -1028,10 +1028,9 @@ public class QARunner extends AbstractRunner {
                 continue;
             }
             config = config.trim()
-            //TODO: handle NPE for trim operations
-            def name = config.split(":")[0].trim()
+            def name = config.split(":")[0]?.trim()
             logger.info("name: " + name)
-            def value = config.split(":")[1].trim()
+            def value = config.split(":")[1]?.trim()
             logger.info("value: " + value)
             valuesMap[name] = value
         }
