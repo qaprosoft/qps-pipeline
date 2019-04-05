@@ -1021,13 +1021,11 @@ public class QARunner extends AbstractRunner {
         // os:Windows, os_version:10, browser:chrome, browser_version:72;
         // device:Samsung Galaxy S8, os_version:7.0
         // devicePool:Samsung Galaxy S8, platform: ANDROID, platformVersion: 9, deviceBrowser: chrome
-
         for (def config : configDetails.split(",")) {
-            if (config == null) {
+            if (isParamEmpty(config)) {
                 logger.warn("Supported config data is NULL!")
-                continue;
+                continue
             }
-            config = config.trim()
             def name = config.split(":")[0]?.trim()
             logger.info("name: " + name)
             def value = config.split(":")[1]?.trim()
