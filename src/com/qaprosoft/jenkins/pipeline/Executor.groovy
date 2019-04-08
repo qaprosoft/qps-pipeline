@@ -70,13 +70,17 @@ public class Executor {
     static def updateJenkinsCredentials(id, description, user, password) {
         if(!isParamEmpty(password) && !isParamEmpty(user)){
             def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
-            credentialsStore.getCredentials(Domain.global()).each {
-                if(it.id.equals(id.toString())) {
-                    credentialsStore.removeCredentials(Domain.global(), it)
-                }
+            if(getCredentials(id)){
+                credentialsStore.removeCredentials(Domain.global(), it)
             }
             Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
             return credentialsStore.addCredentials(Domain.global(), c)
+        }
+    }
+
+    static def getCredentials(id) {
+        return SystemCredentialsProvider.getInstance().getStore().getCredentials(Domain.global()).find {
+            it.id.equals(id.toString())
         }
     }
 
