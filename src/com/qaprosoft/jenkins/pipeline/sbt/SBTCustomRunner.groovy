@@ -51,6 +51,7 @@ class SBTCustomRunner extends AbstractRunner {
                     throw e
                 } finally {
                     publishJenkinsReports()
+                    publishResultsInSlack()
                     clean()
                 }
             }
@@ -72,6 +73,11 @@ class SBTCustomRunner extends AbstractRunner {
         context.stage('Results') {
             context.zip archive: true, dir: 'comparasionReports', glob: '', zipFile: randomCompareArchiveName
         }
+    }
+
+
+    protected void publishResultsInSlack() {
+        context.build job: 'loadTesting/Publish-Compare-Report-Results-To-Slack', wait: false
     }
 
     protected void clean() {
