@@ -183,7 +183,7 @@ class Repository {
         context.stage("Register Credentials") {
             def user = Configuration.get("user")
             def token = Configuration.get("token")
-            def jenkinsUser = !isParamEmpty(Configuration.get("jenkins_user")) ? Configuration.get("jenkins_user") : Configuration.get("BUILD_USER_ID")
+            def jenkinsUser = !isParamEmpty(Configuration.get("jenkins_user")) ? Configuration.get("jenkins_user") : getBuildUser(context.currentBuild)
             if(updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHun token", user, token)){
                 logger.info(jenkinsUser + " credentials were successfully added.")
             } else {
