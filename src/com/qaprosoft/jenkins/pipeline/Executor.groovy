@@ -76,7 +76,7 @@ public class Executor {
                 }
             }
             Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
-            credentialsStore.addCredentials(Domain.global(), c)
+            return credentialsStore.addCredentials(Domain.global(), c)
         }
     }
 
