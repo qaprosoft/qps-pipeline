@@ -184,7 +184,11 @@ class Repository {
             def user = Configuration.get("user")
             def token = Configuration.get("token")
             def jenkinsUser = !isParamEmpty(Configuration.get("jenkins_user")) ? Configuration.get("jenkins_user") : Configuration.get("BUILD_USER_ID")
-            updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHun token", user, token)
+            if(updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHun token", user, token)){
+                logger.info(user + " credentials were succesfully added.")
+            } else {
+                logger.info("No user or token was provided.")
+            }
         }
     }
 }
