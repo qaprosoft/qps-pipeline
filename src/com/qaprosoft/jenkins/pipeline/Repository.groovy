@@ -179,4 +179,12 @@ class Repository {
         dslObjects.put(name, object)
     }
 
+    public def registerCredentials(){
+        context.stage("Register Credentials") {
+            def user = Configuration.get("user")
+            def token = Configuration.get("token")
+            def jenkinsUser = !isParamEmpty(Configuration.get("jenkins_user")) ? Configuration.get("jenkins_user") : Configuration.get("BUILD_USER_ID")
+            updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHun token", user, token)
+        }
+    }
 }

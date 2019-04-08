@@ -68,7 +68,7 @@ public class Executor {
     }
 
     static def updateJenkinsCredentials(id, description, user, password) {
-        if(!isParamEmpty(password)){
+        if(!isParamEmpty(password) && !isParamEmpty(user)){
             def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
             credentialsStore.getCredentials(Domain.global()).each {
                 if(it.id.equals(id.toString())) {
