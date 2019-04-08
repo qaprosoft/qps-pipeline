@@ -70,8 +70,9 @@ public class Executor {
     static def updateJenkinsCredentials(id, description, user, password) {
         if(!isParamEmpty(password) && !isParamEmpty(user)){
             def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
-            if(getCredentials(id)){
-                credentialsStore.removeCredentials(Domain.global(), it)
+            def credentials = getCredentials(id)
+            if(credentials){
+                credentialsStore.removeCredentials(Domain.global(), credentials)
             }
             Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
             return credentialsStore.addCredentials(Domain.global(), c)
