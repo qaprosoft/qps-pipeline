@@ -1,18 +1,23 @@
-package com.qaprosoft.jenkins.pipeline.sbt
+package com.qaprosoft.jenkins.pipeline.runner.sbt
 
-import com.qaprosoft.Utils
+import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.AbstractRunner
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 import java.util.Date
 import groovy.transform.InheritConstructors
 import java.text.SimpleDateFormat
 
 
 @InheritConstructors
-class SBTSimpleRunner extends AbstractRunner {
+class SBTCustomRunner extends AbstractRunner {
 
-    public SBTSimpleRunner(context) {
+    def date = new Date()
+    def sdf = new SimpleDateFormat("yyyyMMddHHmmss")
+    String curDate = sdf.format(date)
+    String randomCompareArchiveName = "loadTestingReports" + curDate + ".zip"
+
+    public SBTCustomRunner(context) {
         super(context)
         scmClient = new GitHub(context)
     }
@@ -45,6 +50,8 @@ class SBTSimpleRunner extends AbstractRunner {
                     logger.error(Utils.printStackTrace(e))
                     throw e
                 } finally {
+                    publishJenkinsReports()
+                    publishResultsInSlack()
                     clean()
                 }
             }
@@ -61,6 +68,17 @@ class SBTSimpleRunner extends AbstractRunner {
         //TODO: implement in future
     }
 
+
+    protected void publishJenkinsReports() {
+        context.stage('Results') {
+            context.zip archive: true, dir: 'comparasionReports', glob: '', zipFile: randomCompareArchiveName
+        }
+    }
+
+
+    protected void publishResultsInSlack() {
+        context.build job: 'loadTesting/Publish-Compare-Report-Results-To-Slack', wait: false
+    }
 
     protected void clean() {
         context.stage('Wipe out Workspace') {
