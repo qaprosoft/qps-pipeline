@@ -171,7 +171,7 @@ class ZafiraClient extends HttpClient{
 						  httpMode: 'POST',
 						  requestBody: "${jsonBuilder}",
 						  validResponseCodes: "200:401",
-						  url: this.serviceURL + "/api/launchers/job"]
+						  url: this.serviceURL + "/api/launchers/create"]
 		return sendRequestFormatted(parameters)
 	}
 
