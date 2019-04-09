@@ -16,28 +16,28 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Repository {
 
-    def context
-    protected ISCM scmClient
-    protected Logger logger
-    protected Configuration configuration = new Configuration(context)
-    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
-    protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
+	def context
+	protected ISCM scmClient
+	protected Logger logger
+	protected Configuration configuration = new Configuration(context)
+	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
+	protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 	protected def pipelineLibrary
 	protected def runnerClass
 
 	protected Map dslObjects = new LinkedHashMap()
 
-    public Repository(context) {
-        this.context = context
-        //TODO: howto register repository not at github?
-        scmClient = new GitHub(context)
-        logger = new Logger(context)
+	public Repository(context) {
+		this.context = context
+		//TODO: howto register repository not at github?
+		scmClient = new GitHub(context)
+		logger = new Logger(context)
 		pipelineLibrary = Configuration.get("pipelineLibrary")
 		runnerClass =  Configuration.get("runnerClass")
-    }
+	}
 
 	public void register() {
-        logger.info("Repository->register")
+		logger.info("Repository->register")
 
 		//create only high level management jobs.
 		context.node('master') {
@@ -131,35 +131,35 @@ class Repository {
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
 			context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
-				sandbox: true,
-				removedConfigFilesAction: 'IGNORE',
-				removedJobAction: 'IGNORE',
-				removedViewAction: 'IGNORE',
-				targets: FACTORY_TARGET,
-				ignoreExisting: false
+					sandbox: true,
+					removedConfigFilesAction: 'IGNORE',
+					removedJobAction: 'IGNORE',
+					removedViewAction: 'IGNORE',
+					targets: FACTORY_TARGET,
+					ignoreExisting: false
 
 		}
 	}
-	
+
 	private clean() {
 		context.stage('Wipe out Workspace') { context.deleteDir() }
 	}
 
 
 	private String getOnPullRequestScript() {
-        if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
-        } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
-        }
+		if ("QPS-Pipeline".equals(pipelineLibrary)) {
+			return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
+		} else {
+			return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
+		}
 	}
 
 	private String getOnPushScript() {
-        if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
-        } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
-        }
+		if ("QPS-Pipeline".equals(pipelineLibrary)) {
+			return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
+		} else {
+			return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
+		}
 	}
 
 	protected String getPipelineScript() {
@@ -170,25 +170,25 @@ class Repository {
 		}
 	}
 
-    private void registerObject(name, object) {
-        if (dslObjects.containsKey(name)) {
-            logger.warn("WARNING! key ${name} already defined and will be replaced!")
-            logger.info("Old Item: ${dslObjects.get(name).dump()}")
-            logger.info("New Item: ${object.dump()}")
-        }
-        dslObjects.put(name, object)
-    }
+	private void registerObject(name, object) {
+		if (dslObjects.containsKey(name)) {
+			logger.warn("WARNING! key ${name} already defined and will be replaced!")
+			logger.info("Old Item: ${dslObjects.get(name).dump()}")
+			logger.info("New Item: ${object.dump()}")
+		}
+		dslObjects.put(name, object)
+	}
 
-    public def registerCredentials(){
-        context.stage("Register Credentials") {
-            def user = Configuration.get("user")
-            def token = Configuration.get("token")
-            def jenkinsUser = !isParamEmpty(Configuration.get("jenkins_user")) ? Configuration.get("jenkins_user") : getBuildUser(context.currentBuild)
-            if(updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHub token", user, token)){
-                logger.info(jenkinsUser + " credentials were successfully registered.")
-            } else {
-                logger.info("No user or token was provided.")
-            }
-        }
-    }
+	public def registerCredentials(){
+		context.stage("Register Credentials") {
+			def user = Configuration.get("user")
+			def token = Configuration.get("token")
+			def jenkinsUser = !isParamEmpty(Configuration.get("jenkins_user")) ? Configuration.get("jenkins_user") : getBuildUser(context.currentBuild)
+			if(updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHub token", user, token)){
+				logger.info(jenkinsUser + " credentials were successfully registered.")
+			} else {
+				logger.info("No user or token was provided.")
+			}
+		}
+	}
 }
