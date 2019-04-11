@@ -140,7 +140,7 @@ public class Configuration {
 		// 2. Load all job parameters into unmodifiable map
 		def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
 		for (param in jobParams) {
-			if (param.value != null && param.value != '') {
+			if (param.value != null) {
 				params.put(param.name, param.value)
 			}
 		}
