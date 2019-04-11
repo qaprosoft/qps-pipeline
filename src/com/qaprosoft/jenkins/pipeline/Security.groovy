@@ -7,107 +7,46 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
 import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jenkins.security.ApiTokenProperty
-import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
-import com.wangyin.parameter.WHideParameterDefinition
-import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-class Organization {
+class Security {
 
-    def context
-    protected Repository repository
+    protected def context
     protected ISCM scmClient
     protected Logger logger
     protected ZafiraUpdater zafiraUpdater
-    protected def onlyUpdated = false
-    protected def currentBuild
-    protected def repo
-    protected def organization
-    protected def securityEnabled
-    protected Configuration configuration = new Configuration(context)
+    protected Configuration configuration
 
-    public Organization(context) {
+    public Security(context) {
         this.context = context
-        repository = new Repository(context)
         scmClient = new GitHub(context)
         logger = new Logger(context)
         zafiraUpdater = new ZafiraUpdater(context)
-        repo = Configuration.get("repo")
-        organization = Configuration.get("organization")
-        securityEnabled = Configuration.get("security_enabled")?.toBoolean()
-        currentBuild = context.currentBuild
+        configuration = new Configuration(context)
     }
 
     def register() {
-        logger.info("Organization->register")
+        logger.info("Security->enable")
         context.node('master') {
             context.timestamps {
                 prepare()
-                repository.register()
-                createSystemJobs()
-                if(securityEnabled){
-                    setSecurity()
-                }
+                setSecurity(Configuration.get("organization"))
                 clean()
             }
         }
     }
 
-    protected def getLatestOnPushBuild(){
-        def jobName = "${organization}/${repo}/onPush-${repo}"
-        def job = Jenkins.instance.getItemByFullName(jobName)
-        return job.getBuilds().get(0)
-    }
-
-    protected def setSecurity(){
+    protected def setSecurity(organization){
         def userName = organization + "-user"
         createJenkinsUser(userName)
-        grantUserBaseGlobalPermissions(userName)
-        setUserFolderPermissions(organization, userName)
+        grantUserGlobalPermissions(userName)
+        grantUserFolderPermissions(organization, userName)
         def token = getAPIToken(userName)
         if(token != null){
             registerTokenInZafira(userName, token.tokenValue, organization)
         }
-    }
-
-    protected def createSystemJobs(){
-        context.currentBuild.rawBuild.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
-            if(job.jobName.contains("Launcher")){
-                zafiraUpdater.createJob(getJobUrl(job))
-            } else if (job.jobName.contains("onPush")){
-                generateLauncher(job)
-            }
-        }
-    }
-
-    protected def generateLauncher(job){
-        def jobUrl = getJobUrl(job)
-        def parameters = getParametersMap(job.jobName)
-        def repo = Configuration.get("repo")
-        zafiraUpdater.createLauncher(parameters, jobUrl, repo)
-    }
-
-    protected def getParametersMap(jobName) {
-        def job = Jenkins.instance.getItemByFullName(jobName)
-        def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
-        Map parameters = [:]
-        parameterDefinitions.each { parameterDefinition ->
-            def value
-            if(parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
-                value = parameterDefinition.choiceListProvider.getDefaultChoice()
-            } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
-                value = parameterDefinition.choices[0]
-            }  else {
-                value = parameterDefinition.defaultValue
-            }
-            if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")) {
-                logger.info(parameterDefinition.name)
-                parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
-            }
-        }
-        return parameters
     }
 
     protected def getAPIToken(userName){
@@ -131,12 +70,12 @@ class Organization {
         return !isParamEmpty(User.getById(userName, false))?User.getById(userName, false):Jenkins.instance.securityRealm.createAccount(userName, password)
     }
 
-    protected def grantUserBaseGlobalPermissions(userName){
+    protected def grantUserGlobalPermissions(userName){
         def authStrategy = Jenkins.instance.getAuthorizationStrategy()
         authStrategy.add(hudson.model.Hudson.READ, userName)
     }
 
-    protected def setUserFolderPermissions(folderName, userName) {
+    protected def grantUserFolderPermissions(folderName, userName) {
         def folder = getJenkinsFolderByName(folderName)
         if(folder == null){
             logger.error("No folder ${folderName} was detected.")
@@ -185,7 +124,7 @@ class Organization {
     }
 
     protected void prepare() {
-        scmClient.clone(!onlyUpdated)
+        scmClient.clone()
         String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
         String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
         scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
