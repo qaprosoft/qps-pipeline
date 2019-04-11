@@ -17,14 +17,13 @@ class Security {
     protected ISCM scmClient
     protected Logger logger
     protected ZafiraUpdater zafiraUpdater
-    protected Configuration configuration
+    protected Configuration configuration = new Configuration(context)
 
     public Security(context) {
         this.context = context
         scmClient = new GitHub(context)
         logger = new Logger(context)
         zafiraUpdater = new ZafiraUpdater(context)
-        configuration = new Configuration(context)
     }
 
     def enableSecurity() {
