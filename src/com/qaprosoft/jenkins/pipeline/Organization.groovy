@@ -39,7 +39,7 @@ class Organization {
                 def organization = Configuration.get("organization")
                 prepare()
                 generateCiItems(organization)
-                setSecurity()
+                setSecurity(organization)
                 clean()
             }
         }
