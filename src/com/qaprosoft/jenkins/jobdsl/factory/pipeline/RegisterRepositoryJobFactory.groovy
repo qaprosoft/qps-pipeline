@@ -40,12 +40,8 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
 		return pipelineJob
 	}
 
-	public String getPipelineScript() {
-		if ("QPS-Pipeline".equals(pipelineLibrary)) {
-			return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
-		} else {
-			return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
-		}
+	String getPipelineScript() {
+		return "@Library(\'${pipelineLibrary}\')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).register()"
 	}
 
 }
