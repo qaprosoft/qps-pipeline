@@ -7,6 +7,7 @@ import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
+import groovy.json.JsonOutput
 import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jenkins.security.ApiTokenProperty
 
@@ -21,6 +22,8 @@ class Organization {
     protected ZafiraUpdater zafiraUpdater
     protected Configuration configuration = new Configuration(context)
     protected Map dslObjects = new LinkedHashMap()
+    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
+    protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
     public Organization(context) {
         this.context = context
@@ -35,16 +38,26 @@ class Organization {
             context.timestamps {
                 def organization = Configuration.get("organization")
                 prepare()
-                registerOrganization(organization)
+                generateCiItems(organization)
                 setSecurity()
                 clean()
             }
         }
     }
 
-    protected def registerOrganization(organization) {
-        registerObject("project_folder", new FolderFactory(organization, ""))
-        registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), organization + "-launcher", "Custom job launcher"))
+    protected def generateCiItems(organization) {
+        context.stage("Register Organization") {
+            registerObject("project_folder", new FolderFactory(organization, ""))
+            registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), organization + "-launcher", "Custom job launcher"))
+            context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+            context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
+                    sandbox: true,
+                    removedConfigFilesAction: 'IGNORE',
+                    removedJobAction: 'IGNORE',
+                    removedViewAction: 'IGNORE',
+                    targets: FACTORY_TARGET,
+                    ignoreExisting: false
+        }
     }
 
     private void registerObject(name, object) {
@@ -140,6 +153,16 @@ class Organization {
         String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
         String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
         scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+    }
+
+    protected String getPipelineScript() {
+        def pipelineLibrary = Configuration.get("pipelineLibrary")
+        def runnerClass =  Configuration.get("runnerClass")
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+        }
     }
 
     protected clean() {
