@@ -22,7 +22,6 @@ public class LauncherJobFactory extends PipelineFactory {
 		logger.info("LauncherJobFactory->create")
 		def pipelineJob = super.create()
 		pipelineJob.with {
-
 			parameters {
 				configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "GitHub repository branch to run against", "master")
 				configure stringParam('suite', 'api', "TestNG suite file name (without \".xml\" extension)")
