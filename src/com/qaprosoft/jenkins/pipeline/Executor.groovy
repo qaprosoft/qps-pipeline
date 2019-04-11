@@ -375,7 +375,7 @@ public class Executor {
 
     static def setDefaultIfEmpty(stringKey, enumKey){
         def configValue = Configuration.get(stringKey)
-        if (configValue.isEmpty()) {
+        if (isParamEmpty(configValue)) {
             configValue = Configuration.get(enumKey)
         }
         return configValue
