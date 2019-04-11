@@ -54,7 +54,7 @@ class Organization {
     protected def generateCiItems(organization) {
         context.stage("Register Organization") {
             registerObject("project_folder", new FolderFactory(organization, ""))
-            registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), organization + "-launcher", "Custom job launcher"))
+            registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), organization.substring(0, 1).toUpperCase() + organization.substring(1) + "Launcher", "Custom job launcher"))
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(organization, 'RegisterRepository', '', organization, pipelineLibrary, runnerClass))
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
             context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
