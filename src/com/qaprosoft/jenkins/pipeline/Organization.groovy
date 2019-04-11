@@ -68,7 +68,7 @@ class Organization {
         setUserFolderPermissions(organization, userName)
         def token = getAPIToken(userName)
         if(token != null){
-            registerTokenInZafira(userName, token.tokenValue)
+            registerTokenInZafira(userName, token.tokenValue, organization)
         }
     }
 
@@ -180,8 +180,8 @@ class Organization {
         folder.save()
     }
 
-    protected def registerTokenInZafira(userName, tokenValue){
-        zafiraUpdater.registerTokenInZafira(userName, tokenValue)
+    protected def registerTokenInZafira(userName, tokenValue, organization){
+        zafiraUpdater.registerTokenInZafira(userName, tokenValue, organization)
     }
 
     protected void prepare() {
