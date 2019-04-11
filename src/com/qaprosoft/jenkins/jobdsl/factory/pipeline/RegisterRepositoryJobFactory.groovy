@@ -29,8 +29,8 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
 		pipelineJob.with {
 			parameters {
 				configure stringParam('organization', organization, 'GitHub organization')
-				configure stringParam('repo', 'repo', 'GitHub repository for scanning')
-				configure stringParam('branch', 'branch', 'It is highly recommended to use master branch for each scan operation')
+				configure stringParam('repo', '', 'GitHub repository for scanning')
+				configure stringParam('branch', '', 'It is highly recommended to use master branch for each scan operation')
 				configure stringParam('user', '', 'GitHub user')
 				configure stringParam('token', '', 'GitHub token with read permissions')
 				configure stringParam('pipelineLibrary', pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
