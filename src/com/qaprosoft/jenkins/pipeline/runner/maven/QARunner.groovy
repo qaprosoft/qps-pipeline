@@ -602,7 +602,7 @@ public class QARunner extends AbstractRunner {
             Configuration.set("capabilities.devicePool", devicePool)
         }
 
-        if (!Configuration.get("deviceBrowser").isEmpty()) {
+        if (!isParamEmpty(Configuration.get("deviceBrowser"))) {
             Configuration.set("capabilities.deviceBrowser", Configuration.get("deviceBrowser"))
         }
         // ATTENTION! Obligatory remove device from the params otherwise
@@ -1075,7 +1075,7 @@ public class QARunner extends AbstractRunner {
                 mappedStages[stageName] = buildOutStages(jobParams, waitJob, propagateJob)
             }
         }
-        if (!mappedStages.isEmpty()) {
+        if (!isParamEmpty(mappedStages)) {
             logger.debug("launch jobs with order: ${curOrder}")
             context.parallel mappedStages
         }
