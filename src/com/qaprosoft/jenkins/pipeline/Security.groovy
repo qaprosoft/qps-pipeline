@@ -27,7 +27,7 @@ class Security {
         configuration = new Configuration(context)
     }
 
-    def register() {
+    def enableSecurity() {
         logger.info("Security->enable")
         context.node('master') {
             context.timestamps {
