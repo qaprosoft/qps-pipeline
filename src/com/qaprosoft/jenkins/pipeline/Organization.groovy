@@ -1,6 +1,8 @@
 package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
@@ -11,30 +13,42 @@ import jenkins.security.ApiTokenProperty
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-class Security {
+class Organization {
 
     protected def context
     protected ISCM scmClient
     protected Logger logger
     protected ZafiraUpdater zafiraUpdater
     protected Configuration configuration = new Configuration(context)
+    protected Map dslObjects = new LinkedHashMap()
 
-    public Security(context) {
+    public Organization(context) {
         this.context = context
         scmClient = new GitHub(context)
         logger = new Logger(context)
         zafiraUpdater = new ZafiraUpdater(context)
     }
 
-    def enableSecurity() {
-        logger.info("Security->enable")
+    def register() {
+        logger.info("Organization->register")
         context.node('master') {
             context.timestamps {
+                def organization = Configuration.get("organization")
                 prepare()
-                setSecurity(Configuration.get("organization"))
+                registerOrganization(organization)
+                setSecurity()
                 clean()
             }
         }
+    }
+
+    protected def registerOrganization(organization) {
+        registerObject("project_folder", new FolderFactory(organization, ""))
+        registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), organization + "-launcher", "Custom job launcher"))
+    }
+
+    private void registerObject(name, object) {
+        dslObjects.put(name, object)
     }
 
     protected def setSecurity(organization){
