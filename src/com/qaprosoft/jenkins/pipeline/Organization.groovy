@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.RegisterRepositoryJobFactory
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
@@ -22,14 +23,19 @@ class Organization {
     protected ZafiraUpdater zafiraUpdater
     protected Configuration configuration = new Configuration(context)
     protected Map dslObjects = new LinkedHashMap()
+    protected def pipelineLibrary
+    protected def runnerClass
     protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
     protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
+
 
     public Organization(context) {
         this.context = context
         scmClient = new GitHub(context)
         logger = new Logger(context)
         zafiraUpdater = new ZafiraUpdater(context)
+        pipelineLibrary = Configuration.get("pipelineLibrary")
+        runnerClass =  Configuration.get("runnerClass")
     }
 
     def register() {
@@ -49,6 +55,7 @@ class Organization {
         context.stage("Register Organization") {
             registerObject("project_folder", new FolderFactory(organization, ""))
             registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), organization + "-launcher", "Custom job launcher"))
+            registerObject("register_repository_job", new RegisterRepositoryJobFactory(organization, 'RegisterRepository', '', organization, pipelineLibrary, runnerClass))
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
             context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
                     sandbox: true,
@@ -156,8 +163,6 @@ class Organization {
     }
 
     protected String getPipelineScript() {
-        def pipelineLibrary = Configuration.get("pipelineLibrary")
-        def runnerClass =  Configuration.get("runnerClass")
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
         } else {
