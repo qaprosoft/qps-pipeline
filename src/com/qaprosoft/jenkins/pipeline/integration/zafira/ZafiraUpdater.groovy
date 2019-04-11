@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins.pipeline.integration.zafira
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
+
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
@@ -165,7 +166,7 @@ class ZafiraUpdater {
                     it.value = tokenValue
                     break
                 case "JENKINS_LAUNCHER_JOB_NAME":
-                    it.value = organization + "-launcher"
+                    it.value = organization.substring(0, 1).toUpperCase() + organization.substring(1) + "Launcher"
                     break
             }
         }
