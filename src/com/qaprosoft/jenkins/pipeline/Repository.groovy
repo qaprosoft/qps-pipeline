@@ -195,14 +195,6 @@ class Repository {
 		}
 	}
 
-	protected String getPipelineScript() {
-		if ("QPS-Pipeline".equals(pipelineLibrary)) {
-			return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
-		} else {
-			return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
-		}
-	}
-
 	private void registerObject(name, object) {
 		if (dslObjects.containsKey(name)) {
 			logger.warn("WARNING! key ${name} already defined and will be replaced!")
