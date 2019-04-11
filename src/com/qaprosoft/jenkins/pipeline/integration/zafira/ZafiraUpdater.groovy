@@ -154,7 +154,7 @@ class ZafiraUpdater {
         return zc.createJob(jobUrl)
     }
 
-    public def registerTokenInZafira(userName, tokenValue){
+    public def registerTokenInZafira(userName, tokenValue, organization){
         def jenkinsSettingsList = zc.getJenkinsSettings()
         jenkinsSettingsList.each {
             switch (it.name) {
@@ -163,6 +163,9 @@ class ZafiraUpdater {
                     break
                 case "JENKINS_API_TOKEN_OR_PASSWORD":
                     it.value = tokenValue
+                    break
+                case "JENKINS_LAUNCHER_JOB_NAME":
+                    it.value = organization + "-launcher"
                     break
             }
         }
