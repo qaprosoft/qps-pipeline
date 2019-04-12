@@ -166,7 +166,6 @@ public class Configuration {
 		for (param in params) {
 			context.println(param)
 		}
-		context.println "!!!"
 		//4. TODO: investigate how private pipeline can override those values
 		// public static void set(Map args) - ???
 	}

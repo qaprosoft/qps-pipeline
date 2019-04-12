@@ -28,7 +28,7 @@ class GitHub implements ISCM {
             throw new RuntimeException("Unsupported SCM system!")
         }
 		credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
-        if(!isParamEmpty(Configuration.get("scmURL"))) {
+        if(Configuration.get("scmURL") != null ) {
             gitHtmlUrl = Configuration.get("scmURL")
             credentialsId = ''
         }
