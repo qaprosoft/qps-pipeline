@@ -126,7 +126,7 @@ public class Configuration {
 
 		//b. redefine values from global variables if any
 		def envVars = context.env.getEnvironment()
-		vars.each {
+		for (var in vars) {
 			if (envVars.get(it.getKey()) != null) {
 				vars.put(it.getKey(), envVars.get(it.getKey()))
 			}

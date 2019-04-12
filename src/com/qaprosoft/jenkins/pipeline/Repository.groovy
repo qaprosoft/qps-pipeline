@@ -148,40 +148,6 @@ class Repository {
 		context.stage('Wipe out Workspace') { context.deleteDir() }
 	}
 
-//	protected def getLatestOnPushBuild(){
-//		def jobName = "${organization}/${repo}/onPush-${repo}"
-//		def job = Jenkins.instance.getItemByFullName(jobName)
-//		return job.getBuilds().get(0)
-//	}
-//
-//	protected def generateLauncher(job){
-//		def jobUrl = getJobUrl(job)
-//		def parameters = getParametersMap(job.jobName)
-//		def repo = Configuration.get("repo")
-//		zafiraUpdater.createLauncher(parameters, jobUrl, repo)
-//	}
-//
-//	protected def getParametersMap(jobName) {
-//		def job = Jenkins.instance.getItemByFullName(jobName)
-//		def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
-//		Map parameters = [:]
-//		parameterDefinitions.each { parameterDefinition ->
-//			def value
-//			if(parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
-//				value = parameterDefinition.choiceListProvider.getDefaultChoice()
-//			} else if (parameterDefinition instanceof ChoiceParameterDefinition) {
-//				value = parameterDefinition.choices[0]
-//			}  else {
-//				value = parameterDefinition.defaultValue
-//			}
-//			if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")) {
-//				logger.info(parameterDefinition.name)
-//				parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
-//			}
-//		}
-//		return parameters
-//	}
-
 	private String getOnPullRequestScript() {
 		if ("QPS-Pipeline".equals(pipelineLibrary)) {
 			return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
