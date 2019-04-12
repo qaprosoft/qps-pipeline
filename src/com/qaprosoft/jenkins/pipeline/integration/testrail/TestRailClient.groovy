@@ -134,7 +134,7 @@ class TestRailClient extends HttpClient{
     }
 
     public def addResultsForTests(testRunId, results) {
-        if(results.isEmpty()){
+        if(isParamEmpty(results)){
             return results
         }
         JsonBuilder jsonBuilder = new JsonBuilder()

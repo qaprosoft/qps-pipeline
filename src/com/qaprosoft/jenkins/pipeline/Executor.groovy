@@ -365,7 +365,7 @@ public class Executor {
         if(isParamEmpty(defects)){
             defects = newDefects
         } else {
-            if(!newDefects.isEmpty()){
+            if(!isParamEmpty(newDefects)){
                 defects = "${defects},${newDefects}"
             }
         }
