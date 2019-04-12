@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
 import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
@@ -19,6 +20,7 @@ class Repository {
 	def context
 	protected ISCM scmClient
 	protected Logger logger
+	protected ZafiraUpdater zafiraUpdater
 	protected Configuration configuration = new Configuration(context)
 	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
 	protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
@@ -32,6 +34,7 @@ class Repository {
 		//TODO: howto register repository not at github?
 		scmClient = new GitHub(context)
 		logger = new Logger(context)
+		zafiraUpdater = new ZafiraUpdater(context)
 		pipelineLibrary = Configuration.get("pipelineLibrary")
 		runnerClass =  Configuration.get("runnerClass")
 	}

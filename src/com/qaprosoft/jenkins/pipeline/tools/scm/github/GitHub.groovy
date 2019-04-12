@@ -10,7 +10,6 @@ class GitHub implements ISCM {
 
     private def context
     private def gitHtmlUrl
-    private def gitSshUrl
 	private def credentialsId
 	private Logger logger
     private def scmHost
@@ -29,6 +28,10 @@ class GitHub implements ISCM {
             throw new RuntimeException("Unsupported SCM system!")
         }
 		credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
+        if(!isParamEmpty(Configuration.get("scmURL"))) {
+            gitHtmlUrl = Configuration.get("scmURL")
+            credentialsId = ''
+        }
     }
     
     public def clone() {
