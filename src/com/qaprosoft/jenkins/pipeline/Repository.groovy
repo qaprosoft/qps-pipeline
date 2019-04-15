@@ -40,7 +40,7 @@ class Repository {
 	}
 
 	public void register() {
-		logger.info("Repository->register")
+        logger.info("Repository->register")
 
 		//create only high level management jobs.
 		context.node('master') {
@@ -129,18 +129,18 @@ class Repository {
 					"- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
 			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl))
-			registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), organization, "Custom job launcher"))
+//			registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), organization, "Custom job launcher"))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
 			context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
-					sandbox: true,
-					removedConfigFilesAction: 'IGNORE',
-					removedJobAction: 'IGNORE',
-					removedViewAction: 'IGNORE',
-					targets: FACTORY_TARGET,
-					ignoreExisting: false
+				sandbox: true,
+				removedConfigFilesAction: 'IGNORE',
+				removedJobAction: 'IGNORE',
+				removedViewAction: 'IGNORE',
+				targets: FACTORY_TARGET,
+				ignoreExisting: false
 
 		}
 	}
@@ -148,6 +148,7 @@ class Repository {
 	private clean() {
 		context.stage('Wipe out Workspace') { context.deleteDir() }
 	}
+
 
 	private String getOnPullRequestScript() {
 		if ("QPS-Pipeline".equals(pipelineLibrary)) {
