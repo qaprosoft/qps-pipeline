@@ -185,6 +185,10 @@ public class Executor {
         return currentJob
     }
 
+    static def getItemByFullName(jobFullName) {
+        return Jenkins.instance.getItemByFullName(jobFullName)
+    }
+
     static def getJenkinsFolderByName(folderName) {
         def currentJob = null
         Jenkins.getInstance().getAllItems(com.cloudbees.hudson.plugins.folder.Folder).each { job ->

@@ -160,7 +160,7 @@ class Organization {
     }
 
 	protected def generateLauncher(jobFullName){
-        def job = Jenkins.instance.getItemByFullName(jobFullName)
+        def job = getItemByFullName(jobFullName)
 		def jobUrl = getJobUrl(jobFullName)
 		def parameters = getParametersMap(job)
 		zafiraUpdater.createLauncher(parameters, jobUrl, "")
