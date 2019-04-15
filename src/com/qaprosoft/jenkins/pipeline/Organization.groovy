@@ -160,6 +160,7 @@ class Organization {
     }
 
 	protected def generateLauncher(job){
+        logger.info(job.dump())
 		def jobUrl = getJobUrl(job)
 		def parameters = getParametersMap(job.jobName)
 		def repo = Configuration.get("repo")
