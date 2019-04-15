@@ -129,6 +129,7 @@ class Repository {
 					"- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
 			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl))
+			registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), isParamEmpty(organization) ? "launcher" : organization + "-launcher", "Custom job launcher"))
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
 			context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -161,6 +162,14 @@ class Repository {
 			return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
 		} else {
 			return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPush()"
+		}
+	}
+
+	protected String getPipelineScript() {
+		if ("QPS-Pipeline".equals(pipelineLibrary)) {
+			return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+		} else {
+			return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
 		}
 	}
 
