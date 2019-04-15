@@ -59,6 +59,7 @@ class Repository {
 		if(!isParamEmpty(Configuration.get("organization")) && !isParamEmpty(getJenkinsFolderByName(organization))){
 			jobName = "${organization}/" + jobName
 		}
+		logger.info("1111")
 		context.build job: jobName,
 				propagate: true,
 				parameters: [
