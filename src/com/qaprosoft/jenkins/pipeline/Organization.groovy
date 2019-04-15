@@ -48,7 +48,7 @@ class Organization {
                 prepare()
                 setSecurity(organization, launcherJobName)
                 generateCiItems(organization, launcherJobName)
-                generateLauncher(organization +'/RegisterRepository')
+//                generateLauncher(organization +'/RegisterRepository')
                 clean()
             }
         }
