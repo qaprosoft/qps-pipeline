@@ -46,8 +46,8 @@ class Organization {
                 def organization = Configuration.get("organization")
                 def launcherJobName = organization + "/launcher"
                 prepare()
-                setSecurity(organization, launcherJobName)
                 generateCiItems(organization)
+                setSecurity(organization, launcherJobName)
 //                generateLauncher(organization +'/RegisterRepository')
                 clean()
             }
@@ -126,11 +126,8 @@ class Organization {
             folder.properties.add(authProperty)
         }
 
-        def authProperty2 = folder.properties.find {
-            it instanceof AuthorizationMatrixProperty
-        }
-        logger.info("AUTH: " + authProperty2)
         authProperty.setInheritanceStrategy(new NonInheritingStrategy())
+
         def permissionsArray = [com.cloudbees.plugins.credentials.CredentialsProvider.CREATE,
                                 com.cloudbees.plugins.credentials.CredentialsProvider.DELETE,
                                 com.cloudbees.plugins.credentials.CredentialsProvider.MANAGE_DOMAINS,
