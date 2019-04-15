@@ -44,7 +44,7 @@ class Organization {
         context.node('master') {
             context.timestamps {
                 def organization = Configuration.get("organization")
-                def launcherJobName = organization + "-launcher"
+                def launcherJobName = organization + "/launcher"
                 prepare()
                 setSecurity(organization, launcherJobName)
                 generateCiItems(organization)
