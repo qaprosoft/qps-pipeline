@@ -44,19 +44,20 @@ class Organization {
         context.node('master') {
             context.timestamps {
                 def organization = Configuration.get("organization")
+                def launcherJobName = organization + "-launcher"
                 prepare()
-                generateCiItems(organization)
+                generateCiItems(organization, launcherJobName)
                 generateLauncher(getJenkinsJobByName('RegisterRepository'))
-                setSecurity(organization)
+                setSecurity(organization, launcherJobName)
                 clean()
             }
         }
     }
 
-    protected def generateCiItems(organization) {
+    protected def generateCiItems(organization, launcherJobName) {
         context.stage("Register Organization") {
             registerObject("project_folder", new FolderFactory(organization, ""))
-            registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), organization.substring(0, 1).toUpperCase() + organization.substring(1) + "Launcher", "Custom job launcher"))
+            registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), launcherJobName, "Custom job launcher"))
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(organization, 'RegisterRepository', '', organization, pipelineLibrary, runnerClass))
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
             context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
@@ -73,14 +74,14 @@ class Organization {
         dslObjects.put(name, object)
     }
 
-    protected def setSecurity(organization){
+    protected def setSecurity(organization, launcherJobName){
         def userName = organization + "-user"
         createJenkinsUser(userName)
         grantUserGlobalPermissions(userName)
         grantUserFolderPermissions(organization, userName)
         def token = getAPIToken(userName)
         if(token != null){
-            registerTokenInZafira(userName, token.tokenValue, organization)
+            registerTokenInZafira(userName, token.tokenValue, launcherJobName)
         }
     }
 
@@ -154,8 +155,8 @@ class Organization {
         folder.save()
     }
 
-    protected def registerTokenInZafira(userName, tokenValue, organization){
-        zafiraUpdater.registerTokenInZafira(userName, tokenValue, organization)
+    protected def registerTokenInZafira(userName, tokenValue, launcherJobName){
+        zafiraUpdater.registerTokenInZafira(userName, tokenValue, launcherJobName)
     }
 
 	protected def generateLauncher(job){
