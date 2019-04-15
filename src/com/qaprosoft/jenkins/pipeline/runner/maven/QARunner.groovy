@@ -399,19 +399,18 @@ public class QARunner extends AbstractRunner {
 
     protected def createLaunchers(build){
         build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
-            generateLauncher(job)
+            generateLauncher(job.jobName)
         }
     }
 
-    protected def generateLauncher(job){
-        def jobUrl = getJobUrl(job)
-        def parameters = getParametersMap(job.jobName)
-        def repo = Configuration.get("repo")
-        zafiraUpdater.createLauncher(parameters, jobUrl, repo)
+    protected def generateLauncher(jobFullName){
+        def job = Jenkins.instance.getItemByFullName(jobFullName)
+        def jobUrl = getJobUrl(jobFullName)
+        def parameters = getParametersMap(job)
+        zafiraUpdater.createLauncher(parameters, jobUrl, "")
     }
 
-    protected def getParametersMap(jobName) {
-        def job = Jenkins.instance.getItemByFullName(jobName)
+    protected def getParametersMap(job) {
         def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
         Map parameters = [:]
         parameterDefinitions.each { parameterDefinition ->
@@ -423,7 +422,10 @@ public class QARunner extends AbstractRunner {
             }  else {
                 value = parameterDefinition.defaultValue
             }
-            if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")) {
+            if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")
+                    && !parameterDefinition.name.equals("pipelineLibrary")
+                    && !parameterDefinition.name.equals("runnerClass"))
+            {
                 logger.info(parameterDefinition.name)
                 parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
             }
