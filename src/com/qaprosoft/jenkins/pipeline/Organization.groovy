@@ -120,11 +120,16 @@ class Organization {
         def authProperty = folder.properties.find {
             it instanceof AuthorizationMatrixProperty
         }
-        logger.info("AUTH: " + authProperty)
+
         if (authProperty == null){
             authProperty = new AuthorizationMatrixProperty()
             folder.properties.add(authProperty)
         }
+
+        def authProperty = folder.properties.find {
+            it instanceof AuthorizationMatrixProperty
+        }
+        logger.info("AUTH: " + authProperty)
         authProperty.setInheritanceStrategy(new NonInheritingStrategy())
         def permissionsArray = [com.cloudbees.plugins.credentials.CredentialsProvider.CREATE,
                                 com.cloudbees.plugins.credentials.CredentialsProvider.DELETE,
