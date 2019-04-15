@@ -211,10 +211,10 @@ public class Executor {
         return failureLog
     }
 
-    static def getJobUrl(job){
+    static def getJobUrl(jobFullName){
         String separator = "/job/"
         String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split(separator)[0]
-        job.jobName.split("/").each {
+        jobFullName.split("/").each {
             jenkinsUrl += separator + it
         }
         return jenkinsUrl
