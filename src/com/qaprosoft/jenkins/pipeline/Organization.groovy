@@ -79,10 +79,10 @@ class Organization {
         createJenkinsUser(userName)
         grantUserGlobalPermissions(userName)
         grantUserFolderPermissions(organization, userName)
-//        def token = getAPIToken(userName)
-//        if(token != null){
-//            registerTokenInZafira(userName, token.tokenValue, launcherJobName)
-//        }
+        def token = getAPIToken(userName)
+        if(token != null){
+            registerTokenInZafira(userName, token.tokenValue, launcherJobName)
+        }
     }
 
     protected def getAPIToken(userName){
