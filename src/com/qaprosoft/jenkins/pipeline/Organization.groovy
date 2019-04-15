@@ -163,8 +163,7 @@ class Organization {
         def job = Jenkins.instance.getItemByFullName(jobFullName)
 		def jobUrl = getJobUrl(jobFullName)
 		def parameters = getParametersMap(job)
-		def repo = Configuration.get("repo")
-		zafiraUpdater.createLauncher(parameters, jobUrl, repo)
+		zafiraUpdater.createLauncher(parameters, jobUrl, "")
 	}
 
 	protected def getParametersMap(job) {
