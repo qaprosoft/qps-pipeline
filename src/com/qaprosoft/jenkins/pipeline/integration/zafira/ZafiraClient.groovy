@@ -23,7 +23,7 @@ class ZafiraClient extends HttpClient{
 			getZafiraAuthToken(refreshToken)
 		}
 		JsonBuilder jsonBuilder = new JsonBuilder()
-		jsonBuilder jobName: Configuration.get(Configuration.Parameter.JOB_BASE_NAME),
+		jsonBuilder jobUrl: Configuration.get(Configuration.Parameter.JOB_URL),
 				buildNumber: Configuration.get(Configuration.Parameter.BUILD_NUMBER),
 				branch: Configuration.get("branch"),
 				env: Configuration.get("env"),
