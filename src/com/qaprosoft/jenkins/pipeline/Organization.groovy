@@ -79,10 +79,10 @@ class Organization {
         createJenkinsUser(userName)
         grantUserGlobalPermissions(userName)
         grantUserFolderPermissions(organization, userName)
-        def token = getAPIToken(userName)
-        if(token != null){
-            registerTokenInZafira(userName, token.tokenValue, launcherJobName)
-        }
+//        def token = getAPIToken(userName)
+//        if(token != null){
+//            registerTokenInZafira(userName, token.tokenValue, launcherJobName)
+//        }
     }
 
     protected def getAPIToken(userName){
@@ -120,6 +120,7 @@ class Organization {
         def authProperty = folder.properties.find {
             it instanceof AuthorizationMatrixProperty
         }
+        logger.info("AUTH: " + authProperty)
         if (authProperty == null){
             authProperty = new AuthorizationMatrixProperty()
             folder.properties.add(authProperty)
