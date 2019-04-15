@@ -47,17 +47,17 @@ class Organization {
                 def launcherJobName = organization + "-launcher"
                 prepare()
                 setSecurity(organization, launcherJobName)
-                generateCiItems(organization, launcherJobName)
+                generateCiItems(organization)
 //                generateLauncher(organization +'/RegisterRepository')
                 clean()
             }
         }
     }
 
-    protected def generateCiItems(organization, launcherJobName) {
+    protected def generateCiItems(organization) {
         context.stage("Register Organization") {
             registerObject("project_folder", new FolderFactory(organization, ""))
-            registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), launcherJobName, "Custom job launcher"))
+            registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), "launcher", "Custom job launcher"))
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(organization, 'RegisterRepository', '', organization, pipelineLibrary, runnerClass))
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
             context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
