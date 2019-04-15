@@ -99,6 +99,10 @@ class ZafiraUpdater {
 
     public def sendZafiraEmail(uuid, emailList) {
         def testRun = getTestRun(uuid)
+        if(isParamEmpty(testRun)){
+            logger.error("No testRun with uuid " + uuid + "found in Zafira")
+            return
+        }
         if (!isParamEmpty(emailList)) {
             zc.sendEmail(uuid, emailList, "all")
         }
