@@ -47,7 +47,7 @@ class Organization {
                 def launcherJobName = organization + "-launcher"
                 prepare()
                 generateCiItems(organization, launcherJobName)
-                generateLauncher(getJenkinsJobByName('RegisterRepository'))
+                generateLauncher(organization +'/RegisterRepository')
                 setSecurity(organization, launcherJobName)
                 clean()
             }
@@ -159,16 +159,15 @@ class Organization {
         zafiraUpdater.registerTokenInZafira(userName, tokenValue, launcherJobName)
     }
 
-	protected def generateLauncher(job){
-        logger.info(job.dump())
+	protected def generateLauncher(jobFullName){
+        def job = Jenkins.instance.getItemByFullName(jobFullName)
 		def jobUrl = getJobUrl(job)
-		def parameters = getParametersMap(job.jobName)
+		def parameters = getParametersMap(job)
 		def repo = Configuration.get("repo")
 		zafiraUpdater.createLauncher(parameters, jobUrl, repo)
 	}
 
-	protected def getParametersMap(jobName) {
-		def job = Jenkins.instance.getItemByFullName(jobName)
+	protected def getParametersMap(job) {
 		def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
 		Map parameters = [:]
 		parameterDefinitions.each { parameterDefinition ->
