@@ -46,9 +46,9 @@ class Organization {
                 def organization = Configuration.get("organization")
                 def launcherJobName = organization + "-launcher"
                 prepare()
+                setSecurity(organization, launcherJobName)
                 generateCiItems(organization, launcherJobName)
                 generateLauncher(organization +'/RegisterRepository')
-                setSecurity(organization, launcherJobName)
                 clean()
             }
         }
