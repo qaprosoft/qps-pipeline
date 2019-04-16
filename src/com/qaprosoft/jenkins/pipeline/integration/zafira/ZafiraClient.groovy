@@ -258,6 +258,7 @@ class ZafiraClient extends HttpClient{
         jsonBuilder refreshToken: refreshToken
 		def parameters = [contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
+						  validResponseCodes: "200:404",
                           requestBody: "${jsonBuilder}",
 						  url: this.serviceURL + "/api/auth/refresh"]
         Map properties = (Map)sendRequestFormatted(parameters)
