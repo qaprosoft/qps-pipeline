@@ -5,7 +5,7 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
 
-import static com.qaprosoft.Utils.parseSuite
+import static com.qaprosoft.jenkins.Utils.*
 
 @InheritConstructors
 public class CronJobFactory extends PipelineFactory {

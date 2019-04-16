@@ -119,28 +119,23 @@ public class Configuration {
 		// any non empty value should be resolved in such order: Parameter, envvars and jobParams
 
 		def enumValues  = Parameter.values()
-		def envVars = context.env.getEnvironment()
-
 		for (enumValue in enumValues) {
 			//a. set default values from enum
 			vars.put(enumValue.getKey(), enumValue.getValue())
-
-			//b. redefine values from global variables if any
-			if (envVars.get(enumValue.getKey()) != null) {
-				vars.put(enumValue.getKey(), envVars.get(enumValue.getKey()))
-			}
 		}
 
-		if (context.env.getEnvironment().get("JENKINS_URL").contains("https")) {
-			vars.put("screen_record_host", "https://\${QPS_HOST}/video/%s.mp4")
-			vars.put("vnc_protocol", "wss")
-			vars.put("vnc_port", "443")
+		//b. redefine values from global variables if any
+		def envVars = context.env.getEnvironment()
+		for (var in vars) {
+			if (envVars.get(var.getKey()) != null) {
+				vars.put(var.getKey(), envVars.get(var.getKey()))
+			}
 		}
 
 		// 2. Load all job parameters into unmodifiable map
 		def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
 		for (param in jobParams) {
-			if (param.value != null) {
+			if (param.value != null && param.value != '') {
 				params.put(param.name, param.value)
 			}
 		}
@@ -150,14 +145,16 @@ public class Configuration {
 		if(overriddenFieldValues){
 			for(value in overriddenFieldValues.split(",")){
 				def keyValueArray = value.trim().split("=")
-				def parameterName = keyValueArray[0]
-				def parameterValue = keyValueArray[1]
-				if(vars.get(parameterName)){
-					vars.put(parameterName, parameterValue)
-				} else if (vars.get(parameterName.toUpperCase())){
-					vars.put(parameterName.toUpperCase(), parameterValue)
-				} else {
-					params.put(parameterName, parameterValue)
+				if(keyValueArray.size() > 1){
+					def parameterName = keyValueArray[0]
+					def parameterValue = keyValueArray[1]
+					if(vars.get(parameterName)){
+						vars.put(parameterName, parameterValue)
+					} else if (vars.get(parameterName.toUpperCase())){
+						vars.put(parameterName.toUpperCase(), parameterValue)
+					} else {
+						params.put(parameterName, parameterValue)
+					}
 				}
 			}
 		}

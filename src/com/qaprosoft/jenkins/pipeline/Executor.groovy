@@ -14,7 +14,7 @@ import java.nio.file.PathMatcher
 import java.nio.file.Paths
 
 import static java.util.UUID.randomUUID
-import static com.qaprosoft.Utils.*
+import static com.qaprosoft.jenkins.Utils.*
 import org.jenkinsci.plugins.ghprb.*
 import com.cloudbees.plugins.credentials.impl.*
 import com.cloudbees.plugins.credentials.*
@@ -68,15 +68,20 @@ public class Executor {
     }
 
     static def updateJenkinsCredentials(id, description, user, password) {
-        if(!isParamEmpty(password)){
+        if(!isParamEmpty(password) && !isParamEmpty(user)){
             def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
-            credentialsStore.getCredentials(Domain.global()).each {
-                if(it.id.equals(id.toString())) {
-                    credentialsStore.removeCredentials(Domain.global(), it)
-                }
+            def credentials = getCredentials(id)
+            if(credentials){
+                credentialsStore.removeCredentials(Domain.global(), credentials)
             }
             Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
-            credentialsStore.addCredentials(Domain.global(), c)
+            return credentialsStore.addCredentials(Domain.global(), c)
+        }
+    }
+
+    static def getCredentials(id) {
+        return SystemCredentialsProvider.getInstance().getStore().getCredentials(Domain.global()).find {
+            it.id.equals(id.toString())
         }
     }
 
@@ -160,6 +165,15 @@ public class Executor {
         return supportedLocales
     }
 
+    static def getJobParameters(currentBuild){
+        Map jobParameters = [:]
+        def jobParams = currentBuild.rawBuild.getAction(ParametersAction)
+        for (param in jobParams) {
+            if (param.value != null) {
+                jobParameters.put(param.name, param.value)
+            }
+        }
+    }
 
     static def getJenkinsJobByName(jobName) {
         def currentJob = null
@@ -169,6 +183,10 @@ public class Executor {
             }
         }
         return currentJob
+    }
+
+    static def getItemByFullName(jobFullName) {
+        return Jenkins.instance.getItemByFullName(jobFullName)
     }
 
     static def getJenkinsFolderByName(folderName) {
@@ -195,6 +213,15 @@ public class Executor {
             }
         }
         return failureLog
+    }
+
+    static def getJobUrl(jobFullName){
+        String separator = "/job/"
+        String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split(separator)[0]
+        jobFullName.split("/").each {
+            jenkinsUrl += separator + it
+        }
+        return jenkinsUrl
     }
 
     static String getBuildUser(currentBuild) {
@@ -342,7 +369,7 @@ public class Executor {
         if(isParamEmpty(defects)){
             defects = newDefects
         } else {
-            if(!newDefects.isEmpty()){
+            if(!isParamEmpty(newDefects)){
                 defects = "${defects},${newDefects}"
             }
         }
@@ -352,7 +379,7 @@ public class Executor {
 
     static def setDefaultIfEmpty(stringKey, enumKey){
         def configValue = Configuration.get(stringKey)
-        if (configValue.isEmpty()) {
+        if (isParamEmpty(configValue)) {
             configValue = Configuration.get(enumKey)
         }
         return configValue

@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.jobdsl.factory
 
-import com.qaprosoft.Logger
+import com.qaprosoft.jenkins.Logger
 
 public class DslFactory {
 	def folder
