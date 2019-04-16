@@ -131,7 +131,6 @@ class Repository {
 			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl))
 
 			def launcher = isParamEmpty(organization) ? getItemByFullName("launcher") : getItemByFullName(organization + "/launcher")
-			logger.info("LAUNCH: " + launcher.dump())
 			if(isParamEmpty(launcher)){
 				registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), "launcher", "Custom job launcher"))
 			}
