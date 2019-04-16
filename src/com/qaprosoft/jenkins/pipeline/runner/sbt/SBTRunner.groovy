@@ -4,19 +4,12 @@ import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
-import java.util.Date
+import com.qaprosoft.jenkins.pipeline.runner.sbt.AbstractSBTRunner
 import groovy.transform.InheritConstructors
-import java.text.SimpleDateFormat
 
 
 @InheritConstructors
-class SBTRunner extends AbstractRunner {
-
-
-    def date = new Date()
-    def sdf = new SimpleDateFormat("yyyyMMddHHmmss")
-    String curDate = sdf.format(date)
-    String randomArchiveName = "loadTestingReports" + curDate + ".zip"
+class SBTRunner extends AbstractSBTRunner {
 
     public SBTRunner(context) {
         super(context)
@@ -78,11 +71,6 @@ class SBTRunner extends AbstractRunner {
         }
     }
 
-    protected void clean() {
-        context.stage('Wipe out Workspace') {
-            context.deleteDir()
-        }
-    }
 
     protected void uploadResultsToS3() {
         def needToUpload = Configuration.get("needToUpload").toString().toBoolean()
@@ -92,6 +80,9 @@ class SBTRunner extends AbstractRunner {
     }
 
     protected void publishResultsInSlack() {
-        context.build job: 'loadTesting/Publish-Results-To-Slack', wait: false
+        def publish = Configuration.get("publishInSlack").toString().toBoolean()
+        if (publish) {
+            context.build job: 'loadTesting/Publish-Results-To-Slack', wait: false
+        }
     }
 }

@@ -3,14 +3,12 @@ package com.qaprosoft.jenkins.pipeline.runner.sbt
 import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
-import java.util.Date
+import com.qaprosoft.jenkins.pipeline.runner.sbt.AbstractSBTRunner
 import groovy.transform.InheritConstructors
-import java.text.SimpleDateFormat
 
 
 @InheritConstructors
-class SBTSimpleRunner extends AbstractRunner {
+class SBTSimpleRunner extends AbstractSBTRunner {
 
     public SBTSimpleRunner(context) {
         super(context)
@@ -60,12 +58,4 @@ class SBTSimpleRunner extends AbstractRunner {
     public void onPullRequest() {
         //TODO: implement in future
     }
-
-
-    protected void clean() {
-        context.stage('Wipe out Workspace') {
-            context.deleteDir()
-        }
-    }
-
 }
