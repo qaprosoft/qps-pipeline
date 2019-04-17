@@ -59,7 +59,7 @@ class Organization {
         context.stage("Register Organization") {
             registerObject("project_folder", new FolderFactory(organization, ""))
             registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), "launcher", "Custom job launcher"))
-            registerObject("register_repository_job", new RegisterRepositoryJobFactory(organization, 'RegisterRepository', '', organization, pipelineLibrary, runnerClass))
+            registerObject("register_repository_job", new RegisterRepositoryJobFactory(organization, 'RegisterRepository', '', pipelineLibrary, runnerClass))
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
             context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
                     sandbox: true,
