@@ -93,14 +93,14 @@ public class QARunner extends AbstractRunner {
                 logger.info("QARunner->onPush")
                 prepare()
                 zafiraUpdater.getZafiraCredentials()
-                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-                    return
-                }
-                //TODO: implement repository scan and QA jobs recreation
-                scan()
-                createLaunchers(currentBuild.rawBuild)
-                clean()
+//                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+//                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
+//                    return
+//                }
+//                //TODO: implement repository scan and QA jobs recreation
+//                scan()
+//                createLaunchers(currentBuild.rawBuild)
+//                clean()
             }
         }
     }
