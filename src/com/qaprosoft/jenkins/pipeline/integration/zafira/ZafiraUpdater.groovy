@@ -195,6 +195,8 @@ class ZafiraUpdater {
                     Configuration.set(context.env.KEY, context.env.VALUE)
                 }
             }
+            logger.info("ZAFIRA_SERVICE_URL: " + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
+            logger.info("ZAFIRA_ACCESS_TOKEN: " + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
         }
     }
 }
