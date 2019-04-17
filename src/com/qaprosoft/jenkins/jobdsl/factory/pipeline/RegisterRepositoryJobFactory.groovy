@@ -10,15 +10,13 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class RegisterRepositoryJobFactory extends PipelineFactory {
 
-	def organization
 	def pipelineLibrary
 	def runnerClass
 
-	public RegisterRepositoryJobFactory(folder, name, jobDesc, organization, pipelineLibrary, runnerClass) {
+	public RegisterRepositoryJobFactory(folder, name, jobDesc, pipelineLibrary, runnerClass) {
 		this.folder = folder
 		this.name = name
 		this.description = jobDesc
-		this.organization = organization
 		this.pipelineLibrary = pipelineLibrary
 		this.runnerClass = runnerClass
 	}
@@ -28,7 +26,7 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
 		def pipelineJob = super.create()
 		pipelineJob.with {
 			parameters {
-				configure stringParam('organization', organization, 'GitHub organization')
+				configure stringParam('organization', '', 'GitHub organization')
 				configure stringParam('repo', '', 'GitHub repository for scanning')
 				configure stringParam('branch', '', 'It is highly recommended to use master branch for each scan operation')
                 configure stringParam('user', '', 'GitHub user')
