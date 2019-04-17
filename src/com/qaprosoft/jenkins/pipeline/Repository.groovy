@@ -98,7 +98,7 @@ class Repository {
 			if(!"Management_Jobs".equals(jobRootFolder)) {
 				repoFolder = "${jobRootFolder}/${repo}"
 			} else {
-				jobRootFolder = null
+				jobRootFolder = ''
 				if(!isParamEmpty(gitHubOrganizationParameter)){
 					Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, gitHubOrganizationParameter)
 					jobRootFolder = gitHubOrganizationParameter
@@ -139,7 +139,7 @@ class Repository {
 
 			def launcher = isParamEmpty(jobRootFolder) ? getItemByFullName("launcher") : getItemByFullName(jobRootFolder + "/launcher")
 			if(isParamEmpty(launcher)){
-				registerObject("launcher_job", new LauncherJobFactory(gitHubOrganizationParameter, getPipelineScript(), "launcher", "Custom job launcher"))
+				registerObject("launcher_job", new LauncherJobFactory(jobRootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
 			}
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
