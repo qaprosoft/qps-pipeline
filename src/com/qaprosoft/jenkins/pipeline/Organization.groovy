@@ -170,35 +170,35 @@ class Organization {
         updateJenkinsCredentials(organization + "-zafira_access_token", organization + " Zafira access URL", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
     }
 
-	protected def generateLauncher(jobFullName){
+    protected def generateLauncher(jobFullName){
         def job = getItemByFullName(jobFullName)
-		def jobUrl = getJobUrl(jobFullName)
-		def parameters = getParametersMap(job)
-		zafiraUpdater.createLauncher(parameters, jobUrl, "")
-	}
+        def jobUrl = getJobUrl(jobFullName)
+        def parameters = getParametersMap(job)
+        zafiraUpdater.createLauncher(parameters, jobUrl, "")
+    }
 
-	protected def getParametersMap(job) {
-		def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
-		Map parameters = [:]
-		parameterDefinitions.each { parameterDefinition ->
-			def value
-			if(parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
-				value = parameterDefinition.choiceListProvider.getDefaultChoice()
-			} else if (parameterDefinition instanceof ChoiceParameterDefinition) {
-				value = parameterDefinition.choices[0]
-			}  else {
-				value = parameterDefinition.defaultValue
-			}
-			if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")
+    protected def getParametersMap(job) {
+        def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
+        Map parameters = [:]
+        parameterDefinitions.each { parameterDefinition ->
+            def value
+            if(parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
+                value = parameterDefinition.choiceListProvider.getDefaultChoice()
+            } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
+                value = parameterDefinition.choices[0]
+            }  else {
+                value = parameterDefinition.defaultValue
+            }
+            if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")
                     && !parameterDefinition.name.equals("pipelineLibrary")
                     && !parameterDefinition.name.equals("runnerClass"))
             {
-				logger.info(parameterDefinition.name)
-				parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
-			}
-		}
-		return parameters
-	}
+                logger.info(parameterDefinition.name)
+                parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
+            }
+        }
+        return parameters
+    }
 
     protected String getPipelineScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
