@@ -11,7 +11,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import groovy.json.JsonOutput
-
+import java.nio.file.Paths
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
@@ -41,7 +41,6 @@ class Repository {
 
 	public void register() {
         logger.info("Repository->register")
-
 		//create only high level management jobs.
 		context.node('master') {
 			context.timestamps {
@@ -50,14 +49,14 @@ class Repository {
 				clean()
 			}
 		}
-
 		// execute new _trigger-<repo> to regenerate other views/jobs/etc
 		def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
 		def repo = Configuration.get("repo")
 		def branch = Configuration.get("branch")
 		def jobName = "${repo}" + "/" + "onPush-" + repo
-		if(!isParamEmpty(Configuration.get("organization")) && !isParamEmpty(getJenkinsFolderByName(organization))){
-			jobName = "${organization}/" + jobName
+		def jobRootFolder = Configuration.get("jobRootFolder")
+		if(!isParamEmpty(jobRootFolder) && !isParamEmpty(getJenkinsFolderByName(jobRootFolder))){
+			jobName = "${jobRootFolder}/" + jobName
 		}
 		context.build job: jobName,
 				propagate: true,
@@ -91,19 +90,27 @@ class Repository {
 
 		context.stage("Create Repository") {
 			def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-			def organization = Configuration.get("organization")
+			def gitHubOrganizationParameter = Configuration.get("organization")
 			def repo = Configuration.get("repo")
 			def branch = Configuration.get("branch")
 			def repoFolder
-			if(!isParamEmpty(organization)){
-				Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
-				if(isParamEmpty(getJenkinsFolderByName(organization))){
-					registerObject("organization_folder", new FolderFactory(organization, ""))
-				}
-				repoFolder = "${organization}/${repo}"
+			def jobRootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+			if(!"Management_Jobs".equals(jobRootFolder)) {
+				repoFolder = "${jobRootFolder}/${repo}"
 			} else {
-				repoFolder = repo
+				jobRootFolder = ''
+				if(!isParamEmpty(gitHubOrganizationParameter)){
+					Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, gitHubOrganizationParameter)
+					jobRootFolder = gitHubOrganizationParameter
+					if(isParamEmpty(getJenkinsFolderByName(jobRootFolder))){
+						registerObject("organization_folder", new FolderFactory(jobRootFolder, ""))
+					}
+					repoFolder = "${jobRootFolder}/${repo}"
+				} else {
+					repoFolder = repo
+				}
 			}
+			Configuration.set("jobRootFolder", jobRootFolder)
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 			def githubHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
 			def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
@@ -130,9 +137,9 @@ class Repository {
 
 			registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl))
 
-			def launcher = isParamEmpty(organization) ? getItemByFullName("launcher") : getItemByFullName(organization + "/launcher")
+			def launcher = isParamEmpty(jobRootFolder) ? getItemByFullName("launcher") : getItemByFullName(jobRootFolder + "/launcher")
 			if(isParamEmpty(launcher)){
-				registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), "launcher", "Custom job launcher"))
+				registerObject("launcher_job", new LauncherJobFactory(jobRootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
 			}
 
 			// put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
