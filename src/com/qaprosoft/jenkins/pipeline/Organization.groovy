@@ -49,6 +49,7 @@ class Organization {
                 generateCiItems(organization)
                 setSecurity(organization, launcherJobName)
 //                generateLauncher(organization +'/RegisterRepository')
+                registerZafiraCreds(organization)
                 clean()
             }
         }
@@ -160,6 +161,13 @@ class Organization {
 
     protected def registerTokenInZafira(userName, tokenValue, launcherJobName){
         zafiraUpdater.registerTokenInZafira(userName, tokenValue, launcherJobName)
+    }
+
+    protected def registerZafiraCreds(organization) {
+        def zafiraServiceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
+        def zafiraRefreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+        updateJenkinsCredentials(organization + "-zafira_service_url", organization + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
+        updateJenkinsCredentials(organization + "-zafira_access_token", organization + " Zafira access URL", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
     }
 
 	protected def generateLauncher(jobFullName){

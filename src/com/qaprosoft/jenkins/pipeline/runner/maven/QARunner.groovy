@@ -92,6 +92,7 @@ public class QARunner extends AbstractRunner {
             context.timestamps {
                 logger.info("QARunner->onPush")
                 prepare()
+                zafiraUpdater.getZafiraCredentials()
                 if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                     logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
                     return
@@ -148,6 +149,7 @@ public class QARunner extends AbstractRunner {
         String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
         String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
         scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+
     }
 
     protected void scan() {
