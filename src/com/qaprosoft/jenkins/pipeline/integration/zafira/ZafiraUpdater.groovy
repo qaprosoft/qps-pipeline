@@ -185,7 +185,6 @@ class ZafiraUpdater {
             def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
             def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
             if(getCredentials(zafiraURLCredentials)){
-                logger.info("CRDS: " + zafiraURLCredentials)
                 context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
                     Configuration.set(context.env.KEY, context.env.VALUE)
                 }
@@ -195,8 +194,7 @@ class ZafiraUpdater {
                     Configuration.set(context.env.KEY, context.env.VALUE)
                 }
             }
-            logger.info("ZAFIRA_SERVICE_URL: " + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
-            logger.info("ZAFIRA_ACCESS_TOKEN: " + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
+            zc = new ZafiraClient(context)
         }
     }
 }
