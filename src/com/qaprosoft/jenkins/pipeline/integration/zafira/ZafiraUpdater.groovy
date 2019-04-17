@@ -2,11 +2,9 @@ package com.qaprosoft.jenkins.pipeline.integration.zafira
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
-
-import java.nio.file.Paths
-
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
+import java.nio.file.Paths
 
 class ZafiraUpdater {
 
