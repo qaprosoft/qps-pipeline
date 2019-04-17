@@ -43,7 +43,6 @@ class Repository {
 
 	public void register() {
         logger.info("Repository->register")
-
 		//create only high level management jobs.
 		context.node('master') {
 			context.timestamps {
@@ -52,13 +51,13 @@ class Repository {
 				clean()
 			}
 		}
-
 		// execute new _trigger-<repo> to regenerate other views/jobs/etc
 		def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
 		def repo = Configuration.get("repo")
 		def branch = Configuration.get("branch")
 		def jobName = "${repo}" + "/" + "onPush-" + repo
-		if(!isParamEmpty(Configuration.get("organization")) && !isParamEmpty(getJenkinsFolderByName(organization))){
+		def jobRootFolder = Configuration.get("jobRootFolder")
+		if(!isParamEmpty(jobRootFolder) && !isParamEmpty(getJenkinsFolderByName(jobRootFolder))){
 			jobName = "${organization}/" + jobName
 		}
 		context.build job: jobName,
@@ -113,6 +112,7 @@ class Repository {
 					repoFolder = repo
 				}
 			}
+			Configuration.set("jobRootFolder", jobRootFolder)
 			context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 			def githubHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
 			def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
