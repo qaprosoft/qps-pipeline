@@ -2,9 +2,9 @@ package com.qaprosoft.jenkins.pipeline.integration.zafira
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
-
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
+import java.nio.file.Paths
 
 class ZafiraUpdater {
 
@@ -175,5 +175,24 @@ class ZafiraUpdater {
             }
         }
         zc.updateJenkinsConfig(jenkinsSettingsList)
+    }
+
+    public def getZafiraCredentials() {
+        def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+        if(!orgFolderName.equals(Configuration.get("repo")) && !orgFolderName.equals(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION))){
+            def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
+            def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+            if(getCredentials(zafiraURLCredentials)){
+                context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+                    Configuration.set(context.env.KEY, context.env.VALUE)
+                }
+            }
+            if(getCredentials(zafiraTokenCredentials)){
+                context.withCredentials([context.usernamePassword(credentialsId:zafiraTokenCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+                    Configuration.set(context.env.KEY, context.env.VALUE)
+                }
+            }
+            zc = new ZafiraClient(context)
+        }
     }
 }

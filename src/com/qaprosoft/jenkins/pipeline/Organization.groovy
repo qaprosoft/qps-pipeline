@@ -43,22 +43,23 @@ class Organization {
         logger.info("Organization->register")
         context.node('master') {
             context.timestamps {
-                def organization = Configuration.get("organization")
-                def launcherJobName = organization + "/launcher"
+                def folder = Configuration.get("folder")
+                def launcherJobName = folder + "/launcher"
                 prepare()
-                generateCiItems(organization)
-                setSecurity(organization, launcherJobName)
-//                generateLauncher(organization +'/RegisterRepository')
+                generateCiItems(folder)
+                setSecurity(folder, launcherJobName)
+//                generateLauncher(folder +'/RegisterRepository')
+                registerZafiraCreds(folder)
                 clean()
             }
         }
     }
 
-    protected def generateCiItems(organization) {
+    protected def generateCiItems(folder) {
         context.stage("Register Organization") {
-            registerObject("project_folder", new FolderFactory(organization, ""))
-            registerObject("launcher_job", new LauncherJobFactory(organization, getPipelineScript(), "launcher", "Custom job launcher"))
-            registerObject("register_repository_job", new RegisterRepositoryJobFactory(organization, 'RegisterRepository', '', organization, pipelineLibrary, runnerClass))
+            registerObject("project_folder", new FolderFactory(folder, ""))
+            registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
+            registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
             context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
                     sandbox: true,
@@ -74,11 +75,11 @@ class Organization {
         dslObjects.put(name, object)
     }
 
-    protected def setSecurity(organization, launcherJobName){
-        def userName = organization + "-user"
+    protected def setSecurity(folder, launcherJobName){
+        def userName = folder + "-user"
         createJenkinsUser(userName)
         grantUserGlobalPermissions(userName)
-        grantUserFolderPermissions(organization, userName)
+        grantUserFolderPermissions(folder, userName)
         def token = getAPIToken(userName)
         if(token != null){
             registerTokenInZafira(userName, token.tokenValue, launcherJobName)
@@ -162,35 +163,42 @@ class Organization {
         zafiraUpdater.registerTokenInZafira(userName, tokenValue, launcherJobName)
     }
 
-	protected def generateLauncher(jobFullName){
-        def job = getItemByFullName(jobFullName)
-		def jobUrl = getJobUrl(jobFullName)
-		def parameters = getParametersMap(job)
-		zafiraUpdater.createLauncher(parameters, jobUrl, "")
-	}
+    protected def registerZafiraCreds(folder) {
+        def zafiraServiceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
+        def zafiraRefreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+        updateJenkinsCredentials(folder + "-zafira_service_url", folder + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
+        updateJenkinsCredentials(folder + "-zafira_access_token", folder + " Zafira access URL", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
+    }
 
-	protected def getParametersMap(job) {
-		def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
-		Map parameters = [:]
-		parameterDefinitions.each { parameterDefinition ->
-			def value
-			if(parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
-				value = parameterDefinition.choiceListProvider.getDefaultChoice()
-			} else if (parameterDefinition instanceof ChoiceParameterDefinition) {
-				value = parameterDefinition.choices[0]
-			}  else {
-				value = parameterDefinition.defaultValue
-			}
-			if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")
+    protected def generateLauncher(jobFullName){
+        def job = getItemByFullName(jobFullName)
+        def jobUrl = getJobUrl(jobFullName)
+        def parameters = getParametersMap(job)
+        zafiraUpdater.createLauncher(parameters, jobUrl, "")
+    }
+
+    protected def getParametersMap(job) {
+        def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
+        Map parameters = [:]
+        parameterDefinitions.each { parameterDefinition ->
+            def value
+            if(parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
+                value = parameterDefinition.choiceListProvider.getDefaultChoice()
+            } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
+                value = parameterDefinition.choices[0]
+            }  else {
+                value = parameterDefinition.defaultValue
+            }
+            if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")
                     && !parameterDefinition.name.equals("pipelineLibrary")
                     && !parameterDefinition.name.equals("runnerClass"))
             {
-				logger.info(parameterDefinition.name)
-				parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
-			}
-		}
-		return parameters
-	}
+                logger.info(parameterDefinition.name)
+                parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
+            }
+        }
+        return parameters
+    }
 
     protected String getPipelineScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
