@@ -24,8 +24,8 @@ class Organization {
     protected ZafiraUpdater zafiraUpdater
     protected Configuration configuration = new Configuration(context)
     protected Map dslObjects = new LinkedHashMap()
-    protected def pipelineLibrary = "QPS-Pipeline"
-    protected def runnerClass = "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner"
+    protected def pipelineLibrary
+    protected def runnerClass
     protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
     protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
