@@ -1,12 +1,9 @@
 package com.qaprosoft.jenkins.pipeline
 
 import groovy.json.JsonBuilder
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 @Grab('org.testng:testng:6.8.8')
 import groovy.json.JsonSlurperClassic
-import org.testng.xml.Parser
-import org.testng.xml.XmlSuite
 
 import java.nio.file.FileSystems
 import java.nio.file.Path
@@ -131,7 +128,7 @@ public class Executor {
             for (def i = 1; i < array.size() - 1; i++){
                 folderName  = folderName + array[i]
             }
-            folderName = folderName.replaceAll(".\$","")
+            folderName = replaceTrailingSlash(folderName)
         } else {
             def array = workspace.split("/")
             folderName = array[array.size() - 2]
