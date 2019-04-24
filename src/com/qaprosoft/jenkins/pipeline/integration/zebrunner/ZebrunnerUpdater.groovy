@@ -17,8 +17,8 @@ class ZebrunnerUpdater {
 
     public def sendInitResult(integrationParameters, initialized) {
         def tenancyName = Configuration.get("tenancyName")
-        def authToken = Configuration.get("authToken")
+        def accessToken = Configuration.get("accessToken")
         def callbackURL = Configuration.get("callbackURL")
-        return zc.sendInitResult(integrationParameters, tenancyName, authToken, callbackURL, initialized)
+        return zc.sendInitResult(integrationParameters, tenancyName, accessToken, callbackURL, initialized)
     }
 }
