@@ -90,7 +90,7 @@ class Organization {
             integrationParameters = generateIntegrationParemetersMap(userName, token.tokenValue, launcherJobName)
             initialized = true
         } catch (Exception e) {
-            logger.error("Something went wrong during secure space initialization: \n${e.getMessage()}\n${e}")
+            logger.error("Something went wrong during secure folder initialization: \n${e}")
         }
         zebrunnerUpdater.sendInitResult(integrationParameters, initialized)
     }
