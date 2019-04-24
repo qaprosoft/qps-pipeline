@@ -179,7 +179,7 @@ class Organization {
         integrationParameters.JENKINS_USER = userName
         integrationParameters.JENKINS_API_TOKEN_OR_PASSWORD = tokenValue
         integrationParameters.JENKINS_LAUNCHER_JOB_NAME = launcherJobName
-
+        return integrationParameters
     }
 
     protected String getPipelineScript() {
