@@ -58,6 +58,7 @@ class Organization {
 
     protected def grantAdminGlobalPermissions(userName){
         def authStrategy = Jenkins.instance.getAuthorizationStrategy()
+        authStrategy.add(hudson.model.Hudson.READ, userName)
         authStrategy.add(hudson.model.Hudson.HUDSON_ADMINISTER, userName)
     }
 
