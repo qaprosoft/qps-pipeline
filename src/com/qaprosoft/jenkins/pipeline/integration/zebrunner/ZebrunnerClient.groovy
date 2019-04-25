@@ -20,7 +20,7 @@ class ZebrunnerClient extends HttpClient{
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
 						  requestBody: "${jsonBuilder}",
-						  url: callbackURL]
+						  url: "${callbackURL}"]
 		return sendRequestFormatted(parameters)
 	}
 }
