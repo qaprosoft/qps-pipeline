@@ -46,20 +46,12 @@ class Organization {
                 def folder = Configuration.get("tenancyName")
                 def launcherJobName = folder + "/launcher"
                 prepare()
-                grantAdminGlobalPermissions("admin")
-
-//                generateCiItems(folder)
-//                setSecurity(folder, launcherJobName)
-////                generateLauncher(folder +'/RegisterRepository')
-//                clean()
+                generateCiItems(folder)
+                setSecurity(folder, launcherJobName)
+//                generateLauncher(folder +'/RegisterRepository')
+                clean()
             }
         }
-    }
-
-    protected def grantAdminGlobalPermissions(userName){
-        def authStrategy = Jenkins.instance.getAuthorizationStrategy()
-        authStrategy.add(hudson.model.Hudson.READ, userName)
-        authStrategy.add(jenkins.model.Jenkins.ADMINISTER, userName)
     }
 
     protected def generateCiItems(folder) {
