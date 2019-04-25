@@ -46,13 +46,19 @@ class Organization {
                 def folder = Configuration.get("tenancyName")
                 def launcherJobName = folder + "/launcher"
                 prepare()
-                generateCiItems(folder)
-                setSecurity(folder, launcherJobName)
-//                generateLauncher(folder +'/RegisterRepository')
-                sendInitResult(folder)
-                clean()
+                grantAdminGlobalPermissions("admin")
+
+//                generateCiItems(folder)
+//                setSecurity(folder, launcherJobName)
+////                generateLauncher(folder +'/RegisterRepository')
+//                clean()
             }
         }
+    }
+
+    protected def grantAdminGlobalPermissions(userName){
+        def authStrategy = Jenkins.instance.getAuthorizationStrategy()
+        authStrategy.add(hudson.model.Hudson.HUDSON_ADMINISTER, userName)
     }
 
     protected def generateCiItems(folder) {
@@ -166,10 +172,6 @@ class Organization {
             authProperty.add(it, userName)
         }
         folder.save()
-    }
-
-    protected def sendInitResult(folder) {
-
     }
 
     protected def generateIntegrationParemetersMap(userName, tokenValue, launcherJobName){
