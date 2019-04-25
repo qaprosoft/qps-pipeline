@@ -59,7 +59,7 @@ class Organization {
     protected def grantAdminGlobalPermissions(userName){
         def authStrategy = Jenkins.instance.getAuthorizationStrategy()
         authStrategy.add(hudson.model.Hudson.READ, userName)
-        authStrategy.add(Jenkins.ADMINISTER, userName)
+        authStrategy.add(jenkins.model.Jenkins.ADMINISTER, userName)
     }
 
     protected def generateCiItems(folder) {
