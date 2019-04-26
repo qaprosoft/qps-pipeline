@@ -54,6 +54,38 @@ class Organization {
         }
     }
 
+    def delete() {
+        logger.info("Organization->register")
+        context.node('master') {
+            context.timestamps {
+                def folder = Configuration.get("tenancyName")
+                def userName = folder + "-user"
+                prepare()
+                deleteFolder(folder)
+                deleteUser(userName)
+                clean()
+            }
+        }
+    }
+
+    protected def deleteFolder(folderName) {
+        context.stage("Delete folder") {
+            def folder = getJenkinsFolderByName(folderName)
+            if (!isParamEmpty(folder)){
+                folder.delete()
+            }
+        }
+    }
+
+    protected def deleteUser(userName) {
+        context.stage("Delete user") {
+            def user = User.getById(userName, false)
+            if (!isParamEmpty(user)){
+                user.delete()
+            }
+        }
+    }
+
     protected def generateCiItems(folder) {
         context.stage("Register Organization") {
             registerObject("project_folder", new FolderFactory(folder, ""))
@@ -70,7 +102,7 @@ class Organization {
         }
     }
 
-    private void registerObject(name, object) {
+    protected void registerObject(name, object) {
         dslObjects.put(name, object)
     }
 
