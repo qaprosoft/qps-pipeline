@@ -4,15 +4,15 @@ import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.RegisterRepositoryJobFactory
-import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
+import com.qaprosoft.jenkins.pipeline.integration.zebrunner.ZebrunnerUpdater
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
+import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jenkins.security.ApiTokenProperty
-import com.wangyin.parameter.WHideParameterDefinition
-import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
+
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
@@ -21,7 +21,7 @@ class Organization {
     protected def context
     protected ISCM scmClient
     protected Logger logger
-    protected ZafiraUpdater zafiraUpdater
+    protected ZebrunnerUpdater zebrunnerUpdater
     protected Configuration configuration = new Configuration(context)
     protected Map dslObjects = new LinkedHashMap()
     protected def pipelineLibrary
@@ -34,7 +34,7 @@ class Organization {
         this.context = context
         scmClient = new GitHub(context)
         logger = new Logger(context)
-        zafiraUpdater = new ZafiraUpdater(context)
+        zebrunnerUpdater = new ZebrunnerUpdater(context)
         pipelineLibrary = Configuration.get("pipelineLibrary")
         runnerClass =  Configuration.get("runnerClass")
     }
@@ -43,14 +43,45 @@ class Organization {
         logger.info("Organization->register")
         context.node('master') {
             context.timestamps {
-                def folder = Configuration.get("folder")
+                def folder = Configuration.get("tenancyName")
                 def launcherJobName = folder + "/launcher"
                 prepare()
                 generateCiItems(folder)
                 setSecurity(folder, launcherJobName)
 //                generateLauncher(folder +'/RegisterRepository')
-                registerZafiraCreds(folder)
                 clean()
+            }
+        }
+    }
+
+    def delete() {
+        logger.info("Organization->register")
+        context.node('master') {
+            context.timestamps {
+                def folder = Configuration.get("tenancyName")
+                def userName = folder + "-user"
+                prepare()
+                deleteFolder(folder)
+                deleteUser(userName)
+                clean()
+            }
+        }
+    }
+
+    protected def deleteFolder(folderName) {
+        context.stage("Delete folder") {
+            def folder = getJenkinsFolderByName(folderName)
+            if (!isParamEmpty(folder)){
+                folder.delete()
+            }
+        }
+    }
+
+    protected def deleteUser(userName) {
+        context.stage("Delete user") {
+            def user = User.getById(userName, false)
+            if (!isParamEmpty(user)){
+                user.delete()
             }
         }
     }
@@ -71,22 +102,31 @@ class Organization {
         }
     }
 
-    private void registerObject(name, object) {
+    protected void registerObject(name, object) {
         dslObjects.put(name, object)
     }
 
     protected def setSecurity(folder, launcherJobName){
         def userName = folder + "-user"
-        createJenkinsUser(userName)
-        grantUserGlobalPermissions(userName)
-        grantUserFolderPermissions(folder, userName)
-        def token = getAPIToken(userName)
-        if(token != null){
-            registerTokenInZafira(userName, token.tokenValue, launcherJobName)
+        boolean initialized = false
+        def integrationParameters = [:]
+        try {
+            createJenkinsUser(userName)
+            grantUserGlobalPermissions(userName)
+            grantUserFolderPermissions(folder, userName)
+            def token = generateAPIToken(userName)
+            if (token == null) {
+                throw new RuntimeException("Token generation failed or token for user ${userName} is already exists")
+            }
+            integrationParameters = generateIntegrationParemetersMap(userName, token.tokenValue, launcherJobName)
+            initialized = true
+        } catch (Exception e) {
+            logger.error("Something went wrong during secure folder initialization: \n${e}")
         }
+        zebrunnerUpdater.sendInitResult(integrationParameters, initialized)
     }
 
-    protected def getAPIToken(userName){
+    protected def generateAPIToken(userName){
         def token = null
         def tokenName = userName + '_token'
         def user = User.getById(userName, false)
@@ -159,45 +199,14 @@ class Organization {
         folder.save()
     }
 
-    protected def registerTokenInZafira(userName, tokenValue, launcherJobName){
-        zafiraUpdater.registerTokenInZafira(userName, tokenValue, launcherJobName)
-    }
-
-    protected def registerZafiraCreds(folder) {
-        def zafiraServiceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
-        def zafiraRefreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
-        updateJenkinsCredentials(folder + "-zafira_service_url", folder + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
-        updateJenkinsCredentials(folder + "-zafira_access_token", folder + " Zafira access URL", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
-    }
-
-    protected def generateLauncher(jobFullName){
-        def job = getItemByFullName(jobFullName)
-        def jobUrl = getJobUrl(jobFullName)
-        def parameters = getParametersMap(job)
-        zafiraUpdater.createLauncher(parameters, jobUrl, "")
-    }
-
-    protected def getParametersMap(job) {
-        def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
-        Map parameters = [:]
-        parameterDefinitions.each { parameterDefinition ->
-            def value
-            if(parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
-                value = parameterDefinition.choiceListProvider.getDefaultChoice()
-            } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
-                value = parameterDefinition.choices[0]
-            }  else {
-                value = parameterDefinition.defaultValue
-            }
-            if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")
-                    && !parameterDefinition.name.equals("pipelineLibrary")
-                    && !parameterDefinition.name.equals("runnerClass"))
-            {
-                logger.info(parameterDefinition.name)
-                parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
-            }
-        }
-        return parameters
+    protected def generateIntegrationParemetersMap(userName, tokenValue, launcherJobName){
+        def integrationParameters = [:]
+        String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split("/job/")[0]
+        integrationParameters.JENKINS_URL = jenkinsUrl
+        integrationParameters.JENKINS_USER = userName
+        integrationParameters.JENKINS_API_TOKEN_OR_PASSWORD = tokenValue
+        integrationParameters.JENKINS_LAUNCHER_JOB_NAME = launcherJobName
+        return integrationParameters
     }
 
     protected String getPipelineScript() {
