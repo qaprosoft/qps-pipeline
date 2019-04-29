@@ -25,12 +25,12 @@ class ZafiraClient extends HttpClient{
 				return
 		}
 		JsonBuilder jsonBuilder = new JsonBuilder()
-		jsonBuilder jobUrl: Configuration.get(Configuration.Parameter.JOB_URL),
+		jsonBuilder jobUrl: replaceTrailingSlash(Configuration.get(Configuration.Parameter.JOB_URL)),
 				buildNumber: Configuration.get(Configuration.Parameter.BUILD_NUMBER),
 				branch: Configuration.get("branch"),
 				env: Configuration.get("env"),
 				ciRunId: uuid,
-				ciParentUrl: Configuration.get("ci_parent_url"),
+				ciParentUrl: replaceTrailingSlash(Configuration.get("ci_parent_url")),
 				ciParentBuild: Configuration.get("ci_parent_build"),
 				project: Configuration.get("zafira_project")
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
@@ -213,39 +213,6 @@ class ZafiraClient extends HttpClient{
 						  url: this.serviceURL + "/api/jobs/url"]
 		return sendRequestFormatted(parameters)
 	}
-
-	public def getJenkinsSettings() {
-		if (isTokenExpired()) {
-			getZafiraAuthToken(refreshToken)
-			if(isParamEmpty(authToken))
-				return
-		}
-		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-						  contentType: 'APPLICATION_JSON',
-						  httpMode: 'GET',
-						  validResponseCodes: "200:401",
-						  url: this.serviceURL + "/api/settings/tool/JENKINS?decrypt=false"]
-		return sendRequestFormatted(parameters)
-	}
-
-	public def updateJenkinsConfig(jenkinsSettingsList) {
-		if (isTokenExpired()) {
-			getZafiraAuthToken(refreshToken)
-			if(isParamEmpty(authToken))
-				return
-		}
-		JsonBuilder jsonBuilder = new JsonBuilder(jenkinsSettingsList)
-
-		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
-		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-						  contentType: 'APPLICATION_JSON',
-						  httpMode: 'PUT',
-						  requestBody: "${jsonBuilder}",
-						  validResponseCodes: "200:401",
-						  url: this.serviceURL + "/api/settings/tool"]
-		return sendRequestFormatted(parameters)
-	}
-
 
 	protected boolean isTokenExpired() {
 		return authToken == null || System.currentTimeMillis() > tokenExpTime

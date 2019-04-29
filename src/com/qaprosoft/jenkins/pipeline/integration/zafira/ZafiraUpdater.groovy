@@ -159,24 +159,6 @@ class ZafiraUpdater {
         return zc.createJob(jobUrl)
     }
 
-    public def registerTokenInZafira(userName, tokenValue, launcherJobName){
-        def jenkinsSettingsList = zc.getJenkinsSettings()
-        jenkinsSettingsList.each {
-            switch (it.name) {
-                case "JENKINS_USER" :
-                    it.value = userName
-                    break
-                case "JENKINS_API_TOKEN_OR_PASSWORD":
-                    it.value = tokenValue
-                    break
-                case "JENKINS_LAUNCHER_JOB_NAME":
-                    it.value = launcherJobName
-                    break
-            }
-        }
-        zc.updateJenkinsConfig(jenkinsSettingsList)
-    }
-
     public def getZafiraCredentials() {
         def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
         def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
