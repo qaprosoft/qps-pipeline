@@ -40,6 +40,9 @@ public class QARunner extends AbstractRunner {
     protected TestRailUpdater testRailUpdater
     protected QTestUpdater qTestUpdater
 
+    protected qpsInfraCrossBrowserMatrixName = "qps-infra-matrix"
+    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome, browser_version: 73.0; browser: chrome, browser_version: 72.0; browser: firefox, browser_version: 66.0; browser: firefox, browser_version: 65.0"
+
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
@@ -1019,6 +1022,9 @@ public class QARunner extends AbstractRunner {
     }
 
     protected getSupportedConfigurations(configDetails){
+        // replace cross-browser matrix by prepared configurations list
+        configDetails = getCrossBrowserConfigurations(configDetails)
+
         def valuesMap = [:]
         // browser: chrome; browser: firefox;
         // browser: chrome, browser_version: 74;
@@ -1038,6 +1044,11 @@ public class QARunner extends AbstractRunner {
         }
         logger.info("valuesMap: " + valuesMap)
         return valuesMap
+    }
+
+    // do not remove unused crossBrowserSchema. It is declared for custom private pipelines to override default schemas
+    protected getCrossBrowserConfigurations(configDetails) {
+        return configDetails.replace(qpsInfraCrossBrowserMatrixName, qpsInfraCrossBrowserMatrixValue)
     }
 
     protected def executeStages() {
