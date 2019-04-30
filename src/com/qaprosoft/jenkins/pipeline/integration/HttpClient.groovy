@@ -24,7 +24,6 @@ abstract class HttpClient {
         }
     }
 
-    @NonCPS
     protected def sendRequest(requestParams) {
         def response = null
         /** Catches exceptions in every http call */

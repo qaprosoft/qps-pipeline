@@ -254,7 +254,7 @@ class ZafiraClient extends HttpClient {
 						  requestBody: requestBody,
 						  url: this.serviceURL + "/api/auth/refresh"]
         logger.debug("parameters: " + parameters)
-        Map properties = (Map)sendRequest(parameters).content
+        Map properties = (Map)sendRequestFormatted(parameters)
         logger.debug("properties: " + properties)
         if(isParamEmpty(properties)) {
             logger.info("Unable to get auth token, check Zafira integration properties")
