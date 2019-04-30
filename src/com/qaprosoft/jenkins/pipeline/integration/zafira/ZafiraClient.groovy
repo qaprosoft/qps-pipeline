@@ -128,7 +128,7 @@ class ZafiraClient extends HttpClient {
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'GET',
 						  validResponseCodes: "200",
-						  url: this.serviceURL + "/api/config/slack/testrun/${uuid}/finish?channels=${channels}"]
+						  url: this.serviceURL + "/api/config/slack/${uuid}/finish?channels=${channels}"]
 		return sendRequest(parameters)
 	}
 
