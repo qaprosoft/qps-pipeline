@@ -5,7 +5,7 @@ import groovy.json.JsonBuilder
 import static com.qaprosoft.jenkins.Utils.*
 import com.qaprosoft.jenkins.pipeline.Configuration
 
-class ZafiraClient extends HttpClient{
+class ZafiraClient extends HttpClient {
 
 	private String serviceURL
 	private String refreshToken
@@ -254,7 +254,7 @@ class ZafiraClient extends HttpClient{
 						  requestBody: requestBody,
 						  url: this.serviceURL + "/api/auth/refresh"]
         logger.debug("parameters: " + parameters)
-        Map properties = (Map)sendRequest(parameters)
+        Map properties = (Map)sendRequest(parameters).content
         logger.debug("properties: " + properties)
         if(isParamEmpty(properties)) {
             logger.info("Unable to get auth token, check Zafira integration properties")
