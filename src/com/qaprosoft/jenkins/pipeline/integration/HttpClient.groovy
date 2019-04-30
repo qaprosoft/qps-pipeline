@@ -30,7 +30,7 @@ abstract class HttpClient {
         /** Catches exceptions in every http call */
         try {
             response = context.httpRequest requestParams
-            logger.debug("response: " + response.content)
+            logger.debug("response: " + response.dump())
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
