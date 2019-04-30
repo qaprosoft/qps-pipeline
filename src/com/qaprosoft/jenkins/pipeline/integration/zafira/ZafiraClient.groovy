@@ -5,7 +5,7 @@ import groovy.json.JsonBuilder
 import static com.qaprosoft.jenkins.Utils.*
 import com.qaprosoft.jenkins.pipeline.Configuration
 
-class ZafiraClient extends HttpClient{
+class ZafiraClient extends HttpClient {
 
 	private String serviceURL
 	private String refreshToken
