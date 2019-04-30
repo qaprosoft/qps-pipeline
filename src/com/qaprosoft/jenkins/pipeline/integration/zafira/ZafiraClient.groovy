@@ -83,7 +83,7 @@ class ZafiraClient extends HttpClient {
 		JsonBuilder jsonBuilder = new JsonBuilder()
 		jsonBuilder comment: failureReason
 
-		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
+		logger.debug("REQUEST: " + jsonBuilder.toPrettyString())
 		String requestBody = jsonBuilder.toString()
 		jsonBuilder = null
 
@@ -105,7 +105,7 @@ class ZafiraClient extends HttpClient {
 		JsonBuilder jsonBuilder = new JsonBuilder()
 		jsonBuilder recipients: emailList
 
-		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
+		logger.debug("REQUEST: " + jsonBuilder.toPrettyString())
 		String requestBody = jsonBuilder.toString()
 		jsonBuilder = null
 
@@ -155,7 +155,7 @@ class ZafiraClient extends HttpClient {
 		JsonBuilder jsonBuilder = new JsonBuilder()
 		jsonBuilder recipients: emailList
 
-		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
+		logger.debug("REQUEST: " + jsonBuilder.toPrettyString())
 
 		String requestBody = jsonBuilder.toString()
 		jsonBuilder = null
@@ -210,7 +210,7 @@ class ZafiraClient extends HttpClient {
 				jobUrl: jobUrl,
 				repo: repo
 
-		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
+		logger.debug("REQUEST: " + jsonBuilder.toPrettyString())
 		String requestBody = jsonBuilder.toString()
 		jsonBuilder = null
 
@@ -232,7 +232,7 @@ class ZafiraClient extends HttpClient {
 		JsonBuilder jsonBuilder = new JsonBuilder()
 		jsonBuilder jobUrlValue: jobUrl
 
-		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
+		logger.debug("REQUEST: " + jsonBuilder.toPrettyString())
 		String requestBody = jsonBuilder.toString()
 		jsonBuilder = null
 
