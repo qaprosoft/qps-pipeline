@@ -162,7 +162,7 @@ class ZafiraClient extends HttpClient {
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
 						  contentType: 'APPLICATION_JSON',
 						  httpMode: 'POST',
-						  requestBody: requestBody,
+						  requestBody: "${jsonBuilder}",
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
 		return sendRequest(parameters)
