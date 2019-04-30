@@ -34,6 +34,7 @@ class ZafiraClient extends HttpClient {
 				ciParentBuild: Configuration.get("ci_parent_build"),
 				project: Configuration.get("zafira_project")
 
+		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
 		String requestBody = jsonBuilder.toString()
 		jsonBuilder = null
 
@@ -59,6 +60,7 @@ class ZafiraClient extends HttpClient {
 				scmUrl: Configuration.get("scm_url"),
 				hashcode: Configuration.get("hashcode")
 
+		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
 		String requestBody = jsonBuilder.toString()
 		jsonBuilder = null
 
@@ -81,6 +83,7 @@ class ZafiraClient extends HttpClient {
 		JsonBuilder jsonBuilder = new JsonBuilder()
 		jsonBuilder comment: failureReason
 
+		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
 		String requestBody = jsonBuilder.toString()
 		jsonBuilder = null
 
@@ -102,6 +105,7 @@ class ZafiraClient extends HttpClient {
 		JsonBuilder jsonBuilder = new JsonBuilder()
 		jsonBuilder recipients: emailList
 
+		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
 		String requestBody = jsonBuilder.toString()
 		jsonBuilder = null
 
@@ -150,6 +154,8 @@ class ZafiraClient extends HttpClient {
 		}
 		JsonBuilder jsonBuilder = new JsonBuilder()
 		jsonBuilder recipients: emailList
+
+		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
 
 		String requestBody = jsonBuilder.toString()
 		jsonBuilder = null
