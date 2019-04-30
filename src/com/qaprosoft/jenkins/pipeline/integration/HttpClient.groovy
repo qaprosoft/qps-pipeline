@@ -24,11 +24,13 @@ abstract class HttpClient {
         }
     }
 
+    @NonCPS
     protected def sendRequest(requestParams) {
         def response = null
         /** Catches exceptions in every http call */
         try {
             response = context.httpRequest requestParams
+            logger.debug("response: " + response.content)
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
