@@ -43,7 +43,7 @@ class ZafiraClient extends HttpClient{
 						  requestBody: requestBody,
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/tests/runs/queue"]
-		return sendRequest(parameters)
+		return sendRequestFormatted(parameters)
 	}
 
 	public def smartRerun() {
@@ -69,7 +69,7 @@ class ZafiraClient extends HttpClient{
                           validResponseCodes: "200:401",
                           url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
                           timeout: 300000]
-	        return sendRequest(parameters)
+	        return sendRequestFormatted(parameters)
 	}
 
 	public def abortTestRun(uuid, failureReason) {
@@ -84,7 +84,7 @@ class ZafiraClient extends HttpClient{
 			  requestBody: '{"comment":"' + failureReason + '"}',
 			  validResponseCodes: "200:500",
 			  url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
-        	return sendRequest(parameters)
+        	return sendRequestFormatted(parameters)
 	}
 
     public def sendEmail(uuid, emailList, filter) {
@@ -133,7 +133,7 @@ class ZafiraClient extends HttpClient{
 						  httpMode: 'GET',
 						  validResponseCodes: "200",
 						  url: this.serviceURL + "/api/tags/${uuid}/integration?integrationTag=${tagName}"]
-		return sendRequest(parameters)
+		return sendRequestFormatted(parameters)
 	}
 
 	public def sendFailureEmail(uuid, emailList, suiteOwner, suiteRunner) {
@@ -184,7 +184,7 @@ class ZafiraClient extends HttpClient{
 						  validResponseCodes: "200:404",
 						  url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"]
 
-		return sendRequest(parameters)
+		return sendRequestFormatted(parameters)
 	}
 
 
@@ -210,7 +210,7 @@ class ZafiraClient extends HttpClient{
 						  requestBody: requestBody,
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/launchers/create"]
-		return sendRequest(parameters)
+		return sendRequestFormatted(parameters)
 	}
 
 	public def createJob(jobUrl) {
@@ -232,7 +232,7 @@ class ZafiraClient extends HttpClient{
 						  requestBody: requestBody,
 						  validResponseCodes: "200:401",
 						  url: this.serviceURL + "/api/jobs/url"]
-		return sendRequest(parameters)
+		return sendRequestFormatted(parameters)
 	}
 
 	protected boolean isTokenExpired() {
@@ -254,7 +254,7 @@ class ZafiraClient extends HttpClient{
 						  requestBody: requestBody,
 						  url: this.serviceURL + "/api/auth/refresh"]
         logger.debug("parameters: " + parameters)
-        Map properties = (Map)sendRequest(parameters)
+        Map properties = (Map)sendRequestFormatted(parameters)
         logger.debug("properties: " + properties)
         if(isParamEmpty(properties)) {
             logger.info("Unable to get auth token, check Zafira integration properties")
