@@ -954,7 +954,7 @@ public class QARunner extends AbstractRunner {
                     }
                     
                     // replace cross-browser matrix by prepared configurations list to organize valid split by ";"
-                    supportedBrowser = getCrossBrowserConfigurations(supportedBrowser)
+                    supportedBrowsers = getCrossBrowserConfigurations(supportedBrowsers)
                     
                     for (def supportedBrowser : supportedBrowsers.split(";")) {
                         supportedBrowser = supportedBrowser.trim()
