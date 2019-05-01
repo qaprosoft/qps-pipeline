@@ -943,6 +943,7 @@ public class QARunner extends AbstractRunner {
                 //launch test only if current regressionPipeline exists among regressionPipelines
                 continue
             }
+            
             for (def currentEnv : currentEnvs.split(",")) {
                 for (def supportedEnv : supportedEnvs.split(",")) {
 //                        logger.debug("supportedEnv: " + supportedEnv)
@@ -951,6 +952,10 @@ public class QARunner extends AbstractRunner {
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
+                    
+                    // replace cross-browser matrix by prepared configurations list to organize valid split by ";"
+                    supportedBrowser = getCrossBrowserConfigurations(supportedBrowser)
+                    
                     for (def supportedBrowser : supportedBrowsers.split(";")) {
                         supportedBrowser = supportedBrowser.trim()
                         logger.info("supportedConfig: ${supportedBrowser}")
@@ -1022,9 +1027,6 @@ public class QARunner extends AbstractRunner {
     }
 
     protected getSupportedConfigurations(configDetails){
-        // replace cross-browser matrix by prepared configurations list
-        configDetails = getCrossBrowserConfigurations(configDetails)
-
         def valuesMap = [:]
         // browser: chrome; browser: firefox;
         // browser: chrome, browser_version: 74;
