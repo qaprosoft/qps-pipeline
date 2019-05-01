@@ -42,6 +42,10 @@ class Utils {
         return value
     }
 
+    static def replaceTrailingSlash(value) {
+        return value.replaceAll(".\$","")
+    }
+
     static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
