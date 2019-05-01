@@ -25,12 +25,12 @@ class ZafiraClient extends HttpClient{
 				return
 		}
 		JsonBuilder jsonBuilder = new JsonBuilder()
-		jsonBuilder jobUrl: Configuration.get(Configuration.Parameter.JOB_URL),
+		jsonBuilder jobUrl: replaceTrailingSlash(Configuration.get(Configuration.Parameter.JOB_URL)),
 				buildNumber: Configuration.get(Configuration.Parameter.BUILD_NUMBER),
 				branch: Configuration.get("branch"),
 				env: Configuration.get("env"),
 				ciRunId: uuid,
-				ciParentUrl: Configuration.get("ci_parent_url"),
+				ciParentUrl: replaceTrailingSlash(Configuration.get("ci_parent_url")),
 				ciParentBuild: Configuration.get("ci_parent_build"),
 				project: Configuration.get("zafira_project")
 		def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
