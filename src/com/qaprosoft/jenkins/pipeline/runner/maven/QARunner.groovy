@@ -1109,8 +1109,10 @@ public class QARunner extends AbstractRunner {
 
         String browser = jobParams.get("browser")
         String browser_version = jobParams.get("browser_version")
+        String custom_capabilities = jobParams.get("custom_capabilities")
         String overrideFields = jobParams.get("overrideFields")
         String locale = jobParams.get("locale")
+        
         if (!isParamEmpty(jobName)) {
             stageName += "Stage: ${jobName} "
         }
@@ -1128,6 +1130,9 @@ public class QARunner extends AbstractRunner {
         }
         if (!isParamEmpty(browser_version)) {
             stageName += "Browser version: ${browser_version} "
+        }
+        if (!isParamEmpty(custom_capabilities)) {
+            stageName += "Custom capabilities: ${custom_capabilities} "
         }
 
         if (!isParamEmpty(locale) && multilingualMode) {
