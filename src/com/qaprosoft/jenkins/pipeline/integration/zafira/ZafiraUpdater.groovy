@@ -123,6 +123,10 @@ class ZafiraUpdater {
      }
 
     public def sendFailureEmail(uuid, emailList) {
+        if(isParamEmpty(emailList)){
+            logger.info("No failure email recipients was provided")
+            return
+        }
         def suiteOwner = true
         def suiteRunner = false
         if(Configuration.get("suiteOwner")){

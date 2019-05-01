@@ -9,18 +9,18 @@ class ZebrunnerClient extends HttpClient{
         super(context)
     }
 
-	public def sendInitResult(integrationParameters, tenancyName, accessToken, callbackURL, initialized) {
-		JsonBuilder jsonBuilder = new JsonBuilder()
-		jsonBuilder tenancyName: tenancyName,
-				accessToken: accessToken,
-				initialized: initialized,
-				integrationParameters: integrationParameters
-		logger.info("REQUEST: " + jsonBuilder.toPrettyString())
-		def parameters = [customHeaders: [[name: 'Authorization', value: "${accessToken}"]],
-						  contentType: 'APPLICATION_JSON',
-						  httpMode: 'POST',
-						  requestBody: "${jsonBuilder}",
-						  url: callbackURL]
-		return sendRequestFormatted(parameters)
-	}
+    public def sendInitResult(integrationParameters, tenancyName, accessToken, callbackURL, initialized) {
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder tenancyName: tenancyName,
+                accessToken: accessToken,
+                initialized: initialized,
+                integrationParameters: integrationParameters
+        logger.info("REQUEST: " + jsonBuilder.toPrettyString())
+        def parameters = [customHeaders: [[name: 'Authorization', value: "${accessToken}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'POST',
+                          requestBody: "${jsonBuilder}",
+                          url: callbackURL]
+        return sendRequestFormatted(parameters)
+    }
 }

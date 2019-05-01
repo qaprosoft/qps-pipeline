@@ -40,6 +40,9 @@ public class QARunner extends AbstractRunner {
     protected TestRailUpdater testRailUpdater
     protected QTestUpdater qTestUpdater
 
+    protected qpsInfraCrossBrowserMatrixName = "qps-infra-matrix"
+    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome, browser_version: 73.0; browser: chrome, browser_version: 72.0; browser: firefox, browser_version: 66.0; browser: firefox, browser_version: 65.0"
+
     //CRON related vars
     protected def listPipelines = []
     protected JobType jobType = JobType.JOB
@@ -940,6 +943,7 @@ public class QARunner extends AbstractRunner {
                 //launch test only if current regressionPipeline exists among regressionPipelines
                 continue
             }
+            
             for (def currentEnv : currentEnvs.split(",")) {
                 for (def supportedEnv : supportedEnvs.split(",")) {
 //                        logger.debug("supportedEnv: " + supportedEnv)
@@ -948,6 +952,10 @@ public class QARunner extends AbstractRunner {
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
+                    
+                    // replace cross-browser matrix by prepared configurations list to organize valid split by ";"
+                    supportedBrowsers = getCrossBrowserConfigurations(supportedBrowsers)
+                    
                     for (def supportedBrowser : supportedBrowsers.split(";")) {
                         supportedBrowser = supportedBrowser.trim()
                         logger.info("supportedConfig: ${supportedBrowser}")
@@ -1040,6 +1048,11 @@ public class QARunner extends AbstractRunner {
         return valuesMap
     }
 
+    // do not remove unused crossBrowserSchema. It is declared for custom private pipelines to override default schemas
+    protected getCrossBrowserConfigurations(configDetails) {
+        return configDetails.replace(qpsInfraCrossBrowserMatrixName, qpsInfraCrossBrowserMatrixValue)
+    }
+
     protected def executeStages() {
         def mappedStages = [:]
 
@@ -1096,8 +1109,10 @@ public class QARunner extends AbstractRunner {
 
         String browser = jobParams.get("browser")
         String browser_version = jobParams.get("browser_version")
+        String custom_capabilities = jobParams.get("custom_capabilities")
         String overrideFields = jobParams.get("overrideFields")
         String locale = jobParams.get("locale")
+        
         if (!isParamEmpty(jobName)) {
             stageName += "Stage: ${jobName} "
         }
@@ -1115,6 +1130,9 @@ public class QARunner extends AbstractRunner {
         }
         if (!isParamEmpty(browser_version)) {
             stageName += "Browser version: ${browser_version} "
+        }
+        if (!isParamEmpty(custom_capabilities)) {
+            stageName += "Custom capabilities: ${custom_capabilities} "
         }
 
         if (!isParamEmpty(locale) && multilingualMode) {
