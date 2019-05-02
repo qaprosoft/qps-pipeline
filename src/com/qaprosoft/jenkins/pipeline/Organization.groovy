@@ -219,10 +219,10 @@ class Organization {
 
             updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL) ?
                     logger.info(orgFolderName + "zafira service url was successfully registered.") :
-                    logger.info("No value was provided.")
+                    logger.info("No url was provided.")
             updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken) ?
                     logger.info(orgFolderName + "zafira access token was successfully registered.") :
-                    logger.info("No value was provided.")
+                    logger.info("No token was provided.")
 
         }
     }
