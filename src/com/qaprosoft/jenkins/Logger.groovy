@@ -48,9 +48,9 @@ class Logger {
 
     private def log(LogLevel logLevel, message){
         def logMessage = ""
-        if(logLevel.value >= pipelineLogLevel.value){
+        if (logLevel.value >= pipelineLogLevel.value){
             logMessage = "${message}"
-            if(contextType == ContextType.JOB_DSL){
+            if (contextType == ContextType.JOB_DSL){
                 logMessage = logMessage +"\n"
             }
         }
