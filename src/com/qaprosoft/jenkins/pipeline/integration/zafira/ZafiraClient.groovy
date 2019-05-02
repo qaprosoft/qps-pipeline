@@ -21,7 +21,7 @@ class ZafiraClient extends HttpClient {
     public def queueZafiraTestRun(uuid) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -50,7 +50,7 @@ class ZafiraClient extends HttpClient {
     public def smartRerun() {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -77,7 +77,7 @@ class ZafiraClient extends HttpClient {
     public def abortTestRun(uuid, failureReason) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -99,7 +99,7 @@ class ZafiraClient extends HttpClient {
     public def sendEmail(uuid, emailList, filter) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -121,7 +121,7 @@ class ZafiraClient extends HttpClient {
     public def sendSlackNotification(uuid, channels) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
@@ -135,7 +135,7 @@ class ZafiraClient extends HttpClient {
     public def exportTagData(uuid, tagName) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
@@ -149,7 +149,7 @@ class ZafiraClient extends HttpClient {
     public def sendFailureEmail(uuid, emailList, suiteOwner, suiteRunner) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -171,7 +171,7 @@ class ZafiraClient extends HttpClient {
     public def exportZafiraReport(uuid) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
@@ -186,7 +186,7 @@ class ZafiraClient extends HttpClient {
     public def getTestRunByCiRunId(uuid) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
@@ -202,7 +202,7 @@ class ZafiraClient extends HttpClient {
     public def createLauncher(jobParameters, jobUrl, repo) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -226,7 +226,7 @@ class ZafiraClient extends HttpClient {
     public def createJob(jobUrl) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
-            if(isParamEmpty(authToken))
+            if (isParamEmpty(authToken))
                 return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -266,7 +266,7 @@ class ZafiraClient extends HttpClient {
         logger.debug("parameters: " + parameters)
         Map properties = (Map)sendRequestFormatted(parameters)
         logger.debug("properties: " + properties)
-        if(isParamEmpty(properties)) {
+        if (isParamEmpty(properties)) {
             logger.info("Unable to get auth token, check Zafira integration properties")
             return
         }

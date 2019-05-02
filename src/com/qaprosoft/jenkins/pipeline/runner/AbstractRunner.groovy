@@ -25,5 +25,5 @@ public abstract class AbstractRunner {
     //Events
     abstract public void onPush()
     abstract public void onPullRequest()
-	
+
 }
