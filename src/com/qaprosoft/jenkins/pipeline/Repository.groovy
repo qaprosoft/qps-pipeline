@@ -198,9 +198,9 @@ class Repository {
 
 	public def registerCredentials(){
 		context.stage("Register Credentials") {
-			def user = Configuration.get("user")
-			def token = Configuration.get("token")
-			def jenkinsUser = !isParamEmpty(Configuration.get("jenkins_user")) ? Configuration.get("jenkins_user") : getBuildUser(context.currentBuild)
+			def user = Configuration.get("githubUser")
+			def token = Configuration.get("githubToken")
+			def jenkinsUser = !isParamEmpty(Configuration.get("jenkinsUser")) ? Configuration.get("jenkinsUser") : getBuildUser(context.currentBuild)
 			if(updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHub token", user, token)){
 				logger.info(jenkinsUser + " credentials were successfully registered.")
 			} else {
