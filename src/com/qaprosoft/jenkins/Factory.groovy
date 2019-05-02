@@ -27,7 +27,7 @@ factories.each{
         exceptionOccurred = true
     }
 }
-if(exceptionOccurred) {
+if (exceptionOccurred) {
     logger.error("Something went wrong during job creation. Please, check stacktrace for more information.")
     throw new RuntimeException("JobDslException occurred.")
 }

@@ -77,7 +77,7 @@ public class QARunner extends AbstractRunner {
     //Methods
     public void build() {
         logger.info("QARunner->build")
-        if(!isParamEmpty(Configuration.get("scmURL"))){
+        if (!isParamEmpty(Configuration.get("scmURL"))){
             scmClient.setUrl(Configuration.get("scmURL"))
         }
         if (jobType.equals(JobType.JOB)) {
@@ -113,15 +113,15 @@ public class QARunner extends AbstractRunner {
             logger.info("QARunner->onPullRequest")
             scmClient.clonePR()
 
-			def pomFiles = getProjectPomFiles()
-			pomFiles.each {
-				logger.debug(it)
-				//do compile and scanner for all hogh level pom.xml files
+            def pomFiles = getProjectPomFiles()
+            pomFiles.each {
+                logger.debug(it)
+                //do compile and scanner for all hogh level pom.xml files
 
-				// [VD] integrated compilation as part of the sonar PR checker maven goal
-				//compile(it.value)
-				executeSonarPRScan(it.value)
-			}
+                // [VD] integrated compilation as part of the sonar PR checker maven goal
+                //compile(it.value)
+                executeSonarPRScan(it.value)
+            }
 
             //TODO: investigate whether we need this piece of code
             //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
@@ -130,22 +130,22 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-	protected void compile() {
-		compile("pom.xml")
-	}
+    protected void compile() {
+        compile("pom.xml")
+    }
 
-	protected void compile(pomFile) {
-		context.stage('Maven Compile') {
-			// [VD] don't remove -U otherwise latest dependencies are not downloaded
-			// and PR can be marked as fail due to the compilation failure!
-			def goals = "-U clean compile test-compile \
+    protected void compile(pomFile) {
+        context.stage('Maven Compile') {
+            // [VD] don't remove -U otherwise latest dependencies are not downloaded
+            // and PR can be marked as fail due to the compilation failure!
+            def goals = "-U clean compile test-compile \
 					-f ${pomFile} \
 					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Dcarina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
 
-			executeMavenGoals(goals)
-		}
-	}
+            executeMavenGoals(goals)
+        }
+    }
 
     protected void prepare() {
         scmClient.clone(!onlyUpdated)
@@ -216,7 +216,7 @@ public class QARunner extends AbstractRunner {
         def pomFiles = []
         def files = context.findFiles(glob: "**/pom.xml")
 
-        if(files.length > 0) {
+        if (files.length > 0) {
             logger.info("Number of pom.xml files to analyze: " + files.length)
 
             int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
@@ -238,7 +238,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def getSubProjectPomFiles(subDirectory) {
-        if(".".equals(subDirectory)){
+        if (".".equals(subDirectory)){
             subDirectory = ""
         } else {
             subDirectory = subDirectory + "/"
@@ -252,7 +252,7 @@ public class QARunner extends AbstractRunner {
         logger.info("SUBPROJECT POMS: " + poms)
         for(pom in poms){
             testNGFolderName = parseTestNgFolderName(pom.path)
-            if(!isParamEmpty(testNGFolderName)){
+            if (!isParamEmpty(testNGFolderName)){
                 break
             }
         }
@@ -264,7 +264,7 @@ public class QARunner extends AbstractRunner {
         String pom = context.readFile pomFile
         String tagName = "suiteXmlFile"
         Matcher matcher = Pattern.compile(".*" + tagName + ".*").matcher(pom)
-        if(matcher.find()){
+        if (matcher.find()){
             def suiteXmlPath = pom.substring(pom.lastIndexOf("<" + tagName + ">") + tagName.length() + 2, pom.indexOf("</" + tagName + ">".toString()))
             Path suitePath = Paths.get(suiteXmlPath).getParent()
             testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
@@ -278,7 +278,7 @@ public class QARunner extends AbstractRunner {
         def zafiraProperties = context.findFiles glob: subProjectFilter + "/**/zafira.properties"
         zafiraProperties.each {
             Map properties  = context.readProperties file: it.path
-            if(!isParamEmpty(properties.zafira_project)){
+            if (!isParamEmpty(properties.zafira_project)){
                 zafiraProject = properties.zafira_project
                 logger.info("ZafiraProject: " + zafiraProject)
             }
@@ -420,14 +420,14 @@ public class QARunner extends AbstractRunner {
         Map parameters = [:]
         parameterDefinitions.each { parameterDefinition ->
             def value
-            if(parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
+            if (parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
                 value = parameterDefinition.choiceListProvider.getDefaultChoice()
             } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
                 value = parameterDefinition.choices[0]
             }  else {
                 value = parameterDefinition.defaultValue
             }
-            if(!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")
+            if (!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")
                     && !parameterDefinition.name.equals("pipelineLibrary")
                     && !parameterDefinition.name.equals("runnerClass"))
             {
@@ -943,7 +943,7 @@ public class QARunner extends AbstractRunner {
                 //launch test only if current regressionPipeline exists among regressionPipelines
                 continue
             }
-            
+
             for (def currentEnv : currentEnvs.split(",")) {
                 for (def supportedEnv : supportedEnvs.split(",")) {
 //                        logger.debug("supportedEnv: " + supportedEnv)
@@ -952,10 +952,10 @@ public class QARunner extends AbstractRunner {
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
-                    
+
                     // replace cross-browser matrix by prepared configurations list to organize valid split by ";"
                     supportedBrowsers = getCrossBrowserConfigurations(supportedBrowsers)
-                    
+
                     for (def supportedBrowser : supportedBrowsers.split(";")) {
                         supportedBrowser = supportedBrowser.trim()
                         logger.info("supportedConfig: ${supportedBrowser}")
@@ -1021,7 +1021,7 @@ public class QARunner extends AbstractRunner {
         return Configuration.get("env")
     }
 
-	// do not remove currentSuite from this method! It is available here to be override on customer level.
+    // do not remove currentSuite from this method! It is available here to be override on customer level.
     protected def registerPipeline(currentSuite, pipelineMap) {
         listPipelines.add(pipelineMap)
     }
@@ -1112,7 +1112,7 @@ public class QARunner extends AbstractRunner {
         String custom_capabilities = jobParams.get("custom_capabilities")
         String overrideFields = jobParams.get("overrideFields")
         String locale = jobParams.get("locale")
-        
+
         if (!isParamEmpty(jobName)) {
             stageName += "Stage: ${jobName} "
         }
@@ -1217,7 +1217,7 @@ public class QARunner extends AbstractRunner {
 
     // Possible to override in private pipelines
     protected def getDebugHost() {
-       return context.env.getEnvironment().get("QPS_HOST")
+        return context.env.getEnvironment().get("QPS_HOST")
     }
 
     // Possible to override in private pipelines
@@ -1225,5 +1225,5 @@ public class QARunner extends AbstractRunner {
         def port = "8000"
         return port
     }
-	
+
 }

@@ -37,12 +37,12 @@ public class Executor {
     }
 
     static String getUUID() {
-		def ci_run_id = Configuration.get("ci_run_id")
-		if (isParamEmpty(ci_run_id)) {
-			ci_run_id = randomUUID() as String
-		}
-		return ci_run_id
-	}
+        def ci_run_id = Configuration.get("ci_run_id")
+        if (isParamEmpty(ci_run_id)) {
+            ci_run_id = randomUUID() as String
+        }
+        return ci_run_id
+    }
 
     static def getEmailParams(body, subject, to) {
         def params = [attachLog: true,
@@ -65,10 +65,10 @@ public class Executor {
     }
 
     static def updateJenkinsCredentials(id, description, user, password) {
-        if(!isParamEmpty(password) && !isParamEmpty(user)){
+        if (!isParamEmpty(password) && !isParamEmpty(user)){
             def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
             def credentials = getCredentials(id)
-            if(credentials){
+            if (credentials){
                 credentialsStore.removeCredentials(Domain.global(), credentials)
             }
             Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
@@ -139,7 +139,7 @@ public class Executor {
 
     static boolean isFailure(testRunStatus) {
         boolean failure = false
-        if(!"PASSED".equals(testRunStatus)){
+        if (!"PASSED".equals(testRunStatus)){
             failure = true
         }
         return failure
@@ -150,7 +150,7 @@ public class Executor {
         def jenkinsPipelineLocales = xmlSuite.getParameter("jenkinsPipelineLocales")
         if (!isParamEmpty(jenkinsPipelineLocales)) {
             for (String locale in jenkinsPipelineLocales.split(",")) {
-                if(locale.contains(":")){
+                if (locale.contains(":")){
                     def languageLocaleArray = locale.split(":")
                     supportedLocales.put(languageLocaleArray[0], languageLocaleArray[1])
                 } else {
@@ -204,7 +204,7 @@ public class Executor {
         def failureLog = ""
         int lineCount = 0
         for(logLine in currentBuild.rawBuild.getLog(50)) {
-            if(logLine.contains(logPattern) && lineCount < 10){
+            if (logLine.contains(logPattern) && lineCount < 10){
                 failureLog = failureLog + "${logLine}\n"
                 lineCount++
             }
@@ -304,7 +304,7 @@ public class Executor {
         GhprbTrigger trigger = Ghprb.extractTrigger(build)
         GhprbPullRequest ghprbPullRequest = trigger.getRepository().getPullRequest(c.getPullID())
         for(ghLabel in ghprbPullRequest.getPullRequest().getLabels()) {
-            if(ghLabel.getName() == label){
+            if (ghLabel.getName() == label){
                 isApplied = true
                 break
             }
@@ -324,7 +324,7 @@ public class Executor {
         def changeLogSets = currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
             for (entry in changeLogSet.getItems()) {
-                if(entry.getMsg().contains(trigger)){
+                if (entry.getMsg().contains(trigger)){
                     isRequired = true
                     return
                 }
@@ -363,10 +363,10 @@ public class Executor {
     }
 
     static def getDefectsString(String defects, String newDefects){
-        if(isParamEmpty(defects)){
+        if (isParamEmpty(defects)){
             defects = newDefects
         } else {
-            if(!isParamEmpty(newDefects)){
+            if (!isParamEmpty(newDefects)){
                 defects = "${defects},${newDefects}"
             }
         }

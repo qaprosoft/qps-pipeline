@@ -10,36 +10,36 @@ import groovy.transform.InheritConstructors
 @InheritConstructors
 public class RegisterRepositoryJobFactory extends PipelineFactory {
 
-	def pipelineLibrary
-	def runnerClass
+    def pipelineLibrary
+    def runnerClass
 
-	public RegisterRepositoryJobFactory(folder, name, jobDesc, pipelineLibrary, runnerClass) {
-		this.folder = folder
-		this.name = name
-		this.description = jobDesc
-		this.pipelineLibrary = pipelineLibrary
-		this.runnerClass = runnerClass
-	}
+    public RegisterRepositoryJobFactory(folder, name, jobDesc, pipelineLibrary, runnerClass) {
+        this.folder = folder
+        this.name = name
+        this.description = jobDesc
+        this.pipelineLibrary = pipelineLibrary
+        this.runnerClass = runnerClass
+    }
 
-	def create() {
-		logger.info("RegisterRepositoryJobFactory->create")
-		def pipelineJob = super.create()
-		pipelineJob.with {
-			parameters {
-				configure stringParam('organization', '', 'GitHub organization')
-				configure stringParam('repo', '', 'GitHub repository for scanning')
-				configure stringParam('branch', '', 'It is highly recommended to use master branch for each scan operation')
+    def create() {
+        logger.info("RegisterRepositoryJobFactory->create")
+        def pipelineJob = super.create()
+        pipelineJob.with {
+            parameters {
+                configure stringParam('organization', '', 'GitHub organization')
+                configure stringParam('repo', '', 'GitHub repository for scanning')
+                configure stringParam('branch', '', 'It is highly recommended to use master branch for each scan operation')
                 configure stringParam('user', '', 'GitHub user')
                 configure stringParam('token', '', 'GitHub token with read permissions')
-				configure stringParam('pipelineLibrary', pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
-				configure stringParam('runnerClass', runnerClass, '')
-			}
-		}
-		return pipelineJob
-	}
+                configure stringParam('pipelineLibrary', pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
+                configure stringParam('runnerClass', runnerClass, '')
+            }
+        }
+        return pipelineJob
+    }
 
-	String getPipelineScript() {
-		return "@Library(\'${pipelineLibrary}\')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).register()"
-	}
+    String getPipelineScript() {
+        return "@Library(\'${pipelineLibrary}\')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).register()"
+    }
 
 }
