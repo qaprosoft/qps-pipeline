@@ -19,7 +19,7 @@ abstract class HttpClient {
     /** Sends httpRequest using passed parameters */
     protected def sendRequestFormatted(requestParams) {
         def response = sendRequest(requestParams)
-        if(response){
+        if (response){
             return getObjectResponse(response)
         }
     }
@@ -32,7 +32,7 @@ abstract class HttpClient {
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
-        if(!response || response.status >= 400){
+        if (!response || response.status >= 400){
             return
         }
         return response.content
