@@ -211,19 +211,19 @@ class Organization {
 
     public def registerZafiraCredentials(){
         context.stage("Register Zafira Credentials") {
+            def orgFolderName = Configuration.get("tenancyName")
             def zafiraServiceURL = Configuration.get("zafiraServiceURL")
             def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
-            def orgFolderName = Configuration.get("tenancyName")
+            if(isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
+                logger.info("Please, fill out all the fields.")
+            }
             def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
             def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
 
-            updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL) ?
-                    logger.info(orgFolderName + "zafira service url was successfully registered.") :
-                    logger.info("No url was provided.")
-            updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken) ?
-                    logger.info(orgFolderName + "zafira access token was successfully registered.") :
-                    logger.info("No token was provided.")
-
+            if(updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL))
+                    logger.info(orgFolderName + "zafira service url was successfully registered.")
+            if(updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken))
+                    logger.info(orgFolderName + "zafira access token was successfully registered.")
         }
     }
 
