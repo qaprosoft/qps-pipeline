@@ -204,7 +204,7 @@ class Repository {
 			if(updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHub token", user, token)){
 				logger.info(jenkinsUser + " credentials were successfully registered.")
 			} else {
-				logger.info("No user or token was provided.")
+				throw new RuntimeException("Required fields are missing.")
 			}
 		}
 	}
