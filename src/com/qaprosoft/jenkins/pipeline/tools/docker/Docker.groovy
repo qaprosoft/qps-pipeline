@@ -4,7 +4,7 @@ class Docker {
 
     def buildDockerImage(version, registry){
         context.stage('Build Docker Image') {
-           context.docker.build(registry + ":${version}", "--build-arg version=${version} .")
+            context.docker.build(registry + ":${version}", "--build-arg version=${version} .")
         }
     }
 

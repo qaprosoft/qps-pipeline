@@ -10,12 +10,12 @@ class GitHub implements ISCM {
 
     private def context
     private def gitHtmlUrl
-	private def credentialsId
-	private Logger logger
+    private def credentialsId
+    private Logger logger
     private def scmHost
 
-	public GitHub(context) {
-		this.context = context
+    public GitHub(context) {
+        this.context = context
         logger = new Logger(context)
         scmHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         if(scmHost.contains("github")){
@@ -27,19 +27,19 @@ class GitHub implements ISCM {
         } else {
             throw new RuntimeException("Unsupported SCM system!")
         }
-		credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
+        credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
         if(Configuration.get("scmURL") != null ) {
             gitHtmlUrl = Configuration.get("scmURL")
             credentialsId = ''
         }
     }
-    
+
     public def clone() {
         clone(true)
     }
 
-	public def clone(isShallow) {
-		context.stage('Checkout GitHub Repository') {
+    public def clone(isShallow) {
+        context.stage('Checkout GitHub Repository') {
             logger.info("GitHub->clone")
             def fork = !isParamEmpty(Configuration.get("fork")) ? Configuration.get("fork").toBoolean() : false
             def branch = Configuration.get("branch")
@@ -69,29 +69,29 @@ class GitHub implements ISCM {
             Configuration.set("scm_branch", branch)
             Configuration.set("scm_commit", scmVars.GIT_COMMIT)
         }
-	}
+    }
 
 
-	public def clone(gitUrl, branch, subFolder) {
-		context.stage('Checkout GitHub Repository') {
+    public def clone(gitUrl, branch, subFolder) {
+        context.stage('Checkout GitHub Repository') {
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false, '', credentialsId)
-		}
-	}
+        }
+    }
 
-	public def clonePR(){
-		context.stage('Checkout GitHub Repository') {
-			def branch  = Configuration.get("sha1")
-			def gitUrl = Configuration.resolveVars(gitHtmlUrl)
+    public def clonePR(){
+        context.stage('Checkout GitHub Repository') {
+            def branch  = Configuration.get("sha1")
+            def gitUrl = Configuration.resolveVars(gitHtmlUrl)
             logger.info("GitHub->clonePR\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
-			context.checkout getCheckoutParams(gitUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
-		}
-	}
+            context.checkout getCheckoutParams(gitUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
+        }
+    }
 
     public def clonePush() {
         context.stage('Checkout GitHub Repository') {
-			def branch = Configuration.get("branch")
-			def gitUrl = Configuration.resolveVars(gitHtmlUrl)
+            def branch = Configuration.get("branch")
+            def gitUrl = Configuration.resolveVars(gitHtmlUrl)
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', credentialsId)
         }
@@ -130,7 +130,7 @@ class GitHub implements ISCM {
             context.sh "curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${repo}/pulls/${ghprbPullId}/merge"
         }
     }
-    
+
     public def setUrl(url) {
         gitHtmlUrl = url
     }

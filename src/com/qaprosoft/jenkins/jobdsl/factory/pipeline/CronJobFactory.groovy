@@ -18,7 +18,7 @@ public class CronJobFactory extends PipelineFactory {
     public CronJobFactory(folder, pipelineScript, cronJobName, host, repo, organization, suitePath, jobDesc) {
 
         this.folder = folder
-		this.pipelineScript = pipelineScript
+        this.pipelineScript = pipelineScript
         this.description = jobDesc
         this.name = cronJobName
         this.host = host

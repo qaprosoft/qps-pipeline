@@ -25,7 +25,7 @@ class ZafiraUpdater {
      * **/
     protected def getTestRun(uuid) {
         def run = testRun
-        if(isParamEmpty(testRun)) {
+        if (isParamEmpty(testRun)) {
             run = zc.getTestRunByCiRunId(uuid)
             if (isParamEmpty(run)) {
                 logger.error("TestRun is not found in Zafira!")
@@ -35,12 +35,12 @@ class ZafiraUpdater {
     }
 
     public def queueZafiraTestRun(uuid) {
-        if(isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
-            if(isParamEmpty(Configuration.get('test_run_rules'))){
+        if (isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
+            if (isParamEmpty(Configuration.get('test_run_rules'))){
                 def response = zc.queueZafiraTestRun(uuid)
                 logger.info("Queued TestRun: " + formatJson(response))
             }
-         }
+        }
     }
 
     public def smartRerun() {
@@ -83,8 +83,8 @@ class ZafiraUpdater {
             failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE.value}:\n" + failureLog, "UTF-8")
         }
         def response = zc.abortTestRun(uuid, failureReason)
-        if(!isParamEmpty(response)){
-            if(response.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
+        if (!isParamEmpty(response)){
+            if (response.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
             } else {
                 sendFailureEmail(uuid, Configuration.get("email_list"))
@@ -99,7 +99,7 @@ class ZafiraUpdater {
 
     public def sendZafiraEmail(uuid, emailList) {
         def testRun = getTestRun(uuid)
-        if(isParamEmpty(testRun)){
+        if (isParamEmpty(testRun)){
             logger.error("No testRun with uuid " + uuid + "found in Zafira")
             return
         }
@@ -114,25 +114,25 @@ class ZafiraUpdater {
 
     public void exportZafiraReport(uuid, workspace) {
         String zafiraReport = zc.exportZafiraReport(uuid)
-        if(isParamEmpty(zafiraReport)){
+        if (isParamEmpty(zafiraReport)){
             logger.error("UNABLE TO GET TESTRUN! Probably it is not registered in Zafira.")
             return
         }
         logger.debug(zafiraReport)
         context.writeFile file: "${workspace}/zafira/report.html", text: zafiraReport
-     }
+    }
 
     public def sendFailureEmail(uuid, emailList) {
-        if(isParamEmpty(emailList)){
+        if (isParamEmpty(emailList)){
             logger.info("No failure email recipients was provided")
             return
         }
         def suiteOwner = true
         def suiteRunner = false
-        if(Configuration.get("suiteOwner")){
+        if (Configuration.get("suiteOwner")){
             suiteOwner = Configuration.get("suiteOwner")
         }
-        if(Configuration.get("suiteRunner")){
+        if (Configuration.get("suiteRunner")){
             suiteRunner = Configuration.get("suiteRunner")
         }
         return zc.sendFailureEmail(uuid, emailList, suiteOwner, suiteRunner)
@@ -140,7 +140,7 @@ class ZafiraUpdater {
 
     public def setBuildResult(uuid, currentBuild) {
         def testRun = getTestRun(uuid)
-        if(!isParamEmpty(testRun) && isFailure(testRun.status)){
+        if (!isParamEmpty(testRun) && isFailure(testRun.status)){
             currentBuild.result = BuildResult.FAILURE
         }
     }
@@ -167,12 +167,12 @@ class ZafiraUpdater {
         def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
         def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
         def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
-        if(getCredentials(zafiraURLCredentials)){
+        if (getCredentials(zafiraURLCredentials)){
             context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
                 Configuration.set(context.env.KEY, context.env.VALUE)
             }
         }
-        if(getCredentials(zafiraTokenCredentials)){
+        if (getCredentials(zafiraTokenCredentials)){
             context.withCredentials([context.usernamePassword(credentialsId:zafiraTokenCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
                 Configuration.set(context.env.KEY, context.env.VALUE)
             }
