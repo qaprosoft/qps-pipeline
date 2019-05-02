@@ -215,7 +215,7 @@ class Organization {
             def zafiraServiceURL = Configuration.get("zafiraServiceURL")
             def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
             if(isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
-                logger.info("Please, fill out all the fields.")
+                throw new RuntimeException("Required fields are missing")
             }
             def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
             def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
