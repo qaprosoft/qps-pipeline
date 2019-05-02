@@ -5,34 +5,34 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 public class PipelineFactory extends JobFactory {
-	def pipelineScript = ""
-	def suiteOwner = ""
-	
-	public PipelineFactory(folder, name, description) {
-		super(folder, name, description)
-	}
-	
-	public PipelineFactory(folder, name, description, logRotator) {
-		super(folder, name, description, logRotator)
-	}
-	
-	public PipelineFactory(folder, name, description, logRotator, pipelineScript) {
-		super(folder, name, description, logRotator)
-		this.pipelineScript = pipelineScript
-	}
+    def pipelineScript = ""
+    def suiteOwner = ""
 
-	public PipelineFactory(folder, name, description, logRotator, pipelineScript, suiteOwner) {
-		super(folder, name, description, logRotator)
-		this.pipelineScript = pipelineScript
-		this.suiteOwner = suiteOwner
-	}
-	
-	def create() {
-		def pipelineJob = _dslFactory.pipelineJob(getFullName()){
-			description "${description}"
-			logRotator { numToKeep logRotator }
-			
-			authenticationToken('ciStart')
+    public PipelineFactory(folder, name, description) {
+        super(folder, name, description)
+    }
+
+    public PipelineFactory(folder, name, description, logRotator) {
+        super(folder, name, description, logRotator)
+    }
+
+    public PipelineFactory(folder, name, description, logRotator, pipelineScript) {
+        super(folder, name, description, logRotator)
+        this.pipelineScript = pipelineScript
+    }
+
+    public PipelineFactory(folder, name, description, logRotator, pipelineScript, suiteOwner) {
+        super(folder, name, description, logRotator)
+        this.pipelineScript = pipelineScript
+        this.suiteOwner = suiteOwner
+    }
+
+    def create() {
+        def pipelineJob = _dslFactory.pipelineJob(getFullName()){
+            description "${description}"
+            logRotator { numToKeep logRotator }
+
+            authenticationToken('ciStart')
 
             properties {
                 disableResume()
@@ -42,17 +42,17 @@ public class PipelineFactory extends JobFactory {
                 }
             }
 
-			/** Git Stuff **/
-			definition {
-				cps {
-					script(pipelineScript)
-					sandbox()
-				}
-			}
+            /** Git Stuff **/
+            definition {
+                cps {
+                    script(pipelineScript)
+                    sandbox()
+                }
+            }
 
-		}
-		return pipelineJob
-	}
+        }
+        return pipelineJob
+    }
 
     protected List<String> getEnvironments(currentSuite) {
         def envList = getGenericSplit(currentSuite, "jenkinsEnvironments")
@@ -120,5 +120,5 @@ public class PipelineFactory extends JobFactory {
             }
         }
     }
-	
+
 }

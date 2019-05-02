@@ -96,7 +96,7 @@ class TestRailClient extends HttpClient{
 
     public def getUserIdByEmail(userEmail) {
         context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            if(isParamEmpty(userEmail)){
+            if (isParamEmpty(userEmail)){
                 userEmail = context.env.USERNAME
             }
             def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
@@ -134,7 +134,7 @@ class TestRailClient extends HttpClient{
     }
 
     public def addResultsForTests(testRunId, results) {
-        if(isParamEmpty(results)){
+        if (isParamEmpty(results)){
             return results
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
