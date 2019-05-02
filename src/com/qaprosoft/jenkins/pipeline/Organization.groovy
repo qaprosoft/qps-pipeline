@@ -221,9 +221,9 @@ class Organization {
             def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
 
             if(updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL))
-                    logger.info(orgFolderName + "zafira service url was successfully registered.")
+                    logger.info(orgFolderName + " zafira service url was successfully registered.")
             if(updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken))
-                    logger.info(orgFolderName + "zafira access token was successfully registered.")
+                    logger.info(orgFolderName + " zafira access token was successfully registered.")
         }
     }
 
