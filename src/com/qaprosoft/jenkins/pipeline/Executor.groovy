@@ -341,6 +341,19 @@ public class Executor {
         }
     }
 
+    static boolean isJobParameterValueEmpty(value) {
+        boolean empty
+        if(value instanceof ArrayList){
+            empty = value.isEmpty()
+            if (value.size() == 1) {
+                empty = isParamEmpty(value[0])
+            }
+        } else {
+            empty = isParamEmpty(value)
+        }
+        return empty
+    }
+
     /** Checks if current job started as rebuild */
     static Boolean isRebuild(currentBuild) {
         Boolean isRebuild = false
