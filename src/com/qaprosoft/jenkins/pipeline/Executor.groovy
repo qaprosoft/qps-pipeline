@@ -341,6 +341,21 @@ public class Executor {
         }
     }
 
+    static boolean isJobParameterValid(name, value) {
+        def excludedCapabilities = ["custom_capabilities",
+                                    "retry_count",
+                                    "rerun_failures",
+                                    "fork",
+                                    "debug",
+                                    "ci_run_id",
+                                    "pipelineLibrary",
+                                    "runnerClass"]
+        def excluded = excludedCapabilities.find {
+            it.equals(name)
+        }
+        return isParamEmpty(excluded)
+    }
+
     /** Checks if current job started as rebuild */
     static Boolean isRebuild(currentBuild) {
         Boolean isRebuild = false
