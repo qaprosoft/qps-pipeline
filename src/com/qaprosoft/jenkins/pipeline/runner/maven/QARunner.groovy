@@ -421,7 +421,7 @@ public class QARunner extends AbstractRunner {
         parameterDefinitions.each { parameterDefinition ->
             def value
             if (parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
-                value = parameterDefinition.choiceListProvider
+                value = parameterDefinition.choiceListProvider.getChoiceList()
                 logger.info(parameterDefinition.choiceListProvider.dump())
             } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
                 value = parameterDefinition.choices
