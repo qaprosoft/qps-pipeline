@@ -432,9 +432,10 @@ public class QARunner extends AbstractRunner {
                     && !parameterDefinition.name.equals("runnerClass"))
             {
                 logger.info(parameterDefinition.name)
-                if(!isJobParameterValueEmpty(value)){
-                    parameters.put(parameterDefinition.name, value)
-                }
+//                if(!isJobParameterValueEmpty(value)){
+//                    parameters.put(parameterDefinition.name, value)
+//                }
+                parameters.put(parameterDefinition.name, value)
             }
         }
         logger.info(parameters)
