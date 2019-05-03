@@ -205,6 +205,7 @@ class ZafiraClient extends HttpClient {
             if (isParamEmpty(authToken))
                 return
         }
+        jobParameters = new JsonBuilder(jobParameters).toPrettyString()
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder jobParameters: jobParameters,
                 jobUrl: jobUrl,

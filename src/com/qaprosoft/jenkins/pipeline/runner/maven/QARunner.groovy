@@ -421,20 +421,20 @@ public class QARunner extends AbstractRunner {
         parameterDefinitions.each { parameterDefinition ->
             def value
             if (parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
-                value = parameterDefinition.choiceListProvider.getDefaultChoice()
+                value = parameterDefinition.choiceListProvider.getChoiceList()
             } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
-                value = parameterDefinition.choices[0]
+                value = parameterDefinition.choices
             }  else {
                 value = parameterDefinition.defaultValue
             }
-            if (!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")
-                    && !parameterDefinition.name.equals("pipelineLibrary")
-                    && !parameterDefinition.name.equals("runnerClass"))
-            {
+            if (!(parameterDefinition instanceof WHideParameterDefinition)) {
                 logger.info(parameterDefinition.name)
-                parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
+                if(isJobParameterValid(parameterDefinition.name, value)){
+                    parameters.put(parameterDefinition.name, value)
+                }
             }
         }
+        logger.info(parameters)
         return parameters
     }
 
