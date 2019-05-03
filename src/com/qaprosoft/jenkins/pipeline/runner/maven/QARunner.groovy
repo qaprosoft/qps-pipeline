@@ -437,7 +437,7 @@ public class QARunner extends AbstractRunner {
                 parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
             }
         }
-        logger.info(parameterDefinitions)
+        logger.info(parameters)
         return parameters
     }
 
