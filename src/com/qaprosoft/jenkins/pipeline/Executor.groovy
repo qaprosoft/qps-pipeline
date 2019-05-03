@@ -350,19 +350,10 @@ public class Executor {
                                     "ci_run_id",
                                     "pipelineLibrary",
                                     "runnerClass"]
-        boolean valid
-        if(value instanceof ArrayList){
-            valid = !value.isEmpty()
-            if (value.size() == 1) {
-                valid = !isParamEmpty(value[0])
-            }
-        } else {
-            def excluded = excludedCapabilities.find {
-                it.equals(name)
-            }
-            valid = isParamEmpty(excluded)
+        def excluded = excludedCapabilities.find {
+            it.equals(name)
         }
-        return valid
+        return isParamEmpty(excluded)
     }
 
     /** Checks if current job started as rebuild */
