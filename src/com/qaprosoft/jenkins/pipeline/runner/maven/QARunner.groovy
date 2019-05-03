@@ -432,7 +432,6 @@ public class QARunner extends AbstractRunner {
                 if(isJobParameterValid(parameterDefinition.name, value)){
                     parameters.put(parameterDefinition.name, value)
                 }
-                parameters.put(parameterDefinition.name, value)
             }
         }
         logger.info(parameters)
