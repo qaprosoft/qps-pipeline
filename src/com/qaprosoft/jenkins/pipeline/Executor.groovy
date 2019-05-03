@@ -341,17 +341,28 @@ public class Executor {
         }
     }
 
-    static boolean isJobParameterValueEmpty(value) {
-        boolean empty
+    static boolean isJobParameterValid(name, value) {
+        def excludedCapabilities = ["custom_capabilities",
+                                    "retry_count",
+                                    "rerun_failures",
+                                    "fork",
+                                    "debug",
+                                    "ci_run_id",
+                                    "pipelineLibrary",
+                                    "runnerClass"]
+        boolean valid
         if(value instanceof ArrayList){
-            empty = value.isEmpty()
+            valid = !value.isEmpty()
             if (value.size() == 1) {
-                empty = isParamEmpty(value[0])
+                valid = !isParamEmpty(value[0])
             }
         } else {
-            empty = isParamEmpty(value)
+            def excluded = excludedCapabilities.find {
+                it.equals(name)
+            }
+            valid = isParamEmpty(excluded)
         }
-        return empty
+        return valid
     }
 
     /** Checks if current job started as rebuild */

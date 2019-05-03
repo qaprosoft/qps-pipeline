@@ -427,14 +427,11 @@ public class QARunner extends AbstractRunner {
             }  else {
                 value = parameterDefinition.defaultValue
             }
-            if (!(parameterDefinition instanceof WHideParameterDefinition) && !parameterDefinition.name.equals("ci_run_id")
-                    && !parameterDefinition.name.equals("pipelineLibrary")
-                    && !parameterDefinition.name.equals("runnerClass"))
-            {
+            if (!(parameterDefinition instanceof WHideParameterDefinition)) {
                 logger.info(parameterDefinition.name)
-//                if(!isJobParameterValueEmpty(value)){
-//                    parameters.put(parameterDefinition.name, value)
-//                }
+                if(isJobParameterValid(parameterDefinition.name, value)){
+                    parameters.put(parameterDefinition.name, value)
+                }
                 parameters.put(parameterDefinition.name, value)
             }
         }
