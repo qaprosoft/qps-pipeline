@@ -434,7 +434,11 @@ public class QARunner extends AbstractRunner {
                     && !parameterDefinition.name.equals("runnerClass"))
             {
                 logger.info(parameterDefinition.name)
-                parameters.put(parameterDefinition.name, !isParamEmpty(value)?value:'')
+                if(!isParamEmpty(value) ||
+                        !(value instanceof ArrayList && (value.size() == 0 || (value.size() == 1 && isParamEmpty(value[0]))))){
+                    parameters.put(parameterDefinition.name, value)
+                }
+
             }
         }
         logger.info(parameters)
