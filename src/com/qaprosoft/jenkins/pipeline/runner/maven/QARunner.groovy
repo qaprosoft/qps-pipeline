@@ -412,7 +412,7 @@ public class QARunner extends AbstractRunner {
         def jobUrl = getJobUrl(jobFullName)
         def parameters = getParametersMap(job)
         def repo = Configuration.get("repo")
-//        zafiraUpdater.createLauncher(parameters, jobUrl, repo)
+        zafiraUpdater.createLauncher(parameters, jobUrl, repo)
     }
 
     protected def getParametersMap(job) {
@@ -422,10 +422,8 @@ public class QARunner extends AbstractRunner {
             def value
             if (parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
                 value = parameterDefinition.choiceListProvider.getChoiceList()
-                logger.info(parameterDefinition.choiceListProvider.dump())
             } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
                 value = parameterDefinition.choices
-                logger.info(parameterDefinition.choices.dump())
             }  else {
                 value = parameterDefinition.defaultValue
             }
