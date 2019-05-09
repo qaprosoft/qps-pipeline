@@ -131,6 +131,18 @@ class GitHub implements ISCM {
         }
     }
 
+    public def mergeBranch(source, target, isForce) {
+        context.sh "git checkout ${source}"
+        context.sh "git gc"
+        context.sh "git pull -v --progress origin"
+        if (isForce) {
+            context.sh "git push --force --progress origin ${source}:${target}"
+        } else {
+            context.sh "git push --progress origin ${source}:${target}"
+        }
+    }
+
+
     public def setUrl(url) {
         gitHtmlUrl = url
     }

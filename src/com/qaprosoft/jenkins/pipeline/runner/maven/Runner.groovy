@@ -52,6 +52,16 @@ public class Runner extends AbstractRunner {
         }
     }
 
+    public void mergeBranch(repo, source, target) {
+        context.node("master") {
+            logger.info("Runner->onBranchMerge")
+                // TODO: implement for list of repos
+                Configuration.set("repo", repoName)
+                scmClient.clone()
+                scmClient.mergeBranch(source, target, true)
+        }
+    }
+
     //Methods
     public void build() {
         context.node("master") {
