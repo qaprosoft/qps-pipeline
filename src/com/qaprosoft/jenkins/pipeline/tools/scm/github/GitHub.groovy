@@ -132,17 +132,13 @@ class GitHub implements ISCM {
     }
 
     public def mergeBranch(source, target, isForce) {
-        def ghprbCredentialsId = Configuration.get("ghprbCredentialsId")
-        logger.info("ghprbCredentialsId: " + ghprbCredentialsId)
-        context.withCredentials([context.usernamePassword(credentialsId: "${ghprbCredentialsId}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            context.sh "git checkout ${source}"
-            context.sh "git gc"
-            context.sh "git pull -v --progress origin"
-            if (isForce) {
-                context.sh "git push --force --progress origin ${source}:${target}"
-            } else {
-                context.sh "git push --progress origin ${source}:${target}"
-            }
+        context.sh "git checkout ${source}"
+        context.sh "git gc"
+        context.sh "git pull -v --progress origin"
+        if (isForce) {
+            context.sh "git push --force --progress origin ${source}:${target}"
+        } else {
+            context.sh "git push --progress origin ${source}:${target}"
         }
     }
 
