@@ -137,6 +137,7 @@ class GitHub implements ISCM {
         context.withCredentials([context.usernamePassword(credentialsId: "${credentialsId}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             logger.debug("USERNAME: ${context.env.USERNAME}")
             logger.debug("PASSWORD: ${context.env.PASSWORD}")
+            context.sh "git config --global ${context.env.USERNAME}"
             context.sh "git checkout -B ${source}"
             context.sh "git gc"
             // context.sh "git pull -v --progress origin"
