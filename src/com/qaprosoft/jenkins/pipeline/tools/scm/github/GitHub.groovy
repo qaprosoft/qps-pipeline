@@ -139,19 +139,14 @@ class GitHub implements ISCM {
             logger.debug("PASSWORD: ${context.env.PASSWORD}")
             context.sh "git checkout -B ${source}"
             context.sh "git gc"
-            context.sh "git branch -u ${source} origin/${source}"
-            // context.sh "git pull https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} -v --progress origin"
-            // context.sh "git commit --allow-empty -m 'processing branch merge' "
+            context.sh "git pull -v --progress origin"
             if (isForce) {
-                // context.sh "git push --force --progress origin HEAD:${target}"
-                context.sh("git push https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} --force --progress origin ${source}:${target}")
+                context.sh "git push --force --progress origin HEAD:${target}"
             } else {
-                // context.sh "git push --progress origin HEAD${target}"
-                context.sh("git push https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} --progress origin ${source}:${target}")
+                context.sh "git push --progress origin HEAD${target}"
             }
         }
     }
-
 
     public def setUrl(url) {
         gitHtmlUrl = url
