@@ -137,16 +137,15 @@ class GitHub implements ISCM {
         context.withCredentials([context.usernamePassword(credentialsId: "${credentialsId}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             logger.debug("USERNAME: ${context.env.USERNAME}")
             logger.debug("PASSWORD: ${context.env.PASSWORD}")
-            context.sh "git remote add origin ${Configuration.resolveVars(gitHtmlUrl)}"
             context.sh "git checkout -B ${source}"
             context.sh "git gc"
-            context.sh "git pull https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} -v --progress origin"
+            // context.sh "git pull https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} -v --progress origin"
             if (isForce) {
-//              context.sh "git push --force --progress origin ${source}:${target}"
-                context.sh("git push https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} --force --progress origin ${source}:${target}")
+                context.sh "git push --force --progress origin HEAD:${target}"
+                // context.sh("git push https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} --force --progress origin ${source}:${target}")
             } else {
-//              context.sh "git push --progress origin ${source}:${target}"
-                context.sh("git push https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} --progress origin ${source}:${target}")
+                context.sh "git push --progress origin HEAD${target}"
+                // context.sh("git push https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} --progress origin ${source}:${target}")
             }
         }
     }
