@@ -140,12 +140,13 @@ class GitHub implements ISCM {
             context.sh "git checkout -B ${source}"
             context.sh "git gc"
             // context.sh "git pull https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} -v --progress origin"
+            context.sh "git commit -m 'processing branch merge' "
             if (isForce) {
-                context.sh "git push --force --progress origin HEAD:${target}"
-                // context.sh("git push https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} --force --progress origin ${source}:${target}")
+                // context.sh "git push --force --progress origin HEAD:${target}"
+                context.sh("git push https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} --force --progress origin ${source}:${target}")
             } else {
-                context.sh "git push --progress origin HEAD${target}"
-                // context.sh("git push https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} --progress origin ${source}:${target}")
+                // context.sh "git push --progress origin HEAD${target}"
+                context.sh("git push https://${context.env.USERNAME}:${context.env.PASSWORD}@github.com/${Configuration.get("GITHUB_ORGANIZATION")}/${Configuration.get("repo")} --progress origin ${source}:${target}")
             }
         }
     }
