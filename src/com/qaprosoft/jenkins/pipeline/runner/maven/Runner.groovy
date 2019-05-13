@@ -55,12 +55,15 @@ public class Runner extends AbstractRunner {
     public void mergeBranch() {
         context.node("master") {
             logger.info("Runner->onBranchMerge")
-            // TODO: implement for list of repos
             def sourceBranch = Configuration.get("branch")
             def targetBranch = Configuration.get("targetBranch")
             def forcePush = Configuration.get("forcePush")
-            scmClient.clone()
-            scmClient.push(sourceBranch, targetBranch, forcePush)
+            def reposList = [Configuration.get("repositories")]
+            for (repo in reposList) {
+                Configuration.set("repo", repo)
+                scmClient.clone()
+                scmClient.push(sourceBranch, targetBranch, forcePush)
+            }
         }
     }
 
