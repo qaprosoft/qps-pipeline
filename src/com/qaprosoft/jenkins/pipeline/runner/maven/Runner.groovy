@@ -61,7 +61,8 @@ public class Runner extends AbstractRunner {
             def repos = Configuration.get("repositories")
             String[] reposList = repos.split()
             logger.info("reposList:" + reposList)
-            for (String repo in reposList) {
+            for (String repo : reposList) {
+                logger.info("currentRepo:" + repo)
                 Configuration.set("repo", repo)
                 scmClient.clone()
                 scmClient.push(sourceBranch, targetBranch, forcePush)
