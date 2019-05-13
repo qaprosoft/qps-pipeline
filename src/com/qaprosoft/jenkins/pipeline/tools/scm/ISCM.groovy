@@ -4,6 +4,8 @@ public interface ISCM {
 
     public def clone()
 
+    public def push(source, target, isForce)
+
     public def clonePR()
 
     public def clone(isShallow)
