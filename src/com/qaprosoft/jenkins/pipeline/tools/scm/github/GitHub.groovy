@@ -134,11 +134,12 @@ class GitHub implements ISCM {
     public def push(source, target, isForce) {
         def credentialsId = Configuration.get("organization") + "-" + Configuration.get("repo")
         logger.info("credentialsId: " + credentialsId)
+        def gitUrl = Configuration.resolveVars(gitHtmlUrl)
         context.withCredentials([context.usernamePassword(credentialsId: credentialsId, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             logger.debug("USERNAME: ${context.env.USERNAME}")
             logger.debug("PASSWORD: ${context.env.PASSWORD}")
             context.sh "git config --global user.name ${context.env.USERNAME}"
-            context.sh "git remote add " + Configuration.get("GIT_URL")
+            context.sh "git remote add " + gitUrl
             context.sh "git checkout -B ${source}"
             context.sh "git gc"
             context.sh "git pull -v --progress origin"
