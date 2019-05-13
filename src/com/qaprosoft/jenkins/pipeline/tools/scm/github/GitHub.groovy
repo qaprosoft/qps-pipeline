@@ -138,7 +138,7 @@ class GitHub implements ISCM {
             logger.debug("USERNAME: ${context.env.USERNAME}")
             logger.debug("PASSWORD: ${context.env.PASSWORD}")
             context.sh "git config --global user.name ${context.env.USERNAME}"
-            context.sh "git remote add " + gitHtmlUrl
+            context.sh "git remote add " + Configuration.get("GIT_URL")
             context.sh "git checkout -B ${source}"
             context.sh "git gc"
             context.sh "git pull -v --progress origin"
