@@ -62,7 +62,7 @@ public class Runner extends AbstractRunner {
             String[] reposList = repos.split()
             for (String repo : reposList) {
                 def url = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${repo}"
-                scmClient.clone(url, sourceBranch, ${sourceBranch})
+                scmClient.clone(url, sourceBranch, repo)
                 scmClient.push(sourceBranch, targetBranch, forcePush)
             }
         }
