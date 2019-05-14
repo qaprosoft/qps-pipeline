@@ -722,7 +722,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def addOptionalCapability(parameter, message, capabilityName, capabilityValue) {
-        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
+        if (Configuration.get(parameter)) {
             logger.info(message)
             Configuration.set(capabilityName, capabilityValue)
         }
