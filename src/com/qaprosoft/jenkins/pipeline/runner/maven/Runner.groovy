@@ -63,10 +63,10 @@ public class Runner extends AbstractRunner {
             logger.info("reposList:" + reposList)
             for (String repo : reposList) {
                 logger.info("currentRepo:" + repo)
-                Configuration.set("repo", repo)
-                scmClient = new GitHub(context)
+                scmClient.setUrl("https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${repo}")
+                logger.info("currentURL for cloning:" + repo)
                 scmClient.clone()
-                scmClient.push(sourceBranch, targetBranch, forcePush)
+                //scmClient.push(sourceBranch, targetBranch, forcePush)
             }
         }
     }
