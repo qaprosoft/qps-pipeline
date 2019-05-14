@@ -685,7 +685,7 @@ public class QARunner extends AbstractRunner {
 
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
         addCapability("suite", suiteName)
-        addOptionalCapability("rerun_failures", "", "zafira_rerun_failures", Configuration.get("rerun_failures"))
+        addCapability("zafira_rerun_failures", !isParamEmpty(Configuration.get("rerun_failures")) ? Configuration.get("rerun_failures") : "false")
         addOptionalCapability("enableVideo", "Video recording was enabled.", "capabilities.enableVideo", "true")
         // [VD] getting debug host works only on specific nodes which are detecetd by chooseNode.
         // on this stage this method is not fucntion properly!
