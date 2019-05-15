@@ -77,7 +77,6 @@ class SBTCustomRunner extends AbstractRunner {
 
 
     protected void publishResultsInSlack() {
-        Configuration.get("publishInSlack")?.toBoolean()
         def publish = Configuration.get("publishInSlack")?.toBoolean()
         if (publish) {
             context.build job: 'loadTesting/Publish-Compare-Report-Results-To-Slack', wait: false
