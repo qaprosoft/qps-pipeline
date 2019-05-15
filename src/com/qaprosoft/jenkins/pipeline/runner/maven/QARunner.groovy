@@ -463,6 +463,7 @@ public class QARunner extends AbstractRunner {
                             buildJob()
                         }
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+                        zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         sendCustomizedEmail()
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
@@ -477,7 +478,6 @@ public class QARunner extends AbstractRunner {
                     testRailUpdater.updateTestRun(uuid, isRerun)
                     zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                     zafiraUpdater.setBuildResult(uuid, currentBuild)
-                    zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                     publishJenkinsReports()
                     clean()
                 }
