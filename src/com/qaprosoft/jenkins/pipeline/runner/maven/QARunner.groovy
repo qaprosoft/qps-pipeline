@@ -471,6 +471,9 @@ public class QARunner extends AbstractRunner {
                 } catch (Exception e) {
                     logger.error(printStackTrace(e))
                     zafiraUpdater.abortTestRun(uuid, currentBuild)
+                    if(Configuration.get("notify_slack_on_abort")?.toBoolean()) {
+                        zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                    }
                     throw e
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
