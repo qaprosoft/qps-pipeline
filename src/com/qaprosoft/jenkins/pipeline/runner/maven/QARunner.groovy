@@ -463,6 +463,7 @@ public class QARunner extends AbstractRunner {
                             buildJob()
                         }
                         zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+                        zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         sendCustomizedEmail()
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
@@ -470,6 +471,9 @@ public class QARunner extends AbstractRunner {
                 } catch (Exception e) {
                     logger.error(printStackTrace(e))
                     zafiraUpdater.abortTestRun(uuid, currentBuild)
+                    if(Configuration.get("notify_slack_on_abort")?.toBoolean()) {
+                        zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                    }
                     throw e
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
@@ -477,7 +481,6 @@ public class QARunner extends AbstractRunner {
                     testRailUpdater.updateTestRun(uuid, isRerun)
                     zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                     zafiraUpdater.setBuildResult(uuid, currentBuild)
-                    zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                     publishJenkinsReports()
                     clean()
                 }
@@ -685,7 +688,7 @@ public class QARunner extends AbstractRunner {
 
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
         addCapability("suite", suiteName)
-        addOptionalCapability("rerun_failures", "", "zafira_rerun_failures", Configuration.get("rerun_failures"))
+        addCapabilityIfPresent("rerun_failures", "zafira_rerun_failures")
         addOptionalCapability("enableVideo", "Video recording was enabled.", "capabilities.enableVideo", "true")
         // [VD] getting debug host works only on specific nodes which are detecetd by chooseNode.
         // on this stage this method is not fucntion properly!
@@ -717,19 +720,38 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    /**
+     * Enables capability
+     */
     protected def addCapability(capabilityName, capabilityValue) {
         Configuration.set(capabilityName, capabilityValue)
     }
 
-    protected def addOptionalCapability(parameter, message, capabilityName, capabilityValue) {
-        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
+    /**
+     * Enables capability if its value is present in configuration and is true
+     */
+    protected def addOptionalCapability(parameterName, message, capabilityName, capabilityValue) {
+        if (Configuration.get(parameterName)?.toBoolean()) {
             logger.info(message)
             Configuration.set(capabilityName, capabilityValue)
         }
     }
 
-    protected def getOptionalCapability(parameter, capabilityName) {
-        return Configuration.get(parameter) && Configuration.get(parameter).toBoolean() ? capabilityName : ""
+    /**
+     * Enables capability if its value is present in configuration
+     */
+    protected def addCapabilityIfPresent(parameterName, capabilityName) {
+        def capabilityValue = Configuration.get(parameterName)
+        if(!isParamEmpty(capabilityValue))
+            addCapability(capabilityName, capabilityValue)
+    }
+
+    /**
+     * Returns capability value when it is enabled via parameterName in Configuration,
+     * the other way returns empty line
+     */
+    protected def getOptionalCapability(parameterName, capabilityName) {
+        return Configuration.get(parameterName)?.toBoolean() ? capabilityName : ""
     }
 
     protected def addBrowserStackGoals() {
