@@ -3,7 +3,6 @@ package com.qaprosoft.jenkins.pipeline.runner.sbt
 import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 import com.qaprosoft.jenkins.pipeline.runner.sbt.AbstractSBTRunner
 import groovy.transform.InheritConstructors
 
@@ -73,14 +72,14 @@ class SBTRunner extends AbstractSBTRunner {
 
 
     protected void uploadResultsToS3() {
-        def needToUpload = Configuration.get("needToUpload").toString().toBoolean()
+        def needToUpload = Configuration.get("needToUpload")?.toBoolean()
         if (needToUpload) {
             context.build job: 'loadTesting/Upload-Results-To-S3', wait: false
         }
     }
 
     protected void publishResultsInSlack() {
-        def publish = Configuration.get("publishInSlack").toString().toBoolean()
+        def publish = Configuration.get("publishInSlack")?.toBoolean()
         if (publish) {
             context.build job: 'loadTesting/Publish-Results-To-Slack', wait: false
         }
