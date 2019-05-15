@@ -720,25 +720,38 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    /**
+     * Enables capability
+     */
     protected def addCapability(capabilityName, capabilityValue) {
         Configuration.set(capabilityName, capabilityValue)
     }
 
-    protected def addOptionalCapability(parameter, message, capabilityName, capabilityValue) {
-        if (Configuration.get(parameter) && Configuration.get(parameter).toBoolean()) {
+    /**
+     * Enables capability if its value is present in configuration and is true
+     */
+    protected def addOptionalCapability(parameterName, message, capabilityName, capabilityValue) {
+        if (Configuration.get(parameterName)?.toBoolean()) {
             logger.info(message)
             Configuration.set(capabilityName, capabilityValue)
         }
     }
 
+    /**
+     * Enables capability if its value is present in configuration
+     */
     protected def addCapabilityIfPresent(parameterName, capabilityName) {
         def capabilityValue = Configuration.get(parameterName)
         if(!isParamEmpty(capabilityValue))
             addCapability(capabilityName, capabilityValue)
     }
 
-    protected def getOptionalCapability(parameter, capabilityName) {
-        return Configuration.get(parameter) && Configuration.get(parameter).toBoolean() ? capabilityName : ""
+    /**
+     * Returns capability value when it is enabled via parameterName in Configuration,
+     * the other way returns empty line
+     */
+    protected def getOptionalCapability(parameterName, capabilityName) {
+        return Configuration.get(parameterName)?.toBoolean() ? capabilityName : ""
     }
 
     protected def addBrowserStackGoals() {
