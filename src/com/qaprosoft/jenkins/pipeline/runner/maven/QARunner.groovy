@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.runner.maven
 
+import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -471,8 +472,11 @@ public class QARunner extends AbstractRunner {
                 } catch (Exception e) {
                     logger.error(printStackTrace(e))
                     zafiraUpdater.abortTestRun(uuid, currentBuild)
-                    if(Configuration.get("notify_slack_on_abort")?.toBoolean()) {
-                        zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                    def testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
+                    if(!isParamEmpty(testRun)) {
+                        if (testRun.status != StatusMapper.ZafiraStatus.ABORTED.name() || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
+                            zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                        }
                     }
                     throw e
                 } finally {
