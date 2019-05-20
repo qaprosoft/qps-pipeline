@@ -443,6 +443,7 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
+        def testRun
         def isRerun = isRerun()
         String nodeName = "master"
         context.node(nodeName) {
@@ -463,17 +464,20 @@ public class QARunner extends AbstractRunner {
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             buildJob()
                         }
-                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-                        zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
-                        sendCustomizedEmail()
+                        testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
+                        if(!isParamEmpty(testRun)){
+                            zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+                            zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                            sendCustomizedEmail()
+                        }
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
                     }
                 } catch (Exception e) {
                     logger.error(printStackTrace(e))
-                    zafiraUpdater.abortTestRun(uuid, currentBuild)
-                    def testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
-                    if(!isParamEmpty(testRun)) {
+                    testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
+                    if (!isParamEmpty(testRun)) {
+                        zafiraUpdater.abortTestRun(uuid, currentBuild)
                         if (testRun.status != StatusMapper.ZafiraStatus.ABORTED.name() || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
                             zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         }
@@ -481,10 +485,12 @@ public class QARunner extends AbstractRunner {
                     throw e
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    qTestUpdater.updateTestRun(uuid)
-                    testRailUpdater.updateTestRun(uuid, isRerun)
-                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
-                    zafiraUpdater.setBuildResult(uuid, currentBuild)
+                    if(!isParamEmpty(testRun)) {
+                        qTestUpdater.updateTestRun(uuid)
+                        testRailUpdater.updateTestRun(uuid, isRerun)
+                        zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
+                        zafiraUpdater.setBuildResult(uuid, currentBuild)
+                    }
                     publishJenkinsReports()
                     clean()
                 }
