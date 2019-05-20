@@ -34,6 +34,15 @@ class ZafiraUpdater {
         return run
     }
 
+    def getTestRunByCiRunId(uuid) {
+        def testRun = zc.getTestRunByCiRunId(uuid)
+        if (isParamEmpty(testRun)) {
+            logger.error("TestRun is not found in Zafira!")
+            return
+        }
+        return testRun
+    }
+
     public def queueZafiraTestRun(uuid) {
         if (isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
             if (isParamEmpty(Configuration.get('test_run_rules'))){
