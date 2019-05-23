@@ -478,7 +478,7 @@ public class QARunner extends AbstractRunner {
                     testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
                     if (!isParamEmpty(testRun)) {
                         zafiraUpdater.abortTestRun(uuid, currentBuild)
-                        if (testRun.status != StatusMapper.ZafiraStatus.ABORTED.name() || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
+                        if (!currentBuild.result.equals(BuildResult.ABORTED) || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
                             zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         }
                     }
