@@ -54,11 +54,11 @@ class ZafiraClient extends HttpClient {
                 return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder owner: Configuration.get("ci_user_id"),
+        jsonBuilder owner: Configuration.get("owner"),
                 cause: Configuration.get("cause"),
-                upstreamJobId: Configuration.get("ci_job_id"),
-                upstreamJobBuildNumber: Configuration.get("ci_parent_build"),
-                scmUrl: Configuration.get("scm_url"),
+                upstreamJobId: Configuration.get("upstreamJobId"),
+                upstreamJobBuildNumber: Configuration.get("upstreamJobBuildNumber"),
+                scmURL: Configuration.get("scmURL"),
                 hashcode: Configuration.get("hashcode")
 
         logger.info("REQUEST: " + jsonBuilder.toPrettyString())
