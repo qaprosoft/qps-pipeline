@@ -115,7 +115,7 @@ class Repository {
             def githubHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
             def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def credentialsId = "${githubOrganization}-${repo}"
-            updateJenkinsCredentials(credentialsId, "${githubOrganization} GitHub token", Configuration.get("user"), Configuration.get("token"))
+            updateJenkinsCredentials(credentialsId, "${githubOrganization} GitHub token", Configuration.get("githubUser"), Configuration.get("githubToken"))
 //			createPRChecker(credentialsId)
 
             registerObject("project_folder", new FolderFactory(repoFolder, ""))
