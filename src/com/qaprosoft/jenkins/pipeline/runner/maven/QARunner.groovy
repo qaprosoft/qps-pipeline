@@ -106,7 +106,7 @@ public class QARunner extends AbstractRunner {
                     scan()
                     createLaunchers(currentBuild.rawBuild)
                 } catch (Exception e) {
-                    logger.error("Scan failed")
+                    logger.error("Scan failed.\n" + e.getMessage())
                     createLaunchers(null)
                 }
                 clean()
@@ -413,6 +413,7 @@ public class QARunner extends AbstractRunner {
         try {
             if (build) {
                 scannedRepoLaunchers.repo = Configuration.get("repo")
+                scannedRepoLaunchers.userId = Configuration.get("userId")
                 scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
                 scannedRepoLaunchers.success = true
             }

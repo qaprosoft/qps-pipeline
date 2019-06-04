@@ -111,10 +111,15 @@ class Repository {
                 }
             }
             Configuration.set("jobRootFolder", jobRootFolder)
+
+            //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+
             def githubHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
             def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def credentialsId = "${githubOrganization}-${repo}"
+
+
             updateJenkinsCredentials(credentialsId, "${githubOrganization} GitHub token", Configuration.get("githubUser"), Configuration.get("githubToken"))
 //			createPRChecker(credentialsId)
 
@@ -161,6 +166,7 @@ class Repository {
     }
 
 
+
     private String getOnPullRequestScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
@@ -193,8 +199,6 @@ class Repository {
         }
         dslObjects.put(name, object)
     }
-
-
 
     public def registerCredentials(){
         context.stage("Register Credentials") {
