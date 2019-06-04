@@ -208,7 +208,7 @@ class ZafiraClient extends HttpClient {
         }
 
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder scannedRepoLaunchers: scannedRepoLaunchers
+        jsonBuilder scannedRepoLaunchers
 
         logger.info("REQUEST: " + jsonBuilder.toPrettyString())
         String requestBody = jsonBuilder.toString()
