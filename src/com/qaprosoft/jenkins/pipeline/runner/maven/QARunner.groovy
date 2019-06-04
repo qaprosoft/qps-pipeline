@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.runner.maven
 
-import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
+
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -403,17 +403,33 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def createLaunchers(build){
+        Map scannedRepoLaunchers = [:]
+        scannedRepoLaunchers.repo = Configuration.get("repo")
+        scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
+
+        zafiraUpdater.createLaunchers(scannedRepoLaunchers)
+    }
+
+    protected def generateLaunchers(build){
+        List jenkinsLaunchers = []
         build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
-            generateLauncher(job.jobName)
+            def jenkinsLauncher = generateLauncher(job.jobName)
+            jenkinsLaunchers.add(jenkinsLauncher)
         }
+        return jenkinsLaunchers
     }
 
     protected def generateLauncher(jobFullName){
+        Map jenkinsLauncher = [:]
+
         def job = getItemByFullName(jobFullName)
         def jobUrl = getJobUrl(jobFullName)
         def parameters = getParametersMap(job)
-        def repo = Configuration.get("repo")
-        zafiraUpdater.createLauncher(parameters, jobUrl, repo)
+
+        jenkinsLauncher.jobUrl = jobUrl
+        jenkinsLauncher.jobParameters = parameters
+
+        return jenkinsLauncher
     }
 
     protected def getParametersMap(job) {
