@@ -417,7 +417,7 @@ public class QARunner extends AbstractRunner {
                 scannedRepoLaunchers.success = true
             }
             zafiraUpdater.createLaunchers(scannedRepoLaunchers)
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             throw new RuntimeException("Something went wrong during launchers creation", e)
         }
     }
