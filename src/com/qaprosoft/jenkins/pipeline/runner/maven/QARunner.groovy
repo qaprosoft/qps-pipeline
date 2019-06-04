@@ -493,14 +493,14 @@ public class QARunner extends AbstractRunner {
                     }
                     publishJenkinsReports()
                     clean()
-                    notify()
+                    finalNotify()
                 }
             }
         }
     }
 
     // to be able to organize custom notifications on private pipeline layer
-    protected void notify() {
+    protected void finalNotify() {
         // do nothing
     }
 
