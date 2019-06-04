@@ -500,7 +500,7 @@ public class QARunner extends AbstractRunner {
     }
 
     // to be able to organize custom notifications on private pipeline layer
-    protected def notify() {
+    protected notify() {
         // do nothing
     }
 
