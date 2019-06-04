@@ -24,9 +24,9 @@ public class Runner extends AbstractRunner {
     public void onPush() {
         context.node("master") {
             logger.info("Runner->onPush")
-            boolean shadowClone = !Configuration.get("onlyUpdated").toBoolean()
-            logger.info("shadowClone: " + shadowClone)
-            scmClient.clone(shadowClone)
+            boolean shallowClone = !Configuration.get("onlyUpdated").toBoolean()
+            logger.info("shallowClone: " + shallowClone)
+            scmClient.clone(shallowClone)
             //TODO: implement Sonar scan for full reposiory
         }
     }

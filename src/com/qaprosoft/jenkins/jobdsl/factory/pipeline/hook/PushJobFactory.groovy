@@ -49,6 +49,7 @@ public class PushJobFactory extends PipelineFactory {
                 choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedJobAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedViewAction', ['IGNORE', 'DELETE'], '')
+                stringParam('userId', '', 'Identifier of the user who triggered the process')
             }
 
         }
