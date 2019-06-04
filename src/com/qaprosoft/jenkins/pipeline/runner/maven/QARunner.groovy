@@ -408,16 +408,17 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def createLaunchers(build) {
+        Map scannedRepoLaunchers = [:]
+        scannedRepoLaunchers.success = false
         try {
-            Map scannedRepoLaunchers = [:]
-            scannedRepoLaunchers.success = false
             if (build) {
                 scannedRepoLaunchers.repo = Configuration.get("repo")
                 scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
+                throw new RuntimeException("test exception")
                 scannedRepoLaunchers.success = true
             }
             zafiraUpdater.createLaunchers(scannedRepoLaunchers)
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Something went wrong during launchers creation", e)
         }
     }
