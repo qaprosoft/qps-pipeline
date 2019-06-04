@@ -414,7 +414,6 @@ public class QARunner extends AbstractRunner {
             if (build) {
                 scannedRepoLaunchers.repo = Configuration.get("repo")
                 scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
-                throw new RuntimeException("test exception")
                 scannedRepoLaunchers.success = true
             }
             zafiraUpdater.createLaunchers(scannedRepoLaunchers)
