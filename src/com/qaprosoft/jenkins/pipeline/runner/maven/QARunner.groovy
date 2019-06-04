@@ -95,15 +95,20 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
             context.timestamps {
                 logger.info("QARunner->onPush")
-                prepare()
-                zafiraUpdater.getZafiraCredentials()
-                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-                    return
+                try {
+                    prepare()
+                    zafiraUpdater.getZafiraCredentials()
+                    if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+                        logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
+                        return
+                    }
+                    //TODO: implement repository scan and QA jobs recreation
+                    scan()
+                    createLaunchers(currentBuild.rawBuild)
+                } catch (Exception e) {
+                    logger.error("Scan failed")
+                    createLaunchers(null)
                 }
-                //TODO: implement repository scan and QA jobs recreation
-                scan()
-                createLaunchers(currentBuild.rawBuild)
                 clean()
             }
         }
@@ -402,12 +407,19 @@ public class QARunner extends AbstractRunner {
         this.additionalClasspath = additionalClasspath
     }
 
-    protected def createLaunchers(build){
-        Map scannedRepoLaunchers = [:]
-        scannedRepoLaunchers.repo = Configuration.get("repo")
-        scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
-
-        zafiraUpdater.createLaunchers(scannedRepoLaunchers)
+    protected def createLaunchers(build) {
+        try {
+            Map scannedRepoLaunchers = [:]
+            scannedRepoLaunchers.success = false
+            if (build) {
+                scannedRepoLaunchers.repo = Configuration.get("repo")
+                scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
+                scannedRepoLaunchers.success = true
+            }
+            zafiraUpdater.createLaunchers(scannedRepoLaunchers)
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong during launchers creation", e)
+        }
     }
 
     protected def generateLaunchers(build){
