@@ -1,31 +1,32 @@
 package com.qaprosoft.jenkins.pipeline.runner.maven
 
-
-import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
-import groovy.json.JsonBuilder
-
-import static com.qaprosoft.jenkins.pipeline.Executor.*
-import static com.qaprosoft.jenkins.Utils.*
-import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
-import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
-import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
-//[VD] do not remove this important import!
-import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
-import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
+import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
+import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
+import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
+import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
+import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import org.testng.xml.XmlSuite
+import com.wangyin.parameter.WHideParameterDefinition
+import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
+import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
+import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
+import org.testng.xml.XmlSuite
+
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import com.wangyin.parameter.WHideParameterDefinition
-import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
-import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
+
+import static com.qaprosoft.jenkins.Utils.*
+import static com.qaprosoft.jenkins.pipeline.Executor.*
+
+//[VD] do not remove this important import!
 
 @Grab('org.testng:testng:6.8.8')
 
@@ -185,10 +186,10 @@ public class QARunner extends AbstractRunner {
 //            }
 
             def pomFiles = getProjectPomFiles()
-            for(pomFile in pomFiles){
+            for (pomFile in pomFiles) {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
-                def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
-                def subProjectFilter = subProject.equals(".")?"**":subProject
+                def subProject = Paths.get(pomFile).getParent() ? Paths.get(pomFile).getParent().toString() : "."
+                def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 def testNGFolderName = searchTestNgFolderName(subProject).toString()
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
