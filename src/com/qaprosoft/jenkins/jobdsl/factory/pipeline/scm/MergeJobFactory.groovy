@@ -9,10 +9,9 @@ public class MergeJobFactory extends PipelineFactory {
     def host
     def organization
     def repo
-    def branch
     def scmRepoUrl
 
-    public MergeJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl) {
+    public MergeJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, scmRepoUrl) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
@@ -20,7 +19,6 @@ public class MergeJobFactory extends PipelineFactory {
         this.host = host
         this.organization = organization
         this.repo = repo
-        this.branch = branch
         this.scmRepoUrl = scmRepoUrl
     }
 
@@ -37,7 +35,7 @@ public class MergeJobFactory extends PipelineFactory {
             parameters {
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
-                configure addHiddenParameter('repo', repo, 'GitHub repository for merging')
+                configure addHiddenParameter('repo', 'GitHub repository for merging', repo)
                 stringParam('branch', 'master', 'Source GitHub branch')
                 stringParam('targetBranch', 'STAG', 'Target GitHub branch')
                 booleanParam('forcePush', false, 'If chosen, do force branches merge.')
