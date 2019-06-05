@@ -128,7 +128,6 @@ class Repository {
             registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
 
             def pullRequestJobDescription = "Customized pull request verification checker"
-
             registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + repo, pullRequestJobDescription, githubHost, githubOrganization, repo, gitUrl))
 
             def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
@@ -136,6 +135,10 @@ class Repository {
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
             registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl))
+
+
+            def mergeJobDescription = "SCM branch merger job"
+            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + repo, mergeJobDescription, githubHost, githubOrganization, repo, gitUrl))
 
             def launcher = isParamEmpty(jobRootFolder) ? getItemByFullName("launcher") : getItemByFullName(jobRootFolder + "/launcher")
             if (isParamEmpty(launcher)){
@@ -184,6 +187,15 @@ class Repository {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
         }
     }
+
+    protected String getMergeScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        }
+    }
+
 
     private void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
