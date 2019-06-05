@@ -16,6 +16,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import org.testng.xml.XmlSuite
 import groovy.json.JsonOutput
 import java.nio.file.Path
@@ -63,6 +64,7 @@ public class QARunner extends AbstractRunner {
     public QARunner(context) {
         super(context)
         scmClient = new GitHub(context)
+        scmSshClient = new SshGitHub(context)
         zafiraUpdater = new ZafiraUpdater(context)
         testRailUpdater = new TestRailUpdater(context)
         qTestUpdater = new QTestUpdater(context)
@@ -103,7 +105,7 @@ public class QARunner extends AbstractRunner {
                 }
                 //TODO: implement repository scan and QA jobs recreation
                 scan()
-                createLaunchers(currentBuild.rawBuild)
+                // createLaunchers(currentBuild.rawBuild)
                 clean()
             }
         }
@@ -1245,6 +1247,17 @@ public class QARunner extends AbstractRunner {
                       onlyStable: false,
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
+    }
+
+    public void mergeBranch() {
+        context.node("master") {
+            logger.info("Runner->onBranchMerge")
+            def sourceBranch = Configuration.get("branch")
+            def targetBranch = Configuration.get("targetBranch")
+            def forcePush = Configuration.get("forcePush").toBoolean()
+            scmSshClient.clone()
+            scmSshClient.push(sourceBranch, targetBranch, forcePush)
+        }
     }
 
     def getSettingsFileProviderContent(fileId){

@@ -8,6 +8,7 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import groovy.json.JsonOutput
@@ -125,7 +126,7 @@ class Repository {
 //			TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
 
-            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
+            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*"))
 
             def pullRequestJobDescription = "Customized pull request verification checker"
             registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + repo, pullRequestJobDescription, githubHost, githubOrganization, repo, gitUrl))
