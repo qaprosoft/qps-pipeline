@@ -11,8 +11,9 @@ public class PushJobFactory extends PipelineFactory {
     def repo
     def branch
     def scmRepoUrl
+    def userId
 
-    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl) {
+    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
@@ -22,6 +23,7 @@ public class PushJobFactory extends PipelineFactory {
         this.repo = repo
         this.branch = branch
         this.scmRepoUrl = scmRepoUrl
+        this.userId = userId
     }
 
     def create() {
@@ -49,7 +51,7 @@ public class PushJobFactory extends PipelineFactory {
                 choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedJobAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedViewAction', ['IGNORE', 'DELETE'], '')
-                stringParam('userId', '', 'Identifier of the user who triggered the process')
+                stringParam('userId', userId, 'Identifier of the user who triggered the process')
             }
 
         }
