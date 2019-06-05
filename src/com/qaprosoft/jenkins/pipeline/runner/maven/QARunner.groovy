@@ -441,7 +441,7 @@ public class QARunner extends AbstractRunner {
         def parameters = getParametersMap(job)
 
         jenkinsLauncher.jobUrl = jobUrl
-        jenkinsLauncher.jobParameters = jobParameters = new JsonBuilder(parameters).toPrettyString()
+        jenkinsLauncher.jobParameters  = new JsonBuilder(parameters).toPrettyString()
 
         return jenkinsLauncher
     }
