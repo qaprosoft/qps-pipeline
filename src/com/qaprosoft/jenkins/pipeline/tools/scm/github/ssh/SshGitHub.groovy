@@ -13,6 +13,10 @@ class SshGitHub extends GitHub {
         super(context)
         if(scmHost.contains("github")){
             gitHtmlUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+        } else if(scmHost.contains("bitbucket")) {
+            gitHtmlUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+        } else if(scmHost.contains("io")) {
+            gitHtmlUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         } else {
             throw new RuntimeException("Unsupported SCM system!")
         }
