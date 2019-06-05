@@ -413,7 +413,7 @@ public class QARunner extends AbstractRunner {
         try {
             if (build) {
                 scannedRepoLaunchers.repo = Configuration.get("repo")
-                scannedRepoLaunchers.userId = Configuration.get("userId")
+                scannedRepoLaunchers.userId = Long.valueOf(Configuration.get("userId"))
                 scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
                 scannedRepoLaunchers.success = true
             }
