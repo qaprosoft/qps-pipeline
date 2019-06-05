@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins.pipeline.runner.maven
 
 
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
+import groovy.json.JsonBuilder
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import static com.qaprosoft.jenkins.Utils.*
@@ -440,7 +441,7 @@ public class QARunner extends AbstractRunner {
         def parameters = getParametersMap(job)
 
         jenkinsLauncher.jobUrl = jobUrl
-        jenkinsLauncher.jobParameters = parameters
+        jenkinsLauncher.jobParameters = jobParameters = new JsonBuilder(parameters).toPrettyString()
 
         return jenkinsLauncher
     }
