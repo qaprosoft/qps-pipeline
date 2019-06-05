@@ -150,7 +150,7 @@ class Repository {
                 registerObject("launcher_job", new LauncherJobFactory(jobRootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
             }
 
-            def registerRepositoryJob = !isParamEmpty(getItemByFullName("RegisterRepository")) ? getItemByFullName("RegisterRepository") : getItemByFullName(jobRootFolder + "/RegisterRepository")
+            def registerRepositoryJob = isParamEmpty(jobRootFolder) ? getItemByFullName("RegisterRepository") : getItemByFullName(jobRootFolder + "/RegisterRepository")
             if(isParamEmpty(registerRepositoryJob)){
                 registerObject("register_repository_job", new RegisterRepositoryJobFactory(jobRootFolder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
             }
