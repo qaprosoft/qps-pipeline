@@ -6,6 +6,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
 import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
+import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
@@ -508,8 +509,10 @@ public class QARunner extends AbstractRunner {
                     logger.error(printStackTrace(e))
                     testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
                     if (!isParamEmpty(testRun)) {
-                        zafiraUpdater.abortTestRun(uuid, currentBuild)
-                        if (!currentBuild.result.equals(BuildResult.ABORTED.toString()) || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
+                        def abortedTestRun = zafiraUpdater.abortTestRun(uuid, currentBuild)
+                        if ((!isParamEmpty(abortedTestRun)
+                                && !StatusMapper.ZafiraStatus.ABORTED.name().equals(abortedTestRun.status)
+                                && !BuildResult.ABORTED.name().equals(currentBuild.result)) || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
                             zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         }
                     }

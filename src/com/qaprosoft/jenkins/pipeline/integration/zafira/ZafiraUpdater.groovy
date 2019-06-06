@@ -58,6 +58,7 @@ class ZafiraUpdater {
     }
 
     public def abortTestRun(uuid, currentBuild) {
+        def abortedTestRun
         currentBuild.result = BuildResult.FAILURE
         def failureReason = "undefined failure"
 
@@ -91,9 +92,9 @@ class ZafiraUpdater {
             failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
             failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE.value}:\n" + failureLog, "UTF-8")
         }
-        def response = zc.abortTestRun(uuid, failureReason)
-        if (!isParamEmpty(response)){
-            if (response.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
+        abortedTestRun = zc.abortTestRun(uuid, failureReason)
+        if (!isParamEmpty(abortedTestRun)){
+            if (abortedTestRun.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
             } else {
                 sendFailureEmail(uuid, Configuration.get("email_list"))
@@ -104,6 +105,7 @@ class ZafiraUpdater {
             def body = "${bodyHeader}\nRebuild: ${jobBuildUrl}/rebuild/parameterized\nZafiraReport: ${jobBuildUrl}/ZafiraReport\n\nConsole: ${jobBuildUrl}/console\n${failureLog}"
             context.emailext getEmailParams(body, subject, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         }
+        return abortedTestRun
     }
 
     public def sendZafiraEmail(uuid, emailList) {
