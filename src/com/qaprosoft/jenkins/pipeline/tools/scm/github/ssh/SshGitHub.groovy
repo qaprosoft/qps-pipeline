@@ -13,10 +13,6 @@ class SshGitHub extends GitHub {
         super(context)
         if(scmHost.contains("github")){
             gitHtmlUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-        } else if(scmHost.contains("bitbucket")) {
-            gitHtmlUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-        } else if(scmHost.contains("io")) {
-            gitHtmlUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         } else {
             throw new RuntimeException("Unsupported SCM system!")
         }
@@ -34,11 +30,8 @@ class SshGitHub extends GitHub {
             context.sh "git checkout -B ${source}"
             context.sh "git gc"
             context.sh "git pull -v --progress origin ${source}"
-            if (isForce) {
-                context.sh "git push --force --progress origin HEAD:${target}"
-            } else {
-                context.sh "git push --progress origin HEAD${target}"
-            }
+            def forceArg = isForce ? "--force" : ""
+            context.sh "git push ${forceArg} --progress origin HEAD:${target}"
         }
     }	
 
