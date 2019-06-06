@@ -1,29 +1,34 @@
 package com.qaprosoft.jenkins.pipeline.runner.maven
 
-import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
-
-import static com.qaprosoft.jenkins.pipeline.Executor.*
-import static com.qaprosoft.jenkins.Utils.*
-import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
-import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
-import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
-//[VD] do not remove this important import!
-import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
-import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
+import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
+import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
+import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
+import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
+import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
+import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import org.testng.xml.XmlSuite
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
+import com.wangyin.parameter.WHideParameterDefinition
+import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
+import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
+import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
+import org.testng.xml.XmlSuite
+
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import com.wangyin.parameter.WHideParameterDefinition
-import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
-import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
+
+import static com.qaprosoft.jenkins.Utils.*
+import static com.qaprosoft.jenkins.pipeline.Executor.*
+
+//[VD] do not remove this important import!
 
 @Grab('org.testng:testng:6.8.8')
 
@@ -62,6 +67,7 @@ public class QARunner extends AbstractRunner {
     public QARunner(context) {
         super(context)
         scmClient = new GitHub(context)
+        scmSshClient = new SshGitHub(context)
         zafiraUpdater = new ZafiraUpdater(context)
         testRailUpdater = new TestRailUpdater(context)
         qTestUpdater = new QTestUpdater(context)
@@ -94,15 +100,20 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
             context.timestamps {
                 logger.info("QARunner->onPush")
-                prepare()
-                zafiraUpdater.getZafiraCredentials()
-                if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-                    return
+                try {
+                    prepare()
+                    zafiraUpdater.getZafiraCredentials()
+                    if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+                        logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
+                        return
+                    }
+                    //TODO: implement repository scan and QA jobs recreation
+                    scan()
+                    createLaunchers(currentBuild.rawBuild)
+                } catch (Exception e) {
+                    logger.error("Scan failed.\n" + e.getMessage())
+                    createLaunchers(null)
                 }
-                //TODO: implement repository scan and QA jobs recreation
-                scan()
-                createLaunchers(currentBuild.rawBuild)
                 clean()
             }
         }
@@ -178,10 +189,10 @@ public class QARunner extends AbstractRunner {
 //            }
 
             def pomFiles = getProjectPomFiles()
-            for(pomFile in pomFiles){
+            for (pomFile in pomFiles) {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
-                def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
-                def subProjectFilter = subProject.equals(".")?"**":subProject
+                def subProject = Paths.get(pomFile).getParent() ? Paths.get(pomFile).getParent().toString() : "."
+                def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 def testNGFolderName = searchTestNgFolderName(subProject).toString()
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
@@ -401,18 +412,42 @@ public class QARunner extends AbstractRunner {
         this.additionalClasspath = additionalClasspath
     }
 
-    protected def createLaunchers(build){
-        build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
-            generateLauncher(job.jobName)
+    protected def createLaunchers(build) {
+        Map scannedRepoLaunchers = [:]
+        scannedRepoLaunchers.success = false
+        try {
+            if (build) {
+                scannedRepoLaunchers.repo = Configuration.get("repo")
+                scannedRepoLaunchers.userId = Long.valueOf(Configuration.get("userId"))
+                scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
+                scannedRepoLaunchers.success = true
+            }
+            zafiraUpdater.createLaunchers(scannedRepoLaunchers)
+        } catch (Exception e) {
+            throw new RuntimeException("Something went wrong during launchers creation", e)
         }
     }
 
+    protected def generateLaunchers(build){
+        List jenkinsLaunchers = []
+        build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
+            def jenkinsLauncher = generateLauncher(job.jobName)
+            jenkinsLaunchers.add(jenkinsLauncher)
+        }
+        return jenkinsLaunchers
+    }
+
     protected def generateLauncher(jobFullName){
+        Map jenkinsLauncher = [:]
+
         def job = getItemByFullName(jobFullName)
         def jobUrl = getJobUrl(jobFullName)
         def parameters = getParametersMap(job)
-        def repo = Configuration.get("repo")
-        zafiraUpdater.createLauncher(parameters, jobUrl, repo)
+
+        jenkinsLauncher.jobUrl = jobUrl
+        jenkinsLauncher.jobParameters  = new JsonBuilder(parameters).toPrettyString()
+
+        return jenkinsLauncher
     }
 
     protected def getParametersMap(job) {
@@ -442,6 +477,7 @@ public class QARunner extends AbstractRunner {
         logger.info("QARunner->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
+        def testRun
         def isRerun = isRerun()
         String nodeName = "master"
         context.node(nodeName) {
@@ -462,30 +498,46 @@ public class QARunner extends AbstractRunner {
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             buildJob()
                         }
-                        zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-                        zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
-                        sendCustomizedEmail()
+                        testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
+                        if(!isParamEmpty(testRun)){
+                            zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+                            zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                            sendCustomizedEmail()
+                        }
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
                     }
                 } catch (Exception e) {
                     logger.error(printStackTrace(e))
-                    zafiraUpdater.abortTestRun(uuid, currentBuild)
-                    if(Configuration.get("notify_slack_on_abort")?.toBoolean()) {
-                        zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                    testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
+                    if (!isParamEmpty(testRun)) {
+                        def abortedTestRun = zafiraUpdater.abortTestRun(uuid, currentBuild)
+                        if ((!isParamEmpty(abortedTestRun)
+                                && !StatusMapper.ZafiraStatus.ABORTED.name().equals(abortedTestRun.status)
+                                && !BuildResult.ABORTED.name().equals(currentBuild.result)) || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
+                            zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                        }
                     }
                     throw e
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    qTestUpdater.updateTestRun(uuid)
-                    testRailUpdater.updateTestRun(uuid, isRerun)
-                    zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
-                    zafiraUpdater.setBuildResult(uuid, currentBuild)
+                    if(!isParamEmpty(testRun)) {
+                        qTestUpdater.updateTestRun(uuid)
+                        testRailUpdater.updateTestRun(uuid, isRerun)
+                        zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
+                        zafiraUpdater.setBuildResult(uuid, currentBuild)
+                    }
                     publishJenkinsReports()
                     clean()
+                    customNotify()
                 }
             }
         }
+    }
+
+    // to be able to organize custom notifications on private pipeline layer
+    protected void customNotify() {
+        // do nothing
     }
 
     protected def initJobParams() {
@@ -1229,6 +1281,17 @@ public class QARunner extends AbstractRunner {
                       onlyStable: false,
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
+    }
+
+    public void mergeBranch() {
+        context.node("master") {
+            logger.info("Runner->onBranchMerge")
+            def sourceBranch = Configuration.get("branch")
+            def targetBranch = Configuration.get("targetBranch")
+            def forcePush = Configuration.get("forcePush").toBoolean()
+            scmSshClient.clone()
+            scmSshClient.push(sourceBranch, targetBranch, forcePush)
+        }
     }
 
     def getSettingsFileProviderContent(fileId){
