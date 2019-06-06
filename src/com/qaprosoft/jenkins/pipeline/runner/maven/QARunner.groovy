@@ -12,6 +12,7 @@ import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
+com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import com.wangyin.parameter.WHideParameterDefinition
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
@@ -66,6 +67,7 @@ public class QARunner extends AbstractRunner {
     public QARunner(context) {
         super(context)
         scmClient = new GitHub(context)
+        scmSshClient = new SshGitHub(context)
         zafiraUpdater = new ZafiraUpdater(context)
         testRailUpdater = new TestRailUpdater(context)
         qTestUpdater = new QTestUpdater(context)
@@ -527,9 +529,15 @@ public class QARunner extends AbstractRunner {
                     }
                     publishJenkinsReports()
                     clean()
+                    customNotify()
                 }
             }
         }
+    }
+
+    // to be able to organize custom notifications on private pipeline layer
+    protected void customNotify() {
+        // do nothing
     }
 
     protected def initJobParams() {
@@ -1273,6 +1281,17 @@ public class QARunner extends AbstractRunner {
                       onlyStable: false,
                       sourceEncoding: 'ASCII',
                       zoomCoverageChart: false])
+    }
+
+    public void mergeBranch() {
+        context.node("master") {
+            logger.info("Runner->onBranchMerge")
+            def sourceBranch = Configuration.get("branch")
+            def targetBranch = Configuration.get("targetBranch")
+            def forcePush = Configuration.get("forcePush").toBoolean()
+            scmSshClient.clone()
+            scmSshClient.push(sourceBranch, targetBranch, forcePush)
+        }
     }
 
     def getSettingsFileProviderContent(fileId){

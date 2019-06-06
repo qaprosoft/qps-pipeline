@@ -9,6 +9,7 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import groovy.json.JsonOutput
@@ -120,7 +121,6 @@ class Repository {
             def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def credentialsId = "${githubOrganization}-${repo}"
 
-
             updateJenkinsCredentials(credentialsId, "${githubOrganization} GitHub token", Configuration.get("githubUser"), Configuration.get("githubToken"))
 //			createPRChecker(credentialsId)
 
@@ -133,7 +133,7 @@ class Repository {
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
 
-            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
+            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*"))
 
             def pullRequestJobDescription = "Customized pull request verification checker"
 
@@ -144,6 +144,10 @@ class Repository {
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
             registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId))
+
+
+            def mergeJobDescription = "SCM branch merger job"
+            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + repo, mergeJobDescription, githubHost, githubOrganization, repo, gitUrl))
 
             def launcher = isParamEmpty(jobRootFolder) ? getItemByFullName("launcher") : getItemByFullName(jobRootFolder + "/launcher")
             if (isParamEmpty(launcher)){
@@ -168,8 +172,6 @@ class Repository {
         context.stage('Wipe out Workspace') { context.deleteDir() }
     }
 
-
-
     private String getOnPullRequestScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"
@@ -193,6 +195,15 @@ class Repository {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
         }
     }
+
+    protected String getMergeScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        }
+    }
+
 
     private void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
