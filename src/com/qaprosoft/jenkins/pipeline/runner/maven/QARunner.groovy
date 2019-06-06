@@ -12,7 +12,7 @@ import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import com.wangyin.parameter.WHideParameterDefinition
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
