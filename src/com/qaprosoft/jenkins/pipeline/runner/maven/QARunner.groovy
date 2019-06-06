@@ -841,6 +841,7 @@ public class QARunner extends AbstractRunner {
         }
 
         def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+        def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
         def jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
         def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
 
@@ -848,8 +849,7 @@ public class QARunner extends AbstractRunner {
         if (files.length == 1) {
             context.archiveArtifacts artifacts: '**/jacoco.exec', fingerprint: true, allowEmptyArchive: true
             // https://github.com/jenkinsci/pipeline-aws-plugin#s3upload
-            //TODO: move region 'us-west-1' into the global var 'JACOCO_REGION'
-            context.withAWS(region: 'us-west-1', credentials: 'aws-jacoco-token') {
+            context.withAWS(region: "$jacocoRegion", credentials: 'aws-jacoco-token') {
                 context.s3Upload(bucket: "$jacocoBucket", path: "$jobName/$buildNumber/jacoco-it.exec", includePathPattern: '**/jacoco.exec')
             }
         }
