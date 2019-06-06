@@ -8,11 +8,12 @@ import static com.qaprosoft.jenkins.Utils.*
 
 class GitHub implements ISCM {
 
-    private def context
-    private def gitHtmlUrl
-    private def credentialsId
-    private Logger logger
-    private def scmHost
+    protected def context
+    //TODO: rename into scmUrl as it covers both https and ssh cases
+    protected def gitHtmlUrl
+    protected def credentialsId
+    protected Logger logger
+    protected def scmHost
 
     public GitHub(context) {
         this.context = context
@@ -21,7 +22,7 @@ class GitHub implements ISCM {
         if(scmHost.contains("github")){
             gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         } else if(scmHost.contains("bitbucket")) {
-            gitHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+            gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         } else if(scmHost.contains("io")) {
             gitHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         } else {
@@ -97,7 +98,7 @@ class GitHub implements ISCM {
         }
     }
 
-    private def getCheckoutParams(gitUrl, branch, subFolder, shallow, changelog, refspecValue, credentialsIdValue) {
+    protected def getCheckoutParams(gitUrl, branch, subFolder, shallow, changelog, refspecValue, credentialsIdValue) {
         def checkoutParams = [scm: [$class: 'GitSCM',
                                     branches: [[name: branch]],
                                     doGenerateSubmoduleConfigurations: false,
@@ -130,7 +131,7 @@ class GitHub implements ISCM {
             context.sh "curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${repo}/pulls/${ghprbPullId}/merge"
         }
     }
-
+    
     public def setUrl(url) {
         gitHtmlUrl = url
     }

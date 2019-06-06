@@ -2,12 +2,14 @@ package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.RegisterRepositoryJobFactory
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import groovy.json.JsonOutput
@@ -111,11 +113,15 @@ class Repository {
                 }
             }
             Configuration.set("jobRootFolder", jobRootFolder)
+
+            //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+
             def githubHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
             def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def credentialsId = "${githubOrganization}-${repo}"
-            updateJenkinsCredentials(credentialsId, "${githubOrganization} GitHub token", Configuration.get("user"), Configuration.get("token"))
+
+            updateJenkinsCredentials(credentialsId, "${githubOrganization} GitHub token", Configuration.get("githubUser"), Configuration.get("githubToken"))
 //			createPRChecker(credentialsId)
 
             registerObject("project_folder", new FolderFactory(repoFolder, ""))
@@ -125,7 +131,9 @@ class Repository {
 //			TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
 
-            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*"))
+            def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
+
+            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*"))
 
             def pullRequestJobDescription = "Customized pull request verification checker"
 
@@ -135,7 +143,11 @@ class Repository {
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl))
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId))
+
+
+            def mergeJobDescription = "SCM branch merger job"
+            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + repo, mergeJobDescription, githubHost, githubOrganization, repo, gitUrl))
 
             def launcher = isParamEmpty(jobRootFolder) ? getItemByFullName("launcher") : getItemByFullName(jobRootFolder + "/launcher")
             if (isParamEmpty(launcher)){
@@ -159,7 +171,6 @@ class Repository {
     private clean() {
         context.stage('Wipe out Workspace') { context.deleteDir() }
     }
-
 
     private String getOnPullRequestScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
@@ -185,6 +196,15 @@ class Repository {
         }
     }
 
+    protected String getMergeScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        }
+    }
+
+
     private void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
             logger.warn("WARNING! key ${name} already defined and will be replaced!")
@@ -193,8 +213,6 @@ class Repository {
         }
         dslObjects.put(name, object)
     }
-
-
 
     public def registerCredentials(){
         context.stage("Register Credentials") {
