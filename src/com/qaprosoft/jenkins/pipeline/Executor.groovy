@@ -138,15 +138,6 @@ public class Executor {
             for (def i = 0; i < array.size() - 1; i++){
                 folderName  = folderName + "/" + array[i]
             }
-        } else if (workspace.contains("workspace/")) {
-            // example #1 "/var/lib/jenkins/workspace/QA/myRepo/onPush-myRepo"
-            // example #2 "/var/lib/jenkins/workspace/myRepo/onPush-myRepo"
-
-            workspace = workspace.split("workspace/")[1]
-            def array = workspace.split("/")
-            for (def i = 0; i < array.size() - 1; i++){
-                folderName  = folderName + "/" + array[i]
-            }
         } else {
             def array = workspace.split("/")
             folderName = array[array.size() - 2]
