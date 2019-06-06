@@ -47,7 +47,6 @@ class Organization {
                 prepare()
                 generateCiItems(folder)
                 setSecurity(folder, launcherJobName)
-//                generateLauncher(folder +'/RegisterRepository')
                 clean()
             }
         }
