@@ -47,7 +47,11 @@ public class Sonar {
         }
     }
 
-    protected void executeSonarFullScan(String projectName, String projectKey, String modules){
+    protected void executeSonarFullScan(String projectName, String projectKey, String modules) {
+        executeSonarFullScan(".", projectName, projectKey, modules) 
+    }
+
+    protected void executeSonarFullScan(String projectBaseDir, String projectName, String projectKey, String modules) {
         context.stage('Sonar Scanner') {
             def sonarQubeEnv = ''
             Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
@@ -60,10 +64,15 @@ public class Sonar {
 
 
             //download combined integration testing coverage report: jacoco-it.exec
+            def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
             def jacocoItExec = 'jacoco-it.exec'
-            context.withAWS(region: 'us-west-1',credentials:'aws-jacoco-token') {
-                def copyOutput = context.sh script: "aws s3 cp s3://jacoco.qaprosoft.com/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
-                logger.info("copyOutput: " + copyOutput)
+            def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+            def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
+            if (jacocoEnable) {
+                context.withAWS(region: "${jacocoRegion}",credentials:'aws-jacoco-token') {
+                    def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
+                    logger.info("copyOutput: " + copyOutput)
+                }
             }
 
 
@@ -75,6 +84,7 @@ public class Sonar {
 
                 // execute sonar scanner
                 context.sh "${sonarHome}/bin/sonar-scanner \
+					-Dsonar.projectBaseDir=${projectBaseDir} \
 					-Dsonar.projectName=${projectName} \
 					-Dsonar.projectKey=${projectKey} \
 					-Dsonar.projectVersion=1.${BUILD_NUMBER} \
