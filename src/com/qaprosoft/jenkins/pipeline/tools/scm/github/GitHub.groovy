@@ -9,6 +9,7 @@ import static com.qaprosoft.jenkins.Utils.*
 class GitHub implements ISCM {
 
     protected def context
+    //TODO: rename into scmUrl as it covers both https and ssh cases
     protected def gitHtmlUrl
     protected def credentialsId
     protected Logger logger
