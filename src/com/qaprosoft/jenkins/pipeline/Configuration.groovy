@@ -36,6 +36,7 @@ public class Configuration {
         //to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
         //the biggest problem is that AWS key can't be located in public repositories
         JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
+        JACOCO_REGION("JACOCO_REGION", "us-west-1"),
         JACOCO_ENABLE("JACOCO_ENABLE", "false"),
         JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
 
