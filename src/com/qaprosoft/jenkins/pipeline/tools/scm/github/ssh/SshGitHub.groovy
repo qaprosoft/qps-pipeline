@@ -11,11 +11,7 @@ class SshGitHub extends GitHub {
 
     public SshGitHub(context) {
         super(context)
-        if(scmHost.contains("github")){
-            gitHtmlUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-        } else {
-            throw new RuntimeException("Unsupported SCM system!")
-        }
+        gitHtmlUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
     }
 
     public def push(source, target, isForce) {
