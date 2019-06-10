@@ -41,7 +41,7 @@ public class QARunner extends AbstractRunner {
     protected def onlyUpdated = false
     protected def currentBuild
     protected def uuid
-    protected ZafiraUpdater zafiraUpdater
+    protected ZafiraUpdater zafiraUpdater = new ZafiraUpdater(context)
     protected TestRailUpdater testRailUpdater
     protected QTestUpdater qTestUpdater
 
@@ -68,7 +68,6 @@ public class QARunner extends AbstractRunner {
         super(context)
         scmClient = new GitHub(context)
         scmSshClient = new SshGitHub(context)
-        zafiraUpdater = new ZafiraUpdater(context)
         testRailUpdater = new TestRailUpdater(context)
         qTestUpdater = new QTestUpdater(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
