@@ -179,7 +179,7 @@ class ZafiraUpdater {
     }
 
     @NonCPS
-    public def getZafiraCredentials() {
+    public void getZafiraCredentials() {
         logger.info("3333333")
         def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
         def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
