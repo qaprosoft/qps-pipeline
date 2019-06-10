@@ -184,8 +184,9 @@ class ZafiraUpdater {
         def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
         def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
         if (nonCPSGetCredentials(zafiraURLCredentials)){
+            def creds = [context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]
             context.println("111111")
-            context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+            context.withCredentials(creds) {
                 context.println("222222")
                 context.println(context.env.getEnvironment())
                 context.println(context.env.KEY)
