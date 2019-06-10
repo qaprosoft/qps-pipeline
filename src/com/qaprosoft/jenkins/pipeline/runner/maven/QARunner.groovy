@@ -73,6 +73,7 @@ public class QARunner extends AbstractRunner {
         qTestUpdater = new QTestUpdater(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         currentBuild = context.currentBuild
+        zafiraUpdater.getZafiraCredentials()
     }
 
     public QARunner(context, jobType) {
@@ -102,7 +103,6 @@ public class QARunner extends AbstractRunner {
                 logger.info("QARunner->onPush")
                 try {
                     prepare()
-                    zafiraUpdater.getZafiraCredentials()
                     if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                         logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
                         return
