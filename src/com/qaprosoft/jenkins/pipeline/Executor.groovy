@@ -82,6 +82,13 @@ public class Executor {
         }
     }
 
+    @NonCPS
+    static def nonCPSGetCredentials(id) {
+        return SystemCredentialsProvider.getInstance().getStore().getCredentials(Domain.global()).find {
+            it.id.equals(id.toString())
+        }
+    }
+
     static def createPRChecker(credentialsId) {
         GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
         List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
