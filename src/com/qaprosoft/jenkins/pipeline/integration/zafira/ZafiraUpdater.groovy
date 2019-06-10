@@ -20,7 +20,7 @@ class ZafiraUpdater {
         this.context = context
         zc = new ZafiraClient(context)
         logger = new Logger(context)
-//        getZafiraCredentials()
+        this.getZafiraCredentials()
     }
 
     /**
