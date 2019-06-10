@@ -180,11 +180,10 @@ class ZafiraUpdater {
 
     @NonCPS
     public void getZafiraCredentials() {
-        logger.info("3333333")
+        context.println("3333333")
         def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
         def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
         def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
-        logger.info("2222222")
         if (getCredentials(zafiraURLCredentials)){
             context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
                 Configuration.set(context.env.KEY, context.env.VALUE)
