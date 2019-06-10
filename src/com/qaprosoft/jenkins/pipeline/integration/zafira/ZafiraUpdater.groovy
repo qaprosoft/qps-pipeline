@@ -174,6 +174,7 @@ class ZafiraUpdater {
         return zc.createJob(jobUrl)
     }
 
+    @NonCPS
     public def getZafiraCredentials() {
         def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
         def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
