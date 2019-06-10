@@ -73,7 +73,6 @@ public class QARunner extends AbstractRunner {
         qTestUpdater = new QTestUpdater(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         currentBuild = context.currentBuild
-        zafiraUpdater.getZafiraCredentials()
     }
 
     public QARunner(context, jobType) {
