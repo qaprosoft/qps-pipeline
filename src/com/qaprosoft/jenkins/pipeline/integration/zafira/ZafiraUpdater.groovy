@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.pipeline.integration.zafira
 
-import com.cloudbees.groovy.cps.NonCPS
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 
@@ -20,7 +19,6 @@ class ZafiraUpdater {
         this.context = context
         zc = new ZafiraClient(context)
         logger = new Logger(context)
-        this.getZafiraCredentials()
     }
 
     /**
@@ -178,24 +176,16 @@ class ZafiraUpdater {
         return zc.createJob(jobUrl)
     }
 
-    @NonCPS
-    public void getZafiraCredentials() {
+    public def getZafiraCredentials() {
         def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
         def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
         def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
-        if (nonCPSGetCredentials(zafiraURLCredentials)){
-            def creds = [context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]
-            context.println("111111")
-            context.println(context.env.getEnvironment())
-            context.println(context.env.KEY)
-            context.withCredentials(creds) {
-                context.println("222222")
-                context.println(context.env.getEnvironment())
-                context.println(context.env.KEY)
+        if (getCredentials(zafiraURLCredentials)){
+            context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
                 Configuration.set(context.env.KEY, context.env.VALUE)
             }
         }
-        if (nonCPSGetCredentials(zafiraTokenCredentials)){
+        if (getCredentials(zafiraTokenCredentials)){
             context.withCredentials([context.usernamePassword(credentialsId:zafiraTokenCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
                 Configuration.set(context.env.KEY, context.env.VALUE)
             }
