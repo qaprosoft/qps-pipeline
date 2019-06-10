@@ -1,10 +1,13 @@
 package com.qaprosoft.jenkins.pipeline.integration.zafira
 
+import com.cloudbees.groovy.cps.NonCPS
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
-import static com.qaprosoft.jenkins.Utils.*
-import static com.qaprosoft.jenkins.pipeline.Executor.*
+
 import java.nio.file.Paths
+
+import static com.qaprosoft.jenkins.Utils.isParamEmpty
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class ZafiraUpdater {
 
