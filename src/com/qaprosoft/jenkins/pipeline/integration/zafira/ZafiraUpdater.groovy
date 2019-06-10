@@ -186,9 +186,11 @@ class ZafiraUpdater {
         if (nonCPSGetCredentials(zafiraURLCredentials)){
             context.println("111111")
             context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+                context.println("222222")
+                context.println(context.env.getEnvironment())
+                context.println(context.env.KEY)
                 Configuration.set(context.env.KEY, context.env.VALUE)
             }
-            context.println("222222")
         }
         if (nonCPSGetCredentials(zafiraTokenCredentials)){
             context.withCredentials([context.usernamePassword(credentialsId:zafiraTokenCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
