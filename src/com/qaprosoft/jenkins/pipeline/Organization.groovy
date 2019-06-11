@@ -46,7 +46,7 @@ class Organization {
                 def launcherJobName = folder + "/launcher"
                 prepare()
                 generateCiItems(folder)
-//                setSecurity(folder, launcherJobName)
+                setSecurity(folder, launcherJobName)
                 clean()
             }
         }
