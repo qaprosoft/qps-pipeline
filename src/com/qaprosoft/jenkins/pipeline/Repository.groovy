@@ -104,17 +104,17 @@ class Repository {
                 // If was started from ManagementJobs and organization name was passed,
                 // folder either already exists, or should be created
             } else if (!isParamEmpty(organization)){
+                rootFolder = organization
                 if (isParamEmpty(getJenkinsFolderByName(rootFolder))){
                     registerObject("organization_folder", new FolderFactory(rootFolder, ""))
                 }
-                rootFolder = organization
             }
 
             if (!isParamEmpty(rootFolder)) {
                 //For both cases when rootFolder exists job was started with existing organization value,
                 //so it should be used by default
                 Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
-                repoFolder = rootFolder + "/" + repo
+                repoFolder = rootFolder + "/" + repoFolder
             }
 
             // Used on the next step to detect onPush job location
