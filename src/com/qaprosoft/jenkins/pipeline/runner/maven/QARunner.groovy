@@ -416,7 +416,7 @@ public class QARunner extends AbstractRunner {
         Map scannedRepoLaunchers = [:]
         scannedRepoLaunchers.success = false
         scannedRepoLaunchers.repo = Configuration.get("repo")
-        scannedRepoLaunchers.userId = Long.valueOf(Configuration.get("userId"))
+        scannedRepoLaunchers.userId = !isParamEmpty(Configuration.get("userId")) ? Long.valueOf(Configuration.get("userId")) : 2
         try {
             if (build) {
                 scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
