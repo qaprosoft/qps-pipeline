@@ -98,6 +98,7 @@ class Repository {
             // Folder from which RegisterRepository job was started
             def registerRepositoryFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
 
+            logger.info("FLDR: " + registerRepositoryFolder)
             // If started from custom location, rootFolder is already created
             if (!"Management_Jobs".equals(registerRepositoryFolder)) {
                 rootFolder = registerRepositoryFolder
