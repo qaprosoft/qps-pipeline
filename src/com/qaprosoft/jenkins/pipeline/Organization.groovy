@@ -42,7 +42,7 @@ class Organization {
         logger.info("Organization->register")
         context.node('master') {
             context.timestamps {
-                def folder = Configuration.get("tenancyName")
+                def folder = Configuration.get("folderName")
                 prepare()
                 generateCiItems(folder)
                 if (Configuration.get("securityEnabled")?.toBoolean()) {
@@ -57,7 +57,7 @@ class Organization {
         logger.info("Organization->register")
         context.node('master') {
             context.timestamps {
-                def folder = Configuration.get("tenancyName")
+                def folder = Configuration.get("folderName")
                 def userName = folder + "-user"
                 prepare()
                 deleteFolder(folder)
@@ -212,7 +212,7 @@ class Organization {
 
     public def registerZafiraCredentials(){
         context.stage("Register Zafira Credentials") {
-            def orgFolderName = Configuration.get("tenancyName")
+            def orgFolderName = Configuration.get("folderName")
             def zafiraServiceURL = Configuration.get("zafiraServiceURL")
             def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
             if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
