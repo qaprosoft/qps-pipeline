@@ -685,6 +685,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("capabilities.STF_ENABLED", "true")
         Configuration.set("capabilities.appWaitDuration", "270000")
         Configuration.set("capabilities.androidInstallTimeout", "270000")
+        Configuration.set("capabilities.adbExecTimeout", "270000")
     }
 
     protected void prepareForiOS() {
