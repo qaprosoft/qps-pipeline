@@ -167,7 +167,8 @@ public class Configuration {
         // public static void set(Map args) - ???
     }
 
-    private void putParamCaseInsensitive(parameterName, parameterValue) {
+    @NonCPS
+    private static void putParamCaseInsensitive(parameterName, parameterValue) {
         if (!parameterValue.equals(DEFAULT_VALUE)) {
             if (vars.get(parameterName)) {
                 vars.put(parameterName, parameterValue)
