@@ -5,6 +5,7 @@ public class Configuration {
     private def context
 
     private final static def mustOverride = "{must_override}"
+    private final static def DEFAULT_VALUE = "default"
 
     //list of CI job params as a map
     protected static Map params = [:]
@@ -137,7 +138,7 @@ public class Configuration {
         // 2. Load all job parameters into unmodifiable map
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
-            if (param.value != null) {
+            if (param.value != null && !param.value.equals(DEFAULT_VALUE)) {
                 params.put(param.name, param.value)
             }
         }
@@ -150,12 +151,14 @@ public class Configuration {
                 if (keyValueArray.size() > 1){
                     def parameterName = keyValueArray[0]
                     def parameterValue = keyValueArray[1]
-                    if (vars.get(parameterName)){
-                        vars.put(parameterName, parameterValue)
-                    } else if (vars.get(parameterName.toUpperCase())){
-                        vars.put(parameterName.toUpperCase(), parameterValue)
-                    } else {
-                        params.put(parameterName, parameterValue)
+                    if(!parameterValue.equals(DEFAULT_VALUE)){
+                        if (vars.get(parameterName)){
+                            vars.put(parameterName, parameterValue)
+                        } else if (vars.get(parameterName.toUpperCase())){
+                            vars.put(parameterName.toUpperCase(), parameterValue)
+                        } else {
+                            params.put(parameterName, parameterValue)
+                        }
                     }
                 }
             }
