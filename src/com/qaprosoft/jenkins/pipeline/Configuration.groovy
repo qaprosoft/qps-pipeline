@@ -121,7 +121,7 @@ public class Configuration {
         // 1. load all obligatory Parameter(s) and their default key/values to vars.
         // any non empty value should be resolved in such order: Parameter, envvars and jobParams
 
-        def enumValues  = Parameter.values()
+        def enumValues = Parameter.values()
         for (enumValue in enumValues) {
             //a. set default values from enum
             vars.put(enumValue.getKey(), enumValue.getValue())
@@ -138,28 +138,20 @@ public class Configuration {
         // 2. Load all job parameters into unmodifiable map
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
-            if (param.value != null && !param.value.equals(DEFAULT_VALUE)) {
-                params.put(param.name, param.value)
+            if (param.value != null) {
+                putParamCaseInsensitive(param.name, param.value)
             }
         }
 
         //3. Replace vars and/or params with overrideFields values
         def overriddenFieldValues = params.get("overrideFields")
-        if (overriddenFieldValues){
-            for(value in overriddenFieldValues.split(",")){
+        if (overriddenFieldValues) {
+            for (value in overriddenFieldValues.split(",")) {
                 def keyValueArray = value.trim().split("=")
-                if (keyValueArray.size() > 1){
+                if (keyValueArray.size() > 1) {
                     def parameterName = keyValueArray[0]
                     def parameterValue = keyValueArray[1]
-                    if(!parameterValue.equals(DEFAULT_VALUE)){
-                        if (vars.get(parameterName)){
-                            vars.put(parameterName, parameterValue)
-                        } else if (vars.get(parameterName.toUpperCase())){
-                            vars.put(parameterName.toUpperCase(), parameterValue)
-                        } else {
-                            params.put(parameterName, parameterValue)
-                        }
-                    }
+                    putParamCaseInsensitive(parameterName, parameterValue)
                 }
             }
         }
@@ -173,6 +165,18 @@ public class Configuration {
         }
         //4. TODO: investigate how private pipeline can override those values
         // public static void set(Map args) - ???
+    }
+
+    private void putParamCaseInsensitive(parameterName, parameterValue) {
+        if (!parameterValue.equals(DEFAULT_VALUE)) {
+            if (vars.get(parameterName)) {
+                vars.put(parameterName, parameterValue)
+            } else if (vars.get(parameterName.toUpperCase())) {
+                vars.put(parameterName.toUpperCase(), parameterValue)
+            } else {
+                params.put(parameterName, parameterValue)
+            }
+        }
     }
 
     @NonCPS
@@ -208,6 +212,7 @@ public class Configuration {
      * String cmd
      * return String cmd
      */
+
     @NonCPS
     public static String resolveVars(String cmd) {
         return cmd.replaceAll('\\$\\{[^\\{\\}]*\\}') { m -> get(m.substring(2, m.size() - 1)) }
