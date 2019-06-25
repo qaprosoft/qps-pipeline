@@ -133,7 +133,7 @@ class Repository {
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
-            def overrideFields = isParamEmpty(Configuration.get("overrideFields")) ? '' : Configuration.get("userId")
+            def overrideFields = isParamEmpty(Configuration.get("overrideFields")) ? '' : Configuration.get("overrideFields")
 
             registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*"))
 
