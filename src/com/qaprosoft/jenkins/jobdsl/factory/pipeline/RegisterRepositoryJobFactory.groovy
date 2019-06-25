@@ -32,6 +32,8 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
                 configure stringParam('githubUser', '', 'GitHub user')
                 configure stringParam('githubToken', '', 'GitHub token with read permissions')
                 configure stringParam('userId', '', 'Identifier of the user who triggered the process')
+                configure addHiddenParameter('ZAFIRA_SERVICE_URL', '', 'default')
+                configure addHiddenParameter('ZAFIRA_ACCESS_TOKEN', '', 'default')
                 configure stringParam('pipelineLibrary', pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
                 configure stringParam('runnerClass', runnerClass, '')
             }

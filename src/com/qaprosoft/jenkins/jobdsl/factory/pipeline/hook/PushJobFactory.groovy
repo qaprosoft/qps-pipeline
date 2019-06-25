@@ -12,8 +12,10 @@ public class PushJobFactory extends PipelineFactory {
     def branch
     def scmRepoUrl
     def userId
+    def zafiraServiceURL
+    def zafiraAccessToken
 
-    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId) {
+    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, zafiraServiceURL, zafiraAccessToken) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
@@ -24,6 +26,9 @@ public class PushJobFactory extends PipelineFactory {
         this.branch = branch
         this.scmRepoUrl = scmRepoUrl
         this.userId = userId
+        this.zafiraServiceURL = zafiraServiceURL
+        this.zafiraAccessToken = zafiraAccessToken
+
     }
 
     def create() {
@@ -51,8 +56,8 @@ public class PushJobFactory extends PipelineFactory {
                 choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedJobAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedViewAction', ['IGNORE', 'DELETE'], '')
-                configure addHiddenParameter('ZAFIRA_SERVICE_URL', '', 'default')
-                configure addHiddenParameter('ZAFIRA_ACCESS_TOKEN', '', 'default')
+                configure addHiddenParameter('ZAFIRA_SERVICE_URL', '', zafiraServiceURL)
+                configure addHiddenParameter('ZAFIRA_ACCESS_TOKEN', '', zafiraAccessToken)
                 configure addHiddenParameter('userId', 'Identifier of the user who triggered the process', userId)
             }
 
