@@ -474,7 +474,6 @@ public class QARunner extends AbstractRunner {
 
     protected void runJob() {
         logger.info("QARunner->runJob")
-        //updates zafira credentials with values from Jenkins Credentials (if present)
         uuid = getUUID()
         logger.info("UUID: " + uuid)
         def testRun
@@ -1264,7 +1263,6 @@ public class QARunner extends AbstractRunner {
 
     public void rerunJobs(){
         context.stage('Rerun Tests'){
-            //updates zafira credentials with values from Jenkins Credentials (if present)
             zafiraUpdater.smartRerun()
         }
     }
