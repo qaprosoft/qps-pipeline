@@ -138,6 +138,8 @@ public class Configuration {
         // 2. Load all job parameters into unmodifiable map
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
+            context.println "1111111"
+            context.println param
             if (param.value != null) {
                 putParamCaseInsensitive(param.name, param.value)
             }
