@@ -34,6 +34,7 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
                 configure stringParam('userId', '', 'Identifier of the user who triggered the process')
                 configure stringParam('pipelineLibrary', pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
                 configure stringParam('runnerClass', runnerClass, '')
+                configure addHiddenParameter('overrideFields', '', '')
             }
         }
         return pipelineJob
