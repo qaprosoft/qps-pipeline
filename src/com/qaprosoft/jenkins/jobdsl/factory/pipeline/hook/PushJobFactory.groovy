@@ -25,7 +25,7 @@ public class PushJobFactory extends PipelineFactory {
         this.branch = branch
         this.scmRepoUrl = scmRepoUrl
         this.userId = userId
-        this.overrideFields
+        this.overrideFields = overrideFields
     }
 
     def create() {
