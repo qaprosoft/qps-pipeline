@@ -51,6 +51,8 @@ public class PushJobFactory extends PipelineFactory {
                 choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedJobAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedViewAction', ['IGNORE', 'DELETE'], '')
+                configure addHiddenParameter('ZAFIRA_SERVICE_URL', '', 'default')
+                configure addHiddenParameter('ZAFIRA_ACCESS_TOKEN', '', 'default')
                 configure addHiddenParameter('userId', 'Identifier of the user who triggered the process', userId)
             }
 
