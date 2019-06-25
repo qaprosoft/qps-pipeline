@@ -168,14 +168,12 @@ public class Configuration {
 
     @NonCPS
     private static void putParamCaseInsensitive(parameterName, parameterValue) {
-        if (!parameterValue.equals(DEFAULT_VALUE)) {
-            if (vars.get(parameterName)) {
-                vars.put(parameterName, parameterValue)
-            } else if (vars.get(parameterName.toUpperCase())) {
-                vars.put(parameterName.toUpperCase(), parameterValue)
-            } else {
-                params.put(parameterName, parameterValue)
-            }
+        if (vars.get(parameterName)) {
+            vars.put(parameterName, parameterValue)
+        } else if (vars.get(parameterName.toUpperCase())) {
+            vars.put(parameterName.toUpperCase(), parameterValue)
+        } else {
+            params.put(parameterName, parameterValue)
         }
     }
 
