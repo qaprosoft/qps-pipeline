@@ -5,7 +5,6 @@ public class Configuration {
     private def context
 
     private final static def mustOverride = "{must_override}"
-    private final static def DEFAULT_VALUE = "default"
 
     //list of CI job params as a map
     protected static Map params = [:]
@@ -138,8 +137,6 @@ public class Configuration {
         // 2. Load all job parameters into unmodifiable map
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
-            context.println "1111111"
-            context.println param
             if (param.value != null) {
                 putParamCaseInsensitive(param.name, param.value)
             }
