@@ -135,8 +135,6 @@ class Repository {
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
             def overrideFields = isParamEmpty(Configuration.get("overrideFields")) ? '' : Configuration.get("overrideFields")
 
-            logger.info("111")
-            logger.info(Configuration.get("overrideFields"))
             registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*"))
 
             def pullRequestJobDescription = "Customized pull request verification checker"
