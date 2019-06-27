@@ -102,7 +102,6 @@ public class QARunner extends AbstractRunner {
                 logger.info("QARunner->onPush")
                 try {
                     prepare()
-                    zafiraUpdater.getZafiraCredentials()
                     if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                         logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
                         return
@@ -415,10 +414,10 @@ public class QARunner extends AbstractRunner {
     protected def createLaunchers(build) {
         Map scannedRepoLaunchers = [:]
         scannedRepoLaunchers.success = false
+        scannedRepoLaunchers.repo = Configuration.get("repo")
+        scannedRepoLaunchers.userId = !isParamEmpty(Configuration.get("userId")) ? Long.valueOf(Configuration.get("userId")) : 2
         try {
             if (build) {
-                scannedRepoLaunchers.repo = Configuration.get("repo")
-                scannedRepoLaunchers.userId = Long.valueOf(Configuration.get("userId"))
                 scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
                 scannedRepoLaunchers.success = true
             }
