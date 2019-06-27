@@ -42,11 +42,12 @@ class Organization {
         logger.info("Organization->register")
         context.node('master') {
             context.timestamps {
-                def folder = Configuration.get("tenancyName")
-                def launcherJobName = folder + "/launcher"
+                def folder = Configuration.get("folderName")
                 prepare()
                 generateCiItems(folder)
-                setSecurity(folder, launcherJobName)
+                if (Configuration.get("securityEnabled")?.toBoolean()) {
+                    setSecurity(folder)
+                }
                 clean()
             }
         }
@@ -56,7 +57,7 @@ class Organization {
         logger.info("Organization->register")
         context.node('master') {
             context.timestamps {
-                def folder = Configuration.get("tenancyName")
+                def folder = Configuration.get("folderName")
                 def userName = folder + "-user"
                 prepare()
                 deleteFolder(folder)
@@ -86,7 +87,9 @@ class Organization {
 
     protected def generateCiItems(folder) {
         context.stage("Register Organization") {
-            registerObject("project_folder", new FolderFactory(folder, ""))
+            if (!isParamEmpty(folder)) {
+                registerObject("project_folder", new FolderFactory(folder, ""))
+            }
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -104,7 +107,7 @@ class Organization {
         dslObjects.put(name, object)
     }
 
-    protected def setSecurity(folder, launcherJobName){
+    protected def setSecurity(folder){
         def userName = folder + "-user"
         boolean initialized = false
         def integrationParameters = [:]
@@ -116,7 +119,7 @@ class Organization {
             if (token == null) {
                 throw new RuntimeException("Token generation failed or token for user ${userName} is already exists")
             }
-            integrationParameters = generateIntegrationParemetersMap(userName, token.tokenValue, launcherJobName)
+            integrationParameters = generateIntegrationParemetersMap(userName, token.tokenValue, folder)
             initialized = true
         } catch (Exception e) {
             logger.error("Something went wrong during secure folder initialization: \n${e}")
@@ -197,19 +200,19 @@ class Organization {
         folder.save()
     }
 
-    protected def generateIntegrationParemetersMap(userName, tokenValue, launcherJobName){
+    protected def generateIntegrationParemetersMap(userName, tokenValue, folder){
         def integrationParameters = [:]
         String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split("/job/")[0]
         integrationParameters.JENKINS_URL = jenkinsUrl
         integrationParameters.JENKINS_USER = userName
         integrationParameters.JENKINS_API_TOKEN_OR_PASSWORD = tokenValue
-        integrationParameters.JENKINS_LAUNCHER_JOB_NAME = launcherJobName
+        integrationParameters.JENKINS_FOLDER = folder
         return integrationParameters
     }
 
     public def registerZafiraCredentials(){
         context.stage("Register Zafira Credentials") {
-            def orgFolderName = Configuration.get("tenancyName")
+            def orgFolderName = Configuration.get("folderName")
             def zafiraServiceURL = Configuration.get("zafiraServiceURL")
             def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
             if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){

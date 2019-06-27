@@ -2,9 +2,11 @@ package com.qaprosoft.jenkins.pipeline.integration.zafira
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
-import static com.qaprosoft.jenkins.Utils.*
-import static com.qaprosoft.jenkins.pipeline.Executor.*
+
 import java.nio.file.Paths
+
+import static com.qaprosoft.jenkins.Utils.isParamEmpty
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class ZafiraUpdater {
 
@@ -93,13 +95,17 @@ class ZafiraUpdater {
             failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE.value}:\n" + failureLog, "UTF-8")
         }
         abortedTestRun = zc.abortTestRun(uuid, failureReason)
+
+        //Checks if testRun is present in Zafira and sends Zafira-generated report
         if (!isParamEmpty(abortedTestRun)){
+            //Sends email to admin if testRun was aborted
             if (abortedTestRun.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
             } else {
                 sendFailureEmail(uuid, Configuration.get("email_list"))
             }
         } else {
+            //If testRun is not available in Zafira, sends email to admins by means of Jenkins
             logger.error("Unable to abort testrun! Probably run is not registered in Zafira.")
             //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
             def body = "${bodyHeader}\nRebuild: ${jobBuildUrl}/rebuild/parameterized\nZafiraReport: ${jobBuildUrl}/ZafiraReport\n\nConsole: ${jobBuildUrl}/console\n${failureLog}"
@@ -172,22 +178,5 @@ class ZafiraUpdater {
 
     public def createJob(jobUrl){
         return zc.createJob(jobUrl)
-    }
-
-    public def getZafiraCredentials() {
-        def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
-        def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
-        def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
-        if (getCredentials(zafiraURLCredentials)){
-            context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                Configuration.set(context.env.KEY, context.env.VALUE)
-            }
-        }
-        if (getCredentials(zafiraTokenCredentials)){
-            context.withCredentials([context.usernamePassword(credentialsId:zafiraTokenCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                Configuration.set(context.env.KEY, context.env.VALUE)
-            }
-        }
-        zc = new ZafiraClient(context)
     }
 }

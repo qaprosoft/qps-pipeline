@@ -2,9 +2,6 @@ package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.RegisterRepositoryJobFactory
-import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
@@ -22,7 +19,6 @@ class Repository {
     def context
     protected ISCM scmClient
     protected Logger logger
-    protected ZafiraUpdater zafiraUpdater
     protected Configuration configuration = new Configuration(context)
     protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
     protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
@@ -36,7 +32,6 @@ class Repository {
         //TODO: howto register repository not at github?
         scmClient = new GitHub(context)
         logger = new Logger(context)
-        zafiraUpdater = new ZafiraUpdater(context)
         pipelineLibrary = Configuration.get("pipelineLibrary")
         runnerClass =  Configuration.get("runnerClass")
     }
@@ -52,15 +47,16 @@ class Repository {
             }
         }
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
-        def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
         def branch = Configuration.get("branch")
-        def jobName = "${repo}" + "/" + "onPush-" + repo
-        def jobRootFolder = Configuration.get("jobRootFolder")
-        if (!isParamEmpty(jobRootFolder) && !isParamEmpty(getJenkinsFolderByName(jobRootFolder))){
-            jobName = "${jobRootFolder}/" + jobName
+        def onPushJobLocation = repo + "/onPush-" + repo
+
+        def rootFolder = Configuration.get("rootFolder")
+
+        if (!isParamEmpty(rootFolder)){
+            onPushJobLocation = rootFolder + "/" + onPushJobLocation
         }
-        context.build job: jobName,
+        context.build job: onPushJobLocation,
                 propagate: true,
                 parameters: [
                         context.string(name: 'repo', value: repo),
@@ -92,27 +88,32 @@ class Repository {
 
         context.stage("Create Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            def gitHubOrganizationParameter = Configuration.get("organization")
+            def organization = Configuration.get("organization")
             def repo = Configuration.get("repo")
             def branch = Configuration.get("branch")
-            def repoFolder
-            def jobRootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
-            if (!"Management_Jobs".equals(jobRootFolder)) {
-                repoFolder = "${jobRootFolder}/${repo}"
-            } else {
-                jobRootFolder = ''
-                if (!isParamEmpty(gitHubOrganizationParameter)){
-                    Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, gitHubOrganizationParameter)
-                    jobRootFolder = gitHubOrganizationParameter
-                    if (isParamEmpty(getJenkinsFolderByName(jobRootFolder))){
-                        registerObject("organization_folder", new FolderFactory(jobRootFolder, ""))
-                    }
-                    repoFolder = "${jobRootFolder}/${repo}"
-                } else {
-                    repoFolder = repo
+
+            def repoFolder = repo
+            def rootFolder = ''
+
+            // Folder from which RegisterRepository job was started
+            def registerRepositoryFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+
+            if (!isParamEmpty(organization)){
+                rootFolder = registerRepositoryFolder
+                if (isParamEmpty(getJenkinsFolderByName(rootFolder))){
+                    registerObject("organization_folder", new FolderFactory(rootFolder, ""))
                 }
             }
-            Configuration.set("jobRootFolder", jobRootFolder)
+
+            if (!isParamEmpty(rootFolder)) {
+                //For both cases when rootFolder exists job was started with existing organization value,
+                //so it should be used by default
+                Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
+                repoFolder = rootFolder + "/" + repoFolder
+            }
+
+            // Used on the next step to detect onPush job location
+            Configuration.set("rootFolder", rootFolder)
 
             //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
@@ -132,7 +133,10 @@ class Repository {
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
+            def overrideFields = isParamEmpty(Configuration.get("overrideFields")) ? '' : Configuration.get("overrideFields")
 
+            logger.info("111")
+            logger.info(Configuration.get("overrideFields"))
             registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*"))
 
             def pullRequestJobDescription = "Customized pull request verification checker"
@@ -143,15 +147,15 @@ class Repository {
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId))
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId, overrideFields))
 
 
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + repo, mergeJobDescription, githubHost, githubOrganization, repo, gitUrl))
 
-            def launcher = isParamEmpty(jobRootFolder) ? getItemByFullName("launcher") : getItemByFullName(jobRootFolder + "/launcher")
+            def launcher = isParamEmpty(rootFolder) ? getItemByFullName("launcher") : getItemByFullName(rootFolder + "/launcher")
             if (isParamEmpty(launcher)){
-                registerObject("launcher_job", new LauncherJobFactory(jobRootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
+                registerObject("launcher_job", new LauncherJobFactory(rootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
             }
 
             // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
