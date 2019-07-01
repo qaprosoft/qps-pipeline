@@ -77,6 +77,7 @@ public class Configuration {
         OPTIMIZE_VIDEO_RECORDING("optimize_video_recording", "false"),
 
         VNC_DESKTOP("vnc_desktop", "%s://%s:%s/vnc/%s"),
+        VNC_MOBILE("vnc_mobile", "%s://%s:%s/websockify"),
         VNC_PROTOCOL("vnc_protocol", "ws"),
         VNC_HOST("vnc_host", "\${QPS_HOST}"),
         VNC_PORT("vnc_port", "80"),
