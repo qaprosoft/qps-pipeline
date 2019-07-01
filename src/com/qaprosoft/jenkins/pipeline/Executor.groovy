@@ -350,7 +350,7 @@ public class Executor {
         }
     }
 
-    static boolean isJobParameterValid(name, value) {
+    static boolean isJobParameterValid(name) {
         def excludedCapabilities = ["custom_capabilities",
                                     "retry_count",
                                     "rerun_failures",
@@ -358,7 +358,13 @@ public class Executor {
                                     "debug",
                                     "ci_run_id",
                                     "pipelineLibrary",
-                                    "runnerClass"]
+                                    "runnerClass",
+                                    "BuildPriority",
+                                    "auto_screenshot",
+                                    "enableVideo",
+                                    "test_run_rules",
+                                    "recoveryMode"
+        ]
         def excluded = excludedCapabilities.find {
             it.equals(name)
         }
