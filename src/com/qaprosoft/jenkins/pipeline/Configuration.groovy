@@ -82,6 +82,9 @@ public class Configuration {
         VNC_HOST("vnc_host", "\${QPS_HOST}"),
         VNC_PORT("vnc_port", "80"),
 
+        ENABLE_VNC("capabilities.enableVNC", "true"),
+        ENABLE_VIDEO("capabilities.enableVideo", "true"),
+
         TIMEZONE("user.timezone", "UTC"),
 
         S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
