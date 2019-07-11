@@ -1112,9 +1112,13 @@ public class QARunner extends AbstractRunner {
                 logger.warn("Supported config data is NULL!")
                 continue
             }
-            def name = config.split(":")[0]?.trim()
+            def nameValueArray = config.split(":");
+            def name = nameValueArray[0]?.trim()
             logger.info("name: " + name)
-            def value = config.split(":")[1]?.trim()
+            def value = ""
+            if (nameValueArray.size() > 1) {
+                value = nameValueArray[1]?.trim()
+            }
             logger.info("value: " + value)
             valuesMap[name] = value
         }
