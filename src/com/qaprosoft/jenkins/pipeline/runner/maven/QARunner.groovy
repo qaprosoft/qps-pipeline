@@ -1216,9 +1216,6 @@ public class QARunner extends AbstractRunner {
         if (!isParamEmpty(locale) && multilingualMode) {
             stageName += "Locale: ${locale} "
         }
-        if (!isParamEmpty(overrideFields)) {
-            stageName += "Override: ${overrideFields} "
-        }
         return stageName
     }
 
