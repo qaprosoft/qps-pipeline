@@ -654,8 +654,6 @@ public class QARunner extends AbstractRunner {
         }
 
         //general mobile capabilities
-        //TODO: find valid way for naming this global "MOBILE" quota
-        Configuration.set("capabilities.deviceName", "QPS-HUB")
         if ("DefaultPool".equalsIgnoreCase(devicePool)) {
             //reuse list of devices from hidden parameter DefaultPool
             Configuration.set("capabilities.devicePool", defaultPool)
@@ -677,6 +675,7 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForAndroid() {
         logger.info("Runner->prepareForAndroid")
+        Configuration.set("capabilities.deviceName", "mcloud-android")
         Configuration.set("mobile_app_clear_cache", "true")
         Configuration.set("capabilities.platformName", "ANDROID")
         Configuration.set("capabilities.autoGrantPermissions", "true")
@@ -689,6 +688,7 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForiOS() {
         logger.info("Runner->prepareForiOS")
+        Configuration.set("capabilities.deviceName", "mcloud-ios")
         Configuration.set("capabilities.platform", "IOS")
         Configuration.set("capabilities.platformName", "IOS")
         Configuration.set("capabilities.deviceName", "*")
