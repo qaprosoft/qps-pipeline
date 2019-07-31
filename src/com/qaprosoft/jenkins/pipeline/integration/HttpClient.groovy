@@ -19,7 +19,7 @@ abstract class HttpClient {
     /** Sends httpRequest using passed parameters */
     protected def sendRequestFormatted(requestParams) {
         def response = sendRequest(requestParams)
-        logger.info("response: " + response.dump())
+        logger.info("response: " + response)
         if (response){
             return getObjectResponse(response)
         }
