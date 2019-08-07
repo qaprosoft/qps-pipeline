@@ -148,18 +148,13 @@ public class Configuration {
             }
         }
 
-        //3. Replace vars and/or params with overrideFields values
+        //3. Replace vars and/or params with zafiraFields values
+        def zafiraFieldValues = params.get("zafiraFields")
+        parseValues(zafiraFieldValues)
+
+        //4. Replace vars and/or params with overrideFields values
         def overriddenFieldValues = params.get("overrideFields")
-        if (overriddenFieldValues) {
-            for (value in overriddenFieldValues.split(",")) {
-                def keyValueArray = value.trim().split("=")
-                if (keyValueArray.size() > 1) {
-                    def parameterName = keyValueArray[0]
-                    def parameterValue = keyValueArray[1]
-                    putParamCaseInsensitive(parameterName, parameterValue)
-                }
-            }
-        }
+        parseValues(overriddenFieldValues)
 
         for (var in vars) {
             context.println(var)
@@ -170,6 +165,20 @@ public class Configuration {
         }
         //4. TODO: investigate how private pipeline can override those values
         // public static void set(Map args) - ???
+    }
+
+    @NonCPS
+    private static void parseValues(values){
+        if (values) {
+            for (value in values.split(",")) {
+                def keyValueArray = value.trim().split("=")
+                if (keyValueArray.size() > 1) {
+                    def parameterName = keyValueArray[0]
+                    def parameterValue = keyValueArray[1]
+                    putParamCaseInsensitive(parameterName, parameterValue)
+                }
+            }
+        }
     }
 
     @NonCPS

@@ -33,7 +33,7 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
                 configure stringParam('githubToken', '', 'GitHub token with read permissions')
                 configure stringParam('pipelineLibrary', pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
                 configure stringParam('runnerClass', runnerClass, '')
-                configure addHiddenParameter('overrideFields', '', '')
+                configure addHiddenParameter('zafiraFields', '', '')
                 configure addHiddenParameter('userId', '', '2')
             }
         }
