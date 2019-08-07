@@ -133,7 +133,7 @@ class Repository {
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
-            def overrideFields = isParamEmpty(Configuration.get("overrideFields")) ? '' : Configuration.get("overrideFields")
+            def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
 
             registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*"))
 
@@ -145,7 +145,7 @@ class Repository {
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId, overrideFields))
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId, zafiraFields))
 
 
             def mergeJobDescription = "SCM branch merger job"
