@@ -680,7 +680,6 @@ public class QARunner extends AbstractRunner {
         Configuration.set("capabilities.platformName", "ANDROID")
         Configuration.set("capabilities.autoGrantPermissions", "true")
         Configuration.set("capabilities.noSign", "true")
-        Configuration.set("capabilities.STF_ENABLED", "true")
         Configuration.set("capabilities.appWaitDuration", "270000")
         Configuration.set("capabilities.androidInstallTimeout", "270000")
         Configuration.set("capabilities.adbExecTimeout", "270000")
@@ -694,7 +693,6 @@ public class QARunner extends AbstractRunner {
         Configuration.set("capabilities.deviceName", "*")
         Configuration.set("capabilities.appPackage", "")
         Configuration.set("capabilities.appActivity", "")
-        Configuration.set("capabilities.STF_ENABLED", "false")
     }
 
     protected void downloadResources() {
