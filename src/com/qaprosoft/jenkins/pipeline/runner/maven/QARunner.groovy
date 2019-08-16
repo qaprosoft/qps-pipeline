@@ -654,8 +654,6 @@ public class QARunner extends AbstractRunner {
         }
 
         //general mobile capabilities
-        //TODO: find valid way for naming this global "MOBILE" quota
-        Configuration.set("capabilities.deviceName", "QPS-HUB")
         if ("DefaultPool".equalsIgnoreCase(devicePool)) {
             //reuse list of devices from hidden parameter DefaultPool
             Configuration.set("capabilities.devicePool", defaultPool)
@@ -677,11 +675,11 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForAndroid() {
         logger.info("Runner->prepareForAndroid")
+        Configuration.set("capabilities.deviceName", "mcloud-android")
         Configuration.set("mobile_app_clear_cache", "true")
         Configuration.set("capabilities.platformName", "ANDROID")
         Configuration.set("capabilities.autoGrantPermissions", "true")
         Configuration.set("capabilities.noSign", "true")
-        Configuration.set("capabilities.STF_ENABLED", "true")
         Configuration.set("capabilities.appWaitDuration", "270000")
         Configuration.set("capabilities.androidInstallTimeout", "270000")
         Configuration.set("capabilities.adbExecTimeout", "270000")
@@ -689,12 +687,12 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForiOS() {
         logger.info("Runner->prepareForiOS")
+        Configuration.set("capabilities.deviceName", "mcloud-ios")
         Configuration.set("capabilities.platform", "IOS")
         Configuration.set("capabilities.platformName", "IOS")
         Configuration.set("capabilities.deviceName", "*")
         Configuration.set("capabilities.appPackage", "")
         Configuration.set("capabilities.appActivity", "")
-        Configuration.set("capabilities.STF_ENABLED", "false")
     }
 
     protected void downloadResources() {
@@ -1058,6 +1056,7 @@ public class QARunner extends AbstractRunner {
                         putNotNullWithSplit(pipelineMap, "emailList", emailList)
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                         putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
+                        putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
                         putNotNull(pipelineMap, "queue_registration", queueRegistration)
                         registerPipeline(currentSuite, pipelineMap)
                     }
@@ -1188,7 +1187,6 @@ public class QARunner extends AbstractRunner {
         String browser = jobParams.get("browser")
         String browser_version = jobParams.get("browser_version")
         String custom_capabilities = jobParams.get("custom_capabilities")
-        String overrideFields = jobParams.get("overrideFields")
         String locale = jobParams.get("locale")
 
         if (!isParamEmpty(jobName)) {
