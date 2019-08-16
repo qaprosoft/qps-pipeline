@@ -12,9 +12,9 @@ public class PushJobFactory extends PipelineFactory {
     def branch
     def scmRepoUrl
     def userId
-    def overrideFields
+    def zafiraFields
 
-    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, overrideFields) {
+    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, zafiraFields) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
@@ -25,7 +25,7 @@ public class PushJobFactory extends PipelineFactory {
         this.branch = branch
         this.scmRepoUrl = scmRepoUrl
         this.userId = userId
-        this.overrideFields = overrideFields
+        this.zafiraFields = zafiraFields
     }
 
     def create() {
@@ -54,7 +54,7 @@ public class PushJobFactory extends PipelineFactory {
                 choiceParam('removedJobAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedViewAction', ['IGNORE', 'DELETE'], '')
                 configure addHiddenParameter('userId', 'Identifier of the user who triggered the process', userId)
-                configure addHiddenParameter('overrideFields', '', overrideFields)
+                configure addHiddenParameter('zafiraFields', '', zafiraFields)
             }
 
         }
