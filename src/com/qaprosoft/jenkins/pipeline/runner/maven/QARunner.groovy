@@ -668,6 +668,8 @@ public class QARunner extends AbstractRunner {
         // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
         // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
         Configuration.remove("device")
+
+        Configuration.set("capabilities.deviceName", "QPS-HUB")
         //TODO: move it to the global jenkins variable
         Configuration.set("capabilities.newCommandTimeout", "180")
         Configuration.set("java.awt.headless", "true")
@@ -675,7 +677,6 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForAndroid() {
         logger.info("Runner->prepareForAndroid")
-        Configuration.set("capabilities.deviceName", "mcloud-android")
         Configuration.set("mobile_app_clear_cache", "true")
         Configuration.set("capabilities.platformName", "ANDROID")
         Configuration.set("capabilities.autoGrantPermissions", "true")
@@ -687,7 +688,6 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForiOS() {
         logger.info("Runner->prepareForiOS")
-        Configuration.set("capabilities.deviceName", "mcloud-ios")
         Configuration.set("capabilities.platform", "IOS")
         Configuration.set("capabilities.platformName", "IOS")
         Configuration.set("capabilities.deviceName", "*")
