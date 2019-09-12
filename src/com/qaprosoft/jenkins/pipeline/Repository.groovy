@@ -97,6 +97,10 @@ class Repository {
 
             // Folder from which RegisterRepository job was started
             def registerRepositoryFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+			if ("RegisterRepository".equals(registerRepositoryFolder)) {
+				// use case when RegisterRepository is on root!
+				RegisterRepository = ""
+			}
             logger.warn("registerRepositoryFolder: " + registerRepositoryFolder)
 
             logger.warn("rootFolder: " + rootFolder)
