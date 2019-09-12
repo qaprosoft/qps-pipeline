@@ -28,9 +28,14 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
 		if ("qaprosoft".equals(this.folder) || "".equals(this.folder)) {
 			repo = "carina-demo"
 		}
+		def org = "qaprosoft"
+		if (!this.folder.isEmpty()) {
+			org = this.folder
+		}
+		
         pipelineJob.with {
             parameters {
-                configure stringParam('organization', this.folder, 'GitHub organization')
+                configure stringParam('organization', org, 'GitHub organization')
                 configure stringParam('repo', repo, 'GitHub repository for scanning')
                 configure stringParam('branch', 'master', 'It is highly recommended to use master branch for each scan operation')
                 configure stringParam('githubUser', '', 'GitHub user')
