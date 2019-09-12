@@ -24,15 +24,19 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
     def create() {
         logger.info("RegisterRepositoryJobFactory->create")
         def pipelineJob = super.create()
+		def repo = ""
+		if ("qaprosoft".equals(this.folder) || "".equals(this.folder)) {
+			repo = "carina-demo"
+		}
         pipelineJob.with {
             parameters {
-                configure stringParam('organization', '', 'GitHub organization')
-                configure stringParam('repo', '', 'GitHub repository for scanning')
-                configure stringParam('branch', '', 'It is highly recommended to use master branch for each scan operation')
+                configure stringParam('organization', this.folder, 'GitHub organization')
+                configure stringParam('repo', repo, 'GitHub repository for scanning')
+                configure stringParam('branch', 'master', 'It is highly recommended to use master branch for each scan operation')
                 configure stringParam('githubUser', '', 'GitHub user')
                 configure stringParam('githubToken', '', 'GitHub token with read permissions')
-                configure stringParam('pipelineLibrary', pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
-                configure stringParam('runnerClass', runnerClass, '')
+                configure stringParam('pipelineLibrary', this.pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
+                configure stringParam('runnerClass', this.runnerClass, '')
                 configure addHiddenParameter('zafiraFields', '', '')
                 configure addHiddenParameter('userId', '', '2')
             }
