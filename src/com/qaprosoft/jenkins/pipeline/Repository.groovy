@@ -103,12 +103,14 @@ class Repository {
 			
 			logger.warn("organization: " + organization)
             logger.warn("rootFolder: " + rootFolder)
+
 			
-            if (!isParamEmpty(organization)){
-                if (isParamEmpty(getJenkinsFolderByName(rootFolder))){
-                    registerObject("organization_folder", new FolderFactory(rootFolder, ""))
-                }
-            }
+			
+			if (!"/".equals(rootFolder)) {
+				//register for JobDSL only non root organization folder
+				registerObject("organization_folder", new FolderFactory(rootFolder, ""))
+			}
+			
             logger.warn("rootFolder: " + rootFolder)
 
             if (!"/".equals(rootFolder)) {
