@@ -111,7 +111,7 @@ class Repository {
             }
             logger.warn("rootFolder: " + rootFolder)
 
-            if (!isParamEmpty(rootFolder)) {
+            if (!"/".equals(rootFolder)) {
                 //For both cases when rootFolder exists job was started with existing organization value,
                 //so it should be used by default
                 Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
