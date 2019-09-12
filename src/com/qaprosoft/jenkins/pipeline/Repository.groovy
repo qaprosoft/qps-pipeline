@@ -24,6 +24,8 @@ class Repository {
     protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
     protected def pipelineLibrary
     protected def runnerClass
+	
+	protected def rootFolder
 
     protected Map dslObjects = new LinkedHashMap()
 
@@ -51,10 +53,8 @@ class Repository {
         def branch = Configuration.get("branch")
         def onPushJobLocation = repo + "/onPush-" + repo
 
-        def rootFolder = Configuration.get("rootFolder")
-
-        if (!isParamEmpty(rootFolder)){
-            onPushJobLocation = rootFolder + "/" + onPushJobLocation
+        if (!isParamEmpty(this.rootFolder)){
+            onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
         }
         context.build job: onPushJobLocation,
                 propagate: true,
@@ -93,28 +93,33 @@ class Repository {
             def branch = Configuration.get("branch")
 
             def repoFolder = repo
-            def rootFolder = ''
 
             // Folder from which RegisterRepository job was started
-            def registerRepositoryFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+            this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+			if ("RegisterRepository".equals(this.rootFolder)) {
+				// use case when RegisterRepository is on root!
+				this.rootFolder = "/"
+			}
+			
+			logger.debug("organization: " + organization)
+            logger.debug("rootFolder: " + this.rootFolder)
+			
+			if (!"/".equals(this.rootFolder)) {
+				//register for JobDSL only non root organization folder
+				registerObject("organization_folder", new FolderFactory(this.rootFolder, ""))
+			}
+			
+            logger.debug("rootFolder: " + this.rootFolder)
 
-            if (!isParamEmpty(organization)){
-                rootFolder = registerRepositoryFolder
-                if (isParamEmpty(getJenkinsFolderByName(rootFolder))){
-                    registerObject("organization_folder", new FolderFactory(rootFolder, ""))
-                }
-            }
-
-            if (!isParamEmpty(rootFolder)) {
+            if (!"/".equals(this.rootFolder)) {
                 //For both cases when rootFolder exists job was started with existing organization value,
                 //so it should be used by default
                 Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
-                repoFolder = rootFolder + "/" + repoFolder
+                repoFolder = this.rootFolder + "/" + repoFolder
             }
 
-            // Used on the next step to detect onPush job location
-            Configuration.set("rootFolder", rootFolder)
-
+			logger.debug("repoFolder: " + repoFolder)
+			
             //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
@@ -151,9 +156,9 @@ class Repository {
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + repo, mergeJobDescription, githubHost, githubOrganization, repo, gitUrl))
 
-            def launcher = isParamEmpty(rootFolder) ? getItemByFullName("launcher") : getItemByFullName(rootFolder + "/launcher")
+            def launcher = isParamEmpty(this.rootFolder) ? getItemByFullName("launcher") : getItemByFullName(this.rootFolder + "/launcher")
             if (isParamEmpty(launcher)){
-                registerObject("launcher_job", new LauncherJobFactory(rootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
+                registerObject("launcher_job", new LauncherJobFactory(this.rootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
             }
 
             // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
