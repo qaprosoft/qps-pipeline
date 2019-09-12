@@ -93,19 +93,18 @@ class Repository {
             def branch = Configuration.get("branch")
 
             def repoFolder = repo
-            def rootFolder = ''
 
             // Folder from which RegisterRepository job was started
-            def registerRepositoryFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
-			if ("RegisterRepository".equals(registerRepositoryFolder)) {
+            def rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+			if ("RegisterRepository".equals(rootFolder)) {
 				// use case when RegisterRepository is on root!
-				registerRepositoryFolder = ""
+				rootFolder = "/"
 			}
-            logger.warn("registerRepositoryFolder: " + registerRepositoryFolder)
-
+			
+			logger.warn("organization: " + organization)
             logger.warn("rootFolder: " + rootFolder)
+			
             if (!isParamEmpty(organization)){
-                rootFolder = registerRepositoryFolder
                 if (isParamEmpty(getJenkinsFolderByName(rootFolder))){
                     registerObject("organization_folder", new FolderFactory(rootFolder, ""))
                 }
@@ -119,6 +118,8 @@ class Repository {
                 repoFolder = rootFolder + "/" + repoFolder
             }
 
+			logger.warn("repoFolder: " + repoFolder)
+			
             // Used on the next step to detect onPush job location
             Configuration.set("rootFolder", rootFolder)
 
