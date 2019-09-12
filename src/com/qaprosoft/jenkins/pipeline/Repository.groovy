@@ -99,7 +99,7 @@ class Repository {
             def registerRepositoryFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
 			if ("RegisterRepository".equals(registerRepositoryFolder)) {
 				// use case when RegisterRepository is on root!
-				RegisterRepository = ""
+				registerRepositoryFolder = ""
 			}
             logger.warn("registerRepositoryFolder: " + registerRepositoryFolder)
 
