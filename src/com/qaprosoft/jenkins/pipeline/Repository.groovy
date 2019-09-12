@@ -97,13 +97,16 @@ class Repository {
 
             // Folder from which RegisterRepository job was started
             def registerRepositoryFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+            logger.warn("registerRepositoryFolder: " + registerRepositoryFolder)
 
+            logger.warn("rootFolder: " + rootFolder)
             if (!isParamEmpty(organization)){
                 rootFolder = registerRepositoryFolder
                 if (isParamEmpty(getJenkinsFolderByName(rootFolder))){
                     registerObject("organization_folder", new FolderFactory(rootFolder, ""))
                 }
             }
+            logger.warn("rootFolder: " + rootFolder)
 
             if (!isParamEmpty(rootFolder)) {
                 //For both cases when rootFolder exists job was started with existing organization value,
