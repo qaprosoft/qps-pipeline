@@ -45,7 +45,12 @@ public class Executor {
     }
 
     static def getEmailParams(body, subject, to) {
-        def params = [attachLog: true,
+        return getEmailParams(body, subject, to, "")
+    }
+
+    static def getEmailParams(body, subject, to, attachments) {
+        def params = [attachmentsPattern: attachments,
+              attachLog: true,
                       body: body,
                       recipientProviders: [[$class: 'DevelopersRecipientProvider'],
                                            [$class: 'RequesterRecipientProvider']],
