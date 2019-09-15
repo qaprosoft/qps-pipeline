@@ -557,13 +557,13 @@ public class QARunner extends AbstractRunner {
     protected def sendCustomizedEmail() {
         //Do nothing in default implementation
 
-    //hotfix to send artifacts as email 
+        //hotfix to send artifacts as email 
         def body = "Find artifacts in attachments"
         def subject = "Job " + Configuration.get("suite") + " artifacts"
         def to = Configuration.get("email_list")
         def attachments = '**/artifacts/**'
 
-        context.emailext getEmailParams(body, subject, to, attachments) {
+        context.emailext getEmailParams(body, subject, to, attachments)
     }
 
     protected String chooseNode() {
