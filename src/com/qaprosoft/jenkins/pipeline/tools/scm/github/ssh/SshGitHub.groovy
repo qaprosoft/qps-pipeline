@@ -38,7 +38,7 @@ class SshGitHub extends GitHub {
     @Override
     public def clone(isShallow) {
         context.stage('Checkout GitHub Repository') {
-            logger.info("GitHub->clone (ssh)")
+            logger.info("GitHub->clone")
 
             def branch = Configuration.get("branch")
             def repo = Configuration.get("repo")
