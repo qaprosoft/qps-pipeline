@@ -31,7 +31,7 @@ public class Configuration {
     public enum Parameter {
 
         //vars
-        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "6.1.21"),
+        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "6.1.25"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
         //to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
         //the biggest problem is that AWS key can't be located in public repositories
@@ -77,9 +77,15 @@ public class Configuration {
         OPTIMIZE_VIDEO_RECORDING("optimize_video_recording", "false"),
 
         VNC_DESKTOP("vnc_desktop", "%s://%s:%s/vnc/%s"),
+        VNC_MOBILE("vnc_mobile", "%s://%s:%s/websockify"),
         VNC_PROTOCOL("vnc_protocol", "ws"),
         VNC_HOST("vnc_host", "\${QPS_HOST}"),
         VNC_PORT("vnc_port", "80"),
+
+        ENABLE_VNC("capabilities.enableVNC", "true"),
+        ENABLE_VIDEO("capabilities.enableVideo", "true"),
+	//TODO: investigate could we disbale it by default
+        ENABLE_STF("capabilities.STF_ENABLED", "true"),
 
         TIMEZONE("user.timezone", "UTC"),
 
@@ -120,7 +126,7 @@ public class Configuration {
         // 1. load all obligatory Parameter(s) and their default key/values to vars.
         // any non empty value should be resolved in such order: Parameter, envvars and jobParams
 
-        def enumValues  = Parameter.values()
+        def enumValues = Parameter.values()
         for (enumValue in enumValues) {
             //a. set default values from enum
             vars.put(enumValue.getKey(), enumValue.getValue())
@@ -138,28 +144,17 @@ public class Configuration {
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
             if (param.value != null) {
-                params.put(param.name, param.value)
+                putParamCaseInsensitive(param.name, param.value)
             }
         }
 
-        //3. Replace vars and/or params with overrideFields values
+        //3. Replace vars and/or params with zafiraFields values
+        def zafiraFieldValues = params.get("zafiraFields")
+        parseValues(zafiraFieldValues)
+
+        //4. Replace vars and/or params with overrideFields values
         def overriddenFieldValues = params.get("overrideFields")
-        if (overriddenFieldValues){
-            for(value in overriddenFieldValues.split(",")){
-                def keyValueArray = value.trim().split("=")
-                if (keyValueArray.size() > 1){
-                    def parameterName = keyValueArray[0]
-                    def parameterValue = keyValueArray[1]
-                    if (vars.get(parameterName)){
-                        vars.put(parameterName, parameterValue)
-                    } else if (vars.get(parameterName.toUpperCase())){
-                        vars.put(parameterName.toUpperCase(), parameterValue)
-                    } else {
-                        params.put(parameterName, parameterValue)
-                    }
-                }
-            }
-        }
+        parseValues(overriddenFieldValues)
 
         for (var in vars) {
             context.println(var)
@@ -170,6 +165,31 @@ public class Configuration {
         }
         //4. TODO: investigate how private pipeline can override those values
         // public static void set(Map args) - ???
+    }
+
+    @NonCPS
+    private static void parseValues(values){
+        if (values) {
+            for (value in values.split(",")) {
+                def keyValueArray = value.trim().split("=")
+                if (keyValueArray.size() > 1) {
+                    def parameterName = keyValueArray[0]
+                    def parameterValue = keyValueArray[1]
+                    putParamCaseInsensitive(parameterName, parameterValue)
+                }
+            }
+        }
+    }
+
+    @NonCPS
+    private static void putParamCaseInsensitive(parameterName, parameterValue) {
+        if (vars.get(parameterName)) {
+            vars.put(parameterName, parameterValue)
+        } else if (vars.get(parameterName.toUpperCase())) {
+            vars.put(parameterName.toUpperCase(), parameterValue)
+        } else {
+            params.put(parameterName, parameterValue)
+        }
     }
 
     @NonCPS
@@ -205,6 +225,7 @@ public class Configuration {
      * String cmd
      * return String cmd
      */
+
     @NonCPS
     public static String resolveVars(String cmd) {
         return cmd.replaceAll('\\$\\{[^\\{\\}]*\\}') { m -> get(m.substring(2, m.size() - 1)) }
