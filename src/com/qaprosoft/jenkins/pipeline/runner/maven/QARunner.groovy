@@ -102,7 +102,6 @@ public class QARunner extends AbstractRunner {
                 logger.info("QARunner->onPush")
                 try {
                     prepare()
-                    zafiraUpdater.getZafiraCredentials()
                     if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                         logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
                         return
@@ -415,10 +414,10 @@ public class QARunner extends AbstractRunner {
     protected def createLaunchers(build) {
         Map scannedRepoLaunchers = [:]
         scannedRepoLaunchers.success = false
+        scannedRepoLaunchers.repo = Configuration.get("repo")
+        scannedRepoLaunchers.userId = !isParamEmpty(Configuration.get("userId")) ? Long.valueOf(Configuration.get("userId")) : 2
         try {
             if (build) {
-                scannedRepoLaunchers.repo = Configuration.get("repo")
-                scannedRepoLaunchers.userId = Long.valueOf(Configuration.get("userId"))
                 scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
                 scannedRepoLaunchers.success = true
             }
@@ -464,7 +463,7 @@ public class QARunner extends AbstractRunner {
             }
             if (!(parameterDefinition instanceof WHideParameterDefinition)) {
                 logger.info(parameterDefinition.name)
-                if(isJobParameterValid(parameterDefinition.name, value)){
+                if(isJobParameterValid(parameterDefinition.name)){
                     parameters.put(parameterDefinition.name, value)
                 }
             }
@@ -678,17 +677,19 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForAndroid() {
         logger.info("Runner->prepareForAndroid")
+//        Configuration.set("capabilities.deviceName", "mcloud-android")
         Configuration.set("mobile_app_clear_cache", "true")
         Configuration.set("capabilities.platformName", "ANDROID")
         Configuration.set("capabilities.autoGrantPermissions", "true")
         Configuration.set("capabilities.noSign", "true")
-        Configuration.set("capabilities.STF_ENABLED", "true")
         Configuration.set("capabilities.appWaitDuration", "270000")
         Configuration.set("capabilities.androidInstallTimeout", "270000")
+        Configuration.set("capabilities.adbExecTimeout", "270000")
     }
 
     protected void prepareForiOS() {
         logger.info("Runner->prepareForiOS")
+//        Configuration.set("capabilities.deviceName", "mcloud-ios")
         Configuration.set("capabilities.platform", "IOS")
         Configuration.set("capabilities.platformName", "IOS")
         Configuration.set("capabilities.deviceName", "*")
@@ -1058,6 +1059,7 @@ public class QARunner extends AbstractRunner {
                         putNotNullWithSplit(pipelineMap, "emailList", emailList)
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                         putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
+                        putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
                         putNotNull(pipelineMap, "queue_registration", queueRegistration)
                         registerPipeline(currentSuite, pipelineMap)
                     }
@@ -1112,9 +1114,13 @@ public class QARunner extends AbstractRunner {
                 logger.warn("Supported config data is NULL!")
                 continue
             }
-            def name = config.split(":")[0]?.trim()
+            def nameValueArray = config.split(":");
+            def name = nameValueArray[0]?.trim()
             logger.info("name: " + name)
-            def value = config.split(":")[1]?.trim()
+            def value = ""
+            if (nameValueArray.size() > 1) {
+                value = nameValueArray[1]?.trim()
+            }
             logger.info("value: " + value)
             valuesMap[name] = value
         }
@@ -1184,7 +1190,6 @@ public class QARunner extends AbstractRunner {
         String browser = jobParams.get("browser")
         String browser_version = jobParams.get("browser_version")
         String custom_capabilities = jobParams.get("custom_capabilities")
-        String overrideFields = jobParams.get("overrideFields")
         String locale = jobParams.get("locale")
 
         if (!isParamEmpty(jobName)) {
@@ -1211,9 +1216,6 @@ public class QARunner extends AbstractRunner {
 
         if (!isParamEmpty(locale) && multilingualMode) {
             stageName += "Locale: ${locale} "
-        }
-        if (!isParamEmpty(overrideFields)) {
-            stageName += "Override: ${overrideFields} "
         }
         return stageName
     }
