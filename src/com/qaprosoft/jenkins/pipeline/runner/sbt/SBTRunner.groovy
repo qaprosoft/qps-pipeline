@@ -65,6 +65,7 @@ class SBTRunner extends AbstractSBTRunner {
         context.stage('Results') {
             context.gatlingArchive()
             context.zip archive: true, dir: 'target/gatling/', glob: '', zipFile: randomArchiveName
+            context.archiveArtifacts 'src/test/resources/user.csv'
             context.emailext body: 'Test Text', subject: 'Test', to: mails
 
         }
