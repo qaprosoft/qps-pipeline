@@ -563,11 +563,11 @@ public class QARunner extends AbstractRunner {
         def to = Configuration.get("email_list")
         def attachments = '**/artifacts/**'
 
-        logger.info("send artifacts: ")
-        logger.info("body: " + body)
-        logger.info("subject: " + subject)
-        logger.info("to: " + to)
-        logger.info("attachments: " + attachments)
+        logger.debug("send artifacts: ")
+        logger.debug("body: " + body)
+        logger.debug("subject: " + subject)
+        logger.debug("to: " + to)
+        logger.debug("attachments: " + attachments)
 
         logger.info("emailParams: " + getEmailParams(body, subject, to, attachments))
         context.emailext getEmailParams(body, subject, to, attachments)
