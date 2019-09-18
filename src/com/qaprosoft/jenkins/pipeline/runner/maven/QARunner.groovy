@@ -948,6 +948,7 @@ public class QARunner extends AbstractRunner {
 
     protected void runCron() {
         logger.info("QARunner->runCron")
+        zafiraUpdater.getZafiraCredentials()
         context.node("master") {
             scmClient.clone()
             listPipelines = []
