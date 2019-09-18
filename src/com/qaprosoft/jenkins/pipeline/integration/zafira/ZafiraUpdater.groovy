@@ -184,7 +184,9 @@ class ZafiraUpdater {
         def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
         def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
         def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+        logger.info("555 " + zafiraURLCredentials)
         if (getCredentials(zafiraURLCredentials)){
+            logger.info("444")
             context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
                 Configuration.set(context.env.KEY, context.env.VALUE)
             }
