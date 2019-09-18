@@ -97,6 +97,8 @@ class Repository {
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
+            } else {
+                registerZafiraCredentials(rootFolder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
             }
 
             logger.debug("organization: " + organization)
@@ -223,6 +225,21 @@ class Repository {
             logger.info("New Item: ${object.dump()}")
         }
         dslObjects.put(name, object)
+    }
+
+    public def registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
+        context.stage("Register Zafira Credentials") {
+            if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
+                throw new RuntimeException("Required fields are missing")
+            }
+            def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
+            def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+
+            if (updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL))
+                logger.info(orgFolderName + " zafira service url was successfully registered.")
+            if (updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken))
+                logger.info(orgFolderName + " zafira access token was successfully registered.")
+        }
     }
 
     public def registerCredentials() {
