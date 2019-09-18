@@ -94,12 +94,10 @@ class Repository {
 
             // Folder from which RegisterRepository job was started
             this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
-            logger.info(rootFolder + " 444444")
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
             } else {
-                logger.info("1111111")
                 registerZafiraCredentials(rootFolder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
             }
 
