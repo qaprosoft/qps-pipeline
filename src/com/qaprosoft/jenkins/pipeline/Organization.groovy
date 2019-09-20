@@ -212,24 +212,6 @@ class Organization {
         return integrationParameters
     }
 
-    public def registerZafiraCredentials(){
-        context.stage("Register Zafira Credentials") {
-            def orgFolderName = Configuration.get("folderName")
-            def zafiraServiceURL = Configuration.get("zafiraServiceURL")
-            def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
-            if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
-                throw new RuntimeException("Required fields are missing")
-            }
-            def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
-            def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
-
-            if (updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL))
-                logger.info(orgFolderName + " zafira service url was successfully registered.")
-            if (updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken))
-                logger.info(orgFolderName + " zafira access token was successfully registered.")
-        }
-    }
-
     protected String getPipelineScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"

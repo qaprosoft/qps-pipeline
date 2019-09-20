@@ -24,8 +24,7 @@ class Repository {
     protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
     protected def pipelineLibrary
     protected def runnerClass
-	
-	protected def rootFolder
+    protected def rootFolder
 
     protected Map dslObjects = new LinkedHashMap()
 
@@ -35,7 +34,7 @@ class Repository {
         scmClient = new GitHub(context)
         logger = new Logger(context)
         pipelineLibrary = Configuration.get("pipelineLibrary")
-        runnerClass =  Configuration.get("runnerClass")
+        runnerClass = Configuration.get("runnerClass")
     }
 
     public void register() {
@@ -53,7 +52,7 @@ class Repository {
         def branch = Configuration.get("branch")
         def onPushJobLocation = repo + "/onPush-" + repo
 
-        if (!isParamEmpty(this.rootFolder)){
+        if (!isParamEmpty(this.rootFolder)) {
             onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
         }
         context.build job: onPushJobLocation,
@@ -67,7 +66,6 @@ class Repository {
                         context.string(name: 'removedViewAction', value: 'DELETE'),
                 ]
     }
-
 
     public void create() {
         //TODO: incorporate maven project generation based on archetype (carina?)
@@ -99,8 +97,10 @@ class Repository {
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
+            } else {
+                registerZafiraCredentials(rootFolder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
             }
-            
+
             logger.debug("organization: " + organization)
             logger.debug("rootFolder: " + this.rootFolder)
 
@@ -114,7 +114,7 @@ class Repository {
                 }
             }
 */
-            
+
             logger.debug("rootFolder: " + this.rootFolder)
 
             if (!"/".equals(this.rootFolder)) {
@@ -125,7 +125,7 @@ class Repository {
             }
 
             logger.debug("repoFolder: " + repoFolder)
-			
+
             //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
@@ -163,7 +163,7 @@ class Repository {
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + repo, mergeJobDescription, githubHost, githubOrganization, repo, gitUrl))
 
             def launcher = isParamEmpty(this.rootFolder) ? getItemByFullName("launcher") : getItemByFullName(this.rootFolder + "/launcher")
-            if (isParamEmpty(launcher)){
+            if (isParamEmpty(launcher)) {
                 registerObject("launcher_job", new LauncherJobFactory(this.rootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
             }
 
@@ -227,12 +227,27 @@ class Repository {
         dslObjects.put(name, object)
     }
 
-    public def registerCredentials(){
+    public def registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
+        context.stage("Register Zafira Credentials") {
+            if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
+                throw new RuntimeException("Required fields are missing")
+            }
+            def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
+            def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+
+            if (updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL))
+                logger.info(orgFolderName + " zafira service url was successfully registered.")
+            if (updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken))
+                logger.info(orgFolderName + " zafira access token was successfully registered.")
+        }
+    }
+
+    public def registerCredentials() {
         context.stage("Register Credentials") {
             def user = Configuration.get("githubUser")
             def token = Configuration.get("githubToken")
             def jenkinsUser = !isParamEmpty(Configuration.get("jenkinsUser")) ? Configuration.get("jenkinsUser") : getBuildUser(context.currentBuild)
-            if (updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHub token", user, token)){
+            if (updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHub token", user, token)) {
                 logger.info(jenkinsUser + " credentials were successfully registered.")
             } else {
                 throw new RuntimeException("Required fields are missing.")
