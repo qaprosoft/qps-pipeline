@@ -102,6 +102,7 @@ public class QARunner extends AbstractRunner {
                 logger.info("QARunner->onPush")
                 try {
                     prepare()
+                    zafiraUpdater.getZafiraCredentials()
                     if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                         logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
                         return
@@ -474,6 +475,8 @@ public class QARunner extends AbstractRunner {
 
     protected void runJob() {
         logger.info("QARunner->runJob")
+        //updates zafira credentials with values from Jenkins Credentials (if present)
+        zafiraUpdater.getZafiraCredentials()
         uuid = getUUID()
         logger.info("UUID: " + uuid)
         def testRun
@@ -945,6 +948,7 @@ public class QARunner extends AbstractRunner {
 
     protected void runCron() {
         logger.info("QARunner->runCron")
+        zafiraUpdater.getZafiraCredentials()
         context.node("master") {
             scmClient.clone()
             listPipelines = []
@@ -1281,6 +1285,8 @@ public class QARunner extends AbstractRunner {
 
     public void rerunJobs(){
         context.stage('Rerun Tests'){
+            //updates zafira credentials with values from Jenkins Credentials (if present)
+            zafiraUpdater.getZafiraCredentials()
             zafiraUpdater.smartRerun()
         }
     }
