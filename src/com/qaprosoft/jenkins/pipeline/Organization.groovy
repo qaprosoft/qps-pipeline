@@ -45,6 +45,7 @@ class Organization {
                 def folder = Configuration.get("folderName")
                 prepare()
                 generateCiItems(folder)
+                logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
                 if (Configuration.get("securityEnabled")?.toBoolean()) {
                     setSecurity(folder)
                 }
@@ -108,6 +109,7 @@ class Organization {
     }
 
     protected def setSecurity(folder){
+        logger.info("Organization->setSecurity")
         def userName = folder + "-user"
         boolean initialized = false
         def integrationParameters = [:]
