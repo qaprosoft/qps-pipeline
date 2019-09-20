@@ -96,19 +96,25 @@ class Repository {
 
             // Folder from which RegisterRepository job was started
             this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
-			if ("RegisterRepository".equals(this.rootFolder)) {
-				// use case when RegisterRepository is on root!
-				this.rootFolder = "/"
-			}
-			
-			logger.debug("organization: " + organization)
+            if ("RegisterRepository".equals(this.rootFolder)) {
+                // use case when RegisterRepository is on root!
+                this.rootFolder = "/"
+            }
+            
+            logger.debug("organization: " + organization)
             logger.debug("rootFolder: " + this.rootFolder)
-			
-			if (!"/".equals(this.rootFolder)) {
-				//register for JobDSL only non root organization folder
-				registerObject("organization_folder", new FolderFactory(this.rootFolder, ""))
-			}
-			
+
+            // TODO: test with SZ his custom CI setup
+            // there is no need to register organization_folder at all as this fucntionality is provided in dedicated RegisterOrganization job logic            
+/*
+            if (!"/".equals(this.rootFolder)) {
+                //register for JobDSL only non root organization folder
+                if (isParamEmpty(getJenkinsFolderByName(this.rootFolder))){
+                    registerObject("organization_folder", new FolderFactory(this.rootFolder, ""))
+                }
+            }
+*/
+            
             logger.debug("rootFolder: " + this.rootFolder)
 
             if (!"/".equals(this.rootFolder)) {
@@ -118,7 +124,7 @@ class Repository {
                 repoFolder = this.rootFolder + "/" + repoFolder
             }
 
-			logger.debug("repoFolder: " + repoFolder)
+            logger.debug("repoFolder: " + repoFolder)
 			
             //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
