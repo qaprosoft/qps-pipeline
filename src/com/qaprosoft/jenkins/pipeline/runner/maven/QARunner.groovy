@@ -431,7 +431,8 @@ public class QARunner extends AbstractRunner {
     protected def generateLaunchers(build){
         List jenkinsLaunchers = []
         build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
-            def jenkinsLauncher = generateLauncher(job.jobName)
+            def jobFullName = replaceStartSlash(job.jobName)
+            def jenkinsLauncher = generateLauncher(jobFullName)
             jenkinsLaunchers.add(jenkinsLauncher)
         }
         return jenkinsLaunchers
