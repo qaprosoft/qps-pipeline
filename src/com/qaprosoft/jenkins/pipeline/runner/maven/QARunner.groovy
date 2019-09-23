@@ -431,7 +431,8 @@ public class QARunner extends AbstractRunner {
     protected def generateLaunchers(build){
         List jenkinsLaunchers = []
         build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
-            def jenkinsLauncher = generateLauncher(job.jobName)
+            def jobFullName = replaceStartSlash(job.jobName)
+            def jenkinsLauncher = generateLauncher(jobFullName)
             jenkinsLaunchers.add(jenkinsLauncher)
         }
         return jenkinsLaunchers
@@ -920,12 +921,14 @@ public class QARunner extends AbstractRunner {
             publishReport('**/*.dump', 'Artifacts')
             publishReport('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReport('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
+            publishReport('**/artifacts/**/feature-overview.html', 'CucumberReport')
         }
     }
 
     protected void publishReport(String pattern, String reportName) {
         try {
             def reports = context.findFiles(glob: pattern)
+            def name = reportName
             for (int i = 0; i < reports.length; i++) {
                 def parentFile = new File(reports[i].path).getParentFile()
                 if (parentFile == null) {
@@ -934,11 +937,19 @@ public class QARunner extends AbstractRunner {
                 }
                 def reportDir = parentFile.getPath()
                 logger.info("Report File Found, Publishing " + reports[i].path)
+
                 if (i > 0) {
                     def reportIndex = "_" + i
-                    reportName = reportName + reportIndex
+                    name = reportName + reportIndex
                 }
-                context.publishHTML getReportParameters(reportDir, reports[i].name, reportName)
+
+                // TODO: remove below hotfix after resolving: https://github.com/qaprosoft/carina/issues/816
+                if (reportName.equals("Artifacts") && reports[i].path.contains("CucumberReport")) {
+                    // do not publish artifact as it is cucumber system item
+                    continue
+                }
+
+                context.publishHTML getReportParameters(reportDir, reports[i].name, name)
             }
         } catch (Exception e) {
             logger.error("Exception occurred while publishing Jenkins report.")
