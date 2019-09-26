@@ -25,6 +25,7 @@ abstract class HttpClient {
     }
 
     protected def sendRequest(requestParams) {
+        logger.info(requestParams.dump())
         def response = null
         /** Catches exceptions in every http call */
         try {
@@ -33,6 +34,7 @@ abstract class HttpClient {
             logger.error(printStackTrace(e))
         }
         if (!response || response.status >= 400){
+            context.currentBuild.result = BuildResult.FAILURE
             return
         }
         return response.content

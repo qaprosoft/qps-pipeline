@@ -98,6 +98,8 @@ public class QARunner extends AbstractRunner {
     //Events
     public void onPush() {
         context.node("master") {
+            logger.info("context: " + context.dump())
+            logger.info("1111111: " + currentBuild.dump())
             context.timestamps {
                 logger.info("QARunner->onPush")
                 try {
