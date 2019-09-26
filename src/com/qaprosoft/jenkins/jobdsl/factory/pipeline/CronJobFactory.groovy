@@ -47,6 +47,7 @@ public class CronJobFactory extends PipelineFactory {
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "5")
                 choiceParam('retry_count', [0, 1, 2, 3], 'Number of Times to Retry a Failed Test')
                 configure addHiddenParameter('zafiraFields', '' , '')
+                configure addHiddenParameter('overrideFields', '' , '')
             }
 
         }
