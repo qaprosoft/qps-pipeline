@@ -49,8 +49,12 @@ public class Executor {
     }
 
     static def getEmailParams(body, subject, to, attachments) {
+        return getEmailParams(body, subject, to, "", true)
+    }
+
+    static def getEmailParams(body, subject, to, attachments, attachLogFile) {
         def params = [attachmentsPattern: attachments,
-              attachLog: true,
+                      attachLog: attachLogFile,
                       body: body,
                       recipientProviders: [[$class: 'DevelopersRecipientProvider'],
                                            [$class: 'RequesterRecipientProvider']],
@@ -58,6 +62,7 @@ public class Executor {
                       to: to]
         return params
     }
+
 
     static def getReportParameters(reportDir, reportFiles, reportName) {
         def reportParameters = [allowMissing: false,
