@@ -574,7 +574,7 @@ public class QARunner extends AbstractRunner {
         logger.debug("attachments: " + attachments)
 
         logger.info("emailParams: " + getEmailParams(body, subject, to, attachments))
-        context.emailext getEmailParams(body, subject, to, attachments)
+        context.emailext getEmailParams(body, subject, to, attachments, false)
     }
 
     protected String chooseNode() {
