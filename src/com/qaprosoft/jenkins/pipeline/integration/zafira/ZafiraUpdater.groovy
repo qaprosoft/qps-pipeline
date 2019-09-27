@@ -21,21 +21,6 @@ class ZafiraUpdater {
         logger = new Logger(context)
     }
 
-    /**
-     * Unable to make a calls for this method at intermeddiate state without refactoring
-     * we keep TestRun result using single call for now at the end only.
-     * **/
-    protected def getTestRun(uuid) {
-        def run = testRun
-        if (isParamEmpty(testRun)) {
-            run = zc.getTestRunByCiRunId(uuid)
-            if (isParamEmpty(run)) {
-                logger.error("TestRun is not found in Zafira!")
-            }
-        }
-        return run
-    }
-
     def getTestRunByCiRunId(uuid) {
         def testRun = zc.getTestRunByCiRunId(uuid)
         if (isParamEmpty(testRun)) {
