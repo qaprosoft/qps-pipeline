@@ -100,7 +100,7 @@ class ZafiraUpdater {
     }
 
     public def sendZafiraEmail(uuid, emailList) {
-        def testRun = getTestRun(uuid)
+        def testRun = getTestRunByCiRunId(uuid)
         if (isParamEmpty(testRun)){
             logger.error("No testRun with uuid " + uuid + "found in Zafira")
             return
@@ -141,7 +141,7 @@ class ZafiraUpdater {
     }
 
     public def setBuildResult(uuid, currentBuild) {
-        def testRun = getTestRun(uuid)
+        def testRun = getTestRunByCiRunId(uuid)
         if (!isParamEmpty(testRun) && isFailure(testRun.status)){
             currentBuild.result = BuildResult.FAILURE
         }
