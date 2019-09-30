@@ -539,6 +539,7 @@ public class QARunner extends AbstractRunner {
             }
         }
         context.node("master") {
+            logger.info("111111")
             context.build job: "Management_Jobs/PushTestRailResults",
                     propagate: true,
                     parameters: [
