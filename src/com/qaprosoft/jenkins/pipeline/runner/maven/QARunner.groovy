@@ -535,7 +535,7 @@ public class QARunner extends AbstractRunner {
                     sendCustomizedEmail()
                     clean()
                     customNotify()
-                    if(Configuration.get("testrail_enabled"?.toBoolean())){
+                    if(Configuration.get("testrail_enabled")?.toBoolean()){
                         context.node("master") {
                             context.build job: "Management_Jobs/PushTestRailResults",
                                     propagate: true,
