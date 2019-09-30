@@ -168,7 +168,7 @@ class Repository {
                 registerObject("launcher_job", new LauncherJobFactory(this.rootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
             }
 
-            registerObject("testrail_job", new TestRailJobFactory(this.rootFolder, getTestRailScript(), "testrail", "TestRail job launcher"))
+            registerObject("testrail_job", new TestRailJobFactory("", getTestRailScript(), "testrail", "TestRail job launcher"))
 
             // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
