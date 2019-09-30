@@ -538,6 +538,20 @@ public class QARunner extends AbstractRunner {
                 }
             }
         }
+        context.node("master") {
+            context.build job: "testrail",
+                    propagate: true,
+                    parameters: [
+                            context.string(name: 'uuid', value: uuid),
+                            context.booleanParam(name: 'isRerun', value: isRerun)
+                    ]
+        }
+    }
+
+    public void sendTestRailResults() {
+        def uuid = Configuration.get("uuid")
+        def isRerun = Configuration.get("isRerun")
+        testRailUpdater.updateTestRun(uuid, isRerun)
     }
 
     // to be able to organize custom notifications on private pipeline layer
