@@ -539,7 +539,7 @@ public class QARunner extends AbstractRunner {
             }
         }
         context.node("master") {
-            context.build job: "System/testrail",
+            context.build job: "Management_Jobs/PushTestRailResults",
                     propagate: true,
                     parameters: [
                             context.string(name: 'uuid', value: uuid),
