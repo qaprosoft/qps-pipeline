@@ -535,18 +535,19 @@ public class QARunner extends AbstractRunner {
                     sendCustomizedEmail()
                     clean()
                     customNotify()
+                    context.node("master") {
+                        logger.info("111111")
+                        context.build job: "Management_Jobs/PushTestRailResults",
+                                propagate: true,
+                                parameters: [
+                                        context.string(name: 'uuid', value: uuid),
+                                        context.booleanParam(name: 'isRerun', value: isRerun)
+                                ]
+                    }
                 }
             }
         }
-        context.node("master") {
-            logger.info("111111")
-            context.build job: "Management_Jobs/PushTestRailResults",
-                    propagate: true,
-                    parameters: [
-                            context.string(name: 'uuid', value: uuid),
-                            context.booleanParam(name: 'isRerun', value: isRerun)
-                    ]
-        }
+
     }
 
     public void sendTestRailResults() {
