@@ -25,7 +25,6 @@ abstract class HttpClient {
     }
 
     protected def sendRequest(requestParams) {
-        logger.info("22222" + requestParams.dump())
         def response = null
         /** Catches exceptions in every http call */
         try {
