@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestRailJobFactory
+
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
@@ -168,14 +168,6 @@ class Repository {
                 registerObject("launcher_job", new LauncherJobFactory(this.rootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
             }
 
-            def systemFolderName = "System"
-
-            if(!getJenkinsFolderByName(systemFolderName)){
-                registerObject("project_folder", new FolderFactory(systemFolderName, ""))
-            }
-
-            registerObject("testrail_job", new TestRailJobFactory(systemFolderName, getTestRailScript(), "testrail", "TestRail job launcher"))
-
             // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 
@@ -223,14 +215,6 @@ class Repository {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
-        }
-    }
-
-    protected String getTestRailScript() {
-        if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
-        } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
         }
     }
 
