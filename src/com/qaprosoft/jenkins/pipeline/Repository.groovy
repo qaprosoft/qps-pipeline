@@ -168,7 +168,13 @@ class Repository {
                 registerObject("launcher_job", new LauncherJobFactory(this.rootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
             }
 
-            registerObject("testrail_job", new TestRailJobFactory("", getTestRailScript(), "testrail", "TestRail job launcher"))
+            def systemFolderName = "System"
+
+            if(!getJenkinsFolderByName(systemFolderName)){
+                registerObject("project_folder", new FolderFactory(systemFolderName, ""))
+            }
+
+            registerObject("testrail_job", new TestRailJobFactory(systemFolderName, getTestRailScript(), "testrail", "TestRail job launcher"))
 
             // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)

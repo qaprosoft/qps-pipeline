@@ -527,7 +527,7 @@ public class QARunner extends AbstractRunner {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     if(!isParamEmpty(testRun)) {
                         qTestUpdater.updateTestRun(uuid)
-                        testRailUpdater.updateTestRun(uuid, isRerun)
+//                        testRailUpdater.updateTestRun(uuid, isRerun)
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
                     }
@@ -539,7 +539,7 @@ public class QARunner extends AbstractRunner {
             }
         }
         context.node("master") {
-            context.build job: "testrail",
+            context.build job: "System/testrail",
                     propagate: true,
                     parameters: [
                             context.string(name: 'uuid', value: uuid),
