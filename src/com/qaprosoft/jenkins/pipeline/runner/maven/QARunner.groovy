@@ -543,6 +543,15 @@ public class QARunner extends AbstractRunner {
                                     ]
                         }
                     }
+                    if(Configuration.get("qtest_enabled")?.toBoolean()){
+                        context.node("master") {
+                            context.build job: "Management_Jobs/PushTestRailResults",
+                                    propagate: true,
+                                    parameters: [
+                                            context.string(name: 'uuid', value: uuid)
+                                    ]
+                        }
+                    }
                 }
             }
         }
