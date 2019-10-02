@@ -593,6 +593,7 @@ public class QARunner extends AbstractRunner {
         //Do nothing in default implementation
 
         //hotfix to send artifacts as email 
+/*
         def body = "Find artifacts in attachments"
         def subject = "Job " + Configuration.get("suite") + " artifacts"
         def to = Configuration.get("email_list")
@@ -604,8 +605,8 @@ public class QARunner extends AbstractRunner {
         logger.debug("to: " + to)
         logger.debug("attachments: " + attachments)
 
-        logger.info("emailParams: " + getEmailParams(body, subject, to, attachments))
-        context.emailext getEmailParams(body, subject, to, attachments)
+        context.emailext getEmailParams(body, subject, to, attachments, false)
+*/
     }
 
     protected String chooseNode() {
