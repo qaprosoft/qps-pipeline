@@ -19,7 +19,7 @@ public class QTestJobFactory extends PipelineFactory {
         pipelineJob.with {
             parameters {
                 configure stringParam('uuid', '', "uuid")
-                configure booleanParam('qtest_enabled', true, 'qtest_enabled')
+                configure booleanParam('qtest_enabled', true)
             }
         }
         return pipelineJob
