@@ -2,7 +2,8 @@ package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
-
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.QTestJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestRailJobFactory
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
@@ -166,6 +167,16 @@ class Repository {
             def launcher = isParamEmpty(this.rootFolder) ? getItemByFullName("launcher") : getItemByFullName(this.rootFolder + "/launcher")
             if (isParamEmpty(launcher)) {
                 registerObject("launcher_job", new LauncherJobFactory(this.rootFolder, getPipelineScript(), "launcher", "Custom job launcher"))
+            }
+
+            def testrail = isParamEmpty(this.rootFolder) ? getItemByFullName("testrail") : getItemByFullName(this.rootFolder + "/testrail")
+            if (isParamEmpty(testrail)) {
+                registerObject("testrail_job", new TestRailJobFactory(this.rootFolder, getPipelineScript(), "testrail", "Custom job testrail"))
+            }
+
+            def qtest = isParamEmpty(this.rootFolder) ? getItemByFullName("qtest") : getItemByFullName(this.rootFolder + "/qtest")
+            if (isParamEmpty(qtest)) {
+                registerObject("qtest_job", new QTestJobFactory(this.rootFolder, getPipelineScript(), "qtest", "Custom job qtest"))
             }
 
             // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
