@@ -20,7 +20,7 @@ public class TestRailJobFactory extends PipelineFactory {
             parameters {
                 configure stringParam('uuid', '', "uuid")
                 configure booleanParam('isRerun', false)
-                configure booleanParam('testrail_enabled','')
+                configure booleanParam('testrail_enabled', true)
             }
         }
         return pipelineJob
