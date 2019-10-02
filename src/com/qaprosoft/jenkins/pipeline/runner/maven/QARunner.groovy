@@ -534,6 +534,8 @@ public class QARunner extends AbstractRunner {
                     clean()
                     customNotify()
                     if(Configuration.get("testrail_enabled")?.toBoolean()){
+                        def job = getJenkinsJobByName("testrail")
+                        logger.info(job.dump())
                         context.node("master") {
                             context.build job: "Management_Jobs/PushTestRailResults",
                                     propagate: true,
