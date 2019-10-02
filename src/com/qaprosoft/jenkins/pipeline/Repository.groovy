@@ -171,12 +171,12 @@ class Repository {
 
             def testrail = isParamEmpty(this.rootFolder) ? getItemByFullName("testrail") : getItemByFullName(this.rootFolder + "/testrail")
             if (isParamEmpty(testrail)) {
-                registerObject("testrail_job", new TestRailJobFactory(this.rootFolder, getPipelineScript(), "testrail", "Custom job testrail"))
+                registerObject("testrail_job", new TestRailJobFactory(this.rootFolder, getTestRailScript(), "testrail", "Custom job testrail"))
             }
 
             def qtest = isParamEmpty(this.rootFolder) ? getItemByFullName("qtest") : getItemByFullName(this.rootFolder + "/qtest")
             if (isParamEmpty(qtest)) {
-                registerObject("qtest_job", new QTestJobFactory(this.rootFolder, getPipelineScript(), "qtest", "Custom job qtest"))
+                registerObject("qtest_job", new QTestJobFactory(this.rootFolder, getQTestScript(), "qtest", "Custom job qtest"))
             }
 
             // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
@@ -226,6 +226,22 @@ class Repository {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        }
+    }
+
+    protected String getTestRailScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
+        }
+    }
+
+    protected String getQTestScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
         }
     }
 
