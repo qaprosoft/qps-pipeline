@@ -533,11 +533,11 @@ public class QARunner extends AbstractRunner {
                     sendCustomizedEmail()
                     clean()
                     customNotify()
-                    if(Configuration.get("testrail_enabled")?.toBoolean()){
-                        def job = getJenkinsJobByName("testrail")
-                        logger.info(job.dump())
+                    if (Configuration.get("testrail_enabled")?.toBoolean()) {
+                        String jobName = "testrail"
+                        jobName = getCurrentFolderFullName(jobName)
                         context.node("master") {
-                            context.build job: "Management_Jobs/PushTestRailResults",
+                            context.build job: jobName,
                                     propagate: true,
                                     parameters: [
                                             context.string(name: 'uuid', value: uuid),
@@ -546,8 +546,10 @@ public class QARunner extends AbstractRunner {
                         }
                     }
                     if(Configuration.get("qtest_enabled")?.toBoolean()){
+                        String jobName = "qtest"
+                        jobName = getCurrentFolderFullName(jobName)
                         context.node("master") {
-                            context.build job: "Management_Jobs/PushQTestResults",
+                            context.build job: jobName,
                                     propagate: true,
                                     parameters: [
                                             context.string(name: 'uuid', value: uuid)
@@ -558,6 +560,16 @@ public class QARunner extends AbstractRunner {
             }
         }
 
+    }
+
+    private String getCurrentFolderFullName(String jobName) {
+        String baseJobName = jobName
+        def fullJobName = Configuration.get(Configuration.Parameter.JOB_NAME)
+        def fullJobNameArray = fullJobName.split("/")
+        if (fullJobNameArray.size() == 3) {
+            baseJobName = fullJobNameArray[0] + "/" + baseJobName
+        }
+        return baseJobName
     }
 
     public void sendQTestResults() {
