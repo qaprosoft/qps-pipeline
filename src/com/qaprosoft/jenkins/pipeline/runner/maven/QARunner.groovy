@@ -524,8 +524,8 @@ public class QARunner extends AbstractRunner {
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     if(!isParamEmpty(testRun)) {
-                        qTestUpdater.updateTestRun(uuid)
-                        testRailUpdater.updateTestRun(uuid, isRerun)
+//                        qTestUpdater.updateTestRun(uuid)
+//                        testRailUpdater.updateTestRun(uuid, isRerun)
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
                     }
@@ -533,9 +533,41 @@ public class QARunner extends AbstractRunner {
                     sendCustomizedEmail()
                     clean()
                     customNotify()
+                    if(Configuration.get("testrail_enabled")?.toBoolean()){
+                        getJenkinsJobByName(testrail)
+                        context.node("master") {
+                            context.build job: "Management_Jobs/testrail",
+                                    propagate: true,
+                                    parameters: [
+                                            context.string(name: 'uuid', value: uuid),
+                                            context.booleanParam(name: 'isRerun', value: isRerun)
+                                    ]
+                        }
+                    }
+                    if(Configuration.get("qtest_enabled")?.toBoolean()){
+                        context.node("master") {
+                            context.build job: "Management_Jobs/qtest",
+                                    propagate: true,
+                                    parameters: [
+                                            context.string(name: 'uuid', value: uuid)
+                                    ]
+                        }
+                    }
                 }
             }
         }
+
+    }
+
+    public void sendQTestResults() {
+        def uuid = Configuration.get("uuid")
+        qTestUpdater.updateTestRun(uuid)
+    }
+
+    public void sendTestRailResults() {
+        def uuid = Configuration.get("uuid")
+        def isRerun = Configuration.get("isRerun")
+        testRailUpdater.updateTestRun(uuid, isRerun)
     }
 
     // to be able to organize custom notifications on private pipeline layer
