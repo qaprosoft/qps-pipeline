@@ -18,9 +18,9 @@ public class TestRailJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
-                configure stringParam('uuid', '', "uuid")
-                configure booleanParam('isRerun', false)
-                configure booleanParam('testrail_enabled', true)
+                configure stringParam('uuid', '', "uuid parameter")
+                configure booleanParam('isRerun', false, 'isRerun boolean parameter')
+                configure addHiddenParameter('testrail_enabled', 'testrail_enabled boolean parameter', 'true')
             }
         }
         return pipelineJob
