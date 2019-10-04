@@ -18,8 +18,8 @@ public class QTestJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
-                configure stringParam('uuid', '', "uuid")
-                configure booleanParam('qtest_enabled', true)
+                configure stringParam('uuid', '', "uuid parameter")
+                configure addHiddenParameter('qtest_enabled', 'qtest_enabled boolean parameter', 'true')
             }
         }
         return pipelineJob
