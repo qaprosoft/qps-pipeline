@@ -534,8 +534,9 @@ public class QARunner extends AbstractRunner {
                     clean()
                     customNotify()
                     if(Configuration.get("testrail_enabled")?.toBoolean()){
+                        getJenkinsJobByName(testrail)
                         context.node("master") {
-                            context.build job: "Management_Jobs/PushTestRailResults",
+                            context.build job: "Management_Jobs/testrail",
                                     propagate: true,
                                     parameters: [
                                             context.string(name: 'uuid', value: uuid),
@@ -545,7 +546,7 @@ public class QARunner extends AbstractRunner {
                     }
                     if(Configuration.get("qtest_enabled")?.toBoolean()){
                         context.node("master") {
-                            context.build job: "Management_Jobs/PushQTestResults",
+                            context.build job: "Management_Jobs/qtest",
                                     propagate: true,
                                     parameters: [
                                             context.string(name: 'uuid', value: uuid)
