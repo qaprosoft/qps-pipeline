@@ -17,8 +17,8 @@ public class TestRailJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
-                configure stringParam('uuid', '', "uuid")
-                configure booleanParam('isRerun', false)
+                configure stringParam('ci_run_id', '', "Zafira test run id")
+                configure booleanParam('isRerun', false, 'isRerun boolean parameter')
             }
         }
         return pipelineJob
