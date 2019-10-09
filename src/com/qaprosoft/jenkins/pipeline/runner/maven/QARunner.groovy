@@ -524,8 +524,8 @@ public class QARunner extends AbstractRunner {
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     if(!isParamEmpty(testRun)) {
-                        qTestUpdater.updateTestRun(uuid)
-                        testRailUpdater.updateTestRun(uuid, isRerun)
+//                        qTestUpdater.updateTestRun(uuid)
+//                        testRailUpdater.updateTestRun(uuid, isRerun)
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
                     }
@@ -533,9 +533,54 @@ public class QARunner extends AbstractRunner {
                     sendCustomizedEmail()
                     clean()
                     customNotify()
+                    if (Configuration.get("testrail_enabled")?.toBoolean()) {
+                        String jobName = "testrail"
+                        jobName = getCurrentFolderFullName(jobName)
+                        context.node("master") {
+                            context.build job: jobName,
+                                    propagate: true,
+                                    parameters: [
+                                            context.string(name: 'uuid', value: uuid),
+                                            context.booleanParam(name: 'isRerun', value: isRerun)
+                                    ]
+                        }
+                    }
+                    if(Configuration.get("qtest_enabled")?.toBoolean()){
+                        String jobName = "qtest"
+                        jobName = getCurrentFolderFullName(jobName)
+                        context.node("master") {
+                            context.build job: jobName,
+                                    propagate: true,
+                                    parameters: [
+                                            context.string(name: 'uuid', value: uuid)
+                                    ]
+                        }
+                    }
                 }
             }
         }
+
+    }
+
+    private String getCurrentFolderFullName(String jobName) {
+        String baseJobName = jobName
+        def fullJobName = Configuration.get(Configuration.Parameter.JOB_NAME)
+        def fullJobNameArray = fullJobName.split("/")
+        if (fullJobNameArray.size() == 3) {
+            baseJobName = fullJobNameArray[0] + "/" + baseJobName
+        }
+        return baseJobName
+    }
+
+    public void sendQTestResults() {
+        def uuid = Configuration.get("uuid")
+        qTestUpdater.updateTestRun(uuid)
+    }
+
+    public void sendTestRailResults() {
+        def uuid = Configuration.get("uuid")
+        def isRerun = Configuration.get("isRerun")
+        testRailUpdater.updateTestRun(uuid, isRerun)
     }
 
     // to be able to organize custom notifications on private pipeline layer
