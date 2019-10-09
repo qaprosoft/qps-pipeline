@@ -533,6 +533,7 @@ public class QARunner extends AbstractRunner {
                     sendCustomizedEmail()
                     clean()
                     customNotify()
+
                     if (Configuration.get("testrail_enabled")?.toBoolean()) {
                         String jobName = "testrail"
                         jobName = getCurrentFolderFullName(jobName)
@@ -540,7 +541,7 @@ public class QARunner extends AbstractRunner {
                             context.build job: jobName,
                                     propagate: true,
                                     parameters: [
-                                            context.string(name: 'uuid', value: uuid),
+                                            context.string(name: 'ci_run_id', value: uuid),
                                             context.booleanParam(name: 'isRerun', value: isRerun)
                                     ]
                         }
@@ -552,7 +553,7 @@ public class QARunner extends AbstractRunner {
                             context.build job: jobName,
                                     propagate: true,
                                     parameters: [
-                                            context.string(name: 'uuid', value: uuid)
+                                            context.string(name: 'ci_run_id', value: uuid)
                                     ]
                         }
                     }
