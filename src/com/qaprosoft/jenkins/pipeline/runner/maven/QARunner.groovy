@@ -574,16 +574,16 @@ public class QARunner extends AbstractRunner {
     }
 
     public void sendQTestResults() {
-        def uuid = Configuration.get("uuid")
+        def ci_run_id = Configuration.get("ci_run_id")
 	Configuration.set("qtest_enabled", "true")
-        qTestUpdater.updateTestRun(uuid)
+        qTestUpdater.updateTestRun(ci_run_id)
     }
 
     public void sendTestRailResults() {
-        def uuid = Configuration.get("uuid")
+        def ci_run_id = Configuration.get("ci_run_id")
         def isRerun = Configuration.get("isRerun")
 	Configuration.set("testrail_enabled", "true")
-        testRailUpdater.updateTestRun(uuid, isRerun)
+        testRailUpdater.updateTestRun(ci_run_id, isRerun)
     }
 
     // to be able to organize custom notifications on private pipeline layer
