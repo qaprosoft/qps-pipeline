@@ -1,9 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.jenkins.Logger
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.QTestJobFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestRailJobFactory
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
