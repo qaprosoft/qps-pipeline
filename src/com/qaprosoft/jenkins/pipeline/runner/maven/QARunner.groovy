@@ -575,12 +575,14 @@ public class QARunner extends AbstractRunner {
 
     public void sendQTestResults() {
         def uuid = Configuration.get("uuid")
+	Configuration.set("qtest_enabled", "true")
         qTestUpdater.updateTestRun(uuid)
     }
 
     public void sendTestRailResults() {
         def uuid = Configuration.get("uuid")
         def isRerun = Configuration.get("isRerun")
+	Configuration.set("testrail_enabled", "true")
         testRailUpdater.updateTestRun(uuid, isRerun)
     }
 
