@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-@Grab('org.testng:testng:6.8.8')
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
@@ -18,9 +17,8 @@ public class TestRailJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
-                configure stringParam('uuid', '', "uuid parameter")
+                configure stringParam('ci_run_id', '', "Zafira test run id")
                 configure booleanParam('isRerun', false, 'isRerun boolean parameter')
-                configure addHiddenParameter('testrail_enabled', 'testrail_enabled boolean parameter', 'true')
             }
         }
         return pipelineJob

@@ -254,6 +254,13 @@ class Repository {
         dslObjects.put(name, object)
     }
 
+    public def registerZafiraCredentials(){
+        def orgFolderName = Configuration.get("folderName")
+        def zafiraServiceURL = Configuration.get("zafiraServiceURL")
+        def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
+        registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken)
+    }
+
     public def registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
         context.stage("Register Zafira Credentials") {
             if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
