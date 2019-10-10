@@ -607,7 +607,6 @@ public class QARunner extends AbstractRunner {
     public void sendTestRailResults() {
         def ci_run_id = Configuration.get("ci_run_id")
         def isRerun = Configuration.get("isRerun")
-	Configuration.set("testrail_enabled", "true")
         testRailUpdater.updateTestRun(ci_run_id, isRerun)
     }
 
