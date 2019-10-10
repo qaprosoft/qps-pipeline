@@ -5,6 +5,7 @@ public class Configuration {
     private def context
 
     private final static def mustOverride = "{must_override}"
+    public final static def testRailUpdaterJobName = "testrail-updater"
 
     //list of CI job params as a map
     protected static Map params = [:]

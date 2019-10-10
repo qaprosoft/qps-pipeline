@@ -95,7 +95,7 @@ class Organization {
             }
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
-            registerObject("testrail_job", new TestRailJobFactory(folder, getTestRailScript(), "testrail", "Custom job testrail"))
+            registerObject("testrail_job", new TestRailJobFactory(folder, getTestRailScript(), Configuration.testRailUpdaterJobName, "Custom job testrail"))
             registerObject("qtest_job", new QTestJobFactory(folder, getQTestScript(), "qtest", "Custom job qtest"))
 
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)

@@ -535,35 +535,27 @@ public class QARunner extends AbstractRunner {
                     customNotify()
 
                     if (Configuration.get("testrail_enabled")?.toBoolean()) {
-                        String jobName = "testrail"
+                        String jobName = Configuration.testRailUpdaterJobName
                         jobName = getCurrentFolderFullName(jobName)
 
-                        def milestone = Configuration.get('testrail_milestone')
-                        if (milestone == null) {
-                        	milestone = ""
-                        }
+                        // TODO: rename include_all to something testrail related
+                        def includeAll = Configuration.get("include_all")?.toBoolean()
+                        def milestoneName = !isParamEmpty(Configuration.get("testrail_milestone"))?Configuration.get("testrail_milestone"):""
+                        def runName = !isParamEmpty(Configuration.get("testrail_run_name"))?Configuration.get("testrail_run_name"):""
+                        def runExists = Configuration.get("run_exists")?.toBoolean()
+                        def assignee = !isParamEmpty(Configuration.get("testrail_assignee"))?Configuration.get("testrail_assignee"):""
 
-                        def runName = Configuration.get('testrail_run_name')
-                        if (runName == null) {
-                        	runName = ""
-                        }
-
-                        def assignee = Configuration.get('testrail_assignee')
-                        if (assignee == null) {
-                        	assignee = ""
-                        }
                         context.node("master") {
                             context.build job: jobName,
                                     propagate: false,
                                     wait: false,
                                     parameters: [
                                             context.string(name: 'ci_run_id', value: uuid),
-                                            context.booleanParam(name: 'include_all', value: Configuration.get("include_all")),
-                                            context.string(name: 'testrail_milestone', value: milestone),
-                                            context.string(name: 'testrail_run_name', value: runName),
-                                            context.string(name: 'testrail_assignee', value: assignee),
-                                            context.booleanParam(name: 'exists', value: isRerun),
-                                            context.string(name: 'testrail_search_interval', value: Configuration.get("testrail_search_interval"))
+                                            context.booleanParam(name: 'include_all', value: includeAll),
+                                            context.string(name: 'milestone', value: milestone),
+                                            context.string(name: 'run_name', value: runName),
+                                            context.booleanParam(name: 'run_exists', value: runExists),
+                                            context.string(name: 'assignee', value: assignee)
                                     ]
                         }
                     }
@@ -605,9 +597,7 @@ public class QARunner extends AbstractRunner {
     }
 
     public void sendTestRailResults() {
-        def ci_run_id = Configuration.get("ci_run_id")
-        def isRerun = Configuration.get("isRerun")
-        testRailUpdater.updateTestRun(ci_run_id, isRerun)
+        testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
     }
 
     // to be able to organize custom notifications on private pipeline layer
