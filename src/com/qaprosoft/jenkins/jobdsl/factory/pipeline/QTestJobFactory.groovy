@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-@Grab('org.testng:testng:6.8.8')
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
@@ -18,8 +17,7 @@ public class QTestJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
-                configure stringParam('uuid', '', "uuid parameter")
-                configure addHiddenParameter('qtest_enabled', 'qtest_enabled boolean parameter', 'true')
+                configure stringParam('ci_run_id', '', "Zafira test run id")
             }
         }
         return pipelineJob
