@@ -543,7 +543,9 @@ public class QARunner extends AbstractRunner {
                                     wait: false,
                                     parameters: [
                                             context.string(name: 'ci_run_id', value: uuid),
-                                            context.booleanParam(name: 'isRerun', value: isRerun)
+                                            context.booleanParam(name: 'isRerun', value: isRerun),
+                                            context.booleanParam(name: 'include_all', value: Configuration.get("include_all")),
+                                            context.stringParam(name: 'testrail_search_interval', value: Configuration.get("testrail_search_interval"))
                                     ]
                         }
                     }
@@ -555,7 +557,10 @@ public class QARunner extends AbstractRunner {
                                     propagate: false,
                                     wait: false,
                                     parameters: [
-                                            context.string(name: 'ci_run_id', value: uuid)
+                                            context.string(name: 'ci_run_id', value: uuid),
+                                            context.string(name: 'capabilities.os', value: Configuration.get("capabilities.os")),
+                                            context.string(name: 'capabilities.os_version', value: Configuration.get("capabilities.os_version")),
+                                            context.string(name: 'capabilities.browser', value: Configuration.get("capabilities.os_version"))
                                     ]
                         }
                     }

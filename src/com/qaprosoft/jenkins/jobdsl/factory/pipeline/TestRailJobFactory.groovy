@@ -19,6 +19,8 @@ public class TestRailJobFactory extends PipelineFactory {
             parameters {
                 configure stringParam('ci_run_id', '', "Zafira test run id")
                 configure booleanParam('isRerun', false, 'isRerun boolean parameter')
+                configure booleanParam('include_all', false, 'include_all parameter')
+                configure stringParam('testrail_search_interval', '', 'testrail_search_interval parameter')
             }
         }
         return pipelineJob
