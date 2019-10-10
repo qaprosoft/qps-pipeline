@@ -543,7 +543,12 @@ public class QARunner extends AbstractRunner {
                                     wait: false,
                                     parameters: [
                                             context.string(name: 'ci_run_id', value: uuid),
-                                            context.booleanParam(name: 'isRerun', value: isRerun)
+                                            context.booleanParam(name: 'include_all', value: Configuration.get("include_all")),
+                                            context.string(name: 'testrail_milestone', value: Configuration.get('testrail_milestone')),
+                                            context.string(name: 'testrail_run_name', value: Configuration.get("testrail_run_name")),
+                                            context.string(name: 'testrail_assignee', value: Configuration.get("testrail_assignee")),
+                                            context.booleanParam(name: 'exists', value: isRerun),
+                                            context.string(name: 'testrail_search_interval', value: Configuration.get("testrail_search_interval"))
                                     ]
                         }
                     }
@@ -555,7 +560,10 @@ public class QARunner extends AbstractRunner {
                                     propagate: false,
                                     wait: false,
                                     parameters: [
-                                            context.string(name: 'ci_run_id', value: uuid)
+                                            context.string(name: 'ci_run_id', value: uuid),
+                                            context.string(name: 'os', value: Configuration.get("capabilities.os")),
+                                            context.string(name: 'os_version', value: Configuration.get("capabilities.os_version")),
+                                            context.string(name: 'browser', value: Configuration.get("capabilities.os_version"))
                                     ]
                         }
                     }
