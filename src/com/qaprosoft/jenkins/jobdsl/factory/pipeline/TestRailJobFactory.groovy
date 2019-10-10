@@ -17,13 +17,13 @@ public class TestRailJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
-                configure stringParam('ci_run_id', '', "Zafira test run id")
-                configure stringParam('testrail_milestone', '', 'testrail_milestone parameter')
-                configure stringParam('testrail_run_name', '', 'testrail run name')
-                configure stringParam('testrail_assignee', '', 'testrail_assignee parameter')
-                configure stringParam('testrail_search_interval', '', 'testrail_search_interval parameter')
-                configure booleanParam('include_all', false, 'include_all parameter')
-                configure booleanParam('isRerun', false, 'isRerun boolean parameter')
+                configure stringParam('ci_run_id', '', "Zafira test run ci_run_id")
+                configure booleanParam('include_all', false, 'Register all cases from suite into the run if true or only executed for false')
+                configure stringParam('testrail_milestone', '', 'Milestone name if needed')
+                configure stringParam('testrail_run_name', '', 'Custom or existing TestRail run name')
+                configure stringParam('testrail_assignee', '', 'Email of the TestRail user to assign for registered tests')
+                configure booleanParam('exists', false, 'Check if you would like to sync results into existing TestRail run')
+                configure stringParam('testrail_search_interval', '', 'Interval in days to look for existing test run. Default: 7')
             }
         }
         return pipelineJob
