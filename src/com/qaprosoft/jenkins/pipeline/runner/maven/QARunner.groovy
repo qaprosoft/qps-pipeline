@@ -552,7 +552,7 @@ public class QARunner extends AbstractRunner {
                                     parameters: [
                                             context.string(name: 'ci_run_id', value: uuid),
                                             context.booleanParam(name: 'include_all', value: includeAll),
-                                            context.string(name: 'milestone', value: milestone),
+                                            context.string(name: 'milestone', value: milestoneName),
                                             context.string(name: 'run_name', value: runName),
                                             context.booleanParam(name: 'run_exists', value: runExists),
                                             context.string(name: 'assignee', value: assignee)
