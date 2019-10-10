@@ -3,6 +3,8 @@ package com.qaprosoft.jenkins.pipeline
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.QTestJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestRailJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.RegisterRepositoryJobFactory
 import com.qaprosoft.jenkins.pipeline.integration.zebrunner.ZebrunnerUpdater
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
@@ -93,6 +95,9 @@ class Organization {
             }
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
+            registerObject("testrail_job", new TestRailJobFactory(folder, getTestRailScript(), "testrail", "Custom job testrail"))
+            registerObject("qtest_job", new QTestJobFactory(folder, getQTestScript(), "qtest", "Custom job qtest"))
+
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
             context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
                     sandbox: true,
@@ -231,4 +236,21 @@ class Organization {
             context.deleteDir()
         }
     }
+
+    protected String getTestRailScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
+        }
+    }
+
+    protected String getQTestScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
+        }
+    }
+
 }
