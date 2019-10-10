@@ -47,7 +47,7 @@ class TestRailUpdater {
             logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
             return
         }
-        def includeAll = !isParamEmpty(Configuration.get("include_all"))?Configuration.get("include_all"):true
+        def includeAll = Configuration.get("include_all")?.toBoolean()
         def projectId = integration.projectId
         def suiteId = integration.suiteId
         Map customParams = integration.customParams
@@ -60,7 +60,7 @@ class TestRailUpdater {
         def assigneeName = !isParamEmpty(Configuration.get("assignee"))?Configuration.get("assignee"):customParams.assignee
         def assignedToId = getAssignedToId(assigneeName)
 
-        def testRunExists = !isParamEmpty(Configuration.get("run_exists"))?Configuration.get("run_exists"):false
+        def testRunExists = Configuration.get("run_exists")?.toBoolean()
 
         def testRunName = !isParamEmpty(Configuration.get("run_name"))?Configuration.get("run_name"):testRunName
 
