@@ -62,15 +62,7 @@ class TestRailUpdater {
 
         def testRunExists = !isParamEmpty(Configuration.get("run_exists"))?Configuration.get("run_exists"):false
 
-        def testRunName
-        if (testRunExists){
-            testRunName = customParams.testrail_run_name
-            createdBy = null
-        } else {
-            testRunName = integration.testRunName
-        }
-
-        testRunName = !isParamEmpty(Configuration.get("run_name"))?Configuration.get("run_name"):testRunName
+        def testRunName = !isParamEmpty(Configuration.get("run_name"))?Configuration.get("run_name"):testRunName
 
         def createdAfter = integration.createdAfter
 
@@ -88,7 +80,7 @@ class TestRailUpdater {
             }
             testRailRunId = newTestRailRun.id
         } else {
-            testRailRunId = getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter, Configuration.get("testrail_search_interval"))
+            testRailRunId = getTestRailRunId(testRunName, null, milestoneId, projectId, suiteId, createdAfter, Configuration.get("testrail_search_interval"))
         }
 
         testResultMap = filterTests(testRailRunId, assignedToId, testRailCaseIds, testResultMap, filteredCaseResultMap)
