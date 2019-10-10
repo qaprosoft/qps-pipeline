@@ -25,14 +25,15 @@ class TestRailUpdater {
     }
 
     public void updateTestRun(uuid, isRerun) {
-		if (!Configuration.get(Configuration.Parameter.TESTRAIL_ENABLE).toBoolean() || !trc.isAvailable()) {
-			// do nothing
-			return
-		}
+	if (!trc.isAvailable()) {
+		// do nothing
+		return
+	}
 		
         // export all tag related metadata from Zafira
         def integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
-        logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
+        logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
+        // logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
         if (isParamEmpty(integration)){
             logger.debug("Nothing to update in TestRail.")
