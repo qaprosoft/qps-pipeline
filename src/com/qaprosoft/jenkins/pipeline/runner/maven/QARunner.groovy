@@ -537,6 +537,21 @@ public class QARunner extends AbstractRunner {
                     if (Configuration.get("testrail_enabled")?.toBoolean()) {
                         String jobName = "testrail"
                         jobName = getCurrentFolderFullName(jobName)
+
+                        def milestone = Configuration.get('testrail_milestone')
+                        if (milestone == null) {
+                        	milestone = ""
+                        }
+
+                        def runName = Configuration.get('testrail_run_name')
+                        if (runName == null) {
+                        	runName = ""
+                        }
+
+                        def assignee = Configuration.get('testrail_assignee')
+                        if (assignee == null) {
+                        	assignee = ""
+                        }
                         context.node("master") {
                             context.build job: jobName,
                                     propagate: false,
@@ -544,9 +559,9 @@ public class QARunner extends AbstractRunner {
                                     parameters: [
                                             context.string(name: 'ci_run_id', value: uuid),
                                             context.booleanParam(name: 'include_all', value: Configuration.get("include_all")),
-                                            context.string(name: 'testrail_milestone', value: Configuration.get('testrail_milestone')),
-                                            context.string(name: 'testrail_run_name', value: Configuration.get("testrail_run_name")),
-                                            context.string(name: 'testrail_assignee', value: Configuration.get("testrail_assignee")),
+                                            context.string(name: 'testrail_milestone', value: milestone),
+                                            context.string(name: 'testrail_run_name', value: runName),
+                                            context.string(name: 'testrail_assignee', value: assignee),
                                             context.booleanParam(name: 'exists', value: isRerun),
                                             context.string(name: 'testrail_search_interval', value: Configuration.get("testrail_search_interval"))
                                     ]
