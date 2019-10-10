@@ -539,7 +539,8 @@ public class QARunner extends AbstractRunner {
                         jobName = getCurrentFolderFullName(jobName)
                         context.node("master") {
                             context.build job: jobName,
-                                    propagate: true,
+                                    propagate: false,
+                                    wait: false,
                                     parameters: [
                                             context.string(name: 'ci_run_id', value: uuid),
                                             context.booleanParam(name: 'isRerun', value: isRerun)
@@ -551,7 +552,8 @@ public class QARunner extends AbstractRunner {
                         jobName = getCurrentFolderFullName(jobName)
                         context.node("master") {
                             context.build job: jobName,
-                                    propagate: true,
+                                    propagate: false,
+                                    wait: false,
                                     parameters: [
                                             context.string(name: 'ci_run_id', value: uuid)
                                     ]
