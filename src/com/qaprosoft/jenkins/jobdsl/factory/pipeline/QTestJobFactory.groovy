@@ -18,9 +18,9 @@ public class QTestJobFactory extends PipelineFactory {
         pipelineJob.with {
             parameters {
                 configure stringParam('ci_run_id', '', "Zafira test run id")
-                configure stringParam('capabilities.os', '', 'capabilities.os')
-                configure stringParam('capabilities.os_version', '', 'capabilities.os_version')
-                configure stringParam('capabilities.browser', '', 'capabilities.browser')
+                configure stringParam('os', '', 'OS name')
+                configure stringParam('os_version', '', 'OS version')
+                configure stringParam('browser', '', 'Browser name')
             }
         }
         return pipelineJob

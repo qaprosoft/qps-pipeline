@@ -561,9 +561,9 @@ public class QARunner extends AbstractRunner {
                                     wait: false,
                                     parameters: [
                                             context.string(name: 'ci_run_id', value: uuid),
-                                            context.string(name: 'capabilities.os', value: Configuration.get("capabilities.os")),
-                                            context.string(name: 'capabilities.os_version', value: Configuration.get("capabilities.os_version")),
-                                            context.string(name: 'capabilities.browser', value: Configuration.get("capabilities.os_version"))
+                                            context.string(name: 'os', value: Configuration.get("capabilities.os")),
+                                            context.string(name: 'os_version', value: Configuration.get("capabilities.os_version")),
+                                            context.string(name: 'browser', value: Configuration.get("capabilities.os_version"))
                                     ]
                         }
                     }
