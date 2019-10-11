@@ -16,7 +16,6 @@ public class Configuration {
     public Configuration(context) {
         this.context = context
         this.loadContext()
-
     }
 
     @NonCPS
@@ -32,82 +31,84 @@ public class Configuration {
     public enum Parameter {
 
         //vars
-        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "6.2.26"),
-        CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
+        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "6.2.26", "false"),
+        CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO", "false"),
         //to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
         //the biggest problem is that AWS key can't be located in public repositories
-        JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
-        JACOCO_REGION("JACOCO_REGION", "us-west-1"),
-        JACOCO_ENABLE("JACOCO_ENABLE", "false"),
-        JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
+        JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com", "false"),
+        JACOCO_REGION("JACOCO_REGION", "us-west-1", "false"),
+        JACOCO_ENABLE("JACOCO_ENABLE", "false", "false"),
+        JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60", "false"),
 
-        QPS_PIPELINE_GIT_BRANCH("QPS_PIPELINE_GIT_BRANCH", mustOverride),
-        QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", "git@github.com:qaprosoft/qps-pipeline.git"),
-        ADMIN_EMAILS("ADMIN_EMAILS", mustOverride),
+        QPS_PIPELINE_GIT_BRANCH("QPS_PIPELINE_GIT_BRANCH", mustOverride, "false"),
+        QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", "git@github.com:qaprosoft/qps-pipeline.git", "false"),
+        ADMIN_EMAILS("ADMIN_EMAILS", mustOverride, "false"),
 
-        GITHUB_HOST("GITHUB_HOST", "github.com"),
-        GITHUB_API_URL("GITHUB_API_URL", "https://api.\${GITHUB_HOST}/"),
-        GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft"),
-        GITHUB_HTML_URL("GITHUB_HTML_URL", "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}"),
-        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride),
-        GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
+        GITHUB_HOST("GITHUB_HOST", "github.com", "false"),
+        GITHUB_API_URL("GITHUB_API_URL", "https://api.\${GITHUB_HOST}/", "false"),
+        GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft", "false"),
+        GITHUB_HTML_URL("GITHUB_HTML_URL", "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}", "false"),
+        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, "true"),
+        GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}", "false"),
 
-        SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
-        SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}"),
-        SELENIUM_PORT("SELENIUM_PORT", "4444"),
-        SELENIUM_URL("SELENIUM_URL", "\${SELENIUM_PROTOCOL}://demo:demo@\${SELENIUM_HOST}:\${SELENIUM_PORT}/wd/hub"),
-        HUB_MODE("hub_mode", "default"),
+        SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http", "false"),
+        SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}", "false"),
+        SELENIUM_PORT("SELENIUM_PORT", "4444", "false"),
+        SELENIUM_URL("SELENIUM_URL", "\${SELENIUM_PROTOCOL}://demo:demo@\${SELENIUM_HOST}:\${SELENIUM_PORT}/wd/hub", "false"),
+        HUB_MODE("hub_mode", "default", "false"),
 
-        QPS_HUB("QPS_HUB", "\${SELENIUM_PROTOCOL}://${SELENIUM_HOST}:\${SELENIUM_PORT}"),
+        QPS_HUB("QPS_HUB", "\${SELENIUM_PROTOCOL}://${SELENIUM_HOST}:\${SELENIUM_PORT}", "false"),
 
-        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride),
-        ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
+        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, "true"),
+        ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws", "false"),
 
-        JOB_URL("JOB_URL", mustOverride),
-        JOB_NAME("JOB_NAME", mustOverride),
-        JOB_BASE_NAME("JOB_BASE_NAME", mustOverride),
-        BUILD_NUMBER("BUILD_NUMBER", mustOverride),
+        JOB_URL("JOB_URL", mustOverride, "false"),
+        JOB_NAME("JOB_NAME", mustOverride, "false"),
+        JOB_BASE_NAME("JOB_BASE_NAME", mustOverride, "false"),
+        BUILD_NUMBER("BUILD_NUMBER", mustOverride, "false"),
 
-        SCREEN_RECORD_FTP("screen_record_ftp", "ftp://\${QPS_HOST}/%s.mp4"),
-        SCREEN_RECORD_HOST("screen_record_host", "http://\${QPS_HOST}/video/%s"),
-        SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
-        SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
-        SCREEN_RECORD_DURATION("screen_record_duration", "1800"),
+        SCREEN_RECORD_FTP("screen_record_ftp", "ftp://\${QPS_HOST}/%s.mp4", "false"),
+        SCREEN_RECORD_HOST("screen_record_host", "http://\${QPS_HOST}/video/%s", "false"),
+        SCREEN_RECORD_USER("screen_record_user", "qpsdemo", "false"),
+        SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo", "false"),
+        SCREEN_RECORD_DURATION("screen_record_duration", "1800", "false"),
 
-        S3_SAVE_SCREENSHOTS("s3_save_screenshots", "true"),
-        OPTIMIZE_VIDEO_RECORDING("optimize_video_recording", "false"),
+        S3_SAVE_SCREENSHOTS("s3_save_screenshots", "true", "false"),
+        OPTIMIZE_VIDEO_RECORDING("optimize_video_recording", "false", "false"),
 
-        VNC_DESKTOP("vnc_desktop", "%s://%s:%s/vnc/%s"),
-        VNC_MOBILE("vnc_mobile", "%s://%s:%s/websockify"),
-        VNC_PROTOCOL("vnc_protocol", "ws"),
-        VNC_HOST("vnc_host", "\${QPS_HOST}"),
-        VNC_PORT("vnc_port", "80"),
+        VNC_DESKTOP("vnc_desktop", "%s://%s:%s/vnc/%s", "false"),
+        VNC_MOBILE("vnc_mobile", "%s://%s:%s/websockify", "false"),
+        VNC_PROTOCOL("vnc_protocol", "ws", "false"),
+        VNC_HOST("vnc_host", "\${QPS_HOST}", "false"),
+        VNC_PORT("vnc_port", "80", "false"),
 
-        ENABLE_VNC("capabilities.enableVNC", "true"),
-        ENABLE_VIDEO("capabilities.enableVideo", "true"),
+        ENABLE_VNC("capabilities.enableVNC", "true", "false"),
+        ENABLE_VIDEO("capabilities.enableVideo", "true", "false"),
 	//TODO: investigate could we disbale it by default
-        ENABLE_STF("capabilities.STF_ENABLED", "true"),
+        ENABLE_STF("capabilities.STF_ENABLED", "true", "false"),
 
-        TIMEZONE("user.timezone", "UTC"),
+        TIMEZONE("user.timezone", "UTC", "false"),
 
-        S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
-        HOCKEYAPP_LOCAL_STORAGE("hockeyapp_local_storage", "/opt/apk"),
+        S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk", "false"),
+        HOCKEYAPP_LOCAL_STORAGE("hockeyapp_local_storage", "/opt/apk", "false"),
 
-        BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}"),
+        BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}", "true"),
 
         //Make sure that URLs have trailing slash
-        TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", ""), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
-        TESTRAIL_ENABLE("testrail_enabled", "false"),
+        TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", "", "false"), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
+        TESTRAIL_ENABLE("testrail_enabled", "false", "false"),
 
-        QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
-        QTEST_ENABLE("qtest_enabled", "false"),
+        QTEST_SERVICE_URL("QTEST_SERVICE_URL", "", "false"), // "https://<CHANGE_ME>/api/v3/"
+        QTEST_ENABLE("qtest_enabled", "false", "false"),
 
         private final String key
         private final String value
+        private final String isSecured
 
-        Parameter(String key, String value) {
+        Parameter(String key, String value, String isSecured ) {
             this.key = key
             this.value = value
+            this.isSecured = isSecured
         }
 
         @NonCPS
@@ -175,7 +176,11 @@ public class Configuration {
                 def keyValueArray = value.trim().split("=")
                 if (keyValueArray.size() > 1) {
                     def parameterName = keyValueArray[0]
-                    def parameterValue = keyValueArray[1]
+                    if (keyValueArray[2] == "true") {
+                        def parameterValue = "********"
+                    } else {
+                        def parameterValue = keyValueArray[1]
+                    }
                     putParamCaseInsensitive(parameterName, parameterValue)
                 }
             }
