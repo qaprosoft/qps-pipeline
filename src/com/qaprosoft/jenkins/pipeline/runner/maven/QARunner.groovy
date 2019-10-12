@@ -535,8 +535,7 @@ public class QARunner extends AbstractRunner {
                     customNotify()
 
                     if (Configuration.get("testrail_enabled")?.toBoolean()) {
-                        String jobName = Configuration.testRailUpdaterJobName
-                        jobName = getCurrentFolderFullName(jobName)
+                        String jobName = getCurrentFolderFullName(Configuration.TESTRAIL_UPDATER_JOBNAME)
 
                         // TODO: rename include_all to something testrail related
                         def includeAll = Configuration.get("include_all")?.toBoolean()
@@ -560,8 +559,7 @@ public class QARunner extends AbstractRunner {
                         }
                     }
                     if(Configuration.get("qtest_enabled")?.toBoolean()){
-                        String jobName = "qtest"
-                        jobName = getCurrentFolderFullName(jobName)
+                        String jobName = getCurrentFolderFullName(Configuration.QTEST_UPDATER_JOBNAME)
                         context.node("master") {
                             context.build job: jobName,
                                     propagate: false,
