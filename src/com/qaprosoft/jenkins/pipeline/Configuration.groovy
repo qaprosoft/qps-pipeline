@@ -5,7 +5,8 @@ public class Configuration {
     private def context
 
     private final static def mustOverride = "{must_override}"
-    public final static def testRailUpdaterJobName = "testrail-updater"
+    public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
+    public final static def QTEST_UPDATER_JOBNAME = "qtest-updater"
 
     //list of CI job params as a map
     protected static Map params = [:]
@@ -32,7 +33,6 @@ public class Configuration {
     public enum Parameter {
 
         //vars
-        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "6.2.26"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
         //to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
         //the biggest problem is that AWS key can't be located in public repositories
