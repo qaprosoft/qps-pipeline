@@ -149,10 +149,7 @@ public class QARunner extends AbstractRunner {
         context.stage('Maven Compile') {
             // [VD] don't remove -U otherwise latest dependencies are not downloaded
             // and PR can be marked as fail due to the compilation failure!
-            def goals = "-U clean compile test-compile \
-					-f ${pomFile} \
-					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
-					-Dcarina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)}"
+            def goals = "-U clean compile test-compile -f ${pomFile}"
 
             executeMavenGoals(goals)
         }
@@ -669,7 +666,6 @@ public class QARunner extends AbstractRunner {
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
 
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String carinaCoreVersion = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
@@ -682,9 +678,6 @@ public class QARunner extends AbstractRunner {
             currentBuild.displayName = "#${buildNumber}|${suite}|${branch}"
             if (!isParamEmpty(env)) {
                 currentBuild.displayName += "|" + "${env}"
-            }
-            if (!isParamEmpty(carinaCoreVersion)) {
-                currentBuild.displayName += "|" + "${carinaCoreVersion}"
             }
             if (!isParamEmpty(devicePool)) {
                 currentBuild.displayName += "|${devicePool}"
@@ -765,12 +758,12 @@ public class QARunner extends AbstractRunner {
     protected void downloadResources() {
         //DO NOTHING as of now
 
-/*		def CARINA_CORE_VERSION = Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)
+/*		
 		context.stage("Download Resources") {
 		def pomFile = getSubProjectFolder() + "/pom.xml"
 		logger.info("pomFile: " + pomFile)
 
-		executeMavenGoals("-B -U -f ${pomFile} clean process-resources process-test-resources -Dcarina-core_version=$CARINA_CORE_VERSION")
+		executeMavenGoals("-B -U -f ${pomFile} clean process-resources process-test-resources")
 */
     }
 
@@ -784,9 +777,7 @@ public class QARunner extends AbstractRunner {
 
     protected String getMavenGoals() {
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
-        def defaultBaseMavenGoals = "-Dcarina-core_version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
-				-Detaf.carina.core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
-		-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
+        def defaultBaseMavenGoals = "-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
 		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
 		-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
