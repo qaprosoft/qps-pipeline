@@ -32,8 +32,7 @@ class TestRailUpdater {
 		
         // export all tag related metadata from Zafira
         def integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
-        logger.info("INTEGRATION_INFO:\n" + formatJson(integration))
-        // logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
+        logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
         if (isParamEmpty(integration)){
             logger.debug("Nothing to update in TestRail.")
