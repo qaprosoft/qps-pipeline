@@ -151,14 +151,6 @@ public class Executor {
         return folderName
     }
 
-    static boolean isFailure(testRunStatus) {
-        boolean failure = false
-        if (!"PASSED".equals(testRunStatus)){
-            failure = true
-        }
-        return failure
-    }
-
     static def getPipelineLocales(xmlSuite){
         def supportedLocales = [:]
         def jenkinsPipelineLocales = xmlSuite.getParameter("jenkinsPipelineLocales")
