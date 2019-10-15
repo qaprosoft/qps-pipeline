@@ -476,15 +476,25 @@ public class QARunner extends AbstractRunner {
         //updates zafira credentials with values from Jenkins Credentials (if present)
         logger.debug("result-8: " + currentBuild.result)
         zafiraUpdater.getZafiraCredentials()
+        logger.debug("result111: " + currentBuild.result)
         uuid = getUUID()
+        logger.debug("result222: " + currentBuild.result)
         logger.info("UUID: " + uuid)
+        logger.debug("result333: " + currentBuild.result)
         def testRun
+        logger.debug("result444: " + currentBuild.result)
         def isRerun = isRerun()
+        logger.debug("result555: " + currentBuild.result)
         String nodeName = "master"
+        logger.debug("result666: " + currentBuild.result)
         context.node(nodeName) {
+            logger.debug("result777: " + currentBuild.result)
             zafiraUpdater.queueZafiraTestRun(uuid)
+            logger.debug("result888: " + currentBuild.result)
             initJobParams()
+            logger.debug("result999: " + currentBuild.result)
             nodeName = chooseNode()
+            logger.debug("result000: " + currentBuild.result)
         }
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
