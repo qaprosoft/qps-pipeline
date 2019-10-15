@@ -474,57 +474,39 @@ public class QARunner extends AbstractRunner {
     protected void runJob() {
         logger.info("QARunner->runJob")
         //updates zafira credentials with values from Jenkins Credentials (if present)
-        logger.debug("result-8: " + currentBuild.result)
         zafiraUpdater.getZafiraCredentials()
-        logger.debug("result111: " + currentBuild.result)
         uuid = getUUID()
-        logger.debug("result222: " + currentBuild.result)
         logger.info("UUID: " + uuid)
-        logger.debug("result333: " + currentBuild.result)
         def testRun
-        logger.debug("result444: " + currentBuild.result)
         def isRerun = isRerun()
-        logger.debug("result555: " + currentBuild.result)
         String nodeName = "master"
-        logger.debug("result666: " + currentBuild.result)
         context.node(nodeName) {
-            logger.debug("result777: " + currentBuild.result)
             zafiraUpdater.queueZafiraTestRun(uuid)
-            logger.debug("result888: " + currentBuild.result)
             initJobParams()
-            logger.debug("result999: " + currentBuild.result)
             nodeName = chooseNode()
-            logger.debug("result000: " + currentBuild.result)
         }
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
-                        logger.debug("result-7: " + currentBuild.result)
                         prepareBuild(currentBuild)
-                        logger.debug("result-6: " + currentBuild.result)
                         scmClient.clone()
 
-                        logger.debug("result-5: " + currentBuild.result)
                         downloadResources()
 
-                        logger.debug("result-4: " + currentBuild.result)
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             buildJob()
                         }
-                        logger.debug("result-3: " + currentBuild.result)
                         testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
-                        logger.debug("result-2: " + currentBuild.result)
                         if(!isParamEmpty(testRun)){
                             zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
                             zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         }
                         //TODO: think about seperate stage for uploading jacoco reports
-                        logger.debug("result-1: " + currentBuild.result)
                         publishJacocoReport()
                     }
-                    logger.debug("result0: " + currentBuild.result)
                 } catch (Exception e) {
+                    //TODO: [VD] think about making currentBuild.result as FAILURE
                     logger.error(printStackTrace(e))
                     testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
                     if (!isParamEmpty(testRun)) {
@@ -538,20 +520,14 @@ public class QARunner extends AbstractRunner {
                     throw e
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    logger.debug("result1: " + currentBuild.result)
                     if(!isParamEmpty(testRun)) {
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
                     }
-                    logger.debug("result2: " + currentBuild.result)
                     publishJenkinsReports()
-                    logger.debug("result3: " + currentBuild.result)
                     sendCustomizedEmail()
-                    logger.debug("result4: " + currentBuild.result)
                     clean()
-                    logger.debug("result5: " + currentBuild.result)
                     customNotify()
-                    logger.debug("result6: " + currentBuild.result)
 
                     if (Configuration.get("testrail_enabled")?.toBoolean()) {
                         String jobName = getCurrentFolderFullName(Configuration.TESTRAIL_UPDATER_JOBNAME)
@@ -577,7 +553,6 @@ public class QARunner extends AbstractRunner {
                                     ]
                         }
                     }
-                    logger.debug("result7: " + currentBuild.result)
                     if(Configuration.get("qtest_enabled")?.toBoolean()){
                         String jobName = getCurrentFolderFullName(Configuration.QTEST_UPDATER_JOBNAME)
                         context.node("master") {
@@ -592,7 +567,6 @@ public class QARunner extends AbstractRunner {
                                     ]
                         }
                     }
-                    logger.debug("result7: " + currentBuild.result)
                 }
             }
         }
