@@ -520,16 +520,20 @@ public class QARunner extends AbstractRunner {
                     throw e
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
+                    logger.debug("result1: " + currentBuild.result)
                     if(!isParamEmpty(testRun)) {
-//                        qTestUpdater.updateTestRun(uuid)
-//                        testRailUpdater.updateTestRun(uuid, isRerun)
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
                     }
+                    logger.debug("result2: " + currentBuild.result)
                     publishJenkinsReports()
+                    logger.debug("result3: " + currentBuild.result)
                     sendCustomizedEmail()
+                    logger.debug("result4: " + currentBuild.result)
                     clean()
+                    logger.debug("result5: " + currentBuild.result)
                     customNotify()
+                    logger.debug("result6: " + currentBuild.result)
 
                     if (Configuration.get("testrail_enabled")?.toBoolean()) {
                         String jobName = getCurrentFolderFullName(Configuration.TESTRAIL_UPDATER_JOBNAME)
@@ -555,6 +559,7 @@ public class QARunner extends AbstractRunner {
                                     ]
                         }
                     }
+                    logger.debug("result7: " + currentBuild.result)
                     if(Configuration.get("qtest_enabled")?.toBoolean()){
                         String jobName = getCurrentFolderFullName(Configuration.QTEST_UPDATER_JOBNAME)
                         context.node("master") {
@@ -569,6 +574,7 @@ public class QARunner extends AbstractRunner {
                                     ]
                         }
                     }
+                    logger.debug("result7: " + currentBuild.result)
                 }
             }
         }
