@@ -20,7 +20,7 @@ import com.cloudbees.plugins.credentials.domains.*
 public class Executor {
 
     static enum BuildResult {
-        FAILURE, ABORTED, UNSTABLE
+        FAILURE, ABORTED, UNSTABLE, SUCCESS
     }
 
     static enum FailureCause {
