@@ -114,6 +114,7 @@ public class Configuration {
         Parameter(String key, String value) {
             this.key = key
             this.value = value
+            this.isSecured = "false"
         }
 
         @NonCPS
