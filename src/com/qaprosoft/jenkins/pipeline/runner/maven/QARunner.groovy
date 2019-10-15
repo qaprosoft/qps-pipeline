@@ -474,6 +474,7 @@ public class QARunner extends AbstractRunner {
     protected void runJob() {
         logger.info("QARunner->runJob")
         //updates zafira credentials with values from Jenkins Credentials (if present)
+        logger.debug("result-8: " + currentBuild.result)
         zafiraUpdater.getZafiraCredentials()
         uuid = getUUID()
         logger.info("UUID: " + uuid)
@@ -489,23 +490,30 @@ public class QARunner extends AbstractRunner {
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
-
+                        logger.debug("result-7: " + currentBuild.result)
                         prepareBuild(currentBuild)
+                        logger.debug("result-6: " + currentBuild.result)
                         scmClient.clone()
 
+                        logger.debug("result-5: " + currentBuild.result)
                         downloadResources()
 
+                        logger.debug("result-4: " + currentBuild.result)
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             buildJob()
                         }
+                        logger.debug("result-3: " + currentBuild.result)
                         testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
+                        logger.debug("result-2: " + currentBuild.result)
                         if(!isParamEmpty(testRun)){
                             zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
                             zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         }
                         //TODO: think about seperate stage for uploading jacoco reports
+                        logger.debug("result-1: " + currentBuild.result)
                         publishJacocoReport()
                     }
+                    logger.debug("result0: " + currentBuild.result)
                 } catch (Exception e) {
                     logger.error(printStackTrace(e))
                     testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
