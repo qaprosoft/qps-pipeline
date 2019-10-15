@@ -105,10 +105,15 @@ public class Configuration {
         private final String value
         private final String isSecured
 
-        Parameter(String key, String value, String isSecured ) {
+        Parameter(String key, String value, String isSecured) {
             this.key = key
             this.value = value
             this.isSecured = isSecured
+        }
+
+        Parameter(String key, String value) {
+            this.key = key
+            this.value = value
         }
 
         @NonCPS
