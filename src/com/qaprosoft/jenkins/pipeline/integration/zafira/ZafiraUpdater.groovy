@@ -145,11 +145,14 @@ class ZafiraUpdater {
         logger.debug("testRun: " + testRun.dump())
         if (!isParamEmpty(testRun)) {
             if (isFailure(testRun.status)){
+                logger.debug("marking currentBuild.result as FAILURE")
                 currentBuild.result = BuildResult.FAILURE
             } else if (isPassed(testRun.status)){
+                logger.debug("marking currentBuild.result as SUCCESS")
                 currentBuild.result = BuildResult.SUCCESS
             } else {
                 // do nothing to inherit status from job
+                logger.debug("don't change currentBuild.result")
             }
         }
     }
