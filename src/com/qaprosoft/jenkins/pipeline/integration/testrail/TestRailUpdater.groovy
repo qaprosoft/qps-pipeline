@@ -61,7 +61,8 @@ class TestRailUpdater {
 
         def testRunExists = Configuration.get("run_exists")?.toBoolean()
 
-        def testRunName = !isParamEmpty(Configuration.get("run_name"))?Configuration.get("run_name"):testRunName
+        def testRunName = integration.testRunName
+        testRunName = !isParamEmpty(Configuration.get("run_name"))?Configuration.get("run_name"):testRunName
 
         def createdAfter = integration.createdAfter
 
