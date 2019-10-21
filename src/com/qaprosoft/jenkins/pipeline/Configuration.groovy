@@ -193,7 +193,9 @@ public class Configuration {
                     } else {
                         parameterValue = keyValueArray[1]
                     }
+                    Logger.info("444444")
                     putParamCaseInsensitive(parameterName, parameterValue)
+                    Logger.info("555555")
                 }
             }
         }
