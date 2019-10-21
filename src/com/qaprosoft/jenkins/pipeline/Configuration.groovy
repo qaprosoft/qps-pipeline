@@ -42,7 +42,7 @@ public class Configuration {
         JACOCO_ENABLE("JACOCO_ENABLE", "false"),
         JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
 
-        QPS_PIPELINE_GIT_BRANCH("QPS_PIPELINE_GIT_BRANCH", mustOverride, "false"),
+        QPS_PIPELINE_GIT_BRANCH("QPS_PIPELINE_GIT_BRANCH", mustOverride),
         QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", "git@github.com:qaprosoft/qps-pipeline.git"),
         ADMIN_EMAILS("ADMIN_EMAILS", mustOverride),
 
@@ -129,6 +129,10 @@ public class Configuration {
             return value
         }
 
+        @NonCPS
+        public String getIsSecured() {
+            return isSecured
+        }
     }
 
     @NonCPS
@@ -165,19 +169,28 @@ public class Configuration {
         def overriddenFieldValues = params.get("overrideFields")
         parseValues(overriddenFieldValues)
 
-        def securedKeys = ["ZAFIRA_ACCESS_TOKEN", "sadasdasdasdasdasd"]
-        context.println("1111111 "+ vars)
-        for (var in vars) {
-            if (var.key in securedKeys) {
-                context.println(var.key , ": ********")
-            } else {
-                context.println(var)
+        def securedParameters = []
+        for (enumValue in enumValues) {
+            if (enumValue.isSecured == "true") {
+                securedParameters << enumValue.getKey()
             }
         }
 
+        context.println("1111111 "+ vars)
+        context.println(securedParameters)
+
+
 //        for (var in vars) {
-//            context.println(var)
+//            if (var.key in securedKeys) {
+//                context.println(var.key , ": ********")
+//            } else {
+//                context.println(var)
+//            }
 //        }
+
+        for (var in vars) {
+            context.println(var)
+        }
 
         for (param in params) {
             context.println(param)
