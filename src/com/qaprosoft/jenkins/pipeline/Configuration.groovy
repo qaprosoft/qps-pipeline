@@ -176,12 +176,8 @@ public class Configuration {
             }
         }
 
-        context.println("1111111 "+ vars)
-        context.println(securedParameters)
-
-
 //        for (var in vars) {
-//            if (var.key in securedKeys) {
+//            if (var.key in securedParameters) {
 //                context.println(var.key , ": ********")
 //            } else {
 //                context.println(var)
@@ -195,6 +191,10 @@ public class Configuration {
         for (param in params) {
             context.println(param)
         }
+
+        context.println("1111111 "+ vars)
+        context.println(securedParameters)
+
         //4. TODO: investigate how private pipeline can override those values
         // public static void set(Map args) - ???
     }
