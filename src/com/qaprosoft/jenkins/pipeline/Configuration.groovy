@@ -178,7 +178,7 @@ public class Configuration {
 
         for (var in vars) {
             if (var.getKey() in securedParameters) {
-                context.println(var.key , ": ********")
+                context.println(var.getKey() + ": ********")
             } else {
                 context.println(var)
             }
