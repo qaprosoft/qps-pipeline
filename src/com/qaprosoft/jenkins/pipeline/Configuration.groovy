@@ -160,9 +160,9 @@ public class Configuration {
 
         //3. Replace vars and/or params with zafiraFields values
         def zafiraFieldValues = params.get("zafiraFields")
-        Logger.info("11111")
+        context.println("11111")
         parseValues(zafiraFieldValues)
-        Logger.info("22222")
+        context.println("22222")
         //4. Replace vars and/or params with overrideFields values
         def overriddenFieldValues = params.get("overrideFields")
         parseValues(overriddenFieldValues)
@@ -185,7 +185,7 @@ public class Configuration {
                 def keyValueArray = value.trim().split("=")
                 def parameterValue
                 def parameterName
-                Logger.info("33333")
+                context.println("33333")
                 if (keyValueArray.size() > 1) {
                     parameterName = keyValueArray[0]
                     if (keyValueArray[2] == "true") {
@@ -193,9 +193,9 @@ public class Configuration {
                     } else {
                         parameterValue = keyValueArray[1]
                     }
-                    Logger.info("444444")
+                    context.println("444444")
                     putParamCaseInsensitive(parameterName, parameterValue)
-                    Logger.info("555555")
+                    context.println("555555")
                 }
             }
         }
