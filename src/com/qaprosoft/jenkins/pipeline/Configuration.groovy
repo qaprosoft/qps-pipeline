@@ -1,7 +1,5 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.Logger
-
 public class Configuration {
 
     private def context
