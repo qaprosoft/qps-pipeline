@@ -181,8 +181,9 @@ public class Configuration {
             for (value in values.split(",")) {
                 def keyValueArray = value.trim().split("=")
                 def parameterValue
+                def parameterName
                 if (keyValueArray.size() > 1) {
-                    def parameterName = keyValueArray[0]
+                    parameterName = keyValueArray[0]
                     if (keyValueArray[2] == "true") {
                         parameterValue = "********"
                     } else {
