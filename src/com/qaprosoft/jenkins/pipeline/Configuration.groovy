@@ -183,7 +183,6 @@ public class Configuration {
                 def keyValueArray = value.trim().split("=")
                 def parameterValue
                 def parameterName
-                context.println("33333")
                 if (keyValueArray.size() > 1) {
                     parameterName = keyValueArray[0]
                     if (keyValueArray[2] == "true") {
@@ -191,9 +190,7 @@ public class Configuration {
                     } else {
                         parameterValue = keyValueArray[1]
                     }
-                    context.println("444444")
                     putParamCaseInsensitive(parameterName, parameterValue)
-                    context.println("555555")
                 }
             }
         }
