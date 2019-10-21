@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.pipeline
 
+import com.qaprosoft.jenkins.Logger
+
 public class Configuration {
 
     private def context
@@ -163,6 +165,7 @@ public class Configuration {
         def overriddenFieldValues = params.get("overrideFields")
         parseValues(overriddenFieldValues)
 
+        Logger.info("1111111 "+ vars)
         for (var in vars) {
             context.println(var)
         }
@@ -176,22 +179,12 @@ public class Configuration {
 
     @NonCPS
     private static void parseValues(values){
-        context.println("11111")
         if (values) {
             for (value in values.split(",")) {
                 def keyValueArray = value.trim().split("=")
-                def parameterValue
-                def parameterName
                 if (keyValueArray.size() > 1) {
-                    context.println("222222")
-                    parameterName = keyValueArray[0]
-                    if (keyValueArray[2] == "true") {
-                        context.println("333333")
-                        parameterValue = "********"
-                    } else {
-                        context.println("444444")
-                        parameterValue = keyValueArray[1]
-                    }
+                    def parameterName = keyValueArray[0]
+                    def parameterValue = keyValueArray[1]
                     putParamCaseInsensitive(parameterName, parameterValue)
                 }
             }
