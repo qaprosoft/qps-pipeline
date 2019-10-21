@@ -180,12 +180,13 @@ public class Configuration {
         if (values) {
             for (value in values.split(",")) {
                 def keyValueArray = value.trim().split("=")
+                def parameterValue
                 if (keyValueArray.size() > 1) {
                     def parameterName = keyValueArray[0]
                     if (keyValueArray[2] == "true") {
-                        def parameterValue = "********"
+                        parameterValue = "********"
                     } else {
-                        def parameterValue = keyValueArray[1]
+                        parameterValue = keyValueArray[1]
                     }
                     putParamCaseInsensitive(parameterName, parameterValue)
                 }
