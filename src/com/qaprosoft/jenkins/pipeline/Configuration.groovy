@@ -158,9 +158,7 @@ public class Configuration {
 
         //3. Replace vars and/or params with zafiraFields values
         def zafiraFieldValues = params.get("zafiraFields")
-        context.println("11111")
         parseValues(zafiraFieldValues)
-        context.println("22222")
         //4. Replace vars and/or params with overrideFields values
         def overriddenFieldValues = params.get("overrideFields")
         parseValues(overriddenFieldValues)
@@ -178,16 +176,20 @@ public class Configuration {
 
     @NonCPS
     private static void parseValues(values){
+        context.println("11111")
         if (values) {
             for (value in values.split(",")) {
                 def keyValueArray = value.trim().split("=")
                 def parameterValue
                 def parameterName
                 if (keyValueArray.size() > 1) {
+                    context.println("222222")
                     parameterName = keyValueArray[0]
                     if (keyValueArray[2] == "true") {
+                        context.println("333333")
                         parameterValue = "********"
                     } else {
+                        context.println("444444")
                         parameterValue = keyValueArray[1]
                     }
                     putParamCaseInsensitive(parameterName, parameterValue)
