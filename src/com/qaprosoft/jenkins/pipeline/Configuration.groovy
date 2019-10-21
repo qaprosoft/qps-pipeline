@@ -184,10 +184,6 @@ public class Configuration {
             }
         }
 
-//        for (var in vars) {
-//            context.println(var)
-//        }
-
         for (param in params) {
             context.println(param)
         }
