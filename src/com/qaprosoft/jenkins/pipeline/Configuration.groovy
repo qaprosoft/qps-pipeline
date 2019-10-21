@@ -166,7 +166,7 @@ public class Configuration {
         parseValues(overriddenFieldValues)
 
         def securedKeys = ["ZAFIRA_ACCESS_TOKEN", "sadasdasdasdasdasd"]
-        Logger.info("1111111 "+ vars)
+        context.println("1111111 "+ vars)
         for (var in vars) {
             if (var.key in securedKeys) {
                 context.println(var.key , ": ********")
