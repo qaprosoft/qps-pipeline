@@ -58,14 +58,17 @@ public class Maven {
     }
     private def filterSecuredParams(goals) {
         def arrayOfParmeters = goals.split()
-        context.println("111111111111")
+        def resultSpringOfParameters
         for (parameter in arrayOfParmeters) {
+            def resultString = parameter
             if (parameter.contains("token") || parameter.contains("TOKEN")) {
+                resultString = ''
                 def arrayOfString = parameter.split("=")
-                context.println("MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW")
+                arrayOfString[1] = "********"
+                resultString = arrayOfString[0] + '=' + arrayOfString[1]
             }
+            resultSpringOfParameters += resultString
         }
-        context.println("111111111111")
         return goals
     }
 
