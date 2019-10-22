@@ -57,7 +57,10 @@ public class Maven {
         }
     }
     private def filterSecuredParams(goals) {
-        Logger.info("1111\n" + goals + "\n1111")
+        def arrayOfParmeters = goals.Split()
+        for (i in arrayOfParmeters) {
+            Logger.info(i)
+        }
         return goals
     }
 
