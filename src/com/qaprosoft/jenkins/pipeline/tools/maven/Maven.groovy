@@ -62,7 +62,7 @@ public class Maven {
         for (parameter in arrayOfParmeters) {
             if (parameter.contains("token")) {
                 def arrayOfString = parameter.split("=")
-                context.println(arrayOfParmeters)
+                context.println("MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW")
             }
         }
         context.println("111111111111")
