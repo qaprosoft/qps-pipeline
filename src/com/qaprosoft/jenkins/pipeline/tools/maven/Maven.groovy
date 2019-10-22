@@ -56,6 +56,10 @@ public class Maven {
             buildGoals(goals)
         }
     }
+    private def filterSecuredParams(goals) {
+        Logger.info("1111\n" + goals + "\n1111")
+        return goals
+    }
 
     public def buildGoals(goals) {
         if(context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name())){
@@ -64,8 +68,9 @@ public class Maven {
         // parse goals replacing sensitive info by *******
         if (context.isUnix()) {
             //context.sh returnStdout: true, script: "#!/bin/bash +x\n 'mvn' -B ${goals}"
+            def filteredGoals = filterSecuredParams(goals)
             context.sh """
-                        echo "mvn -B ${goals}"
+                        echo "mvn -B ${filteredGoals}"
                         set +x
                         'mvn' -B ${goals}
                         set -x 
