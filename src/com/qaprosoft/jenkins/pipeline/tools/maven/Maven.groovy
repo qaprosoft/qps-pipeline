@@ -59,7 +59,7 @@ public class Maven {
     private def filterSecuredParams(goals) {
         def arrayOfParmeters = goals.split()
         for (i in arrayOfParmeters) {
-            Logger.info(i)
+            context.println(i)
         }
         return goals
     }
