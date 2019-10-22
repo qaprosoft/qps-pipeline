@@ -69,7 +69,7 @@ public class Maven {
             }
             resultSpringOfParameters += resultString
         }
-        return goals
+        return resultSpringOfParameters
     }
 
     public def buildGoals(goals) {
