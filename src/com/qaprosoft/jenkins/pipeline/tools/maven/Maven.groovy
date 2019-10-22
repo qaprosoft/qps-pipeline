@@ -58,9 +58,14 @@ public class Maven {
     }
     private def filterSecuredParams(goals) {
         def arrayOfParmeters = goals.split()
-        for (i in arrayOfParmeters) {
-            context.println(i)
+        context.println("111111111111")
+        for (parameter in arrayOfParmeters) {
+            if ('token' in parameter) {
+                def arrayOfString = parameter.split("=")
+                context.println(arrayOfParmeters)
+            }
         }
+        context.println("111111111111")
         return goals
     }
 
