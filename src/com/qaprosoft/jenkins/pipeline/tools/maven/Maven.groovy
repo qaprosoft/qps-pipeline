@@ -62,7 +62,7 @@ public class Maven {
             goals = goals + " -e -X"
         }
         if (context.isUnix()) {
-            context.sh returnStdout: true, script: "'mvn' -B ${goals}"
+            context.sh returnStdout: true, script: "'mvn' -B set +x ${goals}"
         } else {
             context.bat "mvn -B ${goals}"
         }
