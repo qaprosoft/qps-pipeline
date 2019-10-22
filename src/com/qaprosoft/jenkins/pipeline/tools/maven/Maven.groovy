@@ -63,11 +63,11 @@ public class Maven {
         }
         if (context.isUnix()) {
             //context.sh returnStdout: true, script: "#!/bin/bash +x\n 'mvn' -B ${goals}"
-            context.sh '''
+            context.sh """
                         set +x
                         'mvn' -B ${goals}
                         set -x 
-                       '''
+                       """
         } else {
             context.bat "mvn -B ${goals}"
         }
