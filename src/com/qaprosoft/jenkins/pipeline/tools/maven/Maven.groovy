@@ -61,13 +61,11 @@ public class Maven {
         def resultSpringOfParameters = ''
         for (parameter in arrayOfParmeters) {
             def resultString = parameter
-            if (parameter.contains("token") || parameter.contains("TOKEN")) {
+            if (parameter.contains("token") || parameter.contains("TOKEN") || parameter.contains("-Dselenium_host")) {
                 resultString = ''
                 def arrayOfString = parameter.split("=")
                 arrayOfString[1] = "********"
                 resultString = arrayOfString[0] + '=' + arrayOfString[1]
-            } else if (parameter.contains("-Dselenium_host")) {
-                resultString = parameter.replaceAll("(&:)[^&]*(&@)", "********")
             }
             resultSpringOfParameters += resultString + ' '
         }
