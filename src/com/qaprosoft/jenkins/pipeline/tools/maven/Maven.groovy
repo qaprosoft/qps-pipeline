@@ -65,7 +65,7 @@ public class Maven {
                 resultString = ''
                 def arrayOfString = parameter.split("=")
                 arrayOfString[1] = "********"
-                resultString = arrayOfString[0] + '=' + arrayOfString[1]
+                resultString = arrayOfString[0] + '=' + arrayOfString[1] + ' '
             }
             resultSpringOfParameters += resultString
         }
