@@ -61,7 +61,7 @@ public class Maven {
         context.println("111111111111")
         for (parameter in arrayOfParmeters) {
             context.println(parameter)
-            if ('token' in parameter) {
+            if (parameter.contains("token")) {
                 def arrayOfString = parameter.split("=")
                 context.println(arrayOfParmeters)
             }
