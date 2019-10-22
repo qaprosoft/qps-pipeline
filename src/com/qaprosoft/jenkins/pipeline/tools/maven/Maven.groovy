@@ -61,9 +61,11 @@ public class Maven {
         if(context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name())){
             goals = goals + " -e -X"
         }
+        // parse goals replacing sensitive info by *******
         if (context.isUnix()) {
             //context.sh returnStdout: true, script: "#!/bin/bash +x\n 'mvn' -B ${goals}"
             context.sh """
+                        echo "mvn -B ${goals}"
                         set +x
                         'mvn' -B ${goals}
                         set -x 
