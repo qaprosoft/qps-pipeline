@@ -60,6 +60,7 @@ public class Maven {
         def arrayOfParmeters = goals.split()
         context.println("111111111111")
         for (parameter in arrayOfParmeters) {
+            context.println(parameter)
             if ('token' in parameter) {
                 def arrayOfString = parameter.split("=")
                 context.println(arrayOfParmeters)
