@@ -1,4 +1,7 @@
 package com.qaprosoft.jenkins.pipeline.tools.maven
+import java.util.regex.Pattern
+import java.util.regex.Matcher
+
 
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.Logger
@@ -65,9 +68,10 @@ public class Maven {
                 def arrayOfString = parameter.split("=")
                 resultString = arrayOfString[0] + "=********"
             } else if (parameter.contains("-Dselenium_host")){
-                def arrayOfString = parameter.split("=")
-                def arrayOfStrings = arrayOfString[1].split(":")
-                resultString = arrayOfString[0] + '=' + arrayOfStrings[0] + ':' + arrayOfStrings[1] + ':' + arrayOfStrings[2].replaceAll(".*?@", "********@") + ':' + arrayOfStrings[3]
+                parameter = "-Dselenium_host=http://demo:demo@demo.qaprosoft.com:4444/wd/hub"
+                def pattern = "(\\-Dselenium_host=http:\\/\\/.+:)(\\S+)(@.+)"
+                Matcher matcher = Pattern.compile(pattern).matcher(parameter)
+                def newString = matcher.group(1) + "********" + matcher.group(3)
             } else {
                 resultString = parameter
             }
