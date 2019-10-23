@@ -65,7 +65,9 @@ public class Maven {
                 def arrayOfString = parameter.split("=")
                 resultString = arrayOfString[0] + "=********"
             } else if (parameter.contains("-Dselenium_host")){
-                resultString = parameter.replaceAll(":*?.*?@", "********")
+                def arrayOfString = parameter.split("=")
+                def arrayOfStrings = arrayOfString[1].split(":")
+                resultString = arrayOfString[0] + '=' + arrayOfStrings[0] + ':' + arrayOfStrings[1] + ':' + arrayOfStrings[2].replaceAll(".*?@", "********@") + ':' + arrayOfStrings[3]
             } else {
                 resultString = parameter
             }
