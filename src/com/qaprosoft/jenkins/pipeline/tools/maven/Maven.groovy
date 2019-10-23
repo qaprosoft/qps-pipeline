@@ -60,15 +60,14 @@ public class Maven {
         def arrayOfParmeters = goals.split()
         def resultSpringOfParameters = ''
         for (parameter in arrayOfParmeters) {
-            def resultString = parameter
+            def resultString = ''
             if (parameter.contains("token") || parameter.contains("TOKEN")) {
-                resultString = ''
                 def arrayOfString = parameter.split("=")
-                arrayOfString[1] = "********"
-                resultString = arrayOfString[0] + '=' + arrayOfString[1]
+                resultString = arrayOfString[0] + "=********"
             } else if (parameter.contains("-Dselenium_host")){
-                parameter.replaceAll(":?.*?@", "********");
-                context.println('MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW')
+                resultString = parameter.replaceAll(":?.*?@", "********");
+            } else {
+                resultString = parameter
             }
             resultSpringOfParameters += resultString + ' '
         }
