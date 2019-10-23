@@ -61,11 +61,13 @@ public class Maven {
         def resultSpringOfParameters = ''
         for (parameter in arrayOfParmeters) {
             def resultString = parameter
-            if (parameter.contains("token") || parameter.contains("TOKEN") || parameter.contains("-Dselenium_host")) {
+            if (parameter.contains("token") || parameter.contains("TOKEN")) {
                 resultString = ''
                 def arrayOfString = parameter.split("=")
                 arrayOfString[1] = "********"
                 resultString = arrayOfString[0] + '=' + arrayOfString[1]
+            } else if (parameter.contains("-Dselenium_host")){
+                parameter.replaceAll(":?.*?@", "********");
             }
             resultSpringOfParameters += resultString + ' '
         }
@@ -78,7 +80,6 @@ public class Maven {
         }
         // parse goals replacing sensitive info by *******
         if (context.isUnix()) {
-            //context.sh returnStdout: true, script: "#!/bin/bash +x\n 'mvn' -B ${goals}"
             def filteredGoals = filterSecuredParams(goals)
             context.sh """
                         echo "mvn -B ${filteredGoals}"
