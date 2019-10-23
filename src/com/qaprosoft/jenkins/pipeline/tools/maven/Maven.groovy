@@ -69,9 +69,11 @@ public class Maven {
                 resultString = arrayOfString[0] + "=********"
             } else if (parameter.contains("-Dselenium_host")){
                 parameter = "-Dselenium_host=http://demo:demo@demo.qaprosoft.com:4444/wd/hub"
-                def pattern = "(\\-Dselenium_host=http:\\/\\/.+:)(\\S+)(@.+)"
+                def pattern = "(\\-Dselenium_host=http:\\/\\/.+:)\\S+(@.+)"
                 Matcher matcher = Pattern.compile(pattern).matcher(parameter)
-                def newString = matcher.group(1) + "********" + matcher.group(3)
+                while (matcher.find()) {
+                    resultString = matcher.group(1) + "********" + matcher.group(2)
+                }
             } else {
                 resultString = parameter
             }
