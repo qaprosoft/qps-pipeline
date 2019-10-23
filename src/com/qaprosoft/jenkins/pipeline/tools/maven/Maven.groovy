@@ -68,6 +68,7 @@ public class Maven {
                 resultString = arrayOfString[0] + '=' + arrayOfString[1]
             } else if (parameter.contains("-Dselenium_host")){
                 parameter.replaceAll(":?.*?@", "********");
+                context.println('MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW-MEW')
             }
             resultSpringOfParameters += resultString + ' '
         }
