@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.pipeline
 
+import com.qaprosoft.jenkins.Logger
+
 public class Configuration {
 
     private def context
@@ -17,7 +19,6 @@ public class Configuration {
     public Configuration(context) {
         this.context = context
         this.loadContext()
-
     }
 
     @NonCPS
@@ -49,7 +50,7 @@ public class Configuration {
         GITHUB_API_URL("GITHUB_API_URL", "https://api.\${GITHUB_HOST}/"),
         GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft"),
         GITHUB_HTML_URL("GITHUB_HTML_URL", "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}"),
-        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride),
+        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, true),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
 
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
@@ -60,7 +61,7 @@ public class Configuration {
 
         QPS_HUB("QPS_HUB", "\${SELENIUM_PROTOCOL}://${SELENIUM_HOST}:\${SELENIUM_PORT}"),
 
-        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride),
+        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, true),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
 
         JOB_URL("JOB_URL", mustOverride),
@@ -93,7 +94,7 @@ public class Configuration {
         S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
         HOCKEYAPP_LOCAL_STORAGE("hockeyapp_local_storage", "/opt/apk"),
 
-        BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}"),
+        BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}", true),
 
         //Make sure that URLs have trailing slash
         TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", ""), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
@@ -104,10 +105,16 @@ public class Configuration {
 
         private final String key
         private final String value
+        private final Boolean isSecured
 
         Parameter(String key, String value) {
+            this(key, value, false)
+        }
+
+        Parameter(String key, String value, Boolean isSecured) {
             this.key = key
             this.value = value
+            this.isSecured = isSecured
         }
 
         @NonCPS
@@ -120,6 +127,10 @@ public class Configuration {
             return value
         }
 
+        @NonCPS
+        public Boolean isSecured() {
+            return isSecured
+        }
     }
 
     @NonCPS
@@ -152,13 +163,23 @@ public class Configuration {
         //3. Replace vars and/or params with zafiraFields values
         def zafiraFieldValues = params.get("zafiraFields")
         parseValues(zafiraFieldValues)
-
         //4. Replace vars and/or params with overrideFields values
         def overriddenFieldValues = params.get("overrideFields")
         parseValues(overriddenFieldValues)
 
+        def securedParameters = []
+        for (enumValue in enumValues) {
+            if (enumValue.isSecured()) {
+                securedParameters << enumValue.getKey()
+            }
+        }
+
         for (var in vars) {
-            context.println(var)
+            if (var.getKey() in securedParameters) {
+                context.println(var.getKey() + ": ********")
+            } else {
+                context.println(var)
+            }
         }
 
         for (param in params) {
