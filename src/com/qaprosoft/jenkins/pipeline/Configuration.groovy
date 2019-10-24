@@ -50,7 +50,7 @@ public class Configuration {
         GITHUB_API_URL("GITHUB_API_URL", "https://api.\${GITHUB_HOST}/"),
         GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft"),
         GITHUB_HTML_URL("GITHUB_HTML_URL", "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}"),
-        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, "true"),
+        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, true),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
 
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
@@ -61,7 +61,7 @@ public class Configuration {
 
         QPS_HUB("QPS_HUB", "\${SELENIUM_PROTOCOL}://${SELENIUM_HOST}:\${SELENIUM_PORT}"),
 
-        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, "true"),
+        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, true),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
 
         JOB_URL("JOB_URL", mustOverride),
@@ -94,7 +94,7 @@ public class Configuration {
         S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
         HOCKEYAPP_LOCAL_STORAGE("hockeyapp_local_storage", "/opt/apk"),
 
-        BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}", "true"),
+        BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}", true),
 
         //Make sure that URLs have trailing slash
         TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", ""), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
@@ -105,18 +105,16 @@ public class Configuration {
 
         private final String key
         private final String value
-        private final String isSecured
+        private final Boolean isSecured
 
-        Parameter(String key, String value, String isSecured) {
+        Parameter(String key, String value) {
+            this(key, value, false)
+        }
+
+        Parameter(String key, String value, Boolean isSecured) {
             this.key = key
             this.value = value
             this.isSecured = isSecured
-        }
-
-        Parameter(String key, String value) {
-            this.key = key
-            this.value = value
-            this.isSecured = "false"
         }
 
         @NonCPS
@@ -130,7 +128,7 @@ public class Configuration {
         }
 
         @NonCPS
-        public String getIsSecured() {
+        public Boolean isSecured() {
             return isSecured
         }
     }
@@ -171,7 +169,7 @@ public class Configuration {
 
         def securedParameters = []
         for (enumValue in enumValues) {
-            if (enumValue.isSecured == "true") {
+            if (enumValue.isSecured()) {
                 securedParameters << enumValue.getKey()
             }
         }
