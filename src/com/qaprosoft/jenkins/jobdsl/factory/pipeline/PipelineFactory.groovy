@@ -43,6 +43,12 @@ public class PipelineFactory extends JobFactory {
             }
 
             /** Git Stuff **/
+            if (context.fileExists('Jenkinsfile')) {
+                context.println("MEW-MEW-MEW-MEW-MEW-MEW-MEW")
+            } else {
+                context.println("NOT MEW-MEW-MEW-MEW-MEW-MEW-MEW")
+            }
+
             definition {
                 cps {
                     script(pipelineScript)
