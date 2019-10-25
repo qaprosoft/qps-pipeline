@@ -155,6 +155,13 @@ class Repository {
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
+            context.println("??????????? MEW-MEW-MEW-MEW-MEW-MEW-MEW")
+            if (context.fileExists('Jenkinsfile')) {
+                context.println("MEW-MEW-MEW-MEW-MEW-MEW-MEW")
+            } else {
+                context.println("NOT MEW-MEW-MEW-MEW-MEW-MEW-MEW")
+            }
+
             registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId, zafiraFields))
 
 
