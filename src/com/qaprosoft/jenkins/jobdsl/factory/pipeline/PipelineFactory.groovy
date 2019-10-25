@@ -43,6 +43,7 @@ public class PipelineFactory extends JobFactory {
             }
 
             /** Git Stuff **/
+            context.println("??????????? MEW-MEW-MEW-MEW-MEW-MEW-MEW")
             if (context.fileExists('Jenkinsfile')) {
                 context.println("MEW-MEW-MEW-MEW-MEW-MEW-MEW")
             } else {
