@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
 
@@ -44,7 +43,6 @@ public class PipelineFactory extends JobFactory {
             }
 
             /** Git Stuff **/
-            Logger.info("MEMEMEMEMEME")
             context.println("??????????? MEW-MEW-MEW-MEW-MEW-MEW-MEW")
             if (context.fileExists('Jenkinsfile')) {
                 context.println("MEW-MEW-MEW-MEW-MEW-MEW-MEW")
