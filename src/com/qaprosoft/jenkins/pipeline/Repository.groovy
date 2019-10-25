@@ -157,6 +157,7 @@ class Repository {
 
             if (context.fileExists('Jenkinsfile')) {
                 context.println("MEW-MEW-MEW-MEW-MEW-MEW-MEW")
+                registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId, zafiraFields))
             } else {
                 registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId, zafiraFields))
             }
