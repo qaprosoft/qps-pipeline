@@ -7,7 +7,7 @@ import groovy.transform.InheritConstructors
 public class PipelineFactory extends JobFactory {
     def pipelineScript = ""
     def suiteOwner = ""
-    def pipelineFromSource = "Jenkinsfile"
+    def pipelineFromSource = new File('Jenkinsfile')
 
     public PipelineFactory(folder, name, description) {
         super(folder, name, description)
@@ -46,7 +46,7 @@ public class PipelineFactory extends JobFactory {
             /** Git Stuff **/
             definition {
                 cps {
-                    if (fileExists("Jenkinsfile")) {
+                    if (pipelineFromSource.exists()) {
                         script(pipelineFromSource)
                     } else {
                         script(pipelineScript)
