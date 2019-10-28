@@ -47,6 +47,7 @@ public class PipelineFactory extends JobFactory {
                 cps {
                     File pipelineFromSource = new File("/var/jenkins_home/Jenkinsfile")
                     if (pipelineFromSource.exists()) {
+                        logger.info("111111 " + pipelineFromSource.exists())
                         //????
                         script(readFileFromWorkspace(pipelineFromSource))
                     } else {
