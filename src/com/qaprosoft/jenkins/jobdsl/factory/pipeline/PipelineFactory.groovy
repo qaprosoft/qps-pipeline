@@ -49,7 +49,7 @@ public class PipelineFactory extends JobFactory {
                     logger.info("111111 " + pipelineFromSource.exists())
                     if (pipelineFromSource.exists()) {
                         //????
-                        script(readFileFromWorkspace(pipelineFromSource))
+                        script(readFile(pipelineFromSource))
                     } else {
                         script(pipelineScript)
                     }
