@@ -7,7 +7,7 @@ import groovy.transform.InheritConstructors
 public class PipelineFactory extends JobFactory {
     def pipelineScript = ""
     def suiteOwner = ""
-    def pipelineFromSource = new File("Jenkinsfile")
+    def pipelineFromSource = new File("/var/jenkins_home/Jenkinsfile")
 
     public PipelineFactory(folder, name, description) {
         super(folder, name, description)
