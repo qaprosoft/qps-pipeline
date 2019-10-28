@@ -7,7 +7,7 @@ import groovy.transform.InheritConstructors
 public class PipelineFactory extends JobFactory {
     def pipelineScript = ""
     def suiteOwner = ""
-    def pipelineFromSource = new File('Jenkinsfile')
+    def pipelineFromSource = new File('$JENKINS_HOME/Jenkinsfile')
 
     public PipelineFactory(folder, name, description) {
         super(folder, name, description)
@@ -47,7 +47,8 @@ public class PipelineFactory extends JobFactory {
             definition {
                 cps {
                     if (pipelineFromSource.exists()) {
-                        script(pipelineFromSource)
+                        //????
+                        script(readFileFromWorkspace(pipelineFromSource))
                     } else {
                         script(pipelineScript)
                     }
