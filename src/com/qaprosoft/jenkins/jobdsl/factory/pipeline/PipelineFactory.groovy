@@ -27,6 +27,13 @@ public class PipelineFactory extends JobFactory {
         this.suiteOwner = suiteOwner
     }
 
+    public PipelineFactory(folder, name, description, logRotator, suiteOwner, isJenkinsfile) {
+        super(folder, name, description, logRotator)
+        this.pipelineScript = pipelineScript
+        this.suiteOwner = suiteOwner
+        this.isJenkinsfile = isJenkinsfile
+    }
+
     def create() {
         def pipelineJob = _dslFactory.pipelineJob(getFullName()){
             description "${description}"
@@ -46,9 +53,12 @@ public class PipelineFactory extends JobFactory {
             definition {
                 cps {
                     File pipelineFromSource = new File("/var/jenkins_home/Jenkinsfile")
-                    if (pipelineFromSource.exists()) {
-                        //????
-                        script(pipelineFromSource.text)
+                    if (isJenkinsfile) {
+                        checkout([
+                                $class: 'GitSCM',
+                                branches: [[name: '*/dsl']],
+                                userRemoteConfigs: [[credentialsId: 'git-credentials', url: 'https://github.com/qaprosoft/carina-demo']]
+                        ])
                     } else {
                         script(pipelineScript)
                     }
