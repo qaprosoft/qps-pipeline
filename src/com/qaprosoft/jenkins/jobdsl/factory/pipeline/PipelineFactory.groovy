@@ -8,6 +8,10 @@ import org.apache.tools.ant.types.resources.selectors.None
 public class PipelineFactory extends JobFactory {
     def pipelineScript = ""
     def suiteOwner = ""
+    def isJenkinsfile = true
+    def remoteRepoURL = "https://github.com/qaprosoft/carina-demo"
+    def remoteBranch = "dsl"
+    def remoteCredentials = "None"
 
     public PipelineFactory(folder, name, description) {
         super(folder, name, description)
@@ -58,10 +62,6 @@ public class PipelineFactory extends JobFactory {
                 if (isJenkinsfile) {
                     cpsScm {
                         scm {
-                            remoteRepoURL = 'https://github.com/qaprosoft/carina-demo'
-                            remoteBranch = 'dsl'
-                            remoteCredentials = None
-
                             git {
                                 branch(remoteBranch)
                             }
