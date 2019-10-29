@@ -64,10 +64,10 @@ public class PipelineFactory extends JobFactory {
                         scm {
                             git {
                                 branch(remoteBranch)
-                            }
-                            remote {
-                                credentials(remoteCredentials)
-                                url(remoteRepoURL)
+                                remote {
+                                    credentials(remoteCredentials)
+                                    url(remoteRepoURL)
+                                }
                             }
                         }
                     }
