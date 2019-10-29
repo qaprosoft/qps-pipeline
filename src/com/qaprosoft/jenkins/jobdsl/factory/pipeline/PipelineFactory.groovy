@@ -8,10 +8,10 @@ import org.apache.tools.ant.types.resources.selectors.None
 public class PipelineFactory extends JobFactory {
     def pipelineScript = ""
     def suiteOwner = ""
-    def isJenkinsfile = true
-    def remoteRepoURL = "https://github.com/qaprosoft/carina-demo"
-    def remoteBranch = "dsl"
-    def remoteCredentials = "None"
+    def isJenkinsfile = false
+    def remoteRepoURL = ""
+    def remoteBranch = ""
+    def remoteCredentials = ""
 
     public PipelineFactory(folder, name, description) {
         super(folder, name, description)
