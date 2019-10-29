@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import com.qaprosoft.jenkins.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
+import org.apache.tools.ant.types.resources.selectors.None
 
 @InheritConstructors
 public class PipelineFactory extends JobFactory {
@@ -27,11 +28,14 @@ public class PipelineFactory extends JobFactory {
         this.suiteOwner = suiteOwner
     }
 
-    public PipelineFactory(folder, name, description, logRotator, suiteOwner, isJenkinsfile) {
+    public PipelineFactory(folder, name, description, logRotator, suiteOwner, isJenkinsfile, remoteRepoURL, remoteBranch, remoteCredentials) {
         super(folder, name, description, logRotator)
         this.pipelineScript = pipelineScript
         this.suiteOwner = suiteOwner
         this.isJenkinsfile = isJenkinsfile
+        this.remoteRepoURL = remoteRepoURL
+        this.remoteBranch = remoteBranch
+        this.remoteCredentials = remoteCredentials
     }
 
     def create() {
@@ -51,18 +55,27 @@ public class PipelineFactory extends JobFactory {
 
             /** Git Stuff **/
             definition {
-                cps {
-                    File pipelineFromSource = new File("/var/jenkins_home/Jenkinsfile")
-                    if (isJenkinsfile) {
-                        checkout([
-                                $class: 'GitSCM',
-                                branches: [[name: '*/dsl']],
-                                userRemoteConfigs: [[credentialsId: 'git-credentials', url: 'https://github.com/qaprosoft/carina-demo']]
-                        ])
-                    } else {
-                        script(pipelineScript)
+                if (isJenkinsfile) {
+                    cpsScm {
+                        scm {
+                            remoteRepoURL = 'https://github.com/qaprosoft/carina-demo'
+                            remoteBranch = 'dsl'
+                            remoteCredentials = None
+
+                            git {
+                                branch(remoteBranch)
+                            }
+                            remote {
+                                credentials(remoteCredentials)
+                                url(remoteRepoURL)
+                            }
+                        }
                     }
-                    sandbox()
+                } else {
+                    cps {
+                        script(pipelineScript)
+                        sandbox()
+                    }
                 }
             }
         }
