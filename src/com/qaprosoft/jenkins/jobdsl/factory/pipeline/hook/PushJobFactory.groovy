@@ -67,7 +67,7 @@ public class PushJobFactory extends PipelineFactory {
                             git {
                                 branch(branch)
                                 remote {
-                                    credentials(userId)
+                                    credentials(organization + "-" + repo)
                                     url(scmRepoUrl)
                                 }
                             }

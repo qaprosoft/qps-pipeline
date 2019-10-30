@@ -24,6 +24,7 @@ class Repository {
     protected def pipelineLibrary
     protected def runnerClass
     protected def rootFolder
+    def isJenkinsfile = false
 
     protected Map dslObjects = new LinkedHashMap()
 
@@ -43,6 +44,7 @@ class Repository {
             context.timestamps {
                 prepare()
                 generateCiItems()
+                isJenkinsfile = isJenkinsfile()
                 clean()
             }
         }
@@ -155,7 +157,7 @@ class Repository {
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId, zafiraFields, isJenkinsfile()))
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId, zafiraFields, isJenkinsfile))
 
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + repo, mergeJobDescription, githubHost, githubOrganization, repo, gitUrl))
@@ -175,8 +177,7 @@ class Repository {
     }
 
     protected boolean isJenkinsfile() {
-//        return context.fileExists('Jenkinsfile')
-        return true
+        return context.fileExists('Jenkinsfile')
     }
 
 
