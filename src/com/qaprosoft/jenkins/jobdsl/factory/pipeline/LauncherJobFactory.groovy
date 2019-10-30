@@ -29,6 +29,7 @@ public class LauncherJobFactory extends PipelineFactory {
                 configure addHiddenParameter('scmURL', '' , "GitHub repository https URL with token (read permissions only is enough)")
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addHiddenParameter('queue_registration', '', "false")
+                configure addHiddenParameter('rerun_failures', '', "false")
             }
         }
         return pipelineJob
