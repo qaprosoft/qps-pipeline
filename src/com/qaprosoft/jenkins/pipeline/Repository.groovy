@@ -177,7 +177,8 @@ class Repository {
     }
 
     protected boolean isJenkinsfile() {
-        return context.fileExists('/var/jenkins_home/Jenkinsfile')
+        context.println("111111111" + context)
+        return context.fileExists('Jenkinsfile')
     }
 
 
