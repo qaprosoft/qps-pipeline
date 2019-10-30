@@ -8,9 +8,6 @@ import org.apache.tools.ant.types.resources.selectors.None
 public class PipelineFactory extends JobFactory {
     def pipelineScript = ""
     def suiteOwner = ""
-    def scmRepoUrl = ""
-    def branch = ""
-    def userId = ""
 
     public PipelineFactory(folder, name, description) {
         super(folder, name, description)
@@ -31,14 +28,6 @@ public class PipelineFactory extends JobFactory {
         this.suiteOwner = suiteOwner
     }
 
-    public PipelineFactory(folder, name, description, logRotator, suiteOwner, scmRepoUrl, branch, userId) {
-        super(folder, name, description, logRotator)
-        this.suiteOwner = suiteOwner
-        this.scmRepoUrl = scmRepoUrl
-        this.branch = branch
-        this.userId = userId
-    }
-
     def create() {
         def pipelineJob = _dslFactory.pipelineJob(getFullName()){
             description "${description}"
@@ -55,25 +44,10 @@ public class PipelineFactory extends JobFactory {
             }
 
             /** Git Stuff **/
-            def isJenkinsfile = false
             definition {
-                if (isJenkinsfile) {
-                    cpsScm {
-                        scm {
-                            git {
-                                branch(branch)
-                                remote {
-                                    credentials(userId)
-                                    url(scmRepoUrl)
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    cps {
-                        script(pipelineScript)
-                        sandbox()
-                    }
+                cps {
+                    script(pipelineScript)
+                    sandbox()
                 }
             }
         }
