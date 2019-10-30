@@ -24,7 +24,7 @@ class Repository {
     protected def pipelineLibrary
     protected def runnerClass
     protected def rootFolder
-    def isJenkinsfile = true
+    def isJenkinsfile = false
 
     protected Map dslObjects = new LinkedHashMap()
 
@@ -177,7 +177,6 @@ class Repository {
     }
 
     protected boolean isJenkinsfile() {
-        context.println("111111111" + context)
         return context.fileExists('Jenkinsfile')
     }
 
