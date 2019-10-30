@@ -13,8 +13,9 @@ public class PushJobFactory extends PipelineFactory {
     def scmRepoUrl
     def userId
     def zafiraFields
+    def isJenkinsfile
 
-    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, zafiraFields) {
+    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, zafiraFields, isJenkinsfile) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
@@ -26,6 +27,7 @@ public class PushJobFactory extends PipelineFactory {
         this.scmRepoUrl = scmRepoUrl
         this.userId = userId
         this.zafiraFields = zafiraFields
+        this.isJenkinsfile = isJenkinsfile
     }
 
     def create() {
@@ -57,6 +59,22 @@ public class PushJobFactory extends PipelineFactory {
                 configure addHiddenParameter('zafiraFields', '', zafiraFields)
             }
 
+            /** Git Stuff **/
+            definition {
+                if (this.isJenkinsfile) {
+                    cpsScm {
+                        scm {
+                            git {
+                                branch(branch)
+                                remote {
+                                    credentials(userId)
+                                    url(scmRepoUrl)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         return pipelineJob
     }
