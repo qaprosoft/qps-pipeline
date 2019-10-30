@@ -60,8 +60,8 @@ public class PushJobFactory extends PipelineFactory {
             }
 
             /** Git Stuff **/
-            definition {
-                if (this.isJenkinsfile) {
+			if (this.isJenkinsfile) {
+				definition {
                     cpsScm {
                         scm {
                             git {
