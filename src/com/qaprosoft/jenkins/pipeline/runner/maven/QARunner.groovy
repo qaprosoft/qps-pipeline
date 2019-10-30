@@ -523,6 +523,8 @@ public class QARunner extends AbstractRunner {
                     if(!isParamEmpty(testRun)) {
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
+                    } else {
+                        currentBuild.result = BuildResult.FAILURE
                     }
                     publishJenkinsReports()
                     sendCustomizedEmail()
