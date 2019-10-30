@@ -790,6 +790,7 @@ public class QARunner extends AbstractRunner {
 		-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
 				  -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
 		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
+		-Dmaven.test.failure.ignore=true \
 		clean test"
 
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
