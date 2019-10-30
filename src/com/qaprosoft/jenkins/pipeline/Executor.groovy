@@ -20,7 +20,7 @@ import com.cloudbees.plugins.credentials.domains.*
 public class Executor {
 
     static enum BuildResult {
-        FAILURE, ABORTED, UNSTABLE
+        FAILURE, ABORTED, UNSTABLE, SUCCESS
     }
 
     static enum FailureCause {
@@ -149,14 +149,6 @@ public class Executor {
         }
 
         return folderName
-    }
-
-    static boolean isFailure(testRunStatus) {
-        boolean failure = false
-        if (!"PASSED".equals(testRunStatus)){
-            failure = true
-        }
-        return failure
     }
 
     static def getPipelineLocales(xmlSuite){
