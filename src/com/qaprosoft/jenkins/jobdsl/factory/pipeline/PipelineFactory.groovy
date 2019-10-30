@@ -8,10 +8,9 @@ import org.apache.tools.ant.types.resources.selectors.None
 public class PipelineFactory extends JobFactory {
     def pipelineScript = ""
     def suiteOwner = ""
-    def isJenkinsfile = false
-    def remoteRepoURL = ""
-    def remoteBranch = ""
-    def remoteCredentials = ""
+    def scmRepoUrl = ""
+    def branch = ""
+    def userId = ""
 
     public PipelineFactory(folder, name, description) {
         super(folder, name, description)
@@ -32,14 +31,12 @@ public class PipelineFactory extends JobFactory {
         this.suiteOwner = suiteOwner
     }
 
-    public PipelineFactory(folder, name, description, logRotator, suiteOwner, isJenkinsfile, remoteRepoURL, remoteBranch, remoteCredentials) {
+    public PipelineFactory(folder, name, description, logRotator, suiteOwner, scmRepoUrl, branch, userId) {
         super(folder, name, description, logRotator)
-        this.pipelineScript = pipelineScript
         this.suiteOwner = suiteOwner
-        this.isJenkinsfile = isJenkinsfile
-        this.remoteRepoURL = remoteRepoURL
-        this.remoteBranch = remoteBranch
-        this.remoteCredentials = remoteCredentials
+        this.scmRepoUrl = scmRepoUrl
+        this.branch = branch
+        this.userId = userId
     }
 
     def create() {
@@ -58,15 +55,16 @@ public class PipelineFactory extends JobFactory {
             }
 
             /** Git Stuff **/
+            isJenkinsfile = true
             definition {
                 if (isJenkinsfile) {
                     cpsScm {
                         scm {
                             git {
-                                branch(remoteBranch)
+                                branch(branch)
                                 remote {
-                                    credentials(remoteCredentials)
-                                    url(remoteRepoURL)
+                                    credentials(userId)
+                                    url(scmRepoUrl)
                                 }
                             }
                         }
