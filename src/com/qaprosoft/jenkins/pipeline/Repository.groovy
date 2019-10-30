@@ -43,8 +43,8 @@ class Repository {
         context.node('master') {
             context.timestamps {
                 prepare()
-                generateCiItems()
                 isJenkinsfile = isJenkinsfile()
+                generateCiItems()
                 clean()
             }
         }
@@ -177,9 +177,9 @@ class Repository {
     }
 
     protected boolean isJenkinsfile() {
+        context.println("111")
         return context.fileExists('Jenkinsfile')
     }
-
 
     private clean() {
         context.stage('Wipe out Workspace') { context.deleteDir() }
