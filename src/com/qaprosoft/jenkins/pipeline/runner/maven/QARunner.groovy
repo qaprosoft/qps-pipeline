@@ -714,17 +714,16 @@ public class QARunner extends AbstractRunner {
         }
 
         //general mobile capabilities
-        //TODO: find valid way for naming this global "MOBILE" quota
-        Configuration.set("capabilities.deviceName", "QPS-HUB")
+        Configuration.set("capabilities.provider", "mcloud")
         if ("DefaultPool".equalsIgnoreCase(devicePool)) {
             //reuse list of devices from hidden parameter DefaultPool
-            Configuration.set("capabilities.devicePool", defaultPool)
+            Configuration.set("capabilities.deviceName", defaultPool)
         } else {
-            Configuration.set("capabilities.devicePool", devicePool)
+            Configuration.set("capabilities.deviceName", devicePool)
         }
 
         if (!isParamEmpty(Configuration.get("deviceBrowser"))) {
-            Configuration.set("capabilities.deviceBrowser", Configuration.get("deviceBrowser"))
+            Configuration.set("capabilities.browserName", Configuration.get("deviceBrowser"))
         }
         // ATTENTION! Obligatory remove device from the params otherwise
         // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
