@@ -154,8 +154,6 @@ class Repository {
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-			def b = context.fileExists('Jenkinsfile')
-			context.println("b: ${b}")
             registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId, zafiraFields, context.fileExists('Jenkinsfile')))
 
             def mergeJobDescription = "SCM branch merger job"
