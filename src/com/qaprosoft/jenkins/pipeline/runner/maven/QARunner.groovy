@@ -489,7 +489,6 @@ public class QARunner extends AbstractRunner {
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
-
                         prepareBuild(currentBuild)
                         scmClient.clone()
 
@@ -507,6 +506,7 @@ public class QARunner extends AbstractRunner {
                         publishJacocoReport()
                     }
                 } catch (Exception e) {
+                    //TODO: [VD] think about making currentBuild.result as FAILURE
                     logger.error(printStackTrace(e))
                     testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
                     if (!isParamEmpty(testRun)) {
@@ -521,8 +521,6 @@ public class QARunner extends AbstractRunner {
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     if(!isParamEmpty(testRun)) {
-//                        qTestUpdater.updateTestRun(uuid)
-//                        testRailUpdater.updateTestRun(uuid, isRerun)
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
                     }

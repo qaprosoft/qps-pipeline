@@ -142,8 +142,18 @@ class ZafiraUpdater {
 
     public def setBuildResult(uuid, currentBuild) {
         def testRun = getTestRunByCiRunId(uuid)
-        if (!isParamEmpty(testRun) && isFailure(testRun.status)){
-            currentBuild.result = BuildResult.FAILURE
+        logger.debug("testRun: " + testRun.dump())
+        if (!isParamEmpty(testRun)) {
+            if (isFailure(testRun.status)){
+                logger.debug("marking currentBuild.result as FAILURE")
+                currentBuild.result = BuildResult.FAILURE
+            } else if (isPassed(testRun.status)){
+                logger.debug("marking currentBuild.result as SUCCESS")
+                currentBuild.result = BuildResult.SUCCESS
+            } else {
+                // do nothing to inherit status from job
+                logger.debug("don't change currentBuild.result")
+            }
         }
     }
 
@@ -181,4 +191,14 @@ class ZafiraUpdater {
         }
         zc = new ZafiraClient(context)
     }
+
+    protected boolean isFailure(testRunStatus) {
+        return !"PASSED".equals(testRunStatus)
+    }
+
+    protected boolean isPassed(testRunStatus) {
+        return "PASSED".equals(testRunStatus)
+    }
+
+
 }
