@@ -178,7 +178,7 @@ class Repository {
 
     protected boolean isJenkinsfile() {
         context.println("111")
-        return context.fileExists('Jenkinsfile')
+        return fileExists('Jenkinsfile')
     }
 
     private clean() {
