@@ -24,7 +24,7 @@ class Repository {
     protected def pipelineLibrary
     protected def runnerClass
     protected def rootFolder
-    def isJenkinsfile = false
+    def isJenkinsfile = true
 
     protected Map dslObjects = new LinkedHashMap()
 
