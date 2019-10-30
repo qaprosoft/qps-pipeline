@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import com.qaprosoft.jenkins.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
+import org.apache.tools.ant.types.resources.selectors.None
 
 @InheritConstructors
 public class PipelineFactory extends JobFactory {
@@ -49,7 +50,6 @@ public class PipelineFactory extends JobFactory {
                     sandbox()
                 }
             }
-
         }
         return pipelineJob
     }
