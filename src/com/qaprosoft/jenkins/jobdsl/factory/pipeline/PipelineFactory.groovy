@@ -55,7 +55,7 @@ public class PipelineFactory extends JobFactory {
             }
 
             /** Git Stuff **/
-            def isJenkinsfile = true
+            def isJenkinsfile = false
             definition {
                 if (isJenkinsfile) {
                     cpsScm {
