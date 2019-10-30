@@ -555,15 +555,18 @@ public class QARunner extends AbstractRunner {
                     }
                     if(Configuration.get("qtest_enabled")?.toBoolean()){
                         String jobName = getCurrentFolderFullName(Configuration.QTEST_UPDATER_JOBNAME)
+                        def os = !isParamEmpty(Configuration.get("capabilities.os"))?Configuration.get("capabilities.os"):""
+                        def osVersion = !isParamEmpty(Configuration.get("capabilities.os_version"))?Configuration.get("capabilities.os_version"):""
+                        def browser = !isParamEmpty(Configuration.get("browser"))?Configuration.get("browser"):""
                         context.node("master") {
                             context.build job: jobName,
                                     propagate: false,
                                     wait: false,
                                     parameters: [
                                             context.string(name: 'ci_run_id', value: uuid),
-                                            context.string(name: 'os', value: Configuration.get("capabilities.os")),
-                                            context.string(name: 'os_version', value: Configuration.get("capabilities.os_version")),
-                                            context.string(name: 'browser', value: Configuration.get("capabilities.os_version"))
+                                            context.string(name: 'os', value: os),
+                                            context.string(name: 'os_version', value: osVersion),
+                                            context.string(name: 'browser', value: browser)
                                     ]
                         }
                     }
