@@ -782,7 +782,7 @@ public class QARunner extends AbstractRunner {
         def defaultBaseMavenGoals = "-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
 		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
-		-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
+		-Dmax_screen_history=1 \
 		-Dzafira_enabled=true \
 		-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 		-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
