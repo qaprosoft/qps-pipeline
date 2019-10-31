@@ -1059,17 +1059,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected void generatePipeline(XmlSuite currentSuite) {
-
-        def jobName = "API-Demo-Test"
-        if (currentSuite.getParameter("jenkinsJobName") != '') {
-            jobName = currentSuite.getParameter("jenkinsJobName")
-        }
-
-        if (!getBooleanParameterValue("jenkinsJobCreation", currentSuite)) {
-            //no need to proceed as jenkinsJobCreation=false
-            return
-        }
-
+        def jobName = !isParamEmpty(currentSuite.getParameter("jenkinsJobName")) ? currentSuite.getParameter("jenkinsJobName") : "API-Demo-Test"
         def regressionPipelines = !isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))?currentSuite.getParameter("jenkinsRegressionPipeline"):""
         def orderNum = getJobExecutionOrderNumber(currentSuite)
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")
