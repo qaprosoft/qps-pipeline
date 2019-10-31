@@ -31,6 +31,7 @@ class QTestUpdater {
         def zafiraIntegrationData = exportIntegrationDataFromZafira(uuid)
         def parsedIntegrationData = parseIntegrationParams(zafiraIntegrationData)
 
+        /* Values from zafira integration data */
         def projectId = parsedIntegrationData.projectId
         def cycleName = parsedIntegrationData.customParams.cycle_name
         def testRunName = parsedIntegrationData.testRunName
@@ -38,25 +39,90 @@ class QTestUpdater {
         def finishedAt = parsedIntegrationData.finishedAt
         def env = parsedIntegrationData.env
         def testCasesMap = parsedIntegrationData.testCasesMap
-        def cycleId = getCycleIdByName(projectId, cycleName)
+
+        // Get id of test cycle, passed from zafira
+        def rootTestCycleId = getCycleIdByName(projectId, cycleName)
 
         if (projectId.toInteger() == 10) {
-            cycleId = getSubCycleId(cycleId, projectId)
+            rootTestCycleId = getSubCycleId(rootTestCycleId, projectId)
         }
-
-        def suite = getOrAddTestSuite(projectId, cycleId, env)
-
-        testCasesMap.values().each { testCase ->
+        /* Upload subhierarchy of test cycles stored under parent cycle */
+        def testRunsSubHierarchy = qTestClient.getTestRunsSubHierarchy(projectId)
+        /* Create map to store already extracted from zafira module hierarchies */
+        Map<Object, Map> testModuleHierarchiesMap = new HashMap()
+        testCasesMap.values().each { zafiraTestCase ->
+            def testCaseId = zafiraTestCase.case_id
+            /* upload QTest testCase object */
+            def qTestTestCase = qTestClient.getTestCase(projectId, testCaseId)
+            if (isParamEmpty(qTestTestCase)) {
+                logger.error("Unable to get QTest testCase.")
+                return
+            }
+            def parentModuleId = qTestTestCase.parent_id
+            /* check by parentId whether parent package structure was already uploaded from QTest,
+               previously uploaded structures are stored in map, where key - id of lowest folder in hierarchy */
+            Map testModulesSubHierarchy = testModuleHierarchiesMap.get(parentModuleId)
+            /* if no such value in the map, uploading it via http calls to QTest */
+            if (testModulesSubHierarchy == null) {
+                testModulesSubHierarchy = getParentModulesMap(parentModuleId, projectId)
+            }
+            if (testModulesSubHierarchy.size() > 0) {
+                /* Use lowest in hierarchy folder as a key */
+                def firstMapEntry = testModulesSubHierarchy.entrySet().iterator().next()
+                /* put new hierarchy only if there is no such in the map */
+                testModuleHierarchiesMap.putIfAbsent(firstMapEntry.getKey(), testModulesSubHierarchy)
+            }
+            /* Get or create lowest in hierarchy testCycle to write results in there */
+            def currentTestCycleId = getCurrentTestCycleId(testRunsSubHierarchy, testModulesSubHierarchy, rootTestCycleId, projectId)
+            def suite = getOrAddTestSuite(projectId, currentTestCycleId, env)
             def suiteId = suite.id
-            def testCaseId = testCase.case_id
-            def testCaseName = getTestCaseName(projectId, testCaseId)
+            def testCaseName = qTestTestCase.name
             if (!isParamEmpty(testCaseName)) {
                 testRunName = testCaseName
             }
             def testRun = getOrAddTestRun(projectId, suiteId, testCaseId, testRunName)
-            def results = uploadTestRunResults(testCase, startedAt, finishedAt, testRun, projectId)
+            def results = uploadTestRunResults(zafiraTestCase, startedAt, finishedAt, testRun, projectId)
             logger.debug("UPLOADED_RESULTS: " + formatJson(results))
         }
+    }
+
+    private def getParentModulesMap(parentModuleId, projectId) {
+        Map parentModules = new LinkedHashMap()
+        while (!isParamEmpty(parentModuleId)) {
+            def parentModuleObject = qTestClient.getModule(projectId, parentModuleId)
+            if (!isParamEmpty(parentModuleObject)) {
+                parentModules.put(parentModuleObject.id, parentModuleObject.name)
+                parentModuleId = parentModuleObject.parent_id
+            } else {
+                parentModuleId = null
+            }
+        }
+        return parentModules
+    }
+
+    private def getCurrentTestCycleId(testRunsSubHierarchy, testModulesSubHierarchy, rootTestCycleId, projectId) {
+        // Get upper level of test cycles from test runs hierarchy
+        List presentInSubHierarchyTestCycles = testRunsSubHierarchy.children
+        // Set root hierarchy folder to start search from
+        def currentTestCycleId = rootTestCycleId
+        def presentTestCycle
+        testModulesSubHierarchy.reverseEach { key, val ->
+            // Search for upper-level test cycle folder among already present
+            presentTestCycle = presentInSubHierarchyTestCycles.find {
+                it.name.equals(val)
+            }
+            // If corresponding to module cycle wasn't found, create one
+            if (presentTestCycle == null) {
+                def createdTestCycle = qTestClient.addTestCycle(projectId, currentTestCycleId, val)
+                currentTestCycleId = createdTestCycle.id
+                // Set null to disable further search, all test cycles inside newly created will be created too
+                presentInSubHierarchyTestCycles = null
+            } else {
+                presentInSubHierarchyTestCycles = presentTestCycle.children
+                currentTestCycleId = presentTestCycle.id
+            }
+        }
+        return currentTestCycleId
     }
 
     private Object uploadTestRunResults(testCase, startedAt, finishedAt, testRun, projectId) {
@@ -130,7 +196,7 @@ class QTestUpdater {
      * @param projectId
      * @return
      */
-    protected def getSubCycleId(cycleId, projectId){
+    protected def getSubCycleId(cycleId, projectId) {
         def subCycleId = cycleId
         def os = Configuration.get("os")
         def os_version = Configuration.get("os_version")
@@ -154,15 +220,15 @@ class QTestUpdater {
         return subCycle
     }
 
-    private Object addTestCycle(projectId, cycleId, String subCycleName) {
+    private def addTestCycle(projectId, cycleId, String subCycleName) {
         def newSubCycle = qTestClient.addTestCycle(projectId, cycleId, subCycleName)
         if (isParamEmpty(newSubCycle)) {
             throw new RuntimeException("Unable to add new cycle.")
         }
-        newSubCycle
+        return newSubCycle
     }
 
-    private Object getSubCycleByName(cycleId, projectId, subCycleName) {
+    private def getSubCycleByName(cycleId, projectId, subCycleName) {
         def subCycles = qTestClient.getSubCycles(cycleId, projectId)
         return subCycles.find {
             it.name.equals(subCycleName)

@@ -5,7 +5,7 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 import groovy.json.JsonBuilder
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-class QTestClient extends HttpClient{
+class QTestClient extends HttpClient {
 
     private String serviceURL
     private boolean isAvailable
@@ -31,35 +31,46 @@ class QTestClient extends HttpClient{
         }
     }
 
-    public def getSubCycles(cycleId, projectId) {
+    public def getSubCycles(parentCycleId, projectId) {
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
                               validResponseCodes: "200",
-                              url: this.serviceURL + "projects/${projectId}/test-cycles?parentId=${cycleId}&parentType=test-cycle"]
+                              url: this.serviceURL + "projects/${projectId}/test-cycles?parentId=${parentCycleId}&parentType=test-cycle"]
             return sendRequestFormatted(parameters)
         }
     }
 
-    public def getTestSuites(projectId, cycleId) {
+    public def getTestSuites(projectId, parentCycleId) {
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
                               validResponseCodes: "200",
-                              url: this.serviceURL + "projects/${projectId}/test-suites?parentId=${cycleId}&parentType=test-cycle"]
+                              url: this.serviceURL + "projects/${projectId}/test-suites?parentId=${parentCycleId}&parentType=test-cycle"]
             return sendRequestFormatted(parameters)
         }
     }
 
-    public def getTestRuns(projectId, suiteId) {
+    public def getTestRuns(projectId, parentSuiteId) {
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
                               contentType: 'APPLICATION_JSON',
                               httpMode: 'GET',
                               validResponseCodes: "200",
-                              url: this.serviceURL + "projects/${projectId}/test-runs?parentId=${suiteId}&parentType=test-suite"]
+                              url: this.serviceURL + "projects/${projectId}/test-runs?parentId=${parentSuiteId}&parentType=test-suite"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
+    public def getTestRunsSubHierarchy(projectId) {
+        context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200",
+                              url: this.serviceURL + "projects/${projectId}/test-runs/subhierarchy"]
             return sendRequestFormatted(parameters)
         }
     }
@@ -75,6 +86,17 @@ class QTestClient extends HttpClient{
         }
     }
 
+    public def getModule(projectId, moduleId) {
+        context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
+            def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                              contentType: 'APPLICATION_JSON',
+                              httpMode: 'GET',
+                              validResponseCodes: "200:404",
+                              url: this.serviceURL + "projects/${projectId}/modules/${moduleId}"]
+            return sendRequestFormatted(parameters)
+        }
+    }
+
     public def getLog(projectId, testRunId) {
         context.withCredentials([context.string(credentialsId:'qtest_token', variable: 'TOKEN')]) {
             def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
@@ -86,7 +108,7 @@ class QTestClient extends HttpClient{
         }
     }
 
-    public def addTestCycle(projectId, cycleId, name) {
+    public def addTestCycle(projectId, parentCycleId, name) {
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder name: name
         logger.debug("REQUEST_PARAMS: " + jsonBuilder.toString())
@@ -96,12 +118,12 @@ class QTestClient extends HttpClient{
                               httpMode: 'POST',
                               requestBody: "${jsonBuilder}",
                               validResponseCodes: "200",
-                              url: this.serviceURL + "projects/${projectId}/test-cycles?parentId=${cycleId}&parentType=test-cycle"]
+                              url: this.serviceURL + "projects/${projectId}/test-cycles?parentId=${parentCycleId}&parentType=test-cycle"]
             return sendRequestFormatted(parameters)
         }
     }
 
-    public def addTestSuite(projectId, cycleId, name) {
+    public def addTestSuite(projectId, parentcCycleId, name) {
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder name: name
         logger.debug("REQUEST_PARAMS: " + jsonBuilder.toString())
@@ -111,12 +133,12 @@ class QTestClient extends HttpClient{
                               httpMode: 'POST',
                               requestBody: "${jsonBuilder}",
                               validResponseCodes: "200",
-                              url: this.serviceURL + "projects/${projectId}/test-suites?parentId=${cycleId}&parentType=test-cycle"]
+                              url: this.serviceURL + "projects/${projectId}/test-suites?parentId=${parentcCycleId}&parentType=test-cycle"]
             return sendRequestFormatted(parameters)
         }
     }
 
-    public def addTestRun(projectId, suiteId, testCaseId, name) {
+    public def addTestRun(projectId, parentSuiteId, testCaseId, name) {
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder name: name,
                 test_case: [id: testCaseId]
@@ -127,7 +149,7 @@ class QTestClient extends HttpClient{
                               httpMode: 'POST',
                               requestBody: "${jsonBuilder}",
                               validResponseCodes: "200:201",
-                              url: this.serviceURL + "projects/${projectId}/test-runs?parentId=${suiteId}&parentType=test-suite"]
+                              url: this.serviceURL + "projects/${projectId}/test-runs?parentId=${parentSuiteId}&parentType=test-suite"]
             return sendRequestFormatted(parameters)
         }
     }
