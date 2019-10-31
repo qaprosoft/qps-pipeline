@@ -316,46 +316,45 @@ public class QARunner extends AbstractRunner {
             logger.info("SUITE_NAME: " + suiteName)
             def currentSuitePath = workspace + "/" + suitePath
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
-            if (getBooleanParameterValue("jenkinsJobCreation", currentSuite)) {
 
-                logger.info("suite name: " + suiteName)
-                logger.info("suite path: " + suitePath)
 
-                def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
-                def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
+            logger.info("suite name: " + suiteName)
+            logger.info("suite path: " + suitePath)
 
-                // put standard views factory into the map
-                registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
-                registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
+            def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
+            def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
-                switch(suiteName.toLowerCase()){
-                    case ~/^.*api.*$/:
-                        registerObject("API_VIEW", new ListViewFactory(repoFolder, "API", "", ".*(?i)api.*"))
-                        break
-                    case ~/^.*web.*$/:
-                        registerObject("WEB_VIEW", new ListViewFactory(repoFolder, "WEB", "", ".*(?i)web.*"))
-                        break
-                    case ~/^.*android.*$/:
-                        registerObject("ANDROID_VIEW", new ListViewFactory(repoFolder, "ANDROID", "", ".*(?i)android.*"))
-                        break
-                    case ~/^.*ios.*$/:
-                        registerObject("IOS_VIEW", new ListViewFactory(repoFolder, "IOS", "", ".*(?i)ios.*"))
-                        break
-                }
+            // put standard views factory into the map
+            registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+            registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
 
-                //pipeline job
-                //TODO: review each argument to TestJobFactory and think about removal
-                //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-                def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-                registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
-                //cron job
-                if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
-                    def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
-                    for (def cronJobName : cronJobNames.split(",")) {
-                        cronJobName = cronJobName.trim()
-                        def cronDesc = "project: ${repo}; type: cron"
-                        registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
-                    }
+            switch(suiteName.toLowerCase()){
+                case ~/^.*api.*$/:
+                    registerObject("API_VIEW", new ListViewFactory(repoFolder, "API", "", ".*(?i)api.*"))
+                    break
+                case ~/^.*web.*$/:
+                    registerObject("WEB_VIEW", new ListViewFactory(repoFolder, "WEB", "", ".*(?i)web.*"))
+                    break
+                case ~/^.*android.*$/:
+                    registerObject("ANDROID_VIEW", new ListViewFactory(repoFolder, "ANDROID", "", ".*(?i)android.*"))
+                    break
+                case ~/^.*ios.*$/:
+                    registerObject("IOS_VIEW", new ListViewFactory(repoFolder, "IOS", "", ".*(?i)ios.*"))
+                    break
+            }
+
+            //pipeline job
+            //TODO: review each argument to TestJobFactory and think about removal
+            //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
+            def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+            //cron job
+            if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
+                def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
+                for (def cronJobName : cronJobNames.split(",")) {
+                    cronJobName = cronJobName.trim()
+                    def cronDesc = "project: ${repo}; type: cron"
+                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
                 }
             }
         }
@@ -1061,7 +1060,11 @@ public class QARunner extends AbstractRunner {
 
     protected void generatePipeline(XmlSuite currentSuite) {
 
-        def jobName = currentSuite.getParameter("jenkinsJobName")
+        def jobName = "API-Demo-Test"
+        if (currentSuite.getParameter("jenkinsJobName") != '') {
+            jobName = currentSuite.getParameter("jenkinsJobName")
+        }
+
         if (!getBooleanParameterValue("jenkinsJobCreation", currentSuite)) {
             //no need to proceed as jenkinsJobCreation=false
             return
