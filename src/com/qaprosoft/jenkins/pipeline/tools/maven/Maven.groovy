@@ -59,7 +59,7 @@ public class Maven {
             buildGoals(goals)
         }
     }
-    protected def filterSecuredParams(goals) {
+    private def filterSecuredParams(goals) {
         def arrayOfParmeters = goals.split()
         def resultSpringOfParameters = ''
         for (parameter in arrayOfParmeters) {
