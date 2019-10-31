@@ -54,7 +54,7 @@ public class TestJobFactory extends PipelineFactory {
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
                 booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
-                booleanParam('debug', false, 'Check to start tests in remote debug mode.')
+                //booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
                 //** Requires Active Choices Plug-in v1.2+ **//*
                 //** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **//*
