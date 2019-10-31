@@ -754,6 +754,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("capabilities.deviceName", "*")
         Configuration.set("capabilities.appPackage", "")
         Configuration.set("capabilities.appActivity", "")
+        //TODO: sync it with global var where iSTF is configured
         Configuration.set("capabilities.STF_ENABLED", "false")
     }
 

@@ -252,4 +252,8 @@ class Repository {
             }
         }
     }
+	
+	public def setScmClient(client) {
+		scmClient = client
+	}
 }
