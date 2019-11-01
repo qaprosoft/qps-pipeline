@@ -36,6 +36,8 @@ public class TestJobFactory extends PipelineFactory {
 
         XmlSuite currentSuite = parseSuite(suitePath)
 
+        logger.info("MEW-MEW-MEW-MEW-MEW-MEW-MEW: " + currentSuite)
+
         if (isParamEmpty(currentSuite.getParameter("jenkinsJobName"))) {
             this.name = "API-Demo-Test"
         } else {
