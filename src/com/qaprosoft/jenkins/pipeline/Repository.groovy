@@ -32,6 +32,7 @@ class Repository {
         this.context = context
         //TODO: howto register repository not at github?
         scmClient = new GitHub(context)
+		Configuration.set("GITHUB_ORGANIZATION", Configuration.get("organization"))
         logger = new Logger(context)
         pipelineLibrary = Configuration.get("pipelineLibrary")
         runnerClass = Configuration.get("runnerClass")
