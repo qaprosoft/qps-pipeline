@@ -34,7 +34,6 @@ class QTestUpdater {
         /* Values from zafira integration data */
         def projectId = parsedIntegrationData.projectId
         def cycleName = parsedIntegrationData.customParams.cycle_name
-        def testRunName = parsedIntegrationData.testRunName
         def startedAt = parsedIntegrationData.startedAt
         def finishedAt = parsedIntegrationData.finishedAt
         def env = parsedIntegrationData.env
@@ -76,11 +75,7 @@ class QTestUpdater {
             def currentTestCycleId = getCurrentTestCycleId(testRunsSubHierarchy, testModulesSubHierarchy, rootTestCycleId, projectId)
             def suite = getOrAddTestSuite(projectId, currentTestCycleId, env)
             def suiteId = suite.id
-            def testCaseName = qTestTestCase.name
-            if (!isParamEmpty(testCaseName)) {
-                testRunName = testCaseName
-            }
-            def testRun = getOrAddTestRun(projectId, suiteId, testCaseId, testRunName)
+            def testRun = getOrAddTestRun(projectId, suiteId, testCaseId, qTestTestCase.name)
             def results = uploadTestRunResults(zafiraTestCase, startedAt, finishedAt, testRun, projectId)
             logger.debug("UPLOADED_RESULTS: " + formatJson(results))
         }
