@@ -39,6 +39,7 @@ class Repository {
 
     public void register() {
         logger.info("Repository->register")
+		Configuration.set("GITHUB_ORGANIZATION", Configuration.get("organization"))
         //create only high level management jobs.
         context.node('master') {
             context.timestamps {
