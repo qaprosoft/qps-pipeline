@@ -73,7 +73,7 @@ class Repository {
     }
 
     private void prepare() {
-        scmClient.clone(Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL), Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH), "")
+        scmClient.clone(Configuration.get("repo"), Configuration.get("branch"), "")
 
         scmClient.clone(true) //do shallow clone during repo registration to verify if Jenkinsfile exists inside
         String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
