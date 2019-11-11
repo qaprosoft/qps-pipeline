@@ -136,7 +136,8 @@ class Repository {
             updateJenkinsCredentials(credentialsId, "${githubOrganization} GitHub token", Configuration.get("githubUser"), Configuration.get("githubToken"))
 //			createPRChecker(credentialsId)
 
-            registerObject("project_folder", new FolderFactory(repoFolder, ""))
+			// [VD] don't register project_folder during repo registration otherwise we reset custom security ACL if any
+//            registerObject("project_folder", new FolderFactory(repoFolder, ""))
 //			 TODO: move folder and main trigger job creation onto the createRepository method
 
             // Support DEV related CI workflow
