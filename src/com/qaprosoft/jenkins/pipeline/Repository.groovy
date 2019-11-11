@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
@@ -252,4 +253,8 @@ class Repository {
             }
         }
     }
+	
+	public def setSshClient() {
+		scmClient = new SshGitHub(context)
+	}
 }

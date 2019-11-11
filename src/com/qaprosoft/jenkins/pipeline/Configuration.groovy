@@ -86,8 +86,7 @@ public class Configuration {
 
         ENABLE_VNC("capabilities.enableVNC", "true"),
         ENABLE_VIDEO("capabilities.enableVideo", "true"),
-	//TODO: investigate could we disbale it by default
-        ENABLE_STF("capabilities.STF_ENABLED", "true"),
+        ENABLE_STF("capabilities.STF_ENABLED", "false"),
 
         TIMEZONE("user.timezone", "UTC"),
 

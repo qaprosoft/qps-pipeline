@@ -713,17 +713,16 @@ public class QARunner extends AbstractRunner {
         }
 
         //general mobile capabilities
-        //TODO: find valid way for naming this global "MOBILE" quota
-        Configuration.set("capabilities.deviceName", "QPS-HUB")
+        Configuration.set("capabilities.provider", "mcloud")
         if ("DefaultPool".equalsIgnoreCase(devicePool)) {
             //reuse list of devices from hidden parameter DefaultPool
-            Configuration.set("capabilities.devicePool", defaultPool)
+            Configuration.set("capabilities.deviceName", defaultPool)
         } else {
-            Configuration.set("capabilities.devicePool", devicePool)
+            Configuration.set("capabilities.deviceName", devicePool)
         }
 
         if (!isParamEmpty(Configuration.get("deviceBrowser"))) {
-            Configuration.set("capabilities.deviceBrowser", Configuration.get("deviceBrowser"))
+            Configuration.set("capabilities.browserName", Configuration.get("deviceBrowser"))
         }
         // ATTENTION! Obligatory remove device from the params otherwise
         // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
@@ -754,6 +753,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("capabilities.deviceName", "*")
         Configuration.set("capabilities.appPackage", "")
         Configuration.set("capabilities.appActivity", "")
+        //TODO: sync it with global var where iSTF is configured
         Configuration.set("capabilities.STF_ENABLED", "false")
     }
 
@@ -782,7 +782,7 @@ public class QARunner extends AbstractRunner {
         def defaultBaseMavenGoals = "-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
 		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
 		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
-		-Dmax_screen_history=1 -Dinit_retry_count=0 -Dinit_retry_interval=10 \
+		-Dmax_screen_history=1 \
 		-Dzafira_enabled=true \
 		-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 		-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
