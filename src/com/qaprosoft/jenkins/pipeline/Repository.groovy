@@ -127,7 +127,7 @@ class Repository {
             //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
-            def githubHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
+            def githubHost = Configuration.get(Configuration.Parameter.github_host)
             def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def credentialsId = "${githubOrganization}-${repo}"
 
