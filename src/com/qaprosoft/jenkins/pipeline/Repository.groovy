@@ -41,6 +41,8 @@ class Repository {
         logger.info("Repository->register")
 		Configuration.set("GITHUB_ORGANIZATION", Configuration.get("organization"))
         //create only high level management jobs.
+        Configuration.set("GITHUB_ORGANIZATION", Configuration.get("organization"))
+        Configuration.set("GITHUB_HOST", Configuration.get("github_host"))
         context.node('master') {
             context.timestamps {
                 prepare()
