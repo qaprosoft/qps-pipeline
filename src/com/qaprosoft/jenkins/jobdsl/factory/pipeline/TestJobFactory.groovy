@@ -215,6 +215,7 @@ public class TestJobFactory extends PipelineFactory {
 
     protected def getDevices(String platform) {
         def proxyInfo = new ProxyInfo(_dslFactory)
+        logger.info('MEW-MEW-MEW-MEW-MEW ' + proxyInfo)
         return proxyInfo.getDevicesList(platform)
     }
 
