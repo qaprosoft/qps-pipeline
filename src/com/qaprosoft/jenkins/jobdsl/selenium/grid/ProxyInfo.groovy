@@ -18,9 +18,8 @@ class ProxyInfo {
         logger = new Logger(_dslFactory)
     }
 
-    //TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
     public def getDevicesList(String platform) {
-        if ('null' in proxyInfoUrl) {
+        if (proxyInfoUrl.contains('null')) {
             return baseDeviceList
         } else {
             def deviceList = platformDeviceListMap.get(platform.toLowerCase())
