@@ -35,6 +35,7 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
 		
         pipelineJob.with {
             parameters {
+                configure stringParam('github_host', 'github.com', 'GitHub host')
                 configure stringParam('organization', org, 'GitHub organization')
                 configure stringParam('repo', repo, 'GitHub repository for scanning')
                 configure stringParam('branch', 'master', 'It is highly recommended to use master branch for each scan operation')
