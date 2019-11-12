@@ -18,23 +18,26 @@ class ProxyInfo {
         logger = new Logger(_dslFactory)
     }
 
-    //TODO: reused grid/admin/ProxyInfo to get atual list of iOS/Android devices
     public def getDevicesList(String platform) {
-        def deviceList = platformDeviceListMap.get(platform.toLowerCase())
-        try {
-            if (deviceList.size() == 0) {
-                def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
-                json.each {
-                    if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
-                        logger.debug("platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0])
-                        deviceList.add(it.configuration.capabilities.browserName[0]);
+        if (proxyInfoUrl.contains('null')) {
+            return baseDeviceList
+        } else {
+            def deviceList = platformDeviceListMap.get(platform.toLowerCase())
+            try {
+                if (deviceList.size() == 0) {
+                    def json = new JsonSlurper().parse(proxyInfoUrl.toURL())
+                    json.each {
+                        if (platform.equalsIgnoreCase(it.configuration.capabilities.platform)) {
+                            logger.debug("platform: " + it.configuration.capabilities.platform[0] + "; device: " + it.configuration.capabilities.browserName[0])
+                            deviceList.add(it.configuration.capabilities.browserName[0]);
+                        }
                     }
+                    platformDeviceListMap.put(platform.toLowerCase(), deviceList)
                 }
-                platformDeviceListMap.put(platform.toLowerCase(), deviceList)
+            } catch (Exception e) {
+                logger.error(Utils.printStackTrace(e))
             }
-        } catch (Exception e) {
-            logger.error(Utils.printStackTrace(e))
+            return baseDeviceList + deviceList.sort()
         }
-        return baseDeviceList + deviceList.sort()
     }
 }
