@@ -39,6 +39,8 @@ class Repository {
     public void register() {
         logger.info("Repository->register")
         //create only high level management jobs.
+        Configuration.set("GITHUB_ORGANIZATION", Configuration.get("organization"))
+        Configuration.set("GITHUB_HOST", Configuration.get("github_host"))
         context.node('master') {
             context.timestamps {
                 prepare()
@@ -127,7 +129,7 @@ class Repository {
             //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
-            def githubHost = Configuration.get(Configuration.Parameter.github_host)
+            def githubHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
             def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def credentialsId = "${githubOrganization}-${repo}"
 
