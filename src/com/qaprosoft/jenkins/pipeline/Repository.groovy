@@ -39,8 +39,8 @@ class Repository {
 
     public void register() {
         logger.info("Repository->register")
-		Configuration.set("GITHUB_ORGANIZATION", Configuration.get("organization"))
-        //create only high level management jobs.
+		logger.info("github-host: " + Configuration.get("github_host"))
+		logger.info("github-org: " + Configuration.get("organization"))
         Configuration.set("GITHUB_ORGANIZATION", Configuration.get("organization"))
         Configuration.set("GITHUB_HOST", Configuration.get("github_host"))
         context.node('master') {
