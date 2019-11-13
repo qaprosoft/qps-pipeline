@@ -30,7 +30,7 @@ class Repository {
 
     public Repository(context) {
         this.context = context
-        //TODO: howto register repository not at github?
+
         scmClient = new GitHub(context)
         logger = new Logger(context)
         pipelineLibrary = Configuration.get("pipelineLibrary")
@@ -39,10 +39,8 @@ class Repository {
 
     public void register() {
         logger.info("Repository->register")
-		logger.info("github-host: " + Configuration.get("scmHost"))
-		logger.info("github-org: " + Configuration.get("organization"))
-        Configuration.set("GITHUB_ORGANIZATION", Configuration.get("organization"))
-        Configuration.set("GITHUB_HOST", Configuration.get("github_host"))
+        Configuration.set("GITHUB_ORGANIZATION", Configuration.get("scmOrg"))
+        Configuration.set("GITHUB_HOST", Configuration.get("scmHost"))
         context.node('master') {
             context.timestamps {
                 prepare()
@@ -135,7 +133,7 @@ class Repository {
             def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
             def credentialsId = "${githubOrganization}-${repo}"
 
-            updateJenkinsCredentials(credentialsId, "${githubOrganization} GitHub token", Configuration.get("githubUser"), Configuration.get("githubToken"))
+            updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get("scmUser"), Configuration.get("scmToken"))
 //			createPRChecker(credentialsId)
 
             registerObject("project_folder", new FolderFactory(repoFolder, ""))
@@ -246,10 +244,10 @@ class Repository {
 
     public def registerCredentials() {
         context.stage("Register Credentials") {
-            def user = Configuration.get("githubUser")
-            def token = Configuration.get("githubToken")
+            def user = Configuration.get("scmUser")
+            def token = Configuration.get("scmToken")
             def jenkinsUser = !isParamEmpty(Configuration.get("jenkinsUser")) ? Configuration.get("jenkinsUser") : getBuildUser(context.currentBuild)
-            if (updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " GitHub token", user, token)) {
+            if (updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " SCM token", user, token)) {
                 logger.info(jenkinsUser + " credentials were successfully registered.")
             } else {
                 throw new RuntimeException("Required fields are missing.")

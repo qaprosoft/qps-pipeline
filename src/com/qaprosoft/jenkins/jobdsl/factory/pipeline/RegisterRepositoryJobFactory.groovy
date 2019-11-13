@@ -35,12 +35,12 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
 		
         pipelineJob.with {
             parameters {
-                configure stringParam('github_host', 'github.com', 'GitHub host')
-                configure stringParam('organization', org, 'GitHub organization')
-                configure stringParam('repo', repo, 'GitHub repository for scanning')
+                configure stringParam('scmHost', 'github.com', 'Source Control Management host')
+                configure stringParam('scmOrg', org, 'Source Control Management organization')
+                configure stringParam('repo', repo, 'Repository for scanning')
                 configure stringParam('branch', 'master', 'It is highly recommended to use master branch for each scan operation')
-                configure stringParam('githubUser', '', 'GitHub user')
-                configure stringParam('githubToken', '', 'GitHub token with read permissions')
+                configure stringParam('scmUser', '', 'SCM user')
+                configure stringParam('scmToken', '', 'CSM token with read permissions')
                 configure stringParam('pipelineLibrary', this.pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
                 configure stringParam('runnerClass', this.runnerClass, '')
                 configure addHiddenParameter('zafiraFields', '', '')
