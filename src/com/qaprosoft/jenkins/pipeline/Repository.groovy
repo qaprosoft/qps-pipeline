@@ -39,6 +39,7 @@ class Repository {
 
     public void register() {
         logger.info("Repository->register")
+		//TODO: move static names like scmOrg onto the global var layer
         Configuration.set("GITHUB_ORGANIZATION", Configuration.get("scmOrg"))
         Configuration.set("GITHUB_HOST", Configuration.get("scmHost"))
         context.node('master') {
@@ -86,7 +87,8 @@ class Repository {
 
         context.stage("Create Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            def organization = Configuration.get("organization")
+			//TODO: move static names like scmOrg onto the global var layer
+            def organization = Configuration.get("scmOrg")
             def repo = Configuration.get("repo")
             def branch = Configuration.get("branch")
 
