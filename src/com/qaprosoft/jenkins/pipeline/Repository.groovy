@@ -25,6 +25,10 @@ class Repository {
     protected def pipelineLibrary
     protected def runnerClass
     protected def rootFolder
+    protected def scmOrg = Configuration.get("scmOrg")
+    protected def scmHost = Configuration.get("scmHost")
+    protected def repo = Configuration.get("repo")
+    protected def branch = Configuration.get("branch")
 
     protected Map dslObjects = new LinkedHashMap()
 
@@ -39,9 +43,8 @@ class Repository {
 
     public void register() {
         logger.info("Repository->register")
-		//TODO: move static names like scmOrg onto the global var layer
-        Configuration.set("GITHUB_ORGANIZATION", Configuration.get("scmOrg"))
-        Configuration.set("GITHUB_HOST", Configuration.get("scmHost"))
+        Configuration.set("GITHUB_ORGANIZATION", scmOrg)
+        Configuration.set("GITHUB_HOST", scmHost)
         context.node('master') {
             context.timestamps {
                 prepare()
@@ -50,8 +53,6 @@ class Repository {
             }
         }
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
-        def repo = Configuration.get("repo")
-        def branch = Configuration.get("branch")
         def onPushJobLocation = repo + "/onPush-" + repo
 
         if (!isParamEmpty(this.rootFolder)) {
@@ -87,11 +88,7 @@ class Repository {
 
         context.stage("Create Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-			//TODO: move static names like scmOrg onto the global var layer
-            def organization = Configuration.get("scmOrg")
-            def repo = Configuration.get("repo")
-            def branch = Configuration.get("branch")
-
+            //TODO: check if repoFolder created correctly
             def repoFolder = repo
 
             // Folder from which RegisterRepository job was started
@@ -103,7 +100,7 @@ class Repository {
                 registerZafiraCredentials(rootFolder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
             }
 
-            logger.debug("organization: " + organization)
+            logger.debug("organization: " + scmOrg)
             logger.debug("rootFolder: " + this.rootFolder)
 
             // TODO: test with SZ his custom CI setup
