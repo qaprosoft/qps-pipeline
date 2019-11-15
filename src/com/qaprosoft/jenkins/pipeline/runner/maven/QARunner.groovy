@@ -109,10 +109,10 @@ public class QARunner extends AbstractRunner {
                     }
                     //TODO: implement repository scan and QA jobs recreation
                     scan()
-                    createLaunchers(currentBuild.rawBuild)
+                    getJenkinsJobsScanResult(currentBuild.rawBuild)
                 } catch (Exception e) {
                     logger.error("Scan failed.\n" + e.getMessage())
-                    createLaunchers(null)
+                    getJenkinsJobsScanResult(null)
                 }
                 clean()
             }
@@ -408,43 +408,44 @@ public class QARunner extends AbstractRunner {
         this.additionalClasspath = additionalClasspath
     }
 
-    protected def createLaunchers(build) {
-        Map scannedRepoLaunchers = [:]
-        scannedRepoLaunchers.success = false
-        scannedRepoLaunchers.repo = Configuration.get("repo")
-        scannedRepoLaunchers.userId = !isParamEmpty(Configuration.get("userId")) ? Long.valueOf(Configuration.get("userId")) : 2
+    protected def getJenkinsJobsScanResult(build) {
+        Map jenkinsJobsScanResult = [:]
+        jenkinsJobsScanResult.success = false
+        jenkinsJobsScanResult.repo = Configuration.get("repo")
+        jenkinsJobsScanResult.userId = !isParamEmpty(Configuration.get("userId")) ? Long.valueOf(Configuration.get("userId")) : 2
         try {
             if (build) {
-                scannedRepoLaunchers.jenkinsLaunchers = generateLaunchers(build)
-                scannedRepoLaunchers.success = true
+                jenkinsJobsScanResult.jenkinsJobs = generateJenkinsJobs(build)
+                jenkinsJobsScanResult.success = true
             }
-            zafiraUpdater.createLaunchers(scannedRepoLaunchers)
+            zafiraUpdater.createLaunchers(jenkinsJobsScanResult)
         } catch (Exception e) {
             throw new RuntimeException("Something went wrong during launchers creation", e)
         }
     }
 
-    protected def generateLaunchers(build){
-        List jenkinsLaunchers = []
+    protected def generateJenkinsJobs(build){
+        List jenkinsJobs = []
         build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
             def jobFullName = replaceStartSlash(job.jobName)
-            def jenkinsLauncher = generateLauncher(jobFullName)
-            jenkinsLaunchers.add(jenkinsLauncher)
+            def jenkinsJob = generateJenkinsJob(jobFullName)
+            jenkinsJobs.add(jenkinsJob)
         }
-        return jenkinsLaunchers
+        return jenkinsJobs
     }
 
-    protected def generateLauncher(jobFullName){
-        Map jenkinsLauncher = [:]
+    protected def generateJenkinsJob(jobFullName){
+        Map jenkinsJob = [:]
 
         def job = getItemByFullName(jobFullName)
         def jobUrl = getJobUrl(jobFullName)
-        def parameters = getParametersMap(job)
+        Map parameters = getParametersMap(job)
 
-        jenkinsLauncher.jobUrl = jobUrl
-        jenkinsLauncher.jobParameters  = new JsonBuilder(parameters).toPrettyString()
+        jenkinsJob.type = parameters.job_type
+        jenkinsJob.url = jobUrl
+        jenkinsJob.parameters  = new JsonBuilder(parameters).toPrettyString()
 
-        return jenkinsLauncher
+        return jenkinsJob
     }
 
     protected def getParametersMap(job) {
