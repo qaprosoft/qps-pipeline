@@ -27,8 +27,8 @@ class Repository {
     protected def rootFolder
     private static final String SCM_ORG = "scmOrg"
     private static final String SCM_HOST = "scmHost"
-    private static final String repo = "repo"
-    private static final String branch = "branch"
+    private static final String REPO = "repo"
+    private static final String BRANCH = "branch"
 
     protected Map dslObjects = new LinkedHashMap()
 
@@ -53,7 +53,7 @@ class Repository {
             }
         }
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
-        def onPushJobLocation = Configuration.get(repo) + "/onPush-" + Configuration.get(repo)
+        def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
 
         if (!isParamEmpty(this.rootFolder)) {
             onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
@@ -61,8 +61,8 @@ class Repository {
         context.build job: onPushJobLocation,
                 propagate: true,
                 parameters: [
-                        context.string(name: 'repo', value: Configuration.get(repo)),
-                        context.string(name: 'branch', value: Configuration.get(branch)),
+                        context.string(name: 'repo', value: Configuration.get(REPO)),
+                        context.string(name: 'branch', value: Configuration.get(BRANCH)),
                         context.booleanParam(name: 'onlyUpdated', value: false),
                         context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
                         context.string(name: 'removedJobAction', value: 'DELETE'),
@@ -88,7 +88,7 @@ class Repository {
 
         context.stage("Create Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            def repoFolder = Configuration.get(repo)
+            def repoFolder = Configuration.get(REPO)
 
             // Folder from which RegisterRepository job was started
             this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
@@ -125,11 +125,11 @@ class Repository {
             logger.debug("repoFolder: " + repoFolder)
 
             //Job build display name
-            context.currentBuild.displayName = "#${buildNumber}|${Configuration.get(repo)}|${Configuration.get(branch)}"
+            context.currentBuild.displayName = "#${buildNumber}|${Configuration.get(REPO)}|${Configuration.get(BRANCH)}"
 
             def githubHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
             def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
-            def credentialsId = "${githubOrganization}-${Configuration.get(repo)}"
+            def credentialsId = "${githubOrganization}-${Configuration.get(REPO)}"
 
             updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get("scmUser"), Configuration.get("scmToken"))
 //			createPRChecker(credentialsId)
@@ -139,7 +139,7 @@ class Repository {
 
             // Support DEV related CI workflow
 //			TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
-            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get(repo)}")
+            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get(REPO)}")
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
             def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
@@ -148,16 +148,16 @@ class Repository {
 
             def pullRequestJobDescription = "Customized pull request verification checker"
 
-            registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + Configuration.get(repo), pullRequestJobDescription, githubHost, githubOrganization, Configuration.get(repo), gitUrl))
+            registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + Configuration.get(REPO), pullRequestJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
             def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(repo), pushJobDescription, githubHost, githubOrganization, Configuration.get(repo), Configuration.get(branch), gitUrl, userId, zafiraFields, context.fileExists('Jenkinsfile')))
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, zafiraFields, context.fileExists('Jenkinsfile')))
 
             def mergeJobDescription = "SCM branch merger job"
-            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(repo), mergeJobDescription, githubHost, githubOrganization, Configuration.get(repo), gitUrl))
+            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
             // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
