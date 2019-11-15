@@ -25,10 +25,10 @@ class Repository {
     protected def pipelineLibrary
     protected def runnerClass
     protected def rootFolder
-    protected def scmOrg = Configuration.get("scmOrg")
-    protected def scmHost = Configuration.get("scmHost")
-    protected def repo = Configuration.get("repo")
-    protected def branch = Configuration.get("branch")
+    private static final String SCM_ORG = "scmOrg"
+    private static final String SCM_HOST = "scmHost"
+    private static final String repo = "repo"
+    private static final String branch = "branch"
 
     protected Map dslObjects = new LinkedHashMap()
 
@@ -43,8 +43,8 @@ class Repository {
 
     public void register() {
         logger.info("Repository->register")
-        Configuration.set("GITHUB_ORGANIZATION", scmOrg)
-        Configuration.set("GITHUB_HOST", scmHost)
+        Configuration.set("GITHUB_ORGANIZATION", Configuration.get(SCM_ORG))
+        Configuration.set("GITHUB_HOST", Configuration.get(SCM_HOST))
         context.node('master') {
             context.timestamps {
                 prepare()
@@ -53,7 +53,7 @@ class Repository {
             }
         }
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
-        def onPushJobLocation = repo + "/onPush-" + repo
+        def onPushJobLocation = Configuration.get(repo) + "/onPush-" + Configuration.get(repo)
 
         if (!isParamEmpty(this.rootFolder)) {
             onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
@@ -61,8 +61,8 @@ class Repository {
         context.build job: onPushJobLocation,
                 propagate: true,
                 parameters: [
-                        context.string(name: 'repo', value: repo),
-                        context.string(name: 'branch', value: branch),
+                        context.string(name: 'repo', value: Configuration.get(repo)),
+                        context.string(name: 'branch', value: Configuration.get(branch)),
                         context.booleanParam(name: 'onlyUpdated', value: false),
                         context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
                         context.string(name: 'removedJobAction', value: 'DELETE'),
@@ -88,8 +88,7 @@ class Repository {
 
         context.stage("Create Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            //TODO: check if repoFolder created correctly
-            def repoFolder = repo
+            def repoFolder = Configuration.get(repo)
 
             // Folder from which RegisterRepository job was started
             this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
@@ -100,7 +99,7 @@ class Repository {
                 registerZafiraCredentials(rootFolder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
             }
 
-            logger.debug("organization: " + scmOrg)
+            logger.debug("organization: " + Configuration.get(SCM_ORG))
             logger.debug("rootFolder: " + this.rootFolder)
 
             // TODO: test with SZ his custom CI setup
@@ -126,11 +125,11 @@ class Repository {
             logger.debug("repoFolder: " + repoFolder)
 
             //Job build display name
-            context.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+            context.currentBuild.displayName = "#${buildNumber}|${Configuration.get(repo)}|${Configuration.get(branch)}"
 
             def githubHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
             def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
-            def credentialsId = "${githubOrganization}-${repo}"
+            def credentialsId = "${githubOrganization}-${Configuration.get(repo)}"
 
             updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get("scmUser"), Configuration.get("scmToken"))
 //			createPRChecker(credentialsId)
@@ -140,7 +139,7 @@ class Repository {
 
             // Support DEV related CI workflow
 //			TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
-            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get("repo")}")
+            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get(repo)}")
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
             def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
@@ -149,16 +148,16 @@ class Repository {
 
             def pullRequestJobDescription = "Customized pull request verification checker"
 
-            registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + repo, pullRequestJobDescription, githubHost, githubOrganization, repo, gitUrl))
+            registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + Configuration.get(repo), pullRequestJobDescription, githubHost, githubOrganization, Configuration.get(repo), gitUrl))
 
             def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + repo, pushJobDescription, githubHost, githubOrganization, repo, branch, gitUrl, userId, zafiraFields, context.fileExists('Jenkinsfile')))
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(repo), pushJobDescription, githubHost, githubOrganization, Configuration.get(repo), Configuration.get(branch), gitUrl, userId, zafiraFields, context.fileExists('Jenkinsfile')))
 
             def mergeJobDescription = "SCM branch merger job"
-            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + repo, mergeJobDescription, githubHost, githubOrganization, repo, gitUrl))
+            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(repo), mergeJobDescription, githubHost, githubOrganization, Configuration.get(repo), gitUrl))
 
             // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
