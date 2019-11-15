@@ -118,7 +118,7 @@ class Repository {
             if (!"/".equals(this.rootFolder)) {
                 //For both cases when rootFolder exists job was started with existing organization value,
                 //so it should be used by default
-                Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, organization)
+                Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get(SCM_ORG))
                 repoFolder = this.rootFolder + "/" + repoFolder
             }
 
