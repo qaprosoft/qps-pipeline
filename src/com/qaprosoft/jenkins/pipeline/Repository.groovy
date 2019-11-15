@@ -88,7 +88,7 @@ class Repository {
 
         context.stage("Create Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            //TODO: check if repoFolder created correctly
+            //TODO: check if repoFolder is created correctly for not carina-demo repository
             def repoFolder = repo
 
             // Folder from which RegisterRepository job was started
