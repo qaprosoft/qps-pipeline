@@ -91,7 +91,7 @@ public class Configuration {
         TIMEZONE("user.timezone", "UTC"),
 
         S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
-        HOCKEYAPP_LOCAL_STORAGE("hockeyapp_local_storage", "/opt/apk"),
+        APPCENTER_LOCAL_STORAGE("appcenter_local_storage", "/opt/apk"),
 
         BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}", true),
 
