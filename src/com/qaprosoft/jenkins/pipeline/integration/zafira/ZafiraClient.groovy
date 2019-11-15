@@ -200,7 +200,7 @@ class ZafiraClient extends HttpClient {
     }
 
 
-    public def createLaunchers(scannedRepoLaunchers) {
+    public def createLaunchers(jenkinsJobsScanResult) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
             if (isParamEmpty(authToken))
@@ -208,7 +208,7 @@ class ZafiraClient extends HttpClient {
         }
 
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder scannedRepoLaunchers
+        jsonBuilder jenkinsJobsScanResult
 
         logger.info("REQUEST: " + jsonBuilder.toPrettyString())
         String requestBody = jsonBuilder.toString()
