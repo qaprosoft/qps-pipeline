@@ -109,7 +109,7 @@ public class TestJobFactory extends PipelineFactory {
                         break
                 }
                 configure stringParam('capabilities', '', 'Any capabilities for driver like: browser=chrome,deviceName=Google_Nexus_9')
-                configure addHiddenParameter('job_type', '' , jobType)
+                configure stringParam('job_type', jobType, '' )
                 def nodeLabel = getSuiteParameter("", "jenkinsNodeLabel", currentSuite)
                 if (!isParamEmpty(nodeLabel)){
                     configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
