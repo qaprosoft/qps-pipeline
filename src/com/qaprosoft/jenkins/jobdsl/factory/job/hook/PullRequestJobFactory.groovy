@@ -25,8 +25,8 @@ public class PullRequestJobFactory extends FreestyleJobFactory {
         def freestyleJob = super.create()
         freestyleJob.with {
             parameters {
-                configure addHiddenParameter('GITHUB_HOST', '', host)
-                configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
+                stringParam('GITHUB_HOST', '', host)
+                stringParam('GITHUB_ORGANIZATION', '', organization)
                 stringParam('repo', repo, 'Your GitHub repository for scanning')
             }
             scm {
