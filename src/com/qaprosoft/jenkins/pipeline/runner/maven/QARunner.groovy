@@ -440,7 +440,6 @@ public class QARunner extends AbstractRunner {
         def job = getItemByFullName(jobFullName)
         def jobUrl = getJobUrl(jobFullName)
         Map parameters = getParametersMap(job)
-        logger.error("111111\n" + parameters)
 
         jenkinsJob.type = parameters.job_type
         jenkinsJob.url = jobUrl
