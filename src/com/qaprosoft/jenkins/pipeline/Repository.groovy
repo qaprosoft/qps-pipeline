@@ -148,6 +148,7 @@ class Repository {
 
             def pullRequestJobDescription = "Customized pull request verification checker"
 
+            registerObject("old_pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "oldOnPullRequest-" + Configuration.get(REPO), pullRequestJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
             registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + Configuration.get(REPO), pullRequestJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
             def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
