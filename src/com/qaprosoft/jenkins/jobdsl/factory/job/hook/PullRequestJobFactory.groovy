@@ -72,7 +72,7 @@ public class PullRequestJobFactory extends PipelineFactory {
             }
 
         }
-        return pipelineJob
+        return freestyleJob
     }
 
     protected def getGitHubAuthId(project) {
