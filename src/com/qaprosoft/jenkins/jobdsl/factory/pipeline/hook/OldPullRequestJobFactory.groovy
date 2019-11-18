@@ -4,14 +4,14 @@ import groovy.transform.InheritConstructors
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 
 @InheritConstructors
-public class PullRequestJobFactory extends PipelineFactory {
+public class OldPullRequestJobFactory extends PipelineFactory {
 
     def host
     def organization
     def repo
     def scmRepoUrl
 
-    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, scmRepoUrl) {
+    public OldPullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, scmRepoUrl) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
