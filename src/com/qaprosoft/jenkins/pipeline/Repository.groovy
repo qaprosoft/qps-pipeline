@@ -4,7 +4,7 @@ import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.OldPullRequestJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
@@ -154,7 +154,7 @@ class Repository {
                     "- Select application/x-www-form-urlencoded in \"Content Type\" field\n- Tick \"Let me select individual events\" with \"Issue comments\" and \"Pull requests enabled\" option\n- Click \"Add webhook\" button"
 
 
-            registerObject("old_pull_request_job", new OldPullRequestJobFactory(repoFolder, getOnPullRequestScript(), "oldOnPullRequest-" + Configuration.get(REPO), pullRequestJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
+            registerObject("pull_request_job_trigger", new PullRequestJobFactoryTrigger(repoFolder, getOnPullRequestScript(), "oldOnPullRequest-" + Configuration.get(REPO)+ "-trigger", pullRequestJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
             registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, "onPullRequest-" + Configuration.get(REPO), pullRequestJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
             def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
