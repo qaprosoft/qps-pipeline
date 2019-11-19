@@ -27,7 +27,7 @@ public class PullRequestJobFactory extends FreestyleJobFactory {
             scm {
                 git {
                     remote {
-                        github(organization + '/' + repo)
+                        github(scmRepoUrl)
                         refspec('+refs/pull/*:refs/remotes/origin/pr/*')
                     }
                     branch('')
@@ -38,23 +38,23 @@ public class PullRequestJobFactory extends FreestyleJobFactory {
                 githubPullRequest {
                     admin()
                     admins()
-                    userWhitelist('you@you.com')
+                    userWhitelist('')
                     orgWhitelist(organization)
                     cron('H/5 * * * *')
-                    triggerPhrase('special trigger phrase')
-                    onlyTriggerPhrase()
-                    useGitHubHooks()
-                    permitAll()
-                    autoCloseFailedPullRequests()
-                    displayBuildErrorsOnDownstreamBuilds()
-                    blackListTargetBranches()
-                    blackListLabels()
-                    allowMembersOfWhitelistedOrgsAsAdmin()
+                    triggerPhrase('')
+                    onlyTriggerPhrase(false)
+                    useGitHubHooks(true)
+                    permitAll(true)
+                    autoCloseFailedPullRequests(false)
+                    displayBuildErrorsOnDownstreamBuilds(false)
+                    blackListTargetBranches('')
+                    blackListLabels('')
+                    allowMembersOfWhitelistedOrgsAsAdmin(false)
                     extensions {
                         commitStatus {
-                            context('deploy to staging site')
-                            triggeredStatus('starting deployment to staging site...')
-                            startedStatus('deploying to staging site...')
+                            context('')
+                            triggeredStatus('starting deployment...')
+                            startedStatus('deploying...')
                             addTestResults(true)
                             statusUrl('http://mystatussite.com/prs')
                             completedStatus('SUCCESS', 'All is well')
