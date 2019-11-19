@@ -442,6 +442,7 @@ public class QARunner extends AbstractRunner {
         Map parameters = getParametersMap(job)
 
         jenkinsJob.type = parameters.job_type
+        parameters.remove("job_type")
         jenkinsJob.url = jobUrl
         jenkinsJob.parameters  = new JsonBuilder(parameters).toPrettyString()
 
