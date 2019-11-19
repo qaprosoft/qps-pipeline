@@ -67,15 +67,6 @@ public class PullRequestJobFactory extends FreestyleJobFactory {
                     }
                 }
             }
-            publishers {
-                mergeGithubPullRequest {
-                    mergeComment('merged by Jenkins')
-                    onlyAdminsMerge()
-                    disallowOwnCode()
-                    failOnNonMerge()
-                    deleteOnMerge()
-                }
-            }
         }
         return freestyleJob
     }
