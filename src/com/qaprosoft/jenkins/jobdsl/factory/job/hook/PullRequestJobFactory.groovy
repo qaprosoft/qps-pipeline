@@ -27,7 +27,7 @@ public class PullRequestJobFactory extends FreestyleJobFactory {
             scm {
                 git {
                     remote {
-                        github(scmRepoUrl)
+                        github(organization + '/' + repo)
                         refspec('+refs/pull/*:refs/remotes/origin/pr/*')
                     }
                     branch('')
