@@ -24,52 +24,61 @@ public class PullRequestJobFactory extends FreestyleJobFactory {
     def create() {
         def freestyleJob = super.create()
         freestyleJob.with {
-            parameters {
-                stringParam('GITHUB_HOST', '', host)
-                stringParam('GITHUB_ORGANIZATION', '', organization)
-                stringParam('repo', repo, 'Your GitHub repository for scanning')
-            }
             scm {
                 git {
                     remote {
-                        url(scmRepoUrl)
+                        github(organization + '/' + repo)
+                        refspec('+refs/pull/*:refs/remotes/origin/pr/*')
                     }
+                    branch('')
                 }
             }
-            properties {
-                githubProjectUrl(scmRepoUrl)
-                //TODO: test with removed "cron('H/5 * * * *')"
-                pipelineTriggers {
-                    triggers {
-                        ghprbTrigger {
-                            gitHubAuthId(getGitHubAuthId(folder))
-                            adminlist('')
-                            useGitHubHooks(true)
-                            triggerPhrase('')
-                            autoCloseFailedPullRequests(false)
-                            skipBuildPhrase('.*\\[skip\\W+ci\\].*')
-                            displayBuildErrorsOnDownstreamBuilds(false)
-                            cron('H/5 * * * *')
-                            whitelist('')
-                            orgslist(organization)
-                            blackListLabels('')
-                            whiteListLabels('')
-                            allowMembersOfWhitelistedOrgsAsAdmin(false)
-                            permitAll(true)
-                            buildDescTemplate('')
-                            blackListCommitAuthor('')
-                            includedRegions('')
-                            excludedRegions('')
-                            onlyTriggerPhrase(false)
-                            commentFilePath('')
-                            msgSuccess('')
-                            msgFailure('')
-                            commitStatusContext('')
+
+            triggers {
+                githubPullRequest {
+                    admin()
+                    admins()
+                    userWhitelist('you@you.com')
+                    orgWhitelist(organization)
+                    cron('H/5 * * * *')
+                    triggerPhrase('special trigger phrase')
+                    onlyTriggerPhrase()
+                    useGitHubHooks()
+                    permitAll()
+                    autoCloseFailedPullRequests()
+                    displayBuildErrorsOnDownstreamBuilds()
+                    blackListTargetBranches()
+                    blackListLabels()
+                    allowMembersOfWhitelistedOrgsAsAdmin()
+                    extensions {
+                        commitStatus {
+                            context('deploy to staging site')
+                            triggeredStatus('starting deployment to staging site...')
+                            startedStatus('deploying to staging site...')
+                            addTestResults(true)
+                            statusUrl('http://mystatussite.com/prs')
+                            completedStatus('SUCCESS', 'All is well')
+                            completedStatus('FAILURE', 'Something went wrong. Investigate!')
+                            completedStatus('PENDING', 'still in progress...')
+                            completedStatus('ERROR', 'Something went really wrong. Investigate!')
+                        }
+                        buildStatus {
+                            completedStatus('SUCCESS', 'There were no errors, go have a cup of coffee...')
+                            completedStatus('FAILURE', 'There were errors, for info, please see...')
+                            completedStatus('ERROR', 'There was an error in the infrastructure, please contact...')
                         }
                     }
                 }
             }
-
+            publishers {
+                mergeGithubPullRequest {
+                    mergeComment('merged by Jenkins')
+                    onlyAdminsMerge()
+                    disallowOwnCode()
+                    failOnNonMerge()
+                    deleteOnMerge()
+                }
+            }
         }
         return freestyleJob
     }
