@@ -36,8 +36,8 @@ public class PullRequestJobFactory extends FreestyleJobFactory {
 
             triggers {
                 githubPullRequest {
-                    admin()
-                    admins()
+                    admin('')
+                    admins('')
                     userWhitelist('')
                     orgWhitelist(organization)
                     cron('H/5 * * * *')
