@@ -46,7 +46,6 @@ public class PullRequestJobFactory extends FreestyleJobFactory {
                     permitAll(true)
                     autoCloseFailedPullRequests(false)
                     displayBuildErrorsOnDownstreamBuilds(false)
-                    blackListLabels('')
                     allowMembersOfWhitelistedOrgsAsAdmin(false)
                     extensions {
                         commitStatus {
