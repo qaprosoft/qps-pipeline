@@ -69,7 +69,7 @@ public class PullRequestJobFactoryTrigger extends PipelineFactory {
 //                        }
 //                    }
 //                }
-            }
+//            }
 
         }
         return pipelineJob
