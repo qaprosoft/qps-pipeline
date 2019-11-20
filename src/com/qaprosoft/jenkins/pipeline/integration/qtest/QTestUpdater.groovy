@@ -57,17 +57,21 @@ class QTestUpdater {
                 logger.error("Unable to get QTest testCase.")
                 return
             }
+            logger.info("TEST_CASE:\n" + qTestTestCase.dump())
             def parentModuleId = qTestTestCase.parent_id
             /* check by parentId whether parent package structure was already uploaded from QTest,
                previously uploaded structures are stored in map, where key - id of lowest folder in hierarchy */
             Map testModulesSubHierarchy = testModuleHierarchiesMap.get(parentModuleId)
+            logger.info("EXISTING_HIERARCHY:\n" + testModulesSubHierarchy)
             /* if no such value in the map, uploading it via http calls to QTest */
             if (testModulesSubHierarchy == null) {
                 testModulesSubHierarchy = getParentModulesMap(parentModuleId, projectId)
+                logger.info("HIERARCHY_FROM_QTEST:\n" + testModulesSubHierarchy)
             }
             if (testModulesSubHierarchy.size() > 0) {
                 /* Use lowest in hierarchy folder as a key */
                 def firstMapEntry = testModulesSubHierarchy.entrySet().iterator().next()
+                logger.info("FIRST_MAP_ENTRY:\n" + firstMapEntry)
                 /* put new hierarchy only if there is no such in the map */
                 testModuleHierarchiesMap.putIfAbsent(firstMapEntry.getKey(), testModulesSubHierarchy)
             }
