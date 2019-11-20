@@ -1,10 +1,10 @@
 package com.qaprosoft.jenkins.jobdsl.factory.job.hook
 
-
+import com.qaprosoft.jenkins.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class PullRequestJobFactory extends FreestyleJobFactory {
+public class PullRequestJobFactory extends JobFactory {
 
     def host
     def organization
