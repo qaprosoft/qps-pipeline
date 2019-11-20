@@ -87,42 +87,8 @@ public class PullRequestJobFactory extends FreestyleJobFactory {
                 }
             }
 
-//            triggers {
-//                githubPullRequest {
-//                    admin('')
-//                    userWhitelist('')
-//                    orgWhitelist(organization)
-//                    cron('H/5 * * * *')
-//                    triggerPhrase('')
-//                    onlyTriggerPhrase(false)
-//                    useGitHubHooks(true)
-//                    permitAll(true)
-//                    autoCloseFailedPullRequests(false)
-//                    displayBuildErrorsOnDownstreamBuilds(false)
-//                    allowMembersOfWhitelistedOrgsAsAdmin(false)
-//                    extensions {
-//                        commitStatus {
-//                            context('')
-//                            triggeredStatus('starting deployment...')
-//                            startedStatus('deploying...')
-//                            addTestResults(true)
-//                            statusUrl('http://mystatussite.com/prs')
-//                            completedStatus('SUCCESS', 'All is well')
-//                            completedStatus('FAILURE', 'Something went wrong. Investigate!')
-//                            completedStatus('PENDING', 'still in progress...')
-//                            completedStatus('ERROR', 'Something went really wrong. Investigate!')
-//                        }
-//                        buildStatus {
-//                            completedStatus('SUCCESS', '')
-//                            completedStatus('FAILURE', '')
-//                            completedStatus('ERROR', '')
-//                        }
-//                    }
-//                }
-//            }
-
             steps {
-                remoteTrigger('onPullRequest-carina-demo-trigger', 'onPullRequest-carina-demo-trigger') {
+                remoteTrigger('onPullRequest-' + repo + '-trigger', 'onPullRequest-' + repo + '-trigger') {
                     parameter('GITHUB_HOST', host)
                     parameter('GITHUB_ORGANIZATION', organization)
                     parameter('repo', repo)
