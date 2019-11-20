@@ -37,38 +37,38 @@ public class PullRequestJobFactoryTrigger extends PipelineFactory {
                     }
                 }
             }
-            properties {
-                githubProjectUrl(scmRepoUrl)
-                //TODO: test with removed "cron('H/5 * * * *')"
-                pipelineTriggers {
-                    triggers {
-                        ghprbTrigger {
-                            gitHubAuthId(getGitHubAuthId(folder))
-                            adminlist('')
-                            useGitHubHooks(true)
-                            triggerPhrase('')
-                            autoCloseFailedPullRequests(false)
-                            skipBuildPhrase('.*\\[skip\\W+ci\\].*')
-                            displayBuildErrorsOnDownstreamBuilds(false)
-                            cron('H/5 * * * *')
-                            whitelist('')
-                            orgslist(organization)
-                            blackListLabels('')
-                            whiteListLabels('')
-                            allowMembersOfWhitelistedOrgsAsAdmin(false)
-                            permitAll(true)
-                            buildDescTemplate('')
-                            blackListCommitAuthor('')
-                            includedRegions('')
-                            excludedRegions('')
-                            onlyTriggerPhrase(false)
-                            commentFilePath('')
-                            msgSuccess('')
-                            msgFailure('')
-                            commitStatusContext('')
-                        }
-                    }
-                }
+//            properties {
+//                githubProjectUrl(scmRepoUrl)
+//                //TODO: test with removed "cron('H/5 * * * *')"
+//                pipelineTriggers {
+//                    triggers {
+//                        ghprbTrigger {
+//                            gitHubAuthId(getGitHubAuthId(folder))
+//                            adminlist('')
+//                            useGitHubHooks(true)
+//                            triggerPhrase('')
+//                            autoCloseFailedPullRequests(false)
+//                            skipBuildPhrase('.*\\[skip\\W+ci\\].*')
+//                            displayBuildErrorsOnDownstreamBuilds(false)
+//                            cron('H/5 * * * *')
+//                            whitelist('')
+//                            orgslist(organization)
+//                            blackListLabels('')
+//                            whiteListLabels('')
+//                            allowMembersOfWhitelistedOrgsAsAdmin(false)
+//                            permitAll(true)
+//                            buildDescTemplate('')
+//                            blackListCommitAuthor('')
+//                            includedRegions('')
+//                            excludedRegions('')
+//                            onlyTriggerPhrase(false)
+//                            commentFilePath('')
+//                            msgSuccess('')
+//                            msgFailure('')
+//                            commitStatusContext('')
+//                        }
+//                    }
+//                }
             }
 
         }
