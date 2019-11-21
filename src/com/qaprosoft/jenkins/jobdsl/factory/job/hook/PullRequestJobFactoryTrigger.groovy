@@ -87,11 +87,10 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                 }
             }
 
-//            trigger('onPullRequest-' + repo) {
-            trigger() {
-                block {
-
-                }
+            trigger('onPullRequest-' + repo) {
+//                block {
+//
+//                }
                 parameters {
                     currentBuild()
                 }
