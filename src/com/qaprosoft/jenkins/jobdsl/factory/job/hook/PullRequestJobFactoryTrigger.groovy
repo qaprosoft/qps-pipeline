@@ -4,14 +4,14 @@ import com.qaprosoft.jenkins.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class PullRequestJobFactory extends JobFactory {
+public class PullRequestJobFactoryTrigger extends JobFactory {
 
     def host
     def organization
     def repo
     def scmRepoUrl
 
-    public PullRequestJobFactory(folder, jobName, jobDesc, host, organization, repo, scmRepoUrl) {
+    public PullRequestJobFactoryTrigger(folder, jobName, jobDesc, host, organization, repo, scmRepoUrl) {
         this.folder = folder
         this.name = jobName
         this.description = jobDesc
@@ -87,58 +87,12 @@ public class PullRequestJobFactory extends JobFactory {
                 }
             }
 
-            steps {
-                remoteTrigger('onPullRequest-' + repo + '-trigger', 'onPullRequest-' + repo + '-trigger') {
-                    parameter('GITHUB_HOST', host)
-                    parameter('GITHUB_ORGANIZATION', organization)
-                    parameter('repo', repo)
-                    parameter('sha1', '')
-                    parameter('ghprbActualCommit', '')
-                    parameter('ghprbActualCommitAutho', '')
-                    parameter('ghprbActualCommitAuthorEmail', '')
-                    parameter('ghprbAuthorRepoGitUrl', '')
-                    parameter('ghprbTriggerAuthor', '')
-                    parameter('ghprbTriggerAuthorEmai', '')
-                    parameter('ghprbTriggerAuthorLogi', '')
-                    parameter('ghprbTriggerAuthorLoginMention', '')
-                    parameter('ghprbPullI', '')
-                    parameter('ghprbTargetBranch', '')
-                    parameter('ghprbSourceBranch', '')
-                    parameter('GIT_BRANCH', '')
-                    parameter('ghprbPullAuthorEmail', '')
-                    parameter('ghprbPullAuthorLogin', '')
-                    parameter('ghprbPullAuthorLoginMentio', '')
-                    parameter('ghprbPullDescription', '')
-                    parameter('ghprbPullTitle', '')
-                    parameter('ghprbPullLink', '')
-                    parameter('ghprbPullLongDescription', '')
-                    parameter('ghprbCommentBody', '')
-                    parameter('ghprbGhRepository', '')
-                    parameter('ghprbCredentialsId', '')
+            trigger('onPullRequest-' + repo) {
+                block {
 
-                    parameter('gitHubAuthId', getGitHubAuthId(folder))
-                    parameter('adminlist', '')
-                    parameter('useGitHubHooks', 'true')
-                    parameter('triggerPhrase', '')
-                    parameter('autoCloseFailedPullRequests', 'false')
-                    parameter('skipBuildPhrase', '.*\\[skip\\W+ci\\].*')
-                    parameter('displayBuildErrorsOnDownstreamBuilds', 'false')
-                    parameter('cron', 'H/5 * * * *')
-                    parameter('whitelist', '')
-                    parameter('orgslist', organization)
-                    parameter('blackListLabels', '')
-                    parameter('whiteListLabels', '')
-                    parameter('allowMembersOfWhitelistedOrgsAsAdmin', 'false')
-                    parameter('permitAll', 'true')
-                    parameter('buildDescTemplate', '')
-                    parameter('blackListCommitAuthor', '')
-                    parameter('includedRegions', '')
-                    parameter('excludedRegions', '')
-                    parameter('onlyTriggerPhrase', 'false')
-                    parameter('commentFilePath', '')
-                    parameter('msgSuccess', '')
-                    parameter('msgFailure', '')
-                    parameter('commitStatusContext', '')
+                }
+                parameters {
+                    currentBuild()
                 }
             }
         }
