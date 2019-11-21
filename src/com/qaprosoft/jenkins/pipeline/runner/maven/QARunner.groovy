@@ -127,11 +127,10 @@ public class QARunner extends AbstractRunner {
             def pomFiles = getProjectPomFiles()
             pomFiles.each {
                 logger.debug(it)
-                //do compile and scanner for all hogh level pom.xml files
-
-                // [VD] integrated compilation as part of the sonar PR checker maven goal
-                //compile(it.value)
-                executeSonarPRScan(it.value)
+                //do compile and scanner for all high level pom.xml files
+                if (!executeSonarPRScan(it.value)) {
+					compile(it.value)
+				}
             }
 
             //TODO: investigate whether we need this piece of code
