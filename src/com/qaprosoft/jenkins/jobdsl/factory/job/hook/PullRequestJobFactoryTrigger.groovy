@@ -25,11 +25,6 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
         def freestyleJob = super.create()
         freestyleJob.with {
             concurrentBuild(true)
-            parameters {
-                stringParam('GITHUB_HOST', host, '')
-                stringParam('GITHUB_ORGANIZATION', organization, '')
-                stringParam('repo', repo, 'Your GitHub repository for scanning')
-            }
 
             scm {
                 git {
