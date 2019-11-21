@@ -25,12 +25,8 @@ public class PullRequestJobFactory extends PipelineFactory {
     def create() {
         def pipelineJob = super.create()
         pipelineJob.with {
-            scm {
-                git {
-                    remote {
-                        url(scmRepoUrl)
-                    }
-                }
+            parameters {
+				//[VD] do not remove empty declaration otherwise params can't be specified dynamically 
             }
         }
         return pipelineJob

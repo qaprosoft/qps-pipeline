@@ -25,6 +25,9 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
         def freestyleJob = super.create()
         freestyleJob.with {
             concurrentBuild(true)
+            parameters {
+				//[VD] do not remove empty declaration otherwise params can't be specified dynamically
+            }
 
             scm {
                 git {
