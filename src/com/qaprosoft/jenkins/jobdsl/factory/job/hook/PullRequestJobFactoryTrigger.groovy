@@ -91,12 +91,14 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
             steps {
                 downstreamParameterized {
                     trigger('onPullRequest-' + repo) {
-                        buildStepFailure('FAILURE')
-                        failure('FAILURE')
-                        unstable('UNSTABLE')
-                    }
-                    parameters {
-                        currentBuild()
+                        block{
+                            buildStepFailure('FAILURE')
+                            failure('FAILURE')
+                            unstable('UNSTABLE')
+                        }
+                        parameters {
+                            currentBuild()
+                        }
                     }
                 }
             }
