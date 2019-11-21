@@ -11,16 +11,18 @@ public class Sonar {
         executeSonarPRScan("pom.xml")
     }
 
-    protected void executeSonarPRScan(pomFile){
+    protected boolean executeSonarPRScan(pomFile){
         def sonarQubeEnv = ''
         Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
             sonarQubeEnv = installation.getName()
         }
         if(sonarQubeEnv.isEmpty()){
-            logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
-            return
+			//TODO: add link to the doc about howto configur it correctly
+            logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan otherwise only compilation will be verified!")
+			// [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
+			return false
         }
-
+		
         // [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
         context.stage('Sonar Scanner') {
             context.withSonarQubeEnv(sonarQubeEnv) {
@@ -43,6 +45,9 @@ public class Sonar {
                 executeMavenGoals(goals)
             }
         }
+		
+		return true
+        
     }
 
     protected void executeSonarFullScan(String projectName, String projectKey, String modules) {
