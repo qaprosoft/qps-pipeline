@@ -36,7 +36,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
 						credentials("${organization}-${repo}")
                         refspec('+refs/pull/*:refs/remotes/origin/pr/*')
                     }
-                    branch('')
+                    branch('**')
                 }
             }
 
