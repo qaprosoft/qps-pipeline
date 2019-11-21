@@ -88,13 +88,15 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                 }
             }
 
-            steps {
-                trigger('onPullRequest-' + repo) {
+            publishers {
+                downstreamParameterized {
+                    trigger('onPullRequest-' + repo) {
 //                block {
 //
 //                }
-                    parameters {
-                        currentBuild()
+                        parameters {
+                            currentBuild()
+                        }
                     }
                 }
             }
