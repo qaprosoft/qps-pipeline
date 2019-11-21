@@ -26,7 +26,16 @@ public class PullRequestJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
-				//[VD] do not remove empty declaration otherwise params can't be specified dynamically 
+                configure addHiddenParameter('GITHUB_HOST', '', host)
+                configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
+                stringParam('repo', repo, 'Your GitHub repository for scanning')
+            }
+            scm {
+                git {
+                    remote {
+                        url(scmRepoUrl)
+                    }
+                }
             }
         }
         return pipelineJob
