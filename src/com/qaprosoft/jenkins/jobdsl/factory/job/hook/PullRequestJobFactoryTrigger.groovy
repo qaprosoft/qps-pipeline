@@ -24,6 +24,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
     def create() {
         def freestyleJob = super.create()
         freestyleJob.with {
+            concurrentBuild(true)
             parameters {
                 stringParam('GITHUB_HOST', host, '')
                 stringParam('GITHUB_ORGANIZATION', organization, '')
@@ -87,12 +88,14 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                 }
             }
 
-            trigger('onPullRequest-' + repo) {
+            steps {
+                trigger('onPullRequest-' + repo) {
 //                block {
 //
 //                }
-                parameters {
-                    currentBuild()
+                    parameters {
+                        currentBuild()
+                    }
                 }
             }
         }
