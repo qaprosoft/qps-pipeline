@@ -66,7 +66,6 @@ class QTestUpdater {
             /* if no such value in the map, uploading it via http calls to QTest */
             if (testModulesSubHierarchy == null) {
                 testModulesSubHierarchy = getParentModulesMap(parentModuleId, projectId)
-                logger.info("HIERARCHY_FROM_QTEST:\n" + testModulesSubHierarchy)
             }
             if (testModulesSubHierarchy.size() > 0) {
                 /* Use lowest in hierarchy folder as a key */
@@ -100,6 +99,9 @@ class QTestUpdater {
     }
 
     private def getCurrentTestCycleId(testRunsSubHierarchy, testModulesSubHierarchy, rootTestCycleId, projectId) {
+        logger.info("TEST_RUNS_SUBHIERARCHY:\n" + testRunsSubHierarchy)
+        logger.info("TEST_RUNS_SUBHIERARCHY_CHILDREN:\n" + testRunsSubHierarchy.children)
+        logger.info("TEST_MODULES_SUBHIERARCHY:\n" + testModulesSubHierarchy)
         // Get upper level of test cycles from test runs hierarchy
         List presentInSubHierarchyTestCycles = testRunsSubHierarchy.children
         // Set root hierarchy folder to start search from
