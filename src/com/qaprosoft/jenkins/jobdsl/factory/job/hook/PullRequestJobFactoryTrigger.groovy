@@ -10,6 +10,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
     def organization
     def repo
     def scmRepoUrl
+	def branch
 
     public PullRequestJobFactoryTrigger(folder, jobName, jobDesc, host, organization, repo, scmRepoUrl, branch) {
         this.folder = folder
