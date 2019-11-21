@@ -29,6 +29,54 @@ public class PullRequestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
                 stringParam('repo', repo, 'Your GitHub repository for scanning')
+
+                configure addHiddenParameter('sha1', '', '')
+                configure addHiddenParameter('ghprbActualCommit', '', '')
+                configure addHiddenParameter('ghprbActualCommitAutho', '', '')
+                configure addHiddenParameter('ghprbActualCommitAuthorEmail', '', '')
+                configure addHiddenParameter('ghprbAuthorRepoGitUrl', '', '')
+                configure addHiddenParameter('ghprbTriggerAuthor', '', '')
+                configure addHiddenParameter('ghprbTriggerAuthorEmai', '', '')
+                configure addHiddenParameter('ghprbTriggerAuthorLogi', '', '')
+                configure addHiddenParameter('ghprbTriggerAuthorLoginMention', '', '')
+                configure addHiddenParameter('ghprbPullI', '', '')
+                configure addHiddenParameter('ghprbTargetBranch', '', '')
+                configure addHiddenParameter('ghprbSourceBranch', '', '')
+                configure addHiddenParameter('GIT_BRANCH', '', '')
+                configure addHiddenParameter('ghprbPullAuthorEmail', '', '')
+                configure addHiddenParameter('ghprbPullAuthorLogin', '', '')
+                configure addHiddenParameter('ghprbPullAuthorLoginMentio', '', '')
+                configure addHiddenParameter('ghprbPullDescription', '', '')
+                configure addHiddenParameter('ghprbPullTitle', '', '')
+                configure addHiddenParameter('ghprbPullLink', '', '')
+                configure addHiddenParameter('ghprbPullLongDescription', '', '')
+                configure addHiddenParameter('ghprbCommentBody', '', '')
+                configure addHiddenParameter('ghprbGhRepository', '', '')
+                configure addHiddenParameter('ghprbCredentialsId', '', '')
+
+                configure addHiddenParameter('gitHubAuthId', '', '')
+                configure addHiddenParameter('adminlist', '', '')
+                configure addHiddenParameter('useGitHubHooks', '', '')
+                configure addHiddenParameter('triggerPhrase', '', '')
+                configure addHiddenParameter('autoCloseFailedPullRequests', '', '')
+                configure addHiddenParameter('skipBuildPhrase', '', '')
+                configure addHiddenParameter('displayBuildErrorsOnDownstreamBuilds', '', '')
+                configure addHiddenParameter('cron', '', '')
+                configure addHiddenParameter('whitelist', '', '')
+                configure addHiddenParameter('orgslist', '', '')
+                configure addHiddenParameter('blackListLabels', '', '')
+                configure addHiddenParameter('whiteListLabels', '', '')
+                configure addHiddenParameter('allowMembersOfWhitelistedOrgsAsAdmin', '', '')
+                configure addHiddenParameter('permitAll', '', '')
+                configure addHiddenParameter('buildDescTemplate', '', '')
+                configure addHiddenParameter('blackListCommitAuthor', '', '')
+                configure addHiddenParameter('includedRegions', '', '')
+                configure addHiddenParameter('excludedRegions', '', '')
+                configure addHiddenParameter('onlyTriggerPhrase', '', '')
+                configure addHiddenParameter('commentFilePath', '', '')
+                configure addHiddenParameter('msgSuccess', '', '')
+                configure addHiddenParameter('msgFailure', '', '')
+                configure addHiddenParameter('commitStatusContext', '', '')
             }
             scm {
                 git {
@@ -37,40 +85,6 @@ public class PullRequestJobFactory extends PipelineFactory {
                     }
                 }
             }
-//            properties {
-//                githubProjectUrl(scmRepoUrl)
-//                //TODO: test with removed "cron('H/5 * * * *')"
-//                pipelineTriggers {
-//                    triggers {
-//                        ghprbTrigger {
-//                            gitHubAuthId(getGitHubAuthId(folder))
-//                            adminlist('')
-//                            useGitHubHooks(true)
-//                            triggerPhrase('')
-//                            autoCloseFailedPullRequests(false)
-//                            skipBuildPhrase('.*\\[skip\\W+ci\\].*')
-//                            displayBuildErrorsOnDownstreamBuilds(false)
-//                            cron('H/5 * * * *')
-//                            whitelist('')
-//                            orgslist(organization)
-//                            blackListLabels('')
-//                            whiteListLabels('')
-//                            allowMembersOfWhitelistedOrgsAsAdmin(false)
-//                            permitAll(true)
-//                            buildDescTemplate('')
-//                            blackListCommitAuthor('')
-//                            includedRegions('')
-//                            excludedRegions('')
-//                            onlyTriggerPhrase(false)
-//                            commentFilePath('')
-//                            msgSuccess('')
-//                            msgFailure('')
-//                            commitStatusContext('')
-//                        }
-//                    }
-//                }
-//            }
-
         }
         return pipelineJob
     }
