@@ -87,8 +87,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                 }
             }
 
-            //trigger('onPullRequest-' + repo) {
-            trigger('onPullRequest-MEW-MEW') {
+            trigger('onPullRequest-' + repo) {
                 block {
 
                 }
