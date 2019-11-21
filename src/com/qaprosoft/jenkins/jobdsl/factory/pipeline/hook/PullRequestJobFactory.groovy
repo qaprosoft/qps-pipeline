@@ -37,8 +37,8 @@ public class PullRequestJobFactory extends PipelineFactory {
                     }
                 }
             }
-            properties {
-                githubProjectUrl(scmRepoUrl)
+//            properties {
+//                githubProjectUrl(scmRepoUrl)
 //                //TODO: test with removed "cron('H/5 * * * *')"
 //                pipelineTriggers {
 //                    triggers {
@@ -69,7 +69,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 //                        }
 //                    }
 //                }
-            }
+//            }
 
         }
         return pipelineJob
