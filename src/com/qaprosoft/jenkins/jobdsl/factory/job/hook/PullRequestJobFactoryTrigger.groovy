@@ -11,7 +11,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
     def repo
     def scmRepoUrl
 
-    public PullRequestJobFactoryTrigger(folder, jobName, jobDesc, host, organization, repo, scmRepoUrl) {
+    public PullRequestJobFactoryTrigger(folder, jobName, jobDesc, host, organization, repo, scmRepoUrl, branch) {
         this.folder = folder
         this.name = jobName
         this.description = jobDesc
@@ -19,6 +19,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
         this.organization = organization
         this.repo = repo
         this.scmRepoUrl = scmRepoUrl
+		this.branch = branch
     }
 
     def create() {
@@ -32,17 +33,17 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
             scm {
                 git {
                     remote {
-                        github(organization + '/' + repo)
+                        github(this.organization + '/' + this.repo)
 						credentials("${organization}-${repo}")
                         refspec('+refs/pull/*:refs/remotes/origin/pr/*')
                     }
-                    branch('**')
+                    branch(this.branch)
                 }
             }
 
             triggers {
                 ghprbTrigger {
-                    gitHubAuthId(getGitHubAuthId(folder))
+                    gitHubAuthId(getGitHubAuthId(this.folder))
                     adminlist('')
                     useGitHubHooks(true)
                     triggerPhrase('')
@@ -70,7 +71,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
 
             steps {
                 downstreamParameterized {
-                    trigger('onPullRequest-' + repo) {
+                    trigger('onPullRequest-' + this.repo) {
                         block{
                             buildStepFailure('FAILURE')
                             failure('FAILURE')
