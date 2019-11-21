@@ -89,7 +89,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
             }
 
             steps {
-                downstreamParametrizied {
+                downstreamParameterized {
                     trigger('onPullRequest-' + repo) {
                         parameters {
                             currentBuild()
