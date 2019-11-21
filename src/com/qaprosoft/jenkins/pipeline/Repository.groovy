@@ -128,8 +128,8 @@ class Repository {
             //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${Configuration.get(REPO)}|${Configuration.get(BRANCH)}"
 
-            def githubHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
-            def githubOrganization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
+            def githubHost = Configuration.get(SCM_HOST)
+            def githubOrganization = Configuration.get(SCM_ORG)
             def credentialsId = "${githubOrganization}-${Configuration.get(REPO)}"
 
             updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get("scmUser"), Configuration.get("scmToken"))
