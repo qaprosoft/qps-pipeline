@@ -35,6 +35,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                 git {
                     remote {
                         github(organization + '/' + repo)
+						credentials("${organization}-${repo}")
                         refspec('+refs/pull/*:refs/remotes/origin/pr/*')
                     }
                     branch('')
