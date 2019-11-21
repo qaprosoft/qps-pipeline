@@ -88,8 +88,8 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                 }
             }
 
-            publishers {
-                downstreamParameterized {
+//            publishers {
+                steps {
                     trigger('onPullRequest-' + repo) {
 //                block {
 //
@@ -99,7 +99,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                         }
                     }
                 }
-            }
+//            }
         }
         return freestyleJob
     }
