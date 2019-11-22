@@ -53,6 +53,13 @@ class Utils {
         return value
     }
 
+    static def replaceSlashUnderline(String value) {
+        if (value.contains("/")) {
+            value = value.replaceAll("/", "_")
+        }
+        return value
+    }
+
     static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
