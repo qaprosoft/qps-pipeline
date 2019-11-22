@@ -59,7 +59,7 @@ public class Configuration {
         SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}"),
         SELENIUM_PORT("SELENIUM_PORT", "4444"),
         SELENIUM_URL("SELENIUM_URL", "\${SELENIUM_PROTOCOL}://demo:demo@\${SELENIUM_HOST}:\${SELENIUM_PORT}/wd/hub"),
-        HUB_MODE("hub_mode", "default"),
+        HUB_MODE("hub_mode", "selenium"),
 
         QPS_HUB("QPS_HUB", "\${SELENIUM_PROTOCOL}://${SELENIUM_HOST}:\${SELENIUM_PORT}"),
 
