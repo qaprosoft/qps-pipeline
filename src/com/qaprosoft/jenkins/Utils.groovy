@@ -53,6 +53,13 @@ class Utils {
         return value
     }
 
+    static def replaceSlashes(String value, String str) {
+        if (value.contains("/")) {
+            value = value.replaceAll("/", str)
+        }
+        return value
+    }
+
     static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
