@@ -429,7 +429,7 @@ public class QARunner extends AbstractRunner {
         build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
             def jobFullName = replaceStartSlash(job.jobName)
             jobFullName = replaceSlashes(jobFullName, '_')
-            logger.info(jobFullName)
+            logger.info("MEW-MEW-MEW" + jobFullName)
             def jenkinsJob = generateJenkinsJob(jobFullName)
             jenkinsJobs.add(jenkinsJob)
         }
