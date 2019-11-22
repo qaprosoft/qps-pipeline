@@ -204,7 +204,7 @@ public class Configuration {
                 if (keyValueArray.size() > 1) {
                     def parameterName = keyValueArray[0]
                     def parameterValue = keyValueArray[1]
-                    if (isParamEmpty(keyPrefix)) {
+                    if (keyPrefix.isEmpty()) {
                         putParamCaseInsensitive(parameterName, parameterValue)
                     } else {
                         putParamCaseInsensitive(keyPrefix + "." + parameterName, parameterValue)
