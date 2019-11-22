@@ -53,9 +53,9 @@ class Utils {
         return value
     }
 
-    static def replaceSlashUnderline(String value) {
+    static def replaceSlashes(String value, String str) {
         if (value.contains("/")) {
-            value = value.replaceAll("/", "_")
+            value = value.replaceAll("/", str)
         }
         return value
     }
