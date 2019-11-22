@@ -113,6 +113,7 @@ public class QARunner extends AbstractRunner {
                 } catch (Exception e) {
                     logger.error("Scan failed.\n" + e.getMessage())
                     getJenkinsJobsScanResult(null)
+                    currentBuild.result = BuildResult.FAILURE
                 }
                 clean()
             }
