@@ -49,7 +49,6 @@ class Repository {
         context.node('master') {
             context.timestamps {
                 prepare()
-                logger.info("2222")
                 generateCiItems()
                 clean()
             }
@@ -79,7 +78,8 @@ class Repository {
     }
 
     private void prepare() {
-        scmClient.clone(true) //do shallow clone during repo registration to verify if Jenkinsfile exists inside
+        // We don't have github credentials at this point, action is not possible. Necessary to think how to add it before this call.
+//        scmClient.clone(true) //do shallow clone during repo registration to verify if Jenkinsfile exists inside
         String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
         String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
         scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
@@ -87,19 +87,16 @@ class Repository {
 
 
     private void generateCiItems() {
-        logger.info("3333")
         context.stage("Create Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repoFolder = Configuration.get(REPO)
 
             // Folder from which RegisterRepository job was started
             this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
-            logger.info("4444: "  + rootFolder)
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
             } else {
-                logger.info("111111")
                 registerZafiraCredentials(rootFolder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
             }
 
