@@ -28,7 +28,8 @@ class GitHub implements ISCM {
         } else {
             throw new RuntimeException("Unsupported SCM system!")
         }
-        this.credentialsId = "${Configuration.get("scmOrg")}-${Configuration.get("repo")}"
+		//TODO: remove credentialsId setup here or replace by scmOrg after final migration
+        this.credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
         if(Configuration.get("scmURL") != null ) {
             gitHtmlUrl = Configuration.get("scmURL")
             credentialsId = ''
@@ -47,7 +48,7 @@ class GitHub implements ISCM {
             def repo = Configuration.get("repo")
             def userId = Configuration.get("BUILD_USER_ID")
             def gitUrl = Configuration.resolveVars(gitHtmlUrl)
-            def credentialsId = credentialsId
+            def credentialsId = repo + Configuration.get("GITHUB_ORGANIZATION")
             logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
             logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
             logger.info("GIT_URL: " + gitUrl)
