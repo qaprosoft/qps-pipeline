@@ -49,6 +49,7 @@ class Repository {
         context.node('master') {
             context.timestamps {
                 prepare()
+                logger.info("2222")
                 generateCiItems()
                 clean()
             }
@@ -86,13 +87,14 @@ class Repository {
 
 
     private void generateCiItems() {
-
+        logger.info("3333")
         context.stage("Create Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repoFolder = Configuration.get(REPO)
 
             // Folder from which RegisterRepository job was started
             this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+            logger.info("4444: "  + rootFolder)
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
