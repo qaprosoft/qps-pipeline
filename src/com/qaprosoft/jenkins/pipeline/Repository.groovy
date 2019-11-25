@@ -97,6 +97,7 @@ class Repository {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
             } else {
+                logger.info("111111")
                 registerZafiraCredentials(rootFolder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
             }
 
