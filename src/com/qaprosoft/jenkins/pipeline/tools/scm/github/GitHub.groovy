@@ -28,8 +28,7 @@ class GitHub implements ISCM {
         } else {
             throw new RuntimeException("Unsupported SCM system!")
         }
-		//TODO: remove credentialsId setup here or replace by scmOrg after final migration
-        this.credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
+        this.credentialsId = "${Configuration.get("scmOrg")}-${Configuration.get("repo")}"
         if(Configuration.get("scmURL") != null ) {
             gitHtmlUrl = Configuration.get("scmURL")
             credentialsId = ''
