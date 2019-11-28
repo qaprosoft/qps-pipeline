@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.pipeline
 
+import java.util.regex.Pattern
+import java.util.regex.Matcher
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 @Grab('org.testng:testng:6.8.8')

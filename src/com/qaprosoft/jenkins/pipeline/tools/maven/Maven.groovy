@@ -1,7 +1,4 @@
 package com.qaprosoft.jenkins.pipeline.tools.maven
-import java.util.regex.Pattern
-import java.util.regex.Matcher
-
 
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.Logger
