@@ -428,4 +428,27 @@ public class Executor {
             pipelineMap.put(mapItem.key, mapItem.value)
         }
     }
+	
+	static def filterSecuredParams(goals) {
+		def arrayOfParmeters = goals.split()
+		def resultSpringOfParameters = ''
+		for (parameter in arrayOfParmeters) {
+			def resultString = ''
+			if (parameter.contains("token") || parameter.contains("TOKEN")) {
+				def arrayOfString = parameter.split("=")
+				resultString = arrayOfString[0] + "=********"
+			} else if (parameter.contains("-Dselenium_host")){
+				parameter = "-Dselenium_host=http://demo:demo@demo.qaprosoft.com:4444/wd/hub"
+				def pattern = "(\\-Dselenium_host=http:\\/\\/.+:)\\S+(@.+)"
+				Matcher matcher = Pattern.compile(pattern).matcher(parameter)
+				while (matcher.find()) {
+					resultString = matcher.group(1) + "********" + matcher.group(2)
+				}
+			} else {
+				resultString = parameter
+			}
+			resultSpringOfParameters += resultString + ' '
+		}
+		return resultSpringOfParameters
+	}
 }
