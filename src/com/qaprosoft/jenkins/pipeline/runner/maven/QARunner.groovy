@@ -1117,6 +1117,7 @@ public class QARunner extends AbstractRunner {
                         putNotNullWithSplit(pipelineMap, "emailList", emailList)
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
 						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
+						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
                         putNotNull(pipelineMap, "queue_registration", queueRegistration)
                         registerPipeline(currentSuite, pipelineMap)
                     }
