@@ -193,7 +193,7 @@ public class Configuration {
 
 	@NonCPS
 	private static void parseValues(values){
-		parseValues(values, "", ",")
+		parseValues(values, ",", "")
 	}
 
     @NonCPS
