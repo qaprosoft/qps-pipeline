@@ -629,7 +629,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("node", defaultNode) //master is default node to execute job
 
         //TODO: handle browserstack etc integration here?
-        switch (Configuration.get("platform").toLowerCase()) {
+        switch (Configuration.get("job_type").toLowerCase()) {
             case "api":
                 logger.info("Suite Type: API")
                 Configuration.set("node", "api")
