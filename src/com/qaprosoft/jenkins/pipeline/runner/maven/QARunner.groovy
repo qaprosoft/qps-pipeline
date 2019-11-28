@@ -28,8 +28,6 @@ import java.util.regex.Pattern
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-//[VD] do not remove this important import!
-
 @Grab('org.testng:testng:6.8.8')
 
 @Mixin([Maven, Sonar])
