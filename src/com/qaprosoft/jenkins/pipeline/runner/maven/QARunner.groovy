@@ -715,10 +715,6 @@ public class QARunner extends AbstractRunner {
         Configuration.set("capabilities.provider", "mcloud")
         
 
-		//TODO: remove it after migration to 3.5 qps selenium-hub
-        if (!isParamEmpty(Configuration.get("deviceBrowser"))) {
-            Configuration.set("capabilities.browserName", Configuration.get("deviceBrowser"))
-        }
         // ATTENTION! Obligatory remove device from the params otherwise
         // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
         // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
