@@ -162,7 +162,7 @@ public class Configuration {
         }
 
         //3. Replace vars and/or params with capabilities prefix
-        parseValues(params.get(CAPABILITIES), CAPABILITIES)
+        parseValues(params.get(CAPABILITIES), ";", CAPABILITIES)
         
         //4. Replace vars and/or params with zafiraFields values
         parseValues(params.get("zafiraFields"))
@@ -191,15 +191,20 @@ public class Configuration {
         // public static void set(Map args) - ???
     }
 
+	@NonCPS
+	private static void parseValues(values){
+		parseValues(values, "", ",")
+	}
+
     @NonCPS
-    private static void parseValues(values){
-        parseValues(values, "")
+    private static void parseValues(values, separator){
+        parseValues(values, separator, "")
     }
     
     @NonCPS
-    private static void parseValues(values, keyPrefix){
+    private static void parseValues(values, separator, keyPrefix){
         if (values) {
-            for (value in values.split(",")) {
+            for (value in values.split(separator)) {
                 def keyValueArray = value.trim().split("=")
                 if (keyValueArray.size() > 1) {
                     def parameterName = keyValueArray[0]
