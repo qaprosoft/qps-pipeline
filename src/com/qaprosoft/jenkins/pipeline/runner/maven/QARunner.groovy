@@ -701,7 +701,6 @@ public class QARunner extends AbstractRunner {
     protected void prepareForMobile() {
         logger.info("Runner->prepareForMobile")
         def devicePool = Configuration.get("devicePool")
-        def defaultPool = Configuration.get("DefaultPool")
         def platform = Configuration.get("platform")
 
         if (platform.equalsIgnoreCase("android")) {
@@ -714,13 +713,9 @@ public class QARunner extends AbstractRunner {
 
         //general mobile capabilities
         Configuration.set("capabilities.provider", "mcloud")
-        if ("DefaultPool".equalsIgnoreCase(devicePool)) {
-            //reuse list of devices from hidden parameter DefaultPool
-            Configuration.set("capabilities.deviceName", defaultPool)
-        } else {
-            Configuration.set("capabilities.deviceName", devicePool)
-        }
+        
 
+		//TODO: remove it after migration to 3.5 qps selenium-hub
         if (!isParamEmpty(Configuration.get("deviceBrowser"))) {
             Configuration.set("capabilities.browserName", Configuration.get("deviceBrowser"))
         }

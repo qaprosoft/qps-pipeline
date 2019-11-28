@@ -94,17 +94,15 @@ public class TestJobFactory extends PipelineFactory {
                         configure addHiddenParameter('platform', '', '*')
                         break
                     case "android":
-                        configure stringParam('capabilities', getSuiteParameter("deviceName=ANY", "capabilities", currentSuite), 'Provide comma separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide comma separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
                         configure addHiddenParameter('platform', '', 'ANDROID')
                         break
                     case "ios":
-                        configure stringParam('capabilities', getSuiteParameter("deviceName=ANY", "capabilities", currentSuite), 'Provide comma separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide comma separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
                         configure addHiddenParameter('platform', '', 'iOS')
                         break
 					// web ios: capabilities: browserName=safari, deviceName=ANY
