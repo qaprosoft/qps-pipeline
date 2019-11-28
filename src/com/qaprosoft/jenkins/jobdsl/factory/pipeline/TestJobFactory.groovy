@@ -82,25 +82,25 @@ public class TestJobFactory extends PipelineFactory {
                 switch(jobType) {
                     case "api":
                         // API tests specific
-                        configure stringParam('capabilities', getSuiteParameter("", "capabilities", currentSuite), 'Reserved for any comma separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         configure addHiddenParameter('platform', '', 'API')
                         break
                     case "web":
                         // WEB tests specific
-                        configure stringParam('capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite), 'Provide comma separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
                         configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure addHiddenParameter('platform', '', '*')
                         break
                     case "android":
-                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide comma separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure addHiddenParameter('platform', '', 'ANDROID')
                         break
                     case "ios":
-                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide comma separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure addHiddenParameter('platform', '', 'iOS')
@@ -108,7 +108,7 @@ public class TestJobFactory extends PipelineFactory {
 					// web ios: capabilities: browserName=safari, deviceName=ANY
 					// web android: capabilities: browserName=chrome, deviceName=ANY
                     default:
-                        configure stringParam('capabilities', getSuiteParameter("", "capabilities", currentSuite), 'Reserved for any comma separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
                         configure addHiddenParameter('platform', '', '*')
                         break
