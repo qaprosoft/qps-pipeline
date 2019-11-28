@@ -156,6 +156,12 @@ public class Configuration {
         // 2. Load all job parameters into unmodifiable map
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
+			// exclude adding zafiraFields and overrideFields as global param. They will be parsed later and put by each concrete param into the list
+			if ("overrideFields".equals(param.name) ||
+				"zafiraFields".equals(param.name)) {
+				continue;
+			}
+			
             if (param.value != null) {
                 putParamCaseInsensitive(param.name, param.value)
             }
