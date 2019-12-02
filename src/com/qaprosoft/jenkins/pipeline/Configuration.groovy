@@ -165,9 +165,9 @@ public class Configuration {
         parseValues(params.get(CAPABILITIES), ";", CAPABILITIES)
         
         //4. Replace vars and/or params with zafiraFields values
-        parseValues(vars.get("zafiraFields"))
+        parseValues(params.get("zafiraFields"))
         //5. Replace vars and/or params with overrideFields values
-        parseValues(vars.get("overrideFields"))
+        parseValues(params.get("overrideFields"))
 
         def securedParameters = []
         for (enumValue in enumValues) {
@@ -184,6 +184,13 @@ public class Configuration {
             }
         }
 
+		context.println("VARS:")
+		for (var in vars) {
+			context.println(var)
+		}
+
+		
+		context.println("PARAMS:")
         for (param in params) {
             context.println(param)
         }
@@ -221,7 +228,6 @@ public class Configuration {
 
     @NonCPS
     private static void putParamCaseInsensitive(parameterName, parameterValue) {
-		context.println(parameterName, parameterValue)
         if (vars.get(parameterName)) {
             vars.put(parameterName, parameterValue)
         } else if (vars.get(parameterName.toUpperCase())) {
