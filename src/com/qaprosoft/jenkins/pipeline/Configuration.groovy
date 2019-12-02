@@ -165,9 +165,9 @@ public class Configuration {
         parseValues(params.get(CAPABILITIES), ";", CAPABILITIES)
         
         //4. Replace vars and/or params with zafiraFields values
-        parseValues(params.get("zafiraFields"))
+        parseValues(vars.get("zafiraFields"))
         //5. Replace vars and/or params with overrideFields values
-        parseValues(params.get("overrideFields"))
+        parseValues(vars.get("overrideFields"))
 
         def securedParameters = []
         for (enumValue in enumValues) {
