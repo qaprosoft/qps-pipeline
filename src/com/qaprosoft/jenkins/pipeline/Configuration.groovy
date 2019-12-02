@@ -184,7 +184,7 @@ public class Configuration {
             }
         }
 
-		context.println("VARS:")
+/*		context.println("VARS:")
 		for (var in vars) {
 			context.println(var)
 		}
@@ -194,13 +194,15 @@ public class Configuration {
         for (param in params) {
             context.println(param)
         }
+*/
+		
         //6. TODO: investigate how private pipeline can override those values
         // public static void set(Map args) - ???
     }
 
 	@NonCPS
 	private static void parseValues(values){
-		parseValues(values, ",", "")
+		parseValues(values, ",")
 	}
 
     @NonCPS
