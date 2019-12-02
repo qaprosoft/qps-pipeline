@@ -221,6 +221,7 @@ public class Configuration {
 
     @NonCPS
     private static void putParamCaseInsensitive(parameterName, parameterValue) {
+		context.println(parameterName, parameterValue)
         if (vars.get(parameterName)) {
             vars.put(parameterName, parameterValue)
         } else if (vars.get(parameterName.toUpperCase())) {
