@@ -629,7 +629,8 @@ public class QARunner extends AbstractRunner {
         //TODO: handle browserstack etc integration here?
 		def jobType = !isParamEmpty(Configuration.get("job_type")) ? Configuration.get("job_type") : "api" 
         switch (jobType.toLowerCase()) {
-            case "api", "none":
+            case "api":
+			case "none":
                 logger.info("Suite Type: API")
                 Configuration.set("node", "api")
                 Configuration.set("browser", "NULL")
