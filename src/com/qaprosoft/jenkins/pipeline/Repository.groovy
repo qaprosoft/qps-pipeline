@@ -144,6 +144,7 @@ class Repository {
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
             def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
+            logger.error("zafiraFields: " + zafiraFields)
 
             registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*"))
 
