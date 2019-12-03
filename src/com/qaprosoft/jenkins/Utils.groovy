@@ -47,7 +47,7 @@ class Utils {
             }
         }
         def resultValue = suiteOwnerList[0]
-        context.println("MEW_MEW_MEW " + resultValue)
+        Logger.info("MEW_MEW_MEW " + resultValue)
         return resultValue
     }
 
