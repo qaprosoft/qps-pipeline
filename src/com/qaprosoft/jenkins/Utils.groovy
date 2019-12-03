@@ -46,7 +46,9 @@ class Utils {
                 suiteOwnerList.push(defaultValue)
             }
         }
-        return suiteOwnerList[0]
+        def resultValue = suiteOwnerList[0]
+        context.println("MEW_MEW_MEW " + resultValue)
+        return resultValue
     }
 
     static def replaceTrailingSlash(value) {
