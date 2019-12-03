@@ -25,7 +25,7 @@ public class PipelineFactory extends JobFactory {
     public PipelineFactory(folder, name, description, logRotator, pipelineScript, suiteOwner) {
         super(folder, name, description, logRotator)
         this.pipelineScript = pipelineScript
-        this.suiteOwner = suiteOwner
+        this.suiteOwner = checkSuitOwner(suiteOwner)
     }
 
     def create() {
