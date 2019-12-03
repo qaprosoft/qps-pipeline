@@ -44,7 +44,7 @@ class Utils {
             } else if (value.contains(",")) {
                 suiteOwnerList = value.split(",")
             } else {
-                suiteOwnerList = defaultValue
+                suiteOwnerList.add(defaultValue)
             }
         }
         return suiteOwnerList[0]
