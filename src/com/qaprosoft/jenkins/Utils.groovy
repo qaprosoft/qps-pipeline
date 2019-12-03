@@ -35,16 +35,15 @@ class Utils {
     }
 
     static def getSuiteParameter(defaultValue, parameterName, currentSuite){
-        def value
         def suiteOwnerList = []
         if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
-            value = currentSuite.getParameter(parameterName)
+            def value = currentSuite.getParameter(parameterName)
             if (value.contains(", ")) {
                 suiteOwnerList = value.split(", ")
             } else if (value.contains(",")) {
                 suiteOwnerList = value.split(",")
             } else {
-                suiteOwnerList.add(defaultValue)
+                suiteOwnerList.push(defaultValue)
             }
         }
         return suiteOwnerList[0]
