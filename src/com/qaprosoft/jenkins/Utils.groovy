@@ -47,7 +47,6 @@ class Utils {
             }
         }
         def resultValue = suiteOwnerList[0]
-        Logger.info("MEW_MEW_MEW " + resultValue)
         return resultValue
     }
 
