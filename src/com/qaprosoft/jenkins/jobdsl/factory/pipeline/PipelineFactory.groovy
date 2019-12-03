@@ -25,7 +25,7 @@ public class PipelineFactory extends JobFactory {
     public PipelineFactory(folder, name, description, logRotator, pipelineScript, suiteOwner) {
         super(folder, name, description, logRotator)
         this.pipelineScript = pipelineScript
-        this.suiteOwner = checkSuitOwner(suiteOwner)
+        this.suiteOwner = suiteOwner
     }
 
     def create() {
@@ -63,18 +63,6 @@ public class PipelineFactory extends JobFactory {
         }
 
         return envList
-    }
-
-    protected checkSuitOwner(suiteOwner) {
-        def suiteOwnerList = []
-        if (suiteOwner.contains(", ")) {
-            suiteOwnerList = suiteOwner.split(", ")
-        } else if (suiteOwner.contains(",")) {
-            suiteOwnerList = suiteOwner.split(",")
-        } else {
-            suiteOwnerList = suiteOwner
-        }
-        return suiteOwnerList[0]
     }
 
     protected List<String> getGenericSplit(currentSuite, parameterName) {

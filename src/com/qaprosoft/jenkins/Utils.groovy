@@ -35,11 +35,19 @@ class Utils {
     }
 
     static def getSuiteParameter(defaultValue, parameterName, currentSuite){
-        def value = defaultValue
+        def value
+        def suiteOwnerList = []
         if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
             value = currentSuite.getParameter(parameterName)
+            if (value.contains(", ")) {
+                suiteOwnerList = value.split(", ")
+            } else if (value.contains(",")) {
+                suiteOwnerList = value.split(",")
+            } else {
+                suiteOwnerList = defaultValue
+            }
         }
-        return value
+        return suiteOwnerList[0]
     }
 
     static def replaceTrailingSlash(value) {
