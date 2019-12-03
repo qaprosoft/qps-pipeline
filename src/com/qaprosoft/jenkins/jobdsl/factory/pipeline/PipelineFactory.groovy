@@ -65,6 +65,18 @@ public class PipelineFactory extends JobFactory {
         return envList
     }
 
+    protected checkSuitOwner(suiteOwner) {
+        def suiteOwnerList = []
+        if (suiteOwner.contains(", ")) {
+            suiteOwnerList = suiteOwner.split(", ")
+        } else if (suiteOwner.contains(",")) {
+            suiteOwnerList = suiteOwner.split(",")
+        } else {
+            suiteOwnerList = suiteOwner
+        }
+        return suiteOwnerList[0]
+    }
+
     protected List<String> getGenericSplit(currentSuite, parameterName) {
         String genericField = currentSuite.getParameter(parameterName)
         def genericFields = []
