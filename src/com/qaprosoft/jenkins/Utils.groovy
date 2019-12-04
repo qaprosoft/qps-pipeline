@@ -46,7 +46,7 @@ class Utils {
                 suiteOwnerList.push(defaultValue)
             }
         }
-        return suiteOwnerList[0]
+        return defaultValue
     }
 
     static def replaceTrailingSlash(value) {
