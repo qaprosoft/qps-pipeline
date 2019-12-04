@@ -53,7 +53,7 @@ public class QARunner extends AbstractRunner {
     protected orderedJobExecNum = 0
     protected boolean multilingualMode = false
 	
-	private final static String JOB_TYPE = "job_type"
+	protected final static String JOB_TYPE = "job_type"
 
     public enum JobType {
         JOB("JOB"),
