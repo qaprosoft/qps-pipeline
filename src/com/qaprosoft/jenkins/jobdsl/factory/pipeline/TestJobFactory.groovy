@@ -74,7 +74,6 @@ public class TestJobFactory extends PipelineFactory {
                     disabled()
                 }
                 def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
-                logger.info("MEW_MEW_MEW " + getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite))
                 def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
                 def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
 
