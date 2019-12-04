@@ -38,15 +38,8 @@ class Utils {
         def value = defaultValue
         def suiteValue = currentSuite.getParameter(parameterName)
         if (!isParamEmpty(suiteValue) && (suiteValue instanceof String)) {
-            def valuesList
-            if (suiteValue.contains(", ")) {
-                valuesList = suiteValue.split(", ")
-                value = valuesList[0]
-            } else {
-                valuesList = suiteValue.split(",")
-                // if suiteValue doesn't contains comas value will get one value of string
-                value = valuesList[0]
-            }
+            // if suiteValue doesn't contains comas value will get one value of string
+            value = suiteValue.split(",")[0].trim()
         }
         return value
     }
