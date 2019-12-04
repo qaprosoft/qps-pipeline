@@ -1,4 +1,5 @@
 package com.qaprosoft.jenkins
+import java.lang.String
 
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser
