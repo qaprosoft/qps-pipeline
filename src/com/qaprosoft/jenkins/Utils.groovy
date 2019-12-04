@@ -37,7 +37,7 @@ class Utils {
     static def getSuiteParameter(defaultValue, parameterName, currentSuite){
         def value = defaultValue
         def suiteValue = currentSuite.getParameter(parameterName)
-        if (!isParamEmpty(suiteValue)) {
+        if (!isParamEmpty(suiteValue) && (suiteValue instanceof String)) {
             def valuesList
             if (suiteValue.contains(", ")) {
                 valuesList = value.split(", ")
