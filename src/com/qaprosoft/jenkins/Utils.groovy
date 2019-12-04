@@ -35,18 +35,20 @@ class Utils {
     }
 
     static def getSuiteParameter(defaultValue, parameterName, currentSuite){
-        def suiteOwnerList = []
-        if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
-            def value = currentSuite.getParameter(parameterName)
-            if (value.contains(", ")) {
-                suiteOwnerList = value.split(", ")
-            } else if (value.contains(",")) {
-                suiteOwnerList = value.split(",")
+        def value = defaultValue
+        def suiteValue = currentSuite.getParameter(parameterName)
+        if (!isParamEmpty(suiteValue)) {
+            def valuesList
+            if (suiteValue.contains(", ")) {
+                valuesList = value.split(", ")
+                value = valuesList[0]
             } else {
-                suiteOwnerList[0] = defaultValue
+                valuesList = value.split(",")
+                // if suiteValue doesn't contains comas value will get one value of string
+                value = valuesList[0]
             }
         }
-        return suiteOwnerList[0]
+        return value
     }
 
     static def replaceTrailingSlash(value) {
