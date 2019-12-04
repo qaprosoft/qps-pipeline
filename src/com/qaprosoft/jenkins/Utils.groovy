@@ -43,10 +43,10 @@ class Utils {
             } else if (value.contains(",")) {
                 suiteOwnerList = value.split(",")
             } else {
-                suiteOwnerList.push(defaultValue)
+                suiteOwnerList[0] = defaultValue
             }
         }
-        return defaultValue
+        return suiteOwnerList[0]
     }
 
     static def replaceTrailingSlash(value) {
