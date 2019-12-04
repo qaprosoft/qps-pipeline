@@ -52,6 +52,8 @@ public class QARunner extends AbstractRunner {
     protected Map pipelineLocaleMap = [:]
     protected orderedJobExecNum = 0
     protected boolean multilingualMode = false
+	
+	private final static String JOB_TYPE = "job_type"
 
     public enum JobType {
         JOB("JOB"),
@@ -459,7 +461,7 @@ public class QARunner extends AbstractRunner {
             }  else {
                 value = parameterDefinition.defaultValue
             }
-            if (!(parameterDefinition instanceof WHideParameterDefinition)) {
+            if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
                 logger.info(parameterDefinition.name)
                 if(isJobParameterValid(parameterDefinition.name)){
                     parameters.put(parameterDefinition.name, value)
@@ -627,7 +629,7 @@ public class QARunner extends AbstractRunner {
         Configuration.set("node", defaultNode) //master is default node to execute job
 
         //TODO: handle browserstack etc integration here?
-		def jobType = !isParamEmpty(Configuration.get("job_type")) ? Configuration.get("job_type") : "api" 
+		def jobType = !isParamEmpty(Configuration.get(JOB_TYPE)) ? Configuration.get(JOB_TYPE) : "api" 
         switch (jobType.toLowerCase()) {
             case "api":
 			case "none":
