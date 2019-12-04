@@ -1,5 +1,4 @@
 package com.qaprosoft.jenkins
-import java.lang.String
 
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser
@@ -41,10 +40,10 @@ class Utils {
         if (!isParamEmpty(suiteValue) && (suiteValue instanceof String)) {
             def valuesList
             if (suiteValue.contains(", ")) {
-                valuesList = value.split(", ")
+                valuesList = suiteValue.split(", ")
                 value = valuesList[0]
             } else {
-                valuesList = value.split(",")
+                valuesList = suiteValue.split(",")
                 // if suiteValue doesn't contains comas value will get one value of string
                 value = valuesList[0]
             }
