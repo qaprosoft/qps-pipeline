@@ -82,7 +82,6 @@ public class TestJobFactory extends PipelineFactory {
                 switch(jobType) {
                     case "api":
                         // API tests specific
-                        configure stringParam('capabilities', getSuiteParameter("", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         configure stringParam('capabilities', getSuiteParameter("platformName=API", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case "web":
@@ -93,16 +92,14 @@ public class TestJobFactory extends PipelineFactory {
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         break
                     case "android":
-                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case "ios":
-                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
 					// web ios: capabilities: browserName=safari, deviceName=ANY
 					// web android: capabilities: browserName=chrome, deviceName=ANY
