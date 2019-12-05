@@ -1,10 +1,16 @@
 package com.qaprosoft.jenkins.pipeline
 
+import com.qaprosoft.jenkins.Logger
+
 public class Configuration {
 
     private def context
 
     private final static def mustOverride = "{must_override}"
+    public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
+    public final static def QTEST_UPDATER_JOBNAME = "qtest-updater"
+    
+    private static final String CAPABILITIES = "capabilities"
 
     //list of CI job params as a map
     protected static Map params = [:]
@@ -15,7 +21,6 @@ public class Configuration {
     public Configuration(context) {
         this.context = context
         this.loadContext()
-
     }
 
     @NonCPS
@@ -31,11 +36,11 @@ public class Configuration {
     public enum Parameter {
 
         //vars
-        CARINA_CORE_VERSION("CARINA_CORE_VERSION", "6.1.19"),
         CORE_LOG_LEVEL("CORE_LOG_LEVEL", "INFO"),
         //to enable default jacoco code coverage instrumenting we have to find a way to init valid AWS aws-jacoco-token on Jenkins preliminary
         //the biggest problem is that AWS key can't be located in public repositories
         JACOCO_BUCKET("JACOCO_BUCKET", "jacoco.qaprosoft.com"),
+        JACOCO_REGION("JACOCO_REGION", "us-west-1"),
         JACOCO_ENABLE("JACOCO_ENABLE", "false"),
         JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
 
@@ -47,7 +52,7 @@ public class Configuration {
         GITHUB_API_URL("GITHUB_API_URL", "https://api.\${GITHUB_HOST}/"),
         GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft"),
         GITHUB_HTML_URL("GITHUB_HTML_URL", "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}"),
-        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride),
+        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, true),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
 
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
@@ -58,7 +63,7 @@ public class Configuration {
 
         QPS_HUB("QPS_HUB", "\${SELENIUM_PROTOCOL}://${SELENIUM_HOST}:\${SELENIUM_PORT}"),
 
-        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride),
+        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, true),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
 
         JOB_URL("JOB_URL", mustOverride),
@@ -76,16 +81,21 @@ public class Configuration {
         OPTIMIZE_VIDEO_RECORDING("optimize_video_recording", "false"),
 
         VNC_DESKTOP("vnc_desktop", "%s://%s:%s/vnc/%s"),
+        VNC_MOBILE("vnc_mobile", "%s://%s:%s/websockify"),
         VNC_PROTOCOL("vnc_protocol", "ws"),
         VNC_HOST("vnc_host", "\${QPS_HOST}"),
         VNC_PORT("vnc_port", "80"),
 
+        ENABLE_VNC("capabilities.enableVNC", "true"),
+        ENABLE_VIDEO("capabilities.enableVideo", "true"),
+        ENABLE_STF("capabilities.STF_ENABLED", "false"),
+
         TIMEZONE("user.timezone", "UTC"),
 
         S3_LOCAL_STORAGE("s3_local_storage", "/opt/apk"),
-        HOCKEYAPP_LOCAL_STORAGE("hockeyapp_local_storage", "/opt/apk"),
+        APPCENTER_LOCAL_STORAGE("appcenter_local_storage", "/opt/apk"),
 
-        BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}"),
+        BROWSERSTACK_ACCESS_KEY("BROWSERSTACK_ACCESS_KEY", "\${BROWSERSTACK_ACCESS_KEY}", true),
 
         //Make sure that URLs have trailing slash
         TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", ""), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
@@ -96,10 +106,16 @@ public class Configuration {
 
         private final String key
         private final String value
+        private final Boolean isSecured
 
         Parameter(String key, String value) {
+            this(key, value, false)
+        }
+
+        Parameter(String key, String value, Boolean isSecured) {
             this.key = key
             this.value = value
+            this.isSecured = isSecured
         }
 
         @NonCPS
@@ -112,6 +128,10 @@ public class Configuration {
             return value
         }
 
+        @NonCPS
+        public Boolean isSecured() {
+            return isSecured
+        }
     }
 
     @NonCPS
@@ -119,7 +139,7 @@ public class Configuration {
         // 1. load all obligatory Parameter(s) and their default key/values to vars.
         // any non empty value should be resolved in such order: Parameter, envvars and jobParams
 
-        def enumValues  = Parameter.values()
+        def enumValues = Parameter.values()
         for (enumValue in enumValues) {
             //a. set default values from enum
             vars.put(enumValue.getKey(), enumValue.getValue())
@@ -137,38 +157,84 @@ public class Configuration {
         def jobParams = context.currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
             if (param.value != null) {
-                params.put(param.name, param.value)
+                putParamCaseInsensitive(param.name, param.value)
             }
         }
 
-        //3. Replace vars and/or params with overrideFields values
-        def overriddenFieldValues = params.get("overrideFields")
-        if (overriddenFieldValues){
-            for(value in overriddenFieldValues.split(",")){
-                def keyValueArray = value.trim().split("=")
-                if (keyValueArray.size() > 1){
-                    def parameterName = keyValueArray[0]
-                    def parameterValue = keyValueArray[1]
-                    if (vars.get(parameterName)){
-                        vars.put(parameterName, parameterValue)
-                    } else if (vars.get(parameterName.toUpperCase())){
-                        vars.put(parameterName.toUpperCase(), parameterValue)
-                    } else {
-                        params.put(parameterName, parameterValue)
-                    }
-                }
+        //3. Replace vars and/or params with capabilities prefix
+        parseValues(params.get(CAPABILITIES), ";", CAPABILITIES)
+        
+        //4. Replace vars and/or params with zafiraFields values
+        parseValues(params.get("zafiraFields"))
+        //5. Replace vars and/or params with overrideFields values
+        parseValues(params.get("overrideFields"))
+
+        def securedParameters = []
+        for (enumValue in enumValues) {
+            if (enumValue.isSecured()) {
+                securedParameters << enumValue.getKey()
             }
         }
 
         for (var in vars) {
-            context.println(var)
+            if (var.getKey() in securedParameters) {
+                context.println(var.getKey() + ": ********")
+            } else {
+                context.println(var)
+            }
         }
 
+		context.println("VARS:")
+		for (var in vars) {
+			context.println(var)
+		}
+		
+		context.println("PARAMS:")
         for (param in params) {
             context.println(param)
         }
-        //4. TODO: investigate how private pipeline can override those values
+		
+        //6. TODO: investigate how private pipeline can override those values
         // public static void set(Map args) - ???
+    }
+
+	@NonCPS
+	private static void parseValues(values){
+		parseValues(values, ",")
+	}
+
+    @NonCPS
+    private static void parseValues(values, separator){
+        parseValues(values, separator, "")
+    }
+    
+    @NonCPS
+    private static void parseValues(values, separator, keyPrefix){
+        if (values) {
+            for (value in values.split(separator)) {
+                def keyValueArray = value.trim().split("=")
+                if (keyValueArray.size() > 1) {
+                    def parameterName = keyValueArray[0]
+                    def parameterValue = keyValueArray[1]
+                    if (keyPrefix.isEmpty()) {
+                        putParamCaseInsensitive(parameterName, parameterValue)
+                    } else {
+                        putParamCaseInsensitive(keyPrefix + "." + parameterName, parameterValue)
+                    }
+                }
+            }
+        }
+    }
+
+    @NonCPS
+    private static void putParamCaseInsensitive(parameterName, parameterValue) {
+        if (vars.get(parameterName)) {
+            vars.put(parameterName, parameterValue)
+        } else if (vars.get(parameterName.toUpperCase())) {
+            vars.put(parameterName.toUpperCase(), parameterValue)
+        } else {
+            params.put(parameterName, parameterValue)
+        }
     }
 
     @NonCPS
@@ -204,6 +270,7 @@ public class Configuration {
      * String cmd
      * return String cmd
      */
+
     @NonCPS
     public static String resolveVars(String cmd) {
         return cmd.replaceAll('\\$\\{[^\\{\\}]*\\}') { m -> get(m.substring(2, m.size() - 1)) }

@@ -7,6 +7,8 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 public abstract class AbstractRunner {
     protected def context
     protected ISCM scmClient
+    protected ISCM scmSshClient
+
     protected Logger logger
     protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
     protected def additionalClasspath = "qps-pipeline/src"

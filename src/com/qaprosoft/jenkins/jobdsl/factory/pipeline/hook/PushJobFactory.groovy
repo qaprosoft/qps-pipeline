@@ -11,8 +11,11 @@ public class PushJobFactory extends PipelineFactory {
     def repo
     def branch
     def scmRepoUrl
+    def userId
+    def zafiraFields
+    def isJenkinsfile
 
-    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl) {
+    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, zafiraFields, isJenkinsfile) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
@@ -22,6 +25,9 @@ public class PushJobFactory extends PipelineFactory {
         this.repo = repo
         this.branch = branch
         this.scmRepoUrl = scmRepoUrl
+        this.userId = userId
+        this.zafiraFields = zafiraFields
+        this.isJenkinsfile = isJenkinsfile
     }
 
     def create() {
@@ -49,8 +55,26 @@ public class PushJobFactory extends PipelineFactory {
                 choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedJobAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedViewAction', ['IGNORE', 'DELETE'], '')
+                configure addHiddenParameter('userId', 'Identifier of the user who triggered the process', userId)
+                configure addHiddenParameter('zafiraFields', '', zafiraFields)
             }
 
+            /** Git Stuff **/
+			if (this.isJenkinsfile) {
+				definition {
+                    cpsScm {
+                        scm {
+                            git {
+                                branch(branch)
+                                remote {
+                                    credentials(organization + "-" + repo)
+                                    url(scmRepoUrl)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         return pipelineJob
     }

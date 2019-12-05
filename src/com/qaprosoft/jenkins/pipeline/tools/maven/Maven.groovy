@@ -3,6 +3,8 @@ package com.qaprosoft.jenkins.pipeline.tools.maven
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.Logger
 
+import static com.qaprosoft.jenkins.pipeline.Executor.*
+
 public class Maven {
     //TODO: migreate to traits as only it is supported in pipelines
     // https://issues.jenkins-ci.org/browse/JENKINS-46145
@@ -61,8 +63,15 @@ public class Maven {
         if(context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name())){
             goals = goals + " -e -X"
         }
+        // parse goals replacing sensitive info by *******
         if (context.isUnix()) {
-            context.sh "'mvn' -B ${goals}"
+            def filteredGoals = filterSecuredParams(goals)
+            context.sh """
+                        echo "mvn -B ${filteredGoals}"
+                        set +x
+                        'mvn' -B ${goals}
+                        set -x 
+                       """
         } else {
             context.bat "mvn -B ${goals}"
         }

@@ -8,26 +8,26 @@ import static com.qaprosoft.jenkins.Utils.*
 
 class GitHub implements ISCM {
 
-    private def context
-    private def gitHtmlUrl
-    private def credentialsId
-    private Logger logger
-    private def scmHost
+    protected def context
+    //TODO: rename into scmUrl as it covers both https and ssh cases
+    protected def gitHtmlUrl
+    protected def credentialsId
+    protected Logger logger
+    protected def scmHost
 
     public GitHub(context) {
         this.context = context
         logger = new Logger(context)
         scmHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
-        if(scmHost.contains("github")){
+        if(scmHost.contains("bitbucket")) {
             gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-        } else if(scmHost.contains("bitbucket")) {
-            gitHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         } else if(scmHost.contains("io")) {
             gitHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         } else {
-            throw new RuntimeException("Unsupported SCM system!")
+            gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         }
-        credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
+		//TODO: remove credentialsId setup here or replace by scmOrg after final migration
+        this.credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
         if(Configuration.get("scmURL") != null ) {
             gitHtmlUrl = Configuration.get("scmURL")
             credentialsId = ''
@@ -46,7 +46,7 @@ class GitHub implements ISCM {
             def repo = Configuration.get("repo")
             def userId = Configuration.get("BUILD_USER_ID")
             def gitUrl = Configuration.resolveVars(gitHtmlUrl)
-            def credentialsId = credentialsId
+            def credentialsId = Configuration.get("GITHUB_ORGANIZATION") + "-" + repo
             logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
             logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
             logger.info("GIT_URL: " + gitUrl)
@@ -97,7 +97,7 @@ class GitHub implements ISCM {
         }
     }
 
-    private def getCheckoutParams(gitUrl, branch, subFolder, shallow, changelog, refspecValue, credentialsIdValue) {
+    protected def getCheckoutParams(gitUrl, branch, subFolder, shallow, changelog, refspecValue, credentialsIdValue) {
         def checkoutParams = [scm: [$class: 'GitSCM',
                                     branches: [[name: branch]],
                                     doGenerateSubmoduleConfigurations: false,
@@ -130,7 +130,7 @@ class GitHub implements ISCM {
             context.sh "curl -u ${context.env.USERNAME}:${context.env.PASSWORD} -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://api.github.com/repos/${org}/${repo}/pulls/${ghprbPullId}/merge"
         }
     }
-
+    
     public def setUrl(url) {
         gitHtmlUrl = url
     }

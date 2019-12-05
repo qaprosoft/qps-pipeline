@@ -54,10 +54,11 @@ class ZafiraClient extends HttpClient {
                 return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder owner: Configuration.get("ci_user_id"),
-                upstreamJobId: Configuration.get("ci_job_id"),
-                upstreamJobBuildNumber: Configuration.get("ci_parent_build"),
-                scmUrl: Configuration.get("scm_url"),
+        jsonBuilder owner: Configuration.get("owner"),
+                cause: Configuration.get("cause"),
+                upstreamJobId: Configuration.get("upstreamJobId"),
+                upstreamJobBuildNumber: Configuration.get("upstreamJobBuildNumber"),
+                scmURL: Configuration.get("scmURL"),
                 hashcode: Configuration.get("hashcode")
 
         logger.info("REQUEST: " + jsonBuilder.toPrettyString())
@@ -199,19 +200,17 @@ class ZafiraClient extends HttpClient {
     }
 
 
-    public def createLauncher(jobParameters, jobUrl, repo) {
+    public def createLaunchers(jenkinsJobsScanResult) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)
             if (isParamEmpty(authToken))
                 return
         }
-        jobParameters = new JsonBuilder(jobParameters).toPrettyString()
-        JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder jobParameters: jobParameters,
-                jobUrl: jobUrl,
-                repo: repo
 
-        logger.debug("REQUEST: " + jsonBuilder.toPrettyString())
+        JsonBuilder jsonBuilder = new JsonBuilder()
+        jsonBuilder jenkinsJobsScanResult
+
+        logger.info("REQUEST: " + jsonBuilder.toPrettyString())
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
 
@@ -219,7 +218,7 @@ class ZafiraClient extends HttpClient {
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
                           requestBody: requestBody,
-                          validResponseCodes: "200:401",
+                          validResponseCodes: "200",
                           url: this.serviceURL + "/api/launchers/create"]
         return sendRequestFormatted(parameters)
     }

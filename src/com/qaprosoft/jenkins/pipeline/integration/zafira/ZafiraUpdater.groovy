@@ -2,9 +2,11 @@ package com.qaprosoft.jenkins.pipeline.integration.zafira
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
-import static com.qaprosoft.jenkins.Utils.*
-import static com.qaprosoft.jenkins.pipeline.Executor.*
+
 import java.nio.file.Paths
+
+import static com.qaprosoft.jenkins.Utils.isParamEmpty
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class ZafiraUpdater {
 
@@ -19,19 +21,13 @@ class ZafiraUpdater {
         logger = new Logger(context)
     }
 
-    /**
-     * Unable to make a calls for this method at intermeddiate state without refactoring
-     * we keep TestRun result using single call for now at the end only.
-     * **/
-    protected def getTestRun(uuid) {
-        def run = testRun
+    def getTestRunByCiRunId(uuid) {
+        def testRun = zc.getTestRunByCiRunId(uuid)
         if (isParamEmpty(testRun)) {
-            run = zc.getTestRunByCiRunId(uuid)
-            if (isParamEmpty(run)) {
-                logger.error("TestRun is not found in Zafira!")
-            }
+            logger.error("TestRun is not found in Zafira!")
+            return
         }
-        return run
+        return testRun
     }
 
     public def queueZafiraTestRun(uuid) {
@@ -49,6 +45,7 @@ class ZafiraUpdater {
     }
 
     public def abortTestRun(uuid, currentBuild) {
+        def abortedTestRun
         currentBuild.result = BuildResult.FAILURE
         def failureReason = "undefined failure"
 
@@ -82,23 +79,28 @@ class ZafiraUpdater {
             failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
             failureReason = URLEncoder.encode("${FailureCause.BUILD_FAILURE.value}:\n" + failureLog, "UTF-8")
         }
-        def response = zc.abortTestRun(uuid, failureReason)
-        if (!isParamEmpty(response)){
-            if (response.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
+        abortedTestRun = zc.abortTestRun(uuid, failureReason)
+
+        //Checks if testRun is present in Zafira and sends Zafira-generated report
+        if (!isParamEmpty(abortedTestRun)){
+            //Sends email to admin if testRun was aborted
+            if (abortedTestRun.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
             } else {
                 sendFailureEmail(uuid, Configuration.get("email_list"))
             }
         } else {
+            //If testRun is not available in Zafira, sends email to admins by means of Jenkins
             logger.error("Unable to abort testrun! Probably run is not registered in Zafira.")
             //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
             def body = "${bodyHeader}\nRebuild: ${jobBuildUrl}/rebuild/parameterized\nZafiraReport: ${jobBuildUrl}/ZafiraReport\n\nConsole: ${jobBuildUrl}/console\n${failureLog}"
             context.emailext getEmailParams(body, subject, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         }
+        return abortedTestRun
     }
 
     public def sendZafiraEmail(uuid, emailList) {
-        def testRun = getTestRun(uuid)
+        def testRun = getTestRunByCiRunId(uuid)
         if (isParamEmpty(testRun)){
             logger.error("No testRun with uuid " + uuid + "found in Zafira")
             return
@@ -139,9 +141,19 @@ class ZafiraUpdater {
     }
 
     public def setBuildResult(uuid, currentBuild) {
-        def testRun = getTestRun(uuid)
-        if (!isParamEmpty(testRun) && isFailure(testRun.status)){
-            currentBuild.result = BuildResult.FAILURE
+        def testRun = getTestRunByCiRunId(uuid)
+        logger.debug("testRun: " + testRun.dump())
+        if (!isParamEmpty(testRun)) {
+            if (isFailure(testRun.status)){
+                logger.debug("marking currentBuild.result as FAILURE")
+                currentBuild.result = BuildResult.FAILURE
+            } else if (isPassed(testRun.status)){
+                logger.debug("marking currentBuild.result as SUCCESS")
+                currentBuild.result = BuildResult.SUCCESS
+            } else {
+                // do nothing to inherit status from job
+                logger.debug("don't change currentBuild.result")
+            }
         }
     }
 
@@ -155,8 +167,8 @@ class ZafiraUpdater {
         return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
     }
 
-    public def createLauncher(jobParameters, jobUrl, repo) {
-        return zc.createLauncher(jobParameters, jobUrl, repo)
+    public def createLaunchers(jenkinsJobsScanResult) {
+        return zc.createLaunchers(jenkinsJobsScanResult)
     }
 
     public def createJob(jobUrl){
@@ -179,4 +191,14 @@ class ZafiraUpdater {
         }
         zc = new ZafiraClient(context)
     }
+
+    protected boolean isFailure(testRunStatus) {
+        return !"PASSED".equals(testRunStatus)
+    }
+
+    protected boolean isPassed(testRunStatus) {
+        return "PASSED".equals(testRunStatus)
+    }
+
+
 }

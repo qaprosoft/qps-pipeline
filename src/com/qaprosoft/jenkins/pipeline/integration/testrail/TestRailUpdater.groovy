@@ -24,11 +24,11 @@ class TestRailUpdater {
         logger = new Logger(context)
     }
 
-    public void updateTestRun(uuid, isRerun) {
-		if (!Configuration.get(Configuration.Parameter.TESTRAIL_ENABLE).toBoolean() || !trc.isAvailable()) {
-			// do nothing
-			return
-		}
+    public void updateTestRun(uuid) {
+	if (!trc.isAvailable()) {
+		// do nothing
+		return
+	}
 		
         // export all tag related metadata from Zafira
         def integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
@@ -46,28 +46,24 @@ class TestRailUpdater {
             logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
             return
         }
-        def includeAll = !isParamEmpty(Configuration.get("include_all"))?Configuration.get("include_all"):true
+        def includeAll = Configuration.get("include_all")?.toBoolean()
         def projectId = integration.projectId
         def suiteId = integration.suiteId
         Map customParams = integration.customParams
         Map caseResultMap = integration.testCasesMap
         Map testResultMap = new HashMap<>()
-        def milestoneId = getMilestoneId(projectId, customParams)
-        def assignedToId
-        def createdBy = getAssignedToId(null)
-        if (isParamEmpty(customParams.assignee)){
-            assignedToId = createdBy
-        } else {
-            assignedToId = getAssignedToId(customParams.assignee)
-        }
-        def testRunName
-        if (!isParamEmpty(customParams.testrail_run_name)){
-            testRunName = customParams.testrail_run_name
-            createdBy = null
-            isRerun = true
-        } else {
-            testRunName = integration.testRunName
-        }
+
+        def milestoneName = !isParamEmpty(Configuration.get("milestone"))?Configuration.get("milestone"):customParams.milestone
+        def milestoneId = getMilestoneId(projectId, milestoneName)
+
+        def assigneeName = !isParamEmpty(Configuration.get("assignee"))?Configuration.get("assignee"):customParams.assignee
+        def assignedToId = getAssignedToId(assigneeName)
+
+        def testRunExists = Configuration.get("run_exists")?.toBoolean()
+
+        def testRunName = integration.testRunName
+        testRunName = !isParamEmpty(Configuration.get("run_name"))?Configuration.get("run_name"):testRunName
+
         def createdAfter = integration.createdAfter
 
         // get all cases from TestRail by project and suite and compare with exported from Zafira
@@ -76,18 +72,17 @@ class TestRailUpdater {
         def filteredCaseResultMap = filterCaseResultMap(caseResultMap, testRailCaseIds)
 
         def testRailRunId = null
-        if (isRerun){
-            testRailRunId = getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter, Configuration.get("testrail_search_interval"))
-        }
-
-        if (isParamEmpty(testRailRunId)){
+        if (!testRunExists){
             def newTestRailRun = addTestRailRun(testRunName, suiteId, projectId, milestoneId, assignedToId, includeAll, filteredCaseResultMap)
             if (isParamEmpty(newTestRailRun)) {
                 logger.error("Unable to add test run to TestRail!")
                 return
             }
             testRailRunId = newTestRailRun.id
+        } else {
+            testRailRunId = getTestRailRunId(testRunName, null, milestoneId, projectId, suiteId, createdAfter, Configuration.get("testrail_search_interval"))
         }
+
         testResultMap = filterTests(testRailRunId, assignedToId, testRailCaseIds, testResultMap, filteredCaseResultMap)
         addResults(testRailRunId, testResultMap)
     }
@@ -100,7 +95,7 @@ class TestRailUpdater {
         }
         def testRuns = trc.getRuns(Math.round(createdAfter/1000) - 60 * 60 * 24 * defaultSearchInterval, createdBy, milestoneId, projectId, suiteId)
 //        logger.debug("TEST_RUNS:\n" + formatJson(testRuns))
-		def testRunId = null
+	def testRunId = null
         for(Map testRun in testRuns){
 //            logger.debug("TEST_RUN: " + formatJson(testRun))
             String correctedName = testRun.name.trim().replaceAll(" +", " ")
@@ -112,24 +107,24 @@ class TestRailUpdater {
         if (isParamEmpty(testRunId)) {
             logger.error("Unable to detect run in TestRail!")
         }
-		return testRunId
+	return testRunId
     }
 
-    protected def getMilestoneId(projectId, customParams){
-        if (isParamEmpty(customParams.milestone)) {
-            logger.error("No milestone name discovered!")
-            return
+    protected def getMilestoneId(projectId, name){
+        if (isParamEmpty(name)) {
+            logger.warn("No milestone name discovered!")
+            return null
         }
-        def milestoneName = customParams.milestone
+
         def milestoneId = null
         def milestones = trc.getMilestones(projectId)
         milestones.each { Map milestone ->
-            if (milestone.name == milestoneName) {
+            if (milestone.name == name) {
                 milestoneId = milestone.id
             }
         }
         if (isParamEmpty(milestoneId)){
-            def newMilestone = trc.addMilestone(projectId, milestoneName)
+            def newMilestone = trc.addMilestone(projectId, name)
             if (!isParamEmpty(newMilestone)){
                 milestoneId = newMilestone.id
             }

@@ -11,23 +11,23 @@ public class Sonar {
         executeSonarPRScan("pom.xml")
     }
 
-    protected void executeSonarPRScan(pomFile){
+    protected boolean executeSonarPRScan(pomFile){
         def sonarQubeEnv = ''
         Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
             sonarQubeEnv = installation.getName()
         }
         if(sonarQubeEnv.isEmpty()){
-            logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
-            return
+			//TODO: add link to the doc about howto configur it correctly
+            logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan otherwise only compilation will be verified!")
+			// [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
+			return false
         }
-
+		
         // [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
         context.stage('Sonar Scanner') {
             context.withSonarQubeEnv(sonarQubeEnv) {
                 def goals = "-U -f ${pomFile} \
 					clean compile test-compile package sonar:sonar -DskipTests=true \
-					-Dcom.qaprosoft.carina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
-					-Dcarina-core.version=${Configuration.get(Configuration.Parameter.CARINA_CORE_VERSION)} \
 					-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
 					-Dsonar.analysis.mode=preview  \
 					-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
@@ -45,9 +45,16 @@ public class Sonar {
                 executeMavenGoals(goals)
             }
         }
+		
+		return true
+        
     }
 
-    protected void executeSonarFullScan(String projectName, String projectKey, String modules){
+    protected void executeSonarFullScan(String projectName, String projectKey, String modules) {
+        executeSonarFullScan(".", projectName, projectKey, modules) 
+    }
+
+    protected void executeSonarFullScan(String projectBaseDir, String projectName, String projectKey, String modules) {
         context.stage('Sonar Scanner') {
             def sonarQubeEnv = ''
             Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
@@ -60,10 +67,15 @@ public class Sonar {
 
 
             //download combined integration testing coverage report: jacoco-it.exec
+            def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
             def jacocoItExec = 'jacoco-it.exec'
-            context.withAWS(region: 'us-west-1',credentials:'aws-jacoco-token') {
-                def copyOutput = context.sh script: "aws s3 cp s3://jacoco.qaprosoft.com/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
-                logger.info("copyOutput: " + copyOutput)
+            def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+            def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
+            if (jacocoEnable) {
+                context.withAWS(region: "${jacocoRegion}",credentials:'aws-jacoco-token') {
+                    def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
+                    logger.info("copyOutput: " + copyOutput)
+                }
             }
 
 
@@ -75,6 +87,7 @@ public class Sonar {
 
                 // execute sonar scanner
                 context.sh "${sonarHome}/bin/sonar-scanner \
+					-Dsonar.projectBaseDir=${projectBaseDir} \
 					-Dsonar.projectName=${projectName} \
 					-Dsonar.projectKey=${projectKey} \
 					-Dsonar.projectVersion=1.${BUILD_NUMBER} \

@@ -3,6 +3,8 @@ package com.qaprosoft.jenkins.pipeline
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.QTestJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestRailJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.RegisterRepositoryJobFactory
 import com.qaprosoft.jenkins.pipeline.integration.zebrunner.ZebrunnerUpdater
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
@@ -42,12 +44,13 @@ class Organization {
         logger.info("Organization->register")
         context.node('master') {
             context.timestamps {
-                def folder = Configuration.get("tenancyName")
-                def launcherJobName = folder + "/launcher"
+                def folder = Configuration.get("folderName")
                 prepare()
                 generateCiItems(folder)
-                setSecurity(folder, launcherJobName)
-//                generateLauncher(folder +'/RegisterRepository')
+                logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
+                if (Configuration.get("securityEnabled")?.toBoolean()) {
+                    setSecurity(folder)
+                }
                 clean()
             }
         }
@@ -57,7 +60,7 @@ class Organization {
         logger.info("Organization->register")
         context.node('master') {
             context.timestamps {
-                def folder = Configuration.get("tenancyName")
+                def folder = Configuration.get("folderName")
                 def userName = folder + "-user"
                 prepare()
                 deleteFolder(folder)
@@ -87,9 +90,14 @@ class Organization {
 
     protected def generateCiItems(folder) {
         context.stage("Register Organization") {
-            registerObject("project_folder", new FolderFactory(folder, ""))
+            if (!isParamEmpty(folder)) {
+                registerObject("project_folder", new FolderFactory(folder, ""))
+            }
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
+            registerObject("testrail_job", new TestRailJobFactory(folder, getTestRailScript(), Configuration.TESTRAIL_UPDATER_JOBNAME, "Custom job testrail"))
+            registerObject("qtest_job", new QTestJobFactory(folder, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
+
             context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
             context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
                     sandbox: true,
@@ -105,7 +113,8 @@ class Organization {
         dslObjects.put(name, object)
     }
 
-    protected def setSecurity(folder, launcherJobName){
+    protected def setSecurity(folder){
+        logger.info("Organization->setSecurity")
         def userName = folder + "-user"
         boolean initialized = false
         def integrationParameters = [:]
@@ -117,7 +126,7 @@ class Organization {
             if (token == null) {
                 throw new RuntimeException("Token generation failed or token for user ${userName} is already exists")
             }
-            integrationParameters = generateIntegrationParemetersMap(userName, token.tokenValue, launcherJobName)
+            integrationParameters = generateIntegrationParemetersMap(userName, token.tokenValue, folder)
             initialized = true
         } catch (Exception e) {
             logger.error("Something went wrong during secure folder initialization: \n${e}")
@@ -198,32 +207,14 @@ class Organization {
         folder.save()
     }
 
-    protected def generateIntegrationParemetersMap(userName, tokenValue, launcherJobName){
+    protected def generateIntegrationParemetersMap(userName, tokenValue, folder){
         def integrationParameters = [:]
         String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split("/job/")[0]
         integrationParameters.JENKINS_URL = jenkinsUrl
         integrationParameters.JENKINS_USER = userName
         integrationParameters.JENKINS_API_TOKEN_OR_PASSWORD = tokenValue
-        integrationParameters.JENKINS_LAUNCHER_JOB_NAME = launcherJobName
+        integrationParameters.JENKINS_FOLDER = folder
         return integrationParameters
-    }
-
-    public def registerZafiraCredentials(){
-        context.stage("Register Zafira Credentials") {
-            def orgFolderName = Configuration.get("tenancyName")
-            def zafiraServiceURL = Configuration.get("zafiraServiceURL")
-            def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
-            if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
-                throw new RuntimeException("Required fields are missing")
-            }
-            def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
-            def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
-
-            if (updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL))
-                logger.info(orgFolderName + " zafira service url was successfully registered.")
-            if (updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken))
-                logger.info(orgFolderName + " zafira access token was successfully registered.")
-        }
     }
 
     protected String getPipelineScript() {
@@ -245,4 +236,21 @@ class Organization {
             context.deleteDir()
         }
     }
+
+    protected String getTestRailScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
+        }
+    }
+
+    protected String getQTestScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
+        }
+    }
+
 }

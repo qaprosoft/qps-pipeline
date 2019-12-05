@@ -24,22 +24,34 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
     def create() {
         logger.info("RegisterRepositoryJobFactory->create")
         def pipelineJob = super.create()
+		def repo = ""
+		if ("qaprosoft".equals(this.folder) || "".equals(this.folder)) {
+			repo = "carina-demo"
+		}
+		def org = "qaprosoft"
+		if (!this.folder.isEmpty()) {
+			org = this.folder
+		}
+		
         pipelineJob.with {
             parameters {
-                configure stringParam('organization', '', 'GitHub organization')
-                configure stringParam('repo', '', 'GitHub repository for scanning')
-                configure stringParam('branch', '', 'It is highly recommended to use master branch for each scan operation')
-                configure stringParam('user', '', 'GitHub user')
-                configure stringParam('token', '', 'GitHub token with read permissions')
-                configure stringParam('pipelineLibrary', pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
-                configure stringParam('runnerClass', runnerClass, '')
+                configure stringParam('scmHost', 'github.com', 'Source Control Management host')
+                configure stringParam('scmOrg', org, 'Source Control Management organization')
+                configure stringParam('repo', repo, 'Repository for scanning')
+                configure stringParam('branch', 'master', 'It is highly recommended to use master branch for each scan operation')
+                configure stringParam('scmUser', '', 'SCM user')
+                configure stringParam('scmToken', '', 'CSM token with read permissions')
+                configure stringParam('pipelineLibrary', this.pipelineLibrary, 'Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases')
+                configure stringParam('runnerClass', this.runnerClass, '')
+                configure addHiddenParameter('zafiraFields', '', '')
+                configure addHiddenParameter('userId', '', '2')
             }
         }
         return pipelineJob
     }
 
     String getPipelineScript() {
-        return "@Library(\'${pipelineLibrary}\')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).register()"
+        return "@Library(\'QPS-Pipeline\')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).register()"
     }
 
 }

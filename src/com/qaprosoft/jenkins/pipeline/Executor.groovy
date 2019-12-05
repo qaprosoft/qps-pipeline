@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.pipeline
 
+import java.util.regex.Pattern
+import java.util.regex.Matcher
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 @Grab('org.testng:testng:6.8.8')
@@ -20,7 +22,7 @@ import com.cloudbees.plugins.credentials.domains.*
 public class Executor {
 
     static enum BuildResult {
-        FAILURE, ABORTED, UNSTABLE
+        FAILURE, ABORTED, UNSTABLE, SUCCESS
     }
 
     static enum FailureCause {
@@ -45,7 +47,12 @@ public class Executor {
     }
 
     static def getEmailParams(body, subject, to) {
-        def params = [attachLog: true,
+        return getEmailParams(body, subject, to, "")
+    }
+
+    static def getEmailParams(body, subject, to, attachments) {
+        def params = [attachmentsPattern: attachments,
+              attachLog: true,
                       body: body,
                       recipientProviders: [[$class: 'DevelopersRecipientProvider'],
                                            [$class: 'RequesterRecipientProvider']],
@@ -129,20 +136,21 @@ public class Executor {
                 folderName  = folderName + array[i]
             }
             folderName = replaceTrailingSlash(folderName)
+        } else if (workspace.contains("workspace/")) {
+            // example #1 "/var/lib/jenkins/workspace/QA/myRepo/onPush-myRepo"
+            // example #2 "/var/lib/jenkins/workspace/myRepo/onPush-myRepo"
+
+            workspace = workspace.split("workspace/")[1]
+            def array = workspace.split("/")
+            for (def i = 0; i < array.size() - 1; i++){
+                folderName  = folderName + "/" + array[i]
+            }
         } else {
             def array = workspace.split("/")
             folderName = array[array.size() - 2]
         }
 
         return folderName
-    }
-
-    static boolean isFailure(testRunStatus) {
-        boolean failure = false
-        if (!"PASSED".equals(testRunStatus)){
-            failure = true
-        }
-        return failure
     }
 
     static def getPipelineLocales(xmlSuite){
@@ -341,7 +349,7 @@ public class Executor {
         }
     }
 
-    static boolean isJobParameterValid(name, value) {
+    static boolean isJobParameterValid(name) {
         def excludedCapabilities = ["custom_capabilities",
                                     "retry_count",
                                     "rerun_failures",
@@ -349,7 +357,15 @@ public class Executor {
                                     "debug",
                                     "ci_run_id",
                                     "pipelineLibrary",
-                                    "runnerClass"]
+                                    "runnerClass",
+                                    "BuildPriority",
+                                    "auto_screenshot",
+                                    "enableVideo",
+                                    "test_run_rules",
+                                    "recoveryMode",
+                // TODO: remove exclusion after finishing https://github.com/qaprosoft/qps-pipeline/issues/510
+                                    "capabilities"
+        ]
         def excluded = excludedCapabilities.find {
             it.equals(name)
         }
@@ -414,4 +430,27 @@ public class Executor {
             pipelineMap.put(mapItem.key, mapItem.value)
         }
     }
+	
+	static def filterSecuredParams(goals) {
+		def arrayOfParmeters = goals.split()
+		def resultSpringOfParameters = ''
+		for (parameter in arrayOfParmeters) {
+			def resultString = ''
+			if (parameter.contains("token") || parameter.contains("TOKEN")) {
+				def arrayOfString = parameter.split("=")
+				resultString = arrayOfString[0] + "=********"
+			} else if (parameter.contains("-Dselenium_host")){
+				parameter = "-Dselenium_host=http://demo:demo@demo.qaprosoft.com:4444/wd/hub"
+				def pattern = "(\\-Dselenium_host=http:\\/\\/.+:)\\S+(@.+)"
+				Matcher matcher = Pattern.compile(pattern).matcher(parameter)
+				while (matcher.find()) {
+					resultString = matcher.group(1) + "********" + matcher.group(2)
+				}
+			} else {
+				resultString = parameter
+			}
+			resultSpringOfParameters += resultString + ' '
+		}
+		return resultSpringOfParameters
+	}
 }

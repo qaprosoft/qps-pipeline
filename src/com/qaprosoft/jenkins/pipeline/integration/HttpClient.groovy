@@ -33,6 +33,10 @@ abstract class HttpClient {
             logger.error(printStackTrace(e))
         }
         if (!response || response.status >= 400){
+            // [VD] as we don't remember the reason of making build as FAILURE we commented these lines
+//            if (!requestParams.url.contains("queue")) {
+//                context.currentBuild.result = BuildResult.FAILURE
+//            }
             return
         }
         return response.content

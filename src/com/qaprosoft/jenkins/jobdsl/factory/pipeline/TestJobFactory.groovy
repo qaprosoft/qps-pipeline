@@ -36,7 +36,8 @@ public class TestJobFactory extends PipelineFactory {
 
         XmlSuite currentSuite = parseSuite(suitePath)
 
-        this.name = currentSuite.getParameter("jenkinsJobName")
+        this.name = !isParamEmpty(currentSuite.getParameter("jenkinsJobName"))?currentSuite.getParameter("jenkinsJobName"):currentSuite.getName()
+        name = replaceSlashes(name, '_')
         logger.info("JenkinsJobName: ${name}")
 
         def pipelineJob = super.create()
@@ -54,7 +55,7 @@ public class TestJobFactory extends PipelineFactory {
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
                 booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
-                booleanParam('debug', false, 'Check to start tests in remote debug mode.')
+                //booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
                 //** Requires Active Choices Plug-in v1.2+ **//*
                 //** Currently renders with error: https://issues.jenkins-ci.org/browse/JENKINS-42655 **//*
@@ -76,67 +77,47 @@ public class TestJobFactory extends PipelineFactory {
                 def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
                 def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
 
-                switch(getSuiteParameter(suiteName, "jenkinsJobType", currentSuite).toLowerCase()) {
-                    case ~/^(?!.*web).*api.*$/:
+                def jobType = getSuiteParameter("api", "jenkinsJobType", currentSuite).toLowerCase()
+                // TODO: add ios_web, android_web if needed
+                switch(jobType) {
+                    case "api":
                         // API tests specific
+                        configure stringParam('capabilities', getSuiteParameter("", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         configure addHiddenParameter('platform', '', 'API')
                         break
-                    case ~/^.*web.*$/:
-                    case ~/^.*gui.*$/:
+                    case "web":
                         // WEB tests specific
+                        configure stringParam('capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
                         configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
-                        def browser = 'chrome'
-                        if (currentSuite.getParameter("jenkinsDefaultBrowser") != null) {
-                            browser = currentSuite.getParameter("jenkinsDefaultBrowser")
-                        }
-                        configure addExtensibleChoice('browser', 'gc_BROWSER', 'Select a browser to run tests against.', browser)
-                        configure addHiddenParameter('browser_version', '', '*')
-                        configure addHiddenParameter('os', '', 'NULL')
-                        configure addHiddenParameter('os_version', '', '*')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure addHiddenParameter('platform', '', '*')
                         break
-                    case ~/^.*android.*$/:
-                        choiceParam('devicePool', getDevices('ANDROID'), "Select the Device a Test will run against.  ANY - Any available device or exact device.")
-                        if (getSuiteParameter("false", "jenkinsMobileWeb", currentSuite).toBoolean()) {
-                            choiceParam('deviceBrowser', ["chrome"], "Select the mobile browser a Test will run against.")
-                        }
-                        //TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
-                        //stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage\n2.2.0.3741.45 - exact version you would like to use")
-                        booleanParam('recoveryMode', false, 'Restart application between retries')
+                    case "android":
+                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
                         configure addHiddenParameter('platform', '', 'ANDROID')
                         break
-                    case ~/^.*ios.*$/:
-                        //TODO:  Need to adjust this for virtual as well.
-                        choiceParam('devicePool', getDevices('iOS'), "Select the Device a Test will run against.  ANY - Any available device or exact device.")
-                        if (getSuiteParameter("false", "jenkinsMobileWeb", currentSuite).toBoolean()) {
-                            choiceParam('deviceBrowser', ["safari"], "Select the mobile browser a Test will run against.")
-                        }
-                        //TODO: Check private repositories for parameter use and fix possible problems using custom pipeline
-                        //stringParam('build', '.*', ".* - use fresh build artifact from S3 or local storage\n2.2.0.3741.45 - exact version you would like to use")
-                        booleanParam('recoveryMode', false, 'Restart application between retries')
-                        //TODO: hardcode auto_screenshots=true for iOS until we fix video recording
+                    case "ios":
+                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-                        //TODO: enable video as only issue with Appiym and xrecord utility is fixed
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
                         configure addHiddenParameter('platform', '', 'iOS')
                         break
+					// web ios: capabilities: browserName=safari, deviceName=ANY
+					// web android: capabilities: browserName=chrome, deviceName=ANY
                     default:
+                        configure stringParam('capabilities', getSuiteParameter("", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
                         configure addHiddenParameter('platform', '', '*')
                         break
                 }
-
+				configure addHiddenParameter('job_type', '', jobType)
                 def nodeLabel = getSuiteParameter("", "jenkinsNodeLabel", currentSuite)
                 if (!isParamEmpty(nodeLabel)){
                     configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
                 }
-
                 configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", getSuiteParameter("master", "jenkinsDefaultGitBranch", currentSuite))
                 configure addHiddenParameter('repo', '', repo)
                 configure addHiddenParameter('GITHUB_HOST', '', host)
@@ -157,6 +138,7 @@ public class TestJobFactory extends PipelineFactory {
                 booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
                 stringParam('test_run_rules', '', 'Ex. PRIORITY=>P1&&P2;;OWNER=>user;;\nIf not empty, adding queued tests will be disabled.')
                 configure addHiddenParameter('overrideFields', '' , getSuiteParameter("", "overrideFields", currentSuite))
+                configure addHiddenParameter('zafiraFields', '' , getSuiteParameter("", "zafiraFields", currentSuite))
 
                 Map paramsMap = currentSuite.getAllParameters()
                 logger.info("ParametersMap: ${paramsMap}")
