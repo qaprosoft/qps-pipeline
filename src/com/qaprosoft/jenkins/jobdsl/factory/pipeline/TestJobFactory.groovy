@@ -104,7 +104,7 @@ public class TestJobFactory extends PipelineFactory {
 					// web ios: capabilities: browserName=safari, deviceName=ANY
 					// web android: capabilities: browserName=chrome, deviceName=ANY
                     default:
-                        configure stringParam('capabilities', getSuiteParameter("", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+						configure stringParam('capabilities', getSuiteParameter("platformName=*", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
                         break
                 }
