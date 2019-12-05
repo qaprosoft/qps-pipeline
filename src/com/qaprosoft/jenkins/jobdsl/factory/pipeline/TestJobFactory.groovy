@@ -79,7 +79,6 @@ public class TestJobFactory extends PipelineFactory {
                 switch(getSuiteParameter(suiteName, "jenkinsJobType", currentSuite).toLowerCase()) {
                     case ~/^(?!.*web).*api.*$/:
                         // API tests specific
-                        configure addHiddenParameter('platform', '', 'API')
                         break
                     case ~/^.*web.*$/:
                     case ~/^.*gui.*$/:
@@ -90,12 +89,8 @@ public class TestJobFactory extends PipelineFactory {
                             browser = currentSuite.getParameter("jenkinsDefaultBrowser")
                         }
                         configure addExtensibleChoice('browser', 'gc_BROWSER', 'Select a browser to run tests against.', browser)
-                        configure addHiddenParameter('browser_version', '', '*')
-                        configure addHiddenParameter('os', '', 'NULL')
-                        configure addHiddenParameter('os_version', '', '*')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('platform', '', '*')
                         break
                     case ~/^.*android.*$/:
                         choiceParam('devicePool', getDevices('ANDROID'), "Select the Device a Test will run against.  ANY - Any available device or exact device.")
@@ -107,8 +102,6 @@ public class TestJobFactory extends PipelineFactory {
                         booleanParam('recoveryMode', false, 'Restart application between retries')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
-                        configure addHiddenParameter('platform', '', 'ANDROID')
                         break
                     case ~/^.*ios.*$/:
                         //TODO:  Need to adjust this for virtual as well.
@@ -123,40 +116,22 @@ public class TestJobFactory extends PipelineFactory {
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         //TODO: enable video as only issue with Appiym and xrecord utility is fixed
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
-                        configure addHiddenParameter('platform', '', 'iOS')
                         break
                     default:
                         booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
-                        configure addHiddenParameter('platform', '', '*')
                         break
                 }
 
                 def nodeLabel = getSuiteParameter("", "jenkinsNodeLabel", currentSuite)
-                if (!isParamEmpty(nodeLabel)){
-                    configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
-                }
 
                 configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", getSuiteParameter("master", "jenkinsDefaultGitBranch", currentSuite))
-                configure addHiddenParameter('repo', '', repo)
-                configure addHiddenParameter('GITHUB_HOST', '', host)
-                configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
-                configure addHiddenParameter('sub_project', '', sub_project)
-                configure addHiddenParameter('zafira_project', '', zafira_project)
-                configure addHiddenParameter('suite', '', suiteName)
-                configure addHiddenParameter('ci_parent_url', '', '')
-                configure addHiddenParameter('ci_parent_build', '', '')
-                configure addHiddenParameter('slack_channels', '', getSuiteParameter("", "jenkinsSlackChannels", currentSuite))
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-                configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
                 stringParam('thread_count', getSuiteParameter("1", "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
                 stringParam('email_list',  getSuiteParameter("", "jenkinsEmail", currentSuite), 'List of Users to be emailed after the test')
-                configure addHiddenParameter('failure_email_list', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
                 choiceParam('retry_count', getRetryCountArray(currentSuite), 'Number of Times to Retry a Failed Test')
                 booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
                 stringParam('test_run_rules', '', 'Ex. PRIORITY=>P1&&P2;;OWNER=>user;;\nIf not empty, adding queued tests will be disabled.')
-                configure addHiddenParameter('overrideFields', '' , getSuiteParameter("", "overrideFields", currentSuite))
 
                 Map paramsMap = currentSuite.getAllParameters()
                 logger.info("ParametersMap: ${paramsMap}")
@@ -169,9 +144,6 @@ public class TestJobFactory extends PipelineFactory {
                     if (param.key.contains(delimiter)) {
                         def (type, name, desc) = param.key.split(delimiter)
                         switch(type.toLowerCase()) {
-                            case "hiddenparam":
-                                configure addHiddenParameter(name, desc, param.value)
-                                break
                             case "stringparam":
                                 stringParam(name, param.value, desc)
                                 break
