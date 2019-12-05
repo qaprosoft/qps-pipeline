@@ -79,7 +79,7 @@ public class TestJobFactory extends PipelineFactory {
                 switch(getSuiteParameter(suiteName, "jenkinsJobType", currentSuite).toLowerCase()) {
                     case ~/^(?!.*web).*api.*$/:
                         // API tests specific
-                        configure addHiddenParameter('platform', '', 'API')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=API", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case ~/^.*web.*$/:
                     case ~/^.*gui.*$/:
@@ -95,7 +95,6 @@ public class TestJobFactory extends PipelineFactory {
                         configure addHiddenParameter('os_version', '', '*')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('platform', '', '*')
                         break
                     case ~/^.*android.*$/:
                         choiceParam('devicePool', getDevices('ANDROID'), "Select the Device a Test will run against.  ANY - Any available device or exact device.")
@@ -108,7 +107,7 @@ public class TestJobFactory extends PipelineFactory {
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
-                        configure addHiddenParameter('platform', '', 'ANDROID')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDROID", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case ~/^.*ios.*$/:
                         //TODO:  Need to adjust this for virtual as well.
@@ -124,11 +123,10 @@ public class TestJobFactory extends PipelineFactory {
                         //TODO: enable video as only issue with Appiym and xrecord utility is fixed
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure addHiddenParameter('DefaultPool', '', defaultMobilePool)
-                        configure addHiddenParameter('platform', '', 'iOS')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     default:
                         booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
-                        configure addHiddenParameter('platform', '', '*')
                         break
                 }
 
