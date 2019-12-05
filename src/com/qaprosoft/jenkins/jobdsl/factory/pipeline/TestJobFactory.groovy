@@ -79,6 +79,7 @@ public class TestJobFactory extends PipelineFactory {
                 switch(getSuiteParameter(suiteName, "jenkinsJobType", currentSuite).toLowerCase()) {
                     case ~/^(?!.*web).*api.*$/:
                         // API tests specific
+                        configure stringParam('capabilities', getSuiteParameter("platformName=API", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case ~/^.*web.*$/:
                     case ~/^.*gui.*$/:
@@ -89,8 +90,10 @@ public class TestJobFactory extends PipelineFactory {
                             browser = currentSuite.getParameter("jenkinsDefaultBrowser")
                         }
                         configure addExtensibleChoice('browser', 'gc_BROWSER', 'Select a browser to run tests against.', browser)
+                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=API", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case ~/^.*android.*$/:
                         choiceParam('devicePool', getDevices('ANDROID'), "Select the Device a Test will run against.  ANY - Any available device or exact device.")
@@ -102,6 +105,7 @@ public class TestJobFactory extends PipelineFactory {
                         booleanParam('recoveryMode', false, 'Restart application between retries')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDROID", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case ~/^.*ios.*$/:
                         //TODO:  Need to adjust this for virtual as well.
@@ -116,9 +120,11 @@ public class TestJobFactory extends PipelineFactory {
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         //TODO: enable video as only issue with Appiym and xrecord utility is fixed
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')                        break
                         break
                     default:
                         booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=API", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                 }
 
