@@ -145,7 +145,7 @@ public class TestJobFactory extends PipelineFactory {
                 stringParam('test_run_rules', '', 'Ex. PRIORITY=>P1&&P2;;OWNER=>user;;\nIf not empty, adding queued tests will be disabled.')
                 configure addHiddenParameter('overrideFields', '' , getSuiteParameter("", "overrideFields", currentSuite))
                 configure addHiddenParameter('zafiraFields', '' , getSuiteParameter("", "zafiraFields", currentSuite))
-                stringParam('Max # of builds to keep', getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite), 'enter max number of keeping builds')
+                stringParam('maxNumberKeepBuilds', getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite), 'enter max number of keeping builds')
 
                 Map paramsMap = currentSuite.getAllParameters()
                 logger.info("ParametersMap: ${paramsMap}")
