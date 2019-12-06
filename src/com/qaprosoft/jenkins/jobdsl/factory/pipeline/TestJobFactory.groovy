@@ -76,7 +76,7 @@ public class TestJobFactory extends PipelineFactory {
                 def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
                 def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
                 def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
-                def maxNumberKeepBuilds = getSuiteParameter(30, "maxNumberKeepBuilds", currentSuite)
+                def maxNumberKeepBuilds = getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite)
 
                 def jobType = getSuiteParameter("api", "jenkinsJobType", currentSuite).toLowerCase()
                 // TODO: add ios_web, android_web if needed
