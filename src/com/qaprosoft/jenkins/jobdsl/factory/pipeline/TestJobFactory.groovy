@@ -42,6 +42,10 @@ public class TestJobFactory extends PipelineFactory {
 
         def pipelineJob = super.create()
         pipelineJob.with {
+            def maxNumberKeepBuilds = getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite).toInteger()
+            logRotator {
+                numToKeep maxNumberKeepBuilds
+            }
 
             //** Triggers **//*
             def scheduling = currentSuite.getParameter("scheduling")
@@ -96,26 +100,27 @@ public class TestJobFactory extends PipelineFactory {
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
-					case "android-web":
-						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-						booleanParam('enableVideo', enableVideo, 'Enable video recording')
-						configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
-						break
+                    case "android-web":
+                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        break
                     case "ios":
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure stringParam('capabilities', getSuiteParameter("platformName=iOS;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
-					case "ios-web":
-						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-						booleanParam('enableVideo', enableVideo, 'Enable video recording')
-						configure stringParam('capabilities', getSuiteParameter("platformName=iOS;browserName=safari;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
-						break
-					// web ios: capabilities: browserName=safari, deviceName=ANY
-					// web android: capabilities: browserName=chrome, deviceName=ANY
+                    case "ios-web":
+                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS;browserName=safari;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        break
+                // web ios: capabilities: browserName=safari, deviceName=ANY
+                // web android: capabilities: browserName=chrome, deviceName=ANY
                     default:
-						configure stringParam('capabilities', getSuiteParameter("platformName=*", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=*", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
+
                         break
                 }
 				configure addHiddenParameter('job_type', '', jobType)
