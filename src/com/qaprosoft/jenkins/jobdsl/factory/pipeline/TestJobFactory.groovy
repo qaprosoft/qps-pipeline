@@ -42,9 +42,9 @@ public class TestJobFactory extends PipelineFactory {
 
         def pipelineJob = super.create()
         pipelineJob.with {
-
+            maxNumberKeepBuilds = getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite)
             logRotator {
-                numToKeep  getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite)
+                numToKeep maxNumberKeepBuilds
             }
 
             //** Triggers **//*
