@@ -99,10 +99,10 @@ public class TestJobFactory extends PipelineFactory {
                         configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite)
                         break
-					case "android-web":
-						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-						booleanParam('enableVideo', enableVideo, 'Enable video recording')
-						configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                    case "android-web":
+                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite)
                         break
                     case "ios":
@@ -111,16 +111,16 @@ public class TestJobFactory extends PipelineFactory {
                         configure stringParam('capabilities', getSuiteParameter("platformName=iOS;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite)
                         break
-					case "ios-web":
-						booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-						booleanParam('enableVideo', enableVideo, 'Enable video recording')
-						configure stringParam('capabilities', getSuiteParameter("platformName=iOS;browserName=safari;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                    case "ios-web":
+                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS;browserName=safari;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite)
                         break
-					// web ios: capabilities: browserName=safari, deviceName=ANY
-					// web android: capabilities: browserName=chrome, deviceName=ANY
+                // web ios: capabilities: browserName=safari, deviceName=ANY
+                // web android: capabilities: browserName=chrome, deviceName=ANY
                     default:
-						configure stringParam('capabilities', getSuiteParameter("platformName=*", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=*", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
                         configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite)
                         break
