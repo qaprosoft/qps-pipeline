@@ -43,6 +43,10 @@ public class TestJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
 
+            logRotator {
+                numToKeep  getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite)
+            }
+
             //** Triggers **//*
             def scheduling = currentSuite.getParameter("scheduling")
             if (scheduling != null) {
@@ -145,7 +149,6 @@ public class TestJobFactory extends PipelineFactory {
                 stringParam('test_run_rules', '', 'Ex. PRIORITY=>P1&&P2;;OWNER=>user;;\nIf not empty, adding queued tests will be disabled.')
                 configure addHiddenParameter('overrideFields', '' , getSuiteParameter("", "overrideFields", currentSuite))
                 configure addHiddenParameter('zafiraFields', '' , getSuiteParameter("", "zafiraFields", currentSuite))
-                stringParam('maxNumberKeepBuilds', getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite), 'enter max number of keeping builds')
 
                 Map paramsMap = currentSuite.getAllParameters()
                 logger.info("ParametersMap: ${paramsMap}")
