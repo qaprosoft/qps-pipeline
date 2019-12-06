@@ -76,7 +76,6 @@ public class TestJobFactory extends PipelineFactory {
                 def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
                 def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
                 def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
-                def maxNumberKeepBuilds = getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite)
 
                 def jobType = getSuiteParameter("api", "jenkinsJobType", currentSuite).toLowerCase()
                 // TODO: add ios_web, android_web if needed
@@ -91,38 +90,33 @@ public class TestJobFactory extends PipelineFactory {
                         configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite, 'enter max number of keeping builds')
                         break
                     case "android":
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
-                        configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite, 'enter max number of keeping builds')
                         break
                     case "android-web":
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
-                        configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite, 'enter max number of keeping builds')
                         break
                     case "ios":
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure stringParam('capabilities', getSuiteParameter("platformName=iOS;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
-                        configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite, 'enter max number of keeping builds')
                         break
                     case "ios-web":
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         configure stringParam('capabilities', getSuiteParameter("platformName=iOS;browserName=safari;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
-                        configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite, 'enter max number of keeping builds')
                         break
                 // web ios: capabilities: browserName=safari, deviceName=ANY
                 // web android: capabilities: browserName=chrome, deviceName=ANY
                     default:
                         configure stringParam('capabilities', getSuiteParameter("platformName=*", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
-                        configure stringParam('Max # of builds to keep', maxNumberKeepBuilds, currentSuite, 'enter max number of keeping builds')
+
                         break
                 }
 				configure addHiddenParameter('job_type', '', jobType)
@@ -151,6 +145,7 @@ public class TestJobFactory extends PipelineFactory {
                 stringParam('test_run_rules', '', 'Ex. PRIORITY=>P1&&P2;;OWNER=>user;;\nIf not empty, adding queued tests will be disabled.')
                 configure addHiddenParameter('overrideFields', '' , getSuiteParameter("", "overrideFields", currentSuite))
                 configure addHiddenParameter('zafiraFields', '' , getSuiteParameter("", "zafiraFields", currentSuite))
+                stringParam('Max # of builds to keep', getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite), currentSuite, 'enter max number of keeping builds')
 
                 Map paramsMap = currentSuite.getAllParameters()
                 logger.info("ParametersMap: ${paramsMap}")
