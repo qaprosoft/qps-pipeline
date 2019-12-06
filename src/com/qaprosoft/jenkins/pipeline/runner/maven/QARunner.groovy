@@ -1069,6 +1069,7 @@ public class QARunner extends AbstractRunner {
                 "jobExecutionOrderNumber: ${orderNum};\n	email_list: ${emailList};\n	" +
                 "supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	" +
                 "supportedBrowsers: ${supportedBrowsers};\n\tcurrentBrowser: ${currentBrowser};"
+        def maxNumberKeepBuilds = !isParamEmpty(currentSuite.getParameter("maxNumberKeepBuilds"))?currentSuite.getParameter("maxNumberKeepBuilds"):"30"
         logger.info(logLine)
 
         for (def regressionPipeline : regressionPipelines?.split(",")) {
@@ -1119,6 +1120,7 @@ public class QARunner extends AbstractRunner {
                         putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
                         putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
                         putNotNull(pipelineMap, "queue_registration", queueRegistration)
+                        putNotNull(pipelineMap, 'maxNumberKeepBuilds', maxNumberKeepBuilds)
                         registerPipeline(currentSuite, pipelineMap)
                     }
                 }
