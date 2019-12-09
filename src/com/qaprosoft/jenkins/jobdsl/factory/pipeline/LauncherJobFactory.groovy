@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-import com.qaprosoft.jenkins.jobdsl.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors
 import org.testng.xml.XmlSuite
 
