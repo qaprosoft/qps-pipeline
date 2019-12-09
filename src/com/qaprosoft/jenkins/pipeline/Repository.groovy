@@ -79,7 +79,7 @@ class Repository {
 
     private void prepare() {
         // We don't have github credentials at this point, action is not possible. Necessary to think how to add it before this call.
-//        scmClient.clone(true) //do shallow clone during repo registration to verify if Jenkinsfile exists inside
+        scmClient.clone(true) //do shallow clone during repo registration to verify if Jenkinsfile exists inside
         String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
         String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
         scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
