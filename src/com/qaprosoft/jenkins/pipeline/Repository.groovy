@@ -80,7 +80,11 @@ class Repository {
     }
 
     private void prepare() {
-        registerCredentials()
+        def githubOrganization = Configuration.get(SCM_ORG)
+        def credentialsId = "${githubOrganization}-${Configuration.get(REPO)}"
+
+        updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get(SCM_USER), Configuration.get(SCM_TOKEN))
+
         scmClient.clone(true)
         String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
         String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
@@ -132,9 +136,7 @@ class Repository {
 
             def githubHost = Configuration.get(SCM_HOST)
             def githubOrganization = Configuration.get(SCM_ORG)
-            def credentialsId = "${githubOrganization}-${Configuration.get(REPO)}"
 
-            updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get("scmUser"), Configuration.get("scmToken"))
 //			createPRChecker(credentialsId)
 
             registerObject("project_folder", new FolderFactory(repoFolder, ""))
@@ -255,8 +257,8 @@ class Repository {
 
     public def registerCredentials() {
         context.stage("Register Credentials") {
-            def user = Configuration.get("scmUser")
-            def token = Configuration.get("scmToken")
+            def user = Configuration.get(SCM_USER)
+            def token = Configuration.get(SCM_TOKEN)
             def jenkinsUser = !isParamEmpty(Configuration.get("jenkinsUser")) ? Configuration.get("jenkinsUser") : getBuildUser(context.currentBuild)
             if (updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " SCM token", user, token)) {
                 logger.info(jenkinsUser + " credentials were successfully registered.")
