@@ -36,11 +36,10 @@ class Utils {
 
     static def getSuiteParameter(defaultValue, parameterName, currentSuite){
         def value = defaultValue
-        def suiteValue = currentSuite.getParameter(parameterName)
-        if (!isParamEmpty(suiteValue) && (suiteValue instanceof String)) {
-            // if suiteValue doesn't contains comas value will get one value of string
-            value = suiteValue.split(",")[0].trim()
-        }
+		if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
+			value = currentSuite.getParameter(parameterName)
+		}
+		
         return value
     }
 

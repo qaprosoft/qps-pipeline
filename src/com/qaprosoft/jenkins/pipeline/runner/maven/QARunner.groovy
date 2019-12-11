@@ -313,6 +313,7 @@ public class QARunner extends AbstractRunner {
                 continue
             }
             def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
+            
             logger.info("SUITE_NAME: " + suiteName)
             def currentSuitePath = workspace + "/" + suitePath
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
@@ -322,6 +323,12 @@ public class QARunner extends AbstractRunner {
             logger.info("suite path: " + suitePath)
 
             def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
+			if (suiteOwner.contains(",")) {
+				// to workaround problem when multiply suiteowners are declared in suite xml file which is unsupported
+				suiteOwner = suiteOwner.split(",")[0].trim()
+			}
+            
+
             def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
             // put standard views factory into the map
