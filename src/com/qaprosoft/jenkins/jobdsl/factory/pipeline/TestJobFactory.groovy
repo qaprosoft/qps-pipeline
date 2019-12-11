@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
+import com.qaprosoft.jenkins.pipeline.Configuration
+
 @Grab('org.testng:testng:6.8.8')
 
 import static com.qaprosoft.jenkins.Utils.*
@@ -17,6 +19,7 @@ public class TestJobFactory extends PipelineFactory {
     def zafira_project
     def suitePath
     def suiteName
+    private static final String BRANCH = "branch"
 
     public TestJobFactory(folder, pipelineScript, host, repo, organization, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
         this.folder = folder
@@ -128,7 +131,7 @@ public class TestJobFactory extends PipelineFactory {
                 if (!isParamEmpty(nodeLabel)){
                     configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
                 }
-                configure stringParam('scmBranch', "master", "GitHub repository branch to run against")
+                configure stringParam('scmBranch', Configuration.get(BRANCH), "GitHub repository branch to run against")
                 configure addHiddenParameter('repo', '', repo)
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
