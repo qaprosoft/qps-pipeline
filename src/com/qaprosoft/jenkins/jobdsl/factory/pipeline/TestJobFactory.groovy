@@ -128,7 +128,7 @@ public class TestJobFactory extends PipelineFactory {
                 if (!isParamEmpty(nodeLabel)){
                     configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
                 }
-                configure stringParam('scmBranch', getSuiteParameter("master", "scmBranch", currentSuite), "GitHub repository branch to run against")
+                configure stringParam('scmBranch', "master", "GitHub repository branch to run against")
                 configure addHiddenParameter('repo', '', repo)
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
