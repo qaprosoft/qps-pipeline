@@ -15,6 +15,7 @@ public class TestJobFactory extends PipelineFactory {
     def host
     def repo
     def organization
+	def branch
     def sub_project
     def zafira_project
     def suitePath
