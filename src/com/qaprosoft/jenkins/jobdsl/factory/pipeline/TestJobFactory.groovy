@@ -128,7 +128,6 @@ public class TestJobFactory extends PipelineFactory {
                 if (!isParamEmpty(nodeLabel)){
                     configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
                 }
-                configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", getSuiteParameter("master", "jenkinsDefaultGitBranch", currentSuite))
                 configure addHiddenParameter('repo', '', repo)
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
