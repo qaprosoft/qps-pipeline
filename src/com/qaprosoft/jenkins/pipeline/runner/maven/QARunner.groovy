@@ -1085,8 +1085,10 @@ public class QARunner extends AbstractRunner {
             }
 
             for (def currentEnv : currentEnvs.split(",")) {
+                currentEnv = currentEnv.trim()
                 for (def supportedEnv : supportedEnvs.split(",")) {
-//                        logger.debug("supportedEnv: " + supportedEnv)
+                    supportedEnv = supportedEnv.trim()
+//                  logger.debug("supportedEnv: " + supportedEnv)
                     if (!currentEnv.equals(supportedEnv) && !isParamEmpty(currentEnv)) {
                         logger.info("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
                         //launch test only if current suite support cron regression execution for current env
