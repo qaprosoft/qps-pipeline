@@ -192,7 +192,7 @@ public class QARunner extends AbstractRunner {
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 def testNGFolderName = searchTestNgFolderName(subProject).toString()
                 def zafiraProject = getZafiraProject(subProjectFilter)
-                generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
+                generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch)
 
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -294,7 +294,7 @@ public class QARunner extends AbstractRunner {
         return zafiraProject
     }
 
-    def generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter){
+    def generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch){
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
@@ -354,14 +354,14 @@ public class QARunner extends AbstractRunner {
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
             //cron job
             if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
                 def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
                 for (def cronJobName : cronJobNames.split(",")) {
                     cronJobName = cronJobName.trim()
                     def cronDesc = "project: ${repo}; type: cron"
-                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
+                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc))
                 }
             }
         }
