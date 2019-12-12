@@ -36,9 +36,10 @@ class Utils {
 
     static def getSuiteParameter(defaultValue, parameterName, currentSuite){
         def value = defaultValue
-        if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
-            value = currentSuite.getParameter(parameterName)
-        }
+		if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
+			value = currentSuite.getParameter(parameterName)
+		}
+		
         return value
     }
 

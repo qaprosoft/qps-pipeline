@@ -36,8 +36,8 @@ public class MergeJobFactory extends PipelineFactory {
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
                 configure addHiddenParameter('repo', 'GitHub repository for merging', repo)
-                stringParam('branch', 'master', 'Source GitHub branch')
-                stringParam('targetBranch', 'STAG', 'Target GitHub branch')
+                stringParam('branch', 'master', 'Source SCM repository branch')
+                stringParam('targetBranch', 'STAG', 'Target SCM repository branch')
                 booleanParam('forcePush', false, 'If chosen, do force branches merge.')
             }
 

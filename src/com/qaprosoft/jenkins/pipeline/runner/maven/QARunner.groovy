@@ -192,7 +192,7 @@ public class QARunner extends AbstractRunner {
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 def testNGFolderName = searchTestNgFolderName(subProject).toString()
                 def zafiraProject = getZafiraProject(subProjectFilter)
-                generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter)
+                generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch)
 
                 // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
                 context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -294,7 +294,7 @@ public class QARunner extends AbstractRunner {
         return zafiraProject
     }
 
-    def generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter){
+    def generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch){
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
@@ -313,6 +313,7 @@ public class QARunner extends AbstractRunner {
                 continue
             }
             def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
+            
             logger.info("SUITE_NAME: " + suiteName)
             def currentSuitePath = workspace + "/" + suitePath
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
@@ -322,6 +323,12 @@ public class QARunner extends AbstractRunner {
             logger.info("suite path: " + suitePath)
 
             def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
+			if (suiteOwner.contains(",")) {
+				// to workaround problem when multiply suiteowners are declared in suite xml file which is unsupported
+				suiteOwner = suiteOwner.split(",")[0].trim()
+			}
+            
+
             def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
             // put standard views factory into the map
@@ -347,14 +354,14 @@ public class QARunner extends AbstractRunner {
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
             //cron job
             if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
                 def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
                 for (def cronJobName : cronJobNames.split(",")) {
                     cronJobName = cronJobName.trim()
                     def cronDesc = "project: ${repo}; type: cron"
-                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, currentSuitePath, cronDesc))
+                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc))
                 }
             }
         }
@@ -1078,8 +1085,10 @@ public class QARunner extends AbstractRunner {
             }
 
             for (def currentEnv : currentEnvs.split(",")) {
+                currentEnv = currentEnv.trim()
                 for (def supportedEnv : supportedEnvs.split(",")) {
-//                        logger.debug("supportedEnv: " + supportedEnv)
+                    supportedEnv = supportedEnv.trim()
+//                  logger.debug("supportedEnv: " + supportedEnv)
                     if (!currentEnv.equals(supportedEnv) && !isParamEmpty(currentEnv)) {
                         logger.info("Skip execution for env: ${supportedEnv}; currentEnv: ${currentEnv}")
                         //launch test only if current suite support cron regression execution for current env

@@ -30,6 +30,8 @@ class Repository {
     private static final String SCM_HOST = "scmHost"
     private static final String REPO = "repo"
     private static final String BRANCH = "branch"
+    private static final String SCM_USER = "scmUser"
+    private static final String SCM_TOKEN = "scmToken"
 
     protected Map dslObjects = new LinkedHashMap()
 
@@ -78,8 +80,12 @@ class Repository {
     }
 
     private void prepare() {
-        // We don't have github credentials at this point, action is not possible. Necessary to think how to add it before this call.
-//        scmClient.clone(true) //do shallow clone during repo registration to verify if Jenkinsfile exists inside
+        def githubOrganization = Configuration.get(SCM_ORG)
+        def credentialsId = "${githubOrganization}-${Configuration.get(REPO)}"
+
+        updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get(SCM_USER), Configuration.get(SCM_TOKEN))
+
+        scmClient.clone(true)
         String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
         String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
         scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
@@ -130,9 +136,7 @@ class Repository {
 
             def githubHost = Configuration.get(SCM_HOST)
             def githubOrganization = Configuration.get(SCM_ORG)
-            def credentialsId = "${githubOrganization}-${Configuration.get(REPO)}"
 
-            updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get("scmUser"), Configuration.get("scmToken"))
 //			createPRChecker(credentialsId)
 
             registerObject("project_folder", new FolderFactory(repoFolder, ""))
@@ -253,8 +257,8 @@ class Repository {
 
     public def registerCredentials() {
         context.stage("Register Credentials") {
-            def user = Configuration.get("scmUser")
-            def token = Configuration.get("scmToken")
+            def user = Configuration.get(SCM_USER)
+            def token = Configuration.get(SCM_TOKEN)
             def jenkinsUser = !isParamEmpty(Configuration.get("jenkinsUser")) ? Configuration.get("jenkinsUser") : getBuildUser(context.currentBuild)
             if (updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " SCM token", user, token)) {
                 logger.info(jenkinsUser + " credentials were successfully registered.")
