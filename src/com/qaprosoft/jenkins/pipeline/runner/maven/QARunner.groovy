@@ -789,12 +789,12 @@ public class QARunner extends AbstractRunner {
 		-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 		-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
 		-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
-				-Dgit_branch=${Configuration.get("branch")} \
+		-Dgit_branch=${Configuration.get("branch")} \
 		-Dgit_commit=${Configuration.get("scm_commit")} \
 		-Dgit_url=${Configuration.get("scm_url")} \
 		-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
 		-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-				  -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
+		-Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
 		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
 		-Dmaven.test.failure.ignore=true \
 		clean test"
@@ -813,6 +813,11 @@ public class QARunner extends AbstractRunner {
 
         def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
+		//remove param as it should be already parsed and put into valid place as goals
+		Configuration.remove("capabilities")
+		Configuration.remove("ZAFIRA_SERVICE_URL")
+		Configuration.remove("ZAFIRA_ACCESS_TOKEN")
+		
         //register all obligatory vars
         Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
         //register all params after vars to be able to override
