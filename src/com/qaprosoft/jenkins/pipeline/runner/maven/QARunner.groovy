@@ -811,6 +811,9 @@ public class QARunner extends AbstractRunner {
 
         def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
+		//remove param as it should be already parsed and put into the dedicated params
+		Configuration.remove("capabilities")
+		
         //register all obligatory vars
         Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
         //register all params after vars to be able to override
