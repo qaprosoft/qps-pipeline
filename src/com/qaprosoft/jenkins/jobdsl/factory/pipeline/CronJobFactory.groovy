@@ -44,6 +44,8 @@ public class CronJobFactory extends PipelineFactory {
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
                 configure addHiddenParameter('ci_parent_url', '', '')
                 configure addHiddenParameter('ci_parent_build', '', '')
+                configure addHiddenParameter('job_type', '', "api") //cron jobs shouldn't play with capabilities!
+
                 configure stringParam('branch', this.branch, "SCM repository branch to run against")
                 stringParam('email_list', '', 'List of Users to be emailed after the test. If empty then populate from jenkinsEmail suite property')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "5")
