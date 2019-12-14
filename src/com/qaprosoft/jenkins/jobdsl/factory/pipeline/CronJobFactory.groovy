@@ -25,7 +25,7 @@ public class CronJobFactory extends PipelineFactory {
         this.host = host
         this.repo = repo
         this.organization = organization
-		this.branch = organization
+		this.branch = branch
         this.suitePath = suitePath
     }
 
