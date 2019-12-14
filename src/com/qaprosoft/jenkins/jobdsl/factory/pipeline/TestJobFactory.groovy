@@ -125,7 +125,7 @@ public class TestJobFactory extends PipelineFactory {
 
                         break
                 }
-				configure addHiddenParameter('job_type', '', jobType)
+                configure addHiddenParameter('job_type', '', jobType)
                 def nodeLabel = getSuiteParameter("", "jenkinsNodeLabel", currentSuite)
                 if (!isParamEmpty(nodeLabel)){
                     configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
