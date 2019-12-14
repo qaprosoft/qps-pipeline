@@ -64,7 +64,7 @@ class GitHub implements ISCM {
                 }
 
             }
-            Map scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, '', credentialsId)
+            Map scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, "+refs/heads/${branch}:refs/remotes/origin/${branch}", credentialsId)
             Configuration.set("scm_url", scmVars.GIT_URL)
             Configuration.set("scm_branch", branch)
             Configuration.set("scm_commit", scmVars.GIT_COMMIT)
@@ -75,7 +75,7 @@ class GitHub implements ISCM {
     public def clone(gitUrl, branch, subFolder) {
         context.stage('Checkout GitHub Repository') {
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
-            context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false, '', credentialsId)
+            context.checkout getCheckoutParams(gitUrl, branch, subFolder, true, false, "+refs/heads/${branch}:refs/remotes/origin/${branch}", credentialsId)
         }
     }
 
@@ -93,7 +93,7 @@ class GitHub implements ISCM {
             def branch = Configuration.get("branch")
             def gitUrl = Configuration.resolveVars(gitHtmlUrl)
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
-            context.checkout getCheckoutParams(gitUrl, branch, null, false, true, '', credentialsId)
+            context.checkout getCheckoutParams(gitUrl, branch, null, false, true, "+refs/heads/${branch}:refs/remotes/origin/${branch}", credentialsId)
         }
     }
 
