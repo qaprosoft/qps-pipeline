@@ -13,18 +13,20 @@ public class TestJobFactory extends PipelineFactory {
     def host
     def repo
     def organization
+	def branch
     def sub_project
     def zafira_project
     def suitePath
     def suiteName
 
-    public TestJobFactory(folder, pipelineScript, host, repo, organization, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
+    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
         this.folder = folder
         this.description = jobDesc
         this.pipelineScript = pipelineScript
         this.host = host
         this.repo = repo
         this.organization = organization
+		this.branch = branch
         this.sub_project = sub_project
         this.zafira_project = zafira_project
         this.suitePath = suitePath
@@ -42,6 +44,10 @@ public class TestJobFactory extends PipelineFactory {
 
         def pipelineJob = super.create()
         pipelineJob.with {
+            def maxNumberKeepBuilds = getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite).toInteger()
+            logRotator {
+                numToKeep maxNumberKeepBuilds
+            }
 
             //** Triggers **//*
             def scheduling = currentSuite.getParameter("scheduling")
@@ -82,8 +88,7 @@ public class TestJobFactory extends PipelineFactory {
                 switch(jobType) {
                     case "api":
                         // API tests specific
-                        configure stringParam('capabilities', getSuiteParameter("", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
-                        configure addHiddenParameter('platform', '', 'API')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=API", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case "web":
                         // WEB tests specific
@@ -91,26 +96,33 @@ public class TestJobFactory extends PipelineFactory {
                         configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('platform', '', '*')
                         break
                     case "android":
-                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('platform', '', 'ANDROID')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        break
+                    case "android-web":
+                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case "ios":
-                        configure stringParam('capabilities', getSuiteParameter("deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure addHiddenParameter('platform', '', 'iOS')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
-					// web ios: capabilities: browserName=safari, deviceName=ANY
-					// web android: capabilities: browserName=chrome, deviceName=ANY
+                    case "ios-web":
+                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS;browserName=safari;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        break
+                // web ios: capabilities: browserName=safari, deviceName=ANY
+                // web android: capabilities: browserName=chrome, deviceName=ANY
                     default:
-                        configure stringParam('capabilities', getSuiteParameter("", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=*", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
-                        configure addHiddenParameter('platform', '', '*')
+
                         break
                 }
 				configure addHiddenParameter('job_type', '', jobType)
@@ -118,7 +130,7 @@ public class TestJobFactory extends PipelineFactory {
                 if (!isParamEmpty(nodeLabel)){
                     configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
                 }
-                configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "Select a GitHub Testing Repository Branch to run against", getSuiteParameter("master", "jenkinsDefaultGitBranch", currentSuite))
+                configure stringParam('branch', this.branch, "SCM repository branch to run against")
                 configure addHiddenParameter('repo', '', repo)
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
