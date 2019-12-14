@@ -362,9 +362,7 @@ public class Executor {
                                     "auto_screenshot",
                                     "enableVideo",
                                     "test_run_rules",
-                                    "recoveryMode",
-                // TODO: remove exclusion after finishing https://github.com/qaprosoft/qps-pipeline/issues/510
-                                    "capabilities"
+                                    "recoveryMode"
         ]
         def excluded = excludedCapabilities.find {
             it.equals(name)

@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-import com.qaprosoft.jenkins.jobdsl.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors
 import org.testng.xml.XmlSuite
 
@@ -23,7 +22,7 @@ public class LauncherJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
-                configure addExtensibleChoice('branch', "gc_GIT_BRANCH", "GitHub repository branch to run against", "master")
+                configure stringParam('branch', 'master', "SCM repository branch to run against")
                 configure stringParam('suite', 'api', "TestNG suite file name (without \".xml\" extension)")
                 configure stringParam('zafiraFields', 'platform=API,thread_count=5' , "Custom parameters to run job with")
                 configure addHiddenParameter('scmURL', '' , "GitHub repository https URL with token (read permissions only is enough)")
