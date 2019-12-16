@@ -99,7 +99,7 @@ public class Executor {
     }
 
     static boolean isMobile() {
-		if (isParamEmpty(Configuration.get("job_type")) {
+		if (isParamEmpty(Configuration.get("job_type"))) {
 			return false
 		}
 		
