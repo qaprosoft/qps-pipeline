@@ -99,8 +99,8 @@ public class Executor {
     }
 
     static boolean isMobile() {
-        def platform = Configuration.get("platform")
-        return platform.equalsIgnoreCase("android") || platform.equalsIgnoreCase("ios")
+        def platform = Configuration.get("job_type").toLowerCase()
+        return platform.contains("android") || platform.contains("ios")
     }
 
     static String getSubProjectFolder() {
