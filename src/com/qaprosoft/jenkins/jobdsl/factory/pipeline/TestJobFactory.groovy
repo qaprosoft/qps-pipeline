@@ -100,12 +100,12 @@ public class TestJobFactory extends PipelineFactory {
                     case "android":
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDROID;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case "android-web":
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDOID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDROID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
                         break
                     case "ios":
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
