@@ -612,9 +612,10 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def initJobParams() {
-        if (isParamEmpty(Configuration.get("platform"))) {
-            Configuration.set("platform", "*") //init default platform for launcher
-        }
+		//TODO: test this removal
+//        if (isParamEmpty(Configuration.get("platform"))) {
+//            Configuration.set("platform", "*") //init default platform for launcher
+//        }
         if (isParamEmpty(Configuration.get("browser"))) {
             Configuration.set("browser", "NULL") //init default platform for launcher
         }
@@ -712,7 +713,7 @@ public class QARunner extends AbstractRunner {
     protected void prepareForMobile() {
         logger.info("Runner->prepareForMobile")
         def devicePool = Configuration.get("devicePool")
-        def platform = Configuration.get("platform")
+        def platform = Configuration.get("job_type")
 
         if (platform.equalsIgnoreCase("android")) {
             prepareForAndroid()
