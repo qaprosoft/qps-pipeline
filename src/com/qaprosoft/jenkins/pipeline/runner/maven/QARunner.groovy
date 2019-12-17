@@ -781,23 +781,19 @@ public class QARunner extends AbstractRunner {
 
     protected String getMavenGoals() {
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
-        def defaultBaseMavenGoals = "-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
-		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
-		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
-		-Dmax_screen_history=1 \
-		-Dzafira_enabled=true \
-		-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
-		-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-		-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
-		-Dgit_branch=${Configuration.get("branch")} \
-		-Dgit_commit=${Configuration.get("scm_commit")} \
-		-Dgit_url=${Configuration.get("scm_url")} \
-		-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
-		-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-		-Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
-		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
-		-Dmaven.test.failure.ignore=true \
-		clean test"
+        def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
+        -Dmax_screen_history=1 \
+        -Dzafira_enabled=true \
+        -Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
+        -Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
+        -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
+        -Dgit_branch=${Configuration.get("branch")} \
+        -Dgit_commit=${Configuration.get("scm_commit")} \
+        -Dgit_url=${Configuration.get("scm_url")} \
+        -Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
+        -Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+        -Dmaven.test.failure.ignore=true \
+        clean test"
 
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
         addCapability("suite", suiteName)
