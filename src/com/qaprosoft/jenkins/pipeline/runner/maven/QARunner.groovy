@@ -738,9 +738,7 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForAndroid() {
         logger.info("Runner->prepareForAndroid")
-//        Configuration.set("capabilities.deviceName", "mcloud-android")
         Configuration.set("mobile_app_clear_cache", "true")
-        Configuration.set("capabilities.platformName", "ANDROID")
         Configuration.set("capabilities.autoGrantPermissions", "true")
         Configuration.set("capabilities.noSign", "true")
         Configuration.set("capabilities.appWaitDuration", "270000")
@@ -750,14 +748,6 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForiOS() {
         logger.info("Runner->prepareForiOS")
-//        Configuration.set("capabilities.deviceName", "mcloud-ios")
-        Configuration.set("capabilities.platform", "IOS")
-        Configuration.set("capabilities.platformName", "IOS")
-        Configuration.set("capabilities.deviceName", "*")
-        Configuration.set("capabilities.appPackage", "")
-        Configuration.set("capabilities.appActivity", "")
-        //TODO: sync it with global var where iSTF is configured
-        Configuration.set("capabilities.STF_ENABLED", "false")
     }
 
     protected void downloadResources() {
