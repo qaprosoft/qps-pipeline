@@ -613,9 +613,10 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def initJobParams() {
-        if (isParamEmpty(Configuration.get("platform"))) {
-            Configuration.set("platform", "*") //init default platform for launcher
-        }
+		//TODO: test this removal
+//        if (isParamEmpty(Configuration.get("platform"))) {
+//            Configuration.set("platform", "*") //init default platform for launcher
+//        }
         if (isParamEmpty(Configuration.get("browser"))) {
             Configuration.set("browser", "NULL") //init default platform for launcher
         }
@@ -713,7 +714,7 @@ public class QARunner extends AbstractRunner {
     protected void prepareForMobile() {
         logger.info("Runner->prepareForMobile")
         def devicePool = Configuration.get("devicePool")
-        def platform = Configuration.get("platform")
+        def platform = Configuration.get("job_type")
 
         if (platform.equalsIgnoreCase("android")) {
             prepareForAndroid()
@@ -738,9 +739,7 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForAndroid() {
         logger.info("Runner->prepareForAndroid")
-//        Configuration.set("capabilities.deviceName", "mcloud-android")
         Configuration.set("mobile_app_clear_cache", "true")
-        Configuration.set("capabilities.platformName", "ANDROID")
         Configuration.set("capabilities.autoGrantPermissions", "true")
         Configuration.set("capabilities.noSign", "true")
         Configuration.set("capabilities.appWaitDuration", "270000")
@@ -750,14 +749,6 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForiOS() {
         logger.info("Runner->prepareForiOS")
-//        Configuration.set("capabilities.deviceName", "mcloud-ios")
-        Configuration.set("capabilities.platform", "IOS")
-        Configuration.set("capabilities.platformName", "IOS")
-        Configuration.set("capabilities.deviceName", "*")
-        Configuration.set("capabilities.appPackage", "")
-        Configuration.set("capabilities.appActivity", "")
-        //TODO: sync it with global var where iSTF is configured
-        Configuration.set("capabilities.STF_ENABLED", "false")
     }
 
     protected void downloadResources() {
@@ -818,6 +809,7 @@ public class QARunner extends AbstractRunner {
 		Configuration.remove("capabilities")
 		Configuration.remove("ZAFIRA_SERVICE_URL")
 		Configuration.remove("ZAFIRA_ACCESS_TOKEN")
+        Configuration.remove("zafiraFields")
 		
         //register all obligatory vars
         Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
