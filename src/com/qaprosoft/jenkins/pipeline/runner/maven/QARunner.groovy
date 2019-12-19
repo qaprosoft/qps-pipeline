@@ -420,6 +420,7 @@ public class QARunner extends AbstractRunner {
         jenkinsJobsScanResult.success = false
         jenkinsJobsScanResult.repo = Configuration.get("repo")
         jenkinsJobsScanResult.userId = !isParamEmpty(Configuration.get("userId")) ? Long.valueOf(Configuration.get("userId")) : 2
+        jenkinsJobsScanResult.jenkinsJobs = []
         try {
             if (build) {
                 jenkinsJobsScanResult.jenkinsJobs = generateJenkinsJobs(build)

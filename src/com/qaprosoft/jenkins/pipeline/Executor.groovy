@@ -99,9 +99,9 @@ public class Executor {
     }
 
     static boolean isMobile() {
-		if (isParamEmpty(Configuration.get("job_type"))) {
-			return false
-		}
+ 		    if (isParamEmpty(Configuration.get("job_type"))) {
+			    return false
+		    }
         def platform = Configuration.get("job_type").toLowerCase()
         return platform.contains("android") || platform.contains("ios")
     }
