@@ -808,6 +808,7 @@ public class QARunner extends AbstractRunner {
 		Configuration.remove("capabilities")
 		Configuration.remove("ZAFIRA_SERVICE_URL")
 		Configuration.remove("ZAFIRA_ACCESS_TOKEN")
+        Configuration.remove("zafiraFields")
 		
         //register all obligatory vars
         Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
