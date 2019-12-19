@@ -420,6 +420,7 @@ public class QARunner extends AbstractRunner {
         jenkinsJobsScanResult.success = false
         jenkinsJobsScanResult.repo = Configuration.get("repo")
         jenkinsJobsScanResult.userId = !isParamEmpty(Configuration.get("userId")) ? Long.valueOf(Configuration.get("userId")) : 2
+        jenkinsJobsScanResult.jenkinsJobs = []
         try {
             if (build) {
                 jenkinsJobsScanResult.jenkinsJobs = generateJenkinsJobs(build)
@@ -738,9 +739,7 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForAndroid() {
         logger.info("Runner->prepareForAndroid")
-//        Configuration.set("capabilities.deviceName", "mcloud-android")
         Configuration.set("mobile_app_clear_cache", "true")
-        Configuration.set("capabilities.platformName", "ANDROID")
         Configuration.set("capabilities.autoGrantPermissions", "true")
         Configuration.set("capabilities.noSign", "true")
         Configuration.set("capabilities.appWaitDuration", "270000")
@@ -750,14 +749,6 @@ public class QARunner extends AbstractRunner {
 
     protected void prepareForiOS() {
         logger.info("Runner->prepareForiOS")
-//        Configuration.set("capabilities.deviceName", "mcloud-ios")
-        Configuration.set("capabilities.platform", "IOS")
-        Configuration.set("capabilities.platformName", "IOS")
-        Configuration.set("capabilities.deviceName", "*")
-        Configuration.set("capabilities.appPackage", "")
-        Configuration.set("capabilities.appActivity", "")
-        //TODO: sync it with global var where iSTF is configured
-        Configuration.set("capabilities.STF_ENABLED", "false")
     }
 
     protected void downloadResources() {
@@ -818,6 +809,7 @@ public class QARunner extends AbstractRunner {
 		Configuration.remove("capabilities")
 		Configuration.remove("ZAFIRA_SERVICE_URL")
 		Configuration.remove("ZAFIRA_ACCESS_TOKEN")
+        Configuration.remove("zafiraFields")
 		
         //register all obligatory vars
         Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
