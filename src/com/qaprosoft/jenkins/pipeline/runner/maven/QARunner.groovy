@@ -855,7 +855,7 @@ public class QARunner extends AbstractRunner {
         def goals = ''
         for (def i = 0; i < params.size(); i++) {
             if (!(params[i] in necessaryMavenParams)) {
-                goals = goals + " -D${params[i].values()[0]}=\"${params[i].values()[0]}\""
+                goals = goals + ' -D${params[i].values()[0]}=\"${params[i].values()[0]}\"'
             }
         }
     }
