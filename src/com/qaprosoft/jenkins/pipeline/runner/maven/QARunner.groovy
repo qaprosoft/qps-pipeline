@@ -633,36 +633,32 @@ public class QARunner extends AbstractRunner {
     }
 
     protected String chooseNode() {
-
-        String defaultNode = "qa"
-        Configuration.set("node", defaultNode) //master is default node to execute job
-
-        //TODO: handle browserstack etc integration here?
-		def jobType = !isParamEmpty(Configuration.get(JOB_TYPE)) ? Configuration.get(JOB_TYPE) : "api" 
+        def jobType = !isParamEmpty(Configuration.get(JOB_TYPE)) ? Configuration.get(JOB_TYPE) : "" 
         switch (jobType.toLowerCase()) {
             case "api":
-			case "none":
+            case "none":
                 logger.info("Suite Type: API")
                 Configuration.set("node", "api")
+                //TODO: remove browser later
                 Configuration.set("browser", "NULL")
                 break;
             case "android":
+            case "android-web":
                 logger.info("Suite Type: ANDROID")
                 Configuration.set("node", "android")
                 break;
             case "ios":
-                //TODO: Need to improve this to be able to handle where emulator vs. physical tests should be run.
+            case "ios-web":
                 logger.info("Suite Type: iOS")
                 Configuration.set("node", "ios")
                 break;
+            case "web":
+                logger.info("Suite Type: Web")
+                Configuration.set("node", "web")
+                break;
             default:
-                if ("NULL".equals(Configuration.get("browser"))) {
-                    logger.info("Suite Type: Default")
-                    Configuration.set("node", "master")
-                } else {
-                    logger.info("Suite Type: Web")
-                    Configuration.set("node", "web")
-                }
+                logger.info("Suite Type: Default")
+                Configuration.set("node", "master")
         }
 
         def nodeLabel = Configuration.get("node_label")
