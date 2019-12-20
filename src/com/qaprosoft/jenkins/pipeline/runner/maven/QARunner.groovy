@@ -854,10 +854,12 @@ public class QARunner extends AbstractRunner {
 
         def goals = ''
         for (p in params) {
-            if (!(p in necessaryMavenParams)) {
-                p.getKey()
-                goals = goals + " -D${p.getKey()}=\"${p.getValue()}\""
-            }
+            logger.info("key: ${p.getKey()}")
+            logger.info("value: ${p.getValue()}")
+//            if (!(p in necessaryMavenParams)) {
+//                p.getKey()
+//                goals = goals + " -D${p.getKey()}=\"${p.getValue()}\""
+//            }
         }
     }
 
