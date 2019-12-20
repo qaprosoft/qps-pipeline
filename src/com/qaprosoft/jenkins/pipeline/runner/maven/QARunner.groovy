@@ -854,13 +854,12 @@ public class QARunner extends AbstractRunner {
 
         def goals = ''
         for (p in params) {
-            logger.info("key: ${p.getKey()}")
-            logger.info("value: ${p.getValue()}")
-//            if (!(p in necessaryMavenParams)) {
-//                p.getKey()
-//                goals = goals + " -D${p.getKey()}=\"${p.getValue()}\""
-//            }
+            if (!(p.getKey() in necessaryMavenParams)) {
+                p.getKey()
+                goals = goals + " -D${p.getKey()}=\"${p.getValue()}\""
+            }
         }
+        return goals
     }
 
     protected def addVideoStreamingCapability(message, capabilityName, capabilityValue) {
