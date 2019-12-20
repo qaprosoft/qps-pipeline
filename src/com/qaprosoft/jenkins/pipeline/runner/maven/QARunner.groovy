@@ -804,8 +804,8 @@ public class QARunner extends AbstractRunner {
 
         def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
-        goals = goals + excludeMVNGoals(Configuration.getVars())
-        goals = goals + excludeMVNGoals(Configuration.getParams())
+        goals += excludeMVNGoals(Configuration.getVars())
+        goals += excludeMVNGoals(Configuration.getParams())
 
         goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
         goals += getOptionalCapability("deploy_to_local_repo", " install")
