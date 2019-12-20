@@ -775,6 +775,7 @@ public class QARunner extends AbstractRunner {
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
+        -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
         -Dmax_screen_history=1 \
         -Dzafira_enabled=true \
