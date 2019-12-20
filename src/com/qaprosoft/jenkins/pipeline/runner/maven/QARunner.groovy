@@ -856,7 +856,7 @@ public class QARunner extends AbstractRunner {
         return goals
     }
     protected def excludeMVNGoals(params) {
-        for (def i = 0; i<params.length; i++) {
+        for (def i = 0; i < params.size(); i++) {
             Configuration.remove(params[i])
         }
     }
