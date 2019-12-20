@@ -44,10 +44,6 @@ public class Configuration {
         JACOCO_ENABLE("JACOCO_ENABLE", "false"),
         JOB_MAX_RUN_TIME("JOB_MAX_RUN_TIME", "60"),
 
-        QPS_PIPELINE_GIT_BRANCH("QPS_PIPELINE_GIT_BRANCH", mustOverride),
-        QPS_PIPELINE_GIT_URL("QPS_PIPELINE_GIT_URL", "git@github.com:qaprosoft/qps-pipeline.git"),
-        ADMIN_EMAILS("ADMIN_EMAILS", mustOverride),
-
         GITHUB_HOST("GITHUB_HOST", "github.com"),
         GITHUB_API_URL("GITHUB_API_URL", "https://api.\${GITHUB_HOST}/"),
         GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft"),
