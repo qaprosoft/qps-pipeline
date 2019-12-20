@@ -802,7 +802,9 @@ public class QARunner extends AbstractRunner {
         addVideoStreamingCapability("Video streaming was enabled.", "capabilities.enableVNC", "true")
         addBrowserStackGoals()
 
-        def goals = excludeMVNGoals(Configuration.getVars())
+        def goals = Configuration.resolveVars(defaultBaseMavenGoals)
+
+        goals = excludeMVNGoals(Configuration.getVars())
         goals = goals + excludeMVNGoals(Configuration.getParams())
 
         goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
@@ -850,8 +852,7 @@ public class QARunner extends AbstractRunner {
                 "fork"
         ]
 
-        def goals = Configuration.resolveVars(defaultBaseMavenGoals)
-
+        def goals = ''
         for (def i = 0; i < params.size(); i++) {
             if (!(params[i] in necessaryMavenParams)) {
                 goals = goals + " -D${params[i].values()[0]}=\"${params[i].values()[0]}\""
