@@ -856,7 +856,7 @@ public class QARunner extends AbstractRunner {
         for (p in params) {
             if (!(p.getKey() in necessaryMavenParams)) {
                 p.getKey()
-                goals = goals + " -D${p.getKey()}=\"${p.getValue()}\""
+                goals += " -D${p.getKey()}=\"${p.getValue()}\""
             }
         }
         return goals
