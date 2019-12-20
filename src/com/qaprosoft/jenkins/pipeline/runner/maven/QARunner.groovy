@@ -804,7 +804,7 @@ public class QARunner extends AbstractRunner {
 
         def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
-        goals = excludeMVNGoals(Configuration.getVars())
+        goals = goals + excludeMVNGoals(Configuration.getVars())
         goals = goals + excludeMVNGoals(Configuration.getParams())
 
         goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
