@@ -802,15 +802,21 @@ public class QARunner extends AbstractRunner {
         addVideoStreamingCapability("Video streaming was enabled.", "capabilities.enableVNC", "true")
         addBrowserStackGoals()
 
-        def goals = Configuration.resolveVars(defaultBaseMavenGoals)
+        def goals = excludeMVNGoals(Configuration.getVars())
+        goals = goals + excludeMVNGoals(Configuration.getParams())
 
-		//remove param as it should be already parsed and put into valid place as goals
-		Configuration.remove("capabilities")
-		Configuration.remove("ZAFIRA_SERVICE_URL")
-		Configuration.remove("ZAFIRA_ACCESS_TOKEN")
-        Configuration.remove("zafiraFields")
+        goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
+        goals += getOptionalCapability("deploy_to_local_repo", " install")
 
-        excludeMVNGoals([
+        logger.debug("goals: ${goals}")
+        return goals
+    }
+    protected def excludeMVNGoals(params) {
+        def necessaryMavenParams  = [
+                "capabilities",
+                "ZAFIRA_SERVICE_URL",
+                "ZAFIRA_ACCESS_TOKEN",
+                "zafiraFields",
                 "CORE_LOG_LEVEL",
                 "JACOCO_BUCKET",
                 "JACOCO_REGION",
@@ -842,22 +848,14 @@ public class QARunner extends AbstractRunner {
                 "queue_registration",
                 "overrideFields",
                 "fork"
-        ])
-		
-        //register all obligatory vars
-        Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
-        //register all params after vars to be able to override
-        Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
+        ]
 
-        goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
-        goals += getOptionalCapability("deploy_to_local_repo", " install")
+        def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
-        logger.debug("goals: ${goals}")
-        return goals
-    }
-    protected def excludeMVNGoals(params) {
         for (def i = 0; i < params.size(); i++) {
-            Configuration.remove(params[i])
+            if (!(params[i] in necessaryMavenParams)) {
+                goals = goals + " -D${params[i][0]}=\"${params[i][0]}\""
+            }
         }
     }
 
