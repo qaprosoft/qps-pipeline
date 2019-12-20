@@ -808,8 +808,41 @@ public class QARunner extends AbstractRunner {
 		Configuration.remove("capabilities")
 		Configuration.remove("ZAFIRA_SERVICE_URL")
 		Configuration.remove("ZAFIRA_ACCESS_TOKEN")
-        Configuration.remove("CORE_LOG_LEVEL")
         Configuration.remove("zafiraFields")
+
+        excludeMVNGoals([
+                "CORE_LOG_LEVEL",
+                "JACOCO_BUCKET",
+                "JACOCO_REGION",
+                "JACOCO_ENABLE",
+                "JOB_MAX_RUN_TIME",
+                "QPS_PIPELINE_GIT_BRANCH",
+                "QPS_PIPELINE_GIT_URL",
+                "ADMIN_EMAILS",
+                "GITHUB_HOST",
+                "GITHUB_API_URL",
+                "GITHUB_ORGANIZATION",
+                "GITHUB_HTML_URL",
+                "GITHUB_OAUTH_TOKEN",
+                "GITHUB_SSH_URL",
+                "SELENIUM_PROTOCOL",
+                "SELENIUM_HOST",
+                "SELENIUM_PORT",
+                "SELENIUM_URL",
+                "QPS_HUB",
+                "TESTRAIL_SERVICE_URL",
+                "testrail_enabled",
+                "QTEST_SERVICE_URL",
+                "qtest_enabled",
+                "job_type",
+                "repo",
+                "sub_project",
+                "slack_channels",
+                "BuildPriority",
+                "queue_registration",
+                "overrideFields",
+                "fork"
+        ])
 		
         //register all obligatory vars
         Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
@@ -821,6 +854,11 @@ public class QARunner extends AbstractRunner {
 
         logger.debug("goals: ${goals}")
         return goals
+    }
+    protected def excludeMVNGoals(params) {
+        for (def i = 0; i<params.length; i++) {
+            Configuration.remove(params[i])
+        }
     }
 
     protected def addVideoStreamingCapability(message, capabilityName, capabilityValue) {
