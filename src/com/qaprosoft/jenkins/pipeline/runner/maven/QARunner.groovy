@@ -804,8 +804,8 @@ public class QARunner extends AbstractRunner {
 
         def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
-        goals += excludeMVNGoals(Configuration.getVars())
-        goals += excludeMVNGoals(Configuration.getParams())
+        goals += addMVNParams(Configuration.getVars())
+        goals += addMVNParams(Configuration.getParams())
 
         goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
         goals += getOptionalCapability("deploy_to_local_repo", " install")
@@ -813,7 +813,8 @@ public class QARunner extends AbstractRunner {
         logger.debug("goals: ${goals}")
         return goals
     }
-    protected def excludeMVNGoals(params) {
+    protected def addMVNParams(params) {
+        // This is an array of parameters, that we need to exclude from list of transmitted parameters to maven
         def necessaryMavenParams  = [
                 "capabilities",
                 "ZAFIRA_SERVICE_URL",
