@@ -628,6 +628,8 @@ public class QARunner extends AbstractRunner {
             case "none":
                 logger.info("Suite Type: API")
                 Configuration.set("node", "api")
+                //TODO: remove browser later. For now all API jobs marked as web vs chrome without below line
+                Configuration.set("browser", "NULL")
                 break;
             case "android":
             case "android-web":
