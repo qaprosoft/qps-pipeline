@@ -1044,7 +1044,6 @@ public class QARunner extends AbstractRunner {
 
     protected void generatePipeline(XmlSuite currentSuite) {
         boolean jenkinsJobDisabled = currentSuite.getParameter("jenkinsJobDisabled")
-        logger.info("MEW_MEW_MEW " + jenkinsJobDisabled)
         if (jenkinsJobDisabled) {
             return
         }
