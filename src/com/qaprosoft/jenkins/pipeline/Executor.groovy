@@ -45,6 +45,34 @@ public class Executor {
         }
         return ci_run_id
     }
+	
+	static def getBrowser(){
+		// get browserName from capabilities or browser parameter. "browser" param has higher priority to support old cron pipeline matrix
+		String browser = ""
+		if (!isParamEmpty(Configuration.get("capabilities.browserName"))) {
+			browser = Configuration.get("capabilities.browserName")
+		}
+		
+		if (!isParamEmpty(Configuration.get("browser"))) {
+			browser = Configuration.get("browser")
+		}
+
+		return browser
+	}
+	
+	static def getBrowserVersion(){
+		// get browserVersion from capabilities or browser_version parameter. "browser_version" param has higher priority to support old cron pipeline matrix
+		String browserVersion = ""
+		if (!isParamEmpty(Configuration.get("capabilities.browserVersion"))) {
+			browserVersion = Configuration.get("capabilities.browserVersion")
+		}
+		
+		if (!isParamEmpty(Configuration.get("browser_version"))) {
+			browserVersion = Configuration.get("browser_version")
+		}
+		
+		return browserVersion
+	}
 
     static def getEmailParams(body, subject, to) {
         return getEmailParams(body, subject, to, "")
