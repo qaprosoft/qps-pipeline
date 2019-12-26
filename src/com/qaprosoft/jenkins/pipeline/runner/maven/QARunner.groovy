@@ -1043,8 +1043,9 @@ public class QARunner extends AbstractRunner {
     }
 
     protected void generatePipeline(XmlSuite currentSuite) {
-        def jenkinsJobDisabled = currentSuite.getParameter("jenkinsJobDisabled")
-        if (jenkinsJobDisabled == true) {
+        boolean jenkinsJobDisabled = currentSuite.getParameter("jenkinsJobDisabled")
+        logger.info("MEW_MEW_MEW " + jenkinsJobDisabled)
+        if (jenkinsJobDisabled) {
             return
         }
 
