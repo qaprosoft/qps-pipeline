@@ -641,6 +641,10 @@ public class QARunner extends AbstractRunner {
                 logger.info("Suite Type: iOS")
                 Configuration.set("node", "ios")
                 break;
+            case "ios-shop":
+                logger.info("Suite Type: iOS-UAshop")
+                Configuration.set("node", "ios-shop")
+                break;
             case "web":
                 logger.info("Suite Type: Web")
                 Configuration.set("node", "web")
