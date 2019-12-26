@@ -491,7 +491,6 @@ public class QARunner extends AbstractRunner {
         String nodeName = "master"
         context.node(nodeName) {
             zafiraUpdater.queueZafiraTestRun(uuid)
-            initJobParams()
             nodeName = chooseNode()
         }
         context.node(nodeName) {
@@ -568,7 +567,7 @@ public class QARunner extends AbstractRunner {
                         String jobName = getCurrentFolderFullName(Configuration.QTEST_UPDATER_JOBNAME)
                         def os = !isParamEmpty(Configuration.get("capabilities.os"))?Configuration.get("capabilities.os"):""
                         def osVersion = !isParamEmpty(Configuration.get("capabilities.os_version"))?Configuration.get("capabilities.os_version"):""
-                        def browser = !isParamEmpty(Configuration.get("browser"))?Configuration.get("browser"):""
+                        def browser = getBrowser()
                         context.node("master") {
                             context.build job: jobName,
                                     propagate: false,
@@ -612,16 +611,6 @@ public class QARunner extends AbstractRunner {
         // do nothing
     }
 
-    protected def initJobParams() {
-		//TODO: test this removal
-//        if (isParamEmpty(Configuration.get("platform"))) {
-//            Configuration.set("platform", "*") //init default platform for launcher
-//        }
-        if (isParamEmpty(Configuration.get("browser"))) {
-            Configuration.set("browser", "NULL") //init default platform for launcher
-        }
-    }
-
     // Possible to override in private pipelines
     protected boolean isRerun() {
         return zafiraUpdater.isZafiraRerun(uuid)
@@ -639,7 +628,7 @@ public class QARunner extends AbstractRunner {
             case "none":
                 logger.info("Suite Type: API")
                 Configuration.set("node", "api")
-                //TODO: remove browser later
+                //TODO: remove browser later. For now all API jobs marked as web vs chrome without below line
                 Configuration.set("browser", "NULL")
                 break;
             case "android":
@@ -681,9 +670,8 @@ public class QARunner extends AbstractRunner {
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
         String devicePool = Configuration.get("devicePool")
-        String browser = Configuration.get("browser")
-        //TODO: improve carina to detect browser_version on the fly
-        String browserVersion = Configuration.get("browser_version")
+        String browser = getBrowser()
+        String browserVersion = getBrowserVersion()
 
         context.stage('Preparation') {
             currentBuild.displayName = "#${buildNumber}|${suite}|${branch}"
@@ -865,7 +853,7 @@ public class QARunner extends AbstractRunner {
         //browserstack goals
         if (isBrowserStackRunning()) {
             def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
-                    Configuration.get("browser") + "-" + Configuration.get("env") + "\""
+                    getBrowser() + "-" + Configuration.get("env") + "\""
             uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
             startBrowserStackLocal(uniqueBrowserInstance)
             Configuration.set("capabilities.project", Configuration.get("repo"))
@@ -1065,7 +1053,7 @@ public class QARunner extends AbstractRunner {
         def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
         def priorityNum = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
         def supportedBrowsers = !isParamEmpty(currentSuite.getParameter("jenkinsPipelineBrowsers"))?currentSuite.getParameter("jenkinsPipelineBrowsers"):""
-        def currentBrowser = !isParamEmpty(Configuration.get("browser"))?Configuration.get("browser"):"NULL"
+        def currentBrowser = !isParamEmpty(getBrowser())?getBrowser():"NULL"
         def logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
                 "jobExecutionOrderNumber: ${orderNum};\n	email_list: ${emailList};\n	" +
                 "supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	" +
@@ -1241,7 +1229,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected def getStageName(jobParams) {
-        // Put into this nethod all unique pipeline stage params otherwise less jobs then needed are launched!
+        // Put into this method all unique pipeline stage params otherwise less jobs then needed are launched!
         def stageName = ""
         String jobName = jobParams.get("jobName")
         String env = jobParams.get("env")

@@ -163,6 +163,20 @@ public class Configuration {
 
         //3. Replace vars and/or params with capabilities prefix
         parseValues(params.get(CAPABILITIES), ";", CAPABILITIES)
+		
+		//TODO: wrap 3a and 3b into the single method or remove after fixing cron matrix
+		//3.a to support old "browser" capability as parameter
+		if (params.get("browser") != null) {
+			if (!params.get("browser").isEmpty() && !params.get("browser").equalsIgnoreCase("NULL")) {
+				putParamCaseInsensitive("capabilities.browserName", params.get("browser"))
+			}
+		}
+		//3.b to support old "browser_version" capability as parameter
+		if (params.get("browser_version") != null) {
+			if (!params.get("browser_version").isEmpty() && !params.get("browser_version").equalsIgnoreCase("NULL")) {
+				putParamCaseInsensitive("capabilities.browserVersion", params.get("browser_version"))
+			}
+		}
         
         //4. Replace vars and/or params with zafiraFields values
         parseValues(params.get("zafiraFields"))

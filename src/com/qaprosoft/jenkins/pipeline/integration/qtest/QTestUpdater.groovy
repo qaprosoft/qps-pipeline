@@ -201,7 +201,7 @@ class QTestUpdater {
         def subCycleId = cycleId
         def os = Configuration.get("os")
         def os_version = Configuration.get("os_version")
-        def browser = Configuration.get("browser")
+        def browser = getBrowser()
         if (!isParamEmpty(os) && !isParamEmpty(os_version)) {
             def subCycleName = os + "-" + os_version + "-" + browser
             def subCycle = getOrAddSubCycle(cycleId, projectId, subCycleName)
