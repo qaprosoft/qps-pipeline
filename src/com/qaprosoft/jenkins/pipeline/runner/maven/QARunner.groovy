@@ -468,12 +468,14 @@ public class QARunner extends AbstractRunner {
                 value = parameterDefinition.choices
             }  else {
                 value = parameterDefinition.defaultValue
-                // platformName, deviceName, browserName and browserVersion
-                if (parameterDefinition.name == 'capabilities') {
-                    def prms = value.split(';')
-                    logger.info("MEW " + prms)
-                }
             }
+
+            // platformName, deviceName, browserName and browserVersion
+            if (parameterDefinition.name == 'capabilities') {
+                def prms = value.split(';')
+                logger.info("MEW " + prms)
+            }
+
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
                 logger.info("PARAMETER " + parameterDefinition.name)
                 logger.info("VALUE " + value)
