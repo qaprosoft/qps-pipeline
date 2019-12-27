@@ -470,7 +470,7 @@ public class QARunner extends AbstractRunner {
                 value = parameterDefinition.defaultValue
                 // platformName, deviceName, browserName and browserVersion
                 if (parameterDefinition.name == 'capabilities') {
-                    prms = value.split(';')
+                    def prms = value.split(';')
                     logger.info("MEW " + prms)
                 }
             }
@@ -478,7 +478,6 @@ public class QARunner extends AbstractRunner {
                 logger.info("PARAMETER " + parameterDefinition.name)
                 logger.info("VALUE " + value)
                 if(isJobParameterValid(parameterDefinition.name)){
-
                     parameters.put(parameterDefinition.name, value)
                 }
             }
