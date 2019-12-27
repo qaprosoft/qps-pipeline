@@ -470,7 +470,7 @@ public class QARunner extends AbstractRunner {
                 value = parameterDefinition.defaultValue
             }
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
-                logger.info(parameterDefinition.name)
+                logger.info("MEW_MEW_MEW " + parameterDefinition.name)
                 if(isJobParameterValid(parameterDefinition.name)){
                     parameters.put(parameterDefinition.name, value)
                 }
