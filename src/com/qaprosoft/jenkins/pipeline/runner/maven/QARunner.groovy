@@ -464,13 +464,15 @@ public class QARunner extends AbstractRunner {
             def value
             if (parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
                 value = parameterDefinition.choiceListProvider.getChoiceList()
-                logger.info("!!!getChoiceList!!!")
             } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
                 value = parameterDefinition.choices
-                logger.info("!!!choices!!!")
             }  else {
                 value = parameterDefinition.defaultValue
-                logger.info("!!!defaultValue!!!")
+                // platformName, deviceName, browserName and browserVersion
+                if (parameterDefinition.name == 'capabilities') {
+                    prms = value.split(';')
+                    logger.info("MEW " + prms)
+                }
             }
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
                 logger.info("PARAMETER " + parameterDefinition.name)
