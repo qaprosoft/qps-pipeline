@@ -464,10 +464,13 @@ public class QARunner extends AbstractRunner {
             def value
             if (parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
                 value = parameterDefinition.choiceListProvider.getChoiceList()
+                logger.info("!!!getChoiceList!!!")
             } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
                 value = parameterDefinition.choices
+                logger.info("!!!choices!!!")
             }  else {
                 value = parameterDefinition.defaultValue
+                loger.info("!!!defaultValue!!!")
             }
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
                 logger.info("MEW_MEW_MEW " + parameterDefinition.name)
