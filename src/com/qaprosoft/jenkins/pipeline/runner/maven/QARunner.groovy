@@ -470,7 +470,7 @@ public class QARunner extends AbstractRunner {
                 logger.info("!!!choices!!!")
             }  else {
                 value = parameterDefinition.defaultValue
-                loger.info("!!!defaultValue!!!")
+                logger.info("!!!defaultValue!!!")
             }
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
                 logger.info("MEW_MEW_MEW " + parameterDefinition.name)
