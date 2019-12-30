@@ -473,12 +473,17 @@ public class QARunner extends AbstractRunner {
             // platformName, deviceName, browserName and browserVersion
             if (parameterDefinition.name == 'capabilities') {
                 def prms = value.split(';')
-                logger.info("MEW " + prms)
-            }
-
-            if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
                 logger.info("PARAMETER " + parameterDefinition.name)
                 logger.info("VALUE " + value)
+                logger.info("PRMS: " + prms)
+            }
+//            def pattern = "(\\-Dselenium_host=http:\\/\\/.+:)\\S+(@.+)"
+//            Matcher matcher = Pattern.compile(pattern).matcher(parameter)
+//            while (matcher.find()) {
+//                resultString = matcher.group(1) + "********" + matcher.group(2)
+//            }
+
+            if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
                 if(isJobParameterValid(parameterDefinition.name)){
                     parameters.put(parameterDefinition.name, value)
                 }
