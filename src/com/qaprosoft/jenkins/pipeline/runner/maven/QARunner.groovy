@@ -464,8 +464,10 @@ public class QARunner extends AbstractRunner {
         for (parameterDefinition in parameterDefinitions) {
             if (parameterDefinition.name == 'capabilities') {
                 def prms = value.split(';')
+                logger.info("PRMS: " + prms)
                 for (prm in prms) {
                     parameters.put("capabilities_" + prm.split('=')[0], prm.split('=')[1])
+                    logger.info("parameters_map: " + parameters)
                 }
             }
         }
