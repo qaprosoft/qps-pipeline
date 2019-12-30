@@ -460,6 +460,16 @@ public class QARunner extends AbstractRunner {
     protected def getParametersMap(job) {
         def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
         Map parameters = [:]
+
+        for (parameterDefinition in parameterDefinitions) {
+            if (parameterDefinition.name == 'capabilities') {
+                def prms = value.split(';')
+                for (prm in prms) {
+                    parameters.put(prm.split('=')[0], prm.split('=')[1])
+                }
+            }
+        }
+
         parameterDefinitions.each { parameterDefinition ->
             def value
             if (parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
@@ -477,11 +487,6 @@ public class QARunner extends AbstractRunner {
                 logger.info("VALUE " + value)
                 logger.info("PRMS: " + prms)
             }
-//            def pattern = "(\\-Dselenium_host=http:\\/\\/.+:)\\S+(@.+)"
-//            Matcher matcher = Pattern.compile(pattern).matcher(parameter)
-//            while (matcher.find()) {
-//                resultString = matcher.group(1) + "********" + matcher.group(2)
-//            }
 
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
                 if(isJobParameterValid(parameterDefinition.name)){
