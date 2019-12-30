@@ -765,23 +765,22 @@ public class QARunner extends AbstractRunner {
 
     protected String getMavenGoals() {
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
-        def defaultBaseMavenGoals = "-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
-		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
-		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
-		-Dmax_screen_history=1 \
-		-Dzafira_enabled=true \
-		-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
-		-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-		-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
-		-Dgit_branch=${Configuration.get("branch")} \
-		-Dgit_commit=${Configuration.get("scm_commit")} \
-		-Dgit_url=${Configuration.get("scm_url")} \
-		-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
-		-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-		-Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
-		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
-		-Dmaven.test.failure.ignore=true \
-		clean test"
+        def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
+        -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
+        -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
+        -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
+        -Dmax_screen_history=1 \
+        -Dzafira_enabled=true \
+        -Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
+        -Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
+        -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
+        -Dgit_branch=${Configuration.get("branch")} \
+        -Dgit_commit=${Configuration.get("scm_commit")} \
+        -Dgit_url=${Configuration.get("scm_url")} \
+        -Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
+        -Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+        -Dmaven.test.failure.ignore=true \
+        clean test"
 
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
         addCapability("suite", suiteName)
@@ -797,21 +796,62 @@ public class QARunner extends AbstractRunner {
 
         def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
-		//remove param as it should be already parsed and put into valid place as goals
-		Configuration.remove("capabilities")
-		Configuration.remove("ZAFIRA_SERVICE_URL")
-		Configuration.remove("ZAFIRA_ACCESS_TOKEN")
-        Configuration.remove("zafiraFields")
-		
-        //register all obligatory vars
-        Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
-        //register all params after vars to be able to override
-        Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
+        goals += addMVNParams(Configuration.getVars())
+        goals += addMVNParams(Configuration.getParams())
 
         goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
         goals += getOptionalCapability("deploy_to_local_repo", " install")
 
         logger.debug("goals: ${goals}")
+        return goals
+    }
+    protected def addMVNParams(params) {
+        // This is an array of parameters, that we need to exclude from list of transmitted parameters to maven
+        def necessaryMavenParams  = [
+                "capabilities",
+                "ZAFIRA_SERVICE_URL",
+                "ZAFIRA_ACCESS_TOKEN",
+                "zafiraFields",
+                "CORE_LOG_LEVEL",
+                "JACOCO_BUCKET",
+                "JACOCO_REGION",
+                "JACOCO_ENABLE",
+                "JOB_MAX_RUN_TIME",
+                "QPS_PIPELINE_GIT_BRANCH",
+                "QPS_PIPELINE_GIT_URL",
+                "ADMIN_EMAILS",
+                "GITHUB_HOST",
+                "GITHUB_API_URL",
+                "GITHUB_ORGANIZATION",
+                "GITHUB_HTML_URL",
+                "GITHUB_OAUTH_TOKEN",
+                "GITHUB_SSH_URL",
+                "SELENIUM_PROTOCOL",
+                "SELENIUM_HOST",
+                "SELENIUM_PORT",
+                "SELENIUM_URL",
+                "QPS_HUB",
+                "TESTRAIL_SERVICE_URL",
+                "testrail_enabled",
+                "QTEST_SERVICE_URL",
+                "qtest_enabled",
+                "job_type",
+                "repo",
+                "sub_project",
+                "slack_channels",
+                "BuildPriority",
+                "queue_registration",
+                "overrideFields",
+                "fork"
+        ]
+
+        def goals = ''
+        for (p in params) {
+            if (!(p.getKey() in necessaryMavenParams)) {
+                p.getKey()
+                goals += " -D${p.getKey()}=\"${p.getValue()}\""
+            }
+        }
         return goals
     }
 
@@ -1051,6 +1091,10 @@ public class QARunner extends AbstractRunner {
     }
 
     protected void generatePipeline(XmlSuite currentSuite) {
+        if (getBooleanParameterValue("jenkinsJobDisabled", currentSuite)) {
+            return
+        }
+
         def jobName = !isParamEmpty(currentSuite.getParameter("jenkinsJobName"))?currentSuite.getParameter("jenkinsJobName"):currentSuite.getName()
         def regressionPipelines = !isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))?currentSuite.getParameter("jenkinsRegressionPipeline"):""
         def orderNum = getJobExecutionOrderNumber(currentSuite)
