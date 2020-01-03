@@ -394,10 +394,7 @@ public class Executor {
                                     "enableVideo",
                                     "test_run_rules",
                                     "recoveryMode",
-                                    "capabilities.platformName",
-                                    "capabilities.deviceName",
-                                    "capabilities.browserName",
-                                    "capabilities.browserVersion"
+                                    "capabilities"
 
         ]
         def excluded = excludedCapabilities.find {
