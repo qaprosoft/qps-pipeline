@@ -393,7 +393,12 @@ public class Executor {
                                     "auto_screenshot",
                                     "enableVideo",
                                     "test_run_rules",
-                                    "recoveryMode"
+                                    "recoveryMode",
+                                    "capabilities.platformName",
+                                    "capabilities.deviceName",
+                                    "capabilities.browserName",
+                                    "capabilities.browserVersion"
+
         ]
         def excluded = excludedCapabilities.find {
             it.equals(name)
