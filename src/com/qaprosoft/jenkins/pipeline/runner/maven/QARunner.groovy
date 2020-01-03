@@ -16,7 +16,6 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import com.wangyin.parameter.WHideParameterDefinition
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
-import groovyjarjarantlr.collections.List
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import org.testng.xml.XmlSuite
@@ -463,7 +462,7 @@ public class QARunner extends AbstractRunner {
         Map parameters = [:]
 
         logger.info('0000000')
-        parameterDefinitions.keySet() as List
+        parameterDefinitions.keySet().collect()
         logger.info('1111111')
         parameterDefinitions.each {
             key, value ->
