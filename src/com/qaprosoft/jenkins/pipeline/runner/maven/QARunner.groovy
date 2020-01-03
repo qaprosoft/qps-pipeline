@@ -461,6 +461,7 @@ public class QARunner extends AbstractRunner {
         def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
         Map parameters = [:]
 
+        logger.info('0000000')
         parameterDefinitions.keySet() as String[]
         logger.info('1111111')
         parameterDefinitions.each {
