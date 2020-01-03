@@ -457,6 +457,18 @@ public class QARunner extends AbstractRunner {
         return jenkinsJob
     }
 
+    protected def getObjectValue(obj) {
+        def value
+        if (obj instanceof ExtensibleChoiceParameterDefinition){
+            value = obj.choiceListProvider.getChoiceList()
+        } else if (obj instanceof ChoiceParameterDefinition) {
+            value = obj.choices
+        }  else {
+            value = obj.defaultValue
+        }
+        return value
+    }
+
     protected def getParametersMap(job) {
         def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
         Map parameters = [:]
@@ -467,7 +479,7 @@ public class QARunner extends AbstractRunner {
             logger.info('MEW ' + parameterDefinition + '\nMEW ' + parameterDefinition.name)
             if (parameterDefinition.name == 'capabilities') {
                 logger.info('3333333')
-                def value = parameterDefinitions.get('capabilities').split(';')
+                def value = getObjectValue(parameterDefinition).split(';')
                 logger.info('444444')
                 for (prm in value) {
                     logger.info(prm)
@@ -478,20 +490,7 @@ public class QARunner extends AbstractRunner {
         logger.info(parameters)
 
         parameterDefinitions.each { parameterDefinition ->
-            def value
-            if (parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
-                value = parameterDefinition.choiceListProvider.getChoiceList()
-            } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
-                value = parameterDefinition.choices
-            }  else {
-                value = parameterDefinition.defaultValue
-            }
-
-            // platformName, deviceName, browserName and browserVersion
-            if (parameterDefinition.name == 'capabilities') {
-                logger.info("PARAMETER " + parameterDefinition.name)
-                logger.info("VALUE " + value)
-            }
+            def value = getObjectValue(parameterDefinition)
 
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
                 if(isJobParameterValid(parameterDefinition.name)){
