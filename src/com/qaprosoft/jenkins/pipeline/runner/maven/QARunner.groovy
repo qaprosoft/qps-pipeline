@@ -474,7 +474,6 @@ public class QARunner extends AbstractRunner {
         Map parameters = [:]
 
         for (parameterDefinition in parameterDefinitions) {
-            logger.info('MEW ' + parameterDefinition + '\nMEW ' + parameterDefinition.name)
             if (parameterDefinition.name == 'capabilities') {
                 def value = getObjectValue(parameterDefinition).split(';')
                 for (prm in value) {
