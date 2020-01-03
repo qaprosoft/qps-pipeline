@@ -16,6 +16,7 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import com.wangyin.parameter.WHideParameterDefinition
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
+import groovyjarjarantlr.collections.List
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import org.testng.xml.XmlSuite
