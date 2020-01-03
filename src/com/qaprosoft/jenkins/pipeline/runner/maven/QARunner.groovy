@@ -462,12 +462,12 @@ public class QARunner extends AbstractRunner {
         Map parameters = [:]
 
         logger.info('1111111')
-        for (key in parameterDefinitions) {
+        for (parameterDefinition in parameterDefinitions) {
             logger.info('MEW ' + key)
             logger.info('222222')
-            if (key == 'capabilities') {
+            if (parameterDefinition.name == 'capabilities') {
                 logger.info('3333333')
-                def value = parameterDefinitions.get('capabilities')split(';')
+                def value = parameterDefinitions.get('capabilities').split(';')
                 logger.info('444444')
                 for (prm in value) {
                     logger.info(prm)
