@@ -457,20 +457,20 @@ public class QARunner extends AbstractRunner {
         return jenkinsJob
     }
 
+    // platformName, deviceName, browserName and browserVersion
+    protected def addParamsToMap(parametersMap) {
+        for (prm in Configuration.getParams()) {
+            logger.info("MEW_MEW_MEW " + prm)
+//            if (prm.key.contains('capabilities.')) {
+//                parametersMap.put(prm.key, prm.value)
+//            }
+        }
+    }
+
+
     protected def getParametersMap(job) {
         def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
         Map parameters = [:]
-
-        parameterDefinitions.keySet() as String[]
-        parameterDefinitions.each {
-            key, value ->
-                if (key == 'capabilities') {
-                    def prms = value.split(';')
-                    for (prm in prms) {
-                        parameters.put("capabilities_" + prm.split(':')[0], prm.split(':')[1])
-                    }
-                }
-        }
 
         parameterDefinitions.each { parameterDefinition ->
             def value
@@ -482,13 +482,8 @@ public class QARunner extends AbstractRunner {
                 value = parameterDefinition.defaultValue
             }
 
-            // platformName, deviceName, browserName and browserVersion
-            if (parameterDefinition.name == 'capabilities') {
-                logger.info("PARAMETER " + parameterDefinition.name)
-                logger.info("VALUE " + value)
-            }
-
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
+                logger.info(parameterDefinition.name)
                 if(isJobParameterValid(parameterDefinition.name)){
                     parameters.put(parameterDefinition.name, value)
                 }
