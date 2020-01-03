@@ -465,11 +465,13 @@ public class QARunner extends AbstractRunner {
 //                parametersMap.put(prm.key, prm.value)
 //            }
         }
+        return parametersMap
     }
 
 
     protected def getParametersMap(job) {
         def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
+        parameterDefinitions = addParamsToMap(parameterDefinitions)
         Map parameters = [:]
 
         parameterDefinitions.each { parameterDefinition ->
