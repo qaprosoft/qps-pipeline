@@ -52,8 +52,8 @@ public class QARunner extends AbstractRunner {
     protected Map pipelineLocaleMap = [:]
     protected orderedJobExecNum = 0
     protected boolean multilingualMode = false
-	
-	protected final static String JOB_TYPE = "job_type"
+
+    protected final static String JOB_TYPE = "job_type"
 
     public enum JobType {
         JOB("JOB"),
@@ -130,8 +130,8 @@ public class QARunner extends AbstractRunner {
                 logger.debug(it)
                 //do compile and scanner for all high level pom.xml files
                 if (!executeSonarPRScan(it.value)) {
-					compile(it.value)
-				}
+                    compile(it.value)
+                }
             }
 
             //TODO: investigate whether we need this piece of code
@@ -313,7 +313,7 @@ public class QARunner extends AbstractRunner {
                 continue
             }
             def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
-            
+
             logger.info("SUITE_NAME: " + suiteName)
             def currentSuitePath = workspace + "/" + suitePath
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
@@ -323,11 +323,11 @@ public class QARunner extends AbstractRunner {
             logger.info("suite path: " + suitePath)
 
             def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
-			if (suiteOwner.contains(",")) {
-				// to workaround problem when multiply suiteowners are declared in suite xml file which is unsupported
-				suiteOwner = suiteOwner.split(",")[0].trim()
-			}
-            
+            if (suiteOwner.contains(",")) {
+                // to workaround problem when multiply suiteowners are declared in suite xml file which is unsupported
+                suiteOwner = suiteOwner.split(",")[0].trim()
+            }
+
 
             def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
@@ -457,20 +457,20 @@ public class QARunner extends AbstractRunner {
         return jenkinsJob
     }
 
-    // platformName, deviceName, browserName and browserVersion
-    protected def addParamsToMap(parametersMap) {
-        for (prm in Configuration.getParams()) {
-            logger.info("MEW_MEW_MEW " + prm)
-//            if (prm.key.contains('capabilities.')) {
-//                parametersMap.put(prm.key, prm.value)
-//            }
-        }
-    }
-
-
     protected def getParametersMap(job) {
         def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
         Map parameters = [:]
+
+        parameterDefinitions.keySet() as String[]
+        parameterDefinitions.each {
+            key, value ->
+                if (key == 'capabilities') {
+                    def prms = value.split(';')
+                    for (prm in prms) {
+                        parameters.put("capabilities_" + prm.split('=')[0], prm.split('=')[1])
+                    }
+                }
+        }
 
         parameterDefinitions.each { parameterDefinition ->
             def value
@@ -482,8 +482,13 @@ public class QARunner extends AbstractRunner {
                 value = parameterDefinition.defaultValue
             }
 
+            // platformName, deviceName, browserName and browserVersion
+            if (parameterDefinition.name == 'capabilities') {
+                logger.info("PARAMETER " + parameterDefinition.name)
+                logger.info("VALUE " + value)
+            }
+
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
-                logger.info(parameterDefinition.name)
                 if(isJobParameterValid(parameterDefinition.name)){
                     parameters.put(parameterDefinition.name, value)
                 }
@@ -611,7 +616,7 @@ public class QARunner extends AbstractRunner {
 
     public void sendQTestResults() {
         def ci_run_id = Configuration.get("ci_run_id")
-	Configuration.set("qtest_enabled", "true")
+        Configuration.set("qtest_enabled", "true")
         qTestUpdater.updateTestRun(ci_run_id)
     }
 
@@ -635,7 +640,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected String chooseNode() {
-        def jobType = !isParamEmpty(Configuration.get(JOB_TYPE)) ? Configuration.get(JOB_TYPE) : "" 
+        def jobType = !isParamEmpty(Configuration.get(JOB_TYPE)) ? Configuration.get(JOB_TYPE) : ""
         switch (jobType.toLowerCase()) {
             case "api":
             case "none":
@@ -723,7 +728,7 @@ public class QARunner extends AbstractRunner {
 
         //general mobile capabilities
         Configuration.set("capabilities.provider", "mcloud")
-        
+
 
         // ATTENTION! Obligatory remove device from the params otherwise
         // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
