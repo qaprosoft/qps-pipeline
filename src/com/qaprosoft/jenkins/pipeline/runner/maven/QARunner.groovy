@@ -462,7 +462,7 @@ public class QARunner extends AbstractRunner {
         Map parameters = [:]
 
         logger.info('0000000')
-        parameterDefinitions.keySet() as String[]
+        parameterDefinitions.keySet() as List
         logger.info('1111111')
         parameterDefinitions.each {
             key, value ->
