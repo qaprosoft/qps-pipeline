@@ -463,7 +463,6 @@ public class QARunner extends AbstractRunner {
 
         logger.info('1111111')
         for (parameterDefinition in parameterDefinitions) {
-            logger.info('MEW ' + key)
             logger.info('222222')
             if (parameterDefinition.name == 'capabilities') {
                 logger.info('3333333')
