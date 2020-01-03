@@ -461,20 +461,16 @@ public class QARunner extends AbstractRunner {
         def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
         Map parameters = [:]
 
-//        for (parameterDefinition in parameterDefinitions) {
-//            logger.info('111111')
-//            if (parameterDefinition.name == 'capabilities') {
-//                logger.info('22222')
-//                def prms = value.split(';')
-//                logger.info('33333')
-//                logger.info("PRMS: " + prms)
-//                for (prm in prms) {
-//                    logger.info('44444')
-//                    parameters.put("capabilities_" + prm.split('=')[0], prm.split('=')[1])
-//                    logger.info("parameters_map: " + parameters)
-//                }
-//            }
-//        }
+        parameterDefinitions.keySet() as String[]
+        parameterDefinitions.each {
+            key, value ->
+                if (key == 'capabilities') {
+                    def prms = value.split(';')
+                    for (prm in prms) {
+                        parameters.put("capabilities_" + prm.split(':')[0], prm.split(':')[1])
+                    }
+                }
+        }
 
         parameterDefinitions.each { parameterDefinition ->
             def value
@@ -488,10 +484,8 @@ public class QARunner extends AbstractRunner {
 
             // platformName, deviceName, browserName and browserVersion
             if (parameterDefinition.name == 'capabilities') {
-                def prms = value.split(';')
                 logger.info("PARAMETER " + parameterDefinition.name)
                 logger.info("VALUE " + value)
-                logger.info("PRMS: " + prms)
             }
 
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
