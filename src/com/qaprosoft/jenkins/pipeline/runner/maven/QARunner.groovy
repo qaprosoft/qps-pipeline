@@ -462,11 +462,16 @@ public class QARunner extends AbstractRunner {
         Map parameters = [:]
 
         parameterDefinitions.keySet() as String[]
+        logger.info('1111111')
         parameterDefinitions.each {
             key, value ->
+                logger.info('2222222')
                 if (key == 'capabilities') {
+                    logger.info('3333333')
                     def prms = value.split(';')
+                    logger.info('4444444')
                     for (prm in prms) {
+                        logger.info('5555555')
                         parameters.put("capabilities_" + prm.split('=')[0], prm.split('=')[1])
                     }
                 }
@@ -483,6 +488,7 @@ public class QARunner extends AbstractRunner {
             }
 
             // platformName, deviceName, browserName and browserVersion
+            logger.info('6666666')
             if (parameterDefinition.name == 'capabilities') {
                 logger.info("PARAMETER " + parameterDefinition.name)
                 logger.info("VALUE " + value)
