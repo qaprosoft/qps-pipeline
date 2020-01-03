@@ -477,12 +477,14 @@ public class QARunner extends AbstractRunner {
             if (parameterDefinition.name == 'capabilities') {
                 def value = getObjectValue(parameterDefinition).split(';')
                 for (prm in value) {
-                    logger.info(prm)
-                    parameters.put("capabilities." + prm.split('=')[0], prm.split('=')[1])
+                    if (prm.split('=').size == 2) {
+                        parameters.put("capabilities." + prm.split('=')[0], prm.split('=')[1])
+                    } else {
+                        logger.info("Check your capabilities values")
+                    }
                 }
             }
         }
-        logger.info('capabilities parameters  ' + parameters)
 
         parameterDefinitions.each { parameterDefinition ->
             def value = getObjectValue(parameterDefinition)
