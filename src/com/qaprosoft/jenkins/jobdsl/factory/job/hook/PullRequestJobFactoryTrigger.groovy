@@ -34,8 +34,9 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
             scm {
                 git {
                     remote {
-                        github(this.organization + '/' + this.repo)
-						credentials("${organization}-${repo}")
+                        //TODO: potential issue for unsecure github setup! 
+                        github(this.organization + '/' + this.repo, 'https', host)
+                        credentials("${organization}-${repo}")
                         refspec('+refs/pull/*:refs/remotes/origin/pr/*')
                     }
                     branch(this.branch)
