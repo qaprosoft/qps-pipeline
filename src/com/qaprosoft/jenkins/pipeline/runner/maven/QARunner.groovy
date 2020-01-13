@@ -480,7 +480,7 @@ public class QARunner extends AbstractRunner {
                     if (prm.split('=').size() == 2) {
                         parameters.put("capabilities." + prm.split('=')[0], prm.split('=')[1])
                     } else {
-                        logger.error("WARNING!!! INAVLID CAPABILITY PARAM: ${prm}" )
+                        logger.warn("WARNING!!! INAVLID CAPABILITY PARAM: ${prm}" )
                     }
                 }
             }
