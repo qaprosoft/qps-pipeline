@@ -39,11 +39,11 @@ class Logger {
     }
 
     public warn(message){
-        context.println log(LogLevel.WARN, message)
+        context.println log(LogLevel.WARN, "WARNING! " + message)
     }
 
     public error(message){
-        context.println log(LogLevel.ERROR, message)
+        context.println log(LogLevel.ERROR, "ERROR!" + message)
     }
 
     private def log(LogLevel logLevel, message){
