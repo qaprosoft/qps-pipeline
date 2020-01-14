@@ -3,8 +3,6 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 import groovy.transform.InheritConstructors
 import org.testng.xml.XmlSuite
 
-@Grab('org.testng:testng:6.8.8')
-
 import static com.qaprosoft.jenkins.Utils.*
 
 @InheritConstructors
