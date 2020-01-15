@@ -143,7 +143,7 @@ public class TestJobFactory extends PipelineFactory {
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
                 configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
-                stringParam('thread_count', currentSuite.toXml().contains("thread-count") ? currentSuite.getThreadCount().toString() : "1", 'number of threads')
+                stringParam('thread_count', currentSuite.toXml().contains(" thread-count") ? currentSuite.getThreadCount().toString() : "1", 'number of threads')
                 stringParam('email_list',  getSuiteParameter("", "jenkinsEmail", currentSuite), 'List of Users to be emailed after the test')
                 configure addHiddenParameter('failure_email_list', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
                 choiceParam('retry_count', getRetryCountArray(currentSuite), 'Number of Times to Retry a Failed Test')
