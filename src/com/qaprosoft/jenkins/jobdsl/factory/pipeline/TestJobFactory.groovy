@@ -145,6 +145,7 @@ public class TestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
                 stringParam('thread_count', currentSuite.toXml().contains(" thread-count") ? currentSuite.getThreadCount().toString() : "1", 'number of threads')
                 logger.info("11111" + currentSuite.toXml())
+                logger.info("22222" + currentSuite.toString())
                 if (currentSuite.toXml().contains("data-provider-thread-count")) {
                     stringParam('data_provider_thread_count', currentSuite.getDataProviderThreadCount().toString(), 'number of data provider threads')
                 }
