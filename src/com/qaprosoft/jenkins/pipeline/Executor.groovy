@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 import java.util.regex.Matcher
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
-@Grab('org.testng:testng:7.1.1')
+@Grab('org.testng:testng:7.1.0')
 import groovy.json.JsonSlurperClassic
 
 import java.nio.file.FileSystems

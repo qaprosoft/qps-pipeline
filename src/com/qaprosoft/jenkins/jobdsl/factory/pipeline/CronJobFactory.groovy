@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-@Grab('org.testng:testng:7.1.1')
+@Grab('org.testng:testng:7.1.0')
 
 import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors

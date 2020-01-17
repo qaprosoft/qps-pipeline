@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins
 
-@Grab('org.testng:testng:7.1.1')
+@Grab('org.testng:testng:7.1.0')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
 
