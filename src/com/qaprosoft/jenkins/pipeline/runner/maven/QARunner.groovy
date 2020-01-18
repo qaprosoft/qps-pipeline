@@ -377,7 +377,10 @@ public class QARunner extends AbstractRunner {
 			// TODO: remove experimental code
 			def xmlFile = new Parser(filePath)
 			xmlFile.setLoadClasses(false)
-			logger.error(xmlFile.dump())
+			logger.info(xmlFile.dump())
+			logger.info(xmlFile.TESTNG_DTD_URL)
+			xmlFile.TESTNG_DTD_URL="https://testng.org/testng-1.0.dtd"
+			logger.info(xmlFile.TESTNG_DTD_URL)
 			List<XmlSuite> suiteXml = xmlFile.parseToList()
 			XmlSuite currentSuite2 = suiteXml.get(0)
 			logger.error(currentSuite2.toXml())
