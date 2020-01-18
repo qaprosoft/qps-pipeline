@@ -379,8 +379,8 @@ public class QARunner extends AbstractRunner {
 			xmlFile.setLoadClasses(false)
 			logger.error(xmlFile.dump())
 			List<XmlSuite> suiteXml = xmlFile.parseToList()
-			XmlSuite currentSuite = suiteXml.get(0)
-			logger.error(currentSuite.toXml())
+			XmlSuite currentSuite2 = suiteXml.get(0)
+			logger.error(currentSuite2.toXml())
 	
 
 	
