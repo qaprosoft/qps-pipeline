@@ -381,7 +381,7 @@ public class QARunner extends AbstractRunner {
 			TestNGContentHandler dh = new TestNGContentHandler(filePath, false);
 //			InputSource is = dh.resolveEntity(null, "https://testng.org/testng-1.0.dtd");
 			parser3.parse(new FileInputStream(filePath), dh);
-			LOGGER.info(dh.getSuite().toXml());
+			logger.error(dh.getSuite().toXml());
 			
 
 			SuiteXmlParser parser = new SuiteXmlParser();
