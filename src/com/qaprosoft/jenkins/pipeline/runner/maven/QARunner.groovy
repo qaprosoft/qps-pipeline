@@ -19,11 +19,6 @@ import groovy.json.JsonOutput
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import org.testng.xml.XmlSuite
-//TODO: remove after cleanup dump
-import org.testng.xml.Parser;
-import org.testng.xml.SuiteXmlParser
-import org.testng.xml.TestNGContentHandler
-import org.xml.sax.InputSource
 
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -377,31 +372,6 @@ public class QARunner extends AbstractRunner {
         logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
-			SuiteXmlParser parser3 = new SuiteXmlParser();
-			TestNGContentHandler dh = new TestNGContentHandler(filePath, false);
-			InputSource is = dh.resolveEntity(null, "qwe");
-			parser3.parse(new FileInputStream(filePath), dh);
-			logger.error(dh.getSuite().toXml());
-			
-
-/*			SuiteXmlParser parser = new SuiteXmlParser();
-			XmlSuite xmlSuite2 = parser.parse(filePath, new FileInputStream(filePath), false);
-			logger.error(xmlSuite2.toXml())
-			
-			// TODO: remove experimental code
-			def xmlFile = new Parser(filePath)
-			xmlFile.setLoadClasses(false)
-			logger.info(xmlFile.dump())
-			logger.info(xmlFile.TESTNG_DTD_URL)
-			//xmlFile.TESTNG_DTD_URL="https://testng.org/testng-1.0.dtd"
-			//logger.info(xmlFile.TESTNG_DTD_URL)
-			List<XmlSuite> suiteXml = xmlFile.parseToList()
-			XmlSuite currentSuite2 = suiteXml.get(0)
-			logger.error(currentSuite2.toXml())*/
-	
-
-	
-			
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
             logger.error("ERROR! Unable to find suite: " + filePath)
