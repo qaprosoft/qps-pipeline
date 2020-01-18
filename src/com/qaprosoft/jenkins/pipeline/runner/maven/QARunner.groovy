@@ -1,34 +1,8 @@
 package com.qaprosoft.jenkins.pipeline.runner.maven
 
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
-import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
-import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
-import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
-import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
-import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
-import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
-import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
-import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
-import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
-import com.wangyin.parameter.WHideParameterDefinition
-import groovy.json.JsonBuilder
-import groovy.json.JsonOutput
-import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
-import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
-import org.testng.xml.XmlSuite
-//TODO: remove after cleanup dump
 import org.testng.xml.SuiteXmlParser
-
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-
-import static com.qaprosoft.jenkins.Utils.*
-import static com.qaprosoft.jenkins.pipeline.Executor.*
+import org.testng.xml.TestNGContentHandler
+import org.xml.sax.InputSource
 
 @Grab('org.testng:testng:7.1.0')
 
@@ -373,10 +347,31 @@ public class QARunner extends AbstractRunner {
         logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
+			SuiteXmlParser parser = new SuiteXmlParser();
+			TestNGContentHandler dh = new TestNGContentHandler(filePath, false);
+			InputSource is = dh.resolveEntity(null, "https://testng.org/testng-1.0.dtd");
+			parser.parse(new FileInputStream(filePath), dh);
+			LOGGER.info(dh.getSuite().toXml());
+			
 
 			SuiteXmlParser parser = new SuiteXmlParser();
 			XmlSuite xmlSuite2 = parser.parse(filePath, new FileInputStream(filePath), false);
-			logger.info(xmlSuite2.toXml())
+			logger.error(xmlSuite2.toXml())
+			
+			// TODO: remove experimental code
+			def xmlFile = new Parser(filePath)
+			xmlFile.setLoadClasses(false)
+			logger.info(xmlFile.dump())
+			logger.info(xmlFile.TESTNG_DTD_URL)
+			logger.info("canParse: " + xmlFile.canParse())
+			//xmlFile.TESTNG_DTD_URL="https://testng.org/testng-1.0.dtd"
+			//logger.info(xmlFile.TESTNG_DTD_URL)
+			List<XmlSuite> suiteXml = xmlFile.parseToList()
+			XmlSuite currentSuite2 = suiteXml.get(0)
+			logger.error(currentSuite2.toXml())
+	
+
+	
 			
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
