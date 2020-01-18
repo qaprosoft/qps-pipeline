@@ -375,7 +375,7 @@ public class QARunner extends AbstractRunner {
         try {
 
 			// TODO: remove experimental code
-			def xmlFile = new Parser(path)
+			def xmlFile = new Parser(filePath)
 			xmlFile.setLoadClasses(false)
 			logger.error(xmlFile.dump())
 			List<XmlSuite> suiteXml = xmlFile.parseToList()
