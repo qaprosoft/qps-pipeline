@@ -379,7 +379,7 @@ public class QARunner extends AbstractRunner {
         try {
 			SuiteXmlParser parser3 = new SuiteXmlParser();
 			TestNGContentHandler dh = new TestNGContentHandler(filePath, false);
-			//InputSource is = dh.resolveEntity(null, "http://testng.org/testng-1.0.dtd");
+			InputSource is = dh.resolveEntity(null, "qwe");
 			parser3.parse(new FileInputStream(filePath), dh);
 			logger.error(dh.getSuite().toXml());
 			
