@@ -379,7 +379,7 @@ public class QARunner extends AbstractRunner {
         try {
 			SuiteXmlParser parser3 = new SuiteXmlParser();
 			TestNGContentHandler dh = new TestNGContentHandler(filePath, false);
-//			InputSource is = dh.resolveEntity(null, "https://testng.org/testng-1.0.dtd");
+			InputSource is = dh.resolveEntity(null, "http://testng.org/testng-1.0.dtd");
 			parser3.parse(new FileInputStream(filePath), dh);
 			logger.error(dh.getSuite().toXml());
 			
@@ -393,7 +393,6 @@ public class QARunner extends AbstractRunner {
 			xmlFile.setLoadClasses(false)
 			logger.info(xmlFile.dump())
 			logger.info(xmlFile.TESTNG_DTD_URL)
-			logger.info("canParse: " + xmlFile.canParse())
 			//xmlFile.TESTNG_DTD_URL="https://testng.org/testng-1.0.dtd"
 			//logger.info(xmlFile.TESTNG_DTD_URL)
 			List<XmlSuite> suiteXml = xmlFile.parseToList()
