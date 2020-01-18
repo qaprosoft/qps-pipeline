@@ -379,6 +379,7 @@ public class QARunner extends AbstractRunner {
 			xmlFile.setLoadClasses(false)
 			logger.info(xmlFile.dump())
 			logger.info(xmlFile.TESTNG_DTD_URL)
+			logger.info("canParse: " + xmlFile.canParse())
 			//xmlFile.TESTNG_DTD_URL="https://testng.org/testng-1.0.dtd"
 			//logger.info(xmlFile.TESTNG_DTD_URL)
 			List<XmlSuite> suiteXml = xmlFile.parseToList()
