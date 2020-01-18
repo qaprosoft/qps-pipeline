@@ -20,6 +20,7 @@ import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import org.testng.xml.XmlSuite
 //TODO: remove after cleanup dump
+import org.testng.xml.Parser;
 import org.testng.xml.SuiteXmlParser
 import org.testng.xml.TestNGContentHandler
 import org.xml.sax.InputSource
