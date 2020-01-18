@@ -376,7 +376,7 @@ public class QARunner extends AbstractRunner {
         try {
 
 			SuiteXmlParser parser = new SuiteXmlParser();
-			XmlSuite xmlSuite2 = parser.parse(filePath, new FileInputStream(file), false);
+			XmlSuite xmlSuite2 = parser.parse(filePath, new FileInputStream(filePath), false);
 			logger.error(xmlSuite2.toXml())
 			
 			// TODO: remove experimental code
