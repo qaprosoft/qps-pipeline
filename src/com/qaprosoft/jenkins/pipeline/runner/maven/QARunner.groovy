@@ -19,6 +19,8 @@ import groovy.json.JsonOutput
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import org.testng.xml.XmlSuite
+//TODO: remove after cleanup dump
+import org.testng.xml.Parser
 
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -371,6 +373,18 @@ public class QARunner extends AbstractRunner {
         logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
+
+			// TODO: remove experimental code
+			def xmlFile = new Parser(path)
+			xmlFile.setLoadClasses(false)
+			logger.error(xmlFile.dump())
+			List<XmlSuite> suiteXml = xmlFile.parseToList()
+			XmlSuite currentSuite = suiteXml.get(0)
+			logger.error(currentSuite.toXml())
+	
+
+	
+			
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
             logger.error("ERROR! Unable to find suite: " + filePath)

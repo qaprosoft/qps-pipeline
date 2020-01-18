@@ -21,9 +21,6 @@ class Utils {
     static XmlSuite parseSuite(String path) {
         def xmlFile = new Parser(path)
         xmlFile.setLoadClasses(false)
-		
-		context.println xmlFile.dump()
-		
         List<XmlSuite> suiteXml = xmlFile.parseToList()
         XmlSuite currentSuite = suiteXml.get(0)
         return currentSuite
