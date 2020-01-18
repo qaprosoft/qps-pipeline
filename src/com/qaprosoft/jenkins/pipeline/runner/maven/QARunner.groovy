@@ -384,7 +384,7 @@ public class QARunner extends AbstractRunner {
 			logger.error(dh.getSuite().toXml());
 			
 
-			SuiteXmlParser parser = new SuiteXmlParser();
+/*			SuiteXmlParser parser = new SuiteXmlParser();
 			XmlSuite xmlSuite2 = parser.parse(filePath, new FileInputStream(filePath), false);
 			logger.error(xmlSuite2.toXml())
 			
@@ -398,7 +398,7 @@ public class QARunner extends AbstractRunner {
 			//logger.info(xmlFile.TESTNG_DTD_URL)
 			List<XmlSuite> suiteXml = xmlFile.parseToList()
 			XmlSuite currentSuite2 = suiteXml.get(0)
-			logger.error(currentSuite2.toXml())
+			logger.error(currentSuite2.toXml())*/
 	
 
 	
