@@ -21,6 +21,7 @@ import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoicePar
 import org.testng.xml.XmlSuite
 //TODO: remove after cleanup dump
 import org.testng.xml.Parser
+import org.testng.xml.SuiteXmlParser
 
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -374,6 +375,10 @@ public class QARunner extends AbstractRunner {
         XmlSuite currentSuite = null
         try {
 
+			SuiteXmlParser parser = new SuiteXmlParser();
+			XmlSuite xmlSuite2 = parser.parse(filePath, new FileInputStream(file), false);
+			logger.error(xmlSuite2.toXml())
+			
 			// TODO: remove experimental code
 			def xmlFile = new Parser(filePath)
 			xmlFile.setLoadClasses(false)
