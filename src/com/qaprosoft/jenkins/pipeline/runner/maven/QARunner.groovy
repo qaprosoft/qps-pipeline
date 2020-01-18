@@ -28,7 +28,7 @@ import java.util.regex.Pattern
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-@Grab('org.testng:testng:7.0.1')
+@Grab('org.testng:testng:7.1.0')
 
 @Mixin([Maven, Sonar])
 public class QARunner extends AbstractRunner {
