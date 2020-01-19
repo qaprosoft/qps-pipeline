@@ -376,6 +376,8 @@ public class QARunner extends AbstractRunner {
 		logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
+			def resource = getClass().getResource("testng-1.0.dtd")
+			logger.info("resource: " + resource)
 			URL dtdUrl = ClassLoader.getSystemResource("testng-1.0.dtd");
 			logger.info("dtd:" + dtdUrl);
 			
