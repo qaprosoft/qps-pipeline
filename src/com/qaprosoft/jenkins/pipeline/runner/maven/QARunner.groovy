@@ -386,6 +386,13 @@ public class QARunner extends AbstractRunner {
 			URL tetsngUrl = classLoader.getSystemResource("testng-7.1.0.jar");
 			logger.info("testng:" + tetsngUrl);
 			
+			dtdUrl = this.getClass().getResource("testng-1.0.dtd");
+			logger.info("dtd:" + dtdUrl);
+			
+			tetsngUrl = this.getClass().getResource('testng-7.1.0.jar')
+			logger.info("testng:" + tetsngUrl);
+			
+			
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
             logger.error("ERROR! Unable to find suite: " + filePath)
