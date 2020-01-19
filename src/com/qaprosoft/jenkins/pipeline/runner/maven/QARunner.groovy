@@ -382,13 +382,22 @@ public class QARunner extends AbstractRunner {
         try {
 			InputStream is = getClass().getClassLoader().getResourceAsStream("testng-1.0.dtd");
 			logger.info("is: " + is)
-			is = Thread.currentThread().getContextClassLoader().getResourceAsStream("testng-1.0.dtd");
-			logger.info("is2: " + is)
+			LOGGER.info("stream: " + stream);
+			String res = "";
+			try {
+				int chr;
+	
+				chr = stream.read();
+				while (chr != -1){
+					res += (char) chr;
+					chr = stream.read();
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			LOGGER.info("res: " + res);
 			
-			def resource = getClass().getResource("testng-1.0.dtd")
-			logger.info("resource: " + resource)
-			URL dtdUrl = ClassLoader.getSystemResource("testng-1.0.dtd");
-			logger.info("dtd:" + dtdUrl);
 			
 			SuiteXmlParser parser = new SuiteXmlParser();
 			TestNGContentHandler dh = new TestNGContentHandler(filePath, false);
