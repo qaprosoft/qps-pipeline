@@ -376,8 +376,11 @@ public class QARunner extends AbstractRunner {
         logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
-			URL log4jUrl = ClassLoader.getSystemResource("testng-1.0.dtd");
-			logger.info("dtd:" + log4jUrl);
+			URL dtdUrl = ClassLoader.getSystemResource("testng-1.0.dtd");
+			logger.info("dtd:" + dtdUrl);
+			
+			URL tetsngUrl = ClassLoader.getSystemResource("testng-7.1.0.jar");
+			logger.info("testng:" + tetsngUrl);
 			
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
