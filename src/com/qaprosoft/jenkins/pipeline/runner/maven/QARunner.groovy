@@ -378,7 +378,7 @@ public class QARunner extends AbstractRunner {
         XmlSuite currentSuite = null
         try {
 			ClassLoader classLoader = new groovy.lang.GroovyClassLoader()
-			for (cls: classLoader.getLoadedClasses()) {
+			for (Class cls: classLoader.getLoadedClasses()) {
 				logger.info("class:" + cls);
 			}
 			
