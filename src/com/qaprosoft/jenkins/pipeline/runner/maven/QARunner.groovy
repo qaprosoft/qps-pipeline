@@ -35,6 +35,8 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 import java.net.URL;
 import org.testng.xml.SuiteXmlParser
 import org.testng.xml.TestNGContentHandler
+import org.testng.xml.Parser
+import org.xml.sax.InputSource;
 
 
 @Mixin([Maven, Sonar])
@@ -378,6 +380,11 @@ public class QARunner extends AbstractRunner {
 		logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
+			InputStream is = getClass().getClassLoader().getResourceAsStream("testng-1.0.dtd");
+			logger.info("is: " + is)
+			is = Thread.currentThread().getContextClassLoader().getResourceAsStream("testng-1.0.dtd");
+			logger.info("is2: " + is)
+			
 			def resource = getClass().getResource("testng-1.0.dtd")
 			logger.info("resource: " + resource)
 			URL dtdUrl = ClassLoader.getSystemResource("testng-1.0.dtd");
