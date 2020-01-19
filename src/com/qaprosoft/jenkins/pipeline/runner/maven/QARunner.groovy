@@ -382,7 +382,7 @@ public class QARunner extends AbstractRunner {
         try {
 			InputStream is = getClass().getClassLoader().getResourceAsStream("testng-1.0.dtd");
 			logger.info("is: " + is)
-			LOGGER.info("stream: " + stream);
+			logger.info("stream: " + stream);
 			String res = "";
 			try {
 				int chr;
@@ -396,7 +396,7 @@ public class QARunner extends AbstractRunner {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			LOGGER.info("res: " + res);
+			logger.info("res: " + res);
 			
 			
 			SuiteXmlParser parser = new SuiteXmlParser();
