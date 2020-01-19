@@ -371,8 +371,21 @@ public class QARunner extends AbstractRunner {
             }
         }
     }
+	
+	protected def loadGrapes(){
+		logger.info("Class: " + classLoader.loadClass('org.testng.Assert'))
+		logger.info("Class: " + classLoader.loadClass('testng-1.0.dtd'))
+
+		ClassLoader classLoader = new groovy.lang.GroovyClassLoader()
+		Map[] grapez = [[group : 'org.testng', module : 'testng', version : '7.1.0']]
+		Grape.grab(classLoader: classLoader, grapez)
+		
+		logger.info("Class: " + classLoader.loadClass('org.testng.Assert'))
+		logger.info("Class: " + classLoader.loadClass('testng-1.0.dtd'))
+	}
 
     protected XmlSuite parsePipeline(filePath){
+		loadGrapes()
         logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
