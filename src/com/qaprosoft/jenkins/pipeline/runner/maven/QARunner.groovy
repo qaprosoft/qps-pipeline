@@ -378,7 +378,12 @@ public class QARunner extends AbstractRunner {
         XmlSuite currentSuite = null
         try {
 			ClassLoader classLoader = new groovy.lang.GroovyClassLoader()
-			logger.info("Class: " + classLoader.loadClass('org.testng.TestNG'))
+			for (cls: classLoader.getLoadedClasses()) {
+				logger.info("class:" + cls);
+			}
+			
+			GroovyResourceLoader resourceLoader = classLoader.getResourceLoader()
+			resourceLoader.loadGroovySource('/tmp/testng-1.0.dtd')
 			
 			URL dtdUrl = classLoader.getSystemResource("testng-1.0.dtd");
 			logger.info("dtd:" + dtdUrl);
