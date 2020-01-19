@@ -380,8 +380,7 @@ public class QARunner extends AbstractRunner {
 		logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
-			InputStream is = getClass().getClassLoader().getResourceAsStream("testng-1.0.dtd");
-			logger.info("is: " + is)
+			InputStream stream = getClass().getClassLoader().getResourceAsStream("testng-1.0.dtd");
 			logger.info("stream: " + stream);
 			String res = "";
 			try {
