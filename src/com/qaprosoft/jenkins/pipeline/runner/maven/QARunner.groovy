@@ -29,11 +29,7 @@ import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 
-//@Grab('org.testng:testng:7.1.0')
-@Grapes([
-	@Grab('org.testng:testng:7.1.0'),
-	@GrabConfig(systemClassLoader = true)
-])
+@Grab('org.testng:testng:7.1.0')
 
 //TODO: remove after testing
 import java.net.URL;
