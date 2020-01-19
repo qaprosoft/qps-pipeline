@@ -33,6 +33,8 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 //TODO: remove after testing
 import java.net.URL;
+import org.testng.xml.SuiteXmlParser
+import org.testng.xml.TestNGContentHandler
 
 
 @Mixin([Maven, Sonar])
@@ -380,6 +382,12 @@ public class QARunner extends AbstractRunner {
 			logger.info("resource: " + resource)
 			URL dtdUrl = ClassLoader.getSystemResource("testng-1.0.dtd");
 			logger.info("dtd:" + dtdUrl);
+			
+			SuiteXmlParser parser = new SuiteXmlParser();
+			TestNGContentHandler dh = new TestNGContentHandler(filePath, false);
+			InputSource is = dh.resolveEntity(null, "https");
+			parser.parse(new FileInputStream(filePath), dh);
+			logger.info(dh.getSuite().toXml());
 			
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
