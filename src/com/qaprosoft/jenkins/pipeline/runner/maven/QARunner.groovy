@@ -29,7 +29,11 @@ import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 
-@Grab('org.testng:testng:7.1.0')
+//@Grab('org.testng:testng:7.1.0')
+@Grapes([
+	@Grab('org.testng:testng:7.1.0'),
+	@GrabConfig(systemClassLoader = true)
+])
 
 //TODO: remove after testing
 import java.net.URL;
@@ -373,27 +377,17 @@ public class QARunner extends AbstractRunner {
         }
     }
 	
-	protected def loadGrapes(){
-		ClassLoader classLoader = new groovy.lang.GroovyClassLoader()
-		logger.info("Class: " + classLoader.loadClass('org.testng.Assert'))
-//		logger.info("Class: " + classLoader.loadClass('testng-1.0.dtd'))
-
-		Map[] grapez = [[group : 'org.testng', module : 'testng', version : '7.1.0']]
-		Grape.grab(classLoader: classLoader, grapez)
-		
-		logger.info("Class: " + classLoader.loadClass('org.testng.Assert'))
-		logger.info("Class: " + classLoader.loadClass('testng-1.0.dtd'))
-	}
-
-    protected XmlSuite parsePipeline(filePath){
-		loadGrapes()
-        logger.debug("filePath: " + filePath)
+	protected XmlSuite parsePipeline(filePath){
+		logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
-			URL dtdUrl = ClassLoader.getSystemResource("testng-1.0.dtd");
+			ClassLoader classLoader = new groovy.lang.GroovyClassLoader()
+			logger.info("Class: " + classLoader.loadClass('org.testng.Assert'))
+			
+			URL dtdUrl = classLoader.getSystemResource("testng-1.0.dtd");
 			logger.info("dtd:" + dtdUrl);
 			
-			URL tetsngUrl = ClassLoader.getSystemResource("testng-7.1.0.jar");
+			URL tetsngUrl = classLoader.getSystemResource("testng-7.1.0.jar");
 			logger.info("testng:" + tetsngUrl);
 			
             currentSuite = parseSuite(filePath)
