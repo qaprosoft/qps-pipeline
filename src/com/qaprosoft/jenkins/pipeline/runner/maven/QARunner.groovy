@@ -376,7 +376,7 @@ public class QARunner extends AbstractRunner {
 	protected def loadGrapes(){
 		ClassLoader classLoader = new groovy.lang.GroovyClassLoader()
 		logger.info("Class: " + classLoader.loadClass('org.testng.Assert'))
-		logger.info("Class: " + classLoader.loadClass('testng-1.0.dtd'))
+//		logger.info("Class: " + classLoader.loadClass('testng-1.0.dtd'))
 
 		Map[] grapez = [[group : 'org.testng', module : 'testng', version : '7.1.0']]
 		Grape.grab(classLoader: classLoader, grapez)
