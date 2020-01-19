@@ -31,6 +31,10 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 @Grab('org.testng:testng:7.1.0')
 
+//TODO: remove after testing
+import java.net.URL;
+
+
 @Mixin([Maven, Sonar])
 public class QARunner extends AbstractRunner {
 
@@ -372,6 +376,9 @@ public class QARunner extends AbstractRunner {
         logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
+			URL log4jUrl = ClassLoader.getSystemResource("testng-1.0.dtd");
+			logger.info("dtd:" + log4jUrl);
+			
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
             logger.error("ERROR! Unable to find suite: " + filePath)
