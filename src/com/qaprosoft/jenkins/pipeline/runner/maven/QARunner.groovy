@@ -33,7 +33,6 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 //TODO: remove after testing
 import java.net.URL;
-import groovy.lang.GroovyClassLoader
 
 
 @Mixin([Maven, Sonar])
@@ -377,26 +376,8 @@ public class QARunner extends AbstractRunner {
 		logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
-			ClassLoader classLoader = new groovy.lang.GroovyClassLoader()
-			for (Class cls: classLoader.getLoadedClasses()) {
-				logger.info("class:" + cls);
-			}
-			
-			GroovyResourceLoader resourceLoader = classLoader.getResourceLoader()
-			resourceLoader.loadGroovySource('/tmp/testng-1.0.dtd')
-			
 			URL dtdUrl = classLoader.getSystemResource("testng-1.0.dtd");
 			logger.info("dtd:" + dtdUrl);
-			
-			URL tetsngUrl = classLoader.getSystemResource("testng-7.1.0.jar");
-			logger.info("testng:" + tetsngUrl);
-			
-			dtdUrl = this.getClass().getResource("testng-1.0.dtd");
-			logger.info("dtd:" + dtdUrl);
-			
-			tetsngUrl = this.getClass().getResource('testng-7.1.0.jar')
-			logger.info("testng:" + tetsngUrl);
-			
 			
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
