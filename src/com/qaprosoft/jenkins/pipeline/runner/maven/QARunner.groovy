@@ -385,7 +385,7 @@ public class QARunner extends AbstractRunner {
 			
 			SuiteXmlParser parser = new SuiteXmlParser();
 			TestNGContentHandler dh = new TestNGContentHandler(filePath, false);
-			InputSource is = dh.resolveEntity(null, "https");
+			dh.resolveEntity(null, "https");
 			parser.parse(new FileInputStream(filePath), dh);
 			logger.info(dh.getSuite().toXml());
 			
