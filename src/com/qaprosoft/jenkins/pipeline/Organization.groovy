@@ -43,30 +43,30 @@ class Organization {
     def register() {
         logger.info("Organization->register")
         context.node('master') {
-            context.timestamps {
-                def folder = Configuration.get("folderName")
-                prepare()
-                generateCiItems(folder)
-                logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
-                if (Configuration.get("securityEnabled")?.toBoolean()) {
-                    setSecurity(folder)
-                }
-                clean()
-            }
+//            context.timestamps {
+//                def folder = Configuration.get("folderName")
+//                prepare()
+//                generateCiItems(folder)
+//                logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
+//                if (Configuration.get("securityEnabled")?.toBoolean()) {
+//                    setSecurity(folder)
+//                }
+//                clean()
+//            }
         }
     }
 
     def delete() {
         logger.info("Organization->register")
         context.node('master') {
-            context.timestamps {
-                def folder = Configuration.get("folderName")
-                def userName = folder + "-user"
-                prepare()
-                deleteFolder(folder)
-                deleteUser(userName)
-                clean()
-            }
+//            context.timestamps {
+//                def folder = Configuration.get("folderName")
+//                def userName = folder + "-user"
+//                prepare()
+//                deleteFolder(folder)
+//                deleteUser(userName)
+//                clean()
+//            }
         }
     }
 

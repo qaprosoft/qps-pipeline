@@ -98,25 +98,25 @@ public class QARunner extends AbstractRunner {
     //Events
     public void onPush() {
         context.node("master") {
-            context.timestamps {
-                logger.info("QARunner->onPush")
-                try {
-                    prepare()
-                    zafiraUpdater.getZafiraCredentials()
-                    if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-                        logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-                        return
-                    }
-                    //TODO: implement repository scan and QA jobs recreation
-                    scan()
-                    getJenkinsJobsScanResult(currentBuild.rawBuild)
-                } catch (Exception e) {
-                    logger.error("Scan failed.\n" + e.getMessage())
-                    getJenkinsJobsScanResult(null)
-                    this.currentBuild.result = BuildResult.FAILURE
-                }
-                clean()
-            }
+//            context.timestamps {
+//                logger.info("QARunner->onPush")
+//                try {
+//                    prepare()
+//                    zafiraUpdater.getZafiraCredentials()
+//                    if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+//                        logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
+//                        return
+//                    }
+//                    //TODO: implement repository scan and QA jobs recreation
+//                    scan()
+//                    getJenkinsJobsScanResult(currentBuild.rawBuild)
+//                } catch (Exception e) {
+//                    logger.error("Scan failed.\n" + e.getMessage())
+//                    getJenkinsJobsScanResult(null)
+//                    this.currentBuild.result = BuildResult.FAILURE
+//                }
+//                clean()
+//            }
         }
     }
 
@@ -515,23 +515,23 @@ public class QARunner extends AbstractRunner {
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
                 try {
-                    context.timestamps {
-                        prepareBuild(currentBuild)
-                        scmClient.clone()
-
-                        downloadResources()
-
-                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
-                            buildJob()
-                        }
-                        testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
-                        if(!isParamEmpty(testRun)){
-                            zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-                            zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
-                        }
-                        //TODO: think about seperate stage for uploading jacoco reports
-                        publishJacocoReport()
-                    }
+//                    context.timestamps {
+//                        prepareBuild(currentBuild)
+//                        scmClient.clone()
+//
+//                        downloadResources()
+//
+//                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
+//                            buildJob()
+//                        }
+//                        testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
+//                        if(!isParamEmpty(testRun)){
+//                            zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+//                            zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+//                        }
+//                        //TODO: think about seperate stage for uploading jacoco reports
+//                        publishJacocoReport()
+//                    }
                 } catch (Exception e) {
                     //TODO: [VD] think about making currentBuild.result as FAILURE
                     logger.error(printStackTrace(e))
