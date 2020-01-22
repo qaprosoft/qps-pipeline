@@ -50,9 +50,9 @@ class Repository {
         Configuration.set("GITHUB_HOST", Configuration.get(SCM_HOST))
         context.node('master') {
 //            context.timestamps {
-//                prepare()
-//                generateCiItems()
-//                clean()
+                prepare()
+                generateCiItems()
+                clean()
 //            }
         }
         // execute new _trigger-<repo> to regenerate other views/jobs/etc

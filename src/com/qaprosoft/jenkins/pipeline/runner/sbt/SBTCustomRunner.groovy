@@ -31,18 +31,18 @@ class SBTCustomRunner extends AbstractRunner {
                 try {
 
 //                    context.timestamps {
-//
-//                        context.env.getEnvironment()
-//
-//                        scmClient.clone()
-//
-//                        def sbtHome = context.tool 'SBT'
-//
-//                        def args = Configuration.get("args")
-//
-//                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
-//                            context.sh "${sbtHome}/bin/sbt ${args}"
-//
+
+                        context.env.getEnvironment()
+
+                        scmClient.clone()
+
+                        def sbtHome = context.tool 'SBT'
+
+                        def args = Configuration.get("args")
+
+                        context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
+                            context.sh "${sbtHome}/bin/sbt ${args}"
+
 //                        }
 //
 //                    }
