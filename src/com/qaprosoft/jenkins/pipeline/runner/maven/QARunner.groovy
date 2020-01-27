@@ -1144,18 +1144,18 @@ public class QARunner extends AbstractRunner {
                     }
 					
 					
-					// organize ParamsMatrix jobs
+					// organize children pipeline jobs according to the JENKINS_PIPELINE_MATRIX 
 					def supportedParamsMatrix = ""
 					boolean isParamsMatrixDeclared = false
-					if (!isParamEmpty(currentSuite.getParameter("ParamsMatrix"))) {
-						supportedParamsMatrix = currentSuite.getParameter("ParamsMatrix")
-						logger.info("Declared ParamsMatrix detected!")
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_PIPELINE_MATRIX))) {
+						supportedParamsMatrix = currentSuite.getParameter(JENKINS_PIPELINE_MATRIX)
+						logger.debug("Declared ${JENKINS_PIPELINE_MATRIX} detected!")
 					}
 					
-					if (!isParamEmpty(currentSuite.getParameter("ParamsMatrix_" + regressionPipeline))) {
-						// override matrix using concrete cron name
-						supportedParamsMatrix = currentSuite.getParameter("ParamsMatrix_" + regressionPipeline)
-						logger.info("Declared ParamsMatrix_${regressionPipeline} detected!")
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_PIPELINE_MATRIX + "_" + regressionPipeline))) {
+						// override default parameters matrix using concrete cron params
+						supportedParamsMatrix = currentSuite.getParameter(JENKINS_PIPELINE_MATRIX + "_" + regressionPipeline)
+						logger.debug("Declared ${JENKINS_PIPELINE_MATRIX}_${regressionPipeline} detected!")
 					}
 					
 					for (def supportedParams : supportedParamsMatrix.split(";")) {
