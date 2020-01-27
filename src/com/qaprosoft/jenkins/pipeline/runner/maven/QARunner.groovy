@@ -1124,6 +1124,7 @@ public class QARunner extends AbstractRunner {
         logger.info(logLine)
 
         for (def regressionPipeline : regressionPipelines?.split(",")) {
+			regressionPipeline = regressionPipeline.trim()
             if (!Configuration.get(Configuration.Parameter.JOB_BASE_NAME).equals(regressionPipeline)) {
                 //launch test only if current regressionPipeline exists among regressionPipelines
                 continue
@@ -1146,11 +1147,13 @@ public class QARunner extends AbstractRunner {
 					boolean isParamsMatrixDeclared = false
 					if (!isParamEmpty(currentSuite.getParameter("ParamsMatrix"))) {
 						supportedParamsMatrix = currentSuite.getParameter("ParamsMatrix")
+						logger.info("Declared ParamsMatrix detected!")
 					}
 					
 					if (!isParamEmpty(currentSuite.getParameter("ParamsMatrix_" + regressionPipeline))) {
 						// override matrix using concrete cron name
 						supportedParamsMatrix = currentSuite.getParameter("ParamsMatrix_" + regressionPipeline)
+						logger.info("Declared ParamsMatrix_${regressionPipeline} detected!")
 					}
 					
 					for (def supportedParams : supportedParamsMatrix.split(";")) {
