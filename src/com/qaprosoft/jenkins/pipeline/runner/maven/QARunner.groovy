@@ -1139,6 +1139,52 @@ public class QARunner extends AbstractRunner {
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
+					
+					
+					// organize ParamsMatrix jobs
+					def supportedParamsMatrix = ""
+					boolean isParamsMatrixDeclared = false
+					if (!isParamEmpty(currentSuite.getParameter("ParamsMatrix"))) {
+						supportedParamsMatrix = currentSuite.getParameter("ParamsMatrix")
+					}
+					
+					if (!isParamEmpty(currentSuite.getParameter("ParamsMatrix_" + regressionPipeline))) {
+						// override matrix using concrete cron name
+						supportedParamsMatrix = currentSuite.getParameter("ParamsMatrix_" + regressionPipeline)
+					}
+					
+					for (def supportedParams : supportedParamsMatrix.split(";")) {
+						isParamsMatrixDeclared = true
+						supportedParams = supportedParams.trim()
+						logger.info("supportedParams: ${supportedParams}")
+						
+						Map supportedConfigurations = getSupportedConfigurations(supportedParams)
+						def pipelineMap = [:]
+						// put all not NULL args into the pipelineMap for execution
+						putMap(pipelineMap, pipelineLocaleMap)
+						putMap(pipelineMap, supportedConfigurations)
+						pipelineMap.put("name", regressionPipeline)
+						pipelineMap.put("branch", Configuration.get("branch"))
+						pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
+						pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
+						pipelineMap.put("retry_count", Configuration.get("retry_count"))
+						putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
+						pipelineMap.put("jobName", jobName)
+						pipelineMap.put("env", supportedEnv)
+						pipelineMap.put("order", orderNum)
+						pipelineMap.put("BuildPriority", priorityNum)
+						putNotNullWithSplit(pipelineMap, "emailList", emailList)
+						putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
+						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
+						putNotNull(pipelineMap, "queue_registration", queueRegistration)
+						registerPipeline(currentSuite, pipelineMap)
+					}
+					
+					if (isParamsMatrixDeclared) {
+						//there is no to use deprecated functionality for generating pipelines if ParamsMatrix was used otherwise we could run a little bit more jobs
+						continue
+					}
 
                     // replace cross-browser matrix by prepared configurations list to organize valid split by ";"
                     supportedBrowsers = getCrossBrowserConfigurations(supportedBrowsers)
@@ -1176,43 +1222,6 @@ public class QARunner extends AbstractRunner {
                         registerPipeline(currentSuite, pipelineMap)
                     }
 					
-					// organize ParamsMatrix jobs
-					def supportedParamsMatrix = ""
-					if (!isParamEmpty(currentSuite.getParameter("ParamsMatrix"))) {
-						supportedParamsMatrix = currentSuite.getParameter("ParamsMatrix")
-					}
-					
-					if (!isParamEmpty(currentSuite.getParameter("ParamsMatrix_" + regressionPipeline))) {
-						// override matrix using concrete cron name
-						supportedParamsMatrix = currentSuite.getParameter("ParamsMatrix_" + regressionPipeline)
-					}
-					
-					for (def supportedParams : supportedParamsMatrix.split(";")) {
-						supportedParams = supportedParams.trim()
-						logger.info("supportedParams: ${supportedParams}")
-						
-						Map supportedConfigurations = getSupportedConfigurations(supportedParams)
-						def pipelineMap = [:]
-						// put all not NULL args into the pipelineMap for execution
-						putMap(pipelineMap, pipelineLocaleMap)
-						putMap(pipelineMap, supportedConfigurations)
-						pipelineMap.put("name", regressionPipeline)
-						pipelineMap.put("branch", Configuration.get("branch"))
-						pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
-						pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
-						pipelineMap.put("retry_count", Configuration.get("retry_count"))
-						putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
-						pipelineMap.put("jobName", jobName)
-						pipelineMap.put("env", supportedEnv)
-						pipelineMap.put("order", orderNum)
-						pipelineMap.put("BuildPriority", priorityNum)
-						putNotNullWithSplit(pipelineMap, "emailList", emailList)
-						putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
-						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
-						putNotNull(pipelineMap, "queue_registration", queueRegistration)
-						registerPipeline(currentSuite, pipelineMap)
-					}
                 }
             }
         }
