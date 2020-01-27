@@ -30,7 +30,7 @@ class SBTCustomRunner extends AbstractRunner {
             context.wrap([$class: 'BuildUser']) {
                 try {
 
-                    context.timestamps {
+//                    context.timestamps {
 
                         context.env.getEnvironment()
 
@@ -43,9 +43,9 @@ class SBTCustomRunner extends AbstractRunner {
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             context.sh "${sbtHome}/bin/sbt ${args}"
 
-                        }
-
-                    }
+//                        }
+//
+//                    }
                 } catch (Exception e) {
                     logger.error(Utils.printStackTrace(e))
                     throw e

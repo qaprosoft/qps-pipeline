@@ -98,7 +98,7 @@ public class QARunner extends AbstractRunner {
     //Events
     public void onPush() {
         context.node("master") {
-            context.timestamps {
+//            context.timestamps {
                 logger.info("QARunner->onPush")
                 try {
                     prepare()
@@ -116,7 +116,7 @@ public class QARunner extends AbstractRunner {
                     this.currentBuild.result = BuildResult.FAILURE
                 }
                 clean()
-            }
+//            }
         }
     }
 
@@ -515,7 +515,7 @@ public class QARunner extends AbstractRunner {
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
                 try {
-                    context.timestamps {
+//                    context.timestamps {
                         prepareBuild(currentBuild)
                         scmClient.clone()
 
@@ -531,7 +531,7 @@ public class QARunner extends AbstractRunner {
                         }
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
-                    }
+//                    }
                 } catch (Exception e) {
                     //TODO: [VD] think about making currentBuild.result as FAILURE
                     logger.error(printStackTrace(e))

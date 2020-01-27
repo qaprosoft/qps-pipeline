@@ -49,11 +49,11 @@ class Repository {
         Configuration.set("GITHUB_ORGANIZATION", Configuration.get(SCM_ORG))
         Configuration.set("GITHUB_HOST", Configuration.get(SCM_HOST))
         context.node('master') {
-            context.timestamps {
+//            context.timestamps {
                 prepare()
                 generateCiItems()
                 clean()
-            }
+//            }
         }
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
         def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
