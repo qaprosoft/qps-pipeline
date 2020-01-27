@@ -44,7 +44,7 @@ public class QARunner extends AbstractRunner {
     protected QTestUpdater qTestUpdater
 
     protected qpsInfraCrossBrowserMatrixName = "qps-infra-matrix"
-    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome, browser_version: 73.0; browser: chrome, browser_version: 72.0; browser: firefox, browser_version: 66.0; browser: firefox, browser_version: 65.0"
+    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome; browser: firefox" // explicit versions removed as we gonna to deliver auto upgrade for browsers 
 
     //CRON related vars
     protected def listPipelines = []
@@ -1081,6 +1081,7 @@ public class QARunner extends AbstractRunner {
                 continue
             }
             if(!isParamEmpty(currentSuite.getParameter("jenkinsPipelineLocales"))){
+				//TODO: remove jenkinsPipelineLocales after moving all logic to MatrixParams
                 generateMultilingualPipeline(currentSuite)
             } else {
                 generatePipeline(currentSuite)
@@ -1088,6 +1089,7 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+	@Deprecated
     protected def generateMultilingualPipeline(currentSuite){
         def supportedLocales = getPipelineLocales(currentSuite)
         if (supportedLocales.size() > 0){
@@ -1189,6 +1191,7 @@ public class QARunner extends AbstractRunner {
 						continue
 					}
 
+					//TODO: remove deprecated functionality after switching to ParamsMatrix
                     // replace cross-browser matrix by prepared configurations list to organize valid split by ";"
                     supportedBrowsers = getCrossBrowserConfigurations(supportedBrowsers)
 
@@ -1291,6 +1294,7 @@ public class QARunner extends AbstractRunner {
     }
 
     // do not remove unused crossBrowserSchema. It is declared for custom private pipelines to override default schemas
+	@Deprecated
     protected getCrossBrowserConfigurations(configDetails) {
         return configDetails.replace(qpsInfraCrossBrowserMatrixName, qpsInfraCrossBrowserMatrixValue)
     }
