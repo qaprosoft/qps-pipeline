@@ -689,17 +689,15 @@ public class QARunner extends AbstractRunner {
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
-        String devicePool = Configuration.get("devicePool")
         String browser = getBrowser()
         String browserVersion = getBrowserVersion()
+		String locale = Configuration.get("locale")
+		String language = Configuration.get("language")
 
         context.stage('Preparation') {
             currentBuild.displayName = "#${buildNumber}|${suite}|${branch}"
             if (!isParamEmpty(env)) {
                 currentBuild.displayName += "|" + "${env}"
-            }
-            if (!isParamEmpty(devicePool)) {
-                currentBuild.displayName += "|${devicePool}"
             }
             if (!isParamEmpty(browser)) {
                 currentBuild.displayName += "|${browser}"
@@ -707,6 +705,12 @@ public class QARunner extends AbstractRunner {
             if (!isParamEmpty(browserVersion)) {
                 currentBuild.displayName += "|${browserVersion}"
             }
+			if (!isParamEmpty(locale)) {
+				currentBuild.displayName += "|${locale}"
+			}
+			if (!isParamEmpty(language)) {
+				currentBuild.displayName += "|${language}"
+			}
             currentBuild.description = "${suite}"
             if (isMobile()) {
                 //this is mobile test
@@ -1352,8 +1356,8 @@ public class QARunner extends AbstractRunner {
         // Put into this method all unique pipeline stage params otherwise less jobs then needed are launched!
         def stageName = ""
         String jobName = jobParams.get("jobName")
-		String paramsName = jobParams.get("params_name")
         String env = jobParams.get("env")
+		String paramsName = jobParams.get("params_name")
 
         String browser = jobParams.get("browser")
         String browser_version = jobParams.get("browser_version")
@@ -1363,12 +1367,13 @@ public class QARunner extends AbstractRunner {
         if (!isParamEmpty(jobName)) {
             stageName += "Stage: ${jobName} "
         }
+		if (!isParamEmpty(env)) {
+			stageName += "Environment: ${env} "
+		}
 		if (!isParamEmpty(paramsName)) {
 			stageName += "Params: ${paramsName} "
 		}
-        if (!isParamEmpty(env)) {
-            stageName += "Environment: ${env} "
-        }
+		//TODO: investigate if we can remove lower param for naming after adding "params_name"
         if (!isParamEmpty(browser)) {
             stageName += "Browser: ${browser} "
         }
@@ -1399,6 +1404,11 @@ public class QARunner extends AbstractRunner {
 
             //add current build params from cron
             for (param in Configuration.getParams()) {
+				if ("params_name".equals(param.getKey())) {
+					//do not append params_name as it it used only for naming
+					continue
+				}
+				
                 if (!isParamEmpty(param.getValue())) {
                     if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
                         jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
