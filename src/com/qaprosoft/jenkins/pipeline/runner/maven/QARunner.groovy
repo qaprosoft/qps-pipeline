@@ -1150,13 +1150,13 @@ public class QARunner extends AbstractRunner {
 					boolean isParamsMatrixDeclared = false
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_PIPELINE_MATRIX))) {
 						supportedParamsMatrix = currentSuite.getParameter(JENKINS_PIPELINE_MATRIX)
-						logger.debug("Declared ${JENKINS_PIPELINE_MATRIX} detected!")
+						logger.info("Declared ${JENKINS_PIPELINE_MATRIX} detected!")
 					}
 					
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_PIPELINE_MATRIX + "_" + regressionPipeline))) {
 						// override default parameters matrix using concrete cron params
 						supportedParamsMatrix = currentSuite.getParameter(JENKINS_PIPELINE_MATRIX + "_" + regressionPipeline)
-						logger.debug("Declared ${JENKINS_PIPELINE_MATRIX}_${regressionPipeline} detected!")
+						logger.info("Declared ${JENKINS_PIPELINE_MATRIX}_${regressionPipeline} detected!")
 					}
 					
 					for (def supportedParams : supportedParamsMatrix.split(";")) {
