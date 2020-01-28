@@ -54,7 +54,7 @@ public class QARunner extends AbstractRunner {
     protected boolean multilingualMode = false
 
     protected static final String JOB_TYPE = "job_type"
-	protected static final String JENKINS_PIPELINE_MATRIX = "jenkinsPipelineMatrix"
+	protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
 
     public enum JobType {
         JOB("JOB"),
@@ -1145,18 +1145,18 @@ public class QARunner extends AbstractRunner {
                     }
 					
 					
-					// organize children pipeline jobs according to the JENKINS_PIPELINE_MATRIX 
+					// organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX 
 					def supportedParamsMatrix = ""
 					boolean isParamsMatrixDeclared = false
-					if (!isParamEmpty(currentSuite.getParameter(JENKINS_PIPELINE_MATRIX))) {
-						supportedParamsMatrix = currentSuite.getParameter(JENKINS_PIPELINE_MATRIX)
-						logger.info("Declared ${JENKINS_PIPELINE_MATRIX} detected!")
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX))) {
+						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX)
+						logger.info("Declared ${JENKINS_REGRESSION_MATRIX} detected!")
 					}
 					
-					if (!isParamEmpty(currentSuite.getParameter(JENKINS_PIPELINE_MATRIX + "_" + regressionPipeline))) {
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline))) {
 						// override default parameters matrix using concrete cron params
-						supportedParamsMatrix = currentSuite.getParameter(JENKINS_PIPELINE_MATRIX + "_" + regressionPipeline)
-						logger.info("Declared ${JENKINS_PIPELINE_MATRIX}_${regressionPipeline} detected!")
+						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline)
+						logger.info("Declared ${JENKINS_REGRESSION_MATRIX}_${regressionPipeline} detected!")
 					}
 					
 					for (def supportedParams : supportedParamsMatrix.split(";")) {
