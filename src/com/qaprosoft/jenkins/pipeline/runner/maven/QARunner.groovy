@@ -53,7 +53,8 @@ public class QARunner extends AbstractRunner {
     protected orderedJobExecNum = 0
     protected boolean multilingualMode = false
 
-    protected final static String JOB_TYPE = "job_type"
+    protected static final String JOB_TYPE = "job_type"
+	protected static final String JENKINS_PIPELINE_MATRIX = "jenkinsPipelineMatrix"
 
     public enum JobType {
         JOB("JOB"),

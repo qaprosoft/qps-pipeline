@@ -12,8 +12,6 @@ public class Configuration {
     
     private static final String CAPABILITIES = "capabilities"
 	
-	public static final String JENKINS_PIPELINE_MATRIX = "jenkinsPipelineMatrix"
-	
     //list of CI job params as a map
     protected static Map params = [:]
     //list of required goals vars which must present in command line obligatory
