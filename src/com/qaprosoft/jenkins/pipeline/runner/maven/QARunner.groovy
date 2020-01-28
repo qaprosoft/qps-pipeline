@@ -1170,6 +1170,7 @@ public class QARunner extends AbstractRunner {
 						putMap(pipelineMap, pipelineLocaleMap)
 						putMap(pipelineMap, supportedConfigurations)
 						pipelineMap.put("name", regressionPipeline)
+						pipelineMap.put("params_name", supportedParams)
 						pipelineMap.put("branch", Configuration.get("branch"))
 						pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
 						pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
@@ -1212,6 +1213,7 @@ public class QARunner extends AbstractRunner {
                         putMap(pipelineMap, pipelineLocaleMap)
                         putMap(pipelineMap, supportedConfigurations)
                         pipelineMap.put("name", regressionPipeline)
+						pipelineMap.put("params_name", supportedBrowser)
                         pipelineMap.put("branch", Configuration.get("branch"))
                         pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
                         pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
@@ -1304,7 +1306,7 @@ public class QARunner extends AbstractRunner {
         def mappedStages = [:]
 
         boolean parallelMode = true
-        //combine jobs with similar priority into the single paralle stage and after that each stage execute in parallel
+        //combine jobs with similar priority into the single parallel stage and after that each stage execute in parallel
         String beginOrder = "0"
         String curOrder = ""
         for (Map jobParams : listPipelines) {
@@ -1350,9 +1352,8 @@ public class QARunner extends AbstractRunner {
         // Put into this method all unique pipeline stage params otherwise less jobs then needed are launched!
         def stageName = ""
         String jobName = jobParams.get("jobName")
+		String paramsName = jobParams.get("params_name")
         String env = jobParams.get("env")
-        String devicePool = jobParams.get("devicePool")
-        String deviceBrowser = jobParams.get("deviceBrowser")
 
         String browser = jobParams.get("browser")
         String browser_version = jobParams.get("browser_version")
@@ -1362,14 +1363,11 @@ public class QARunner extends AbstractRunner {
         if (!isParamEmpty(jobName)) {
             stageName += "Stage: ${jobName} "
         }
+		if (!isParamEmpty(paramsName)) {
+			stageName += "Params: ${paramsName} "
+		}
         if (!isParamEmpty(env)) {
             stageName += "Environment: ${env} "
-        }
-        if (!isParamEmpty(devicePool)) {
-            stageName += "Device: ${devicePool} "
-        }
-        if (!isParamEmpty(deviceBrowser)) {
-            stageName += "Browser: ${deviceBrowser} "
         }
         if (!isParamEmpty(browser)) {
             stageName += "Browser: ${browser} "
@@ -1380,7 +1378,6 @@ public class QARunner extends AbstractRunner {
         if (!isParamEmpty(custom_capabilities)) {
             stageName += "Custom capabilities: ${custom_capabilities} "
         }
-
         if (!isParamEmpty(locale) && multilingualMode) {
             stageName += "Locale: ${locale} "
         }
