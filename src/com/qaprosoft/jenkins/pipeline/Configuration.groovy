@@ -11,7 +11,7 @@ public class Configuration {
     public final static def QTEST_UPDATER_JOBNAME = "qtest-updater"
     
     private static final String CAPABILITIES = "capabilities"
-
+	
     //list of CI job params as a map
     protected static Map params = [:]
     //list of required goals vars which must present in command line obligatory

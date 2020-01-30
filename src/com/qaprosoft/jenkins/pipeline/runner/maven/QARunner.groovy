@@ -44,7 +44,7 @@ public class QARunner extends AbstractRunner {
     protected QTestUpdater qTestUpdater
 
     protected qpsInfraCrossBrowserMatrixName = "qps-infra-matrix"
-    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome, browser_version: 73.0; browser: chrome, browser_version: 72.0; browser: firefox, browser_version: 66.0; browser: firefox, browser_version: 65.0"
+    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome; browser: firefox" // explicit versions removed as we gonna to deliver auto upgrade for browsers 
 
     //CRON related vars
     protected def listPipelines = []
@@ -53,7 +53,8 @@ public class QARunner extends AbstractRunner {
     protected orderedJobExecNum = 0
     protected boolean multilingualMode = false
 
-    protected final static String JOB_TYPE = "job_type"
+    protected static final String JOB_TYPE = "job_type"
+	protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
 
     public enum JobType {
         JOB("JOB"),
@@ -688,17 +689,15 @@ public class QARunner extends AbstractRunner {
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
-        String devicePool = Configuration.get("devicePool")
         String browser = getBrowser()
         String browserVersion = getBrowserVersion()
+		String locale = Configuration.get("locale")
+		String language = Configuration.get("language")
 
         context.stage('Preparation') {
             currentBuild.displayName = "#${buildNumber}|${suite}|${branch}"
             if (!isParamEmpty(env)) {
                 currentBuild.displayName += "|" + "${env}"
-            }
-            if (!isParamEmpty(devicePool)) {
-                currentBuild.displayName += "|${devicePool}"
             }
             if (!isParamEmpty(browser)) {
                 currentBuild.displayName += "|${browser}"
@@ -706,6 +705,12 @@ public class QARunner extends AbstractRunner {
             if (!isParamEmpty(browserVersion)) {
                 currentBuild.displayName += "|${browserVersion}"
             }
+			if (!isParamEmpty(locale)) {
+				currentBuild.displayName += "|${locale}"
+			}
+			if (!isParamEmpty(language)) {
+				currentBuild.displayName += "|${language}"
+			}
             currentBuild.description = "${suite}"
             if (isMobile()) {
                 //this is mobile test
@@ -1081,6 +1086,7 @@ public class QARunner extends AbstractRunner {
                 continue
             }
             if(!isParamEmpty(currentSuite.getParameter("jenkinsPipelineLocales"))){
+				//TODO: remove jenkinsPipelineLocales after moving all logic to MatrixParams
                 generateMultilingualPipeline(currentSuite)
             } else {
                 generatePipeline(currentSuite)
@@ -1088,6 +1094,7 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+	@Deprecated
     protected def generateMultilingualPipeline(currentSuite){
         def supportedLocales = getPipelineLocales(currentSuite)
         if (supportedLocales.size() > 0){
@@ -1124,6 +1131,7 @@ public class QARunner extends AbstractRunner {
         logger.info(logLine)
 
         for (def regressionPipeline : regressionPipelines?.split(",")) {
+			regressionPipeline = regressionPipeline.trim()
             if (!Configuration.get(Configuration.Parameter.JOB_BASE_NAME).equals(regressionPipeline)) {
                 //launch test only if current regressionPipeline exists among regressionPipelines
                 continue
@@ -1139,7 +1147,57 @@ public class QARunner extends AbstractRunner {
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
+					
+					
+					// organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX 
+					def supportedParamsMatrix = ""
+					boolean isParamsMatrixDeclared = false
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX))) {
+						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX)
+						logger.info("Declared ${JENKINS_REGRESSION_MATRIX} detected!")
+					}
+					
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline))) {
+						// override default parameters matrix using concrete cron params
+						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline)
+						logger.info("Declared ${JENKINS_REGRESSION_MATRIX}_${regressionPipeline} detected!")
+					}
+					
+					for (def supportedParams : supportedParamsMatrix.split(";")) {
+						isParamsMatrixDeclared = true
+						supportedParams = supportedParams.trim()
+						logger.info("supportedParams: ${supportedParams}")
+						
+						Map supportedConfigurations = getSupportedConfigurations(supportedParams)
+						def pipelineMap = [:]
+						// put all not NULL args into the pipelineMap for execution
+						putMap(pipelineMap, pipelineLocaleMap)
+						putMap(pipelineMap, supportedConfigurations)
+						pipelineMap.put("name", regressionPipeline)
+						pipelineMap.put("params_name", supportedParams)
+						pipelineMap.put("branch", Configuration.get("branch"))
+						pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
+						pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
+						pipelineMap.put("retry_count", Configuration.get("retry_count"))
+						putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
+						pipelineMap.put("jobName", jobName)
+						pipelineMap.put("env", supportedEnv)
+						pipelineMap.put("order", orderNum)
+						pipelineMap.put("BuildPriority", priorityNum)
+						putNotNullWithSplit(pipelineMap, "emailList", emailList)
+						putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
+						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
+						putNotNull(pipelineMap, "queue_registration", queueRegistration)
+						registerPipeline(currentSuite, pipelineMap)
+					}
+					
+					if (isParamsMatrixDeclared) {
+						//there is no to use deprecated functionality for generating pipelines if ParamsMatrix was used otherwise we could run a little bit more jobs
+						continue
+					}
 
+					//TODO: remove deprecated functionality after switching to ParamsMatrix
                     // replace cross-browser matrix by prepared configurations list to organize valid split by ";"
                     supportedBrowsers = getCrossBrowserConfigurations(supportedBrowsers)
 
@@ -1159,6 +1217,7 @@ public class QARunner extends AbstractRunner {
                         putMap(pipelineMap, pipelineLocaleMap)
                         putMap(pipelineMap, supportedConfigurations)
                         pipelineMap.put("name", regressionPipeline)
+						pipelineMap.put("params_name", supportedBrowser)
                         pipelineMap.put("branch", Configuration.get("branch"))
                         pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
                         pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
@@ -1175,6 +1234,7 @@ public class QARunner extends AbstractRunner {
                         putNotNull(pipelineMap, "queue_registration", queueRegistration)
                         registerPipeline(currentSuite, pipelineMap)
                     }
+					
                 }
             }
         }
@@ -1241,6 +1301,7 @@ public class QARunner extends AbstractRunner {
     }
 
     // do not remove unused crossBrowserSchema. It is declared for custom private pipelines to override default schemas
+	@Deprecated
     protected getCrossBrowserConfigurations(configDetails) {
         return configDetails.replace(qpsInfraCrossBrowserMatrixName, qpsInfraCrossBrowserMatrixValue)
     }
@@ -1249,7 +1310,7 @@ public class QARunner extends AbstractRunner {
         def mappedStages = [:]
 
         boolean parallelMode = true
-        //combine jobs with similar priority into the single paralle stage and after that each stage execute in parallel
+        //combine jobs with similar priority into the single parallel stage and after that each stage execute in parallel
         String beginOrder = "0"
         String curOrder = ""
         for (Map jobParams : listPipelines) {
@@ -1296,8 +1357,7 @@ public class QARunner extends AbstractRunner {
         def stageName = ""
         String jobName = jobParams.get("jobName")
         String env = jobParams.get("env")
-        String devicePool = jobParams.get("devicePool")
-        String deviceBrowser = jobParams.get("deviceBrowser")
+		String paramsName = jobParams.get("params_name")
 
         String browser = jobParams.get("browser")
         String browser_version = jobParams.get("browser_version")
@@ -1307,15 +1367,13 @@ public class QARunner extends AbstractRunner {
         if (!isParamEmpty(jobName)) {
             stageName += "Stage: ${jobName} "
         }
-        if (!isParamEmpty(env)) {
-            stageName += "Environment: ${env} "
-        }
-        if (!isParamEmpty(devicePool)) {
-            stageName += "Device: ${devicePool} "
-        }
-        if (!isParamEmpty(deviceBrowser)) {
-            stageName += "Browser: ${deviceBrowser} "
-        }
+		if (!isParamEmpty(env)) {
+			stageName += "Environment: ${env} "
+		}
+		if (!isParamEmpty(paramsName)) {
+			stageName += "Params: ${paramsName} "
+		}
+		//TODO: investigate if we can remove lower param for naming after adding "params_name"
         if (!isParamEmpty(browser)) {
             stageName += "Browser: ${browser} "
         }
@@ -1325,7 +1383,6 @@ public class QARunner extends AbstractRunner {
         if (!isParamEmpty(custom_capabilities)) {
             stageName += "Custom capabilities: ${custom_capabilities} "
         }
-
         if (!isParamEmpty(locale) && multilingualMode) {
             stageName += "Locale: ${locale} "
         }
@@ -1347,6 +1404,11 @@ public class QARunner extends AbstractRunner {
 
             //add current build params from cron
             for (param in Configuration.getParams()) {
+				if ("params_name".equals(param.getKey())) {
+					//do not append params_name as it it used only for naming
+					continue
+				}
+				
                 if (!isParamEmpty(param.getValue())) {
                     if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
                         jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
