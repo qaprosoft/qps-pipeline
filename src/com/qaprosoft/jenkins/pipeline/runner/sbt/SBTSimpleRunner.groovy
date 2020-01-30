@@ -23,7 +23,7 @@ class SBTSimpleRunner extends AbstractSBTRunner {
             context.wrap([$class: 'BuildUser']) {
                 try {
 
-                    context.timestamps {
+//                    context.timestamps {
 
                         context.env.getEnvironment()
 
@@ -38,7 +38,7 @@ class SBTSimpleRunner extends AbstractSBTRunner {
 
                         }
 
-                    }
+//                    }
                 } catch (Exception e) {
                     logger.error(Utils.printStackTrace(e))
                     throw e

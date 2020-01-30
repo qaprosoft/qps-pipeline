@@ -43,7 +43,7 @@ class Organization {
     def register() {
         logger.info("Organization->register")
         context.node('master') {
-            context.timestamps {
+//            context.timestamps {
                 def folder = Configuration.get("folderName")
                 prepare()
                 generateCiItems(folder)
@@ -52,21 +52,21 @@ class Organization {
                     setSecurity(folder)
                 }
                 clean()
-            }
+//            }
         }
     }
 
     def delete() {
         logger.info("Organization->register")
         context.node('master') {
-            context.timestamps {
+//            context.timestamps {
                 def folder = Configuration.get("folderName")
                 def userName = folder + "-user"
                 prepare()
                 deleteFolder(folder)
                 deleteUser(userName)
                 clean()
-            }
+//            }
         }
     }
 

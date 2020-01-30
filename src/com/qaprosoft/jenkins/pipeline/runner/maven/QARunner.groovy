@@ -44,7 +44,7 @@ public class QARunner extends AbstractRunner {
     protected QTestUpdater qTestUpdater
 
     protected qpsInfraCrossBrowserMatrixName = "qps-infra-matrix"
-    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome, browser_version: 73.0; browser: chrome, browser_version: 72.0; browser: firefox, browser_version: 66.0; browser: firefox, browser_version: 65.0"
+    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome; browser: firefox" // explicit versions removed as we gonna to deliver auto upgrade for browsers 
 
     //CRON related vars
     protected def listPipelines = []
@@ -52,8 +52,9 @@ public class QARunner extends AbstractRunner {
     protected Map pipelineLocaleMap = [:]
     protected orderedJobExecNum = 0
     protected boolean multilingualMode = false
-	
-	protected final static String JOB_TYPE = "job_type"
+
+    protected static final String JOB_TYPE = "job_type"
+	protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
 
     public enum JobType {
         JOB("JOB"),
@@ -98,7 +99,7 @@ public class QARunner extends AbstractRunner {
     //Events
     public void onPush() {
         context.node("master") {
-            context.timestamps {
+//            context.timestamps {
                 logger.info("QARunner->onPush")
                 try {
                     prepare()
@@ -116,7 +117,7 @@ public class QARunner extends AbstractRunner {
                     this.currentBuild.result = BuildResult.FAILURE
                 }
                 clean()
-            }
+//            }
         }
     }
 
@@ -130,8 +131,8 @@ public class QARunner extends AbstractRunner {
                 logger.debug(it)
                 //do compile and scanner for all high level pom.xml files
                 if (!executeSonarPRScan(it.value)) {
-					compile(it.value)
-				}
+                    compile(it.value)
+                }
             }
 
             //TODO: investigate whether we need this piece of code
@@ -313,7 +314,7 @@ public class QARunner extends AbstractRunner {
                 continue
             }
             def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
-            
+
             logger.info("SUITE_NAME: " + suiteName)
             def currentSuitePath = workspace + "/" + suitePath
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
@@ -323,11 +324,11 @@ public class QARunner extends AbstractRunner {
             logger.info("suite path: " + suitePath)
 
             def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
-			if (suiteOwner.contains(",")) {
-				// to workaround problem when multiply suiteowners are declared in suite xml file which is unsupported
-				suiteOwner = suiteOwner.split(",")[0].trim()
-			}
-            
+            if (suiteOwner.contains(",")) {
+                // to workaround problem when multiply suiteowners are declared in suite xml file which is unsupported
+                suiteOwner = suiteOwner.split(",")[0].trim()
+            }
+
 
             def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
@@ -457,20 +458,39 @@ public class QARunner extends AbstractRunner {
         return jenkinsJob
     }
 
+    protected def getObjectValue(obj) {
+        def value
+        if (obj instanceof ExtensibleChoiceParameterDefinition){
+            value = obj.choiceListProvider.getChoiceList()
+        } else if (obj instanceof ChoiceParameterDefinition) {
+            value = obj.choices
+        }  else {
+            value = obj.defaultValue
+        }
+        return value
+    }
+
     protected def getParametersMap(job) {
         def parameterDefinitions = job.getProperty('hudson.model.ParametersDefinitionProperty').parameterDefinitions
         Map parameters = [:]
-        parameterDefinitions.each { parameterDefinition ->
-            def value
-            if (parameterDefinition instanceof ExtensibleChoiceParameterDefinition){
-                value = parameterDefinition.choiceListProvider.getChoiceList()
-            } else if (parameterDefinition instanceof ChoiceParameterDefinition) {
-                value = parameterDefinition.choices
-            }  else {
-                value = parameterDefinition.defaultValue
+
+        for (parameterDefinition in parameterDefinitions) {
+            if (parameterDefinition.name == 'capabilities') {
+                def value = getObjectValue(parameterDefinition).split(';')
+                for (prm in value) {
+                    if (prm.split('=').size() == 2) {
+                        parameters.put("capabilities." + prm.split('=')[0], prm.split('=')[1])
+                    } else {
+                        logger.error("Invalid capability param: ${prm}" )
+                    }
+                }
             }
+        }
+
+        parameterDefinitions.each { parameterDefinition ->
+            def value = getObjectValue(parameterDefinition)
+
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
-                logger.info(parameterDefinition.name)
                 if(isJobParameterValid(parameterDefinition.name)){
                     parameters.put(parameterDefinition.name, value)
                 }
@@ -496,7 +516,7 @@ public class QARunner extends AbstractRunner {
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
                 try {
-                    context.timestamps {
+//                    context.timestamps {
                         prepareBuild(currentBuild)
                         scmClient.clone()
 
@@ -512,7 +532,7 @@ public class QARunner extends AbstractRunner {
                         }
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
-                    }
+//                    }
                 } catch (Exception e) {
                     //TODO: [VD] think about making currentBuild.result as FAILURE
                     logger.error(printStackTrace(e))
@@ -598,7 +618,7 @@ public class QARunner extends AbstractRunner {
 
     public void sendQTestResults() {
         def ci_run_id = Configuration.get("ci_run_id")
-	Configuration.set("qtest_enabled", "true")
+        Configuration.set("qtest_enabled", "true")
         qTestUpdater.updateTestRun(ci_run_id)
     }
 
@@ -622,7 +642,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected String chooseNode() {
-        def jobType = !isParamEmpty(Configuration.get(JOB_TYPE)) ? Configuration.get(JOB_TYPE) : "" 
+        def jobType = !isParamEmpty(Configuration.get(JOB_TYPE)) ? Configuration.get(JOB_TYPE) : ""
         switch (jobType.toLowerCase()) {
             case "api":
             case "none":
@@ -669,17 +689,15 @@ public class QARunner extends AbstractRunner {
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
         String env = Configuration.get("env")
-        String devicePool = Configuration.get("devicePool")
         String browser = getBrowser()
         String browserVersion = getBrowserVersion()
+		String locale = Configuration.get("locale")
+		String language = Configuration.get("language")
 
         context.stage('Preparation') {
             currentBuild.displayName = "#${buildNumber}|${suite}|${branch}"
             if (!isParamEmpty(env)) {
                 currentBuild.displayName += "|" + "${env}"
-            }
-            if (!isParamEmpty(devicePool)) {
-                currentBuild.displayName += "|${devicePool}"
             }
             if (!isParamEmpty(browser)) {
                 currentBuild.displayName += "|${browser}"
@@ -687,6 +705,12 @@ public class QARunner extends AbstractRunner {
             if (!isParamEmpty(browserVersion)) {
                 currentBuild.displayName += "|${browserVersion}"
             }
+			if (!isParamEmpty(locale)) {
+				currentBuild.displayName += "|${locale}"
+			}
+			if (!isParamEmpty(language)) {
+				currentBuild.displayName += "|${language}"
+			}
             currentBuild.description = "${suite}"
             if (isMobile()) {
                 //this is mobile test
@@ -710,7 +734,7 @@ public class QARunner extends AbstractRunner {
 
         //general mobile capabilities
         Configuration.set("capabilities.provider", "mcloud")
-        
+
 
         // ATTENTION! Obligatory remove device from the params otherwise
         // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
@@ -757,23 +781,22 @@ public class QARunner extends AbstractRunner {
 
     protected String getMavenGoals() {
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
-        def defaultBaseMavenGoals = "-Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
-		-Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
-		-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
-		-Dmax_screen_history=1 \
-		-Dzafira_enabled=true \
-		-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
-		-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
-		-Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
-		-Dgit_branch=${Configuration.get("branch")} \
-		-Dgit_commit=${Configuration.get("scm_commit")} \
-		-Dgit_url=${Configuration.get("scm_url")} \
-		-Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
-		-Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-		-Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
-		-Duser.timezone=${Configuration.get(Configuration.Parameter.TIMEZONE)} \
-		-Dmaven.test.failure.ignore=true \
-		clean test"
+        def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
+        -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
+        -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
+        -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
+        -Dmax_screen_history=1 \
+        -Dzafira_enabled=true \
+        -Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
+        -Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
+        -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
+        -Dgit_branch=${Configuration.get("branch")} \
+        -Dgit_commit=${Configuration.get("scm_commit")} \
+        -Dgit_url=${Configuration.get("scm_url")} \
+        -Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
+        -Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+        -Dmaven.test.failure.ignore=true \
+        clean test"
 
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
         addCapability("suite", suiteName)
@@ -789,21 +812,62 @@ public class QARunner extends AbstractRunner {
 
         def goals = Configuration.resolveVars(defaultBaseMavenGoals)
 
-		//remove param as it should be already parsed and put into valid place as goals
-		Configuration.remove("capabilities")
-		Configuration.remove("ZAFIRA_SERVICE_URL")
-		Configuration.remove("ZAFIRA_ACCESS_TOKEN")
-        Configuration.remove("zafiraFields")
-		
-        //register all obligatory vars
-        Configuration.getVars().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
-        //register all params after vars to be able to override
-        Configuration.getParams().each { k, v -> goals = goals + " -D${k}=\"${v}\"" }
+        goals += addMVNParams(Configuration.getVars())
+        goals += addMVNParams(Configuration.getParams())
 
         goals += getOptionalCapability(Configuration.Parameter.JACOCO_ENABLE, " jacoco:instrument ")
         goals += getOptionalCapability("deploy_to_local_repo", " install")
 
         logger.debug("goals: ${goals}")
+        return goals
+    }
+    protected def addMVNParams(params) {
+        // This is an array of parameters, that we need to exclude from list of transmitted parameters to maven
+        def necessaryMavenParams  = [
+                "capabilities",
+                "ZAFIRA_SERVICE_URL",
+                "ZAFIRA_ACCESS_TOKEN",
+                "zafiraFields",
+                "CORE_LOG_LEVEL",
+                "JACOCO_BUCKET",
+                "JACOCO_REGION",
+                "JACOCO_ENABLE",
+                "JOB_MAX_RUN_TIME",
+                "QPS_PIPELINE_GIT_BRANCH",
+                "QPS_PIPELINE_GIT_URL",
+                "ADMIN_EMAILS",
+                "GITHUB_HOST",
+                "GITHUB_API_URL",
+                "GITHUB_ORGANIZATION",
+                "GITHUB_HTML_URL",
+                "GITHUB_OAUTH_TOKEN",
+                "GITHUB_SSH_URL",
+                "SELENIUM_PROTOCOL",
+                "SELENIUM_HOST",
+                "SELENIUM_PORT",
+                "SELENIUM_URL",
+                "QPS_HUB",
+                "TESTRAIL_SERVICE_URL",
+                "testrail_enabled",
+                "QTEST_SERVICE_URL",
+                "qtest_enabled",
+                "job_type",
+                "repo",
+                "sub_project",
+                "slack_channels",
+                "BuildPriority",
+                "queue_registration",
+                "overrideFields",
+                "fork"
+        ]
+
+        def goals = ''
+        for (p in params) {
+            if (!(p.getKey() in necessaryMavenParams)) {
+                p.getKey()
+                goals += " -D${p.getKey()}=\"${p.getValue()}\""
+            }
+        }
         return goals
     }
 
@@ -1022,6 +1086,7 @@ public class QARunner extends AbstractRunner {
                 continue
             }
             if(!isParamEmpty(currentSuite.getParameter("jenkinsPipelineLocales"))){
+				//TODO: remove jenkinsPipelineLocales after moving all logic to MatrixParams
                 generateMultilingualPipeline(currentSuite)
             } else {
                 generatePipeline(currentSuite)
@@ -1029,6 +1094,7 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+	@Deprecated
     protected def generateMultilingualPipeline(currentSuite){
         def supportedLocales = getPipelineLocales(currentSuite)
         if (supportedLocales.size() > 0){
@@ -1043,6 +1109,10 @@ public class QARunner extends AbstractRunner {
     }
 
     protected void generatePipeline(XmlSuite currentSuite) {
+        if (getBooleanParameterValue("jenkinsJobDisabled", currentSuite)) {
+            return
+        }
+
         def jobName = !isParamEmpty(currentSuite.getParameter("jenkinsJobName"))?currentSuite.getParameter("jenkinsJobName"):currentSuite.getName()
         def regressionPipelines = !isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))?currentSuite.getParameter("jenkinsRegressionPipeline"):""
         def orderNum = getJobExecutionOrderNumber(currentSuite)
@@ -1061,6 +1131,7 @@ public class QARunner extends AbstractRunner {
         logger.info(logLine)
 
         for (def regressionPipeline : regressionPipelines?.split(",")) {
+			regressionPipeline = regressionPipeline.trim()
             if (!Configuration.get(Configuration.Parameter.JOB_BASE_NAME).equals(regressionPipeline)) {
                 //launch test only if current regressionPipeline exists among regressionPipelines
                 continue
@@ -1076,7 +1147,57 @@ public class QARunner extends AbstractRunner {
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
+					
+					
+					// organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX 
+					def supportedParamsMatrix = ""
+					boolean isParamsMatrixDeclared = false
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX))) {
+						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX)
+						logger.info("Declared ${JENKINS_REGRESSION_MATRIX} detected!")
+					}
+					
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline))) {
+						// override default parameters matrix using concrete cron params
+						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline)
+						logger.info("Declared ${JENKINS_REGRESSION_MATRIX}_${regressionPipeline} detected!")
+					}
+					
+					for (def supportedParams : supportedParamsMatrix.split(";")) {
+						isParamsMatrixDeclared = true
+						supportedParams = supportedParams.trim()
+						logger.info("supportedParams: ${supportedParams}")
+						
+						Map supportedConfigurations = getSupportedConfigurations(supportedParams)
+						def pipelineMap = [:]
+						// put all not NULL args into the pipelineMap for execution
+						putMap(pipelineMap, pipelineLocaleMap)
+						putMap(pipelineMap, supportedConfigurations)
+						pipelineMap.put("name", regressionPipeline)
+						pipelineMap.put("params_name", supportedParams)
+						pipelineMap.put("branch", Configuration.get("branch"))
+						pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
+						pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
+						pipelineMap.put("retry_count", Configuration.get("retry_count"))
+						putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
+						pipelineMap.put("jobName", jobName)
+						pipelineMap.put("env", supportedEnv)
+						pipelineMap.put("order", orderNum)
+						pipelineMap.put("BuildPriority", priorityNum)
+						putNotNullWithSplit(pipelineMap, "emailList", emailList)
+						putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
+						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
+						putNotNull(pipelineMap, "queue_registration", queueRegistration)
+						registerPipeline(currentSuite, pipelineMap)
+					}
+					
+					if (isParamsMatrixDeclared) {
+						//there is no to use deprecated functionality for generating pipelines if ParamsMatrix was used otherwise we could run a little bit more jobs
+						continue
+					}
 
+					//TODO: remove deprecated functionality after switching to ParamsMatrix
                     // replace cross-browser matrix by prepared configurations list to organize valid split by ";"
                     supportedBrowsers = getCrossBrowserConfigurations(supportedBrowsers)
 
@@ -1096,6 +1217,7 @@ public class QARunner extends AbstractRunner {
                         putMap(pipelineMap, pipelineLocaleMap)
                         putMap(pipelineMap, supportedConfigurations)
                         pipelineMap.put("name", regressionPipeline)
+						pipelineMap.put("params_name", supportedBrowser)
                         pipelineMap.put("branch", Configuration.get("branch"))
                         pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
                         pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
@@ -1112,6 +1234,7 @@ public class QARunner extends AbstractRunner {
                         putNotNull(pipelineMap, "queue_registration", queueRegistration)
                         registerPipeline(currentSuite, pipelineMap)
                     }
+					
                 }
             }
         }
@@ -1178,6 +1301,7 @@ public class QARunner extends AbstractRunner {
     }
 
     // do not remove unused crossBrowserSchema. It is declared for custom private pipelines to override default schemas
+	@Deprecated
     protected getCrossBrowserConfigurations(configDetails) {
         return configDetails.replace(qpsInfraCrossBrowserMatrixName, qpsInfraCrossBrowserMatrixValue)
     }
@@ -1186,7 +1310,7 @@ public class QARunner extends AbstractRunner {
         def mappedStages = [:]
 
         boolean parallelMode = true
-        //combine jobs with similar priority into the single paralle stage and after that each stage execute in parallel
+        //combine jobs with similar priority into the single parallel stage and after that each stage execute in parallel
         String beginOrder = "0"
         String curOrder = ""
         for (Map jobParams : listPipelines) {
@@ -1233,8 +1357,7 @@ public class QARunner extends AbstractRunner {
         def stageName = ""
         String jobName = jobParams.get("jobName")
         String env = jobParams.get("env")
-        String devicePool = jobParams.get("devicePool")
-        String deviceBrowser = jobParams.get("deviceBrowser")
+		String paramsName = jobParams.get("params_name")
 
         String browser = jobParams.get("browser")
         String browser_version = jobParams.get("browser_version")
@@ -1244,15 +1367,13 @@ public class QARunner extends AbstractRunner {
         if (!isParamEmpty(jobName)) {
             stageName += "Stage: ${jobName} "
         }
-        if (!isParamEmpty(env)) {
-            stageName += "Environment: ${env} "
-        }
-        if (!isParamEmpty(devicePool)) {
-            stageName += "Device: ${devicePool} "
-        }
-        if (!isParamEmpty(deviceBrowser)) {
-            stageName += "Browser: ${deviceBrowser} "
-        }
+		if (!isParamEmpty(env)) {
+			stageName += "Environment: ${env} "
+		}
+		if (!isParamEmpty(paramsName)) {
+			stageName += "Params: ${paramsName} "
+		}
+		//TODO: investigate if we can remove lower param for naming after adding "params_name"
         if (!isParamEmpty(browser)) {
             stageName += "Browser: ${browser} "
         }
@@ -1262,7 +1383,6 @@ public class QARunner extends AbstractRunner {
         if (!isParamEmpty(custom_capabilities)) {
             stageName += "Custom capabilities: ${custom_capabilities} "
         }
-
         if (!isParamEmpty(locale) && multilingualMode) {
             stageName += "Locale: ${locale} "
         }
@@ -1284,6 +1404,11 @@ public class QARunner extends AbstractRunner {
 
             //add current build params from cron
             for (param in Configuration.getParams()) {
+				if ("params_name".equals(param.getKey())) {
+					//do not append params_name as it it used only for naming
+					continue
+				}
+				
                 if (!isParamEmpty(param.getValue())) {
                     if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
                         jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
