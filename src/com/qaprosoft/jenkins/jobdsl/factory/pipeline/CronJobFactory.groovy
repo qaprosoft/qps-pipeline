@@ -36,7 +36,11 @@ public class CronJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
 
         pipelineJob.with {
-
+            //** Properties & Parameters Area **//*
+            def scheduling = currentSuite.getParameter("jenkinsPipelineScheduling")
+            if (scheduling != null) {
+                triggers { cron(scheduling) }
+            }
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
                 configure addHiddenParameter('repo', '', repo)
