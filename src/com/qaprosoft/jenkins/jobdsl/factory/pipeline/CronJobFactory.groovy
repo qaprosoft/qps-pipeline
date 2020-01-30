@@ -30,7 +30,7 @@ public class CronJobFactory extends PipelineFactory {
     }
 
     def create() {
-
+        logger.info("CronJobFactory->create")
         XmlSuite currentSuite = parseSuite(suitePath)
 
         def pipelineJob = super.create()
