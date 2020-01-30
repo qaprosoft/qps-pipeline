@@ -25,7 +25,7 @@ public class CronJobFactory extends PipelineFactory {
         this.host = host
         this.repo = repo
         this.organization = organization
-		this.branch = branch
+	this.branch = branch
         this.suitePath = suitePath
     }
 
@@ -38,7 +38,7 @@ public class CronJobFactory extends PipelineFactory {
         pipelineJob.with {
             //** Properties & Parameters Area **//*
             def scheduling = currentSuite.getParameter("jenkinsRegressionScheduling")
-            _dslFactory.println("scheduling: ${scheduling}")
+            _dslFactory.println("suitePath: ${suitePath}; scheduling: ${scheduling}")
             if (scheduling != null) {
                 triggers { cron(scheduling) }
             }
