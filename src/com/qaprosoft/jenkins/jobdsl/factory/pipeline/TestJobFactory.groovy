@@ -185,18 +185,6 @@ public class TestJobFactory extends PipelineFactory {
         return pipelineJob
     }
 
-    protected def parseSheduling(scheduling){
-        if (scheduling.contains("::")){
-            def multilineArray = scheduling.split("::")
-            def multilineValue = ""
-            multilineArray.each { value ->
-                multilineValue = multilineValue + value + "\n"
-            }
-            scheduling = multilineValue
-        }
-        return scheduling
-    }
-
     protected def getRetryCountArray(currentSuite){
         def retryCount = getSuiteParameter(0, "jenkinsDefaultRetryCount", currentSuite).toInteger()
         List retryCountList = new ArrayList(Arrays.asList(0, 1, 2, 3))
