@@ -37,7 +37,7 @@ public class CronJobFactory extends PipelineFactory {
 
         pipelineJob.with {
             //** Properties & Parameters Area **//*
-            def scheduling = currentSuite.getParameter("jenkinsPipelineScheduling")
+            def scheduling = currentSuite.getParameter("jenkinsRegressionScheduling")
             if (scheduling != null) {
                 triggers { cron(scheduling) }
             }
