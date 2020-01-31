@@ -1,8 +1,5 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-@Grab('org.testng:testng:6.8.8')
-
-import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
 
 import static com.qaprosoft.jenkins.Utils.*
@@ -14,10 +11,9 @@ public class CronJobFactory extends PipelineFactory {
     def repo
     def organization
     def branch
-    def suitePath
+    def scheduling
 
-    public CronJobFactory(folder, pipelineScript, cronJobName, host, repo, organization, branch, suitePath, jobDesc) {
-
+    public CronJobFactory(folder, pipelineScript, cronJobName, host, repo, organization, branch, jobDesc) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.description = jobDesc
@@ -25,20 +21,15 @@ public class CronJobFactory extends PipelineFactory {
         this.host = host
         this.repo = repo
         this.organization = organization
-	this.branch = branch
-        this.suitePath = suitePath
+        this.branch = branch
     }
 
     def create() {
         logger.info("CronJobFactory->create")
-        XmlSuite currentSuite = parseSuite(suitePath)
-
         def pipelineJob = super.create()
 
         pipelineJob.with {
             //** Properties & Parameters Area **//*
-            def scheduling = currentSuite.getParameter("jenkinsRegressionScheduling")
-            //_dslFactory.println("suitePath: ${suitePath}; scheduling: ${scheduling}")
             if (scheduling != null) {
                 triggers { cron(parseSheduling(scheduling)) }
             }
@@ -60,5 +51,9 @@ public class CronJobFactory extends PipelineFactory {
         }
         return pipelineJob
     }
+	
+	def setScheduling(scheduling) {
+		this.scheduling = scheduling
+	}
 
 }

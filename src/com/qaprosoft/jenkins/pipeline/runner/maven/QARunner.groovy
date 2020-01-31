@@ -55,6 +55,7 @@ public class QARunner extends AbstractRunner {
 
     protected static final String JOB_TYPE = "job_type"
 	protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
+	protected static final String JENKINS_REGRESSION_SCHEDULING = "jenkinsRegressionScheduling"
 
     public enum JobType {
         JOB("JOB"),
@@ -356,13 +357,35 @@ public class QARunner extends AbstractRunner {
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
             registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
-            //cron job
+
+			//cron job
             if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
                 def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
                 for (def cronJobName : cronJobNames.split(",")) {
                     cronJobName = cronJobName.trim()
-                    def cronDesc = "project: ${repo}; type: cron"
-                    registerObject(cronJobName, new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc))
+					def cronDesc = "project: ${repo}; type: cron"
+					def cronJobFactory = new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, cronDesc)
+					
+					if (!dslObjects.containsKey(cronJobName)) {
+						// register CronJobFactory only if its declaration is missed
+						registerObject(cronJobName, cronJobFactory)
+					} else {
+						cronJobFactory = dslObjects.get(cronJobName) 
+					}
+					
+					// try to detect scheduling in current suite
+					def scheduling = null
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING)) {
+						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING)
+					}
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName)) {
+						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName)
+					}
+					
+					if (!isParamEmpty(scheduling)) {
+						logger.info("Setup scheduling for cron: ${cronJobName} value: ${scheduling}")
+						cronJobFactory.setScheduling(scheduling)
+					}
                 }
             }
         }
