@@ -375,7 +375,7 @@ public class QARunner extends AbstractRunner {
 					
 					// try to detect scheduling in current suite
 					def scheduling = null
-					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING)) {
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING))) {
 						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING)
 					}
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName))) {
