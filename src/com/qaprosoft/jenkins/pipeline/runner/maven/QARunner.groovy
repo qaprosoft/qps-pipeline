@@ -378,7 +378,7 @@ public class QARunner extends AbstractRunner {
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING)) {
 						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING)
 					}
-					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName)) {
+					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName))) {
 						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName)
 					}
 					
