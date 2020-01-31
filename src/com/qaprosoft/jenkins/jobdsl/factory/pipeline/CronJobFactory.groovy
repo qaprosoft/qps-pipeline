@@ -13,7 +13,7 @@ public class CronJobFactory extends PipelineFactory {
     def host
     def repo
     def organization
-	def branch
+    def branch
     def suitePath
 
     public CronJobFactory(folder, pipelineScript, cronJobName, host, repo, organization, branch, suitePath, jobDesc) {
@@ -25,18 +25,23 @@ public class CronJobFactory extends PipelineFactory {
         this.host = host
         this.repo = repo
         this.organization = organization
-		this.branch = branch
+	this.branch = branch
         this.suitePath = suitePath
     }
 
     def create() {
-
+        logger.info("CronJobFactory->create")
         XmlSuite currentSuite = parseSuite(suitePath)
 
         def pipelineJob = super.create()
 
         pipelineJob.with {
-
+            //** Properties & Parameters Area **//*
+            def scheduling = currentSuite.getParameter("jenkinsRegressionScheduling")
+            //_dslFactory.println("suitePath: ${suitePath}; scheduling: ${scheduling}")
+            if (scheduling != null) {
+                triggers { cron(parseSheduling(scheduling)) }
+            }
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
                 configure addHiddenParameter('repo', '', repo)
