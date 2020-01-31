@@ -364,7 +364,7 @@ public class QARunner extends AbstractRunner {
                 for (def cronJobName : cronJobNames.split(",")) {
                     cronJobName = cronJobName.trim()
 					def cronDesc = "project: ${repo}; type: cron"
-					def cronJobFactory = new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, cronDesc)
+					def cronJobFactory = new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc)
 					
 					if (!dslObjects.containsKey(cronJobName)) {
 						// register CronJobFactory only if its declaration is missed
