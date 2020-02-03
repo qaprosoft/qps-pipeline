@@ -121,4 +121,17 @@ public class PipelineFactory extends JobFactory {
         }
     }
 
+    protected def parseSheduling(scheduling){
+        if (scheduling.contains("::")){
+            def multilineArray = scheduling.split("::")
+            def multilineValue = ""
+            multilineArray.each { value ->
+                multilineValue = multilineValue + value + "\n"
+            }
+            scheduling = multilineValue
+        }
+        return scheduling
+    }
+
+
 }

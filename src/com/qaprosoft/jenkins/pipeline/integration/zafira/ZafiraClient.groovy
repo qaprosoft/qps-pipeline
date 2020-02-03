@@ -272,7 +272,7 @@ class ZafiraClient extends HttpClient {
         }
         authToken = properties.type + " " + properties.accessToken
         logger.debug("authToken: " + authToken)
-        tokenExpTime = System.currentTimeMillis() + 290 * 60 * 1000
+        tokenExpTime = System.currentTimeMillis() + 470 * 60 * 1000
     }
 
 }
