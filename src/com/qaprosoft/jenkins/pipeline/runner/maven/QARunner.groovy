@@ -1195,7 +1195,6 @@ public class QARunner extends AbstractRunner {
 						def pipelineMap = [:]
 						// put all not NULL args into the pipelineMap for execution
 						putMap(pipelineMap, pipelineLocaleMap)
-						putMap(pipelineMap, supportedConfigurations)
 						pipelineMap.put("name", regressionPipeline)
 						pipelineMap.put("params_name", supportedParams)
 						pipelineMap.put("branch", Configuration.get("branch"))
@@ -1212,6 +1211,8 @@ public class QARunner extends AbstractRunner {
 						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
 						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
 						putNotNull(pipelineMap, "queue_registration", queueRegistration)
+						// supported config matrix should be applied at the end to be able to override default args like retry_count etc
+						putMap(pipelineMap, supportedConfigurations)
 						registerPipeline(currentSuite, pipelineMap)
 					}
 					
