@@ -13,7 +13,7 @@ public class TestJobFactory extends PipelineFactory {
     def host
     def repo
     def organization
-	def branch
+    def branch
     def sub_project
     def zafira_project
     def suitePath
@@ -183,18 +183,6 @@ public class TestJobFactory extends PipelineFactory {
             }
         }
         return pipelineJob
-    }
-
-    protected def parseSheduling(scheduling){
-        if (scheduling.contains("::")){
-            def multilineArray = scheduling.split("::")
-            def multilineValue = ""
-            multilineArray.each { value ->
-                multilineValue = multilineValue + value + "\n"
-            }
-            scheduling = multilineValue
-        }
-        return scheduling
     }
 
     protected def getRetryCountArray(currentSuite){

@@ -13,11 +13,11 @@ public class CronJobFactory extends PipelineFactory {
     def host
     def repo
     def organization
-	def branch
-    def suitePath
+    def branch
+	def suitePath
+    def scheduling
 
     public CronJobFactory(folder, pipelineScript, cronJobName, host, repo, organization, branch, suitePath, jobDesc) {
-
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.description = jobDesc
@@ -25,18 +25,20 @@ public class CronJobFactory extends PipelineFactory {
         this.host = host
         this.repo = repo
         this.organization = organization
-		this.branch = branch
-        this.suitePath = suitePath
+        this.branch = branch
+		this.suitePath = suitePath
     }
 
     def create() {
-
-        XmlSuite currentSuite = parseSuite(suitePath)
-
+        logger.info("CronJobFactory->create")
+		XmlSuite currentSuite = parseSuite(suitePath)
         def pipelineJob = super.create()
 
         pipelineJob.with {
-
+            //** Properties & Parameters Area **//*
+            if (scheduling != null) {
+                triggers { cron(parseSheduling(scheduling)) }
+            }
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
                 configure addHiddenParameter('repo', '', repo)
@@ -55,5 +57,9 @@ public class CronJobFactory extends PipelineFactory {
         }
         return pipelineJob
     }
+	
+	def setScheduling(scheduling) {
+		this.scheduling = scheduling
+	}
 
 }
