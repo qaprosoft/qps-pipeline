@@ -179,13 +179,6 @@ public class QARunner extends AbstractRunner {
 //
 //            // Support DEV related CI workflow
 //            //TODO: analyze if we need 3 system object declarations
-//
-//            def jenkinsFileOrigin = "Jenkinsfile"
-//            if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
-//                //TODO: figure our howto work with Jenkinsfile
-//                // this is the repo with already available pipeline script in Jenkinsfile
-//                // just create a job
-//            }
 
             def pomFiles = getProjectPomFiles()
             for (pomFile in pomFiles) {
