@@ -680,6 +680,7 @@ public class QARunner extends AbstractRunner {
                 Configuration.set("node", "android")
                 break;
             case "ios":
+            case "appletv":
             case "ios-web":
                 logger.info("Suite Type: iOS")
                 Configuration.set("node", "ios")
