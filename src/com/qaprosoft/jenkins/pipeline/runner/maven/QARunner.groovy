@@ -941,7 +941,8 @@ public class QARunner extends AbstractRunner {
         //browserstack goals
         if (isBrowserStackRunning()) {
             def uniqueBrowserInstance = "\"#${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-" + Configuration.get("suite") + "-" +
-                    getBrowser() + "-" + Configuration.get("env") + "\""
+                    getBrowser() + "-" + "DEMO" + "\""
+//                    getBrowser() + "-" + Configuration.get("env") + "\""
             uniqueBrowserInstance = uniqueBrowserInstance.replace("/", "-").replace("#", "")
             startBrowserStackLocal(uniqueBrowserInstance)
             Configuration.set("capabilities.project", Configuration.get("repo"))
