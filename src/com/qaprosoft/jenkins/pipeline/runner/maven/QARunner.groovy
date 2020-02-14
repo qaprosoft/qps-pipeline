@@ -711,7 +711,8 @@ public class QARunner extends AbstractRunner {
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
         String suite = Configuration.get("suite")
         String branch = Configuration.get("branch")
-        String env = Configuration.get("env")
+//        String env = Configuration.get("env")
+        String env = "DEMO"
         String browser = getBrowser()
         String browserVersion = getBrowserVersion()
 		String locale = Configuration.get("locale")
@@ -1290,7 +1291,8 @@ public class QARunner extends AbstractRunner {
 
     protected def getCronEnv(currentSuite) {
         //currentSuite is need to override action in private pipelines
-        return Configuration.get("env")
+//        return Configuration.get("env")
+        return "DEMO"
     }
 
     // do not remove currentSuite from this method! It is available here to be override on customer level.
