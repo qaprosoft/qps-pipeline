@@ -1383,7 +1383,8 @@ public class QARunner extends AbstractRunner {
         // Put into this method all unique pipeline stage params otherwise less jobs then needed are launched!
         def stageName = ""
         String jobName = jobParams.get("jobName")
-        String env = jobParams.get("env")
+//        String env = jobParams.get("env")
+        String env = "DEMO"
 		String paramsName = jobParams.get("params_name")
 
         String browser = jobParams.get("browser")
