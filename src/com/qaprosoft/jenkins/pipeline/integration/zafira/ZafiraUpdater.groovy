@@ -52,7 +52,8 @@ class ZafiraUpdater {
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
         String jobBuildUrl = Configuration.get(Configuration.Parameter.JOB_URL) + buildNumber
         String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
-        String env = Configuration.get("env")
+//        String env = Configuration.get("env")
+        String env = "DEMO"
 
         def bodyHeader = "Unable to execute tests due to the unrecognized failure: ${jobBuildUrl}\n"
         def subject = getFailureSubject(FailureCause.UNRECOGNIZED_FAILURE.value, jobName, env, buildNumber)
