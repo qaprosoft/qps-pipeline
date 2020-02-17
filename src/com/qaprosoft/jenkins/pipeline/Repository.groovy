@@ -244,15 +244,15 @@ class Repository {
 		def user = Configuration.get("User")
 		def password = Configuration.get("Password")
 
-        if (isParamEmpty(user) || isParamEmpty(password)) {
-            throw new RuntimeException("Not implemented yet!")
-        }
         def hubUrl
-        if (isParamEmpty(user) && isParamEmpty(password)) {
+        if (!isParamEmpty(user) && !isParamEmpty(password)) {
             hubUrl = "http://${user}:${password}@demo.qaprosoft.com/ggr/wd/hub"
-        } else {
+        } else if (isParamEmpty(user) && isParamEmpty(password)) {
             hubUrl = url
+        } else {
+            throw new RuntimeException("Invalid parameters!")
         }
+
         logger.info("hubUrl: ${hubUrl}")
 
 		context.stage("Register Hub Credentials") {
