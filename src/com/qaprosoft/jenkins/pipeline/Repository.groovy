@@ -233,17 +233,48 @@ class Repository {
         dslObjects.put(name, object)
     }
 
+	public def registerHubCredentials(){
+		def orgFolderName = Configuration.get("folderName")
+		
+		def provider = Configuration.get("Provider")
+
+		// Example: http://demo.qaprosoft.com/ggr/wd/hub
+		def url = Configuration.get("Url") 
+		
+		def user = Configuration.get("User")
+		def password = Configuration.get("Password")
+		
+		// Register in secured way as : http://user:password@demo.qaprosoft.com/ggr/wd/hub
+		// add implementation here to inject user:password to hubUrl
+		// if user and password empty then hubUrl = url
+		def hubUrl = url
+		
+		context.stage("Register Hub Credentials") {
+            if (isParamEmpty(orgFolderName) || isParamEmpty(url)){
+                throw new RuntimeException("Required fields are missing!")
+            }
+            def hubURLCredName = "${orgFolderName}-${provider}_hub"
+
+
+            if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", hubUrl)) {
+                logger.info("${hubURLCredName} was successfully registered.")
+            }
+        }
+	}
+
+	
+	// TODO: combine both registerZafiraCredentials and registerZafiraCredentials with args
     public def registerZafiraCredentials(){
         def orgFolderName = Configuration.get("folderName")
         def zafiraServiceURL = Configuration.get("zafiraServiceURL")
         def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
         registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken)
     }
-
+	
     public def registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
         context.stage("Register Zafira Credentials") {
             if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
-                throw new RuntimeException("Required fields are missing")
+                throw new RuntimeException("Required fields are missing!")
             }
             def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
             def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
