@@ -812,6 +812,7 @@ public class QARunner extends AbstractRunner {
 			if (getCredentials(hubUrl)){
 				context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 					Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
+					logger.info("${orgFolderName}-${provider}_hub: ${context.env.VALUE}")
 				}
 			}
 		}
