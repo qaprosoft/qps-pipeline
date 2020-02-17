@@ -802,9 +802,27 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+	public def updateSeleniumUrl() {
+		// update SELENIUM_URL parameter based on capabilities.provider
+		def provider = Configuration.get("capabilities.provider")
+		if (!isParamEmpty(provider)) {
+			def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+			def hubUrl = "${orgFolderName}-${provider}_hub"
+			
+			if (getCredentials(hubUrl)){
+				context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+					Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
+				}
+			}
+		}
+		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
+	}
+
     protected String getMavenGoals() {
+		def seleniumHost = updateSeleniumUrl()
+		
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
-        def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
+        def defaultBaseMavenGoals = "-Dselenium_host=${seleniumHost} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
         -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
