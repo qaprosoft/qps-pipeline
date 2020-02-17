@@ -246,7 +246,7 @@ class Repository {
 
         def hubUrl
         if (!isParamEmpty(user) && !isParamEmpty(password)) {
-            hubUrl = "http://${user}:${password}@demo.qaprosoft.com/ggr/wd/hub"
+            hubUrl = url.split('//')[0] + user + ":" + password + "@" + url.split('//')[1]
         } else if (isParamEmpty(user) && isParamEmpty(password)) {
             hubUrl = url
         } else {
