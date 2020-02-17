@@ -243,12 +243,17 @@ class Repository {
 		
 		def user = Configuration.get("User")
 		def password = Configuration.get("Password")
-		
-		// Register in secured way as : http://user:password@demo.qaprosoft.com/ggr/wd/hub
-		// add implementation here to inject user:password to hubUrl
-		// if user and password empty then hubUrl = url
-		def hubUrl = url
-		
+
+        if (isParamEmpty(user) || isParamEmpty(password)) {
+            throw new RuntimeException("Not implemented yet!")
+        }
+        def hubUrl
+        if (isParamEmpty(user) && isParamEmpty(password)) {
+            hubUrl = "http://${user}:${password}@demo.qaprosoft.com/ggr/wd/hub"
+        } else {
+            hubUrl = url
+        }
+
 		context.stage("Register Hub Credentials") {
             if (isParamEmpty(orgFolderName) || isParamEmpty(url)){
                 throw new RuntimeException("Required fields are missing!")
