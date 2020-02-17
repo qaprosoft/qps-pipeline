@@ -46,6 +46,7 @@ class Organization {
 //            context.timestamps {
                 def folder = Configuration.get("folderName")
                 prepare()
+				generateCreds(folder)
                 generateCiItems(folder)
                 logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
                 if (Configuration.get("securityEnabled")?.toBoolean()) {
@@ -87,7 +88,7 @@ class Organization {
             }
         }
     }
-
+	
     protected def generateCiItems(folder) {
         context.stage("Register Organization") {
             if (!isParamEmpty(folder)) {
@@ -252,5 +253,50 @@ class Organization {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
         }
     }
+	
+	protected def generateCreds(folder) {
+		def host = Configuration.get("QPS_HOST")
+		registerHubCredentials(folder, "selenium", "http://${host}/ggr/wd/hub", "demo", "demo")
+		registerHubCredentials(folder, "mcloud", "http://${host}/mcloud/wd/hub", "demo", "demo")
+	}
+	
+	public def registerHubCredentials() {
+		def orgFolderName = Configuration.get("folderName")
+		
+		def provider = Configuration.get("Provider")
+
+		// Example: http://demo.qaprosoft.com/ggr/wd/hub
+		def url = Configuration.get("Url")
+		
+		def user = Configuration.get("User")
+		def password = Configuration.get("Password")
+		
+		registerHubCredentials(orgFolderName, provider, url, user, password)
+	}
+	
+	protected def registerHubCredentials(orgFolderName, provider, url, user, password) {
+		def hubUrl
+		if (!isParamEmpty(user) && !isParamEmpty(password)) {
+			hubUrl = url.split('//')[0] + "//" + user + ":" + password + "@" + url.split('//')[1]
+		} else if (isParamEmpty(user) && isParamEmpty(password)) {
+			hubUrl = url
+		} else {
+			throw new RuntimeException("Invalid parameters!")
+		}
+
+		logger.info("hubUrl: ${hubUrl}")
+
+		context.stage("Register Hub Credentials") {
+			if (isParamEmpty(orgFolderName) || isParamEmpty(url)){
+				throw new RuntimeException("Required fields are missing!")
+			}
+			def hubURLCredName = "${orgFolderName}-${provider}_hub"
+
+
+			if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", hubUrl)) {
+				logger.info("${hubURLCredName} was successfully registered.")
+			}
+		}
+	}
 
 }

@@ -232,42 +232,6 @@ class Repository {
         }
         dslObjects.put(name, object)
     }
-
-	public def registerHubCredentials(){
-		def orgFolderName = Configuration.get("folderName")
-		
-		def provider = Configuration.get("Provider")
-
-		// Example: http://demo.qaprosoft.com/ggr/wd/hub
-		def url = Configuration.get("Url") 
-		
-		def user = Configuration.get("User")
-		def password = Configuration.get("Password")
-
-        def hubUrl
-        if (!isParamEmpty(user) && !isParamEmpty(password)) {
-            hubUrl = url.split('//')[0] + "//" + user + ":" + password + "@" + url.split('//')[1]
-        } else if (isParamEmpty(user) && isParamEmpty(password)) {
-            hubUrl = url
-        } else {
-            throw new RuntimeException("Invalid parameters!")
-        }
-
-        logger.info("hubUrl: ${hubUrl}")
-
-		context.stage("Register Hub Credentials") {
-            if (isParamEmpty(orgFolderName) || isParamEmpty(url)){
-                throw new RuntimeException("Required fields are missing!")
-            }
-            def hubURLCredName = "${orgFolderName}-${provider}_hub"
-
-
-            if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", hubUrl)) {
-                logger.info("${hubURLCredName} was successfully registered.")
-            }
-        }
-	}
-
 	
 	// TODO: combine both registerZafiraCredentials and registerZafiraCredentials with args
     public def registerZafiraCredentials(){
