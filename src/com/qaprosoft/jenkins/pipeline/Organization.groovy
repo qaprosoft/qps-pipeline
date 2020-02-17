@@ -255,9 +255,8 @@ class Organization {
     }
 	
 	protected def generateCreds(folder) {
-		def host = Configuration.get("SELENIUM_HOST")
-		registerHubCredentials(folder, "selenium", "http://${host}/ggr/wd/hub", "demo", "demo")
-		registerHubCredentials(folder, "mcloud", "http://${host}/mcloud/wd/hub", "demo", "demo")
+		registerHubCredentials(folder, "selenium", "http://\${QPS_HOST}/ggr/wd/hub", "demo", "demo")
+		registerHubCredentials(folder, "mcloud", "http://\${QPS_HOST}/mcloud/wd/hub", "demo", "demo")
 	}
 	
 	public def registerHubCredentials() {
