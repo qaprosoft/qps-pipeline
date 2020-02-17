@@ -253,6 +253,7 @@ class Repository {
         } else {
             hubUrl = url
         }
+        logger.info("hubUrl: ${hubUrl}")
 
 		context.stage("Register Hub Credentials") {
             if (isParamEmpty(orgFolderName) || isParamEmpty(url)){
