@@ -255,10 +255,11 @@ class Organization {
     }
 	
 	protected def generateCreds(folder) {
-		logger.info("QPS_HOST: " + Configuration.get(Configuration.Parameter.QPS_HOST))
-		logger.info("selenium: " + "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
+		logger.debug("QPS_HOST: " + Configuration.get(Configuration.Parameter.QPS_HOST))
+		logger.debug("selenium: " + "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
 		registerHubCredentials(folder, "selenium", "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
 		//TODO: remove mcloud registration in released version
+		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 		registerHubCredentials(folder, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 	}
 	
