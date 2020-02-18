@@ -808,13 +808,14 @@ public class QARunner extends AbstractRunner {
 		if (!isParamEmpty(provider)) {
 			def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
 			def hubUrl = "${orgFolderName}-${provider}_hub"
-			
+
+            def tmp_val = context.env.VALUE
+            logger.info("111111111111 " + tmp_val)
+
 			if (getCredentials(hubUrl)){
 				context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 					Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
 					logger.info("${orgFolderName}-${provider}_hub: ${context.env.VALUE}")
-                    def tmp_val = context.env.VALUE
-                    logger.info("111111111111 " + tmp_val)
 				}
 			}
 		}
