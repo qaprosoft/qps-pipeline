@@ -255,8 +255,8 @@ class Organization {
     }
 	
 	protected def generateCreds(folder) {
-		registerHubCredentials(folder, "selenium", "http://\${QPS_HOST}/ggr/wd/hub", "demo", "demo")
-		registerHubCredentials(folder, "mcloud", "http://\${QPS_HOST}/mcloud/wd/hub", "demo", "demo")
+		registerHubCredentials(folder, "selenium", "http://demo:demo@\$\{QPS_HOST\}/ggr/wd/hub")
+		registerHubCredentials(folder, "mcloud", "http://demo:demo@\$\{QPS_HOST\}/mcloud/wd/hub")
 	}
 	
 	public def registerHubCredentials() {
@@ -267,32 +267,16 @@ class Organization {
 		// Example: http://demo.qaprosoft.com/ggr/wd/hub
 		def url = Configuration.get("Url")
 		
-		def user = Configuration.get("User")
-		def password = Configuration.get("Password")
-		
-		registerHubCredentials(orgFolderName, provider, url, user, password)
+		registerHubCredentials(orgFolderName, provider, url)
 	}
 	
-	protected def registerHubCredentials(orgFolderName, provider, url, user, password) {
-		def hubUrl
-		if (!isParamEmpty(user) && !isParamEmpty(password)) {
-			hubUrl = url.split('//')[0] + "//" + user + ":" + password + "@" + url.split('//')[1]
-		} else if (isParamEmpty(user) && isParamEmpty(password)) {
-			hubUrl = url
-		} else {
-			throw new RuntimeException("Invalid parameters!")
-		}
-
-		logger.info("hubUrl: ${hubUrl}")
-
+	protected def registerHubCredentials(orgFolderName, provider, url) {
 		context.stage("Register Hub Credentials") {
 			if (isParamEmpty(orgFolderName) || isParamEmpty(url)){
 				throw new RuntimeException("Required fields are missing!")
 			}
 			def hubURLCredName = "${orgFolderName}-${provider}_hub"
-
-
-			if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", hubUrl)) {
+			if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", url)) {
 				logger.info("${hubURLCredName} was successfully registered.")
 			}
 		}
