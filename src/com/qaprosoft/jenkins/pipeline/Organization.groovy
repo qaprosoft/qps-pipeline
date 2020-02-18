@@ -46,7 +46,7 @@ class Organization {
 //            context.timestamps {
                 def folder = Configuration.get("folderName")
                 prepare()
-				generateCreds(folder)
+                generateCreds(folder)
                 generateCiItems(folder)
                 logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
                 if (Configuration.get("securityEnabled")?.toBoolean()) {
@@ -261,13 +261,13 @@ class Organization {
 		//TODO: remove mcloud registration in released version
 		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 		registerHubCredentials(folder, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
+		
+		registerZafiraCredentials(folder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
 	}
 	
 	public def registerHubCredentials() {
 		def orgFolderName = Configuration.get("folderName")
-		
 		def provider = Configuration.get("Provider")
-
 		// Example: http://demo.qaprosoft.com/ggr/wd/hub
 		def url = Configuration.get("Url")
 		
@@ -283,6 +283,28 @@ class Organization {
 			if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", url)) {
 				logger.info("${hubURLCredName} was successfully registered.")
 			}
+		}
+	}
+	
+	public def registerZafiraCredentials(){
+		def orgFolderName = Configuration.get("folderName")
+		def zafiraServiceURL = Configuration.get("zafiraServiceURL")
+		def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
+		registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken)
+	}
+	
+	protected def registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
+		context.stage("Register Zafira Credentials") {
+			if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
+				throw new RuntimeException("Required fields are missing!")
+			}
+			def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
+			def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+
+			if (updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL))
+				logger.info(orgFolderName + " zafira service url was successfully registered.")
+			if (updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken))
+				logger.info(orgFolderName + " zafira access token was successfully registered.")
 		}
 	}
 
