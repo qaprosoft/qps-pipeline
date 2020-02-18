@@ -888,7 +888,6 @@ public class QARunner extends AbstractRunner {
                 "SELENIUM_HOST",
                 "SELENIUM_PORT",
                 "SELENIUM_URL",
-                "QPS_HUB",
                 "TESTRAIL_SERVICE_URL",
                 "testrail_enabled",
                 "QTEST_SERVICE_URL",
