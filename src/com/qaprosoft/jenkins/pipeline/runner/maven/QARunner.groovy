@@ -814,6 +814,8 @@ public class QARunner extends AbstractRunner {
 					Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
 					logger.debug("${orgFolderName}-${provider}_hub:" + context.env.VALUE)
 				}
+			} else {
+				throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
 			}
 		}
 		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
