@@ -809,18 +809,12 @@ public class QARunner extends AbstractRunner {
 			def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
 			def hubUrl = "${orgFolderName}-${provider}_hub"
 
-            def tmp_val
-
 			if (getCredentials(hubUrl)){
 				context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-					Configuration.set(Configuration.Parameter.SELENIUM_URL, Configuration.resolveVars(context.env.VALUE))
-					logger.info("${orgFolderName}-${provider}_hub:" + Configuration.resolveVars(context.env.VALUE))
-
-                    tmp_val = Configuration.resolveVars(context.env.VALUE)
+					Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
+					logger.debug("${orgFolderName}-${provider}_hub:" + context.env.VALUE)
 				}
 			}
-
-            logger.info("111111111111 " + tmp_val)
 		}
 		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
 	}
