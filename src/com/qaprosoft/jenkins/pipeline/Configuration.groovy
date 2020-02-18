@@ -55,6 +55,8 @@ public class Configuration {
         GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, true),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
 
+        QPS_HOST("QPS_HOST", "demo.qaprosoft.com"),
+
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
         SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}"),
         SELENIUM_PORT("SELENIUM_PORT", "4444"),
