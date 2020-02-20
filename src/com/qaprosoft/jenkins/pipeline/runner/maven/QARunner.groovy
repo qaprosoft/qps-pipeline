@@ -808,6 +808,8 @@ public class QARunner extends AbstractRunner {
 		if (!isParamEmpty(provider)) {
 			def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
 			
+			logger.info("orgFolderName: '${orgFolderName}'")
+			
 			def hubUrl = "${provider}_hub"
 			if (!isParamEmpty(orgFolderName)) {
 				hubUrl = "${orgFolderName}-${provider}_hub"
