@@ -19,9 +19,11 @@ class GitHub implements ISCM {
         this.context = context
         logger = new Logger(context)
         scmHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
-        if(scmHost.contains("bitbucket")) {
+		if(scmHost.contains("upnetix")) {
+			gitHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+		} else if(scmHost.contains("bitbucket")) {
             gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-        } else if(scmHost.contains("io") || scmHost.contains("upnetix")) {
+        } else if(scmHost.contains("io")) {
             gitHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         } else {
             gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
