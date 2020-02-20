@@ -807,7 +807,11 @@ public class QARunner extends AbstractRunner {
 		def provider = Configuration.get("capabilities.provider")
 		if (!isParamEmpty(provider)) {
 			def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
-			def hubUrl = "${orgFolderName}-${provider}_hub"
+			
+			def hubUrl = "${provider}_hub"
+			if (!isParamEmpty(orgFolderName)) {
+				hubUrl = "${orgFolderName}-${provider}_hub"
+			}
 
 			if (getCredentials(hubUrl)){
 				context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {

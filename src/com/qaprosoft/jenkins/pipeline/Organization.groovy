@@ -279,9 +279,9 @@ class Organization {
 			if (isParamEmpty(url)){
 				throw new RuntimeException("Required URL field is missing!")
 			}
-			def hubURLCredName = "${orgFolderName}-${provider}_hub"
-			if (isParamEmpty(orgFolderName)) {
-				hubURLCredName = "${provider}_hub"
+			def hubURLCredName = "${provider}_hub"
+			if (!isParamEmpty(orgFolderName)) {
+				hubURLCredName = "${orgFolderName}-${provider}_hub"
 			}
 			
 			if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", url)) {
