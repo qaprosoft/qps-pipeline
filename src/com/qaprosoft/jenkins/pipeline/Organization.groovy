@@ -276,10 +276,14 @@ class Organization {
 	
 	protected def registerHubCredentials(orgFolderName, provider, url) {
 		context.stage("Register Hub Credentials") {
-			if (isParamEmpty(orgFolderName) || isParamEmpty(url)){
-				throw new RuntimeException("Required fields are missing!")
+			if (isParamEmpty(url)){
+				throw new RuntimeException("Required URL field is missing!")
 			}
 			def hubURLCredName = "${orgFolderName}-${provider}_hub"
+			if (isParamEmpty(orgFolderName)) {
+				hubURLCredName = "${provider}_hub"
+			}
+			
 			if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", url)) {
 				logger.info("${hubURLCredName} was successfully registered.")
 			}
