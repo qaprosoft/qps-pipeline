@@ -808,17 +808,15 @@ public class QARunner extends AbstractRunner {
 		if (!isParamEmpty(provider)) {
 			def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
 			
-			logger.info("orgFolderName: '${orgFolderName}'")
-			
-			def hubUrl = "${provider}_hub"
-			if (!isParamEmpty(orgFolderName)) {
-				hubUrl = "${orgFolderName}-${provider}_hub"
+			def hubUrl = "${orgFolderName}-${provider}_hub"
+			if (!getCredentials(hubUrl)) {
+				hubUrl = "${provider}_hub"
 			}
-
+			
 			if (getCredentials(hubUrl)){
 				context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 					Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
-					logger.debug("${orgFolderName}-${provider}_hub:" + context.env.VALUE)
+					logger.debug("${hubUrl}:" + context.env.VALUE)
 				}
 			} else {
 				throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
