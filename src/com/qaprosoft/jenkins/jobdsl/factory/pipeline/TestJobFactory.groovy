@@ -93,7 +93,9 @@ public class TestJobFactory extends PipelineFactory {
                     case "web":
                         // WEB tests specific
                         configure stringParam('capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
-                        configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
+                        if (!isParamEmpty(getSuiteParameter('NULL', 'custom_capabilities', currentSuite))){
+                            configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
+                        }
                         booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
                         booleanParam('enableVideo', enableVideo, 'Enable video recording')
                         break
