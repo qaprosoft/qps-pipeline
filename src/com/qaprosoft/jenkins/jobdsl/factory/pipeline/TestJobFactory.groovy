@@ -4,7 +4,6 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import static com.qaprosoft.jenkins.Utils.*
 import org.testng.xml.XmlSuite
-import com.qaprosoft.jenkins.jobdsl.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
@@ -126,6 +125,12 @@ public class TestJobFactory extends PipelineFactory {
                         break
                 }
                 configure addHiddenParameter('job_type', '', jobType)
+                
+                def hubProvider = getSuiteParameter("", "provider", currentSuite)
+                if (!isParamEmpty(hubProvider)){
+                    configure addHiddenParameter('capabilities.provider', 'hub provider name', hubProvider)
+                }
+                
                 def nodeLabel = getSuiteParameter("", "jenkinsNodeLabel", currentSuite)
                 if (!isParamEmpty(nodeLabel)){
                     configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
@@ -192,11 +197,6 @@ public class TestJobFactory extends PipelineFactory {
             retryCountList.add(0, retryCount)
         }
         return retryCountList
-    }
-
-    protected def getDevices(String platform) {
-        def proxyInfo = new ProxyInfo(_dslFactory)
-        return proxyInfo.getDevicesList(platform)
     }
 
     protected String listToString(currentSuite, parameterName) {

@@ -55,13 +55,13 @@ public class Configuration {
         GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, true),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
 
+        QPS_HOST("QPS_HOST", "demo.qaprosoft.com"),
+
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
         SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}"),
         SELENIUM_PORT("SELENIUM_PORT", "4444"),
         SELENIUM_URL("SELENIUM_URL", "\${SELENIUM_PROTOCOL}://demo:demo@\${SELENIUM_HOST}:\${SELENIUM_PORT}/wd/hub"),
         HUB_MODE("hub_mode", "selenium"),
-
-        QPS_HUB("QPS_HUB", "\${SELENIUM_PROTOCOL}://${SELENIUM_HOST}:\${SELENIUM_PORT}"),
 
         ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, true),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),

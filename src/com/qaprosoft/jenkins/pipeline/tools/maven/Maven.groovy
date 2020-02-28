@@ -66,8 +66,8 @@ public class Maven {
         // parse goals replacing sensitive info by *******
         if (context.isUnix()) {
             def filteredGoals = filterSecuredParams(goals)
+            logger.info("mvn -B ${filteredGoals}")
             context.sh """
-                        echo "mvn -B ${filteredGoals}"
                         set +x
                         'mvn' -B ${goals}
                         set -x 
