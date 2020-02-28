@@ -294,22 +294,22 @@ class Organization {
 		def orgFolderName = Configuration.get("folderName")
 		def zafiraServiceURL = Configuration.get("zafiraServiceURL")
 		def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
-		Organization.registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken)
+		context.stage("Register Zafira Credentials") {
+			Organization.registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken)
+		}
 	}
 	
 	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
-		context.stage("Register Zafira Credentials") {
-			if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
-				throw new RuntimeException("Required fields are missing!")
-			}
-			def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
-			def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
-
-			if (updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL))
-				logger.info(orgFolderName + " zafira service url was successfully registered.")
-			if (updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken))
-				logger.info(orgFolderName + " zafira access token was successfully registered.")
+		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
+			throw new RuntimeException("Required fields are missing!")
 		}
+		def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
+		def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+
+		if (updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL))
+			logger.info(orgFolderName + " zafira service url was successfully registered.")
+		if (updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken))
+			logger.info(orgFolderName + " zafira access token was successfully registered.")
 	}
 
 }
