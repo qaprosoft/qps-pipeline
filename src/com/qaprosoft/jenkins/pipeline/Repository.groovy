@@ -102,6 +102,16 @@ class Repository {
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
+            } else {
+                def zafiraFields = Configuration.get("zafiraFields")
+                logger.debug("zafiraFields: " + zafiraFields)
+                if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+                    def zafiraServiceURL = Configuration.get("zafiraServiceURL")
+                    def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
+                    logger.debug("zafiraServiceURL: " + zafiraServiceURL)
+                    logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
+                    Organization.registerZafiraCredentials(repoFolder, zafiraServiceURL, zafiraRefreshToken)
+                }
             }
 
             logger.debug("organization: " + Configuration.get(SCM_ORG))
@@ -118,23 +128,11 @@ class Repository {
             }
 */
 
-            logger.debug("rootFolder: " + this.rootFolder)
-
             if (!"/".equals(this.rootFolder)) {
                 //For both cases when rootFolder exists job was started with existing organization value,
                 //so it should be used by default
                 Configuration.set(Configuration.Parameter.GITHUB_ORGANIZATION, Configuration.get(SCM_ORG))
                 repoFolder = this.rootFolder + "/" + repoFolder
-            } else {
-                def zafiraFields = Configuration.get("zafiraFields")
-                logger.debug("zafiraFields: " + zafiraFields)
-                if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def zafiraServiceURL = Configuration.get("zafiraServiceURL")
-                    def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
-                    logger.debug("zafiraServiceURL: " + zafiraServiceURL)
-                    logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
-                    Organization.registerZafiraCredentials(repoFolder, zafiraServiceURL, zafiraRefreshToken)
-                }
             }
 
             logger.debug("repoFolder: " + repoFolder)
