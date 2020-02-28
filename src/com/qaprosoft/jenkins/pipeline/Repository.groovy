@@ -131,6 +131,8 @@ class Repository {
                 if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
                     def zafiraServiceURL = Configuration.get("zafiraServiceURL")
                     def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
+                    logger.debug("zafiraServiceURL: " + zafiraServiceURL)
+                    logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
                     Organization.registerZafiraCredentials(repoFolder, zafiraServiceURL, zafiraRefreshToken)
                 }
             }
