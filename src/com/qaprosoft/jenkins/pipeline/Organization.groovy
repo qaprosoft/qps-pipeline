@@ -294,10 +294,10 @@ class Organization {
 		def orgFolderName = Configuration.get("folderName")
 		def zafiraServiceURL = Configuration.get("zafiraServiceURL")
 		def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
-		registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken)
+		Organization.registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken)
 	}
 	
-	protected def registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
+	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
 		context.stage("Register Zafira Credentials") {
 			if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
 				throw new RuntimeException("Required fields are missing!")
