@@ -114,7 +114,7 @@ public class PipelineFactory extends JobFactory {
                     'bla-bla-bla'
                     choice
                     flase
-                    AddEditedChoiceListProvider.WhenToAdd 'Triggered'
+                    'Triggered'
 
                     //whenToAdd 'Triggered'
                     //name globalName
