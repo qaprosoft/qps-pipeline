@@ -113,7 +113,7 @@ public class PipelineFactory extends JobFactory {
                 choiceListProvider(class: 'jp.ikedam.jenkins.plugins.extensible_choice_parameter.TextareaChoiceListProvider') {
                     choiceListText 'DEMO1'
                     defaultChoice 'DEMO2'
-                    addEditedValue flase
+                    addEditedValue false
                     whenToAdd 'Triggered'
                 }
             }
