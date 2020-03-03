@@ -40,20 +40,19 @@ public class CronJobFactory extends PipelineFactory {
                 triggers { cron(parseSheduling(scheduling)) }
             }
             parameters {
-//                extensibleChoiceParameterDefinition {
-//                    name('env')
-//                    choiceListProvider {
-//                        textareaChoiceListProvider {
-//                            choiceListText(getEnvironments(currentSuite))
-//                            choiceListText("bla1\nbla2")
-//                            defaultChoice('')
-//                            addEditedValue(false)
-//                            whenToAdd('Triggered')
-//                        }
-//                    }
-//                    editable(true)
-//                    description('Environment to test against')
-//                }
+                extensibleChoiceParameterDefinition {
+                    name('env')
+                    choiceListProvider {
+                        textareaChoiceListProvider {
+                            choiceListText(getEnvironments(currentSuite))
+                            defaultChoice('')
+                            addEditedValue(false)
+                            whenToAdd('Triggered')
+                        }
+                    }
+                    editable(true)
+                    description('Environment to test against')
+                }
                 configure addHiddenParameter('repo', '', repo)
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
