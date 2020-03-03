@@ -56,7 +56,7 @@ public class PipelineFactory extends JobFactory {
 
     protected List<String> getEnvironments(currentSuite) {
         def env = currentSuite.getParameter("jenkinsEnvironments")
-
+        logger.info('1111111 ' + env)
         if (env.isEmpty()) {
             env += "DEMO\nSTAG"
         }
