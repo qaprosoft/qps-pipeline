@@ -65,7 +65,9 @@ public class TestJobFactory extends PipelineFactory {
                     choiceListProvider {
                         textareaChoiceListProvider {
                             choiceListText('foo\nbar')
+                            defaultChoice('bla-bla')
                             addEditedValue(false)
+                            whenToAdd('Triggered')
                         }
                     }
                     editable(true)
