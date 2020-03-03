@@ -160,19 +160,6 @@ public class TestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('slack_channels', '', getSuiteParameter("", "jenkinsSlackChannels", currentSuite))
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-
-                extensibleChoiceParameterDefinition {
-                    name('BuildPriority')
-                    description('Priority of execution. Lower number means higher priority')
-                    choiceListProvider {
-                        GlobalTextareaChoiceListProvider {
-                            whenToAdd('Triggered')
-                            name("gc_BUILD_PRIORITY")
-                            defaultChoice('3')
-                        }
-                    }
-                }
-
                 configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
                 stringParam('thread_count', getSuiteParameter("1", "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
                 stringParam('email_list',  getSuiteParameter("", "jenkinsEmail", currentSuite), 'List of Users to be emailed after the test')
