@@ -59,7 +59,7 @@ public class TestJobFactory extends PipelineFactory {
             //** Properties & Parameters Area **//*
             parameters {
                 //choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
-                configure addExtensibleTextareaChoice('env', "Environment to test against", getEnvironments(currentSuite))
+                //configure addExtensibleTextareaChoice('env', "Environment to test against", getEnvironments(currentSuite))
                 extensibleChoiceParameterDefinition {
                     name('env2')
                     choiceListProvider {
