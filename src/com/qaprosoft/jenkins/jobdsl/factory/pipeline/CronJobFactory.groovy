@@ -44,7 +44,8 @@ public class CronJobFactory extends PipelineFactory {
                     name('env')
                     choiceListProvider {
                         textareaChoiceListProvider {
-                            choiceListText(getEnvironments(currentSuite))
+//                            choiceListText(getEnvironments(currentSuite))
+                            choiceListText("bla1\nbla2")
                             defaultChoice('')
                             addEditedValue(false)
                             whenToAdd('Triggered')
