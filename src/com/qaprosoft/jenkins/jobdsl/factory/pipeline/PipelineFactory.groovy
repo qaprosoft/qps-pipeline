@@ -2,7 +2,6 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import com.qaprosoft.jenkins.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
-import org.apache.ivy.util.filter.NoFilter
 import org.apache.tools.ant.types.resources.selectors.None
 
 @InheritConstructors
@@ -100,20 +99,6 @@ public class PipelineFactory extends JobFactory {
                     whenToAdd 'Triggered'
                     name globalName
                     defaultChoice choice
-                }
-            }
-        }
-    }
-
-    protected Closure addExtensibleTextareaChoice(choiceName, desc, choice) {
-        return { node ->
-            node / 'properties' / 'hudson.model.ParametersDefinitionProperty' / 'parameterDefinitions' << 'jp.ikedam.jenkins.plugins.extensible__choice__parameter.ExtensibleChoiceParameterDefinition'(plugin: 'extensible-choice-parameter@1.3.3') {
-                name choiceName
-                description desc
-                editable true
-                editableType NoFilter
-                choiceListProvider(class: 'jp.ikedam.jenkins.plugins.extensible_choice_parameter.TextareaChoiceListProvider') {
-                    choiceList 'DEMO1'
                 }
             }
         }
