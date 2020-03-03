@@ -55,7 +55,7 @@ public class PipelineFactory extends JobFactory {
     }
 
     protected String getEnvironments(currentSuite) {
-        return currentSuite.getParameter("jenkinsEnvironments").isEmpty() ? "DEMO\nPROD" : currentSuite.getParameter("jenkinsEnvironments")
+        return currentSuite.getParameter("jenkinsEnvironments").isEmpty() || currentSuite.getParameter("jenkinsEnvironments").isEmpty() == null ? "DEMO\nPROD" : currentSuite.getParameter("jenkinsEnvironments")
     }
 
     protected List<String> getGenericSplit(currentSuite, parameterName) {
