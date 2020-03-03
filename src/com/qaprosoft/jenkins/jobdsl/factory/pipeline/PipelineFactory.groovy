@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import com.qaprosoft.jenkins.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
+import com.qaprosoft.jenkins.Utils.isParamEmpty
 import org.apache.tools.ant.types.resources.selectors.None
 
 @InheritConstructors
@@ -56,8 +57,7 @@ public class PipelineFactory extends JobFactory {
 
     protected List<String> getEnvironments(currentSuite) {
         def env = currentSuite.getParameter("jenkinsEnvironments")
-        logger.info('1111111 ' + env)
-        if (env.isEmpty()) {
+        if (isParamEmpty(env)) {
             env += "DEMO\nSTAG"
         }
         return env
