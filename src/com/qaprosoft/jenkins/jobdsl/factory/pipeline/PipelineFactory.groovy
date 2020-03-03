@@ -55,14 +55,12 @@ public class PipelineFactory extends JobFactory {
     }
 
     protected List<String> getEnvironments(currentSuite) {
-        def envList = getGenericSplit(currentSuite, "jenkinsEnvironments")
+        def env = currentSuite.getParameter("jenkinsEnvironments")
 
-        if (envList.isEmpty()) {
-            envList.add("DEMO")
-            envList.add("STAG")
+        if (env.isEmpty()) {
+            env += "DEMO\nSTAG"
         }
-
-        return envList
+        return env
     }
 
     protected List<String> getGenericSplit(currentSuite, parameterName) {
