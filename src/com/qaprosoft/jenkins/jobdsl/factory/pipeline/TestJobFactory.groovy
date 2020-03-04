@@ -33,7 +33,7 @@ public class TestJobFactory extends PipelineFactory {
         this.zafira_project = zafira_project
         this.suitePath = suitePath
         this.suiteName = suiteName
-        this.scheduling = orgRepoScheduling
+        this.orgRepoScheduling = orgRepoScheduling
     }
 
     def create() {
