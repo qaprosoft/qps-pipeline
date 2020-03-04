@@ -56,7 +56,7 @@ public class QARunner extends AbstractRunner {
     protected static final String JOB_TYPE = "job_type"
 	protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
 	protected static final String JENKINS_REGRESSION_SCHEDULING = "jenkinsRegressionScheduling"
-    protected static final String JENKINS_ORG_REPO_SCHEDULING = "orgRepoScheduling"
+    protected static final String JENKINS_ORG_REPO_SCHEDULING = "org-repo-scheduling"
 
     public enum JobType {
         JOB("JOB"),
