@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins
 
+import com.qaprosoft.jenkins.pipeline.Configuration
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
@@ -63,5 +64,10 @@ class Utils {
 
     static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
+    }
+
+    static boolean getSchedulingGlobalParam(organization, repo) {
+        def scheduling = Configuration.get(organization + '-' + repo + '-scheduling')
+        return scheduling == null && scheduling.isEmpty() && scheduling == false ? false : true
     }
 }
