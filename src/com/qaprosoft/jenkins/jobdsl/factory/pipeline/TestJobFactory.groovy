@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-import com.qaprosoft.jenkins.pipeline.Configuration
 
 @Grab('org.testng:testng:6.8.8')
 
@@ -19,8 +18,9 @@ public class TestJobFactory extends PipelineFactory {
     def zafira_project
     def suitePath
     def suiteName
+    def scheduling
 
-    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
+    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, sub_project, zafira_project, suitePath, suiteName, jobDesc, scheduling) {
         this.folder = folder
         this.description = jobDesc
         this.pipelineScript = pipelineScript
@@ -32,6 +32,7 @@ public class TestJobFactory extends PipelineFactory {
         this.zafira_project = zafira_project
         this.suitePath = suitePath
         this.suiteName = suiteName
+        this.scheduling = scheduling
     }
 
     def create() {
