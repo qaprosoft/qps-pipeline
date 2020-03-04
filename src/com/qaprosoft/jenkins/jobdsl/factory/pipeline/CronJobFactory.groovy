@@ -16,8 +16,9 @@ public class CronJobFactory extends PipelineFactory {
     def branch
 	def suitePath
     def scheduling
+    def orgRepoScheduling
 
-    public CronJobFactory(folder, pipelineScript, cronJobName, host, repo, organization, branch, suitePath, jobDesc) {
+    public CronJobFactory(folder, pipelineScript, cronJobName, host, repo, organization, branch, suitePath, jobDesc, orgRepoScheduling) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.description = jobDesc
@@ -27,6 +28,7 @@ public class CronJobFactory extends PipelineFactory {
         this.organization = organization
         this.branch = branch
 		this.suitePath = suitePath
+        this.orgRepoScheduling = orgRepoScheduling
     }
 
     def create() {
@@ -36,7 +38,7 @@ public class CronJobFactory extends PipelineFactory {
 
         pipelineJob.with {
             //** Properties & Parameters Area **//*
-            if (scheduling != null) {
+            if (scheduling != null || orgRepoScheduling) {
                 triggers {
                     cron(parseSheduling(scheduling))
                 }
