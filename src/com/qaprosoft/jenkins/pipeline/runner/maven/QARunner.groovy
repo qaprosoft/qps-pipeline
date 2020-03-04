@@ -375,6 +375,7 @@ public class QARunner extends AbstractRunner {
 					}
 					
 					// try to detect scheduling in current suite
+                    def orgRepoScheduling = currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING) == null && isParamEmpty(currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING)) && currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING) == false ? false : true
 					def scheduling = null
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING))) {
 						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING)
@@ -383,7 +384,7 @@ public class QARunner extends AbstractRunner {
 						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName)
 					}
 					
-					if (!isParamEmpty(scheduling)) {
+					if (!isParamEmpty(scheduling) && !orgRepoScheduling) {
 						logger.info("Setup scheduling for cron: ${cronJobName} value: ${scheduling}")
 						cronJobFactory.setScheduling(scheduling)
 					}
@@ -1170,7 +1171,6 @@ public class QARunner extends AbstractRunner {
         def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
         def priorityNum = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
         def supportedBrowsers = !isParamEmpty(currentSuite.getParameter("jenkinsPipelineBrowsers"))?currentSuite.getParameter("jenkinsPipelineBrowsers"):""
-        def orgRepoScheduling = currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING) == null && isParamEmpty(currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING)) && currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING) == false ? false : true
         def currentBrowser = !isParamEmpty(getBrowser())?getBrowser():"NULL"
         def logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
                 "jobExecutionOrderNumber: ${orderNum};\n	email_list: ${emailList};\n	" +
