@@ -45,6 +45,8 @@ public class TestJobFactory extends PipelineFactory {
         name = replaceSlashes(name, '_')
         logger.info("JenkinsJobName: ${name}")
 
+        logger.info("mew_mew_mew " + orgRepoScheduling)
+
         def pipelineJob = super.create()
         pipelineJob.with {
             def maxNumberKeepBuilds = getSuiteParameter("30", "maxNumberKeepBuilds", currentSuite).toInteger()
@@ -52,7 +54,6 @@ public class TestJobFactory extends PipelineFactory {
                 numToKeep maxNumberKeepBuilds
             }
 
-            logger.info("mew_mew_mew " + orgRepoScheduling)
             //** Triggers **//*
             def scheduling = currentSuite.getParameter("scheduling")
             if (scheduling != null) {
