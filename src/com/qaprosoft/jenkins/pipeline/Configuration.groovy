@@ -135,6 +135,12 @@ public class Configuration {
     }
 
     @NonCPS
+    public String getUsersParameters(paramName) {
+        def envVars = context.env.getEnvironment()
+        return envVars.get(paramName)
+    }
+
+    @NonCPS
     public void loadContext() {
         // 1. load all obligatory Parameter(s) and their default key/values to vars.
         // any non empty value should be resolved in such order: Parameter, envvars and jobParams

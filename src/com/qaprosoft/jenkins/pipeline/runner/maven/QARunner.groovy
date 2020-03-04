@@ -355,7 +355,7 @@ public class QARunner extends AbstractRunner {
             logger.info("mew_mew_mew " + organization + '-' + repo + '-scheduling : ' + Configuration.get(organization + '-' + repo + '-scheduling'))
 
             def orgRepoScheduling = false
-            orgRepoScheduling = isParamEmpty(Configuration.get(organization + '-' + repo + '-scheduling')) ? false : true
+            orgRepoScheduling = isParamEmpty(Configuration.getUsersParameters(organization + '-' + repo + '-scheduling')) ? false : true
 
             //pipeline job
             //TODO: review each argument to TestJobFactory and think about removal
