@@ -56,6 +56,7 @@ public class QARunner extends AbstractRunner {
     protected static final String JOB_TYPE = "job_type"
 	protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
 	protected static final String JENKINS_REGRESSION_SCHEDULING = "jenkinsRegressionScheduling"
+    protected static final String JENKINS_ORG_REPO_SCHEDULING = "orgRepoScheduling"
 
     public enum JobType {
         JOB("JOB"),
@@ -626,7 +627,6 @@ public class QARunner extends AbstractRunner {
                 }
             }
         }
-
     }
 
     private String getCurrentFolderFullName(String jobName) {
@@ -1170,6 +1170,7 @@ public class QARunner extends AbstractRunner {
         def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
         def priorityNum = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
         def supportedBrowsers = !isParamEmpty(currentSuite.getParameter("jenkinsPipelineBrowsers"))?currentSuite.getParameter("jenkinsPipelineBrowsers"):""
+        def orgRepoScheduling = currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING) == null && isParamEmpty(currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING)) && currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING) == false ? false : true
         def currentBrowser = !isParamEmpty(getBrowser())?getBrowser():"NULL"
         def logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
                 "jobExecutionOrderNumber: ${orderNum};\n	email_list: ${emailList};\n	" +
@@ -1234,6 +1235,7 @@ public class QARunner extends AbstractRunner {
 						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
 						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
 						putNotNull(pipelineMap, "queue_registration", queueRegistration)
+                        pipelineMap.put("orgRepoScheduling", orgRepoScheduling)
 						// supported config matrix should be applied at the end to be able to override default args like retry_count etc
 						putMap(pipelineMap, supportedConfigurations)
 						registerPipeline(currentSuite, pipelineMap)
