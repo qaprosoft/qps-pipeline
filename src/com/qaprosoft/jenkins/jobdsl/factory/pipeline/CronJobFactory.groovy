@@ -37,7 +37,9 @@ public class CronJobFactory extends PipelineFactory {
         pipelineJob.with {
             //** Properties & Parameters Area **//*
             if (scheduling != null) {
-                triggers { cron(parseSheduling(scheduling)) }
+                triggers {
+                    cron(parseSheduling(scheduling))
+                }
             }
             parameters {
                 choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')

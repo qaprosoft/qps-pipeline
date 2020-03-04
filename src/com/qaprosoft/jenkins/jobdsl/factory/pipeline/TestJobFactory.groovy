@@ -1,5 +1,7 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
+import com.qaprosoft.jenkins.pipeline.Configuration
+
 @Grab('org.testng:testng:6.8.8')
 
 import static com.qaprosoft.jenkins.Utils.*
@@ -48,6 +50,7 @@ public class TestJobFactory extends PipelineFactory {
                 numToKeep maxNumberKeepBuilds
             }
 
+            logger.info("mew_mew_mew " + Configuration.get("QPS_HOST"))
             //** Triggers **//*
             def scheduling = currentSuite.getParameter("scheduling")
             if (scheduling != null) {

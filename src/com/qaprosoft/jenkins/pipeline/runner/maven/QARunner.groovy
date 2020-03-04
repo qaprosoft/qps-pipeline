@@ -56,7 +56,6 @@ public class QARunner extends AbstractRunner {
     protected static final String JOB_TYPE = "job_type"
 	protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
 	protected static final String JENKINS_REGRESSION_SCHEDULING = "jenkinsRegressionScheduling"
-    protected static final String JENKINS_ORG_REPO_SCHEDULING = "org-repo-scheduling"
 
     public enum JobType {
         JOB("JOB"),
@@ -375,7 +374,6 @@ public class QARunner extends AbstractRunner {
 					}
 					
 					// try to detect scheduling in current suite
-                    def orgRepoScheduling = currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING) == null && isParamEmpty(currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING)) && currentSuite.getParameter(JENKINS_ORG_REPO_SCHEDULING) == false ? false : true
 					def scheduling = null
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING))) {
 						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING)
@@ -384,7 +382,7 @@ public class QARunner extends AbstractRunner {
 						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName)
 					}
 					
-					if (!isParamEmpty(scheduling) && !orgRepoScheduling) {
+					if (!isParamEmpty(scheduling)) {
 						logger.info("Setup scheduling for cron: ${cronJobName} value: ${scheduling}")
 						cronJobFactory.setScheduling(scheduling)
 					}
@@ -1235,7 +1233,6 @@ public class QARunner extends AbstractRunner {
 						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
 						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
 						putNotNull(pipelineMap, "queue_registration", queueRegistration)
-                        pipelineMap.put("orgRepoScheduling", orgRepoScheduling)
 						// supported config matrix should be applied at the end to be able to override default args like retry_count etc
 						putMap(pipelineMap, supportedConfigurations)
 						registerPipeline(currentSuite, pipelineMap)
