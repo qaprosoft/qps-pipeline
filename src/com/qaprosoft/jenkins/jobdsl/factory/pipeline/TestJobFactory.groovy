@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
+import com.qaprosoft.jenkins.pipeline.Configuration
 
 @Grab('org.testng:testng:6.8.8')
 
