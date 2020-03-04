@@ -352,7 +352,8 @@ public class QARunner extends AbstractRunner {
                     break
             }
 
-            logger.info("mew_mew_mew " + organization + '-' + repo + '-scheduling : ' + Configuration.getUsersParameter(organization + '-' + repo + '-scheduling'))
+            //logger.info("mew_mew_mew " + organization + '-' + repo + '-scheduling : ' + Configuration.getUsersParameter(organization + '-' + repo + '-scheduling'))
+            logger.info("mew_mew_mew " + organization + '-' + repo + '-scheduling : ' + Configuration.getUsersParameter('qaprosoft-carina-demo-scheduling'))
 
             def orgRepoScheduling = false
             orgRepoScheduling = isParamEmpty(Configuration.getUsersParameter(organization + '-' + repo + '-scheduling').toBoolean()) ? false : true
