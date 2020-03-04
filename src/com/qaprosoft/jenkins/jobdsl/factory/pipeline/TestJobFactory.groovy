@@ -19,9 +19,9 @@ public class TestJobFactory extends PipelineFactory {
     def zafira_project
     def suitePath
     def suiteName
-    def scheduling
+    def orgRepoScheduling
 
-    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, sub_project, zafira_project, suitePath, suiteName, jobDesc, scheduling) {
+    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling) {
         this.folder = folder
         this.description = jobDesc
         this.pipelineScript = pipelineScript
@@ -33,7 +33,7 @@ public class TestJobFactory extends PipelineFactory {
         this.zafira_project = zafira_project
         this.suitePath = suitePath
         this.suiteName = suiteName
-        this.scheduling = scheduling
+        this.scheduling = orgRepoScheduling
     }
 
     def create() {
@@ -52,7 +52,7 @@ public class TestJobFactory extends PipelineFactory {
                 numToKeep maxNumberKeepBuilds
             }
 
-            logger.info("mew_mew_mew " + Configuration.get("QPS_HOST"))
+            logger.info("mew_mew_mew " + orgRepoScheduling)
             //** Triggers **//*
             def scheduling = currentSuite.getParameter("scheduling")
             if (scheduling != null) {
