@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins.pipeline.runner.maven
 
-import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.CronJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
@@ -357,7 +356,7 @@ public class QARunner extends AbstractRunner {
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-            def orgRepoScheduling = Utils.getSchedulingGlobalParam(organization, repo)
+            def orgRepoScheduling = Configuration.get(organization + '-' + repo + '-scheduling') == null && Configuration.get(organization + '-' + repo + '-scheduling').isEmpty() && Configuration.get(organization + '-' + repo + '-scheduling') == false ? false : true
             registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling))
 
 			//cron job
