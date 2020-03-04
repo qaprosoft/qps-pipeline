@@ -356,7 +356,8 @@ public class QARunner extends AbstractRunner {
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-            def orgRepoScheduling = Configuration.get(organization + '-' + repo + '-scheduling') == null && Configuration.get(organization + '-' + repo + '-scheduling').isEmpty() && Configuration.get(organization + '-' + repo + '-scheduling') == false ? false : true
+            def orgRepoScheduling = false
+            orgRepoScheduling = isParamEmpty(Configuration.get(organization + '-' + repo + '-scheduling')) ? false : true
             registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling))
 
 			//cron job
