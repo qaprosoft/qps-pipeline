@@ -142,8 +142,8 @@ class ZafiraUpdater {
 
     public def setBuildResult(uuid, currentBuild) {
         def testRun = getTestRunByCiRunId(uuid)
-        logger.debug("testRun: " + testRun.dump())
         if (!isParamEmpty(testRun)) {
+            logger.debug("testRun: " + testRun.dump())
             if (isFailure(testRun.status)){
                 logger.debug("marking currentBuild.result as FAILURE")
                 currentBuild.result = BuildResult.FAILURE
