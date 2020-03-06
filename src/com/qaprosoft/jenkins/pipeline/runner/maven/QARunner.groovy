@@ -352,9 +352,9 @@ public class QARunner extends AbstractRunner {
                     break
             }
 
-//            logger.info("mew_mew_mew " + organization + "-" + repo + "-scheduling : " + Configuration.getUsersParameter(organization + "-" + repo + "-scheduling"))
+            def nameOrgRepoScheduling = (organization + "-" + repo + "-scheduling").toString()
+            logger.info("mew_mew_mew " + nameOrgRepoScheduling + " : " + Configuration.getUsersParameter(nameOrgRepoScheduling))
 
-//            def nameOrgRepoScheduling = (organization + "-" + repo + "-scheduling").toString()
 //            def orgRepoScheduling = isParamEmpty(Configuration.getUsersParameter(nameOrgRepoScheduling)) && Configuration.getUsersParameter(nameOrgRepoScheduling) == false ? false : true
             def orgRepoScheduling = false
 
