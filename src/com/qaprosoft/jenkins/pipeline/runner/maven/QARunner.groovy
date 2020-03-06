@@ -352,11 +352,9 @@ public class QARunner extends AbstractRunner {
                     break
             }
 
-            //logger.info("mew_mew_mew " + organization + '-' + repo + '-scheduling : ' + Configuration.getUsersParameter(organization + '-' + repo + '-scheduling'))
-            logger.info("mew_mew_mew " + organization + '-' + repo + '-scheduling : ' + Configuration.getUsersParameter('qaprosoft-carina-demo-scheduling'))
+            logger.info("mew_mew_mew " + organization + '-' + repo + '-scheduling : ' + Configuration.getUsersParameter(organization + '-' + repo + '-scheduling'))
 
-            def orgRepoScheduling = false
-            orgRepoScheduling = isParamEmpty(Configuration.getUsersParameter(organization + '-' + repo + '-scheduling').toBoolean()) ? false : true
+            def orgRepoScheduling = isParamEmpty(Configuration.getUsersParameter(organization + '-' + repo + '-scheduling').toBoolean()) && Configuration.getUsersParameter(organization + '-' + repo + '-scheduling').toBoolean() == false ? false : true
 
             //pipeline job
             //TODO: review each argument to TestJobFactory and think about removal
