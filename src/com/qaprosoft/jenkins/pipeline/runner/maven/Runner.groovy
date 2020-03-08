@@ -57,7 +57,6 @@ public class Runner extends AbstractRunner {
         context.node("master") {
             logger.info("Runner->build")
             throw new RuntimeException("Not implemented yet!")
-            //TODO: implement Jenkinsfile pipeline execution from the repo
         }
     }
 
