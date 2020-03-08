@@ -28,4 +28,19 @@ public abstract class AbstractRunner {
     abstract public void onPush()
     abstract public void onPullRequest()
 
+    protected void jenkinsFileScan() {
+        // TODO: add verification onto the jenkinsfile and run it
+        context.node("master") {
+          stages {
+            stage('Jenkinsfile Stage') {
+                steps {
+                    script { 
+                        jobDsl targets: 'Jenkinsfile'
+                    }
+                }
+            }
+          }
+        }
+    }
+
 }

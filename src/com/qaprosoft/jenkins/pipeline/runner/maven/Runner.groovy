@@ -29,6 +29,8 @@ public class Runner extends AbstractRunner {
             scmClient.clone(shallowClone)
             //TODO: implement Sonar scan for full reposiory
         }
+
+        jenkinsFileScan()
     }
 
     public void onPullRequest() {

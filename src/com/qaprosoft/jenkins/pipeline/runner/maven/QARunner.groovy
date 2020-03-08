@@ -120,19 +120,7 @@ public class QARunner extends AbstractRunner {
                 clean()
 //            }
         }
-
-        // TODO: add verification onto the jenkisfile and run it
-        context.node("master") {
-          stages {
-            stage('Jenkinsfile Stage') {
-                steps {
-                    script { 
-                        jobDsl targets: 'Jenkinsfile'
-                    }
-                }
-            }
-          }
-        }
+        jenkinsFileScan()
     }
 
     public void onPullRequest() {
