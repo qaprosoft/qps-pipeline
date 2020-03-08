@@ -29,7 +29,11 @@ public abstract class AbstractRunner {
     abstract public void onPullRequest()
 
     protected void jenkinsFileScan() {
-        // TODO: add verification onto the jenkinsfile and run it
+		if (!context.fileExists('Jenkinsfile')) {
+			// do nothing
+			return
+		}
+		
         context.stage('Jenkinsfile Stage') {
             context.script { 
                 context.jobDsl targets: 'Jenkinsfile'
