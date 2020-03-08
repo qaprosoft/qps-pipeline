@@ -31,10 +31,8 @@ public abstract class AbstractRunner {
     protected void jenkinsFileScan() {
         // TODO: add verification onto the jenkinsfile and run it
         context.stage('Jenkinsfile Stage') {
-            context.steps {
-                context.script { 
-                    context.jobDsl targets: 'Jenkinsfile'
-                }
+            context.script { 
+                context.jobDsl targets: 'Jenkinsfile'
             }
         }
     }
