@@ -30,7 +30,9 @@ public class Runner extends AbstractRunner {
             //TODO: implement Sonar scan for full reposiory
         }
 
-        jenkinsFileScan()
+        context.node("master") {
+            jenkinsFileScan()
+        }
     }
 
     public void onPullRequest() {

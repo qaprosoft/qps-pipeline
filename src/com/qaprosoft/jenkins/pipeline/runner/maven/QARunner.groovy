@@ -120,7 +120,9 @@ public class QARunner extends AbstractRunner {
                 clean()
 //            }
         }
-        jenkinsFileScan()
+        context.node("master") {
+            jenkinsFileScan()
+        }
     }
 
     public void onPullRequest() {

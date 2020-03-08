@@ -30,8 +30,7 @@ public abstract class AbstractRunner {
 
     protected void jenkinsFileScan() {
         // TODO: add verification onto the jenkinsfile and run it
-        context.node("master") {
-          context.stages {
+        context.stages {
             context.stage('Jenkinsfile Stage') {
                 context.steps {
                     context.script { 
@@ -39,7 +38,6 @@ public abstract class AbstractRunner {
                     }
                 }
             }
-          }
         }
     }
 
