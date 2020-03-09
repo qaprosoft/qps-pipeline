@@ -353,11 +353,18 @@ public class QARunner extends AbstractRunner {
             }
 
             def nameOrgRepoScheduling = (organization + "-" + repo + "-scheduling").toString()
+            //logger.info("mew_mew_mew " + nameOrgRepoScheduling + " : " + Configuration.getUsersParameter(nameOrgRepoScheduling))
+            logger.info("mew_mew_mew " + nameOrgRepoScheduling + " : " + configuration.getUsersParameter("qaprosoft-carina-demo-scheduling"))
+
+//            def orgRepoScheduling = isParamEmpty(Configuration.getUsersParameter(nameOrgRepoScheduling)) && Configuration.getUsersParameter(nameOrgRepoScheduling) == false ? false : true
             def orgRepoScheduling = false
-            if (!isParamEmpty(Configuration.getUsersParameter(nameOrgRepoScheduling)) && Configuration.getUsersParameter(nameOrgRepoScheduling) != false) {
-                orgRepoScheduling = true
-            }
-            logger.info("mew_mew_mew " + nameOrgRepoScheduling + " : " + Configuration.getUsersParameter(nameOrgRepoScheduling) + "   " + "parameter: " + orgRepoScheduling)
+
+//            def nameOrgRepoScheduling = (organization + "-" + repo + "-scheduling").toString()
+//            def orgRepoScheduling = false
+//            if (!isParamEmpty(Configuration.getUsersParameter(nameOrgRepoScheduling)) && Configuration.getUsersParameter(nameOrgRepoScheduling) != false) {
+//                orgRepoScheduling = true
+//            }
+//            logger.info("mew_mew_mew " + nameOrgRepoScheduling + " : " + Configuration.getUsersParameter(nameOrgRepoScheduling) + "   " + "parameter: " + orgRepoScheduling)
 
             //pipeline job
             //TODO: review each argument to TestJobFactory and think about removal
