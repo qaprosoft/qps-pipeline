@@ -59,7 +59,10 @@ public class PipelineFactory extends JobFactory {
         def parsedEnviroments
         if (enviroments != null && !enviroments.isEmpty()) {
             if (enviroments.contains(",")) {
-                enviroments = enviroments.split(",").trim()
+                enviroments = enviroments.split(",")
+            }
+            for (env in enviroments) {
+                env.trim()
             }
             parsedEnviroments = enviroments.join("\n")
         } else {
