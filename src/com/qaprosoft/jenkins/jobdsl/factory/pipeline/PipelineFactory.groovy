@@ -61,11 +61,10 @@ public class PipelineFactory extends JobFactory {
             if (enviroments.contains(",")) {
                 enviroments = enviroments.split(",")
             }
-//            for (env in enviroments) {
-//                env.trim()
-//            }
-            enviroments = enviroments*.trim()
-            parsedEnviroments = enviroments.join("\n")
+            for (env in enviroments) {
+                parsedEnviroments += env.trim() + "\n"
+            }
+            //parsedEnviroments = enviroments.join("\n")
         } else {
             parsedEnviroments = "DEMO\nSTAG"
         }
