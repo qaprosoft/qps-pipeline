@@ -134,7 +134,7 @@ public class Configuration {
         }
     }
 
-    public String getGlobalUserParameter(String paramName) {
+    public String getGlobalProperties(String paramName) {
         return context.env.getEnvironment().get(paramName)
     }
 
