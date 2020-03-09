@@ -67,7 +67,7 @@ public class PipelineFactory extends JobFactory {
             parsedEnviroments = "DEMO\nPROD"
         }
         for (env in enviroments) {
-            parsedEnviroments.add(env)
+            parsedEnviroments += env
         }
         return parsedEnviroments
     }
