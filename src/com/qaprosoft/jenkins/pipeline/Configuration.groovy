@@ -135,14 +135,9 @@ public class Configuration {
     }
 
     @NonCPS
-    private String getEnumUsersParameter(String paramName) {
+    public static String getUsersParameter(String paramName) {
         def envVars = context.env.getEnvironment()
         return envVars.get(paramName)
-    }
-
-    @NonCPS
-    public static String getUsersParameter(String paramName) {
-        return getEnumUsersParameter(paramName)
     }
 
     @NonCPS
@@ -305,4 +300,5 @@ public class Configuration {
         vars.remove(key)
         params.remove(key)
     }
+
 }
