@@ -6,7 +6,7 @@ import static com.qaprosoft.jenkins.Utils.*
 import org.testng.xml.XmlSuite
 import com.qaprosoft.jenkins.jobdsl.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors
-import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ChoiceListProvider
+import jp.ikedam.jenkins.plugins.extensible_choice_parameter.SystemGroovyChoiceListProvider
 
 @InheritConstructors
 public class TestJobFactory extends PipelineFactory {
@@ -94,7 +94,7 @@ public class TestJobFactory extends PipelineFactory {
                     case "web":
                         // WEB tests specific
                         configure stringParam('capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
-                        logger.info('MEW_MEW_MEW ' + ChoiceListProvider.getDefaultChoice())
+                        logger.info('MEW_MEW_MEW ' + SystemGroovyChoiceListProvider.getChoiceList())
                         if (!isParamEmpty(getSuiteParameter('NULL', 'custom_capabilities', currentSuite))){
                             configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
                         }
