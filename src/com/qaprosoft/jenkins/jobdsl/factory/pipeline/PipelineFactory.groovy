@@ -60,8 +60,6 @@ public class PipelineFactory extends JobFactory {
         if (enviroments != null && !enviroments.isEmpty()) {
             if (!enviroments.contains(", ")) {
                 enviroments = enviroments.split(",").trim()
-            } else {
-                enviroments = enviroments.split(", ").trim()
             }
             parsedEnviroments = enviroments.join("\n")
         } else {
