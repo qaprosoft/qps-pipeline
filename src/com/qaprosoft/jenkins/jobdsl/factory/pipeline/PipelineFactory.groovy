@@ -56,6 +56,7 @@ public class PipelineFactory extends JobFactory {
 
     protected String getEnvironments(currentSuite) {
         def enviroments = currentSuite.getParameter("jenkinsEnvironments")
+        logger.info("MEW_MEW_MEW " + enviroments)
         def parsedEnviroments
         if (enviroments != null && !enviroments.isEmpty()) {
             if (!enviroments.contains(", ")) {
@@ -67,7 +68,7 @@ public class PipelineFactory extends JobFactory {
             parsedEnviroments = "DEMO\nPROD"
         }
         for (env in enviroments) {
-            parsedEnviroments += env
+            parsedEnviroments = parsedEnviroments + env
         }
         return parsedEnviroments
     }
