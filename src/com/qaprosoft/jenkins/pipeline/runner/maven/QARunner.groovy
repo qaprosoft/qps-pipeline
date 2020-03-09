@@ -352,11 +352,14 @@ public class QARunner extends AbstractRunner {
                     break
             }
 
+            def nameOrgRepoScheduling = (organization + "-" + repo + "-scheduling")
+            def orgRepoScheduling = isParamEmpty(configuration.getGlobalProperty(nameOrgRepoScheduling)) && configuration.getGlobalProperty(nameOrgRepoScheduling) == false ? false : true
+
             //pipeline job
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling))
 
 			//cron job
             if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
@@ -364,7 +367,7 @@ public class QARunner extends AbstractRunner {
                 for (def cronJobName : cronJobNames.split(",")) {
                     cronJobName = cronJobName.trim()
 					def cronDesc = "project: ${repo}; type: cron"
-					def cronJobFactory = new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc)
+					def cronJobFactory = new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc, orgRepoScheduling)
 					
 					if (!dslObjects.containsKey(cronJobName)) {
 						// register CronJobFactory only if its declaration is missed
@@ -626,7 +629,6 @@ public class QARunner extends AbstractRunner {
                 }
             }
         }
-
     }
 
     private String getCurrentFolderFullName(String jobName) {

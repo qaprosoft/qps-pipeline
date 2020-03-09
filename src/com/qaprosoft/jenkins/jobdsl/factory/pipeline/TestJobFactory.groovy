@@ -17,8 +17,9 @@ public class TestJobFactory extends PipelineFactory {
     def zafira_project
     def suitePath
     def suiteName
+    def orgRepoScheduling
 
-    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
+    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling) {
         this.folder = folder
         this.description = jobDesc
         this.pipelineScript = pipelineScript
@@ -30,6 +31,7 @@ public class TestJobFactory extends PipelineFactory {
         this.zafira_project = zafira_project
         this.suitePath = suitePath
         this.suiteName = suiteName
+        this.orgRepoScheduling = orgRepoScheduling
     }
 
     def create() {
@@ -50,7 +52,7 @@ public class TestJobFactory extends PipelineFactory {
 
             //** Triggers **//*
             def scheduling = currentSuite.getParameter("scheduling")
-            if (scheduling != null) {
+            if (scheduling != null && !orgRepoScheduling) {
                 triggers {
                     cron(parseSheduling(scheduling))
                 }
