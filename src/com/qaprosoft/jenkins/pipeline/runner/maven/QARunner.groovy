@@ -352,19 +352,8 @@ public class QARunner extends AbstractRunner {
                     break
             }
 
-            def nameOrgRepoScheduling = (organization + "-" + repo + "-scheduling").toString()
-            //logger.info("mew_mew_mew " + nameOrgRepoScheduling + " : " + Configuration.getUsersParameter(nameOrgRepoScheduling))
-            logger.info("mew_mew_mew " + nameOrgRepoScheduling + " : " + configuration.getUsersParameter(nameOrgRepoScheduling))
-
+            def nameOrgRepoScheduling = (organization + "-" + repo + "-scheduling")
             def orgRepoScheduling = isParamEmpty(configuration.getUsersParameter(nameOrgRepoScheduling)) && configuration.getUsersParameter(nameOrgRepoScheduling) == false ? false : true
-//            def orgRepoScheduling = false
-
-//            def nameOrgRepoScheduling = (organization + "-" + repo + "-scheduling").toString()
-//            def orgRepoScheduling = false
-//            if (!isParamEmpty(configuration.getUsersParameter(nameOrgRepoScheduling)) && configuration.getUsersParameter(nameOrgRepoScheduling) != false) {
-//                orgRepoScheduling = true
-//            }
-//            logger.info("mew_mew_mew " + nameOrgRepoScheduling + " : " + configuration.getUsersParameter(nameOrgRepoScheduling) + "   " + "parameter: " + orgRepoScheduling)
 
             //pipeline job
             //TODO: review each argument to TestJobFactory and think about removal
