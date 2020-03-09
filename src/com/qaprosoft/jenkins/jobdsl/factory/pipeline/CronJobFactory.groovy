@@ -44,7 +44,19 @@ public class CronJobFactory extends PipelineFactory {
                 }
             }
             parameters {
-                choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
+                extensibleChoiceParameterDefinition {
+                    name('env')
+                    choiceListProvider {
+                        textareaChoiceListProvider {
+                            choiceListText(getEnvironments(currentSuite))
+                            defaultChoice('')
+                            addEditedValue(false)
+                            whenToAdd('Triggered')
+                        }
+                    }
+                    editable(true)
+                    description('Environment to test against')
+                }
                 configure addHiddenParameter('repo', '', repo)
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)

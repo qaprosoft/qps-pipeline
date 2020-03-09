@@ -60,7 +60,20 @@ public class TestJobFactory extends PipelineFactory {
 
             //** Properties & Parameters Area **//*
             parameters {
-                choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
+                extensibleChoiceParameterDefinition {
+                    name('env')
+                    choiceListProvider {
+                        textareaChoiceListProvider {
+                            choiceListText(getEnvironments(currentSuite))
+                            defaultChoice('')
+                            addEditedValue(false)
+                            whenToAdd('Triggered')
+                        }
+                    }
+                    editable(true)
+                    description('Environment to test against')
+                }
+
                 booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
                 //booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
