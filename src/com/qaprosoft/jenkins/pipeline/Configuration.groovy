@@ -134,8 +134,8 @@ public class Configuration {
         }
     }
 
-    public String getGlobalProperties(String paramName) {
-        return context.env.getEnvironment().get(paramName)
+    public String getGlobalProperty(String name) {
+        return context.env.getEnvironment().get(name)
     }
 
     @NonCPS
