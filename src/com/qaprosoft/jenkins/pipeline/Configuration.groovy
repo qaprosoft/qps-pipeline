@@ -135,6 +135,16 @@ public class Configuration {
     }
 
     @NonCPS
+    private String getEnumUsersParameter(String paramName) {
+        def envVars = context.env.getEnvironment()
+        return envVars.get(paramName)
+
+    @NonCPS
+    public static String getUsersParameter(String paramName) {
+        return getEnumUsersParameter(paramName)
+    }
+
+    @NonCPS
     public void loadContext() {
         // 1. load all obligatory Parameter(s) and their default key/values to vars.
         // any non empty value should be resolved in such order: Parameter, envvars and jobParams
@@ -293,12 +303,6 @@ public class Configuration {
     public static void remove(String key) {
         vars.remove(key)
         params.remove(key)
-    }
-
-    @NonCPS
-    public static String getUsersParameter(String paramName) {
-        def envVars = context.env.getEnvironment()
-        return envVars.get(paramName)
     }
 
 }
