@@ -56,12 +56,9 @@ public class PipelineFactory extends JobFactory {
 
     protected String getEnvironments(currentSuite) {
         def enviroments = currentSuite.getParameter("jenkinsEnvironments")
-        def parsedEnviroments
-        if (enviroments != null && !enviroments.isEmpty()) {
-            if (enviroments.contains(",")) {
-                enviroments = enviroments.split(",")
-            }
-            for (env in enviroments) {
+        def parsedEnviroments = ""
+        if (!Utils.isParamEmpty(enviroments)) {
+            for (env in enviroments.split(",")) {
                 parsedEnviroments += env.trim() + "\n"
             }
             //parsedEnviroments = enviroments.join("\n")
