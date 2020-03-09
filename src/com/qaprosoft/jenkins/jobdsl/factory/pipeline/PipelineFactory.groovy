@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import com.qaprosoft.jenkins.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
+import static com.qaprosoft.jenkins.Utils.*
 import org.apache.tools.ant.types.resources.selectors.None
 
 @InheritConstructors
@@ -57,7 +58,7 @@ public class PipelineFactory extends JobFactory {
     protected String getEnvironments(currentSuite) {
         def enviroments = currentSuite.getParameter("jenkinsEnvironments")
         def parsedEnviroments = ""
-        if (!Utils.isParamEmpty(enviroments)) {
+        if (!isParamEmpty(enviroments)) {
             for (env in enviroments.split(",")) {
                 parsedEnviroments += env.trim() + "\n"
             }
