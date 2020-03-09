@@ -134,10 +134,8 @@ public class Configuration {
         }
     }
 
-    @NonCPS
-    public static String getUsersParameter(String paramName) {
-        def envVars = context.env.getEnvironment()
-        return envVars.get(paramName)
+    public String getUsersParameter(String paramName) {
+        return context.env.getEnvironment().get(paramName)
     }
 
     @NonCPS
