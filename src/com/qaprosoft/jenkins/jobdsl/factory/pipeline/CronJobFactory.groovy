@@ -38,7 +38,7 @@ public class CronJobFactory extends PipelineFactory {
 
         pipelineJob.with {
             //** Properties & Parameters Area **//*
-            if (scheduling != null || orgRepoScheduling) {
+            if (scheduling != null && orgRepoScheduling) {
                 triggers {
                     cron(parseSheduling(scheduling))
                 }
