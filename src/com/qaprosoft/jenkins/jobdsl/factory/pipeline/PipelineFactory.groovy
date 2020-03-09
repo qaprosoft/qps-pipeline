@@ -65,10 +65,10 @@ public class PipelineFactory extends JobFactory {
                 enviroments = enviroments.split(", ")
             }
         } else {
-            parsedEnviroments = "DEMO\nPROD"
+            parsedEnviroments = "DEMO\nSTAG"
         }
         for (env in enviroments) {
-            parsedEnviroments = parsedEnviroments + env
+            parsedEnviroments = parsedEnviroments + env + '\n'
         }
         return parsedEnviroments
     }
