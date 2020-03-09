@@ -138,6 +138,7 @@ public class Configuration {
     private String getEnumUsersParameter(String paramName) {
         def envVars = context.env.getEnvironment()
         return envVars.get(paramName)
+    }
 
     @NonCPS
     public static String getUsersParameter(String paramName) {
@@ -173,7 +174,7 @@ public class Configuration {
 
         //3. Replace vars and/or params with capabilities prefix
         parseValues(params.get(CAPABILITIES), ";", CAPABILITIES)
-		
+
 		//TODO: wrap 3a and 3b into the single method or remove after fixing cron matrix
 		//3.a to support old "browser" capability as parameter
 		if (params.get("browser") != null) {
@@ -187,7 +188,7 @@ public class Configuration {
 				putParamCaseInsensitive("capabilities.browserVersion", params.get("browser_version"))
 			}
 		}
-        
+
         //4. Replace vars and/or params with zafiraFields values
         parseValues(params.get("zafiraFields"))
         //5. Replace vars and/or params with overrideFields values
@@ -212,12 +213,12 @@ public class Configuration {
 		for (var in vars) {
 			context.println(var)
 		}
-		
+
 		context.println("PARAMS:")
         for (param in params) {
             context.println(param)
         }
-		
+
         //6. TODO: investigate how private pipeline can override those values
         // public static void set(Map args) - ???
     }
@@ -231,7 +232,7 @@ public class Configuration {
     private static void parseValues(values, separator){
         parseValues(values, separator, "")
     }
-    
+
     @NonCPS
     private static void parseValues(values, separator, keyPrefix){
         if (values) {
@@ -304,5 +305,4 @@ public class Configuration {
         vars.remove(key)
         params.remove(key)
     }
-
 }
