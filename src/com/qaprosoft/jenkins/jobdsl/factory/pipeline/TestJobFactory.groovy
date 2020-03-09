@@ -52,7 +52,7 @@ public class TestJobFactory extends PipelineFactory {
 
             //** Triggers **//*
             def scheduling = currentSuite.getParameter("scheduling")
-            if (scheduling != null && orgRepoScheduling) {
+            if (scheduling != null && !orgRepoScheduling) {
                 triggers {
                     cron(parseSheduling(scheduling))
                 }
