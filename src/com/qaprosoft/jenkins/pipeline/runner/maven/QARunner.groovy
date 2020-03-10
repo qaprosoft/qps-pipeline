@@ -803,6 +803,7 @@ public class QARunner extends AbstractRunner {
     }
 
     protected String getMavenGoals() {
+        logger.info('MEW_MEW_MEW ' + context.binding.variables.get("gc_CUSTOM_CAPABILITIES"))
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
