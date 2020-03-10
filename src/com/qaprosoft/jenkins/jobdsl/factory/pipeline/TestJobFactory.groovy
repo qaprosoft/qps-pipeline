@@ -93,7 +93,7 @@ public class TestJobFactory extends PipelineFactory {
                     case "web":
                         // WEB tests specific
                         configure stringParam('capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
-                        logger.info('MEW_MEW_MEW ' + getObjectValue("gc_CUSTOM_CAPABILITIES"))
+                        logger.info('MEW_MEW_MEW ' + context.binding.variables.get("gc_CUSTOM_CAPABILITIES"))
                         if (!isParamEmpty(getSuiteParameter('NULL', 'custom_capabilities', currentSuite))){
                             configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
                         }

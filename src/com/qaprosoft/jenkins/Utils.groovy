@@ -1,6 +1,5 @@
 package com.qaprosoft.jenkins
 
-import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
@@ -64,17 +63,5 @@ class Utils {
 
     static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
-    }
-
-    static def getObjectValue(String obj) {
-        def value
-        if (obj instanceof ExtensibleChoiceParameterDefinition){
-            value = obj.choiceListProvider.getChoiceList()
-        } else if (obj instanceof ChoiceParameterDefinition) {
-            value = obj.choices
-        }  else {
-            value = obj.defaultValue
-        }
-        return value
     }
 }
