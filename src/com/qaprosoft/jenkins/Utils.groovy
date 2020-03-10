@@ -1,9 +1,9 @@
 package com.qaprosoft.jenkins
 
+import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
-import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 
 class Utils {
 
