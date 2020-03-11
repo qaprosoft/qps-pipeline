@@ -262,7 +262,7 @@ class Organization {
 		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 		registerHubCredentials(folder, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 
-        if (!isParamEmpty(Configuration.Parameter.ZAFIRA_SERVICE_URL)) {
+        if (!isParamEmpty(Configuration.Parameter.ZAFIRA_SERVICE_URL.getValue())) {
             registerZafiraCredentials(folder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
         }
 	}
