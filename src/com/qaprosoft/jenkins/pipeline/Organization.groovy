@@ -261,8 +261,10 @@ class Organization {
 		//TODO: remove mcloud registration in released version
 		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 		registerHubCredentials(folder, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
-		
-		registerZafiraCredentials(folder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
+
+        if (!isParamEmpty(Configuration.Parameter.ZAFIRA_SERVICE_URL)) {
+            registerZafiraCredentials(folder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
+        }
 	}
 	
 	public def registerHubCredentials() {
@@ -299,17 +301,15 @@ class Organization {
 		}
 	}
 	
-	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken) {
-        if (isParamEmpty(zafiraServiceURL)) {
-            if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)) {
-                throw new RuntimeException("Required fields are missing!")
-            }
-            def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
-            def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
+		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
+			throw new RuntimeException("Required fields are missing!")
+		}
+		def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
+		def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
 
-            updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
-            updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
-        }
+		updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
+		updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
 	}
 
 }
