@@ -299,15 +299,17 @@ class Organization {
 		}
 	}
 	
-	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
-		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
-			throw new RuntimeException("Required fields are missing!")
-		}
-		def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
-		def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken) {
+        if (isParamEmpty(zafiraServiceURL)) {
+            if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)) {
+                throw new RuntimeException("Required fields are missing!")
+            }
+            def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
+            def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
 
-		updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
-		updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
+            updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
+            updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
+        }
 	}
 
 }
