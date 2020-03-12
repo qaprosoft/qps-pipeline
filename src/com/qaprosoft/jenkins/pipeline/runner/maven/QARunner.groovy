@@ -345,8 +345,8 @@ public class QARunner extends AbstractRunner {
                     break
             }
 
-            def nameOrgRepoScheduling = (repoFolder + "-" + repo + "-scheduling")
-            logger.info('MEW_MEW_MEW   ' + nameOrgRepoScheduling + configuration.getGlobalProperty(nameOrgRepoScheduling))
+            def nameOrgRepoScheduling = (repoFolder.replaceAll('/', '-') + "-scheduling")
+            logger.info('MEW_MEW_MEW   ' + nameOrgRepoScheduling + ": "+ configuration.getGlobalProperty(nameOrgRepoScheduling))
             def orgRepoScheduling = true
             if (!isParamEmpty(configuration.getGlobalProperty(nameOrgRepoScheduling)) && configuration.getGlobalProperty(nameOrgRepoScheduling).toBoolean() == false) {
                 orgRepoScheduling = false
