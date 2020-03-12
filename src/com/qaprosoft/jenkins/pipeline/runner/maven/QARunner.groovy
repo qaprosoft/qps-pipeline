@@ -351,6 +351,7 @@ public class QARunner extends AbstractRunner {
             if (configuration.getGlobalProperty(nameOrgRepoScheduling) == false) {
                 orgRepoScheduling = false
             }
+            logger.info('orgRepoScheduling: ' + orgRepoScheduling)
 
             //pipeline job
             //TODO: review each argument to TestJobFactory and think about removal
