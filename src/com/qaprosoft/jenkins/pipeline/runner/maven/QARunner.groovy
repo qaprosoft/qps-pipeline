@@ -345,7 +345,7 @@ public class QARunner extends AbstractRunner {
                     break
             }
 
-            def nameOrgRepoScheduling = (organization + "-" + repo + "-scheduling")
+            def nameOrgRepoScheduling = (repoFolder.replaceAll('/', '-') + "-scheduling")
             def orgRepoScheduling = true
             if (!isParamEmpty(configuration.getGlobalProperty(nameOrgRepoScheduling)) && configuration.getGlobalProperty(nameOrgRepoScheduling).toBoolean() == false) {
                 orgRepoScheduling = false
