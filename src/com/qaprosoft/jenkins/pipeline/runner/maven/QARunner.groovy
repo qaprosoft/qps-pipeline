@@ -346,12 +346,10 @@ public class QARunner extends AbstractRunner {
             }
 
             def nameOrgRepoScheduling = (organization + "-" + repo + "-scheduling")
-            logger.info("MEW_MEW_MEW   " + nameOrgRepoScheduling + ': ' + configuration.getGlobalProperty(nameOrgRepoScheduling))
             def orgRepoScheduling = true
-            if (configuration.getGlobalProperty(nameOrgRepoScheduling).toBoolean() == false) {
+            if (!isParamEmpty(configuration.getGlobalProperty(nameOrgRepoScheduling)) && configuration.getGlobalProperty(nameOrgRepoScheduling).toBoolean() == false) {
                 orgRepoScheduling = false
             }
-            logger.info('orgRepoScheduling: ' + orgRepoScheduling)
 
             //pipeline job
             //TODO: review each argument to TestJobFactory and think about removal
