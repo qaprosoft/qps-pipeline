@@ -42,7 +42,9 @@ public class TestJobFactory extends PipelineFactory {
         this.name = !isParamEmpty(currentSuite.getParameter("jenkinsJobName"))?currentSuite.getParameter("jenkinsJobName"):currentSuite.getName()
         name = replaceSlashes(name, '_')
         //TODO: move later into the common replaceUnsafeCharacters method
-        name = name.replaceAll(":", '_')
+        if (value.contains(":")) {
+            name = name.replaceAll(":", '_')
+        }
         logger.info("JenkinsJobName: ${name}")
 
         def pipelineJob = super.create()
