@@ -120,6 +120,9 @@ public class QARunner extends AbstractRunner {
                 clean()
 //            }
         }
+        context.node("master") {
+            jenkinsFileScan()
+        }
     }
 
     public void onPullRequest() {
@@ -176,16 +179,6 @@ public class QARunner extends AbstractRunner {
 
             def workspace = getWorkspace()
             logger.info("WORKSPACE: ${workspace}")
-//
-//            // Support DEV related CI workflow
-//            //TODO: analyze if we need 3 system object declarations
-//
-//            def jenkinsFileOrigin = "Jenkinsfile"
-//            if (context.fileExists("${workspace}/${jenkinsFileOrigin}")) {
-//                //TODO: figure our howto work with Jenkinsfile
-//                // this is the repo with already available pipeline script in Jenkinsfile
-//                // just create a job
-//            }
 
             def pomFiles = getProjectPomFiles()
             for (pomFile in pomFiles) {
@@ -352,11 +345,17 @@ public class QARunner extends AbstractRunner {
                     break
             }
 
+            def nameOrgRepoScheduling = (repoFolder.replaceAll('/', '-') + "-scheduling")
+            def orgRepoScheduling = true
+            if (!isParamEmpty(configuration.getGlobalProperty(nameOrgRepoScheduling)) && configuration.getGlobalProperty(nameOrgRepoScheduling).toBoolean() == false) {
+                orgRepoScheduling = false
+            }
+
             //pipeline job
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc))
+            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling))
 
 			//cron job
             if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
@@ -364,7 +363,7 @@ public class QARunner extends AbstractRunner {
                 for (def cronJobName : cronJobNames.split(",")) {
                     cronJobName = cronJobName.trim()
 					def cronDesc = "project: ${repo}; type: cron"
-					def cronJobFactory = new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc)
+					def cronJobFactory = new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc, orgRepoScheduling)
 					
 					if (!dslObjects.containsKey(cronJobName)) {
 						// register CronJobFactory only if its declaration is missed
@@ -626,7 +625,6 @@ public class QARunner extends AbstractRunner {
                 }
             }
         }
-
     }
 
     private String getCurrentFolderFullName(String jobName) {
@@ -802,9 +800,34 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+	public def updateSeleniumUrl() {
+		// update SELENIUM_URL parameter based on capabilities.provider
+		def provider = Configuration.get("capabilities.provider")
+		if (!isParamEmpty(provider)) {
+			def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+			
+			def hubUrl = "${orgFolderName}-${provider}_hub"
+			if (!getCredentials(hubUrl)) {
+				hubUrl = "${provider}_hub"
+			}
+			
+			if (getCredentials(hubUrl)){
+				context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+					Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
+					logger.debug("${hubUrl}:" + context.env.VALUE)
+				}
+			} else {
+				throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
+			}
+		}
+		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
+	}
+
     protected String getMavenGoals() {
+		def seleniumHost = updateSeleniumUrl()
+		
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
-        def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
+        def defaultBaseMavenGoals = "-Dselenium_host=${seleniumHost} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
         -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
@@ -869,7 +892,6 @@ public class QARunner extends AbstractRunner {
                 "SELENIUM_HOST",
                 "SELENIUM_PORT",
                 "SELENIUM_URL",
-                "QPS_HUB",
                 "TESTRAIL_SERVICE_URL",
                 "testrail_enabled",
                 "QTEST_SERVICE_URL",
@@ -1200,13 +1222,12 @@ public class QARunner extends AbstractRunner {
 						pipelineMap.put("branch", Configuration.get("branch"))
 						pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
 						pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
-						pipelineMap.put("retry_count", Configuration.get("retry_count"))
 						putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
 						pipelineMap.put("jobName", jobName)
 						pipelineMap.put("env", supportedEnv)
 						pipelineMap.put("order", orderNum)
 						pipelineMap.put("BuildPriority", priorityNum)
-						putNotNullWithSplit(pipelineMap, "emailList", emailList)
+						putNotNullWithSplit(pipelineMap, "email_list", emailList)
 						putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
 						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
 						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
@@ -1245,7 +1266,6 @@ public class QARunner extends AbstractRunner {
                         pipelineMap.put("branch", Configuration.get("branch"))
                         pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
                         pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
-                        pipelineMap.put("retry_count", Configuration.get("retry_count"))
                         putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
                         pipelineMap.put("jobName", jobName)
                         pipelineMap.put("env", supportedEnv)

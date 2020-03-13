@@ -4,7 +4,6 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import static com.qaprosoft.jenkins.Utils.*
 import org.testng.xml.XmlSuite
-import com.qaprosoft.jenkins.jobdsl.selenium.grid.ProxyInfo
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
@@ -18,8 +17,9 @@ public class TestJobFactory extends PipelineFactory {
     def zafira_project
     def suitePath
     def suiteName
+    def orgRepoScheduling
 
-    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, sub_project, zafira_project, suitePath, suiteName, jobDesc) {
+    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling) {
         this.folder = folder
         this.description = jobDesc
         this.pipelineScript = pipelineScript
@@ -31,6 +31,7 @@ public class TestJobFactory extends PipelineFactory {
         this.zafira_project = zafira_project
         this.suitePath = suitePath
         this.suiteName = suiteName
+        this.orgRepoScheduling = orgRepoScheduling
     }
 
     def create() {
@@ -51,7 +52,7 @@ public class TestJobFactory extends PipelineFactory {
 
             //** Triggers **//*
             def scheduling = currentSuite.getParameter("scheduling")
-            if (scheduling != null) {
+            if (scheduling != null && orgRepoScheduling) {
                 triggers {
                     cron(parseSheduling(scheduling))
                 }
@@ -59,7 +60,20 @@ public class TestJobFactory extends PipelineFactory {
 
             //** Properties & Parameters Area **//*
             parameters {
-                choiceParam('env', getEnvironments(currentSuite), 'Environment to test against.')
+                extensibleChoiceParameterDefinition {
+                    name('env')
+                    choiceListProvider {
+                        textareaChoiceListProvider {
+                            choiceListText(getEnvironments(currentSuite))
+                            defaultChoice('')
+                            addEditedValue(false)
+                            whenToAdd('Triggered')
+                        }
+                    }
+                    editable(true)
+                    description('Environment to test against')
+                }
+
                 booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
                 //booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
@@ -126,6 +140,12 @@ public class TestJobFactory extends PipelineFactory {
                         break
                 }
                 configure addHiddenParameter('job_type', '', jobType)
+                
+                def hubProvider = getSuiteParameter("", "provider", currentSuite)
+                if (!isParamEmpty(hubProvider)){
+                    configure addHiddenParameter('capabilities.provider', 'hub provider name', hubProvider)
+                }
+                
                 def nodeLabel = getSuiteParameter("", "jenkinsNodeLabel", currentSuite)
                 if (!isParamEmpty(nodeLabel)){
                     configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
@@ -192,11 +212,6 @@ public class TestJobFactory extends PipelineFactory {
             retryCountList.add(0, retryCount)
         }
         return retryCountList
-    }
-
-    protected def getDevices(String platform) {
-        def proxyInfo = new ProxyInfo(_dslFactory)
-        return proxyInfo.getDevicesList(platform)
     }
 
     protected String listToString(currentSuite, parameterName) {

@@ -28,4 +28,17 @@ public abstract class AbstractRunner {
     abstract public void onPush()
     abstract public void onPullRequest()
 
+    protected void jenkinsFileScan() {
+		if (!context.fileExists('Jenkinsfile')) {
+			// do nothing
+			return
+		}
+		
+        context.stage('Jenkinsfile Stage') {
+            context.script { 
+                context.jobDsl targets: 'Jenkinsfile'
+            }
+        }
+    }
+
 }

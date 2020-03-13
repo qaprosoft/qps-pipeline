@@ -29,6 +29,10 @@ public class Runner extends AbstractRunner {
             scmClient.clone(shallowClone)
             //TODO: implement Sonar scan for full reposiory
         }
+
+        context.node("master") {
+            jenkinsFileScan()
+        }
     }
 
     public void onPullRequest() {
@@ -57,7 +61,6 @@ public class Runner extends AbstractRunner {
         context.node("master") {
             logger.info("Runner->build")
             throw new RuntimeException("Not implemented yet!")
-            //TODO: implement Jenkinsfile pipeline execution from the repo
         }
     }
 

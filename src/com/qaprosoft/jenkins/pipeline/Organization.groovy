@@ -46,6 +46,7 @@ class Organization {
 //            context.timestamps {
                 def folder = Configuration.get("folderName")
                 prepare()
+                generateCreds(folder)
                 generateCiItems(folder)
                 logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
                 if (Configuration.get("securityEnabled")?.toBoolean()) {
@@ -87,7 +88,7 @@ class Organization {
             }
         }
     }
-
+	
     protected def generateCiItems(folder) {
         context.stage("Register Organization") {
             if (!isParamEmpty(folder)) {
@@ -252,5 +253,61 @@ class Organization {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
         }
     }
+	
+	protected def generateCreds(folder) {
+		logger.debug("QPS_HOST: " + Configuration.get(Configuration.Parameter.QPS_HOST))
+		logger.debug("selenium: " + "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
+		registerHubCredentials(folder, "selenium", "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
+		//TODO: remove mcloud registration in released version
+		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
+		registerHubCredentials(folder, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
+		
+		registerZafiraCredentials(folder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
+	}
+	
+	public def registerHubCredentials() {
+		def orgFolderName = Configuration.get("folderName")
+		def provider = Configuration.get("Provider")
+		// Example: http://demo.qaprosoft.com/ggr/wd/hub
+		def url = Configuration.get("Url")
+		
+		registerHubCredentials(orgFolderName, provider, url)
+	}
+	
+	protected def registerHubCredentials(orgFolderName, provider, url) {
+		context.stage("Register Hub Credentials") {
+			if (isParamEmpty(url)){
+				throw new RuntimeException("Required URL field is missing!")
+			}
+			def hubURLCredName = "${provider}_hub"
+			if (!isParamEmpty(orgFolderName)) {
+				hubURLCredName = "${orgFolderName}-${provider}_hub"
+			}
+			
+			if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", url)) {
+				logger.info("${hubURLCredName} was successfully registered.")
+			}
+		}
+	}
+	
+	public def registerZafiraCredentials(){
+		def orgFolderName = Configuration.get("folderName")
+		def zafiraServiceURL = Configuration.get("zafiraServiceURL")
+		def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
+		context.stage("Register Zafira Credentials") {
+			Organization.registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken)
+		}
+	}
+	
+	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
+		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
+			throw new RuntimeException("Required fields are missing!")
+		}
+		def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
+		def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+
+		updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
+		updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
+	}
 
 }

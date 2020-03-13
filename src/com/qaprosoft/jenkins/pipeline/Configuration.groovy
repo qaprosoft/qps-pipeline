@@ -55,13 +55,13 @@ public class Configuration {
         GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, true),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
 
+        QPS_HOST("QPS_HOST", "demo.qaprosoft.com"),
+
         SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
         SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}"),
         SELENIUM_PORT("SELENIUM_PORT", "4444"),
         SELENIUM_URL("SELENIUM_URL", "\${SELENIUM_PROTOCOL}://demo:demo@\${SELENIUM_HOST}:\${SELENIUM_PORT}/wd/hub"),
         HUB_MODE("hub_mode", "selenium"),
-
-        QPS_HUB("QPS_HUB", "\${SELENIUM_PROTOCOL}://${SELENIUM_HOST}:\${SELENIUM_PORT}"),
 
         ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, true),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", "http://zafira:8080/zafira-ws"),
@@ -134,6 +134,10 @@ public class Configuration {
         }
     }
 
+    public String getGlobalProperty(String name) {
+        return context.env.getEnvironment().get(name)
+    }
+
     @NonCPS
     public void loadContext() {
         // 1. load all obligatory Parameter(s) and their default key/values to vars.
@@ -163,7 +167,7 @@ public class Configuration {
 
         //3. Replace vars and/or params with capabilities prefix
         parseValues(params.get(CAPABILITIES), ";", CAPABILITIES)
-		
+
 		//TODO: wrap 3a and 3b into the single method or remove after fixing cron matrix
 		//3.a to support old "browser" capability as parameter
 		if (params.get("browser") != null) {
@@ -177,7 +181,7 @@ public class Configuration {
 				putParamCaseInsensitive("capabilities.browserVersion", params.get("browser_version"))
 			}
 		}
-        
+
         //4. Replace vars and/or params with zafiraFields values
         parseValues(params.get("zafiraFields"))
         //5. Replace vars and/or params with overrideFields values
@@ -202,12 +206,12 @@ public class Configuration {
 		for (var in vars) {
 			context.println(var)
 		}
-		
+
 		context.println("PARAMS:")
         for (param in params) {
             context.println(param)
         }
-		
+
         //6. TODO: investigate how private pipeline can override those values
         // public static void set(Map args) - ???
     }
@@ -221,7 +225,7 @@ public class Configuration {
     private static void parseValues(values, separator){
         parseValues(values, separator, "")
     }
-    
+
     @NonCPS
     private static void parseValues(values, separator, keyPrefix){
         if (values) {
