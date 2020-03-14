@@ -10,9 +10,8 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
     def organization
     def repo
     def scmRepoUrl
-	def branch
 
-    public PullRequestJobFactoryTrigger(folder, jobName, jobDesc, host, organization, repo, scmRepoUrl, branch) {
+    public PullRequestJobFactoryTrigger(folder, jobName, jobDesc, host, organization, repo, scmRepoUrl) {
         this.folder = folder
         this.name = jobName
         this.description = jobDesc
@@ -20,7 +19,6 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
         this.organization = organization
         this.repo = repo
         this.scmRepoUrl = scmRepoUrl
-		this.branch = branch
     }
 
     def create() {
@@ -28,7 +26,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
         freestyleJob.with {
             concurrentBuild(true)
             parameters {
-				//[VD] do not remove empty declaration otherwise params can't be specified dynamically
+                //[VD] do not remove empty declaration otherwise params can't be specified dynamically
             }
 
             scm {
@@ -39,7 +37,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                         credentials("${organization}-${repo}")
                         refspec('+refs/pull/*:refs/remotes/origin/pr/*')
                     }
-                    branch(this.branch)
+                    branch("${sha1}")
                 }
             }
 
