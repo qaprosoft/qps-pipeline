@@ -27,7 +27,7 @@ public class Sonar {
         context.stage('Sonar Scanner') {
             context.withSonarQubeEnv(sonarQubeEnv) {
                 def goals = "-U -f ${pomFile} \
-					clean dependency:resolve compile test-compile package sonar:sonar -DskipTests=true \
+					clean compile test-compile package sonar:sonar -DskipTests=true \
 					-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
 					-Dsonar.analysis.mode=preview  \
 					-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
