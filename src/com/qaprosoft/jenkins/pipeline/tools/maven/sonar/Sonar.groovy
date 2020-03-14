@@ -46,7 +46,11 @@ public class Sonar {
 					-Dsonar.test.inclusions=**/src/test/java/** \
 					-Dsonar.java.source=1.8"
                 /** **/
-                executeMavenGoals(goals, mavenSettingsConfig)
+                if (mavenSettingsConfig != null) {
+                    executeMavenGoals(goals, mavenSettingsConfig)
+                } else {
+                    executeMavenGoals(goals)
+                }
             }
         }
 		
