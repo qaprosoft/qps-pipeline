@@ -38,6 +38,7 @@ class Organization {
         scmClient = new GitHub(context)
         logger = new Logger(context)
         zebrunnerUpdater = new ZebrunnerUpdater(context)
+        runnerClass = Configuration.get("runnerClass")
         pipelineLibrary = Configuration.get("pipelineLibrary")
         zafiraServiceURL =  Configuration.get("zafiraServiceURL")
         zafiraAccessToken =  Configuration.get("zafiraAccessToken")
@@ -265,11 +266,11 @@ class Organization {
 		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 		registerHubCredentials(folder, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
         logger.info('MEW_MEW_MEW')
-        logger.info('zafiraServiceURL: ' + Configuration.get('zafiraServiceURL'))
-        logger.info('zafiraAccessToken: ' + Configuration.get('zafiraAccessToken'))
+        logger.info('zafiraServiceURL: ' + zafiraServiceURL)
+        logger.info('zafiraAccessToken: ' + zafiraAccessToken)
 
-        if (!isParamEmpty(Configuration.get('zafiraServiceURL'))) {
-            registerZafiraCredentials(folder, Configuration.get('zafiraServiceURL'), Configuration.get('zafiraAccessToken'))
+        if (!isParamEmpty(zafiraServiceURL)) {
+            registerZafiraCredentials(folder, zafiraServiceURL, zafiraAccessToken)
         }
 	}
 	
@@ -300,7 +301,7 @@ class Organization {
 	
 	public def registerZafiraCredentials(){
         context.stage("Register Zafira Credentials") {
-            Organization.registerZafiraCredentials(Configuration.get("folderName"), Configuration.get("zafiraServiceURL"), Configuration.get("zafiraAccessToken"))
+            Organization.registerZafiraCredentials(Configuration.get("folderName"), zafiraServiceURL, zafiraAccessToken)
         }
 	}
 	
@@ -311,8 +312,8 @@ class Organization {
 		def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
 		def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
 
-		updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
-		updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
+		updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", zafiraServiceURL, zafiraServiceURL)
+		updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Organization.zafiraAccessToken, zafiraRefreshToken)
 	}
 
 }
