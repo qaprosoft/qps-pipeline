@@ -296,12 +296,9 @@ class Organization {
 	}
 	
 	public def registerZafiraCredentials(){
-		def orgFolderName = Configuration.get("folderName")
-		def zafiraServiceURL = Configuration.get("zafiraServiceURL")
-		def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
-		context.stage("Register Zafira Credentials") {
-			Organization.registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken)
-		}
+        context.stage("Register Zafira Credentials") {
+            Organization.registerZafiraCredentials(Configuration.get("folderName"), zafiraServiceURL, zafiraAccessToken)
+        }
 	}
 	
 	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
