@@ -264,8 +264,11 @@ class Organization {
 		//TODO: remove mcloud registration in released version
 		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 		registerHubCredentials(folder, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
+        logger.info('MEW_MEW_MEW')
+        logger.info('zafiraServiceURL: ' + Configuration.get('zafiraServiceURL'))
+        logger.info('zafiraAccessToken: ' + Configuration.get('zafiraAccessToken'))
 
-        if (!isParamEmpty(zafiraServiceURL)) {
+        if (!isParamEmpty(Configuration.get('zafiraServiceURL'))) {
             registerZafiraCredentials(folder, Configuration.get('zafiraServiceURL'), Configuration.get('zafiraAccessToken'))
         }
 	}
