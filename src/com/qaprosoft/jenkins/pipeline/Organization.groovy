@@ -312,8 +312,8 @@ class Organization {
 		def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
 		def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
 
-		updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", zafiraServiceURL, zafiraServiceURL)
-		updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", zafiraRefreshToken, zafiraRefreshToken)
+		updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", orgFolderName, zafiraServiceURL)
+		updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", orgFolderName, zafiraRefreshToken)
 	}
 
 }
