@@ -27,6 +27,8 @@ class Organization {
     protected Map dslObjects = new LinkedHashMap()
     protected def pipelineLibrary
     protected def runnerClass
+    protected def zafiraServiceURL
+    protected def zafiraAccessToken
     protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
     protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
@@ -37,7 +39,8 @@ class Organization {
         logger = new Logger(context)
         zebrunnerUpdater = new ZebrunnerUpdater(context)
         pipelineLibrary = Configuration.get("pipelineLibrary")
-        runnerClass =  Configuration.get("runnerClass")
+        zafiraServiceURL =  Configuration.get("zafiraServiceURL")
+        zafiraAccessToken =  Configuration.get("zafiraAccessToken")
     }
 
     def register() {
@@ -262,8 +265,8 @@ class Organization {
 		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 		registerHubCredentials(folder, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 
-        if (!isParamEmpty(Configuration.Parameter.ZAFIRA_SERVICE_URL.getValue())) {
-            registerZafiraCredentials(folder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
+        if (!isParamEmpty(zafiraServiceURL) {
+            registerZafiraCredentials(folder, zafiraServiceURL, zafiraAccessToken)
         }
 	}
 	

@@ -270,7 +270,7 @@ class ZafiraClient extends HttpClient {
             logger.info("Unable to get auth token, check Zafira integration properties")
             return
         }
-        authToken = properties.type + " " + properties.accessToken
+        authToken = properties.type + " " + properties.zafiraAccessToken
         logger.debug("authToken: " + authToken)
         tokenExpTime = System.currentTimeMillis() + 470 * 60 * 1000
     }
