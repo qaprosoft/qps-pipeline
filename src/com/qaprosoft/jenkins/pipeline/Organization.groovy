@@ -265,7 +265,7 @@ class Organization {
 		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 		registerHubCredentials(folder, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 
-        if (!isParamEmpty(zafiraServiceURL) {
+        if (!isParamEmpty(zafiraServiceURL)) {
             registerZafiraCredentials(folder, zafiraServiceURL, zafiraAccessToken)
         }
 	}
