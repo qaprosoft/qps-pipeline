@@ -297,7 +297,7 @@ class Organization {
 	
 	public def registerZafiraCredentials(){
         context.stage("Register Zafira Credentials") {
-            Organization.registerZafiraCredentials(Configuration.get("folderName"), zafiraServiceURL, zafiraAccessToken)
+            Organization.registerZafiraCredentials(Configuration.get("folderName"), Configuration.get("zafiraServiceURL"), Configuration.get("zafiraAccessToken"))
         }
 	}
 	
