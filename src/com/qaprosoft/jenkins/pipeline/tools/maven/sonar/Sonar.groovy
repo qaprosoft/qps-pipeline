@@ -12,6 +12,10 @@ public class Sonar {
     }
 
     protected boolean executeSonarPRScan(pomFile){
+        return executeSonarPRScan(pomFile, null)
+    }
+
+    protected boolean executeSonarPRScan(pomFile, mavenSettingsConfig){
         def sonarQubeEnv = ''
         Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
             sonarQubeEnv = installation.getName()
@@ -42,7 +46,11 @@ public class Sonar {
 					-Dsonar.test.inclusions=**/src/test/java/** \
 					-Dsonar.java.source=1.8"
                 /** **/
-                executeMavenGoals(goals)
+                if (mavenSettingsConfig != null) {
+                    executeMavenGoals(goals, mavenSettingsConfig)
+                } else {
+                    executeMavenGoals(goals)
+                }
             }
         }
 		
