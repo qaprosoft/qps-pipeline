@@ -64,4 +64,32 @@ class Utils {
     static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
+
+    static def getZafiraServiceUrl(orgName) {
+        def jenkinsCredentials = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
+            com.cloudbees.plugins.credentials.Credentials.class,
+            Jenkins.instance,
+            null,
+            null
+        )
+        for (creds in jenkinsCredentials) {
+            if(creds.id == orgName + "-zafira_access_token"){
+                return creds.password
+            }
+        }
+    }
+
+    static def getZafiraAccessToken(orgName) {
+        def jenkinsCredentials = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
+                com.cloudbees.plugins.credentials.Credentials.class,
+                Jenkins.instance,
+                null,
+                null
+        )
+        for (creds in jenkinsCredentials) {
+            if (creds.id == orgName + "-zafira_service_url") {
+                return creds.password
+            }
+        }
+    }
 }
