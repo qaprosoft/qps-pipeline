@@ -55,7 +55,7 @@ class Utils {
     }
 
     static def replaceSpecialSymbols(String value, String str) {
-        def listOfCharacters = ['/', ':', '|']
+        def listOfCharacters = ['/', ':', '\\|']
         for (character in listOfCharacters) {
             if (value.contains(character)) {
                 value = value.replaceAll(character, str)
