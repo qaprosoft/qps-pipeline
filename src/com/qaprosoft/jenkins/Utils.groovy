@@ -54,9 +54,12 @@ class Utils {
         return value
     }
 
-    static def replaceSlashes(String value, String str) {
-        if (value.contains("/")) {
-            value = value.replaceAll("/", str)
+    static def replaceSpecialSymbols(String value, String str) {
+        def listOfCharacters = ['/', ':', '|']
+        for (character in listOfCharacters) {
+            if (value.contains(character)) {
+                value = value.replaceAll(character, str)
+            }
         }
         return value
     }
