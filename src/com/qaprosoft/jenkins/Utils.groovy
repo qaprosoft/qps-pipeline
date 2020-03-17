@@ -55,13 +55,7 @@ class Utils {
     }
 
     static def replaceSpecialSymbols(String value, String str) {
-        def listOfCharacters = ['/', ':', '\\|']
-        for (character in listOfCharacters) {
-            if (value.contains(character)) {
-                value = value.replaceAll(character, str)
-            }
-        }
-        return value
+        return value.replaceAll("[^\\w]", "_")
     }
 
     static boolean getBooleanParameterValue(parameter, currentSuite){
