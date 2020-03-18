@@ -20,6 +20,14 @@ class ZafiraClient extends HttpClient {
 
     }
 
+    public getZafiraCredentialsParameter(id){
+        if (getCredentials(id)){
+            context.withCredentials([context.usernamePassword(credentialsId:id, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+                return context.env.VALUE
+            }
+        }
+    }
+
     public def queueZafiraTestRun(uuid) {
         if (isTokenExpired()) {
             getZafiraAuthToken(refreshToken)

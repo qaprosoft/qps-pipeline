@@ -99,14 +99,6 @@ public class Executor {
         return reportParameters
     }
 
-    static def getZafiraCredentialsParameter(id) {
-        if (getCredentials(id)){
-            context.withCredentials([context.usernamePassword(credentialsId:id, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                return context.env.VALUE
-            }
-        }
-    }
-
     static def updateJenkinsCredentials(id, description, user, password) {
         if (!isParamEmpty(password) && !isParamEmpty(user)){
             def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
