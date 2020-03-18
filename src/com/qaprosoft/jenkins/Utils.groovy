@@ -4,6 +4,7 @@ package com.qaprosoft.jenkins
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
 import com.qaprosoft.jenkins.pipeline.Configuration
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Utils {
 
