@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
+import com.qaprosoft.jenkins.pipeline.Configuration
 
 class Utils {
 
@@ -67,25 +68,27 @@ class Utils {
 
 
     static def getZafiraServiceParameters(orgName) {
+        def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+        def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
+        def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
         def resultList
-        def jenkinsCredentials = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
-                com.cloudbees.plugins.credentials.Credentials.class,
-                Jenkins.instance,
-                null,
-                null
-        )
-        for (creds in jenkinsCredentials) {
-            if (creds.id == orgName + "-zafira_service_url") {
-                resultList.add(creds.password)
-            } else {
-                resultList.add('')
+
+        if (getCredentials(zafiraURLCredentials)){
+            context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+                resultList.add(context.env.VALUE)
             }
-            if(creds.id == orgName + "-zafira_access_token"){
-                resultList.add(creds.password)
-            } else {
-                resultList.add('')
-            }
+        } else {
+            resultList.add('')
         }
+
+        if (getCredentials(zafiraTokenCredentials)){
+            context.withCredentials([context.usernamePassword(credentialsId:zafiraTokenCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+                resultList.add(context.env.VALUE)
+            }
+        } else {
+            resultList.add('')
+        }
+
         return resultList
     }
 }
