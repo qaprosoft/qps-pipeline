@@ -1209,7 +1209,7 @@ public class QARunner extends AbstractRunner {
 					}
 					
 					for (def supportedParams : supportedParamsMatrix.split(";")) {
-						if (!isParamEmtpy(supportedParams)) {
+						if (!isParamEmpty(supportedParams)) {
 							continue
 						}
 						isParamsMatrixDeclared = true
