@@ -14,17 +14,20 @@ class ZafiraClient extends HttpClient {
 
     public ZafiraClient(context) {
         super(context)
-        serviceURL = getZafiraCredentialsParameter(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_service_url")
-        refreshToken = getZafiraCredentialsParameter(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_access_token")
-
-    }
-
-    public getZafiraCredentialsParameter(id){
-        if (getCredentials(id)){
-            context.withCredentials([context.usernamePassword(credentialsId:id, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                return context.env.VALUE
+        def idServiceURL = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_service_url"
+        def idRefreshToken = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_access_token"
+        if (getCredentials(idServiceURL)){
+            context.withCredentials([context.usernamePassword(credentialsId:idServiceURL, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+                serviceURL = context.env.VALUE
             }
         }
+        if (getCredentials(idRefreshToken)){
+            context.withCredentials([context.usernamePassword(credentialsId:idRefreshToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+                refreshToken = context.env.VALUE
+            }
+        }
+
+
     }
 
     public def queueZafiraTestRun(uuid) {
