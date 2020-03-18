@@ -12,12 +12,11 @@ class ZafiraClient extends HttpClient {
     private String refreshToken
     private String authToken
     private long tokenExpTime
-    protected Executor executor = new Executor()
 
     public ZafiraClient(context) {
         super(context)
-        serviceURL = executor.getZafiraCredentialsParameters(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_service_url")
-        refreshToken = executor.getZafiraCredentialsParameters(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_access_token")
+        serviceURL = Executor.getZafiraCredentialsParameter(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_service_url")
+        refreshToken = Executor.getZafiraCredentialsParameter(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_access_token")
 
     }
 
