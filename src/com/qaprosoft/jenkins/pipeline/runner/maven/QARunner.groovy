@@ -1236,7 +1236,7 @@ public class QARunner extends AbstractRunner {
 						putMap(pipelineMap, supportedConfigurations)
 						registerPipeline(currentSuite, pipelineMap)
 					}
-					
+					logger.info("isParamsMatrixDeclared: ${isParamsMatrixDeclared}")
 					if (isParamsMatrixDeclared) {
 						//there is no to use deprecated functionality for generating pipelines if ParamsMatrix was used otherwise we could run a little bit more jobs
 						continue
