@@ -21,8 +21,6 @@ import com.cloudbees.plugins.credentials.domains.*
 
 public class Executor {
 
-    def context
-
     static enum BuildResult {
         FAILURE, ABORTED, UNSTABLE, SUCCESS
     }
