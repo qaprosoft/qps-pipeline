@@ -14,8 +14,8 @@ class ZafiraClient extends HttpClient {
 
     public ZafiraClient(context) {
         super(context)
-        serviceURL = getZafiraServiceUrl('qaprosoft')
-        refreshToken = getZafiraAccessToken('qaprosoft')
+        serviceURL = getZafiraServiceParameters('qaprosoft')[0]
+        refreshToken = getZafiraServiceParameters('qaprosoft')[1]
     }
 
     public def queueZafiraTestRun(uuid) {
