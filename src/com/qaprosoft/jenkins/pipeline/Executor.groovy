@@ -102,7 +102,6 @@ public class Executor {
     }
 
     static def getZafiraCredentialsParameter(id) {
-        this.context = context
         if (getCredentials(zafiraURLCredentials)){
             context.withCredentials([context.usernamePassword(credentialsId:id, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
                 return context.env.VALUE
