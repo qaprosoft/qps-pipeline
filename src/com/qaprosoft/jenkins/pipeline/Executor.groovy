@@ -99,7 +99,7 @@ public class Executor {
         return reportParameters
     }
 
-    def getZafiraCredentials(id) {
+    def getZafiraCredentialsParameters(id) {
         if (getCredentials(zafiraURLCredentials)){
             context.withCredentials([context.usernamePassword(credentialsId:id, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
                 return context.env.VALUE
