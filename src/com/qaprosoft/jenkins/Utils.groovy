@@ -92,4 +92,23 @@ class Utils {
             }
         }
     }
+
+    static def getZafiraServiceParameters(orgName) {
+        def resultList
+        def jenkinsCredentials = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
+                com.cloudbees.plugins.credentials.Credentials.class,
+                Jenkins.instance,
+                null,
+                null
+        )
+        for (creds in jenkinsCredentials) {
+            if (creds.id == orgName + "-zafira_service_url") {
+                resultList.add(creds.password)
+            }
+            if(creds.id == orgName + "-zafira_access_token"){
+                resultList.add(creds.password)
+            }
+        }
+        return resultList
+    }
 }
