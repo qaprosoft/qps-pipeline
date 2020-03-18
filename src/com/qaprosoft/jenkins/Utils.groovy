@@ -3,8 +3,6 @@ package com.qaprosoft.jenkins
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
-import com.qaprosoft.jenkins.pipeline.Configuration
-import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Utils {
 
@@ -65,31 +63,5 @@ class Utils {
 
     static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
-    }
-
-
-    static def getZafiraServiceParameters(orgName) {
-        def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
-        def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
-        def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
-        def resultList
-
-        if (getCredentials(zafiraURLCredentials)){
-            context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                resultList.add(context.env.VALUE)
-            }
-        } else {
-            resultList.add('')
-        }
-
-        if (getCredentials(zafiraTokenCredentials)){
-            context.withCredentials([context.usernamePassword(credentialsId:zafiraTokenCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                resultList.add(context.env.VALUE)
-            }
-        } else {
-            resultList.add('')
-        }
-
-        return resultList
     }
 }

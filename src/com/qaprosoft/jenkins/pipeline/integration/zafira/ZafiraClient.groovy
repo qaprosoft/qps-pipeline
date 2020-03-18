@@ -4,6 +4,7 @@ import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 import groovy.json.JsonBuilder
 import static com.qaprosoft.jenkins.Utils.*
 import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.pipeline.Executor
 
 class ZafiraClient extends HttpClient {
 
@@ -11,12 +12,13 @@ class ZafiraClient extends HttpClient {
     private String refreshToken
     private String authToken
     private long tokenExpTime
-    private static final String SCM_ORG = "scmOrg"
+    protected Executor executor = new Executor()
 
     public ZafiraClient(context) {
         super(context)
-        serviceURL = getZafiraServiceParameters(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION))[0]
-        refreshToken = getZafiraServiceParameters(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION))[1]
+        serviceURL = executor.getZafiraCredentials(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_service_url")
+        refreshToken = executor.getZafiraCredentials(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_access_token")
+
     }
 
     public def queueZafiraTestRun(uuid) {

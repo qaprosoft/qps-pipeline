@@ -38,8 +38,8 @@ class Organization {
         scmClient = new GitHub(context)
         logger = new Logger(context)
         zebrunnerUpdater = new ZebrunnerUpdater(context)
-        runnerClass = Configuration.get("runnerClass")
         pipelineLibrary = Configuration.get("pipelineLibrary")
+        runnerClass = Configuration.get("runnerClass")
         zafiraServiceURL =  Configuration.get("zafiraServiceURL")
         zafiraAccessToken =  Configuration.get("zafiraAccessToken")
     }
