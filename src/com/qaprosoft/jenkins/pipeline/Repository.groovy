@@ -106,8 +106,8 @@ class Repository {
                 def zafiraFields = Configuration.get("zafiraFields")
                 logger.debug("zafiraFields: " + zafiraFields)
                 if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def zafiraServiceURL = getZafiraServiceParameters('qaprosoft')[0]
-                    def zafiraRefreshToken = getZafiraServiceParameters('qaprosoft')[1]
+                    def zafiraServiceURL = getZafiraServiceParameters(Configuration.get(SCM_ORG))[0]
+                    def zafiraRefreshToken = getZafiraServiceParameters(Configuration.get(SCM_ORG))[1]
                     logger.debug("zafiraServiceURL: " + zafiraServiceURL)
                     logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
                     Organization.registerZafiraCredentials(repoFolder, zafiraServiceURL, zafiraRefreshToken)

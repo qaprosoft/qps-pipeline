@@ -11,11 +11,12 @@ class ZafiraClient extends HttpClient {
     private String refreshToken
     private String authToken
     private long tokenExpTime
+    private static final String SCM_ORG = "scmOrg"
 
     public ZafiraClient(context) {
         super(context)
-        serviceURL = getZafiraServiceParameters('qaprosoft')[0]
-        refreshToken = getZafiraServiceParameters('qaprosoft')[1]
+        serviceURL = getZafiraServiceParameters(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION))[0]
+        refreshToken = getZafiraServiceParameters(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION))[1]
     }
 
     public def queueZafiraTestRun(uuid) {
