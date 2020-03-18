@@ -8,20 +8,25 @@ import com.qaprosoft.jenkins.pipeline.Executor
 
 class ZafiraClient extends HttpClient {
 
-    private String serviceURL
-    private String refreshToken
     private String authToken
     private long tokenExpTime
 
     public ZafiraClient(context) {
         super(context)
-        serviceURL = Executor.getZafiraCredentialsParameter(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_service_url", context)
-        refreshToken = Executor.getZafiraCredentialsParameter(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_access_token", context)
+    }
+
+    public def getUrl() {
+        return Executor.getPassword(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_service_url")
+    }
+
+    public def getToken() {
+        return Executor.getPassword(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_access_token")
     }
 
     public def queueZafiraTestRun(uuid) {
+        //TODO: wrap bellow 5 lines into method
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -44,13 +49,13 @@ class ZafiraClient extends HttpClient {
                           httpMode: 'POST',
                           requestBody: requestBody,
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/queue"]
+                          url: getUrl() + "/api/tests/runs/queue"]
         return sendRequestFormatted(parameters)
     }
 
     public def smartRerun() {
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -71,14 +76,14 @@ class ZafiraClient extends HttpClient {
                           httpMode: 'POST',
                           requestBody: requestBody,
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
+                          url: getUrl() + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
                           timeout: 300000]
         return sendRequestFormatted(parameters)
     }
 
     public def abortTestRun(uuid, failureReason) {
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -94,13 +99,13 @@ class ZafiraClient extends HttpClient {
                           httpMode: 'POST',
                           requestBody: requestBody,
                           validResponseCodes: "200:500",
-                          url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
+                          url: getUrl() + "/api/tests/runs/abort?ciRunId=${uuid}"]
         return sendRequestFormatted(parameters)
     }
 
     public def sendEmail(uuid, emailList, filter) {
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -116,13 +121,13 @@ class ZafiraClient extends HttpClient {
                           httpMode: 'POST',
                           requestBody: requestBody,
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
+                          url: getUrl() + "/api/tests/runs/${uuid}/email?filter=${filter}"]
         return sendRequest(parameters)
     }
 
     public def sendSlackNotification(uuid, channels) {
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -130,13 +135,13 @@ class ZafiraClient extends HttpClient {
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "/api/slack/testrun/${uuid}/finish?channels=${channels}"]
+                          url: getUrl() + "/api/slack/testrun/${uuid}/finish?channels=${channels}"]
         return sendRequest(parameters)
     }
 
     public def exportTagData(uuid, tagName) {
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -144,13 +149,13 @@ class ZafiraClient extends HttpClient {
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "/api/tags/${uuid}/integration?integrationTag=${tagName}"]
+                          url: getUrl() + "/api/tags/${uuid}/integration?integrationTag=${tagName}"]
         return sendRequestFormatted(parameters)
     }
 
     public def sendFailureEmail(uuid, emailList, suiteOwner, suiteRunner) {
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -166,13 +171,13 @@ class ZafiraClient extends HttpClient {
                           httpMode: 'POST',
                           requestBody: requestBody,
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
+                          url: getUrl() + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
         return sendRequest(parameters)
     }
 
     public def exportZafiraReport(uuid) {
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -180,14 +185,14 @@ class ZafiraClient extends HttpClient {
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'GET',
                           validResponseCodes: "200:500",
-                          url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
+                          url: getUrl() + "/api/tests/runs/${uuid}/export"]
 
         return sendRequest(parameters)
     }
 
     public def getTestRunByCiRunId(uuid) {
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -195,7 +200,7 @@ class ZafiraClient extends HttpClient {
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'GET',
                           validResponseCodes: "200:404",
-                          url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"]
+                          url: getUrl() + "/api/tests/runs?ciRunId=${uuid}"]
 
         return sendRequestFormatted(parameters)
     }
@@ -203,7 +208,7 @@ class ZafiraClient extends HttpClient {
 
     public def createLaunchers(jenkinsJobsScanResult) {
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -220,13 +225,13 @@ class ZafiraClient extends HttpClient {
                           httpMode: 'POST',
                           requestBody: requestBody,
                           validResponseCodes: "200",
-                          url: this.serviceURL + "/api/launchers/create"]
+                          url: getUrl() + "/api/launchers/create"]
         return sendRequestFormatted(parameters)
     }
 
     public def createJob(jobUrl) {
         if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
+            getZafiraAuthToken(getToken())
             if (isParamEmpty(authToken))
                 return
         }
@@ -242,7 +247,7 @@ class ZafiraClient extends HttpClient {
                           httpMode: 'POST',
                           requestBody: requestBody,
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/jobs/url"]
+                          url: getUrl() + "/api/jobs/url"]
         return sendRequestFormatted(parameters)
     }
 
@@ -263,7 +268,7 @@ class ZafiraClient extends HttpClient {
                           httpMode: 'POST',
                           validResponseCodes: "200:404",
                           requestBody: requestBody,
-                          url: this.serviceURL + "/api/auth/refresh"]
+                          url: getUrl() + "/api/auth/refresh"]
         logger.debug("parameters: " + parameters)
         Map properties = (Map)sendRequestFormatted(parameters)
         logger.debug("properties: " + properties)

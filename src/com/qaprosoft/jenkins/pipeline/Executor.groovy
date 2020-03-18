@@ -117,11 +117,21 @@ public class Executor {
         }
     }
 
-    static def getZafiraCredentialsParameter(id, context){
-        if (getCredentials(id)){
-            context.withCredentials([context.usernamePassword(credentialsId:id, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+//    static def getZafiraCredentialsParameter(id){
+//        if (getCredentials(id)){
+//            context.withCredentials([context.usernamePassword(credentialsId:id, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+//                return context.env.VALUE
+//            }
+//        }
+//    }
+
+    static def getPassword(credentialsId){
+        if (getCredentials(credentialsId)) {
+            context.withCredentials([context.usernamePassword(credentialsId: credentialsId, usernameVariable: 'KEY', passwordVariable: 'VALUE')]) {
                 return context.env.VALUE
             }
+        } else {
+            return ''
         }
     }
 
