@@ -4,6 +4,7 @@ import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 import groovy.json.JsonBuilder
 import static com.qaprosoft.jenkins.Utils.*
 import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.pipeline.Executor
 
 class ZafiraClient extends HttpClient {
 
@@ -14,20 +15,8 @@ class ZafiraClient extends HttpClient {
 
     public ZafiraClient(context) {
         super(context)
-        def idServiceURL = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_service_url"
-        def idRefreshToken = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_access_token"
-        if (getCredentials(idServiceURL)){
-            context.withCredentials([context.usernamePassword(credentialsId:idServiceURL, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                serviceURL = context.env.VALUE
-            }
-        }
-        if (getCredentials(idRefreshToken)){
-            context.withCredentials([context.usernamePassword(credentialsId:idRefreshToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                refreshToken = context.env.VALUE
-            }
-        }
-
-
+        serviceURL = Executor.getZafiraCredentialsParameter(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_service_url")
+        refreshToken = Executor.getZafiraCredentialsParameter(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION) + "-zafira_access_token")
     }
 
     public def queueZafiraTestRun(uuid) {

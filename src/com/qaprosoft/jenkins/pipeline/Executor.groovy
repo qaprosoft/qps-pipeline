@@ -117,6 +117,14 @@ public class Executor {
         }
     }
 
+    static def getZafiraCredentialsParameter(id){
+        if (getCredentials(id)){
+            context.withCredentials([context.usernamePassword(credentialsId:id, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+                return context.env.VALUE
+            }
+        }
+    }
+
     static def createPRChecker(credentialsId) {
         GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
         List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
