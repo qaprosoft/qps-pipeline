@@ -21,6 +21,8 @@ import com.cloudbees.plugins.credentials.domains.*
 
 public class Executor {
 
+    def context
+
     static enum BuildResult {
         FAILURE, ABORTED, UNSTABLE, SUCCESS
     }
@@ -100,6 +102,7 @@ public class Executor {
     }
 
     static def getZafiraCredentialsParameter(id) {
+        this.context = context
         if (getCredentials(zafiraURLCredentials)){
             context.withCredentials([context.usernamePassword(credentialsId:id, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
                 return context.env.VALUE
