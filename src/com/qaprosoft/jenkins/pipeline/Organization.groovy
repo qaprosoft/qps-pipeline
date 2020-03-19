@@ -22,11 +22,14 @@ class Organization {
     protected def context
     protected ISCM scmClient
     protected Logger logger
-    protected ZebrunnerUpdater zebrunnerUpdater
     protected Configuration configuration = new Configuration(context)
     protected Map dslObjects = new LinkedHashMap()
+	
+	protected def folderName
     protected def pipelineLibrary
     protected def runnerClass
+	protected def zafiraServiceURL
+	protected def zafiraAccessToken
     protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
     protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
@@ -35,22 +38,26 @@ class Organization {
         this.context = context
         scmClient = new GitHub(context)
         logger = new Logger(context)
-        zebrunnerUpdater = new ZebrunnerUpdater(context)
-        pipelineLibrary = Configuration.get("pipelineLibrary")
-        runnerClass =  Configuration.get("runnerClass")
+		
+		this.folderName = Configuration.get("folderName")
+		
+        this.pipelineLibrary = Configuration.get("pipelineLibrary")
+        this.runnerClass =  Configuration.get("runnerClass")
+		
+		this.zafiraServiceURL = Configuration.get("zafiraServiceURL")
+		this.zafiraAccessToken = Configuration.get("zafiraAccessToken")
     }
 
     def register() {
         logger.info("Organization->register")
         context.node('master') {
 //            context.timestamps {
-                def folder = Configuration.get("folderName")
                 prepare()
-                generateCreds(folder)
-                generateCiItems(folder)
+                generateCreds()
+                generateCiItems()
                 logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
                 if (Configuration.get("securityEnabled")?.toBoolean()) {
-                    setSecurity(folder)
+                    setSecurity()
                 }
                 clean()
 //            }
@@ -89,7 +96,8 @@ class Organization {
         }
     }
 	
-    protected def generateCiItems(folder) {
+    protected def generateCiItems() {
+		def folder = this.folderName
         context.stage("Register Organization") {
             if (!isParamEmpty(folder)) {
                 registerObject("project_folder", new FolderFactory(folder, ""))
@@ -114,7 +122,8 @@ class Organization {
         dslObjects.put(name, object)
     }
 
-    protected def setSecurity(folder){
+    protected def setSecurity(){
+		def folder = this.folderName
         logger.info("Organization->setSecurity")
         def userName = folder + "-user"
         boolean initialized = false
@@ -254,15 +263,17 @@ class Organization {
         }
     }
 	
-	protected def generateCreds(folder) {
+	protected def generateCreds() {
 		logger.debug("QPS_HOST: " + Configuration.get(Configuration.Parameter.QPS_HOST))
 		logger.debug("selenium: " + "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
-		registerHubCredentials(folder, "selenium", "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
+		registerHubCredentials(this.folderName, "selenium", "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
 		//TODO: remove mcloud registration in released version
 		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
-		registerHubCredentials(folder, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
-		
-		registerZafiraCredentials(folder, Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL), Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
+		registerHubCredentials(this.folderName, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
+
+		if (!isParamEmpty(this.zafiraServiceURL) && !isParamEmpty(this.zafiraAccessToken)) {
+			registerZafiraCredentials(this.folderName, this.zafiraServiceURL, this.zafiraAccessToken)
+		}
 	}
 	
 	public def registerHubCredentials() {
@@ -291,17 +302,15 @@ class Organization {
 	}
 	
 	public def registerZafiraCredentials(){
-		def orgFolderName = Configuration.get("folderName")
-		def zafiraServiceURL = Configuration.get("zafiraServiceURL")
-		def zafiraRefreshToken = Configuration.get("zafiraRefreshToken")
 		context.stage("Register Zafira Credentials") {
-			Organization.registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken)
+			Organization.registerZafiraCredentials(this.folderName, this.zafiraServiceURL, this.zafiraRefreshToken)
 		}
 	}
 	
 	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
 		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
-			throw new RuntimeException("Required fields are missing!")
+			logger.error("Unable to register Zafira credentials! Required fields are missing!")
+			return
 		}
 		def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
 		def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"

@@ -822,19 +822,46 @@ public class QARunner extends AbstractRunner {
 		}
 		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
 	}
+	
+	public def updateZafiraGoals() {
+		// update Zafira serviceUrl and accessToken parameter based on values from credentials
+		def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+			
+		def zafiraServiceUrl = "${orgFolderName}-zafira_service_url"
+		if (getCredentials(zafiraServiceUrl)){
+			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
+				logger.debug("${zafiraServiceUrl}:" + context.env.VALUE)
+			}
+		}
+		
+		def zafiraAccessToken = "${orgFolderName}-zafira_access_token"
+		if (getCredentials(zafiraAccessToken)){
+			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
+				logger.debug("${zafiraAccessToken}:" + context.env.VALUE)
+			}
+		}
+		
+		def zafiraGoals = "-Dzafira_enabled=false"
+		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) && 
+			!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))) {
+			zafiraGoals = "-Dzafira_enabled=true -Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} -Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
+		}
+		return zafiraGoals
+	}
 
     protected String getMavenGoals() {
+		def zafiraGoals = updateZafiraGoals()
 		def seleniumHost = updateSeleniumUrl()
 		
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dselenium_host=${seleniumHost} \
+		${zafiraGoals} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
         -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
         -Dmax_screen_history=1 \
-        -Dzafira_enabled=true \
-        -Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
-        -Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
         -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
         -Dgit_branch=${Configuration.get("branch")} \
         -Dgit_commit=${Configuration.get("scm_commit")} \
