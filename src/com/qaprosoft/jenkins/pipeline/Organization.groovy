@@ -309,7 +309,7 @@ class Organization {
 	
 	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
 		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
-			logger.error("Unable to register Zafira credentials! Required fields are missing!")
+			throw new RuntimeException("Unable to register Zafira credentials! Required fields are missing!")
 			return
 		}
 		def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
