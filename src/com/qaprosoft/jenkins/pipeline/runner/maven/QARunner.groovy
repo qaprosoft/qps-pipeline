@@ -1209,6 +1209,9 @@ public class QARunner extends AbstractRunner {
 					}
 					
 					for (def supportedParams : supportedParamsMatrix.split(";")) {
+						if (isParamEmpty(supportedParams)) {
+							continue
+						}
 						isParamsMatrixDeclared = true
 						supportedParams = supportedParams.trim()
 						logger.info("supportedParams: ${supportedParams}")
@@ -1236,9 +1239,9 @@ public class QARunner extends AbstractRunner {
 						putMap(pipelineMap, supportedConfigurations)
 						registerPipeline(currentSuite, pipelineMap)
 					}
-					
+					logger.debug("isParamsMatrixDeclared: ${isParamsMatrixDeclared}")
 					if (isParamsMatrixDeclared) {
-						//there is no to use deprecated functionality for generating pipelines if ParamsMatrix was used otherwise we could run a little bit more jobs
+						//there is no need to use deprecated functionality for generating pipelines if ParamsMatrix was used otherwise we could run a little bit more jobs
 						continue
 					}
 
@@ -1345,7 +1348,7 @@ public class QARunner extends AbstractRunner {
     }
 
     // do not remove unused crossBrowserSchema. It is declared for custom private pipelines to override default schemas
-	@Deprecated
+    @Deprecated
     protected getCrossBrowserConfigurations(configDetails) {
         return configDetails.replace(qpsInfraCrossBrowserMatrixName, qpsInfraCrossBrowserMatrixValue)
     }
