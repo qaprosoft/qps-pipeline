@@ -1483,7 +1483,7 @@ public class QARunner extends AbstractRunner {
             } catch (Exception e) {
                 logger.error(printStackTrace(e))
                 def body = "Unable to start job via cron! " + e.getMessage()
-                def subject = "JOBSTART FAILURE: " + entry.get("jobName")
+                def subject = "JOBSTART FAILURE: " + replaceSpecialSymbols(entry.get("jobName").toString())
                 def to = entry.get("email_list") + "," + Configuration.get("email_list")
 
                 context.emailext getEmailParams(body, subject, to)
