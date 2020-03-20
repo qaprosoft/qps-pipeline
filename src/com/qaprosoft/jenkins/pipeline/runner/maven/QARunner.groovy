@@ -573,6 +573,8 @@ public class QARunner extends AbstractRunner {
                     if(!isParamEmpty(testRun)) {
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
+                    } else {
+                        //try to find build result from CarinaReport if any
                     }
                     publishJenkinsReports()
                     sendCustomizedEmail()
@@ -841,13 +843,14 @@ public class QARunner extends AbstractRunner {
 			}
 		}
 		
-		//TODO: when zafira is not enabled use maven TestNG build status as job status, i.e. "-Dmaven.test.failure.ignore=false"
-		def zafiraGoals = "-Dzafira_enabled=false"
+		// When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
+		def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
 		
 		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) && 
 			!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))) {
-			//TODO: ignore maven build result if Zafira integration is enabled, i.e. "-Dmaven.test.failure.ignore=true" 
-			zafiraGoals = "-Dzafira_enabled=true \
+			// Ignore maven build result if Zafira integration is enabled 
+			zafiraGoals = "-Dmaven.test.failure.ignore=true \
+							-Dzafira_enabled=true \
 							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
 		}
@@ -1077,6 +1080,7 @@ public class QARunner extends AbstractRunner {
 
     protected void publishJenkinsReports() {
         context.stage('Results') {
+			publishReport('**/reports/qa/report.html', "CarinaReport")
             publishReport('**/zafira/report.html', "ZafiraReport")
             publishReport('**/artifacts/**', 'Artifacts')
             publishReport('**/*.dump', 'Artifacts')
