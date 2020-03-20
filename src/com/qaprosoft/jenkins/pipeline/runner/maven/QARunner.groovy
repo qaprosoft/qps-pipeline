@@ -1476,7 +1476,7 @@ public class QARunner extends AbstractRunner {
             logger.info(jobParams.dump())
 
             try {
-                context.build job: parseFolderName(getWorkspace()) + "/" + replaceSpecialSymbols(entry.get("jobName")),
+                context.build job: parseFolderName(getWorkspace()) + "/" + replaceSpecialSymbols(entry.get("jobName").toString()),
                         propagate: propagateJob,
                         parameters: jobParams,
                         wait: waitJob
