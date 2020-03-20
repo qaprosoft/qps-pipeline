@@ -1080,7 +1080,7 @@ public class QARunner extends AbstractRunner {
 
     protected void publishJenkinsReports() {
         context.stage('Results') {
-			publishReport('**/reports/qa/report.html', "CarinaReport")
+			publishReport('**/reports/qa/emailable-report.html', "CarinaReport")
             publishReport('**/zafira/report.html', "ZafiraReport")
             publishReport('**/artifacts/**', 'Artifacts')
             publishReport('**/*.dump', 'Artifacts')
