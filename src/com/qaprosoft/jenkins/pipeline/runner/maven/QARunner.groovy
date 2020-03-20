@@ -1159,7 +1159,6 @@ public class QARunner extends AbstractRunner {
         }
 
         def jobName = !isParamEmpty(currentSuite.getParameter("jenkinsJobName"))?currentSuite.getParameter("jenkinsJobName"):currentSuite.getName()
-        jobName = replaceSpecialSymbols(jobName.toString())
         def regressionPipelines = !isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))?currentSuite.getParameter("jenkinsRegressionPipeline"):""
         def orderNum = getJobExecutionOrderNumber(currentSuite)
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")

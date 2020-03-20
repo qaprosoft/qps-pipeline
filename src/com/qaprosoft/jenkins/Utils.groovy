@@ -54,7 +54,7 @@ class Utils {
         return value
     }
 
-    static def replaceSpecialSymbols(String value, String str) {
+    static def replaceSpecialSymbols(String value) {
         return value.replaceAll("[^\\w]", "_")
     }
 
