@@ -573,8 +573,6 @@ public class QARunner extends AbstractRunner {
                     if(!isParamEmpty(testRun)) {
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
-                    } else {
-                        currentBuild.result = BuildResult.FAILURE
                     }
                     publishJenkinsReports()
                     sendCustomizedEmail()
@@ -843,10 +841,15 @@ public class QARunner extends AbstractRunner {
 			}
 		}
 		
+		//TODO: when zafira is not enabled use maven TestNG build status as job status, i.e. "-Dmaven.test.failure.ignore=false"
 		def zafiraGoals = "-Dzafira_enabled=false"
+		
 		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) && 
 			!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))) {
-			zafiraGoals = "-Dzafira_enabled=true -Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} -Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
+			//TODO: ignore maven build result if Zafira integration is enabled, i.e. "-Dmaven.test.failure.ignore=true" 
+			zafiraGoals = "-Dzafira_enabled=true \
+							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
+							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
 		}
 		return zafiraGoals
 	}
@@ -868,7 +871,6 @@ public class QARunner extends AbstractRunner {
         -Dgit_url=${Configuration.get("scm_url")} \
         -Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
         -Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-        -Dmaven.test.failure.ignore=true \
         clean test"
 
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
