@@ -254,8 +254,9 @@ class ZafiraClient extends HttpClient {
         Map properties = (Map)sendRequestFormatted(parameters)
         logger.debug("properties: " + properties)
         if (isParamEmpty(properties)) {
-            logger.warn("Unable to get auth token, check Zafira integration properties")
-            return false
+            // #669: no sense to start tests if zafira is configured and not available! 
+            logger.info("properties: " + properties)
+            throw new RuntimeException("Unable to get auth token, check Zafira integration!")
         }
         this.authToken = properties.type + " " + properties.accessToken
         logger.debug("authToken: " + authToken)
