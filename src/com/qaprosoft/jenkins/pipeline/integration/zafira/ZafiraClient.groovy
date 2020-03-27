@@ -14,15 +14,13 @@ class ZafiraClient extends HttpClient {
 
     public ZafiraClient(context) {
         super(context)
-        serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
-        refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+        this.serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
+        this.refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
     }
 
     public def queueZafiraTestRun(uuid) {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder jobUrl: replaceTrailingSlash(Configuration.get(Configuration.Parameter.JOB_URL)),
@@ -48,10 +46,8 @@ class ZafiraClient extends HttpClient {
     }
 
     public def smartRerun() {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder owner: Configuration.get("owner"),
@@ -76,10 +72,8 @@ class ZafiraClient extends HttpClient {
     }
 
     public def abortTestRun(uuid, failureReason) {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder comment: failureReason
@@ -98,10 +92,8 @@ class ZafiraClient extends HttpClient {
     }
 
     public def sendEmail(uuid, emailList, filter) {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder recipients: emailList
@@ -120,10 +112,8 @@ class ZafiraClient extends HttpClient {
     }
 
     public def sendSlackNotification(uuid, channels) {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
@@ -134,10 +124,8 @@ class ZafiraClient extends HttpClient {
     }
 
     public def exportTagData(uuid, tagName) {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
@@ -148,10 +136,8 @@ class ZafiraClient extends HttpClient {
     }
 
     public def sendFailureEmail(uuid, emailList, suiteOwner, suiteRunner) {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder recipients: emailList
@@ -170,10 +156,8 @@ class ZafiraClient extends HttpClient {
     }
 
     public def exportZafiraReport(uuid) {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
@@ -185,10 +169,8 @@ class ZafiraClient extends HttpClient {
     }
 
     public def getTestRunByCiRunId(uuid) {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
                           contentType: 'APPLICATION_JSON',
@@ -201,10 +183,8 @@ class ZafiraClient extends HttpClient {
 
 
     public def createLaunchers(jenkinsJobsScanResult) {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
 
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -224,10 +204,8 @@ class ZafiraClient extends HttpClient {
     }
 
     public def createJob(jobUrl) {
-        if (isTokenExpired()) {
-            getZafiraAuthToken(refreshToken)
-            if (isParamEmpty(authToken))
-                return
+        if (!isZafiraConnected()) {
+            return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder jobUrlValue: jobUrl
@@ -249,11 +227,20 @@ class ZafiraClient extends HttpClient {
         return authToken == null || System.currentTimeMillis() > tokenExpTime
     }
 
-    /** Generates authToken using refreshToken*/
-    protected void getZafiraAuthToken(refreshToken) {
+    /** Verify if ZafiraConnected and refresh authToken if needed. Return false if connection can't be established or disabled **/
+    protected boolean isZafiraConnected() {
+		if (!isTokenExpired()) {
+			return true
+		}
+		
+		if (isParamEmpty(this.refreshToken) || isParamEmpty(this.serviceURL)) {
+			return false
+		}
+
+		
         logger.debug("refreshToken: " + refreshToken)
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder refreshToken: refreshToken
+        jsonBuilder refreshToken: this.refreshToken
 
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
@@ -267,12 +254,14 @@ class ZafiraClient extends HttpClient {
         Map properties = (Map)sendRequestFormatted(parameters)
         logger.debug("properties: " + properties)
         if (isParamEmpty(properties)) {
-            logger.info("Unable to get auth token, check Zafira integration properties")
-            return
+            // #669: no sense to start tests if zafira is configured and not available! 
+            logger.info("properties: " + properties)
+            throw new RuntimeException("Unable to get auth token, check Zafira integration!")
         }
-        authToken = properties.type + " " + properties.accessToken
+        this.authToken = properties.type + " " + properties.accessToken
         logger.debug("authToken: " + authToken)
-        tokenExpTime = System.currentTimeMillis() + 470 * 60 * 1000
+        this.tokenExpTime = System.currentTimeMillis() + 470 * 60 * 1000 //8 hours - interval '10 minutes'
+        return true
     }
 
 }
