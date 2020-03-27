@@ -1081,7 +1081,7 @@ public class QARunner extends AbstractRunner {
                     continue
                 }
 
-                context.publishHTML getReportParameters(reportDir, reports[i].name, name)
+                context.publishHTML getReportParameters(reportDir, reports[i].name, reports[i].name)
             }
         } catch (Exception e) {
             logger.error("Exception occurred while publishing Jenkins report.")

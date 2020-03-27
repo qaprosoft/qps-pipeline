@@ -103,13 +103,6 @@ public class TestJobFactory extends PipelineFactory {
                     case "api":
                         // API tests specific
                         configure stringParam('capabilities', getSuiteParameter("platformName=API", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
-                        String filePath = ReportContext.getArtifactsFolder().getAbsolutePath() + File.separator + fileName;
-                        try {
-                            file = new File(filePath);
-                            FileUtils.writeStringToFile(file, "file content line");
-                        } catch (IOException e) {
-                            LOGGER.warn("Error has been occurred during artifact generation: " + fileName, e);
-                        }
                         break
                     case "web":
                         // WEB tests specific
