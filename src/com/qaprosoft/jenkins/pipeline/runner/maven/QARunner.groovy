@@ -1070,10 +1070,10 @@ public class QARunner extends AbstractRunner {
                 def reportDir = parentFile.getPath()
                 logger.info("Report File Found, Publishing " + reports[i].path)
 
-                if (i > 0) {
-                    def reportIndex = "_" + i
-                    name = reportName + reportIndex
-                }
+//                if (i > 0) {
+//                    def reportIndex = "_" + i
+//                    name = reportName + reportIndex
+//                }
 
                 // TODO: remove below hotfix after resolving: https://github.com/qaprosoft/carina/issues/816
                 if (reportName.equals("Artifacts") && reports[i].path.contains("CucumberReport")) {
