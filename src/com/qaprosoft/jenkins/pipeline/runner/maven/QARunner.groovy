@@ -1070,10 +1070,9 @@ public class QARunner extends AbstractRunner {
                 def reportDir = parentFile.getPath()
                 logger.info("Report File Found, Publishing " + reports[i].path)
 
-//                if (i > 0) {
-//                    def reportIndex = "_" + i
-//                    name = reportName + reportIndex
-//                }
+                if (i > 0) {
+                    name = reports[i].name
+                }
 
                 // TODO: remove below hotfix after resolving: https://github.com/qaprosoft/carina/issues/816
                 if (reportName.equals("Artifacts") && reports[i].path.contains("CucumberReport")) {
@@ -1081,7 +1080,7 @@ public class QARunner extends AbstractRunner {
                     continue
                 }
 
-                context.publishHTML getReportParameters(reportDir, reports[i].name, reports[i].name)
+                context.publishHTML getReportParameters(reportDir, reports[i].name, name)
             }
         } catch (Exception e) {
             logger.error("Exception occurred while publishing Jenkins report.")
