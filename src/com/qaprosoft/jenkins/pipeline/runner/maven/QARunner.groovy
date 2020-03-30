@@ -1071,7 +1071,7 @@ public class QARunner extends AbstractRunner {
                 logger.info("Report File Found, Publishing " + reports[i].path)
 
                 if (i > 0) {
-                    name = reports[i].name
+                    name = reportName
                 }
 
                 // TODO: remove below hotfix after resolving: https://github.com/qaprosoft/carina/issues/816
