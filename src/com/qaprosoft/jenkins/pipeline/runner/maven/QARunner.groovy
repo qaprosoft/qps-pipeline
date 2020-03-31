@@ -1104,8 +1104,12 @@ public class QARunner extends AbstractRunner {
                 logger.info("Report File Found, Publishing " + reports[i].path)
 
                 if (i > 0) {
-                    def reportIndex = "_" + i
-                    name = reportName + reportIndex
+                    name = reports[i].name.toString()
+                }
+
+                if (name.contains(".mp4")) {
+                    // don't publish ".mp4" artifacts
+                    continue
                 }
 
                 // TODO: remove below hotfix after resolving: https://github.com/qaprosoft/carina/issues/816
