@@ -1074,6 +1074,11 @@ public class QARunner extends AbstractRunner {
                     name = reports[i].name.toString()
                 }
 
+                if (name.contains(".mp4")) {
+                    // don't publish ".mp4" artifacts
+                    continue
+                }
+
                 // TODO: remove below hotfix after resolving: https://github.com/qaprosoft/carina/issues/816
                 if (reportName.equals("Artifacts") && reports[i].path.contains("CucumberReport")) {
                     // do not publish artifact as it is cucumber system item
