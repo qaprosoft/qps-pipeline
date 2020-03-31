@@ -574,7 +574,7 @@ public class QARunner extends AbstractRunner {
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
                     } else {
-                        currentBuild.result = BuildResult.FAILURE
+                        //try to find build result from CarinaReport if any
                     }
                     publishJenkinsReports()
                     sendCustomizedEmail()
@@ -822,26 +822,58 @@ public class QARunner extends AbstractRunner {
 		}
 		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
 	}
+	
+	public def updateZafiraGoals() {
+		// update Zafira serviceUrl and accessToken parameter based on values from credentials
+		def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+			
+		def zafiraServiceUrl = "${orgFolderName}-zafira_service_url"
+		if (getCredentials(zafiraServiceUrl)){
+			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
+				logger.debug("${zafiraServiceUrl}:" + context.env.VALUE)
+			}
+		}
+		
+		def zafiraAccessToken = "${orgFolderName}-zafira_access_token"
+		if (getCredentials(zafiraAccessToken)){
+			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
+				logger.debug("${zafiraAccessToken}:" + context.env.VALUE)
+			}
+		}
+		
+		// When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
+		def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
+		
+		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) && 
+			!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))) {
+			// Ignore maven build result if Zafira integration is enabled 
+			zafiraGoals = "-Dmaven.test.failure.ignore=true \
+							-Dzafira_enabled=true \
+							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
+							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
+		}
+		return zafiraGoals
+	}
 
     protected String getMavenGoals() {
+		def zafiraGoals = updateZafiraGoals()
 		def seleniumHost = updateSeleniumUrl()
 		
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dselenium_host=${seleniumHost} \
+		${zafiraGoals} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
         -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
         -Dmax_screen_history=1 \
-        -Dzafira_enabled=true \
-        -Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
-        -Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)} \
         -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
         -Dgit_branch=${Configuration.get("branch")} \
         -Dgit_commit=${Configuration.get("scm_commit")} \
         -Dgit_url=${Configuration.get("scm_url")} \
         -Dci_url=${Configuration.get(Configuration.Parameter.JOB_URL)} \
         -Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-        -Dmaven.test.failure.ignore=true \
         clean test"
 
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
@@ -1048,6 +1080,7 @@ public class QARunner extends AbstractRunner {
 
     protected void publishJenkinsReports() {
         context.stage('Results') {
+			publishReport('**/reports/qa/emailable-report.html', "CarinaReport")
             publishReport('**/zafira/report.html', "ZafiraReport")
             publishReport('**/artifacts/**', 'Artifacts')
             publishReport('**/*.dump', 'Artifacts')
@@ -1071,8 +1104,12 @@ public class QARunner extends AbstractRunner {
                 logger.info("Report File Found, Publishing " + reports[i].path)
 
                 if (i > 0) {
-                    def reportIndex = "_" + i
-                    name = reportName + reportIndex
+                    name = reports[i].name.toString()
+                }
+
+                if (name.contains(".mp4")) {
+                    // don't publish ".mp4" artifacts
+                    continue
                 }
 
                 // TODO: remove below hotfix after resolving: https://github.com/qaprosoft/carina/issues/816
@@ -1158,7 +1195,7 @@ public class QARunner extends AbstractRunner {
             return
         }
 
-        def jobName = !isParamEmpty(currentSuite.getParameter("jenkinsJobName"))?currentSuite.getParameter("jenkinsJobName"):currentSuite.getName()
+        def jobName = !isParamEmpty(currentSuite.getParameter("jenkinsJobName"))?replaceSpecialSymbols(currentSuite.getParameter("jenkinsJobName")):replaceSpecialSymbols(currentSuite.getName())
         def regressionPipelines = !isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))?currentSuite.getParameter("jenkinsRegressionPipeline"):""
         def orderNum = getJobExecutionOrderNumber(currentSuite)
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")
@@ -1209,6 +1246,9 @@ public class QARunner extends AbstractRunner {
 					}
 					
 					for (def supportedParams : supportedParamsMatrix.split(";")) {
+						if (isParamEmpty(supportedParams)) {
+							continue
+						}
 						isParamsMatrixDeclared = true
 						supportedParams = supportedParams.trim()
 						logger.info("supportedParams: ${supportedParams}")
@@ -1236,9 +1276,9 @@ public class QARunner extends AbstractRunner {
 						putMap(pipelineMap, supportedConfigurations)
 						registerPipeline(currentSuite, pipelineMap)
 					}
-					
+					logger.debug("isParamsMatrixDeclared: ${isParamsMatrixDeclared}")
 					if (isParamsMatrixDeclared) {
-						//there is no to use deprecated functionality for generating pipelines if ParamsMatrix was used otherwise we could run a little bit more jobs
+						//there is no need to use deprecated functionality for generating pipelines if ParamsMatrix was used otherwise we could run a little bit more jobs
 						continue
 					}
 
@@ -1345,7 +1385,7 @@ public class QARunner extends AbstractRunner {
     }
 
     // do not remove unused crossBrowserSchema. It is declared for custom private pipelines to override default schemas
-	@Deprecated
+    @Deprecated
     protected getCrossBrowserConfigurations(configDetails) {
         return configDetails.replace(qpsInfraCrossBrowserMatrixName, qpsInfraCrossBrowserMatrixValue)
     }

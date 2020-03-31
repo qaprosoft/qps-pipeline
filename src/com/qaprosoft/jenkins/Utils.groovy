@@ -54,11 +54,8 @@ class Utils {
         return value
     }
 
-    static def replaceSlashes(String value, String str) {
-        if (value.contains("/")) {
-            value = value.replaceAll("/", str)
-        }
-        return value
+    static def replaceSpecialSymbols(String value) {
+        return value.replaceAll("[^\\w]", "_")
     }
 
     static boolean getBooleanParameterValue(parameter, currentSuite){
