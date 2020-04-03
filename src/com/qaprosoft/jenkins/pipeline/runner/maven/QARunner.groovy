@@ -802,7 +802,7 @@ public class QARunner extends AbstractRunner {
 
 	protected def updateSeleniumUrl() {
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
-		def provider = !Configuration.get("capabilities.provider").isEmpty() ? Configuration.get("capabilities.provider") : "selenium"
+		def provider = !isParamEmpt(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
 		def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
 		
 		def hubUrl = "${orgFolderName}-${provider}_hub"
