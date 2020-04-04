@@ -310,12 +310,10 @@ class Organization {
 	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
         if (isParamEmpty(orgFolderName)) {
             orgFolderName = 'qaprosoft'
-            logger.info("1111111111 " + orgFolderName)
         }
 
         if (!isParamEmpty(Configuration.get('SCM_ORGANIZATION')) || Configuration.get('SCM_ORGANIZATION').toBoolean() == true) {
             orgFolderName = Configuration.get('SCM_ORGANIZATION')
-            logger.info("1111111111 " + orgFolderName)
         }
 
 		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
