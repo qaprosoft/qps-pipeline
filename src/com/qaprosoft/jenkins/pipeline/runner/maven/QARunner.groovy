@@ -806,6 +806,9 @@ public class QARunner extends AbstractRunner {
 		if (!isParamEmpty(provider)) {
 
 			def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+            if (isParamEmpty(orgFolderName)) {
+                orgFolderName = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION.getKey())
+            }
 			
 			def hubUrl = "${orgFolderName}-${provider}_hub"
 			if (!getCredentials(hubUrl)) {
