@@ -313,7 +313,7 @@ class Organization {
             orgFolderName = 'qaprosoft'
         }
         logger.info("2222222" + orgFolderName)
-        if (!isParamEmpty(configuration.getGlobalProperty('SCM_ORGANIZATION')) && configuration.getGlobalProperty('SCM_ORGANIZATION').toBoolean() == true) {
+        if (!isParamEmpty(configuration.getGlobalProperty('SCM_ORGANIZATION'))) {
             orgFolderName = configuration.getGlobalProperty('SCM_ORGANIZATION')
         }
         logger.info("3333333" + orgFolderName)
