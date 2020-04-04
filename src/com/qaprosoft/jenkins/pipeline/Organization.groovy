@@ -309,7 +309,7 @@ class Organization {
 	
 	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
         if (isParamEmpty(orgFolderName)) {
-            orgFolderName = 'qaprosoft'
+            orgFolderName = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION.getKey())
         }
 
 		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
