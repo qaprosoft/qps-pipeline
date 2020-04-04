@@ -307,7 +307,7 @@ class Organization {
 		}
 	}
 	
-	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
+	public void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
         if (isParamEmpty(orgFolderName)) {
             orgFolderName = 'qaprosoft'
         }
