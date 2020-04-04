@@ -312,7 +312,7 @@ class Organization {
             orgFolderName = 'qaprosoft'
         }
 
-        if (!isParamEmpty(Configuration.get('SCM_ORGANIZATION')) || Configuration.get('SCM_ORGANIZATION').toBoolean() == true) {
+        if (!isParamEmpty(Configuration.get('SCM_ORGANIZATION')) || Configuration.get('SCM_ORGANIZATION')?.toBoolean() == true) {
             orgFolderName = Configuration.get('SCM_ORGANIZATION')
         }
 
