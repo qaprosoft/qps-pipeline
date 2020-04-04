@@ -312,8 +312,8 @@ class Organization {
             orgFolderName = 'qaprosoft'
         }
 
-        if (!isParamEmpty(Configuration.get('SCM_ORGANIZATION')) && Configuration.get('SCM_ORGANIZATION').toBoolean() == true) {
-            orgFolderName = Configuration.get('SCM_ORGANIZATION')
+        if (!isParamEmpty(configuration.getGlobalProperty('SCM_ORGANIZATION')) && configuration.getGlobalProperty('SCM_ORGANIZATION').toBoolean() == true) {
+            orgFolderName = configuration.getGlobalProperty('SCM_ORGANIZATION')
         }
 
 		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
