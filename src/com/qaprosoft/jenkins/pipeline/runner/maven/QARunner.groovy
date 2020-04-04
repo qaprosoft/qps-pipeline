@@ -804,6 +804,7 @@ public class QARunner extends AbstractRunner {
 		// update SELENIUM_URL parameter based on capabilities.provider
 		def provider = Configuration.get("capabilities.provider")
 		if (!isParamEmpty(provider)) {
+
 			def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
 			
 			def hubUrl = "${orgFolderName}-${provider}_hub"
