@@ -308,15 +308,15 @@ class Organization {
 	}
 	
 	public void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
+        logger("1111111" + orgFolderName)
         if (isParamEmpty(orgFolderName)) {
             orgFolderName = 'qaprosoft'
         }
-
-        logger.info('1111111 ' + !isParamEmpty(configuration.getGlobalProperty('SCM_ORGANIZATION')))
+        logger("2222222" + orgFolderName)
         if (!isParamEmpty(configuration.getGlobalProperty('SCM_ORGANIZATION')) && configuration.getGlobalProperty('SCM_ORGANIZATION').toBoolean() == true) {
             orgFolderName = configuration.getGlobalProperty('SCM_ORGANIZATION')
         }
-
+        logger("3333333" + orgFolderName)
 		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
 			throw new RuntimeException("Unable to register Zafira credentials! Required fields are missing!")
 			return
