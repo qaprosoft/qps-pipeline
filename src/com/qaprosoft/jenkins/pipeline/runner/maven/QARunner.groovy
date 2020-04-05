@@ -1319,7 +1319,7 @@ public class QARunner extends AbstractRunner {
                         pipelineMap.put("env", supportedEnv)
                         pipelineMap.put("order", orderNum)
                         pipelineMap.put("BuildPriority", priorityNum)
-                        putNotNullWithSplit(pipelineMap, "emailList", emailList)
+                        putNotNullWithSplit(pipelineMap, "email_list", emailList)
                         putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
                         putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
                         putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
@@ -1490,7 +1490,7 @@ public class QARunner extends AbstractRunner {
     protected def buildOutStage(Map entry, boolean waitJob, boolean propagateJob) {
         context.stage(getStageName(entry)) {
             logger.debug("Dynamic Stage Created For: " + entry.get("jobName"))
-            logger.debug("Checking EmailList: " + entry.get("emailList"))
+            logger.debug("Checking EmailList: " + entry.get("email_list"))
 
             List jobParams = []
 
