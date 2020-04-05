@@ -308,16 +308,18 @@ class Organization {
 	}
 	
 	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
-        if (isParamEmpty(orgFolderName)) {
-            orgFolderName = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION.getKey())
-        }
+		def zafiraURLCredentials = "zafira_service_url"
+		def zafiraTokenCredentials = "zafira_access_token"
+		
+        if (!isParamEmpty(orgFolderName)) {
+			zafiraURLCredentials = orgFolderName + "-zafira_service_url"
+			zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+		}
 
 		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
 			throw new RuntimeException("Unable to register Zafira credentials! Required fields are missing!")
 			return
 		}
-		def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
-		def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
 
 		updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
 		updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
