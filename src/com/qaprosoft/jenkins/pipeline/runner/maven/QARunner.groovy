@@ -809,6 +809,7 @@ public class QARunner extends AbstractRunner {
 		if (!isParamEmpty(orgFolderName)) {
 			hubUrl = "${orgFolderName}-${provider}_hub"
 		}
+		logger.info("hubUrl: ${hubUrl}")
 		
 		if (getCredentials(hubUrl)){
 			context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
