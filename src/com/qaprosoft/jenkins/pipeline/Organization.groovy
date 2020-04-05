@@ -321,8 +321,8 @@ class Organization {
 			return
 		}
 
-		updateJenkinsCredentials(zafiraURLCredentials, orgFolderName + " Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
-		updateJenkinsCredentials(zafiraTokenCredentials, orgFolderName + " Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
+		updateJenkinsCredentials(zafiraURLCredentials, "Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
+		updateJenkinsCredentials(zafiraTokenCredentials, "Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
 	}
 
 }
