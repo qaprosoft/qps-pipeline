@@ -98,6 +98,7 @@ class Repository {
             def repoFolder = Configuration.get(REPO)
 
             // Folder from which RegisterRepository job was started
+            // Important! using getOrgFolderNam from Utils is prohibited here!
             this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
@@ -110,7 +111,7 @@ class Repository {
                     def zafiraRefreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
                     logger.debug("zafiraServiceURL: " + zafiraServiceURL)
                     logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
-					if (isParamEmpty(repoFolder) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
+					if (!isParamEmpty(zafiraServiceURL) && !isParamEmpty(zafiraRefreshToken)){
 						Organization.registerZafiraCredentials(repoFolder, zafiraServiceURL, zafiraRefreshToken)
 					}
                 }
