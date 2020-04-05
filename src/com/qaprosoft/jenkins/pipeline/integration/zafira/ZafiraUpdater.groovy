@@ -3,9 +3,7 @@ package com.qaprosoft.jenkins.pipeline.integration.zafira
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 
-import java.nio.file.Paths
-
-import static com.qaprosoft.jenkins.Utils.isParamEmpty
+import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class ZafiraUpdater {
@@ -176,7 +174,7 @@ class ZafiraUpdater {
     }
 
     public def getZafiraCredentials() {
-        def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+        def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
         def zafiraURLCredentials = orgFolderName + "-zafira_service_url"
         def zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
         if (getCredentials(zafiraURLCredentials)){
