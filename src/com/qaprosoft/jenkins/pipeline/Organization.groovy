@@ -316,9 +316,12 @@ class Organization {
 			zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
 		}
 
-		if (isParamEmpty(orgFolderName) || isParamEmpty(zafiraServiceURL) || isParamEmpty(zafiraRefreshToken)){
-			throw new RuntimeException("Unable to register Zafira credentials! Required fields are missing!")
-			return
+		if (isParamEmpty(zafiraServiceURL)){
+			throw new RuntimeException("Unable to register Zafira credentials! Required field zafiraServiceURL is missing!")
+		}
+		
+		if ( isParamEmpty(zafiraRefreshToken)){
+			throw new RuntimeException("Unable to register Zafira credentials! Required field zafiraRefreshToken is missing!")
 		}
 
 		updateJenkinsCredentials(zafiraURLCredentials, "Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
