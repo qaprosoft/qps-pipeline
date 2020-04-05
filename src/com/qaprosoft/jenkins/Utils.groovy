@@ -63,7 +63,6 @@ class Utils {
     }
 	
 	static def getOrgFolderName(String jobName) {
-		logger.info("jobName: " + jobName)
-		
+		return jobName		
 	}
 }

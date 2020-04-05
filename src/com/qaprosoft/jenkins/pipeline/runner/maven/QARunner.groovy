@@ -805,6 +805,7 @@ public class QARunner extends AbstractRunner {
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
 		//TODO: improve orgFolderName detection and fix it for empty orgName structure
 		def ogrFolderName2 = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		logger.info("ogrFolderName2: ${ogrFolderName2}")
 		
 		def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
 		
