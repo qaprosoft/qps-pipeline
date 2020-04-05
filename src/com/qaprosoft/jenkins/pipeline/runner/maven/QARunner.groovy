@@ -799,6 +799,27 @@ public class QARunner extends AbstractRunner {
             executeMavenGoals("-U ${goals} -f ${pomFile}")
         }
     }
+	
+	protected def updateSeleniumUrl() {
+		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
+		def provider = !Configuration.get("capabilities.provider").isEmpty() ? Configuration.get("capabilities.provider") : "selenium"
+		def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+		
+		def hubUrl = "${provider}_hub"
+		if (!isParamEmpty(orgFolderName)) {
+			hubUrl = "${orgFolderName}-${provider}_hub"
+		}
+		
+		if (getCredentials(hubUrl)){
+			context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
+				logger.debug("${hubUrl}:" + context.env.VALUE)
+			}
+		} else {
+			throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
+		}
+		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
+	}
 
 	public def updateSeleniumUrl() {
 		// update SELENIUM_URL parameter based on capabilities.provider

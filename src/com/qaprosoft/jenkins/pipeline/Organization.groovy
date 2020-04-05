@@ -291,11 +291,9 @@ class Organization {
 				throw new RuntimeException("Required URL field is missing!")
 			}
 			def hubURLCredName = "${provider}_hub"
-
-            if (isParamEmpty(orgFolderName)) {
-                orgFolderName = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION.getKey())
-            }
-            hubURLCredName = "${orgFolderName}-${provider}_hub"
+			if (!isParamEmpty(orgFolderName)) {
+				hubURLCredName = "${orgFolderName}-${provider}_hub"
+			}
 			
 			if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", url)) {
 				logger.info("${hubURLCredName} was successfully registered.")
