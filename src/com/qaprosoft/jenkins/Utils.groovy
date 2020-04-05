@@ -63,6 +63,23 @@ class Utils {
     }
 	
 	static def getOrgFolderName(String jobName) {
-		return jobName		
+		int nameCount = Paths.get(Configuration.get(jobName)).getNameCount()
+		
+		/*
+		 * nameCount: 2 
+		 * carina-demo/API_Demo_Test - i.e. empty orgFolderName
+		 * 
+		 * nameCount: 3 
+		 * qaprosoft/carina-demo/API_Demo_Test - i.e. orgFolderName=qaprosoft
+		 * 
+		 */
+		def orgFolderName = ""
+		if (nameCount == 3) { //TODO: need to test use-case with views!
+			// qaprosoft/carina-demo/API_Demo_Test - i.e. empty orgFolderName
+			orgFolderName = Paths.get(jobName).getName(0).toString()
+		} else {
+			throw new RuntimeException("Invalid job organization structure: '${jobName}'!" )
+		}
+		return orgFolderName		
 	}
 }

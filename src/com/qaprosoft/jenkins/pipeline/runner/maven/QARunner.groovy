@@ -804,12 +804,8 @@ public class QARunner extends AbstractRunner {
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
 		//TODO: improve orgFolderName detection and fix it for empty orgName structure
-		def ogrFolderName2 = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
-		logger.info("ogrFolderName2: ${ogrFolderName2}")
-		
-		logger.info("size: " + Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getNameCount())
-		
-		def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
+		def ogrFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		logger.info("ogrFolderName: ${ogrFolderName}")
 		
 		def hubUrl = "${provider}_hub"
 		if (!isParamEmpty(orgFolderName)) {
