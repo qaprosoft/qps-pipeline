@@ -64,7 +64,7 @@ class Utils {
     }
 	
 	static def getOrgFolderName(String jobName) {
-		int nameCount = Paths.get(Configuration.get(jobName)).getNameCount()
+		int nameCount = Paths.get(jobName).getNameCount()
 		
 		/*
 		 * nameCount: 2 
