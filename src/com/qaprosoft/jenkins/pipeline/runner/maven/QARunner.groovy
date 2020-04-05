@@ -821,38 +821,14 @@ public class QARunner extends AbstractRunner {
 		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
 	}
 
-	public def updateSeleniumUrl() {
-		// update SELENIUM_URL parameter based on capabilities.provider
-		def provider = Configuration.get("capabilities.provider")
-		if (!isParamEmpty(provider)) {
-
-			def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
-            if (isParamEmpty(orgFolderName)) {
-                orgFolderName = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION.getKey())
-            }
-			
-			def hubUrl = "${orgFolderName}-${provider}_hub"
-			if (!getCredentials(hubUrl)) {
-				hubUrl = "${provider}_hub"
-			}
-			
-			if (getCredentials(hubUrl)){
-				context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-					Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
-					logger.debug("${hubUrl}:" + context.env.VALUE)
-				}
-			} else {
-				throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
-			}
-		}
-		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
-	}
-	
 	public def updateZafiraGoals() {
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
+		def zafiraServiceUrl = "zafira_service_url"
+		
 		def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
-			
-		def zafiraServiceUrl = "${orgFolderName}-zafira_service_url"
+		if (!isParamEmpty(orgFolderName)) {
+			zafiraServiceUrl = "${orgFolderName}-zafira_service_url"
+		}
 		if (getCredentials(zafiraServiceUrl)){
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
@@ -860,7 +836,10 @@ public class QARunner extends AbstractRunner {
 			}
 		}
 		
-		def zafiraAccessToken = "${orgFolderName}-zafira_access_token"
+		def zafiraAccessToken = "zafira_access_token"
+		if (!isParamEmpty(orgFolderName)) {
+			zafiraAccessToken = "${orgFolderName}-zafira_access_token"
+		}
 		if (getCredentials(zafiraAccessToken)){
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
