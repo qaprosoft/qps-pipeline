@@ -807,7 +807,7 @@ public class QARunner extends AbstractRunner {
 		def ogrFolderName2 = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
 		logger.info("ogrFolderName2: ${ogrFolderName2}")
 		
-		logger.info("size: " + Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).size())
+		logger.info("size: " + Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getNameCount())
 		
 		def orgFolderName = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
 		
