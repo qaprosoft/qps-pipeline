@@ -97,6 +97,7 @@ class Repository {
             def repoFolder = Configuration.get(REPO)
 
             // Folder from which RegisterRepository job was started. 
+            logger.info("jobName: " + Configuration.get(Configuration.Parameter.JOB_NAME))
             this.rootFolder = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
