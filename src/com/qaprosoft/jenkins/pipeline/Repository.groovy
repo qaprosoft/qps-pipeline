@@ -11,6 +11,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import groovy.json.JsonOutput
+import java.nio.file.Paths
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
@@ -96,9 +97,9 @@ class Repository {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repoFolder = Configuration.get(REPO)
 
-            // Folder from which RegisterRepository job was started. 
-            logger.info("jobName: " + Configuration.get(Configuration.Parameter.JOB_NAME))
-            this.rootFolder = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+            // Folder from which RegisterRepository job was started
+            // Important! using getOrgFolderNam from Utils is prohibited here!
+            this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
