@@ -61,4 +61,9 @@ class Utils {
     static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
+	
+	static def getOrgFolderName(String jobName) {
+		logger.info("jobName: " + jobName)
+		
+	}
 }
