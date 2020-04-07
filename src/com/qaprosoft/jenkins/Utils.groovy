@@ -56,7 +56,7 @@ class Utils {
     }
 
     static def replaceSpecialSymbols(String value) {
-        return value.replaceAll("[^\\w]", "_")
+        return value.replaceAll("[^\\w-]", "_")
     }
 
     static boolean getBooleanParameterValue(parameter, currentSuite){
