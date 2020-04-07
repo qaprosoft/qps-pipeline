@@ -1088,10 +1088,11 @@ public class QARunner extends AbstractRunner {
 
     protected void publishJenkinsReports() {
         context.stage('Results') {
-			publishReport('**/reports/qa/emailable-report.html', "CarinaReport")
+            publishReport('**/reports/qa/emailable-report.html', "CarinaReport")
             publishReport('**/zafira/report.html', "ZafiraReport")
-            publishReport('**/artifacts/**', 'Artifacts')
-            publishReport('**/*.dump', 'Artifacts')
+            //publishReport('**/artifacts/**', 'Artifacts')
+            publishReport('**/*.dump', 'DumpReports')
+            publishReport('**/*.har', 'HarReports')
             publishReport('**/target/surefire-reports/index.html', 'Full TestNG HTML Report')
             publishReport('**/target/surefire-reports/emailable-report.html', 'TestNG Summary HTML Report')
             publishReport('**/artifacts/**/feature-overview.html', 'CucumberReport')
