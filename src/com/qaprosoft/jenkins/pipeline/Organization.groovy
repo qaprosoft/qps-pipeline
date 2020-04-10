@@ -303,11 +303,11 @@ class Organization {
 	
 	public def registerZafiraCredentials(){
 		context.stage("Register Zafira Credentials") {
-			Organization.registerZafiraCredentials(this.folderName, this.zafiraServiceURL, this.zafiraRefreshToken)
+			Organization.registerZafiraCredentials(this.folderName, this.zafiraServiceURL, this.zafiraAccessToken)
 		}
 	}
 	
-	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraRefreshToken){
+	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraAccessToken){
 		def zafiraURLCredentials = "zafira_service_url"
 		def zafiraTokenCredentials = "zafira_access_token"
 		
@@ -320,12 +320,12 @@ class Organization {
 			throw new RuntimeException("Unable to register Zafira credentials! Required field zafiraServiceURL is missing!")
 		}
 		
-		if ( isParamEmpty(zafiraRefreshToken)){
-			throw new RuntimeException("Unable to register Zafira credentials! Required field zafiraRefreshToken is missing!")
+		if ( isParamEmpty(zafiraAccessToken)){
+			throw new RuntimeException("Unable to register Zafira credentials! Required field zafiraAccessToken is missing!")
 		}
 
 		updateJenkinsCredentials(zafiraURLCredentials, "Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
-		updateJenkinsCredentials(zafiraTokenCredentials, "Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraRefreshToken)
+		updateJenkinsCredentials(zafiraTokenCredentials, "Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraAccessToken)
 	}
 
 }
