@@ -253,15 +253,16 @@ public class Configuration {
 
     @NonCPS
     private static void putParamCaseInsensitive(parameterName, parameterValue) {
+		del += "param: ${parameterName}; existing value: ${vars.get(parameterName)}"
         if (vars.get(parameterName)) {
             vars.put(parameterName, parameterValue)
-			del += "varName: ${parameterName}; varValue: ${parameterValue}\n"
+			//del += "varName: ${parameterName}; varValue: ${parameterValue}\n"
         } else if (vars.get(parameterName.toUpperCase())) {
             vars.put(parameterName.toUpperCase(), parameterValue)
-			del += "varName: ${parameterName}; varValue: ${parameterValue}\n"
+			//del += "varName: ${parameterName}; varValue: ${parameterValue}\n"
         } else {
             params.put(parameterName, parameterValue)
-			del += "paramName: ${parameterName}; paramValue: ${parameterValue}\n"
+			//del += "paramName: ${parameterName}; paramValue: ${parameterValue}\n"
         }
     }
 
