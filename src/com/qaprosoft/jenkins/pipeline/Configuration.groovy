@@ -12,22 +12,22 @@ public class Configuration {
     public final static def CREDS_ZAFIRA_ACCESS_TOKEN = "zafira_access_token"
     public final static def CREDS_TESTRAIL_SERVICE_URL = "testrail_service_url"
     public final static def CREDS_TESTRAIL = "testrail_creds"
-	public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
-	public final static def CREDS_QTEST_ACCESS_TOKEN = "qtest_token"
+    public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
+    public final static def CREDS_QTEST_ACCESS_TOKEN = "qtest_token"
 
     public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
     public final static def QTEST_UPDATER_JOBNAME = "qtest-updater"
     
     private static final String CAPABILITIES = "capabilities"
-	
+
     //list of CI job params as a map
     protected static Map params = [:]
     //list of required goals vars which must present in command line obligatory
     protected static Map vars = [:]
 
-	
-	// example of the logging for static @NonCPS calls
-	//private static String del = ""
+
+    // example of the logging for static @NonCPS calls
+    //private static String del = ""
 
     public Configuration(context) {
         this.context = context
