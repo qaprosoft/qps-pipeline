@@ -70,8 +70,7 @@ public class QARunner extends AbstractRunner {
         super(context)
         scmClient = new GitHub(context)
         scmSshClient = new SshGitHub(context)
-		
-        testRailUpdater = new TestRailUpdater(context)
+
         qTestUpdater = new QTestUpdater(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         currentBuild = context.currentBuild
@@ -89,6 +88,9 @@ public class QARunner extends AbstractRunner {
         // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
         setZafiraCreds()
         setSeleniumUrl()
+		
+		//TODO: temporary execute to debug results. remove later as it is added into the sendTestRailResults public method  
+		setTestRailCreds()
 
         if (!isParamEmpty(Configuration.get("scmURL"))){
             scmClient.setUrl(Configuration.get("scmURL"))
@@ -163,6 +165,7 @@ public class QARunner extends AbstractRunner {
 	public void sendTestRailResults() {
 		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
 		setZafiraCreds()
+		setTestRailCreds()
 		
 		testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
 	}
@@ -835,7 +838,7 @@ public class QARunner extends AbstractRunner {
 	}
 
 	//TODO: #690 try to move this logic to QARunner constructor so any component could use zafira integration as earlier
-	public void setZafiraCreds() {
+	protected void setZafiraCreds() {
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def zafiraServiceUrl = "zafira_service_url"
 		
@@ -864,6 +867,39 @@ public class QARunner extends AbstractRunner {
 		
 		// obligatory init zafiraUpdater after getting valid url and token
 		zafiraUpdater = new ZafiraUpdater(context)		
+	}
+	
+	protected void setTestRailCreds() {
+		// update testRail integration items from credentials
+		def testRailUrl = "testrail_service_url"
+		
+		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		
+		if (!isParamEmpty(orgFolderName)) {
+			testRailUrl = "${orgFolderName}-testrail_service_url"
+		}
+		if (getCredentials(testRailUrl)){
+			context.withCredentials([context.usernamePassword(credentialsId:testRailUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, context.env.VALUE)
+				logger.info("${TestRail url}:" + context.env.VALUE)
+			}
+		}
+		
+		def testRailCreds = "testrail_creds"
+		if (!isParamEmpty(orgFolderName)) {
+			testRailCreds = "${orgFolderName}-testrail_creds"
+		}
+		if (getCredentials(testRailCreds)){
+			context.withCredentials([context.usernamePassword(credentialsId:testRailCreds, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+				Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, context.env.USERNAME)
+				Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, context.env.PASSWORD)
+				logger.info("${TestRail username}:" + context.env.USERNAME)
+				logger.info("${TestRail password}:" + context.env.PASSWORD)
+			}
+		}
+		
+		// obligatory init testrailUpdater after getting valid url and token
+		testRailUpdater = new TestRailUpdater(context)
 	}
 
     protected String getMavenGoals() {
