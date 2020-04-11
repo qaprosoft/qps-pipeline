@@ -114,7 +114,6 @@ public class QARunner extends AbstractRunner {
 
                 try {
                     prepare()
-                    zafiraUpdater.getZafiraCredentials()
                     if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                         logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
                         return
@@ -550,8 +549,6 @@ public class QARunner extends AbstractRunner {
 
     protected void runJob() {
         logger.info("QARunner->runJob")
-        //updates zafira credentials with values from Jenkins Credentials (if present)
-        zafiraUpdater.getZafiraCredentials()
         uuid = getUUID()
         logger.info("UUID: " + uuid)
         def testRun
@@ -839,7 +836,6 @@ public class QARunner extends AbstractRunner {
 		}
 	}
 
-	//TODO: #690 try to move this logic to QARunner constructor so any component could use zafira integration as earlier
 	protected void setZafiraCreds() {
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def zafiraServiceUrl = "zafira_service_url"
@@ -847,24 +843,24 @@ public class QARunner extends AbstractRunner {
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
 		
 		if (!isParamEmpty(orgFolderName)) {
-			zafiraServiceUrl = "${orgFolderName}-zafira_service_url"
+			zafiraServiceUrl = "${orgFolderName}" + "-" + zafiraServiceUrl
 		}
 		if (getCredentials(zafiraServiceUrl)){
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
-				logger.debug("${zafiraServiceUrl}:" + context.env.VALUE)
 			}
+			logger.debug("${zafiraServiceUrl}:" + Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL))
 		}
 		
 		def zafiraAccessToken = "zafira_access_token"
 		if (!isParamEmpty(orgFolderName)) {
-			zafiraAccessToken = "${orgFolderName}-zafira_access_token"
+			zafiraAccessToken = "${orgFolderName}" + "-" + zafiraAccessToken
 		}
 		if (getCredentials(zafiraAccessToken)){
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
-				logger.debug("${zafiraAccessToken}:" + context.env.VALUE)
 			}
+			logger.debug("${zafiraAccessToken}:" + Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
 		}
 		
 		// obligatory init zafiraUpdater after getting valid url and token
@@ -883,7 +879,7 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:testRailUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, context.env.VALUE)
 			}
-			logger.info("TestRail url:" + Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL))
+			logger.debug("TestRail url:" + Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL))
 		}
 		
 		def testRailCreds = Configuration.TESTRAIL_CREDS
@@ -895,8 +891,8 @@ public class QARunner extends AbstractRunner {
 				Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, context.env.USERNAME)
 				Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, context.env.PASSWORD)
 			}
-			logger.info("TestRail username:" + Configuration.get(Configuration.Parameter.TESTRAIL_USERNAME))
-			logger.info("TestRail password:" + Configuration.get(Configuration.Parameter.TESTRAIL_PASSWORD))
+			logger.debug("TestRail username:" + Configuration.get(Configuration.Parameter.TESTRAIL_USERNAME))
+			logger.debug("TestRail password:" + Configuration.get(Configuration.Parameter.TESTRAIL_PASSWORD))
 		}
 		
 	
@@ -1184,7 +1180,6 @@ public class QARunner extends AbstractRunner {
 
     protected void runCron() {
         logger.info("QARunner->runCron")
-        zafiraUpdater.getZafiraCredentials()
         context.node("master") {
             scmClient.clone()
             listPipelines = []
@@ -1581,7 +1576,7 @@ public class QARunner extends AbstractRunner {
     public void rerunJobs(){
         context.stage('Rerun Tests'){
             //updates zafira credentials with values from Jenkins Credentials (if present)
-            zafiraUpdater.getZafiraCredentials()
+			setZafiraCreds()
             zafiraUpdater.smartRerun()
         }
     }
