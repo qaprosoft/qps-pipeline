@@ -871,12 +871,11 @@ public class QARunner extends AbstractRunner {
 	
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
-		def testRailUrl = "testrail_service_url"
+		def testRailUrl = Configuration.TESTRAIL_SERVICE_URL
 		
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
-		
 		if (!isParamEmpty(orgFolderName)) {
-			testRailUrl = "${orgFolderName}-testrail_service_url"
+			testRailUrl = "${orgFolderName}" + "-" + testRailUrl
 		}
 		if (getCredentials(testRailUrl)){
 			context.withCredentials([context.usernamePassword(credentialsId:testRailUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
@@ -885,9 +884,9 @@ public class QARunner extends AbstractRunner {
 			}
 		}
 		
-		def testRailCreds = "testrail_creds"
+		def testRailCreds = Configuration.TESTRAIL_CREDS
 		if (!isParamEmpty(orgFolderName)) {
-			testRailCreds = "${orgFolderName}-testrail_creds"
+			testRailCreds = "${orgFolderName}" + "-" + testRailCreds
 		}
 		if (getCredentials(testRailCreds)){
 			context.withCredentials([context.usernamePassword(credentialsId:testRailCreds, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {

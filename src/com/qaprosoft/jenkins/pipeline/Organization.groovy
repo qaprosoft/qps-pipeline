@@ -341,8 +341,8 @@ class Organization {
 	}
 	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
-		def testrailURLCredentials = "testrail_url"
-		def testrailUserCredentials = "testrail_creds"
+		def testrailURLCredentials = Configuration.TESTRAIL_SERVICE_URL
+		def testrailUserCredentials = Configuration.TESTRAIL_CREDS
 		
 		if (!isParamEmpty(orgFolderName)) {
 			testrailURLCredentials = orgFolderName + "-" + testrailURLCredentials
