@@ -286,7 +286,7 @@ class Organization {
 	
 	protected def registerHubCredentials(orgFolderName, provider, url) {
 		if (isParamEmpty(url)){
-			throw new RuntimeException("Required 'Url' field is missing!")
+			throw new RuntimeException("Required 'url' field is missing!")
 		}
 		def hubURLCredName = "${provider}_hub"
 		if (!isParamEmpty(orgFolderName)) {
