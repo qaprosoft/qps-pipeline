@@ -880,8 +880,8 @@ public class QARunner extends AbstractRunner {
 		if (getCredentials(testRailUrl)){
 			context.withCredentials([context.usernamePassword(credentialsId:testRailUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, context.env.VALUE)
-				logger.info("TestRail url:" + context.env.VALUE)
 			}
+			logger.info("TestRail url:" + Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL))
 		}
 		
 		def testRailCreds = Configuration.TESTRAIL_CREDS
@@ -892,12 +892,12 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:testRailCreds, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
 				Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, context.env.USERNAME)
 				Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, context.env.PASSWORD)
-				logger.info("TestRail username:" + context.env.USERNAME)
-				logger.info("TestRail password:" + context.env.PASSWORD)
 			}
-		}
+			logger.info("TestRail username:" + Configuration.get(Configuration.Parameter.TESTRAIL_USERNAME))
+			logger.info("TestRail password:" + Configuration.get(Configuration.Parameter.TESTRAIL_PASSWORD))
 		
-		// obligatory init testrailUpdater after getting valid url and token
+	
+		// obligatory init testrailUpdater after getting valid url and creds reading
 		testRailUpdater = new TestRailUpdater(context)
 	}
 
