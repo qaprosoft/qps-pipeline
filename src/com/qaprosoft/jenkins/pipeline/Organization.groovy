@@ -267,9 +267,6 @@ class Organization {
 		logger.debug("QPS_HOST: " + Configuration.get(Configuration.Parameter.QPS_HOST))
 		logger.debug("selenium: " + "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
 		registerHubCredentials(this.folderName, "selenium", "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
-		//TODO: remove mcloud registration in released version
-		logger.debug("mcloud: " + "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
-		registerHubCredentials(this.folderName, "mcloud", "http://demo:demo@\${QPS_HOST}/mcloud/wd/hub")
 
 		if (!isParamEmpty(this.zafiraServiceURL) && !isParamEmpty(this.zafiraAccessToken)) {
 			registerZafiraCredentials(this.folderName, this.zafiraServiceURL, this.zafiraAccessToken)
