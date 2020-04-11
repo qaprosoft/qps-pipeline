@@ -71,7 +71,6 @@ public class QARunner extends AbstractRunner {
         scmClient = new GitHub(context)
         scmSshClient = new SshGitHub(context)
 
-        qTestUpdater = new QTestUpdater(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         currentBuild = context.currentBuild
     }
@@ -157,6 +156,7 @@ public class QARunner extends AbstractRunner {
 	public void sendQTestResults() {
 		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
 		setZafiraCreds()
+		setQTestCreds()
 
 		def ci_run_id = Configuration.get("ci_run_id")
 		Configuration.set("qtest_enabled", "true")
@@ -816,7 +816,6 @@ public class QARunner extends AbstractRunner {
 	protected void setSeleniumUrl() {
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
-		//TODO: improve orgFolderName detection and fix it for empty orgName structure
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
 		logger.info("orgFolderName: ${orgFolderName}")
 		
@@ -839,9 +838,7 @@ public class QARunner extends AbstractRunner {
 	protected void setZafiraCreds() {
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def zafiraServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
-		
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
-		
 		if (!isParamEmpty(orgFolderName)) {
 			zafiraServiceUrl = "${orgFolderName}" + "-" + zafiraServiceUrl
 		}
@@ -870,7 +867,6 @@ public class QARunner extends AbstractRunner {
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
 		def testRailUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
-		
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
 		if (!isParamEmpty(orgFolderName)) {
 			testRailUrl = "${orgFolderName}" + "-" + testRailUrl
@@ -895,9 +891,37 @@ public class QARunner extends AbstractRunner {
 			logger.debug("TestRail password:" + Configuration.get(Configuration.Parameter.TESTRAIL_PASSWORD))
 		}
 		
-	
 		// obligatory init testrailUpdater after getting valid url and creds reading
 		testRailUpdater = new TestRailUpdater(context)
+	}
+	
+	protected void setQTestCreds() {
+		// update QTest serviceUrl and accessToken parameter based on values from credentials
+		def qtestServiceUrl = Configuration.CREDS_QTEST_SERVICE_URL
+		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		if (!isParamEmpty(orgFolderName)) {
+			qtestServiceUrl = "${orgFolderName}" + "-" + qtestServiceUrl
+		}
+		if (getCredentials(qtestServiceUrl)){
+			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.QTEST_SERVICE_URL, context.env.VALUE)
+			}
+			logger.info("${qtestServiceUrl}:" + Configuration.get(Configuration.Parameter.QTEST_SERVICE_URL))
+		}
+		
+		def qtestAccessToken = Configuration.CREDS_QTEST_ACCESS_TOKEN
+		if (!isParamEmpty(orgFolderName)) {
+			qtestAccessToken = "${orgFolderName}" + "-" + qtestAccessToken
+		}
+		if (getCredentials(qtestAccessToken)){
+			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.QTEST_ACCESS_TOKEN, context.env.VALUE)
+			}
+			logger.debug("${qtestAccessToken}:" + Configuration.get(Configuration.Parameter.QTEST_ACCESS_TOKEN))
+		}
+		
+		// obligatory init qtestUpdater after getting valid url and token
+		qTestUpdater = new QTestUpdater(context)
 	}
 
     protected String getMavenGoals() {
@@ -978,6 +1002,7 @@ public class QARunner extends AbstractRunner {
                 "TESTRAIL_ENABLE",
                 "testrail_enabled",
                 "QTEST_SERVICE_URL",
+                "QTEST_ACCESS_TOKEN",
                 "qtest_enabled",
                 "job_type",
                 "repo",

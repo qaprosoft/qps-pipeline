@@ -5,6 +5,10 @@ import groovy.json.JsonBuilder
 import static com.qaprosoft.jenkins.Utils.*
 import com.qaprosoft.jenkins.pipeline.Configuration
 
+/*
+ * Prerequisites: valid ZAFIRA_SERVICE_URL and ZAFIRA_ACCESS_TOKEN already defined in Configuration
+ */
+
 class ZafiraClient extends HttpClient {
 
     private String serviceURL

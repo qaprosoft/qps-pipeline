@@ -361,9 +361,42 @@ class Organization {
 			throw new RuntimeException("Unable to register TestRail credentials! Required field 'password' is missing!")
 		}
 
-		updateJenkinsCredentials(testrailURLCredentials, "TestRail URL", Configuration.Parameter.TESTRAIL_SERVICE_URL.getKey(), url)
+		updateJenkinsCredentials(testrailURLCredentials, "TestRail Service API URL", Configuration.Parameter.TESTRAIL_SERVICE_URL.getKey(), url)
 		updateJenkinsCredentials(testrailUserCredentials, "TestRaul User credentials", username, password)
 		
+	}
+	
+	public def registerQTestCredentials() {
+		context.stage("Register QTest Credentials") {
+			def orgFolderName = Configuration.get("folderName")
+			
+			// Example: https://<CHANGE_ME>/api/v3/
+			def url = Configuration.get("url")
+			def token = Configuration.get("token")
+	
+			registerQTestCredentials(orgFolderName, url, token)
+		}
+	}
+	
+	protected def registerQTestCredentials(orgFolderName, url, token) {
+		def qtestURLCredentials = Configuration.CREDS_QTEST_SERVICE_URL
+		def qtestTokenCredentials = Configuration.CREDS_QTEST_ACCESS_TOKEN
+		
+		if (!isParamEmpty(orgFolderName)) {
+			qtestURLCredentials = orgFolderName + "-" + qtestURLCredentials
+			qtestTokenCredentials = orgFolderName + "-" + qtestTokenCredentials
+		}
+
+		if (isParamEmpty(url)){
+			throw new RuntimeException("Unable to register QTest credentials! Required field 'url' is missing!")
+		}
+		
+		if (isParamEmpty(token)){
+			throw new RuntimeException("Unable to register QTest credentials! Required field 'token' is missing!")
+		}
+		
+		updateJenkinsCredentials(qtestURLCredentials, "QTest Service API URL", Configuration.Parameter.QTEST_SERVICE_URL.getKey(), url)
+		updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
 	}
 
 }

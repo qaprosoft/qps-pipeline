@@ -6,6 +6,10 @@ import static com.qaprosoft.jenkins.Utils.*
 import groovy.json.JsonBuilder
 import com.qaprosoft.jenkins.pipeline.Configuration
 
+/*
+ * Prerequisites: valid TESTRAIL_SERVICE_URL, TESTRAIL_USERNAME and TESTRAIL_PASSWORD already defined in Configuration
+ */
+
 class TestRailClient extends HttpClient{
 
     private String serviceURL
