@@ -5,7 +5,7 @@ import com.qaprosoft.jenkins.Logger
 public class Configuration {
 
     private def context
-    private String del
+    private static String del
 
     private final static def mustOverride = "{must_override}"
 
