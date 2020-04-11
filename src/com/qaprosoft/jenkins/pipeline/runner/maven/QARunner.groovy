@@ -70,7 +70,7 @@ public class QARunner extends AbstractRunner {
         super(context)
         scmClient = new GitHub(context)
         scmSshClient = new SshGitHub(context)
-        zafiraUpdater = new ZafiraUpdater(context)
+		
         testRailUpdater = new TestRailUpdater(context)
         qTestUpdater = new QTestUpdater(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
@@ -85,7 +85,8 @@ public class QARunner extends AbstractRunner {
     //Methods
     public void build() {
         logger.info("QARunner->build")
-        // set all required integration at the beginning of build operation to use actual value and be able to oveeride anytime later
+
+        // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
         setZafiraCreds()
         setSeleniumUrl()
 
@@ -149,6 +150,22 @@ public class QARunner extends AbstractRunner {
             //            }
         }
     }
+	
+	public void sendQTestResults() {
+		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
+		setZafiraCreds()
+
+		def ci_run_id = Configuration.get("ci_run_id")
+		Configuration.set("qtest_enabled", "true")
+		qTestUpdater.updateTestRun(ci_run_id)
+	}
+
+	public void sendTestRailResults() {
+		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
+		setZafiraCreds()
+		
+		testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
+	}
 
     protected void compile() {
         compile("pom.xml")
@@ -641,16 +658,6 @@ public class QARunner extends AbstractRunner {
         return baseJobName
     }
 
-    public void sendQTestResults() {
-        def ci_run_id = Configuration.get("ci_run_id")
-        Configuration.set("qtest_enabled", "true")
-        qTestUpdater.updateTestRun(ci_run_id)
-    }
-
-    public void sendTestRailResults() {
-        testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
-    }
-
     // to be able to organize custom notifications on private pipeline layer
     protected void customNotify() {
         // do nothing
@@ -855,6 +862,8 @@ public class QARunner extends AbstractRunner {
 			}
 		}
 		
+		// obligatory init zafiraUpdater after getting valid url and token
+		zafiraUpdater = new ZafiraUpdater(context)		
 	}
 
     protected String getMavenGoals() {
