@@ -76,7 +76,7 @@ public class QARunner extends AbstractRunner {
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         currentBuild = context.currentBuild
         
-        logger.info("QARunner->jobName: " + Configuration.get(Configuration.Parameter.JOB_NAME))
+		context.println("QARunner->jobName: " + Configuration.get(Configuration.Parameter.JOB_NAME))
     }
 
     public QARunner(context, jobType) {
