@@ -5,7 +5,7 @@ import com.qaprosoft.jenkins.Logger
 public class Configuration {
 
     private def context
-    private static String del
+    private static String del = ""
 
     private final static def mustOverride = "{must_override}"
 
@@ -255,12 +255,14 @@ public class Configuration {
     private static void putParamCaseInsensitive(parameterName, parameterValue) {
         if (vars.get(parameterName)) {
             vars.put(parameterName, parameterValue)
+			del += "varName: ${parameterName}; varValue: ${parameterValue}\n"
         } else if (vars.get(parameterName.toUpperCase())) {
             vars.put(parameterName.toUpperCase(), parameterValue)
+			del += "varName: ${parameterName}; varValue: ${parameterValue}\n"
         } else {
             params.put(parameterName, parameterValue)
+			del += "paramName: ${parameterName}; paramValue: ${parameterValue}\n"
         }
-		del += "parameterName: ${parameterName}; parameterValue: ${parameterValue}\n"
     }
 
     @NonCPS
