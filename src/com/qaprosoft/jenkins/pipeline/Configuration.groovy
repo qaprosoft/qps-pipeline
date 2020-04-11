@@ -202,6 +202,7 @@ public class Configuration {
             }
         }
 
+        context.println("VARS:")
         for (var in vars) {
             if (var.getKey() in securedParameters) {
                 context.println(var.getKey() + ": ********")
@@ -210,12 +211,7 @@ public class Configuration {
             }
         }
 
-		context.println("VARS:")
-		for (var in vars) {
-			context.println(var)
-		}
-
-		context.println("PARAMS:")
+        context.println("PARAMS:")
         for (param in params) {
             context.println(param)
         }
