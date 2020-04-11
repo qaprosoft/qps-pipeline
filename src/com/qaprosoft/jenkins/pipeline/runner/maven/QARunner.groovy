@@ -90,6 +90,7 @@ public class QARunner extends AbstractRunner {
 		
 		//TODO: temporary execute to debug results. remove later as it is added into the sendTestRailResults public method  
 		setTestRailCreds()
+		setQTestCreds()
 
         if (!isParamEmpty(Configuration.get("scmURL"))){
             scmClient.setUrl(Configuration.get("scmURL"))
