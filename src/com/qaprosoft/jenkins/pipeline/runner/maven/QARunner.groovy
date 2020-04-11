@@ -904,7 +904,7 @@ public class QARunner extends AbstractRunner {
 			qtestServiceUrl = "${orgFolderName}" + "-" + qtestServiceUrl
 		}
 		if (getCredentials(qtestServiceUrl)){
-			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+			context.withCredentials([context.usernamePassword(credentialsId:qtestServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.QTEST_SERVICE_URL, context.env.VALUE)
 			}
 			logger.info("${qtestServiceUrl}:" + Configuration.get(Configuration.Parameter.QTEST_SERVICE_URL))
@@ -915,10 +915,10 @@ public class QARunner extends AbstractRunner {
 			qtestAccessToken = "${orgFolderName}" + "-" + qtestAccessToken
 		}
 		if (getCredentials(qtestAccessToken)){
-			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+			context.withCredentials([context.usernamePassword(credentialsId:qtestAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.QTEST_ACCESS_TOKEN, context.env.VALUE)
 			}
-			logger.debug("${qtestAccessToken}:" + Configuration.get(Configuration.Parameter.QTEST_ACCESS_TOKEN))
+			logger.info("${qtestAccessToken}:" + Configuration.get(Configuration.Parameter.QTEST_ACCESS_TOKEN))
 		}
 		
 		// obligatory init qtestUpdater after getting valid url and token
