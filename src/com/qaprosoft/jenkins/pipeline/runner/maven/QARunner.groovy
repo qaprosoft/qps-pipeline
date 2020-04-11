@@ -829,8 +829,8 @@ public class QARunner extends AbstractRunner {
 		if (getCredentials(hubUrl)){
 			context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
-				logger.debug("${hubUrl}:" + context.env.VALUE)
 			}
+			logger.debug("${hubUrl}:" + Configuration.get(Configuration.Parameter.SELENIUM_URL))
 		} else {
 			throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
 		}
@@ -838,7 +838,7 @@ public class QARunner extends AbstractRunner {
 
 	protected void setZafiraCreds() {
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		def zafiraServiceUrl = "zafira_service_url"
+		def zafiraServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
 		
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
 		
@@ -852,7 +852,7 @@ public class QARunner extends AbstractRunner {
 			logger.debug("${zafiraServiceUrl}:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
 		}
 		
-		def zafiraAccessToken = "zafira_access_token"
+		def zafiraAccessToken = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
 		if (!isParamEmpty(orgFolderName)) {
 			zafiraAccessToken = "${orgFolderName}" + "-" + zafiraAccessToken
 		}
@@ -869,7 +869,7 @@ public class QARunner extends AbstractRunner {
 	
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
-		def testRailUrl = Configuration.TESTRAIL_SERVICE_URL
+		def testRailUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
 		
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
 		if (!isParamEmpty(orgFolderName)) {
@@ -882,7 +882,7 @@ public class QARunner extends AbstractRunner {
 			logger.debug("TestRail url:" + Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL))
 		}
 		
-		def testRailCreds = Configuration.TESTRAIL_CREDS
+		def testRailCreds = Configuration.CREDS_TESTRAIL
 		if (!isParamEmpty(orgFolderName)) {
 			testRailCreds = "${orgFolderName}" + "-" + testRailCreds
 		}

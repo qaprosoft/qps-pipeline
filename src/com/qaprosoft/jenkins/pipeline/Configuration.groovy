@@ -7,10 +7,13 @@ public class Configuration {
     private def context
 
     private final static def mustOverride = "{must_override}"
-    public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
-    public final static def TESTRAIL_SERVICE_URL = "testrail_service_url"
-    public final static def TESTRAIL_CREDS = "testrail_creds"
 
+    public final static def CREDS_ZAFIRA_SERVICE_URL = "zafira_service_url"
+    public final static def CREDS_ZAFIRA_ACCESS_TOKEN = "zafira_access_token"
+    public final static def CREDS_TESTRAIL_SERVICE_URL = "testrail_service_url"
+    public final static def CREDS_TESTRAIL = "testrail_creds"
+
+    public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
     public final static def QTEST_UPDATER_JOBNAME = "qtest-updater"
     
     private static final String CAPABILITIES = "capabilities"

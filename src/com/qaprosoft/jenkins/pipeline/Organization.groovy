@@ -305,10 +305,10 @@ class Organization {
 	}
 	
 	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraAccessToken){
-		def zafiraURLCredentials = "zafira_service_url"
-		def zafiraTokenCredentials = "zafira_access_token"
+		def zafiraURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
+		def zafiraTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
 		
-        if (!isParamEmpty(orgFolderName)) {
+		if (!isParamEmpty(orgFolderName)) {
 			zafiraURLCredentials = orgFolderName + "-" + zafiraURLCredentials
 			zafiraTokenCredentials = orgFolderName + "-" + zafiraTokenCredentials
 		}
@@ -341,8 +341,8 @@ class Organization {
 	}
 	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
-		def testrailURLCredentials = Configuration.TESTRAIL_SERVICE_URL
-		def testrailUserCredentials = Configuration.TESTRAIL_CREDS
+		def testrailURLCredentials = Configuration.CREDS_TESTRAIL_SERVICE_URL
+		def testrailUserCredentials = Configuration.CREDS_TESTRAIL
 		
 		if (!isParamEmpty(orgFolderName)) {
 			testrailURLCredentials = orgFolderName + "-" + testrailURLCredentials
