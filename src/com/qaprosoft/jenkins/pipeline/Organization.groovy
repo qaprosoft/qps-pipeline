@@ -277,27 +277,27 @@ class Organization {
 	}
 	
 	public def registerHubCredentials() {
-		def orgFolderName = Configuration.get("folderName")
-		def provider = Configuration.get("Provider")
-		// Example: http://demo.qaprosoft.com/ggr/wd/hub
-		def url = Configuration.get("Url")
-		
-		registerHubCredentials(orgFolderName, provider, url)
+		context.stage("Register Hub Credentials") {
+			def orgFolderName = Configuration.get("folderName")
+			def provider = Configuration.get("Provider")
+			// Example: http://demo.qaprosoft.com/ggr/wd/hub
+			def url = Configuration.get("Url")
+			
+			registerHubCredentials(orgFolderName, provider, url)
+		}
 	}
 	
 	protected def registerHubCredentials(orgFolderName, provider, url) {
-		context.stage("Register Hub Credentials") {
-			if (isParamEmpty(url)){
-				throw new RuntimeException("Required URL field is missing!")
-			}
-			def hubURLCredName = "${provider}_hub"
-			if (!isParamEmpty(orgFolderName)) {
-				hubURLCredName = "${orgFolderName}-${provider}_hub"
-			}
-			
-			if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", url)) {
-				logger.info("${hubURLCredName} was successfully registered.")
-			}
+		if (isParamEmpty(url)){
+			throw new RuntimeException("Required 'Url' field is missing!")
+		}
+		def hubURLCredName = "${provider}_hub"
+		if (!isParamEmpty(orgFolderName)) {
+			hubURLCredName = "${orgFolderName}" + "-" + hubURLCredName
+		}
+		
+		if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", url)) {
+			logger.info("${hubURLCredName} was successfully registered.")
 		}
 	}
 	
@@ -312,20 +312,61 @@ class Organization {
 		def zafiraTokenCredentials = "zafira_access_token"
 		
         if (!isParamEmpty(orgFolderName)) {
-			zafiraURLCredentials = orgFolderName + "-zafira_service_url"
-			zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
+			zafiraURLCredentials = orgFolderName + "-" + zafiraURLCredentials
+			zafiraTokenCredentials = orgFolderName + "-" + zafiraTokenCredentials
 		}
 
 		if (isParamEmpty(zafiraServiceURL)){
-			throw new RuntimeException("Unable to register Zafira credentials! Required field zafiraServiceURL is missing!")
+			throw new RuntimeException("Unable to register Zafira credentials! Required field 'zafiraServiceURL' is missing!")
 		}
 		
 		if ( isParamEmpty(zafiraAccessToken)){
-			throw new RuntimeException("Unable to register Zafira credentials! Required field zafiraAccessToken is missing!")
+			throw new RuntimeException("Unable to register Zafira credentials! Required field 'zafiraAccessToken' is missing!")
 		}
 
 		updateJenkinsCredentials(zafiraURLCredentials, "Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
 		updateJenkinsCredentials(zafiraTokenCredentials, "Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraAccessToken)
+	}
+	
+	
+	public def registerTestRailCredentials() {
+		context.stage("Register TestRail Credentials") {
+			def orgFolderName = Configuration.get("folderName")
+			
+			// Example: https://mytenant.testrail.com?/api/v2/
+			def url = Configuration.get("url")		
+			def username = Configuration.get("username")
+			def password = Configuration.get("password")
+	
+			
+			registerTestRailCredentials(orgFolderName, url, username, password)
+		}
+	}
+	
+	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
+		def testrailURLCredentials = "testrail_url"
+		def testrailUserCredentials = "testrail_creds"
+		
+		if (!isParamEmpty(orgFolderName)) {
+			testrailURLCredentials = orgFolderName + "-" + testrailURLCredentials
+			testrailUserCredentials = orgFolderName + "-" + testrailUserCredentials
+		}
+
+		if (isParamEmpty(url)){
+			throw new RuntimeException("Unable to register TestRail credentials! Required field 'url' is missing!")
+		}
+		
+		if (isParamEmpty(username)){
+			throw new RuntimeException("Unable to register TestRail credentials! Required field 'username' is missing!")
+		}
+		
+		if (isParamEmpty(username)){
+			throw new password("Unable to register TestRail credentials! Required field 'password' is missing!")
+		}
+
+		updateJenkinsCredentials(testrailURLCredentials, "TestRail URL", Configuration.Parameter.TESTRAIL_SERVICE_URL.getKey(), url)
+		updateJenkinsCredentials(testrailUserCredentials, "TestRaul User credentials", username, password)
+		
 	}
 
 }
