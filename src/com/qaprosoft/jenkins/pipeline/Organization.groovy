@@ -276,9 +276,9 @@ class Organization {
 	public def registerHubCredentials() {
 		context.stage("Register Hub Credentials") {
 			def orgFolderName = Configuration.get("folderName")
-			def provider = Configuration.get("Provider")
+			def provider = Configuration.get("provider")
 			// Example: http://demo.qaprosoft.com/ggr/wd/hub
-			def url = Configuration.get("Url")
+			def url = Configuration.get("url")
 			
 			registerHubCredentials(orgFolderName, provider, url)
 		}
