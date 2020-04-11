@@ -6,17 +6,28 @@ public class Configuration {
 
     private def context
 
-    private final static def mustOverride = "{must_override}"
+    public final static def mustOverride = "{must_override}"
+
+    public final static def CREDS_ZAFIRA_SERVICE_URL = "zafira_service_url"
+    public final static def CREDS_ZAFIRA_ACCESS_TOKEN = "zafira_access_token"
+    public final static def CREDS_TESTRAIL_SERVICE_URL = "testrail_service_url"
+    public final static def CREDS_TESTRAIL = "testrail_creds"
+    public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
+    public final static def CREDS_QTEST_ACCESS_TOKEN = "qtest_token"
+
     public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
     public final static def QTEST_UPDATER_JOBNAME = "qtest-updater"
     
     private static final String CAPABILITIES = "capabilities"
-	
+
     //list of CI job params as a map
     protected static Map params = [:]
     //list of required goals vars which must present in command line obligatory
     protected static Map vars = [:]
 
+
+    // example of the logging for static @NonCPS calls
+    //private static String del = ""
 
     public Configuration(context) {
         this.context = context
@@ -57,10 +68,8 @@ public class Configuration {
 
         QPS_HOST("QPS_HOST", "demo.qaprosoft.com"),
 
-        SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
-        SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}"),
-        SELENIUM_PORT("SELENIUM_PORT", "4444"),
-        SELENIUM_URL("SELENIUM_URL", "\${SELENIUM_PROTOCOL}://demo:demo@\${SELENIUM_HOST}:\${SELENIUM_PORT}/wd/hub"),
+		//TODO: make it secured as it might has creds
+        SELENIUM_URL("SELENIUM_URL", mustOverride),
         HUB_MODE("hub_mode", "selenium"),
 
         ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", "", true),
@@ -99,9 +108,12 @@ public class Configuration {
 
         //Make sure that URLs have trailing slash
         TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", ""), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
+        TESTRAIL_USERNAME("TESTRAIL_USERNAME", ""),
+        TESTRAIL_PASSWORD("TESTRAIL_PASSWORD", "", true),
         TESTRAIL_ENABLE("testrail_enabled", "false"),
 
         QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
+        QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true),
         QTEST_ENABLE("qtest_enabled", "false"),
 
         private final String key
@@ -194,20 +206,16 @@ public class Configuration {
             }
         }
 
+        context.println("VARS:")
         for (var in vars) {
             if (var.getKey() in securedParameters) {
-                context.println(var.getKey() + ": ********")
+                context.println(var.getKey() + "=********")
             } else {
                 context.println(var)
             }
         }
 
-		context.println("VARS:")
-		for (var in vars) {
-			context.println(var)
-		}
-
-		context.println("PARAMS:")
+        context.println("PARAMS:")
         for (param in params) {
             context.println(param)
         }
@@ -248,10 +256,13 @@ public class Configuration {
     private static void putParamCaseInsensitive(parameterName, parameterValue) {
         if (vars.get(parameterName)) {
             vars.put(parameterName, parameterValue)
+			//del += "varName: ${parameterName}; varValue: ${parameterValue}\n"
         } else if (vars.get(parameterName.toUpperCase())) {
             vars.put(parameterName.toUpperCase(), parameterValue)
+			//del += "varName: ${parameterName}; varValue: ${parameterValue}\n"
         } else {
             params.put(parameterName, parameterValue)
+			//del += "paramName: ${parameterName}; paramValue: ${parameterValue}\n"
         }
     }
 

@@ -70,9 +70,7 @@ public class QARunner extends AbstractRunner {
         super(context)
         scmClient = new GitHub(context)
         scmSshClient = new SshGitHub(context)
-        zafiraUpdater = new ZafiraUpdater(context)
-        testRailUpdater = new TestRailUpdater(context)
-        qTestUpdater = new QTestUpdater(context)
+
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         currentBuild = context.currentBuild
     }
@@ -85,6 +83,11 @@ public class QARunner extends AbstractRunner {
     //Methods
     public void build() {
         logger.info("QARunner->build")
+
+        // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
+        setZafiraCreds()
+        setSeleniumUrl()
+		
         if (!isParamEmpty(Configuration.get("scmURL"))){
             scmClient.setUrl(Configuration.get("scmURL"))
         }
@@ -102,14 +105,15 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
 //            context.timestamps {
                 logger.info("QARunner->onPush")
+
+                setZafiraCreds()
+
                 try {
                     prepare()
-                    zafiraUpdater.getZafiraCredentials()
                     if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
                         logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
                         return
                     }
-                    //TODO: implement repository scan and QA jobs recreation
                     scan()
                     getJenkinsJobsScanResult(currentBuild.rawBuild)
                 } catch (Exception e) {
@@ -145,6 +149,24 @@ public class QARunner extends AbstractRunner {
             //            }
         }
     }
+	
+	public void sendQTestResults() {
+		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
+		setZafiraCreds()
+		setQTestCreds()
+
+		def ci_run_id = Configuration.get("ci_run_id")
+		Configuration.set("qtest_enabled", "true")
+		qTestUpdater.updateTestRun(ci_run_id)
+	}
+
+	public void sendTestRailResults() {
+		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
+		setZafiraCreds()
+		setTestRailCreds()
+		
+		testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
+	}
 
     protected void compile() {
         compile("pom.xml")
@@ -524,8 +546,6 @@ public class QARunner extends AbstractRunner {
 
     protected void runJob() {
         logger.info("QARunner->runJob")
-        //updates zafira credentials with values from Jenkins Credentials (if present)
-        zafiraUpdater.getZafiraCredentials()
         uuid = getUUID()
         logger.info("UUID: " + uuid)
         def testRun
@@ -635,16 +655,6 @@ public class QARunner extends AbstractRunner {
             baseJobName = fullJobNameArray[0] + "/" + baseJobName
         }
         return baseJobName
-    }
-
-    public void sendQTestResults() {
-        def ci_run_id = Configuration.get("ci_run_id")
-        Configuration.set("qtest_enabled", "true")
-        qTestUpdater.updateTestRun(ci_run_id)
-    }
-
-    public void sendTestRailResults() {
-        testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
     }
 
     // to be able to organize custom notifications on private pipeline layer
@@ -800,10 +810,16 @@ public class QARunner extends AbstractRunner {
         }
     }
 	
-	protected def updateSeleniumUrl() {
+	protected void setSeleniumUrl() {
+		def seleniumUrl = Configuration.get(Configuration.Parameter.SELENIUM_URL)
+		logger.info("seleniumUrl: ${seleniumUrl}")
+		if (!isParamEmpty(seleniumUrl) && !Configuration.mustOverride.equals(seleniumUrl)) {
+			// do not override from creds as looks like external service or user overrided this value
+			return
+		}
+			
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
-		//TODO: improve orgFolderName detection and fix it for empty orgName structure
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
 		logger.info("orgFolderName: ${orgFolderName}")
 		
@@ -816,62 +832,117 @@ public class QARunner extends AbstractRunner {
 		if (getCredentials(hubUrl)){
 			context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
-				logger.debug("${hubUrl}:" + context.env.VALUE)
 			}
+			logger.debug("${hubUrl}:" + Configuration.get(Configuration.Parameter.SELENIUM_URL))
 		} else {
 			throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
 		}
-		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
 	}
 
-	public def updateZafiraGoals() {
+	protected void setZafiraCreds() {
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		def zafiraServiceUrl = "zafira_service_url"
-		
+		def zafiraServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
-		
 		if (!isParamEmpty(orgFolderName)) {
-			zafiraServiceUrl = "${orgFolderName}-zafira_service_url"
+			zafiraServiceUrl = "${orgFolderName}" + "-" + zafiraServiceUrl
 		}
 		if (getCredentials(zafiraServiceUrl)){
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
-				logger.debug("${zafiraServiceUrl}:" + context.env.VALUE)
 			}
+			logger.debug("${zafiraServiceUrl}:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
 		}
 		
-		def zafiraAccessToken = "zafira_access_token"
+		def zafiraAccessToken = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
 		if (!isParamEmpty(orgFolderName)) {
-			zafiraAccessToken = "${orgFolderName}-zafira_access_token"
+			zafiraAccessToken = "${orgFolderName}" + "-" + zafiraAccessToken
 		}
 		if (getCredentials(zafiraAccessToken)){
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
-				logger.debug("${zafiraAccessToken}:" + context.env.VALUE)
 			}
+			logger.debug("${zafiraAccessToken}:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
 		}
 		
+		// obligatory init zafiraUpdater after getting valid url and token
+		zafiraUpdater = new ZafiraUpdater(context)		
+	}
+	
+	protected void setTestRailCreds() {
+		// update testRail integration items from credentials
+		def testRailUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
+		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		if (!isParamEmpty(orgFolderName)) {
+			testRailUrl = "${orgFolderName}" + "-" + testRailUrl
+		}
+		if (getCredentials(testRailUrl)){
+			context.withCredentials([context.usernamePassword(credentialsId:testRailUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, context.env.VALUE)
+			}
+			logger.debug("TestRail url:" + Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL))
+		}
+		
+		def testRailCreds = Configuration.CREDS_TESTRAIL
+		if (!isParamEmpty(orgFolderName)) {
+			testRailCreds = "${orgFolderName}" + "-" + testRailCreds
+		}
+		if (getCredentials(testRailCreds)) {
+			context.withCredentials([context.usernamePassword(credentialsId:testRailCreds, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+				Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, context.env.USERNAME)
+				Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, context.env.PASSWORD)
+			}
+			logger.debug("TestRail username:" + Configuration.get(Configuration.Parameter.TESTRAIL_USERNAME))
+			logger.debug("TestRail password:" + Configuration.get(Configuration.Parameter.TESTRAIL_PASSWORD))
+		}
+		
+		// obligatory init testrailUpdater after getting valid url and creds reading
+		testRailUpdater = new TestRailUpdater(context)
+	}
+	
+	protected void setQTestCreds() {
+		// update QTest serviceUrl and accessToken parameter based on values from credentials
+		def qtestServiceUrl = Configuration.CREDS_QTEST_SERVICE_URL
+		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		if (!isParamEmpty(orgFolderName)) {
+			qtestServiceUrl = "${orgFolderName}" + "-" + qtestServiceUrl
+		}
+		if (getCredentials(qtestServiceUrl)){
+			context.withCredentials([context.usernamePassword(credentialsId:qtestServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.QTEST_SERVICE_URL, context.env.VALUE)
+			}
+			logger.info("${qtestServiceUrl}:" + Configuration.get(Configuration.Parameter.QTEST_SERVICE_URL))
+		}
+		
+		def qtestAccessToken = Configuration.CREDS_QTEST_ACCESS_TOKEN
+		if (!isParamEmpty(orgFolderName)) {
+			qtestAccessToken = "${orgFolderName}" + "-" + qtestAccessToken
+		}
+		if (getCredentials(qtestAccessToken)){
+			context.withCredentials([context.usernamePassword(credentialsId:qtestAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.QTEST_ACCESS_TOKEN, context.env.VALUE)
+			}
+			logger.info("${qtestAccessToken}:" + Configuration.get(Configuration.Parameter.QTEST_ACCESS_TOKEN))
+		}
+		
+		// obligatory init qtestUpdater after getting valid url and token
+		qTestUpdater = new QTestUpdater(context)
+	}
+
+    protected String getMavenGoals() {
 		// When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
 		def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
-		
-		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) && 
+		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) &&
 			!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))) {
-			// Ignore maven build result if Zafira integration is enabled 
+			// Ignore maven build result if Zafira integration is enabled
 			zafiraGoals = "-Dmaven.test.failure.ignore=true \
 							-Dzafira_enabled=true \
 							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
 		}
-		return zafiraGoals
-	}
-
-    protected String getMavenGoals() {
-		def zafiraGoals = updateZafiraGoals()
-		def seleniumHost = updateSeleniumUrl()
 		
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
-        def defaultBaseMavenGoals = "-Dselenium_host=${seleniumHost} \
-		${zafiraGoals} \
+        def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
+        ${zafiraGoals} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
         -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
@@ -928,13 +999,14 @@ public class QARunner extends AbstractRunner {
                 "GITHUB_HTML_URL",
                 "GITHUB_OAUTH_TOKEN",
                 "GITHUB_SSH_URL",
-                "SELENIUM_PROTOCOL",
-                "SELENIUM_HOST",
-                "SELENIUM_PORT",
                 "SELENIUM_URL",
                 "TESTRAIL_SERVICE_URL",
+                "TESTRAIL_USERNAME",
+                "TESTRAIL_PASSWORD",
+                "TESTRAIL_ENABLE",
                 "testrail_enabled",
                 "QTEST_SERVICE_URL",
+                "QTEST_ACCESS_TOKEN",
                 "qtest_enabled",
                 "job_type",
                 "repo",
@@ -1137,7 +1209,6 @@ public class QARunner extends AbstractRunner {
 
     protected void runCron() {
         logger.info("QARunner->runCron")
-        zafiraUpdater.getZafiraCredentials()
         context.node("master") {
             scmClient.clone()
             listPipelines = []
@@ -1534,7 +1605,7 @@ public class QARunner extends AbstractRunner {
     public void rerunJobs(){
         context.stage('Rerun Tests'){
             //updates zafira credentials with values from Jenkins Credentials (if present)
-            zafiraUpdater.getZafiraCredentials()
+			setZafiraCreds()
             zafiraUpdater.smartRerun()
         }
     }
