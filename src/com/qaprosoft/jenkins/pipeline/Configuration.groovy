@@ -66,7 +66,8 @@ public class Configuration {
 
         QPS_HOST("QPS_HOST", "demo.qaprosoft.com"),
 
-        SELENIUM_URL("SELENIUM_URL", ""),
+		//TODO: make it secured as it might has creds
+        SELENIUM_URL("SELENIUM_URL", mustOverride),
         HUB_MODE("hub_mode", "selenium"),
 
         ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", "", true),
