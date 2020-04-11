@@ -6,7 +6,7 @@ public class Configuration {
 
     private def context
 
-    private final static def mustOverride = "{must_override}"
+    public final static def mustOverride = "{must_override}"
 
     public final static def CREDS_ZAFIRA_SERVICE_URL = "zafira_service_url"
     public final static def CREDS_ZAFIRA_ACCESS_TOKEN = "zafira_access_token"
