@@ -71,8 +71,8 @@ public class Configuration {
         SELENIUM_URL("SELENIUM_URL", mustOverride, true),
         HUB_MODE("hub_mode", "selenium"),
 
-        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", "", true),
-        ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", ""),
+        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, true),
+        ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", mustOverride),
 
         JOB_URL("JOB_URL", mustOverride),
         JOB_NAME("JOB_NAME", mustOverride),
