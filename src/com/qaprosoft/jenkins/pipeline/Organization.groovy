@@ -357,8 +357,8 @@ class Organization {
 			throw new RuntimeException("Unable to register TestRail credentials! Required field 'username' is missing!")
 		}
 		
-		if (isParamEmpty(username)){
-			throw new password("Unable to register TestRail credentials! Required field 'password' is missing!")
+		if (isParamEmpty(password)){
+			throw new RuntimeException("Unable to register TestRail credentials! Required field 'password' is missing!")
 		}
 
 		updateJenkinsCredentials(testrailURLCredentials, "TestRail URL", Configuration.Parameter.TESTRAIL_SERVICE_URL.getKey(), url)
