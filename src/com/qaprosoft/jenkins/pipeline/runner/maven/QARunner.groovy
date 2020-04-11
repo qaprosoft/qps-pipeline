@@ -881,7 +881,7 @@ public class QARunner extends AbstractRunner {
 		if (getCredentials(testRailUrl)){
 			context.withCredentials([context.usernamePassword(credentialsId:testRailUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, context.env.VALUE)
-				logger.info("${TestRail url}:" + context.env.VALUE)
+				logger.info("TestRail url:" + context.env.VALUE)
 			}
 		}
 		
@@ -893,8 +893,8 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:testRailCreds, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
 				Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, context.env.USERNAME)
 				Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, context.env.PASSWORD)
-				logger.info("${TestRail username}:" + context.env.USERNAME)
-				logger.info("${TestRail password}:" + context.env.PASSWORD)
+				logger.info("TestRail username:" + context.env.USERNAME)
+				logger.info("TestRail password:" + context.env.PASSWORD)
 			}
 		}
 		
