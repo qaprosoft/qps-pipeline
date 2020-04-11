@@ -816,6 +816,7 @@ public class QARunner extends AbstractRunner {
 	
 	protected void setSeleniumUrl() {
 		def seleniumUrl = Configuration.get(Configuration.Parameter.SELENIUM_URL)
+		logger.info("seleniumUrl: ${seleniumUrl}")
 		if (!isParamEmpty(seleniumUrl)) {
 			// do not override from creds as looks like external service or user overrided this value
 			return
