@@ -75,6 +75,8 @@ public class QARunner extends AbstractRunner {
         qTestUpdater = new QTestUpdater(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         currentBuild = context.currentBuild
+        
+        logger.info("QARunner->jobName: " + Configuration.get(Configuration.Parameter.JOB_NAME))
     }
 
     public QARunner(context, jobType) {
@@ -824,6 +826,7 @@ public class QARunner extends AbstractRunner {
 		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
 	}
 
+	//TODO: #690 try to move this logic to QARunner constructor so any component could use zafira integration as earlier
 	public def updateZafiraGoals() {
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def zafiraServiceUrl = "zafira_service_url"
