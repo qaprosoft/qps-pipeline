@@ -75,10 +75,6 @@ public class QARunner extends AbstractRunner {
         qTestUpdater = new QTestUpdater(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         currentBuild = context.currentBuild
-        
-        context.println("QARunner->jobName: " + Configuration.get(Configuration.Parameter.JOB_NAME))
-        def goals = updateZafiraGoals()		
-        context.println("QARunner->zafiraGoals: " + goals)
     }
 
     public QARunner(context, jobType) {
@@ -88,6 +84,10 @@ public class QARunner extends AbstractRunner {
 
     //Methods
     public void build() {
+		logger.info("QARunner->build->jobName: " + Configuration.get(Configuration.Parameter.JOB_NAME))
+		def goals = updateZafiraGoals()
+		logger.info("QARunner->build->zafiraGoals: " + goals)
+		
         logger.info("QARunner->build")
         if (!isParamEmpty(Configuration.get("scmURL"))){
             scmClient.setUrl(Configuration.get("scmURL"))
