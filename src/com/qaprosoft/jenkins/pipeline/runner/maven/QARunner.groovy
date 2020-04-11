@@ -109,6 +109,9 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
 //            context.timestamps {
                 logger.info("QARunner->onPush")
+
+                setZafiraCreds()
+
                 try {
                     prepare()
                     zafiraUpdater.getZafiraCredentials()
@@ -116,7 +119,6 @@ public class QARunner extends AbstractRunner {
                         logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
                         return
                     }
-                    //TODO: implement repository scan and QA jobs recreation
                     scan()
                     getJenkinsJobsScanResult(currentBuild.rawBuild)
                 } catch (Exception e) {
