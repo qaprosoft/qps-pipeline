@@ -888,13 +888,14 @@ public class QARunner extends AbstractRunner {
 		if (!isParamEmpty(orgFolderName)) {
 			testRailCreds = "${orgFolderName}" + "-" + testRailCreds
 		}
-		if (getCredentials(testRailCreds)){
+		if (getCredentials(testRailCreds)) {
 			context.withCredentials([context.usernamePassword(credentialsId:testRailCreds, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
 				Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, context.env.USERNAME)
 				Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, context.env.PASSWORD)
 			}
 			logger.info("TestRail username:" + Configuration.get(Configuration.Parameter.TESTRAIL_USERNAME))
 			logger.info("TestRail password:" + Configuration.get(Configuration.Parameter.TESTRAIL_PASSWORD))
+		}
 		
 	
 		// obligatory init testrailUpdater after getting valid url and creds reading
