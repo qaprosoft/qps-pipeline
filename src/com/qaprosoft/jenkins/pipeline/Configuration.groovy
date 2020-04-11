@@ -57,10 +57,7 @@ public class Configuration {
 
         QPS_HOST("QPS_HOST", "demo.qaprosoft.com"),
 
-        SELENIUM_PROTOCOL("SELENIUM_PROTOCOL", "http"),
-        SELENIUM_HOST("SELENIUM_HOST", "\${QPS_HOST}"),
-        SELENIUM_PORT("SELENIUM_PORT", "4444"),
-        SELENIUM_URL("SELENIUM_URL", "\${SELENIUM_PROTOCOL}://demo:demo@\${SELENIUM_HOST}:\${SELENIUM_PORT}/wd/hub"),
+        SELENIUM_URL("SELENIUM_URL", ""),
         HUB_MODE("hub_mode", "selenium"),
 
         ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", "", true),
