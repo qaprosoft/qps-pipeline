@@ -849,7 +849,7 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
 			}
-			logger.debug("${zafiraServiceUrl}:" + Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL))
+			logger.debug("${zafiraServiceUrl}:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
 		}
 		
 		def zafiraAccessToken = "zafira_access_token"
@@ -860,7 +860,7 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
 			}
-			logger.debug("${zafiraAccessToken}:" + Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
+			logger.debug("${zafiraAccessToken}:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
 		}
 		
 		// obligatory init zafiraUpdater after getting valid url and token
