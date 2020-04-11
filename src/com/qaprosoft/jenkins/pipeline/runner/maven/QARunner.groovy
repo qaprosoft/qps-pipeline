@@ -815,6 +815,12 @@ public class QARunner extends AbstractRunner {
     }
 	
 	protected void setSeleniumUrl() {
+		def seleniumUrl = Configuration.get(Configuration.Parameter.SELENIUM_URL)
+		if (!isParamEmpty(seleniumUrl)) {
+			// do not override from creds as looks like external service or user overrided this value
+			return
+		}
+			
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
