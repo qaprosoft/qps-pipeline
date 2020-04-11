@@ -5,7 +5,6 @@ import com.qaprosoft.jenkins.Logger
 public class Configuration {
 
     private def context
-    private static String del = ""
 
     private final static def mustOverride = "{must_override}"
 
@@ -26,6 +25,9 @@ public class Configuration {
     //list of required goals vars which must present in command line obligatory
     protected static Map vars = [:]
 
+	
+	// example of the logging for static @NonCPS calls
+	//private static String del = ""
 
     public Configuration(context) {
         this.context = context
@@ -195,10 +197,8 @@ public class Configuration {
 
         //4. Replace vars and/or params with zafiraFields values
         parseValues(params.get("zafiraFields"))
-		context.println(del)
         //5. Replace vars and/or params with overrideFields values
         parseValues(params.get("overrideFields"))
-		context.println(del)
 
         def securedParameters = []
         for (enumValue in enumValues) {
@@ -257,11 +257,9 @@ public class Configuration {
     private static void putParamCaseInsensitive(parameterName, parameterValue) {
         if (vars.get(parameterName)) {
             vars.put(parameterName, parameterValue)
-			del += "param: ${parameterName}; existing value: ${vars.get(parameterName)}"
 			//del += "varName: ${parameterName}; varValue: ${parameterValue}\n"
         } else if (vars.get(parameterName.toUpperCase())) {
             vars.put(parameterName.toUpperCase(), parameterValue)
-			del += "param: ${parameterName.toUpperCase()}; existing value: ${vars.get(parameterName.toUpperCase())}"
 			//del += "varName: ${parameterName}; varValue: ${parameterValue}\n"
         } else {
             params.put(parameterName, parameterValue)
