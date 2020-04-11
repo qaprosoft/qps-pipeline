@@ -251,10 +251,13 @@ public class Configuration {
     @NonCPS
     private static void putParamCaseInsensitive(parameterName, parameterValue) {
         if (vars.get(parameterName)) {
+			context.println("replacing var ${parameterName)} by ${parameterValue}")
             vars.put(parameterName, parameterValue)
         } else if (vars.get(parameterName.toUpperCase())) {
+			context.println("replacing var ${parameterName.toUpperCase()} by ${parameterValue}")
             vars.put(parameterName.toUpperCase(), parameterValue)
         } else {
+			context.println("replacing param ${parameterName)} by ${parameterValue}:")
             params.put(parameterName, parameterValue)
         }
     }
