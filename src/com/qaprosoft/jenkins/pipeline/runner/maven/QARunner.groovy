@@ -84,11 +84,9 @@ public class QARunner extends AbstractRunner {
 
     //Methods
     public void build() {
-		logger.info("QARunner->build->jobName: " + Configuration.get(Configuration.Parameter.JOB_NAME))
-		def goals = updateZafiraGoals()
-		logger.info("QARunner->build->zafiraGoals: " + goals)
-		
         logger.info("QARunner->build")
+        setZafiraCreds()
+
         if (!isParamEmpty(Configuration.get("scmURL"))){
             scmClient.setUrl(Configuration.get("scmURL"))
         }
@@ -829,7 +827,7 @@ public class QARunner extends AbstractRunner {
 	}
 
 	//TODO: #690 try to move this logic to QARunner constructor so any component could use zafira integration as earlier
-	public def updateZafiraGoals() {
+	public void setZafiraCreds() {
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def zafiraServiceUrl = "zafira_service_url"
 		
@@ -856,22 +854,20 @@ public class QARunner extends AbstractRunner {
 			}
 		}
 		
+	}
+
+    protected String getMavenGoals() {
 		// When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
 		def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
-		
-		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) && 
+		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) &&
 			!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))) {
-			// Ignore maven build result if Zafira integration is enabled 
+			// Ignore maven build result if Zafira integration is enabled
 			zafiraGoals = "-Dmaven.test.failure.ignore=true \
 							-Dzafira_enabled=true \
 							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
 		}
-		return zafiraGoals
-	}
-
-    protected String getMavenGoals() {
-		def zafiraGoals = updateZafiraGoals()
+		
 		def seleniumHost = updateSeleniumUrl()
 		
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
