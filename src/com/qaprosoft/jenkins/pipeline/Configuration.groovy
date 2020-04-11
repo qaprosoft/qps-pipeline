@@ -155,6 +155,7 @@ public class Configuration {
         def enumValues = Parameter.values()
         for (enumValue in enumValues) {
             //a. set default values from enum
+			context.println("key: ${enumValue.getKey()}; value: ${enumValue.getValue()}")
             vars.put(enumValue.getKey(), enumValue.getValue())
         }
 
