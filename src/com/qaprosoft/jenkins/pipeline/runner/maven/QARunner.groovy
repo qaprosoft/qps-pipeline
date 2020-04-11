@@ -85,7 +85,9 @@ public class QARunner extends AbstractRunner {
     //Methods
     public void build() {
         logger.info("QARunner->build")
+        // set all required integration at the beginning of build operation to use actual value and be able to oveeride anytime later
         setZafiraCreds()
+        setSeleniumUrl()
 
         if (!isParamEmpty(Configuration.get("scmURL"))){
             scmClient.setUrl(Configuration.get("scmURL"))
@@ -802,7 +804,7 @@ public class QARunner extends AbstractRunner {
         }
     }
 	
-	protected def updateSeleniumUrl() {
+	protected void setSeleniumUrl() {
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
 		//TODO: improve orgFolderName detection and fix it for empty orgName structure
@@ -823,7 +825,6 @@ public class QARunner extends AbstractRunner {
 		} else {
 			throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
 		}
-		return Configuration.get(Configuration.Parameter.SELENIUM_URL)
 	}
 
 	//TODO: #690 try to move this logic to QARunner constructor so any component could use zafira integration as earlier
@@ -868,11 +869,9 @@ public class QARunner extends AbstractRunner {
 							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
 		}
 		
-		def seleniumHost = updateSeleniumUrl()
-		
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
-        def defaultBaseMavenGoals = "-Dselenium_host=${seleniumHost} \
-		${zafiraGoals} \
+        def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
+        ${zafiraGoals} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
         -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
