@@ -293,7 +293,7 @@ class Organization {
 			hubURLCredName = "${orgFolderName}" + "-" + hubURLCredName
 		}
 		
-		if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", "SELENIUM_URL", url)) {
+		if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", Configuration.Parameter.SELENIUM_URL.getKey(), url)) {
 			logger.info("${hubURLCredName} was successfully registered.")
 		}
 	}
