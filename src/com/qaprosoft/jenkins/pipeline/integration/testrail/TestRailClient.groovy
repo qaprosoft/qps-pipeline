@@ -9,6 +9,8 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 class TestRailClient extends HttpClient{
 
     private String serviceURL
+	private String username
+	private String password
 	private boolean isAvailable
 
     public TestRailClient(context) {
