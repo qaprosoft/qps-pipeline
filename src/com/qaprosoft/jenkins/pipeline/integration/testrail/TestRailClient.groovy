@@ -6,15 +6,25 @@ import static com.qaprosoft.jenkins.Utils.*
 import groovy.json.JsonBuilder
 import com.qaprosoft.jenkins.pipeline.Configuration
 
+/*
+ * Prerequisites: valid TESTRAIL_SERVICE_URL, TESTRAIL_USERNAME and TESTRAIL_PASSWORD already defined in Configuration
+ */
+
 class TestRailClient extends HttpClient{
 
     private String serviceURL
-	private boolean isAvailable
+    private String username
+    private String password
+    private boolean isAvailable
 
     public TestRailClient(context) {
         super(context)
-		this.serviceURL = Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL)
-		this.isAvailable = !serviceURL.isEmpty()
+
+        this.serviceURL = Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL)
+        this.username = Configuration.get(Configuration.Parameter.TESTRAIL_USERNAME)
+        this.password = Configuration.get(Configuration.Parameter.TESTRAIL_PASSWORD)
+
+        this.isAvailable = !serviceURL.isEmpty() && !this.username.isEmpty() && !this.password.isEmpty()
     }
 	
 	public boolean isAvailable() {
@@ -29,36 +39,30 @@ class TestRailClient extends HttpClient{
         if (!isParamEmpty(milestoneId)) {
             requestArgs = requestArgs + "&milestone_id=${milestoneId}"
         }
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'GET',
-                              validResponseCodes: "200:401",
-                              url: this.serviceURL + requestArgs]
-            return sendRequestFormatted(parameters)
-        }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${this.username}:${this.password}")}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'GET',
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + requestArgs]
+        return sendRequestFormatted(parameters)
     }
 
     public def getTests(runId) {
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'GET',
-                              validResponseCodes: "200:401",
-                              url: this.serviceURL + "get_tests/${runId}"]
-            return sendRequestFormatted(parameters)
-        }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${this.username}:${this.password}")}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'GET',
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + "get_tests/${runId}"]
+        return sendRequestFormatted(parameters)
     }
 
     public def getCases(projectId, suiteId) {
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'GET',
-                              validResponseCodes: "200:401",
-                              url: this.serviceURL + "get_cases/${projectId}&suite_id=${suiteId}"]
-            return sendRequestFormatted(parameters)
-        }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${this.username}:${this.password}")}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'GET',
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + "get_cases/${projectId}&suite_id=${suiteId}"]
+        return sendRequestFormatted(parameters)
     }
 
 
@@ -83,54 +87,46 @@ class TestRailClient extends HttpClient{
                     case_ids: caseIds
         }
         logger.debug("TEST_RUN_TO_ADD:\n" + jsonBuilder.toPrettyString())
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'POST',
-                              requestBody: "${jsonBuilder}",
-                              validResponseCodes: "200",
-                              url: this.serviceURL + "add_run/${projectID}"]
-            return sendRequestFormatted(parameters)
-        }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${this.username}:${this.password}")}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'POST',
+                          requestBody: "${jsonBuilder}",
+                          validResponseCodes: "200",
+                          url: this.serviceURL + "add_run/${projectID}"]
+        return sendRequestFormatted(parameters)
     }
 
     public def getUserIdByEmail(userEmail) {
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            if (isParamEmpty(userEmail)){
-                userEmail = context.env.USERNAME
-            }
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'GET',
-                              validResponseCodes: "200:404",
-                              url: this.serviceURL + "get_user_by_email&email=${userEmail}"]
-            return sendRequestFormatted(parameters)
+        if (isParamEmpty(userEmail)){
+            userEmail = context.env.USERNAME
         }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${this.username}:${this.password}")}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'GET',
+                          validResponseCodes: "200:404",
+                          url: this.serviceURL + "get_user_by_email&email=${userEmail}"]
+        return sendRequestFormatted(parameters)
     }
 
     public def getMilestones(projectId) {
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'GET',
-                              validResponseCodes: "200:401",
-                              url: this.serviceURL + "get_milestones/${projectId}"]
-            return sendRequestFormatted(parameters)
-        }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${this.username}:${this.password}")}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'GET',
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + "get_milestones/${projectId}"]
+        return sendRequestFormatted(parameters)
     }
 
     public def addMilestone(projectId, milestoneName) {
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder name: milestoneName
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'POST',
-                              requestBody: "${jsonBuilder}",
-                              validResponseCodes: "200:401",
-                              url: this.serviceURL + "add_milestone/${projectId}"]
-            return sendRequestFormatted(parameters)
-        }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${this.username}:${this.password}")}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'POST',
+                          requestBody: "${jsonBuilder}",
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + "add_milestone/${projectId}"]
+        return sendRequestFormatted(parameters)
     }
 
     public def addResultsForTests(testRunId, results) {
@@ -140,14 +136,12 @@ class TestRailClient extends HttpClient{
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder results: results
 //        logger.debug("REQUEST:\n" + formatJson(jsonBuilder))
-        context.withCredentials([context.usernamePassword(credentialsId:'testrail_creds', usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-            def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${context.env.USERNAME}:${context.env.PASSWORD}")}"]],
-                              contentType: 'APPLICATION_JSON',
-                              httpMode: 'POST',
-                              requestBody: "${jsonBuilder}",
-                              validResponseCodes: "200:401",
-                              url: this.serviceURL + "add_results/${testRunId}"]
-            return sendRequestFormatted(parameters)
-        }
+        def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${this.username}:${this.password}")}"]],
+                          contentType: 'APPLICATION_JSON',
+                          httpMode: 'POST',
+                          requestBody: "${jsonBuilder}",
+                          validResponseCodes: "200:401",
+                          url: this.serviceURL + "add_results/${testRunId}"]
+        return sendRequestFormatted(parameters)
     }
 }

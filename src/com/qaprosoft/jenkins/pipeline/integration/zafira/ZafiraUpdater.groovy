@@ -173,28 +173,6 @@ class ZafiraUpdater {
         return zc.createJob(jobUrl)
     }
 
-    public def getZafiraCredentials() {
-        def zafiraURLCredentials = "zafira_service_url"
-        def zafiraTokenCredentials = "zafira_access_token"
-        def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
-        if (!isParamEmpty(orgFolderName)) {
-            zafiraURLCredentials = orgFolderName + "-zafira_service_url"
-            zafiraTokenCredentials = orgFolderName + "-zafira_access_token"
-        }
-
-        if (getCredentials(zafiraURLCredentials)){
-            context.withCredentials([context.usernamePassword(credentialsId:zafiraURLCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                Configuration.set(context.env.KEY, context.env.VALUE)
-            }
-        }
-        if (getCredentials(zafiraTokenCredentials)){
-            context.withCredentials([context.usernamePassword(credentialsId:zafiraTokenCredentials, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                Configuration.set(context.env.KEY, context.env.VALUE)
-            }
-        }
-        zc = new ZafiraClient(context)
-    }
-
     protected boolean isFailure(testRunStatus) {
         return !"PASSED".equals(testRunStatus)
     }
