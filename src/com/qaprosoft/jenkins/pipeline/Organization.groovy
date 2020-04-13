@@ -22,6 +22,7 @@ class Organization {
     protected def context
     protected ISCM scmClient
     protected Logger logger
+    protected ZebrunnerUpdater zebrunnerUpdater
     protected Configuration configuration = new Configuration(context)
     protected Map dslObjects = new LinkedHashMap()
 	
@@ -38,6 +39,8 @@ class Organization {
         this.context = context
         scmClient = new GitHub(context)
         logger = new Logger(context)
+		
+		zebrunnerUpdater = new ZebrunnerUpdater(context)
 		
 		this.folderName = Configuration.get("folderName")
 		
