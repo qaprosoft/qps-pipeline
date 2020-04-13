@@ -840,6 +840,13 @@ public class QARunner extends AbstractRunner {
 	}
 
 	protected void setZafiraCreds() {
+		def zafiraFields = Configuration.get("zafiraFields")
+		logger.debug("zafiraFields: " + zafiraFields)
+		if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+			//already should be parsed and inited as part of Configuration
+			return
+		}
+			
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def zafiraServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
