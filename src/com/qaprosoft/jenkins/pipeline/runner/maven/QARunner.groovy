@@ -844,6 +844,8 @@ public class QARunner extends AbstractRunner {
 		logger.debug("zafiraFields: " + zafiraFields)
 		if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
 			//already should be parsed and inited as part of Configuration
+			//TODO: improve code quality having single return and zafiraUpdater init
+			zafiraUpdater = new ZafiraUpdater(context)
 			return
 		}
 			
