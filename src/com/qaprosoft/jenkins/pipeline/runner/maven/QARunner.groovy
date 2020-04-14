@@ -1668,7 +1668,10 @@ public class QARunner extends AbstractRunner {
 		logger.debug("getOrgFolderName.nameCount: " + nameCount)
 		
 		def orgFolderName = ""
-		if (nameCount == 2) {
+		if (nameCount == 2 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
+			// stage/testrail-updater - i.e. stage
+			orgFolderName = Paths.get(jobName).getName(0).toString()
+		} else if (nameCount == 2) {
 			// carina-demo/API_Demo_Test - i.e. empty orgFolderName
 			orgFolderName = ""
 		} else if (nameCount == 3) { //TODO: need to test use-case with views!
