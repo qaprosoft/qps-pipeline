@@ -833,16 +833,26 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
 			}
-			logger.debug("${hubUrl}:" + Configuration.get(Configuration.Parameter.SELENIUM_URL))
+			logger.debug("hubUrl:" + Configuration.get(Configuration.Parameter.SELENIUM_URL))
 		} else {
 			throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
 		}
 	}
 
 	protected void setZafiraCreds() {
+		def zafiraFields = Configuration.get("zafiraFields")
+		logger.debug("zafiraFields: " + zafiraFields)
+		if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+			//already should be parsed and inited as part of Configuration
+			//TODO: improve code quality having single return and zafiraUpdater init
+			zafiraUpdater = new ZafiraUpdater(context)
+			return
+		}
+			
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def zafiraServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		logger.info("orgFolderName: " + orgFolderName)
 		if (!isParamEmpty(orgFolderName)) {
 			zafiraServiceUrl = "${orgFolderName}" + "-" + zafiraServiceUrl
 		}
@@ -850,7 +860,7 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
 			}
-			logger.debug("${zafiraServiceUrl}:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
+			logger.debug("zafiraServiceUrl:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
 		}
 		
 		def zafiraAccessToken = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
@@ -861,7 +871,7 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
 			}
-			logger.debug("${zafiraAccessToken}:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
+			logger.debug("zafiraAccessToken:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
 		}
 		
 		// obligatory init zafiraUpdater after getting valid url and token
@@ -1652,5 +1662,25 @@ public class QARunner extends AbstractRunner {
         def port = "8000"
         return port
     }
+
+	protected def getOrgFolderName(String jobName) {
+		int nameCount = Paths.get(jobName).getNameCount()
+		logger.debug("getOrgFolderName.nameCount: " + nameCount)
+		
+		def orgFolderName = ""
+		if (nameCount == 2 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
+			// stage/testrail-updater - i.e. stage
+			orgFolderName = Paths.get(jobName).getName(0).toString()
+		} else if (nameCount == 2) {
+			// carina-demo/API_Demo_Test - i.e. empty orgFolderName
+			orgFolderName = ""
+		} else if (nameCount == 3) { //TODO: need to test use-case with views!
+			// qaprosoft/carina-demo/API_Demo_Test - i.e. orgFolderName=qaprosoft
+			orgFolderName = Paths.get(jobName).getName(0).toString()
+		} else {
+			throw new RuntimeException("Invalid job organization structure: '${jobName}'!" )
+		}
+		return orgFolderName
+	}
 
 }
