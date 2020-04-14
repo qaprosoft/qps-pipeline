@@ -833,7 +833,7 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
 			}
-			logger.debug("${hubUrl}:" + Configuration.get(Configuration.Parameter.SELENIUM_URL))
+			logger.debug("hubUrl:" + Configuration.get(Configuration.Parameter.SELENIUM_URL))
 		} else {
 			throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
 		}
@@ -859,7 +859,7 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
 			}
-			logger.debug("${zafiraServiceUrl}:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
+			logger.debug("zafiraServiceUrl:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
 		}
 		
 		def zafiraAccessToken = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
@@ -870,7 +870,7 @@ public class QARunner extends AbstractRunner {
 			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
 			}
-			logger.debug("${zafiraAccessToken}:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
+			logger.debug("zafiraAccessToken:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
 		}
 		
 		// obligatory init zafiraUpdater after getting valid url and token
