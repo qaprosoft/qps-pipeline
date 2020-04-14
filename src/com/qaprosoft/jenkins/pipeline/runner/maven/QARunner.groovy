@@ -852,6 +852,7 @@ public class QARunner extends AbstractRunner {
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def zafiraServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		logger.info("orgFolderName: " + orgFolderName)
 		if (!isParamEmpty(orgFolderName)) {
 			zafiraServiceUrl = "${orgFolderName}" + "-" + zafiraServiceUrl
 		}
