@@ -1663,4 +1663,21 @@ public class QARunner extends AbstractRunner {
         return port
     }
 
+	protected def getOrgFolderName(String jobName) {
+		int nameCount = Paths.get(jobName).getNameCount()
+		logger.debug("getOrgFolderName.nameCount: " + nameCount)
+		
+		def orgFolderName = ""
+		if (nameCount == 2) {
+			// carina-demo/API_Demo_Test - i.e. empty orgFolderName
+			orgFolderName = ""
+		} else if (nameCount == 3) { //TODO: need to test use-case with views!
+			// qaprosoft/carina-demo/API_Demo_Test - i.e. orgFolderName=qaprosoft
+			orgFolderName = Paths.get(jobName).getName(0).toString()
+		} else {
+			throw new RuntimeException("Invalid job organization structure: '${jobName}'!" )
+		}
+		return orgFolderName
+	}
+
 }
