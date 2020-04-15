@@ -338,7 +338,6 @@ class Organization {
 	
 			
 			registerTestRailCredentials(orgFolderName, url, username, password)
-            registerObject("testrail_job", new TestRailJobFactory(orgFolderName, getTestRailScript(), Configuration.TESTRAIL_UPDATER_JOBNAME, "Custom job testrail"))
         }
 	}
 	
@@ -365,7 +364,8 @@ class Organization {
 
 		updateJenkinsCredentials(testrailURLCredentials, "TestRail Service API URL", Configuration.Parameter.TESTRAIL_SERVICE_URL.getKey(), url)
 		updateJenkinsCredentials(testrailUserCredentials, "TestRaul User credentials", username, password)
-		
+
+        registerObject("testrail_job", new TestRailJobFactory(orgFolderName, getTestRailScript(), Configuration.TESTRAIL_UPDATER_JOBNAME, "Custom job testrail"))
 	}
 	
 	public def registerQTestCredentials() {
@@ -377,7 +377,6 @@ class Organization {
 			def token = Configuration.get("token")
 	
 			registerQTestCredentials(orgFolderName, url, token)
-            registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
 		}
 	}
 	
@@ -400,6 +399,8 @@ class Organization {
 		
 		updateJenkinsCredentials(qtestURLCredentials, "QTest Service API URL", Configuration.Parameter.QTEST_SERVICE_URL.getKey(), url)
 		updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
+
+        registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
 	}
 
 }
