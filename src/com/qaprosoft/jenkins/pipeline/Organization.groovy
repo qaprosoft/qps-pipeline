@@ -401,6 +401,7 @@ class Organization {
 		updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
 
         logger.info("MEW_MEW_MEW")
+        logger.info('orgFolderName: ' + orgFolderName +  '\ngetQTestScript(): ' + getQTestScript() + '\nConfiguration.QTEST_UPDATER_JOBNAME: ' + Configuration.QTEST_UPDATER_JOBNAME)
         registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
 	}
 
