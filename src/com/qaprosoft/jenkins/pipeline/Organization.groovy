@@ -229,8 +229,6 @@ class Organization {
     }
 
     protected String getPipelineScript() {
-        this.pipelineLibrary = Configuration.get("pipelineLibrary")
-        this.runnerClass =  Configuration.get("runnerClass")
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
         } else {
