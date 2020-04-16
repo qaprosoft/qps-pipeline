@@ -403,8 +403,8 @@ class Organization {
 
         logger.info("MEW_MEW_MEW\n")
         logger.info('orgFolderName: ' + orgFolderName +  '\ngetQTestScript(): ' + getQTestScript() + '\nConfiguration.QTEST_UPDATER_JOBNAME: ' + Configuration.QTEST_UPDATER_JOBNAME)
-        def runner = new QARunner()
-        runner.qTestCreateJob(context)
+        def runner = new QARunner(context)
+        runner.qTestCreateJob()
         registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
 	}
 
