@@ -7,6 +7,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.QTestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestRailJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.RegisterRepositoryJobFactory
 import com.qaprosoft.jenkins.pipeline.integration.zebrunner.ZebrunnerUpdater
+import com.qaprosoft.jenkins.pipeline.runner.maven.QARunner
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
@@ -402,6 +403,7 @@ class Organization {
 
         logger.info("MEW_MEW_MEW\n")
         logger.info('orgFolderName: ' + orgFolderName +  '\ngetQTestScript(): ' + getQTestScript() + '\nConfiguration.QTEST_UPDATER_JOBNAME: ' + Configuration.QTEST_UPDATER_JOBNAME)
+        QARunner.qTestCreateJob()
         registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
 	}
 

@@ -226,6 +226,17 @@ public class QARunner extends AbstractRunner {
         }
     }
 
+    protected qTestCreateJob() {
+        context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+        logger.info("factoryTarget: " + FACTORY_TARGET)
+        //TODO: test carefully auto-removal for jobs/views and configs
+        context.jobDsl additionalClasspath: additionalClasspath,
+                removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
+                removedJobAction: Configuration.get("removedJobAction"),
+                removedViewAction: Configuration.get("removedViewAction"),
+                targets: FACTORY_TARGET,
+                ignoreExisting: false
+    }
 
     protected clean() {
         context.stage('Wipe out Workspace') {
