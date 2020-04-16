@@ -226,7 +226,7 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    public void qTestCreateJob() {
+    protected qTestCreateJob() {
         context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
         logger.info("factoryTarget: " + FACTORY_TARGET)
         //TODO: test carefully auto-removal for jobs/views and configs
