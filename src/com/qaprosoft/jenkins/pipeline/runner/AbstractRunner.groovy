@@ -1,11 +1,8 @@
 package com.qaprosoft.jenkins.pipeline.runner
 
 import com.qaprosoft.jenkins.BaseObject
-import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 
 public abstract class AbstractRunner extends BaseObject {
-    protected ISCM scmClient
-    protected ISCM scmSshClient
 	
     public AbstractRunner(context) {
 		super(context)

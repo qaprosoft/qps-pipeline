@@ -37,7 +37,6 @@ public class QARunner extends AbstractRunner {
     protected def pipelineLibrary = "QPS-Pipeline"
     protected def runnerClass = "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner"
     protected def onlyUpdated = false
-    protected def currentBuild
     protected def uuid
     protected ZafiraUpdater zafiraUpdater
     protected TestRailUpdater testRailUpdater
@@ -68,11 +67,8 @@ public class QARunner extends AbstractRunner {
 
     public QARunner(context) {
         super(context)
-        scmClient = new GitHub(context)
-        scmSshClient = new SshGitHub(context)
 
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
-        currentBuild = context.currentBuild
     }
 
     public QARunner(context, jobType) {
@@ -182,14 +178,11 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected void prepare() {
-        scmClient.clone(!onlyUpdated)
-        String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
-        String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
-        scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
-    }
-
-    protected void scan() {
+	
+	protected void prepare() {
+		scmClient.clone(!onlyUpdated)
+		super.prepare()
+	}    protected void scan() {
 
         context.stage("Scan Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)

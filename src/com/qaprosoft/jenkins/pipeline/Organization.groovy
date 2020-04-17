@@ -47,7 +47,7 @@ class Organization extends BaseObject {
 		this.zafiraAccessToken = Configuration.get("zafiraAccessToken")
     }
 
-    def register() {
+    public def register() {
         logger.info("Organization->register")
         context.node('master') {
 //            context.timestamps {
@@ -63,7 +63,7 @@ class Organization extends BaseObject {
         }
     }
 
-    def delete() {
+    public def delete() {
         logger.info("Organization->register")
         context.node('master') {
 //            context.timestamps {
@@ -225,12 +225,6 @@ class Organization extends BaseObject {
         }
     }
 
-    protected void prepare() {
-        String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
-        String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
-        scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
-    }
-
     protected clean() {
         context.stage('Wipe out Workspace') {
             context.deleteDir()
@@ -326,8 +320,9 @@ class Organization extends BaseObject {
 			def password = Configuration.get("password")
 	
 			
+			prepare()
 			registerTestRailCredentials(orgFolderName, url, username, password)
-        }
+		}
 	}
 	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
@@ -367,37 +362,35 @@ class Organization extends BaseObject {
 			def url = Configuration.get("url")
 			def token = Configuration.get("token")
 	
+			prepare()
 			registerQTestCredentials(orgFolderName, url, token)
 		}
 	}
 	
 	protected def registerQTestCredentials(orgFolderName, url, token) {
-		context.node('master') {
-			context.stage("Register QTestCredentials") {
 				
-				def qtestURLCredentials = Configuration.CREDS_QTEST_SERVICE_URL
-				def qtestTokenCredentials = Configuration.CREDS_QTEST_ACCESS_TOKEN
-				
-				if (!isParamEmpty(orgFolderName)) {
-					qtestURLCredentials = orgFolderName + "-" + qtestURLCredentials
-					qtestTokenCredentials = orgFolderName + "-" + qtestTokenCredentials
-				}
-		
-				if (isParamEmpty(url)){
-					throw new RuntimeException("Unable to register QTest credentials! Required field 'url' is missing!")
-				}
-				
-				if (isParamEmpty(token)){
-					throw new RuntimeException("Unable to register QTest credentials! Required field 'token' is missing!")
-				}
-				
-				updateJenkinsCredentials(qtestURLCredentials, "QTest Service API URL", Configuration.Parameter.QTEST_SERVICE_URL.getKey(), url)
-				updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
-		
-		        registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
-		
-		        factoryRunner.run(dslObjects)
+			def qtestURLCredentials = Configuration.CREDS_QTEST_SERVICE_URL
+			def qtestTokenCredentials = Configuration.CREDS_QTEST_ACCESS_TOKEN
+			
+			if (!isParamEmpty(orgFolderName)) {
+				qtestURLCredentials = orgFolderName + "-" + qtestURLCredentials
+				qtestTokenCredentials = orgFolderName + "-" + qtestTokenCredentials
 			}
+	
+			if (isParamEmpty(url)){
+				throw new RuntimeException("Unable to register QTest credentials! Required field 'url' is missing!")
+			}
+			
+			if (isParamEmpty(token)){
+				throw new RuntimeException("Unable to register QTest credentials! Required field 'token' is missing!")
+			}
+			
+			updateJenkinsCredentials(qtestURLCredentials, "QTest Service API URL", Configuration.Parameter.QTEST_SERVICE_URL.getKey(), url)
+			updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
+	
+	        registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
+	
+	        factoryRunner.run(dslObjects)
 		}
 	}
 

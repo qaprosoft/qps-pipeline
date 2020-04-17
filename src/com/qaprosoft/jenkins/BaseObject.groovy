@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 
 /*
  * BaseObject to operate with pipeline context, loggers and runners
@@ -10,19 +11,35 @@ public abstract class BaseObject {
 	protected def context
 	protected Logger logger
 	protected FactoryRunner factoryRunner // object to be able to start JobDSL anytime we need
-
+	
+	protected ISCM scmClient
+	protected ISCM scmSshClient
+	
+	protected def currentBuild
+	
 	//this is very important line which should be declared only as a class member!
 	protected Configuration configuration = new Configuration(context)
 
 	public BaseObject(context) {
 		this.context = context
 		this.logger = new Logger(context)
+		this.scmClient = new GitHub(context)
+		this.scmSshClient = new SshGitHub(context)
+		
 		this.factoryRunner = new FactoryRunner(context)
+		
+		currentBuild = context.currentBuild
 	}
 
 	//TODO: [VD] think about moving into AbstractRunner!
 	protected void setDslClasspath(additionalClasspath) {
 		factoryRunner.setDslClasspath(additionalClasspath)
+	}
+	
+	protected void prepare() {
+		String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
+		String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
+		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 	}
 
 }
