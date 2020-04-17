@@ -1665,6 +1665,7 @@ public class QARunner extends AbstractRunner {
 
 	protected def getOrgFolderName(String jobName) {
 		int nameCount = Paths.get(jobName).getNameCount()
+
 		logger.info("getOrgFolderName.jobName: " + jobName)
 		logger.info("getOrgFolderName.nameCount: " + nameCount)
 		
