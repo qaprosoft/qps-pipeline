@@ -211,17 +211,9 @@ public class QARunner extends AbstractRunner {
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch)
 
-                // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-                context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-                logger.info("factoryTarget: " + FACTORY_TARGET)
-                //TODO: test carefully auto-removal for jobs/views and configs
-                context.jobDsl additionalClasspath: additionalClasspath,
-                        removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
-                        removedJobAction: Configuration.get("removedJobAction"),
-                        removedViewAction: Configuration.get("removedViewAction"),
-                        targets: FACTORY_TARGET,
-                        ignoreExisting: false
-
+				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"), 
+										Configuration.get("removedJobAction"),
+										Configuration.get("removedViewAction"))
             }
         }
     }
@@ -449,14 +441,6 @@ public class QARunner extends AbstractRunner {
             logger.info("New Item: ${object.dump()}")
         }
         dslObjects.put(name, object)
-    }
-
-    protected void setDslTargets(targets) {
-        this.factoryTarget = targets
-    }
-
-    protected void setDslClasspath(additionalClasspath) {
-        this.additionalClasspath = additionalClasspath
     }
 
     protected def getJenkinsJobsScanResult(build) {

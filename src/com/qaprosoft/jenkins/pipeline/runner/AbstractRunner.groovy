@@ -8,17 +8,17 @@ public abstract class AbstractRunner {
     protected def context
     protected ISCM scmClient
     protected ISCM scmSshClient
-
+	
+	protected FactoryRunner factoryRunner // object to be able to start JobDSL anytime we need
     protected Logger logger
-    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
-    protected def additionalClasspath = "qps-pipeline/src"
-
+	
     //this is very important line which should be declared only as a class member!
     protected Configuration configuration = new Configuration(context)
 
     public AbstractRunner(context) {
         this.context = context
         this.logger = new Logger(context)
+		this.factoryRunner = new FactoryRunner(context)
     }
 
     //Methods
@@ -40,5 +40,9 @@ public abstract class AbstractRunner {
             }
         }
     }
+	
+	protected void setDslClasspath(additionalClasspath) {
+		factoryRunner.setDslClasspath(additionalClasspath)
+	}
 
 }
