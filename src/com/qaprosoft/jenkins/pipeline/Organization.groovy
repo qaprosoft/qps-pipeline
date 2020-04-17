@@ -76,7 +76,38 @@ class Organization extends BaseObject {
 //            }
         }
     }
+	
+	
+	public def registerQTestCredentials() {
+		logger.info("Organization->registerQTestCredentials")
+		context.node('master') {
+			def orgFolderName = Configuration.get("folderName")
+			
+			// Example: https://<CHANGE_ME>/api/v3/
+			def url = Configuration.get("url")
+			def token = Configuration.get("token")
+	
+			prepare()
+			registerQTestCredentials(orgFolderName, url, token)
+		}
+	}
 
+	public def registerTestRailCredentials() {
+		logger.info("Organization->registerTestRailCredentials")
+		context.node('master') {
+			def orgFolderName = Configuration.get("folderName")
+			
+			// Example: https://mytenant.testrail.com?/api/v2/
+			def url = Configuration.get("url")
+			def username = Configuration.get("username")
+			def password = Configuration.get("password")
+	
+			
+			prepare()
+			registerTestRailCredentials(orgFolderName, url, username, password)
+		}
+	}
+	
     protected def deleteFolder(folderName) {
         context.stage("Delete folder") {
             def folder = getJenkinsFolderByName(folderName)
@@ -309,22 +340,6 @@ class Organization extends BaseObject {
 		updateJenkinsCredentials(zafiraTokenCredentials, "Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraAccessToken)
 	}
 	
-	
-	public def registerTestRailCredentials() {
-		context.stage("Register TestRail Credentials") {
-			def orgFolderName = Configuration.get("folderName")
-			
-			// Example: https://mytenant.testrail.com?/api/v2/
-			def url = Configuration.get("url")		
-			def username = Configuration.get("username")
-			def password = Configuration.get("password")
-	
-			
-			prepare()
-			registerTestRailCredentials(orgFolderName, url, username, password)
-		}
-	}
-	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
 		def testrailURLCredentials = Configuration.CREDS_TESTRAIL_SERVICE_URL
 		def testrailUserCredentials = Configuration.CREDS_TESTRAIL
@@ -352,19 +367,6 @@ class Organization extends BaseObject {
         registerObject("testrail_job", new TestRailJobFactory(orgFolderName, getTestRailScript(), Configuration.TESTRAIL_UPDATER_JOBNAME, "Custom job testrail"))
 
         factoryRunner.run(dslObjects)
-	}
-	
-	public def registerQTestCredentials() {
-		context.stage("Register QTest Credentials") {
-			def orgFolderName = Configuration.get("folderName")
-			
-			// Example: https://<CHANGE_ME>/api/v3/
-			def url = Configuration.get("url")
-			def token = Configuration.get("token")
-	
-			prepare()
-			registerQTestCredentials(orgFolderName, url, token)
-		}
 	}
 	
 	protected def registerQTestCredentials(orgFolderName, url, token) {
