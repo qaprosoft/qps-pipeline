@@ -178,11 +178,12 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-	
 	protected void prepare() {
 		scmClient.clone(!onlyUpdated)
 		super.prepare()
-	}    protected void scan() {
+	}    
+	
+	protected void scan() {
 
         context.stage("Scan Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
