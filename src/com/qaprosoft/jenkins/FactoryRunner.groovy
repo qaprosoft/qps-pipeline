@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins
 
 import groovy.json.JsonOutput
+import java.nio.file.Path
 
 public class FactoryRunner {
 	protected def context
