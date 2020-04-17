@@ -368,30 +368,28 @@ class Organization extends BaseObject {
 	}
 	
 	protected def registerQTestCredentials(orgFolderName, url, token) {
-				
-			def qtestURLCredentials = Configuration.CREDS_QTEST_SERVICE_URL
-			def qtestTokenCredentials = Configuration.CREDS_QTEST_ACCESS_TOKEN
-			
-			if (!isParamEmpty(orgFolderName)) {
-				qtestURLCredentials = orgFolderName + "-" + qtestURLCredentials
-				qtestTokenCredentials = orgFolderName + "-" + qtestTokenCredentials
-			}
-	
-			if (isParamEmpty(url)){
-				throw new RuntimeException("Unable to register QTest credentials! Required field 'url' is missing!")
-			}
-			
-			if (isParamEmpty(token)){
-				throw new RuntimeException("Unable to register QTest credentials! Required field 'token' is missing!")
-			}
-			
-			updateJenkinsCredentials(qtestURLCredentials, "QTest Service API URL", Configuration.Parameter.QTEST_SERVICE_URL.getKey(), url)
-			updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
-	
-	        registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
-	
-	        factoryRunner.run(dslObjects)
+		def qtestURLCredentials = Configuration.CREDS_QTEST_SERVICE_URL
+		def qtestTokenCredentials = Configuration.CREDS_QTEST_ACCESS_TOKEN
+		
+		if (!isParamEmpty(orgFolderName)) {
+			qtestURLCredentials = orgFolderName + "-" + qtestURLCredentials
+			qtestTokenCredentials = orgFolderName + "-" + qtestTokenCredentials
 		}
+
+		if (isParamEmpty(url)){
+			throw new RuntimeException("Unable to register QTest credentials! Required field 'url' is missing!")
+		}
+		
+		if (isParamEmpty(token)){
+			throw new RuntimeException("Unable to register QTest credentials! Required field 'token' is missing!")
+		}
+		
+		updateJenkinsCredentials(qtestURLCredentials, "QTest Service API URL", Configuration.Parameter.QTEST_SERVICE_URL.getKey(), url)
+		updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
+
+        registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
+
+        factoryRunner.run(dslObjects)
 	}
 
 }
