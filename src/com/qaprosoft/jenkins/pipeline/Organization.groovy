@@ -51,7 +51,6 @@ class Organization extends BaseObject {
         logger.info("Organization->register")
         context.node('master') {
 //            context.timestamps {
-                prepare()
                 generateCreds()
                 generateCiItems()
                 logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
@@ -69,7 +68,6 @@ class Organization extends BaseObject {
 //            context.timestamps {
                 def folder = Configuration.get("folderName")
                 def userName = folder + "-user"
-                prepare()
                 deleteFolder(folder)
                 deleteUser(userName)
                 clean()
@@ -87,7 +85,6 @@ class Organization extends BaseObject {
 			def url = Configuration.get("url")
 			def token = Configuration.get("token")
 	
-			prepare()
 			registerQTestCredentials(orgFolderName, url, token)
 		}
 	}
@@ -102,8 +99,6 @@ class Organization extends BaseObject {
 			def username = Configuration.get("username")
 			def password = Configuration.get("password")
 	
-			
-			prepare()
 			registerTestRailCredentials(orgFolderName, url, username, password)
 		}
 	}

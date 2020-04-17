@@ -73,16 +73,14 @@ class Repository extends BaseObject {
 
     }
 
-    private void prepare() {
+    protected void prepare() {
         def githubOrganization = Configuration.get(SCM_ORG)
         def credentialsId = "${githubOrganization}-${Configuration.get(REPO)}"
 
         updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get(SCM_USER), Configuration.get(SCM_TOKEN))
 
         scmClient.clone(true)
-        String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
-        String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
-        scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
+        super.prepare()
     }
 
 
