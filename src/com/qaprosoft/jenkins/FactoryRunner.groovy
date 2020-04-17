@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins
 
+import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import groovy.json.JsonOutput
