@@ -11,6 +11,15 @@ public class FactoryRunner {
 	public FactoryRunner(context) {
 		this.context = context
 	}
+	
+	
+	/*
+	 * Export dslObjects into factories.json and start Factory.groovy as JobDSL script to regenerate jenkins items (jobs, views etc)
+	 * removedConfigFilesAction, removedJobAction and removedViewAction are set to 'IGNORE' by default
+	 */
+	protected void run(dslObjects) {
+		run(dslObjects, 'IGNORE', 'IGNORE', 'IGNORE')
+	}
 
 	/*
 	 * Export dslObjects into factories.json and start Factory.groovy as JobDSL script to regenerate jenkins items (jobs, views etc)

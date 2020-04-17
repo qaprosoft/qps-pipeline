@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.QTestJobFactory
@@ -18,13 +18,11 @@ import jenkins.security.ApiTokenProperty
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-class Organization {
+class Organization extends BaseObject {
 
-    protected def context
     protected ISCM scmClient
-    protected Logger logger
     protected ZebrunnerUpdater zebrunnerUpdater
-    protected Configuration configuration = new Configuration(context)
+	
     protected Map dslObjects = new LinkedHashMap()
 	
 	protected def folderName
@@ -32,14 +30,11 @@ class Organization {
     protected def runnerClass
 	protected def zafiraServiceURL
 	protected def zafiraAccessToken
-    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
-    protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
 
     public Organization(context) {
-        this.context = context
+		super(context)
         scmClient = new GitHub(context)
-        logger = new Logger(context)
 		
 		zebrunnerUpdater = new ZebrunnerUpdater(context)
 		
@@ -109,15 +104,7 @@ class Organization {
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
 
-            context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-            context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
-                    sandbox: true,
-                    removedConfigFilesAction: 'IGNORE',
-                    removedJobAction: 'IGNORE',
-                    removedViewAction: 'IGNORE',
-                    targets: FACTORY_TARGET,
-                    ignoreExisting: false
-        }
+            factoryRunner.run(dslObjects)
     }
 
     protected void registerObject(name, object) {
@@ -367,6 +354,8 @@ class Organization {
 		updateJenkinsCredentials(testrailUserCredentials, "TestRaul User credentials", username, password)
 
         registerObject("testrail_job", new TestRailJobFactory(orgFolderName, getTestRailScript(), Configuration.TESTRAIL_UPDATER_JOBNAME, "Custom job testrail"))
+
+        factoryRunner.run(dslObjects)
 	}
 	
 	public def registerQTestCredentials() {
@@ -401,11 +390,9 @@ class Organization {
 		updateJenkinsCredentials(qtestURLCredentials, "QTest Service API URL", Configuration.Parameter.QTEST_SERVICE_URL.getKey(), url)
 		updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
 
-        logger.info("MEW_MEW_MEW\n")
-        logger.info('orgFolderName: ' + orgFolderName +  '\ngetQTestScript(): ' + getQTestScript() + '\nConfiguration.QTEST_UPDATER_JOBNAME: ' + Configuration.QTEST_UPDATER_JOBNAME)
-        def runner = new QARunner(context)
-        runner.qTestCreateJob()
         registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
+
+        factoryRunner.run(dslObjects)
 	}
 
 }
