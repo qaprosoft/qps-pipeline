@@ -56,7 +56,7 @@ public class FactoryRunner {
 		this.isCloned = true
 	}
 	
-	public void isCloned() {
+	public def isCloned() {
 		return this.isCloned
 	}
 }
