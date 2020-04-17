@@ -105,6 +105,7 @@ class Organization extends BaseObject {
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
 
             factoryRunner.run(dslObjects)
+		}
     }
 
     protected void registerObject(name, object) {
