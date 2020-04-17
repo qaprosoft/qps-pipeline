@@ -11,7 +11,7 @@ public class FactoryRunner {
 	private final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
 	private def additionalClasspath = "qps-pipeline/src"
 	
-	private def isCloned = false
+	private def isPrepared = false
 
 	public FactoryRunner(context) {
 		this.context = context
@@ -31,8 +31,8 @@ public class FactoryRunner {
 	 * Export dslObjects into factories.json and start Factory.groovy as JobDSL script to regenerate jenkins items (jobs, views etc)
 	 */
 	public void run(dslObjects, removedConfigFilesAction, removedJobAction, removedViewAction) {
-		if (!this.isCloned) {
-			clone()
+		if (!this.isPrepared) {
+			prepare()
 		}
 		
 		context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
@@ -48,12 +48,12 @@ public class FactoryRunner {
 		this.additionalClasspath = additionalClasspath
 	}
 	
-	public void clone() {
+	public void prepare() {
 		String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
 		String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
 		scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
 		
-		this.isCloned = true
+		this.isPrepared = true
 	}
 	
 }

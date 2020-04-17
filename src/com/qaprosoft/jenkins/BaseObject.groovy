@@ -40,7 +40,7 @@ public abstract class BaseObject {
 	}
 	
 	protected void prepare() {
-		factoryRunner.clone()
+		factoryRunner.prepare()
 	}
 
 }
