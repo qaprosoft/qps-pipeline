@@ -5,13 +5,13 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import groovy.json.JsonOutput
 
 public class FactoryRunner {
-	protected def context
-	protected ISCM scmClient
+	private def context
+	private ISCM scmClient
 
-	protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
-	protected def additionalClasspath = "qps-pipeline/src"
+	private final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
+	private def additionalClasspath = "qps-pipeline/src"
 	
-	protected def isCloned = false
+	private def isCloned = false
 
 	public FactoryRunner(context) {
 		this.context = context
@@ -31,7 +31,7 @@ public class FactoryRunner {
 	 * Export dslObjects into factories.json and start Factory.groovy as JobDSL script to regenerate jenkins items (jobs, views etc)
 	 */
 	public void run(dslObjects, removedConfigFilesAction, removedJobAction, removedViewAction) {
-		if (!isCloned()) {
+		if (!this.isCloned) {
 			clone()
 		}
 		
@@ -56,7 +56,4 @@ public class FactoryRunner {
 		this.isCloned = true
 	}
 	
-	public def isCloned() {
-		return this.isCloned
-	}
 }
