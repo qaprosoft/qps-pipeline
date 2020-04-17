@@ -1665,7 +1665,8 @@ public class QARunner extends AbstractRunner {
 
 	protected def getOrgFolderName(String jobName) {
 		int nameCount = Paths.get(jobName).getNameCount()
-		logger.debug("getOrgFolderName.nameCount: " + nameCount)
+		logger.info("getOrgFolderName.jobName: " + jobName)
+		logger.info("getOrgFolderName.nameCount: " + nameCount)
 		
 		def orgFolderName = ""
 		if (nameCount == 2 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
