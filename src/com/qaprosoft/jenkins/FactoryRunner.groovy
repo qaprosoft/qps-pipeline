@@ -27,9 +27,9 @@ public class FactoryRunner {
 	protected void run(dslObjects, removedConfigFilesAction, removedJobAction, removedViewAction) {
 		context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
 		context.jobDsl additionalClasspath: this.additionalClasspath,
-			removedConfigFilesAction: this.removedConfigFilesAction,
-			removedJobAction: this.removedJobAction,
-			removedViewAction: this.removedViewAction,
+			removedConfigFilesAction: removedConfigFilesAction,
+			removedJobAction: removedJobAction,
+			removedViewAction: removedViewAction,
 			targets: FACTORY_TARGET,
 			ignoreExisting: false
 	}
