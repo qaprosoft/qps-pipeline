@@ -1665,11 +1665,15 @@ public class QARunner extends AbstractRunner {
 
 	protected def getOrgFolderName(String jobName) {
 		int nameCount = Paths.get(jobName).getNameCount()
-		logger.debug("getOrgFolderName.jobName: " + jobName)
-		logger.debug("getOrgFolderName.nameCount: " + nameCount)
+
+		logger.info("getOrgFolderName.jobName: " + jobName)
+		logger.info("getOrgFolderName.nameCount: " + nameCount)
 		
 		def orgFolderName = ""
-		if (nameCount == 2 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
+		if (nameCount == 1 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
+			// testrail-updater - i.e. stage
+			orgFolderName = ""
+		} else if (nameCount == 2 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
 			// stage/testrail-updater - i.e. stage
 			orgFolderName = Paths.get(jobName).getName(0).toString()
 		} else if (nameCount == 2) {
