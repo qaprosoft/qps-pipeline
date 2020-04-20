@@ -68,7 +68,7 @@ public class PipelineFactory extends JobFactory {
         return parsedEnviroments
     }
 
-    protected String getFirstEnvironmentsValue(currentSuite) {
+    protected String getDefaultChoiceValue(currentSuite) {
         def enviroments = getEnvironments(currentSuite)
         return enviroments.substring(0, enviroments.indexOf('\n'))
     }
