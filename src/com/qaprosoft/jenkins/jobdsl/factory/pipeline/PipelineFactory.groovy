@@ -68,6 +68,11 @@ public class PipelineFactory extends JobFactory {
         return parsedEnviroments
     }
 
+    protected String getDefaultChoiceValue(currentSuite) {
+        def enviroments = getEnvironments(currentSuite)
+        return enviroments.substring(0, enviroments.indexOf('\n'))
+    }
+
     protected List<String> getGenericSplit(currentSuite, parameterName) {
         String genericField = currentSuite.getParameter(parameterName)
         def genericFields = []
