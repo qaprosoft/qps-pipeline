@@ -1,12 +1,13 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.QTestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestRailJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.RegisterRepositoryJobFactory
 import com.qaprosoft.jenkins.pipeline.integration.zebrunner.ZebrunnerUpdater
+import com.qaprosoft.jenkins.pipeline.runner.maven.QARunner
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
@@ -17,13 +18,11 @@ import jenkins.security.ApiTokenProperty
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-class Organization {
+class Organization extends BaseObject {
 
-    protected def context
     protected ISCM scmClient
-    protected Logger logger
     protected ZebrunnerUpdater zebrunnerUpdater
-    protected Configuration configuration = new Configuration(context)
+	
     protected Map dslObjects = new LinkedHashMap()
 	
 	protected def folderName
@@ -31,14 +30,11 @@ class Organization {
     protected def runnerClass
 	protected def zafiraServiceURL
 	protected def zafiraAccessToken
-    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
-    protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
 
 
     public Organization(context) {
-        this.context = context
+		super(context)
         scmClient = new GitHub(context)
-        logger = new Logger(context)
 		
 		zebrunnerUpdater = new ZebrunnerUpdater(context)
 		
@@ -51,11 +47,10 @@ class Organization {
 		this.zafiraAccessToken = Configuration.get("zafiraAccessToken")
     }
 
-    def register() {
+    public def register() {
         logger.info("Organization->register")
         context.node('master') {
 //            context.timestamps {
-                prepare()
                 generateCreds()
                 generateCiItems()
                 logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
@@ -67,20 +62,47 @@ class Organization {
         }
     }
 
-    def delete() {
+    public def delete() {
         logger.info("Organization->register")
         context.node('master') {
 //            context.timestamps {
                 def folder = Configuration.get("folderName")
                 def userName = folder + "-user"
-                prepare()
                 deleteFolder(folder)
                 deleteUser(userName)
                 clean()
 //            }
         }
     }
+	
+	
+	public def registerQTestCredentials() {
+		logger.info("Organization->registerQTestCredentials")
+		context.node('master') {
+			def orgFolderName = Configuration.get("folderName")
+			
+			// Example: https://<CHANGE_ME>/api/v3/
+			def url = Configuration.get("url")
+			def token = Configuration.get("token")
+	
+			registerQTestCredentials(orgFolderName, url, token)
+		}
+	}
 
+	public def registerTestRailCredentials() {
+		logger.info("Organization->registerTestRailCredentials")
+		context.node('master') {
+			def orgFolderName = Configuration.get("folderName")
+			
+			// Example: https://mytenant.testrail.com?/api/v2/
+			def url = Configuration.get("url")
+			def username = Configuration.get("username")
+			def password = Configuration.get("password")
+	
+			registerTestRailCredentials(orgFolderName, url, username, password)
+		}
+	}
+	
     protected def deleteFolder(folderName) {
         context.stage("Delete folder") {
             def folder = getJenkinsFolderByName(folderName)
@@ -107,18 +129,9 @@ class Organization {
             }
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
-            registerObject("testrail_job", new TestRailJobFactory(folder, getTestRailScript(), Configuration.TESTRAIL_UPDATER_JOBNAME, "Custom job testrail"))
-            registerObject("qtest_job", new QTestJobFactory(folder, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
 
-            context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-            context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
-                    sandbox: true,
-                    removedConfigFilesAction: 'IGNORE',
-                    removedJobAction: 'IGNORE',
-                    removedViewAction: 'IGNORE',
-                    targets: FACTORY_TARGET,
-                    ignoreExisting: false
-        }
+            factoryRunner.run(dslObjects)
+		}
     }
 
     protected void registerObject(name, object) {
@@ -238,12 +251,6 @@ class Organization {
         }
     }
 
-    protected void prepare() {
-        String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
-        String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
-        scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
-    }
-
     protected clean() {
         context.stage('Wipe out Workspace') {
             context.deleteDir()
@@ -328,21 +335,6 @@ class Organization {
 		updateJenkinsCredentials(zafiraTokenCredentials, "Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraAccessToken)
 	}
 	
-	
-	public def registerTestRailCredentials() {
-		context.stage("Register TestRail Credentials") {
-			def orgFolderName = Configuration.get("folderName")
-			
-			// Example: https://mytenant.testrail.com?/api/v2/
-			def url = Configuration.get("url")		
-			def username = Configuration.get("username")
-			def password = Configuration.get("password")
-	
-			
-			registerTestRailCredentials(orgFolderName, url, username, password)
-		}
-	}
-	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
 		def testrailURLCredentials = Configuration.CREDS_TESTRAIL_SERVICE_URL
 		def testrailUserCredentials = Configuration.CREDS_TESTRAIL
@@ -366,19 +358,10 @@ class Organization {
 
 		updateJenkinsCredentials(testrailURLCredentials, "TestRail Service API URL", Configuration.Parameter.TESTRAIL_SERVICE_URL.getKey(), url)
 		updateJenkinsCredentials(testrailUserCredentials, "TestRaul User credentials", username, password)
-		
-	}
-	
-	public def registerQTestCredentials() {
-		context.stage("Register QTest Credentials") {
-			def orgFolderName = Configuration.get("folderName")
-			
-			// Example: https://<CHANGE_ME>/api/v3/
-			def url = Configuration.get("url")
-			def token = Configuration.get("token")
-	
-			registerQTestCredentials(orgFolderName, url, token)
-		}
+
+        registerObject("testrail_job", new TestRailJobFactory(orgFolderName, getTestRailScript(), Configuration.TESTRAIL_UPDATER_JOBNAME, "Custom job testrail"))
+
+        factoryRunner.run(dslObjects)
 	}
 	
 	protected def registerQTestCredentials(orgFolderName, url, token) {
@@ -400,6 +383,10 @@ class Organization {
 		
 		updateJenkinsCredentials(qtestURLCredentials, "QTest Service API URL", Configuration.Parameter.QTEST_SERVICE_URL.getKey(), url)
 		updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
+
+        registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
+
+        factoryRunner.run(dslObjects)
 	}
 
 }

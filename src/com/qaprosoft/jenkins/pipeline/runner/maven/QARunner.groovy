@@ -11,8 +11,6 @@ import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
-import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import com.wangyin.parameter.WHideParameterDefinition
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
@@ -37,7 +35,6 @@ public class QARunner extends AbstractRunner {
     protected def pipelineLibrary = "QPS-Pipeline"
     protected def runnerClass = "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner"
     protected def onlyUpdated = false
-    protected def currentBuild
     protected def uuid
     protected ZafiraUpdater zafiraUpdater
     protected TestRailUpdater testRailUpdater
@@ -68,11 +65,8 @@ public class QARunner extends AbstractRunner {
 
     public QARunner(context) {
         super(context)
-        scmClient = new GitHub(context)
-        scmSshClient = new SshGitHub(context)
 
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
-        currentBuild = context.currentBuild
     }
 
     public QARunner(context, jobType) {
@@ -182,14 +176,12 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected void prepare() {
-        scmClient.clone(!onlyUpdated)
-        String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
-        String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
-        scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
-    }
-
-    protected void scan() {
+	protected void prepare() {
+		scmClient.clone(!onlyUpdated)
+		super.prepare()
+	}    
+	
+	protected void scan() {
 
         context.stage("Scan Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
@@ -211,21 +203,12 @@ public class QARunner extends AbstractRunner {
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch)
 
-                // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-                context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-                logger.info("factoryTarget: " + FACTORY_TARGET)
-                //TODO: test carefully auto-removal for jobs/views and configs
-                context.jobDsl additionalClasspath: additionalClasspath,
-                        removedConfigFilesAction: Configuration.get("removedConfigFilesAction"),
-                        removedJobAction: Configuration.get("removedJobAction"),
-                        removedViewAction: Configuration.get("removedViewAction"),
-                        targets: FACTORY_TARGET,
-                        ignoreExisting: false
-
+				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"), 
+										Configuration.get("removedJobAction"),
+										Configuration.get("removedViewAction"))
             }
         }
     }
-
 
     protected clean() {
         context.stage('Wipe out Workspace') {
@@ -450,14 +433,6 @@ public class QARunner extends AbstractRunner {
             logger.info("New Item: ${object.dump()}")
         }
         dslObjects.put(name, object)
-    }
-
-    protected void setDslTargets(targets) {
-        this.factoryTarget = targets
-    }
-
-    protected void setDslClasspath(additionalClasspath) {
-        this.additionalClasspath = additionalClasspath
     }
 
     protected def getJenkinsJobsScanResult(build) {
