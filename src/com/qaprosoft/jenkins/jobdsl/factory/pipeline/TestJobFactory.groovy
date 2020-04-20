@@ -64,8 +64,8 @@ public class TestJobFactory extends PipelineFactory {
                     name('env')
                     choiceListProvider {
                         textareaChoiceListProvider {
-                            choiceListText(getFirstEnvironmentsValue(currentSuite))
-                            defaultChoice('')
+                            choiceListText(getEnvironments(currentSuite))
+                            defaultChoice(getFirstEnvironmentsValue(currentSuite))
                             addEditedValue(false)
                             whenToAdd('Triggered')
                         }
