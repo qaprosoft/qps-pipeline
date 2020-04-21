@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins
 @Grab('org.testng:testng:6.8.8')
 import org.testng.xml.Parser
 import org.testng.xml.XmlSuite
+import javax.xml.parsers.DocumentBuilderFactory
 
 class Utils {
 
