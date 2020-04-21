@@ -66,7 +66,7 @@ class Utils {
     static def getAttributeValue(filePath, attribute) {
         def suite = parseSuite(filePath)
         def res = ""
-        def file = new File(suite.getXmlSuite().getFileName())
+        def file = new File(filePath)
         def documentBuilderFactory = DocumentBuilderFactory.newInstance()
 
         documentBuilderFactory.setValidating(false)
