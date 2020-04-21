@@ -43,6 +43,15 @@ class Utils {
         return value
     }
 
+    protected def getAttributeValue(defaultValue, currentSuite, attributeName) {
+        def value = defaultValue
+        if (!isParamEmpty(currentSuite.getParameter(attributeName))) {
+            value = currentSuite.getParameter(attributeName)
+        }
+
+        return value
+    }
+
     static def replaceTrailingSlash(value) {
         return value.replaceAll(".\$","")
     }

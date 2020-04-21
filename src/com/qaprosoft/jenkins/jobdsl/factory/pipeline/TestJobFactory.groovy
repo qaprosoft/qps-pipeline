@@ -163,6 +163,10 @@ public class TestJobFactory extends PipelineFactory {
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
                 configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
+
+                logger.info('11111\n' + currentSuite + "\n\n\n")
+                //getAttributeValue("1", 'thread_count', currentSuite)
+
                 stringParam('thread_count', getSuiteParameter("1", "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
                 stringParam('data-provider-thread-count', currentSuite.getDataProviderThreadCount().toString(), 'number of data provider threads')
                 stringParam('email_list',  getSuiteParameter("", "jenkinsEmail", currentSuite), 'List of Users to be emailed after the test')
