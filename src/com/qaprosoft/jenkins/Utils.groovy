@@ -43,13 +43,23 @@ class Utils {
         return value
     }
 
-    protected def getAttributeValue(defaultValue, currentSuite, attributeName) {
-        def value = defaultValue
-        if (!isParamEmpty(currentSuite.getParameter(attributeName))) {
-            value = currentSuite.getParameter(attributeName)
+    static def parseSuite(filePath){
+//        logger.debug("filePath: " + filePath)
+        XmlSuite currentSuite = null
+        try {
+            currentSuite = parseSuite(filePath)
+        } catch (FileNotFoundException e) {
+//            logger.error("ERROR! Unable to find suite: " + filePath)
+//            logger.error(printStackTrace(e))
+        } catch (Exception e) {
+//            logger.error("ERROR! Unable to parse suite: " + filePath)
+//            logger.error(printStackTrace(e))
         }
+        return currentSuite
+    }
 
-        return value
+    static def getAttributeValue(filePath) {
+        return parseSuite(filePath)
     }
 
     static def replaceTrailingSlash(value) {

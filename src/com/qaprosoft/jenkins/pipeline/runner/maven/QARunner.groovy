@@ -316,7 +316,7 @@ public class QARunner extends AbstractRunner {
 
             logger.info("SUITE_NAME: " + suiteName)
             def currentSuitePath = workspace + "/" + suitePath
-            XmlSuite currentSuite = parsePipeline(currentSuitePath)
+            XmlSuite currentSuite = parseSuite(currentSuitePath)
 
 
             logger.info("suite name: " + suiteName)
@@ -393,21 +393,6 @@ public class QARunner extends AbstractRunner {
                 }
             }
         }
-    }
-
-    protected XmlSuite parsePipeline(filePath){
-        logger.debug("filePath: " + filePath)
-        XmlSuite currentSuite = null
-        try {
-            currentSuite = parseSuite(filePath)
-        } catch (FileNotFoundException e) {
-            logger.error("ERROR! Unable to find suite: " + filePath)
-            logger.error(printStackTrace(e))
-        } catch (Exception e) {
-            logger.error("ERROR! Unable to parse suite: " + filePath)
-            logger.error(printStackTrace(e))
-        }
-        return currentSuite
     }
 
     protected String getPipelineScript() {
@@ -1227,7 +1212,7 @@ public class QARunner extends AbstractRunner {
         logger.info("Number of Test Suites to Scan Through: " + files.length)
         for (file in files){
             logger.info("Current suite path: " + file.path)
-            XmlSuite currentSuite = parsePipeline(workspace + "/" + file.path)
+            XmlSuite currentSuite = parseSuite(workspace + "/" + file.path)
             if (currentSuite == null) {
                 currentBuild.result = BuildResult.FAILURE
                 continue
