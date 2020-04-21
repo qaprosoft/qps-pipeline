@@ -26,6 +26,11 @@ import java.util.regex.Pattern
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
+// #608 imports
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+
 @Grab('org.testng:testng:6.8.8')
 
 @Mixin([Maven, Sonar])
