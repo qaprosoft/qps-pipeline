@@ -167,7 +167,6 @@ public class TestJobFactory extends PipelineFactory {
                 if (currentSuite.toXml().contains("data-provider-thread-count")) {
                     stringParam('dataproviderthreadcount', currentSuite.getDataProviderThreadCount().toString(), 'number of data provider threads')
                 }
-                stringParam('thread_count', currentSuite.toXml().contains(" thread-count") ? currentSuite.getThreadCount().toString() : "1", 'number of threads')
                 stringParam('email_list',  getSuiteParameter("", "jenkinsEmail", currentSuite), 'List of Users to be emailed after the test')
                 configure addHiddenParameter('failure_email_list', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
                 choiceParam('retry_count', getRetryCountArray(currentSuite), 'Number of Times to Retry a Failed Test')
