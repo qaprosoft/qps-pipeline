@@ -401,7 +401,7 @@ public class QARunner extends AbstractRunner {
 	protected def getAttributeValue(suite, attribute) {
 		def res = ""
 		
-		def file = new File(suite.getXmlSuite().getFileName())
+		def file = new File(suite.getFileName())
 		def documentBuilderFactory = DocumentBuilderFactory.newInstance()
 
 		documentBuilderFactory.setValidating(false)
