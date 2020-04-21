@@ -165,7 +165,7 @@ public class TestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
                 stringParam('thread_count', getSuiteParameter("1", "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
                 if (currentSuite.toXml().contains("data-provider-thread-count")) {
-                    stringParam('data_provider_thread_count', currentSuite.getDataProviderThreadCount().toString(), 'number of data provider threads')
+                    stringParam('dataproviderthreadcount', currentSuite.getDataProviderThreadCount().toString(), 'number of data provider threads')
                 }
                 stringParam('thread_count', currentSuite.toXml().contains(" thread-count") ? currentSuite.getThreadCount().toString() : "1", 'number of threads')
                 stringParam('email_list',  getSuiteParameter("", "jenkinsEmail", currentSuite), 'List of Users to be emailed after the test')
