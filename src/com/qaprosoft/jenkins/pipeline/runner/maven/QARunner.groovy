@@ -26,6 +26,14 @@ import java.util.regex.Pattern
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
+// #608 imports
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+
 @Grab('org.testng:testng:6.8.8')
 
 @Mixin([Maven, Sonar])
@@ -318,16 +326,20 @@ public class QARunner extends AbstractRunner {
             def currentSuitePath = workspace + "/" + suitePath
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
 
-
             logger.info("suite name: " + suiteName)
             logger.info("suite path: " + suitePath)
+
+            def suiteThreadCount = getSuiteAttribute(currentSuite, "thread-count")
+            logger.info("suite thread-count: " + suiteThreadCount)
+            
+            def suiteDataProviderThreadCount = getSuiteAttribute(currentSuite, "data-provider-thread-count")
+            logger.info("suite data-provider-thread-count: " + suiteDataProviderThreadCount)
 
             def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
             if (suiteOwner.contains(",")) {
                 // to workaround problem when multiply suiteowners are declared in suite xml file which is unsupported
                 suiteOwner = suiteOwner.split(",")[0].trim()
             }
-
 
             def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
@@ -360,7 +372,7 @@ public class QARunner extends AbstractRunner {
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling))
+            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling, suiteThreadCount, suiteDataProviderThreadCount))
 
 			//cron job
             if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
@@ -394,6 +406,54 @@ public class QARunner extends AbstractRunner {
             }
         }
     }
+	
+	protected def getSuiteAttribute(suite, attribute) {
+		def res = "1"
+		
+		def file = new File(suite.getFileName())
+		def documentBuilderFactory = DocumentBuilderFactory.newInstance()
+
+		documentBuilderFactory.setValidating(false)
+		documentBuilderFactory.setNamespaceAware(true)
+		try {
+			documentBuilderFactory.setFeature("http://xml.org/sax/features/namespaces", false)
+			documentBuilderFactory.setFeature("http://xml.org/sax/features/validation", false)
+			documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false)
+			documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+
+			def documentBuilder = documentBuilderFactory.newDocumentBuilder()
+			def document = documentBuilder.parse(file)
+
+			for (int i = 0; i < document.getChildNodes().getLength(); i++) {
+				def nodeMapAttributes = document.getChildNodes().item(i).getAttributes()
+				if (nodeMapAttributes == null) {
+					continue
+				}
+
+				// get "name" from suite element
+				// <suite verbose="1" name="Carina Demo Tests - API Sample" thread-count="3" >
+				Node nodeName = nodeMapAttributes.getNamedItem("name")
+				if (nodeName == null) {
+					continue
+				}
+
+				if (suite.getName().equals(nodeName.getNodeValue())) {
+					// valid suite node detected
+					Node nodeAttribute = nodeMapAttributes.getNamedItem(attribute)
+					if (nodeAttribute != null) {
+						res = nodeAttribute.getNodeValue()
+						break
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Unable to get attribute '" + attribute +"' from suite: " + suite.getFileName() + "!")
+			logger.error(e.getMessage())
+			logger.error(printStackTrace(e))
+		}
+
+		return res
+	}
 
     protected XmlSuite parsePipeline(filePath){
         logger.debug("filePath: " + filePath)
