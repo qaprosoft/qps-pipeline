@@ -321,7 +321,7 @@ public class QARunner extends AbstractRunner {
             logger.info("suite name: " + suiteName)
             logger.info("suite path: " + suitePath)
 
-            def threadCount = getAttributeValue(suitePath, "thread-count")
+            def threadCount = getAttributeValue(currentSuite, "thread-count")
             logger info("threadCount: " + threadCount)
 
 
@@ -398,11 +398,10 @@ public class QARunner extends AbstractRunner {
         }
     }
 	
-	protected def getAttributeValue(filePath, attribute) {
-		def suite = parseSuite(filePath)
-
+	protected def getAttributeValue(suite, attribute) {
 		def res = ""
-		def file = new File(filePath)
+		
+		def file = new File(suite.getXmlSuite().getFileName())
 		def documentBuilderFactory = DocumentBuilderFactory.newInstance()
 
 		documentBuilderFactory.setValidating(false)
