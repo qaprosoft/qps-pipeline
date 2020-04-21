@@ -58,8 +58,8 @@ class Utils {
         return currentSuite
     }
 
-    static def getAttributeValue(filePath) {
-        return parseSuite(filePath)
+    static def getAttributeValue(filePath, attributeName) {
+        return parseSuite(filePath).getAttribute(attributeName)
     }
 
     static def replaceTrailingSlash(value) {

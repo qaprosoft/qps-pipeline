@@ -164,7 +164,7 @@ public class TestJobFactory extends PipelineFactory {
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
                 configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
 
-                logger.info('11111\n' + getAttributeValue(currentSuite.getFileName()) + "\n\n\n")
+                logger.info('11111\n' + getAttributeValue(currentSuite.getFileName(), "thread-count") + "\n\n\n")
 
                 stringParam('thread_count', getSuiteParameter("1", "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
                 stringParam('data-provider-thread-count', currentSuite.getDataProviderThreadCount().toString(), 'number of data provider threads')
