@@ -330,7 +330,10 @@ public class QARunner extends AbstractRunner {
             logger.info("suite path: " + suitePath)
 
             def threadCount = getAttributeValue(currentSuite, "thread-count")
-            logger.info("threadCount: " + threadCount)
+            logger.info("suite thread-count: " + threadCount)
+            
+            def suiteDataProviderThreadCount = getAttributeValue(currentSuite, "data-provider-thread-count")
+            logger.info("suite data-provider-thread-count: " + suiteDataProviderThreadCount)
 
 
             def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
