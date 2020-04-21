@@ -329,19 +329,17 @@ public class QARunner extends AbstractRunner {
             logger.info("suite name: " + suiteName)
             logger.info("suite path: " + suitePath)
 
-            def threadCount = getAttributeValue(currentSuite, "thread-count")
-            logger.info("suite thread-count: " + threadCount)
+            def suiteThreadCount = getSuiteAttribute(currentSuite, "thread-count")
+            logger.info("suite thread-count: " + suiteThreadCount)
             
-            def suiteDataProviderThreadCount = getAttributeValue(currentSuite, "data-provider-thread-count")
+            def suiteDataProviderThreadCount = getSuiteAttribute(currentSuite, "data-provider-thread-count")
             logger.info("suite data-provider-thread-count: " + suiteDataProviderThreadCount)
-
 
             def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
             if (suiteOwner.contains(",")) {
                 // to workaround problem when multiply suiteowners are declared in suite xml file which is unsupported
                 suiteOwner = suiteOwner.split(",")[0].trim()
             }
-
 
             def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
@@ -374,7 +372,7 @@ public class QARunner extends AbstractRunner {
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling))
+            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling, suiteThreadCount, suiteDataProviderThreadCount))
 
 			//cron job
             if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
@@ -409,8 +407,8 @@ public class QARunner extends AbstractRunner {
         }
     }
 	
-	protected def getAttributeValue(suite, attribute) {
-		def res = ""
+	protected def getSuiteAttribute(suite, attribute) {
+		def res = "1"
 		
 		def file = new File(suite.getFileName())
 		def documentBuilderFactory = DocumentBuilderFactory.newInstance()
