@@ -318,9 +318,12 @@ public class QARunner extends AbstractRunner {
             def currentSuitePath = workspace + "/" + suitePath
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
 
-
             logger.info("suite name: " + suiteName)
             logger.info("suite path: " + suitePath)
+
+            def threadCount = getAttributeValue(suitePath, "thread-count")
+            logger info("threadCount: " + threadCount)
+
 
             def suiteOwner = getSuiteParameter("anonymous", "suiteOwner", currentSuite)
             if (suiteOwner.contains(",")) {
@@ -394,6 +397,53 @@ public class QARunner extends AbstractRunner {
             }
         }
     }
+	
+	protected def getAttributeValue(filePath, attribute) {
+		def suite = parseSuite(filePath)
+
+		def res = ""
+		def file = new File(filePath)
+		def documentBuilderFactory = DocumentBuilderFactory.newInstance()
+
+		documentBuilderFactory.setValidating(false)
+		documentBuilderFactory.setNamespaceAware(true)
+		try {
+			documentBuilderFactory.setFeature("http://xml.org/sax/features/namespaces", false)
+			documentBuilderFactory.setFeature("http://xml.org/sax/features/validation", false)
+			documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false)
+			documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+
+			def documentBuilder = documentBuilderFactory.newDocumentBuilder()
+			def document = documentBuilder.parse(file)
+
+			for (int i = 0; i < document.getChildNodes().getLength(); i++) {
+				def nodeMapAttributes = document.getChildNodes().item(i).getAttributes()
+				if (nodeMapAttributes == null) {
+					continue
+				}
+
+				// get "name" from suite element
+				// <suite verbose="1" name="Carina Demo Tests - API Sample" thread-count="3" >
+				Node nodeName = nodeMapAttributes.getNamedItem("name")
+				if (nodeName == null) {
+					continue
+				}
+
+				if (suite.getName().equals(nodeName.getNodeValue())) {
+					// valid suite node detected
+					Node nodeAttribute = nodeMapAttributes.getNamedItem(attribute)
+					if (nodeAttribute != null) {
+						res = nodeAttribute.getNodeValue()
+						break
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.warn("Unable to get attribute '" + attribute +"' from suite: " + suite.getXmlSuite().getFileName(), e)
+		}
+
+		return res
+	}
 
     protected XmlSuite parsePipeline(filePath){
         logger.debug("filePath: " + filePath)
