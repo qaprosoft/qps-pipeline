@@ -443,7 +443,7 @@ public class QARunner extends AbstractRunner {
 				}
 			}
 		} catch (Exception e) {
-			logger.warn("Unable to get attribute '" + attribute +"' from suite: " + suite.getXmlSuite().getFileName(), e)
+			logger.warn("Unable to get attribute '" + attribute +"' from suite: " + suite.getFileName(), e)
 		}
 
 		return res
