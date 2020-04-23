@@ -26,14 +26,13 @@ public class Sonar {
 			// [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
 			return false
         }
-		
+
         // [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
         context.stage('Sonar Scanner') {
             context.withSonarQubeEnv(sonarQubeEnv) {
                 def goals = "-U -f ${pomFile} \
 					clean compile test-compile package sonar:sonar -DskipTests=true \
 					-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-					-Dsonar.analysis.mode=preview  \
 					-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
 					-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
 					-Dsonar.projectKey=${Configuration.get("repo")} \
@@ -53,13 +52,13 @@ public class Sonar {
                 }
             }
         }
-		
+
 		return true
-        
+
     }
 
     protected void executeSonarFullScan(String projectName, String projectKey, String modules) {
-        executeSonarFullScan(".", projectName, projectKey, modules) 
+        executeSonarFullScan(".", projectName, projectKey, modules)
     }
 
     protected void executeSonarFullScan(String projectBaseDir, String projectName, String projectKey, String modules) {
