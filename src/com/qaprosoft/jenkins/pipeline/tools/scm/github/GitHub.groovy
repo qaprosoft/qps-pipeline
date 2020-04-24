@@ -29,7 +29,7 @@ class GitHub implements ISCM {
             gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
         }
 		//TODO: remove credentialsId setup here or replace by scmOrg after final migration
-        this.credentialsId = isParamEmpty(Configuration.get("repo")) ? null : "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
+        this.credentialsId = isParamEmpty(Configuration.get("repo")) ? "${null}" : "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
         if(Configuration.get("scmURL") != null ) {
             gitHtmlUrl = Configuration.get("scmURL")
             credentialsId = ''
