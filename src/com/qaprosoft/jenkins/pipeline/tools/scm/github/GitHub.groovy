@@ -55,7 +55,7 @@ class GitHub implements ISCM {
             def repo = Configuration.get("repo")
             def userId = Configuration.get("BUILD_USER_ID")
             def gitUrl = Configuration.resolveVars(gitHtmlUrl)
-            def credentialsId =  !repo ? null : Configuration.get("GITHUB_ORGANIZATION") + "-" + repo
+            def credentialsId = Configuration.get("GITHUB_ORGANIZATION") + "-" + repo
             logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
             logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
             logger.info("GIT_URL: " + gitUrl)
