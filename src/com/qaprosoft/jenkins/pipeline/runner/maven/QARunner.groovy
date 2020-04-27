@@ -309,7 +309,7 @@ public class QARunner extends AbstractRunner {
 			XmlSuite currentSuite = parsePipeline(currentSuitePath)
 			
 			def suiteName = ""
-			if (currentSuitePath.contains(carinaSuitePath) && currentSuitePath.endWith(".xml")) {
+			if (currentSuitePath.contains(carinaSuitePath) && currentSuitePath.endsWith(".xml")) {
 				// carina core TestNG suite
 				int testResourceIndex = currentSuitePath.lastIndexOf(carinaSuitePath)
 				logger.debug("testResourceIndex : " + testResourceIndex)
