@@ -283,7 +283,7 @@ public class QARunner extends AbstractRunner {
         def repo = Configuration.get("repo")
 		
 		def testResourcesPath = "/src/test/resources/"
-		def carinaSuitePath = testResourcesPath + "testng_suites"
+		def carinaSuitePath = testResourcesPath + "testng_suites/"
 
         // VIEWS
         registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
