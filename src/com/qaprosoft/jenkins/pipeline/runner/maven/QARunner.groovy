@@ -293,8 +293,11 @@ public class QARunner extends AbstractRunner {
         for (File suite : suites) {
             def suitePath = suite.path
 			logger.debug("suitePath: " + suitePath)
+			
 			//verify if it is testNG suite xml file and continue scan only in this case!
-			if (parsePipeline(suite.path) == null) {
+			def currentSuitePath = workspace + "/" + suitePath
+			XmlSuite currentSuite = parsePipeline(currentSuitePath)
+			if (currentSuite == null) {
 				// not a testng suite
 				continue
 			}
@@ -302,8 +305,6 @@ public class QARunner extends AbstractRunner {
 			//def suiteName = "test"
 
             logger.info("SUITE_NAME: " + suiteName)
-            def currentSuitePath = workspace + "/" + suitePath
-            XmlSuite currentSuite = parsePipeline(currentSuitePath)
 
             logger.info("suite name: " + suiteName)
             logger.info("suite path: " + suitePath)
