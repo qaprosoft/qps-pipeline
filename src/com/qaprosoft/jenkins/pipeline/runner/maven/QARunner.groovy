@@ -301,7 +301,7 @@ public class QARunner extends AbstractRunner {
 			logger.debug("suitePath: " + suitePath)
 			if (suitePath == null) {
 				// no custom folder for suite xml file resources detected so getting from src/test/resources...
-				suitePath = Paths.get(pomFile).getParent() 
+				suitePath = Paths.get(pomFile) 
 			}
 			logger.debug("suitePath: " + suitePath)
 			
