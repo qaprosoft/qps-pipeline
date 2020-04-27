@@ -283,6 +283,7 @@ public class QARunner extends AbstractRunner {
         def repo = Configuration.get("repo")
 		
 		def testResourcesPath = "/src/test/resources/"
+		def carinaSuitePath = testResourcesPath + "testng_suites"
 
         // VIEWS
         registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
@@ -307,12 +308,22 @@ public class QARunner extends AbstractRunner {
 			
 			XmlSuite currentSuite = parsePipeline(currentSuitePath)
 			
-			int testResourceIndex = currentSuitePath.lastIndexOf(testResourcesPath)
-			logger.debug("testResourceIndex : " + testResourceIndex)
+			def suiteName = ""
+			if (currentSuitePath.contains(carinaSuitePath) && currentSuitePath.endWith(".xml")) {
+				// carina core TestNG suite
+				int testResourceIndex = currentSuitePath.lastIndexOf(carinaSuitePath)
+				logger.debug("testResourceIndex : " + testResourceIndex)
+				suiteName = currentSuitePath.substring(testResourceIndex + carinaSuitePath.length(), currentSuitePath.length() - 4)
+			} else {
+				// external TestNG suite
+				int testResourceIndex = currentSuitePath.lastIndexOf(testResourcesPath)
+				logger.debug("testResourceIndex : " + testResourceIndex)
+				suiteName = currentSuitePath.substring(testResourceIndex + testResourcesPath.length(), currentSuitePath.length())
+			}
 			
-			def suiteName = currentSuitePath.substring(testResourceIndex + testResourcesPath.length(), currentSuitePath.length())
-
-            logger.info("SUITE_NAME: " + suiteName)
+			if (suiteName.isEmpty()) {
+				continue
+			}
 
             logger.info("suite name: " + suiteName)
             logger.info("suite path: " + suitePath)
