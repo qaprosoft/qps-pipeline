@@ -297,7 +297,8 @@ public class QARunner extends AbstractRunner {
 //            if (!suitePath.contains(".xml")) {
 //                continue
 //            }
-            def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
+            // def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
+			def suiteName = "test"
 
             logger.info("SUITE_NAME: " + suiteName)
             def currentSuitePath = workspace + "/" + suitePath
@@ -1258,8 +1259,8 @@ public class QARunner extends AbstractRunner {
         }
     }
 
-    protected def generatePipeLineList(subProjectFilter, testNGFolderName){
-        def files = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
+    protected def generatePipeLineList(subProjectFilter){
+        def files = context.findFiles glob: subProjectFilter + "/**/*.xml"
         logger.info("Number of Test Suites to Scan Through: " + files.length)
         for (file in files){
             logger.info("Current suite path: " + file.path)
