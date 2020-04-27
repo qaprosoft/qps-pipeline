@@ -292,7 +292,7 @@ public class QARunner extends AbstractRunner {
 			logger.debug("matcher found.")
 			def startIndex = pom.lastIndexOf("<" + tagName + ">")
 			logger.debug("startIndex: " + startIndex)
-			def endIndex = pom.indexOf("</" + tagName + ">".toString())
+			def endIndex = pom.lastIndexOf("</" + tagName + ">".toString())
 			logger.debug("endIndex: " + endIndex)
             def suiteXmlPath = pom.substring(startIndex + tagName.length() + 2, endIndex)
 			logger.debug("suiteXmlPath: " + suiteXmlPath)
