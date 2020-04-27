@@ -296,11 +296,11 @@ public class QARunner extends AbstractRunner {
 			
 			//verify if it is testNG suite xml file and continue scan only in this case!
 			def currentSuitePath = workspace + "/" + suitePath
-			XmlSuite currentSuite = parsePipeline(currentSuitePath)
-			if (currentSuite == null) {
+			if (!isTestNgSuite(currentSuitePath)) {
 				// not a testng suite
 				continue
 			}
+			XmlSuite currentSuite = parsePipeline(currentSuitePath)
 			def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
 			//def suiteName = "test"
 
@@ -435,6 +435,23 @@ public class QARunner extends AbstractRunner {
 		return res
 	}
 
+	protected boolean isTestNgSuite(filePath){
+		logger.debug("filePath: " + filePath)
+		XmlSuite currentSuite = null
+		boolean res = false
+		try {
+			currentSuite = parseSuite(filePath)
+			res = true
+		} catch (FileNotFoundException e) {
+			logger.error("ERROR! Unable to find suite: " + filePath)
+			logger.error(printStackTrace(e))
+		} catch (Exception e) {
+			logger.debug("Unable to parse suite: " + filePath)
+			logger.debug(printStackTrace(e))
+		}
+		return res
+	}
+	
     protected XmlSuite parsePipeline(filePath){
         logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
