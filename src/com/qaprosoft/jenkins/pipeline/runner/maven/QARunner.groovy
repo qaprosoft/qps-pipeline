@@ -304,7 +304,7 @@ public class QARunner extends AbstractRunner {
 			}
 			XmlSuite currentSuite = parsePipeline(currentSuitePath)
 			
-			def suiteName = suitePath.substring(suitePath.lastIndexOf(testResourcesPath), suitePath.length)
+			def suiteName = suitePath.substring(suitePath.lastIndexOf(testResourcesPath), suitePath.length())
 
             logger.info("SUITE_NAME: " + suiteName)
 
