@@ -298,6 +298,8 @@ public class QARunner extends AbstractRunner {
 			logger.debug("suiteXmlPath: " + suiteXmlPath)
 			
             Path suitePath = Paths.get(suiteXmlPath).getParent()
+			logger.debug("suitePath: " + suitePath)
+			
             testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
             logger.info("TestNG folder name: " + testNGFolderName)
         } else {
