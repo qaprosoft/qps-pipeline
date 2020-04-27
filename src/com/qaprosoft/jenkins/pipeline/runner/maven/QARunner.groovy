@@ -298,6 +298,10 @@ public class QARunner extends AbstractRunner {
 			logger.debug("suiteXmlPath: " + suiteXmlPath)
 			
             Path suitePath = Paths.get(suiteXmlPath).getParent()
+			if (suitePath == null) {
+				// no custom folder for suite xml file resources detected so getting from src/test/resources...
+				suitePath = Paths.get(pomFile).getParent() 
+			}
 			logger.debug("suitePath: " + suitePath)
 			
             testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
