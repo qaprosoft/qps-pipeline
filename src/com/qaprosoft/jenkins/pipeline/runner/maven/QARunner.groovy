@@ -209,11 +209,9 @@ public class QARunner extends AbstractRunner {
 				logger.debug("subProject: " + subProject)
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
 				logger.debug("subProjectFilter: " + subProjectFilter)
-                def testNGFolderName = searchTestNgFolderName(subProject).toString()
-				logger.debug("testNGFolderName: " + testNGFolderName)
                 def zafiraProject = getZafiraProject(subProjectFilter)
 				logger.debug("zafiraProject: " + zafiraProject)
-                generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch)
+                generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch)
 
 				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"), 
 										Configuration.get("removedJobAction"),
@@ -266,53 +264,6 @@ public class QARunner extends AbstractRunner {
         return context.findFiles(glob: subDirectory + "**/pom.xml")
     }
 
-    def searchTestNgFolderName(subProject) {
-        def testNGFolderName = null
-        def poms = getSubProjectPomFiles(subProject)
-        logger.info("SUBPROJECT POMS: " + poms)
-        for(pom in poms){
-            testNGFolderName = parseTestNgFolderName(pom.path)
-            if (!isParamEmpty(testNGFolderName)){
-                break
-            }
-        }
-        return testNGFolderName
-    }
-
-    def parseTestNgFolderName(pomFile) {
-		logger.debug("pomFile: " + pomFile)
-        def testNGFolderName = null
-        String pom = context.readFile pomFile
-		logger.debug("pom content: " + pom)
-        String tagName = "suiteXmlFile"
-		logger.debug("tagName: " + tagName)
-        Matcher matcher = Pattern.compile(".*" + tagName + ".*").matcher(pom)
-		logger.debug("matcher: " + matcher)
-        if (matcher.find()){
-			logger.debug("matcher found.")
-			def startIndex = pom.lastIndexOf("<" + tagName + ">")
-			logger.debug("startIndex: " + startIndex)
-			def endIndex = pom.lastIndexOf("</" + tagName + ">".toString())
-			logger.debug("endIndex: " + endIndex)
-            def suiteXmlPath = pom.substring(startIndex + tagName.length() + 2, endIndex)
-			logger.debug("suiteXmlPath: " + suiteXmlPath)
-			
-            Path suitePath = Paths.get(suiteXmlPath).getParent()
-			logger.debug("suitePath: " + suitePath)
-			if (suitePath == null) {
-				// no custom folder for suite xml file resources detected so getting from src/test/resources...
-				suitePath = Paths.get(pomFile) 
-			}
-			logger.debug("suitePath: " + suitePath)
-			
-            testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
-            logger.info("TestNG folder name: " + testNGFolderName)
-        } else {
-			logger.debug("matcher not found!")
-		}
-        return testNGFolderName
-    }
-
     def getZafiraProject(subProjectFilter){
         def zafiraProject = "unknown"
         def zafiraProperties = context.findFiles glob: subProjectFilter + "/**/zafira.properties"
@@ -326,7 +277,7 @@ public class QARunner extends AbstractRunner {
         return zafiraProject
     }
 
-    def generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch){
+    def generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch){
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
@@ -336,15 +287,15 @@ public class QARunner extends AbstractRunner {
         //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
         //TODO: create default personalized view here
-        logger.debug("suites pattern: " + subProjectFilter + "/**/" + testNGFolderName + "/**")
-        def suites = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
+        def suites = context.findFiles glob: subProjectFilter + "/**/*.xml"
         logger.info("SUITES: " + suites)
         // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
         for (File suite : suites) {
             def suitePath = suite.path
-            if (!suitePath.contains(".xml")) {
-                continue
-            }
+			//TODO: verify if it is testNG suite xml file and continue scan only in this case!
+//            if (!suitePath.contains(".xml")) {
+//                continue
+//            }
             def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
 
             logger.info("SUITE_NAME: " + suiteName)
@@ -1295,8 +1246,7 @@ public class QARunner extends AbstractRunner {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
-                def testNGFolderName = searchTestNgFolderName(subProject).toString()
-                generatePipeLineList(subProjectFilter, testNGFolderName)
+                generatePipeLineList(subProjectFilter)
                 logger.info "Finished Dynamic Mapping:"
                 listPipelines = sortPipelineList(listPipelines)
                 listPipelines.each { pipeline ->
@@ -1306,7 +1256,7 @@ public class QARunner extends AbstractRunner {
             }
         }
     }
-
+!!!
     protected def generatePipeLineList(subProjectFilter, testNGFolderName){
         def files = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
         logger.info("Number of Test Suites to Scan Through: " + files.length)
