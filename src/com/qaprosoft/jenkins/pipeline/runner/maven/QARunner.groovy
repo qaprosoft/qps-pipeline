@@ -310,7 +310,7 @@ public class QARunner extends AbstractRunner {
 			int testResourceIndex = currentSuitePath.lastIndexOf(testResourcesPath)
 			logger.debug("testResourceIndex : " + testResourceIndex)
 			
-			def suiteName = currentSuitePath.substring(testResourceIndex, currentSuitePath.length())
+			def suiteName = currentSuitePath.substring(testResourceIndex + testResourceIndex.length(), currentSuitePath.length())
 
             logger.info("SUITE_NAME: " + suiteName)
 
