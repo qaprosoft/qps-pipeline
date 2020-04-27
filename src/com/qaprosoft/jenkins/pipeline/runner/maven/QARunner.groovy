@@ -285,11 +285,17 @@ public class QARunner extends AbstractRunner {
         String pom = context.readFile pomFile
 		logger.debug("pom content: " + pom)
         String tagName = "suiteXmlFile"
+		logger.debug("tagName: " + tagName)
         Matcher matcher = Pattern.compile(".*" + tagName + ".*").matcher(pom)
 		logger.debug("matcher: " + matcher)
         if (matcher.find()){
 			logger.debug("matcher found.")
-            def suiteXmlPath = pom.substring(pom.lastIndexOf("<" + tagName + ">") + tagName.length() + 2, pom.indexOf("</" + tagName + ">".toString()))
+			def startIndex = pom.lastIndexOf("<" + tagName + ">")
+			logger.debug("startIndex: " + startIndex)
+			def endIndex = pom.indexOf("</" + tagName + ">".toString())
+            def suiteXmlPath = pom.substring(startIndex + tagName.length() + 2, endIndex)
+			logger.debug("suiteXmlPath: " + suiteXmlPath)
+			
             Path suitePath = Paths.get(suiteXmlPath).getParent()
             testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
             logger.info("TestNG folder name: " + testNGFolderName)
