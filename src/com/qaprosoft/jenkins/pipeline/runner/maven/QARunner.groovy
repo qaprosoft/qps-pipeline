@@ -316,6 +316,7 @@ public class QARunner extends AbstractRunner {
         //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
         //TODO: create default personalized view here
+        logger.debug("suites pattern: " + subProjectFilter + "/**/" + testNGFolderName + "/**")
         def suites = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
         logger.info("SUITES: " + suites)
         // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
