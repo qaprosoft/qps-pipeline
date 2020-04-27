@@ -1256,7 +1256,7 @@ public class QARunner extends AbstractRunner {
             }
         }
     }
-!!!
+
     protected def generatePipeLineList(subProjectFilter, testNGFolderName){
         def files = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
         logger.info("Number of Test Suites to Scan Through: " + files.length)
