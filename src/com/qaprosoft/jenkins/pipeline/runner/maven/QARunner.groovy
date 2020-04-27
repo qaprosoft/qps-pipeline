@@ -119,7 +119,6 @@ public class QARunner extends AbstractRunner {
                     scan()
                     getJenkinsJobsScanResult(currentBuild.rawBuild)
                 } catch (Exception e) {
-		    printStackTrace(e)
                     logger.error("Scan failed.\n" + e.getMessage())
                     getJenkinsJobsScanResult(null)
                     this.currentBuild.result = BuildResult.FAILURE
@@ -207,9 +206,13 @@ public class QARunner extends AbstractRunner {
             for (pomFile in pomFiles) {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent() ? Paths.get(pomFile).getParent().toString() : "."
+				logger.debug("subProject: " + subProject)
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
+				logger.debug("subProjectFilter: " + subProjectFilter)
                 def testNGFolderName = searchTestNgFolderName(subProject).toString()
+				logger.debug("testNGFolderName: " + testNGFolderName)
                 def zafiraProject = getZafiraProject(subProjectFilter)
+				logger.debug("zafiraProject: " + zafiraProject)
                 generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch)
 
 				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"), 
