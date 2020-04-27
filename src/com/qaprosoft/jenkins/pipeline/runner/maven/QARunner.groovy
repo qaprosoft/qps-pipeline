@@ -119,8 +119,8 @@ public class QARunner extends AbstractRunner {
                     scan()
                     getJenkinsJobsScanResult(currentBuild.rawBuild)
                 } catch (Exception e) {
-                    logger.error("Scan failed.\n" + e.getMessage())
 		    printStackTrace(e)
+                    logger.error("Scan failed.\n" + e.getMessage())
                     getJenkinsJobsScanResult(null)
                     this.currentBuild.result = BuildResult.FAILURE
                 }
