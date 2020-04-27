@@ -281,6 +281,8 @@ public class QARunner extends AbstractRunner {
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
+		
+		def testResourcesPath = "/src/test/resources/"
 
         // VIEWS
         registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
@@ -296,13 +298,13 @@ public class QARunner extends AbstractRunner {
 			
 			//verify if it is testNG suite xml file and continue scan only in this case!
 			def currentSuitePath = workspace + "/" + suitePath
-			if (!isTestNgSuite(currentSuitePath)) {
+			if (currentSuitePath.contains(testResourcesPath) && !isTestNgSuite(currentSuitePath)) {
 				// not a testng suite
 				continue
 			}
 			XmlSuite currentSuite = parsePipeline(currentSuitePath)
-			def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
-			//def suiteName = "test"
+			
+			def suiteName = suitePath.substring(suitePath.lastIndexOf(testResourcesPath), suitePath.length)
 
             logger.info("SUITE_NAME: " + suiteName)
 
