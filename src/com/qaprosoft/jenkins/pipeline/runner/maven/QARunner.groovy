@@ -292,6 +292,7 @@ public class QARunner extends AbstractRunner {
         // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
         for (File suite : suites) {
             def suitePath = suite.path
+			logger.debug("suitePath: " + suitePath)
 			//TODO: verify if it is testNG suite xml file and continue scan only in this case!
 //            if (!suitePath.contains(".xml")) {
 //                continue
