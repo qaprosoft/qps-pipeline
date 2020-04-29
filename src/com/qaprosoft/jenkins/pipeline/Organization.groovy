@@ -28,8 +28,8 @@ class Organization extends BaseObject {
 	protected def folderName
     protected def pipelineLibrary
     protected def runnerClass
-	protected def zafiraServiceURL
-	protected def zafiraAccessToken
+	protected def reportingServiceUrl
+	protected def reportingAccessToken
 
 
     public Organization(context) {
@@ -43,8 +43,8 @@ class Organization extends BaseObject {
         this.pipelineLibrary = Configuration.get("pipelineLibrary")
         this.runnerClass =  Configuration.get("runnerClass")
 		
-		this.zafiraServiceURL = Configuration.get("zafiraServiceURL")
-		this.zafiraAccessToken = Configuration.get("zafiraAccessToken")
+		this.reportingServiceUrl = Configuration.get("reportingServiceUrl")
+		this.reportingAccessToken = Configuration.get("reportingAccessToken")
     }
 
     public def register() {
@@ -278,8 +278,8 @@ class Organization extends BaseObject {
 		logger.debug("selenium: " + "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
 		registerHubCredentials(this.folderName, "selenium", "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
 
-		if (!isParamEmpty(this.zafiraServiceURL) && !isParamEmpty(this.zafiraAccessToken)) {
-			registerZafiraCredentials(this.folderName, this.zafiraServiceURL, this.zafiraAccessToken)
+		if (!isParamEmpty(this.reportingServiceUrl) && !isParamEmpty(this.reportingAccessToken)) {
+			registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
 		}
 	}
 	
@@ -308,31 +308,31 @@ class Organization extends BaseObject {
 		}
 	}
 	
-	public def registerZafiraCredentials(){
+	public def registerReportingCredentials(){
 		context.stage("Register Zafira Credentials") {
-			Organization.registerZafiraCredentials(this.folderName, this.zafiraServiceURL, this.zafiraAccessToken)
+			Organization.registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
 		}
 	}
 	
-	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraAccessToken){
-		def zafiraURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
-		def zafiraTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
+	public static void registerReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
+		def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
+		def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
 		
 		if (!isParamEmpty(orgFolderName)) {
-			zafiraURLCredentials = orgFolderName + "-" + zafiraURLCredentials
-			zafiraTokenCredentials = orgFolderName + "-" + zafiraTokenCredentials
+            reportingURLCredentials = orgFolderName + "-" + reportingURLCredentials
+            reportingTokenCredentials = orgFolderName + "-" + reportingTokenCredentials
 		}
 
-		if (isParamEmpty(zafiraServiceURL)){
-			throw new RuntimeException("Unable to register Zafira credentials! Required field 'zafiraServiceURL' is missing!")
+		if (isParamEmpty(reportingServiceUrl)){
+			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingServiceUrl' is missing!")
 		}
 		
-		if ( isParamEmpty(zafiraAccessToken)){
-			throw new RuntimeException("Unable to register Zafira credentials! Required field 'zafiraAccessToken' is missing!")
+		if ( isParamEmpty(reportingAccessToken)){
+			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingAccessToken' is missing!")
 		}
 
-		updateJenkinsCredentials(zafiraURLCredentials, "Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
-		updateJenkinsCredentials(zafiraTokenCredentials, "Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraAccessToken)
+		updateJenkinsCredentials(reportingURLCredentials, "Reporting service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), reportingServiceUrl)
+		updateJenkinsCredentials(reportingTokenCredentials, "Reporting access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), reportingAccessToken)
 	}
 	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {

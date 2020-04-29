@@ -99,12 +99,12 @@ class Repository extends BaseObject {
                 def zafiraFields = Configuration.get("zafiraFields")
                 logger.debug("zafiraFields: " + zafiraFields)
                 if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def zafiraServiceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
+                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
                     def zafiraRefreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
-                    logger.debug("zafiraServiceURL: " + zafiraServiceURL)
+                    logger.debug("reportingServiceUrl: " + reportingServiceUrl)
                     logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
-                    if (!isParamEmpty(zafiraServiceURL) && !isParamEmpty(zafiraRefreshToken)){
-                        Organization.registerZafiraCredentials(repoFolder, zafiraServiceURL, zafiraRefreshToken)
+                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(zafiraRefreshToken)){
+                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, zafiraRefreshToken)
                     }
                 }
             }
