@@ -315,24 +315,24 @@ class Organization extends BaseObject {
 	}
 	
 	public static void registerReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
-		def zafiraURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
-		def zafiraTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
+		def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
+		def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
 		
 		if (!isParamEmpty(orgFolderName)) {
-			zafiraURLCredentials = orgFolderName + "-" + zafiraURLCredentials
-			zafiraTokenCredentials = orgFolderName + "-" + zafiraTokenCredentials
+            reportingURLCredentials = orgFolderName + "-" + reportingURLCredentials
+            reportingTokenCredentials = orgFolderName + "-" + reportingTokenCredentials
 		}
 
 		if (isParamEmpty(reportingServiceUrl)){
-			throw new RuntimeException("Unable to register Zafira credentials! Required field 'reportingServiceUrl' is missing!")
+			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingServiceUrl' is missing!")
 		}
 		
 		if ( isParamEmpty(reportingAccessToken)){
-			throw new RuntimeException("Unable to register Zafira credentials! Required field 'reportingAccessToken' is missing!")
+			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingAccessToken' is missing!")
 		}
 
-		updateJenkinsCredentials(zafiraURLCredentials, "Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), reportingServiceUrl)
-		updateJenkinsCredentials(zafiraTokenCredentials, "Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), reportingAccessToken)
+		updateJenkinsCredentials(reportingURLCredentials, "Reporting service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), reportingServiceUrl)
+		updateJenkinsCredentials(reportingTokenCredentials, "Reporting access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), reportingAccessToken)
 	}
 	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
