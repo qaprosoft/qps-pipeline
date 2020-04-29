@@ -885,28 +885,28 @@ public class QARunner extends AbstractRunner {
 		}
 			
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		def zafiraServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
+		def reportingServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
 		logger.info("orgFolderName: " + orgFolderName)
 		if (!isParamEmpty(orgFolderName)) {
-			zafiraServiceUrl = "${orgFolderName}" + "-" + zafiraServiceUrl
+			reportingServiceUrl = "${orgFolderName}" + "-" + reportingServiceUrl
 		}
-		if (getCredentials(zafiraServiceUrl)){
-			context.withCredentials([context.usernamePassword(credentialsId:zafiraServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+		if (getCredentials(reportingServiceUrl)){
+			context.withCredentials([context.usernamePassword(credentialsId:reportingServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
 			}
-			logger.debug("zafiraServiceUrl:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
+			logger.debug("reportingServiceUrl:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
 		}
 		
-		def zafiraAccessToken = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
+		def reportingAccessToken = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
 		if (!isParamEmpty(orgFolderName)) {
-			zafiraAccessToken = "${orgFolderName}" + "-" + zafiraAccessToken
+			reportingAccessToken = "${orgFolderName}" + "-" + reportingAccessToken
 		}
-		if (getCredentials(zafiraAccessToken)){
-			context.withCredentials([context.usernamePassword(credentialsId:zafiraAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+		if (getCredentials(reportingAccessToken)){
+			context.withCredentials([context.usernamePassword(credentialsId:reportingAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
 			}
-			logger.debug("zafiraAccessToken:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
+			logger.debug("reportingAccessToken:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
 		}
 		
 		// obligatory init zafiraUpdater after getting valid url and token
