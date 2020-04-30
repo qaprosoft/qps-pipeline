@@ -108,6 +108,8 @@ public class QARunner extends AbstractRunner {
 //            context.timestamps {
                 logger.info("QARunner->onPush")
 
+				def project = Configuration.get("repo")
+				
                 setZafiraCreds()
 
                 try {
@@ -118,6 +120,9 @@ public class QARunner extends AbstractRunner {
                     }
                     scan()
                     getJenkinsJobsScanResult(currentBuild.rawBuild)
+
+					//TODO: investigate howto override modules
+					executeSonarFullScan(project, project, "")
                 } catch (Exception e) {
                     logger.error("Scan failed.\n" + e.getMessage())
                     getJenkinsJobsScanResult(null)
