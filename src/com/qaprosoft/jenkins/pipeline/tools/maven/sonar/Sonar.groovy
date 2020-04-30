@@ -87,7 +87,7 @@ public class Sonar {
 
 
             context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-            context.withSonarQubeEnv('sonar-ci') {
+            context.withSonarQubeEnv('sonar-ci')
                 //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
                 def sonarHome = context.env.getEnvironment().get("sonarHome")
                 def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
@@ -101,7 +101,7 @@ public class Sonar {
 					-Dsonar.java.source=1.8 \
 					-Dsonar.sources='src/main' \
 					-Dsonar.tests='src/test' \
-					-Dsonar.java.binaries='target/classes' \
+					-Dsonar.java.binaries=target/classes \
 					-Dsonar.junit.reportsPath='target/surefire-reports' \
 					-Dsonar.modules=${modules} \
 					-Dsonar.jacoco.ReportPath='target/jacoco.exec' \
