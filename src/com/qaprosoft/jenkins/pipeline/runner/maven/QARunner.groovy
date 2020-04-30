@@ -114,12 +114,12 @@ public class QARunner extends AbstractRunner {
 
                 try {
                     prepare()
-                    if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-                        logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-                        return
-                    }
-                    scan()
-                    getJenkinsJobsScanResult(currentBuild.rawBuild)
+                    if (isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+						scan()
+						getJenkinsJobsScanResult(currentBuild.rawBuild)
+					} else {
+						logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
+					}
 
 					//TODO: investigate howto override modules
 					executeSonarFullScan(project, project, "")
