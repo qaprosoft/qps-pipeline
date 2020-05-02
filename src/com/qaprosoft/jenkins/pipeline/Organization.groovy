@@ -275,7 +275,7 @@ class Organization extends BaseObject {
 	
 	protected def generateCreds() {
 		logger.debug("QPS_HOST: " + Configuration.get(Configuration.Parameter.QPS_HOST))
-		logger.debug("selenium: " + "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
+		logger.debug("selenium: " + "http://demo:demo@\${QPS_HOST}/selenoid/wd/hub")
 		registerHubCredentials(this.folderName, "selenium", "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
 
 		if (!isParamEmpty(this.reportingServiceUrl) && !isParamEmpty(this.reportingAccessToken)) {
