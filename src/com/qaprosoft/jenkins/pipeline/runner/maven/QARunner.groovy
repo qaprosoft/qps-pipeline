@@ -1689,7 +1689,7 @@ public class QARunner extends AbstractRunner {
 
     // Possible to override in private pipelines
     protected def getDebugHost() {
-        return context.env.getEnvironment().get("QPS_HOST")
+        return context.env.getEnvironment().get("INFRA_HOST")
     }
 
     // Possible to override in private pipelines
