@@ -112,15 +112,15 @@ public class QARunner extends AbstractRunner {
               try {
                   prepare()
                   if (isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-        						scan()
-        						getJenkinsJobsScanResult(currentBuild.rawBuild)
-        					} else {
-        						logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-        					}
+        	  	scan()
+        		getJenkinsJobsScanResult(currentBuild.rawBuild)
+               	  } else {
+        		logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
+        	  }
                   def project = Configuration.get("repo")
-        					//TODO: investigate howto override modules
+        	  //TODO: investigate howto override modules
                   compile()
-        					executeSonarFullScan(project, project, "")
+        	  executeSonarFullScan(project, project, "")
               } catch (Exception e) {
                   logger.error("Scan failed.\n" + e.getMessage())
                   getJenkinsJobsScanResult(null)
