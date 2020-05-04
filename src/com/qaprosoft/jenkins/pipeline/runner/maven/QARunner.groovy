@@ -119,8 +119,9 @@ public class QARunner extends AbstractRunner {
         						logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
         					}
                   scan()
-                  getJenkinsJobsScanResult(currentBuild.rawBuild)    
+                  getJenkinsJobsScanResult(currentBuild.rawBuild)
         					//TODO: investigate howto override modules
+                  compile()
         					executeSonarFullScan(project, project, "")
               } catch (Exception e) {
                   logger.error("Scan failed.\n" + e.getMessage())
