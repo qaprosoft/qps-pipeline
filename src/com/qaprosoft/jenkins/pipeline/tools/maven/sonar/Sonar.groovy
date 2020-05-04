@@ -87,7 +87,7 @@ public class Sonar {
             }
 
 
-            context.env.sonarHome = context.tool name: 'qps-sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+            context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
             context.withSonarQubeEnv('sonar-ci') {
                 //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
                 def sonarHome = context.env.getEnvironment().get("sonarHome")
