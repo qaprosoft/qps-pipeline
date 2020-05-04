@@ -98,7 +98,6 @@ public class Sonar {
 					-Dsonar.projectBaseDir=${projectBaseDir} \
 					-Dsonar.projectName=${projectName} \
 					-Dsonar.projectKey=${projectKey} \
-          				-Dsonar.analysis.mode=preview \
 					-Dsonar.projectVersion=1.${BUILD_NUMBER} \
 					-Dsonar.java.source=1.8 \
 					-Dsonar.sources='src/main' \
