@@ -39,6 +39,7 @@ public class Sonar {
 					-Dsonar.projectName=${Configuration.get("repo")} \
 					-Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
 					-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
+		    			-Dsonar.analysis.mode=preview \
 					-Dsonar.sources=. \
 					-Dsonar.tests=. \
 					-Dsonar.inclusions=**/src/main/java/** \
@@ -97,7 +98,7 @@ public class Sonar {
 					-Dsonar.projectBaseDir=${projectBaseDir} \
 					-Dsonar.projectName=${projectName} \
 					-Dsonar.projectKey=${projectKey} \
-          -Dsonar.analysis.mode=preview \
+          				-Dsonar.analysis.mode=preview \
 					-Dsonar.projectVersion=1.${BUILD_NUMBER} \
 					-Dsonar.java.source=1.8 \
 					-Dsonar.sources='src/main' \
