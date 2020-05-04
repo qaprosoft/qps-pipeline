@@ -107,7 +107,6 @@ public class QARunner extends AbstractRunner {
         context.node("master") {
 //            context.timestamps {
               logger.info("QARunner->onPush")
-				      def project = Configuration.get("repo")
               setZafiraCreds()
 
               try {
@@ -118,8 +117,7 @@ public class QARunner extends AbstractRunner {
         					} else {
         						logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
         					}
-                  scan()
-                  getJenkinsJobsScanResult(currentBuild.rawBuild)
+                  def project = Configuration.get("repo")
         					//TODO: investigate howto override modules
                   compile()
         					executeSonarFullScan(project, project, "")
