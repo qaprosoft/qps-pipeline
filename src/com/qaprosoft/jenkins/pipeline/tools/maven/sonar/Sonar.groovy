@@ -99,7 +99,7 @@ public class Sonar {
         					-Dsonar.java.source=1.8 \
         					-Dsonar.sources=src/main/java \
         					-Dsonar.tests='src/test' \
-        					-Dsonar.java.binaries=target/classes \
+        					-Dsonar.java.binaries=target \
         					-Dsonar.junit.reportsPath='target/surefire-reports' \
         					-Dsonar.modules=${modules} \
         					-Dsonar.jacoco.ReportPath='target/jacoco.exec' \
