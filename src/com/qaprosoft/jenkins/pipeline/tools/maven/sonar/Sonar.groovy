@@ -97,7 +97,7 @@ public class Sonar {
         					-Dsonar.projectKey=${projectKey} \
         					-Dsonar.projectVersion=1.${BUILD_NUMBER} \
         					-Dsonar.java.source=1.8 \
-        					-Dsonar.sources='src/main' \
+        					-Dsonar.sources=src/main/java \
         					-Dsonar.tests='src/test' \
         					-Dsonar.java.binaries=target/classes \
         					-Dsonar.junit.reportsPath='target/surefire-reports' \
