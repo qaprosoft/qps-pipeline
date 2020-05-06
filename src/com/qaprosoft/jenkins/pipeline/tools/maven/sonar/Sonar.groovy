@@ -58,6 +58,46 @@ public class Sonar {
 
     }
 
+    protected void executeSonarFullScan() {
+        context.stage('Sonar Scanner') {
+            def sonarQubeEnv = ''
+            Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
+                sonarQubeEnv = installation.getName()
+            }
+            if(sonarQubeEnv.isEmpty()){
+                logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
+                return
+            }
+
+
+            //download combined integration testing coverage report: jacoco-it.exec
+            def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+            def jacocoItExec = 'jacoco-it.exec'
+            def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+            def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
+            if (jacocoEnable) {
+                context.withAWS(region: "${jacocoRegion}",credentials:'aws-jacoco-token') {
+                    def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
+                    logger.info("copyOutput: " + copyOutput)
+                }
+            }
+
+
+            context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+            context.withSonarQubeEnv('sonar-ci') {
+                //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
+                def sonarHome = context.env.getEnvironment().get("sonarHome")
+                def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+
+                // execute sonar scanner
+                context.sh "${sonarHome}/bin/sonar-scanner \
+					-Dsonar.projectBaseDir=. \
+					-Dsonar.jacoco.ReportPath='target/jacoco.exec' \
+					-Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
+            }
+        }
+    }
+
     protected void executeSonarFullScan(String projectName, String projectKey, String modules) {
         executeSonarFullScan(".", projectName, projectKey, modules)
     }
