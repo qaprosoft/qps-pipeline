@@ -71,7 +71,7 @@ public class Sonar {
                         context.sh "${sonarHome}/bin/sonar-scanner \
                             -Dsonar.projectBaseDir=.\
                             -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
-                            -Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
+                            -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
                 }
             } else {
                 logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
@@ -89,7 +89,7 @@ public class Sonar {
         def sonarQubeEnv = getSonarEnv()
         if (!sonarQubeEnv.isEmpty()) {
             def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-            jacocoIntegration(jacocoEnable)
+            def jacocoItExec = jacocoIntegration(jacocoEnable)
             context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
             context.withSonarQubeEnv('sonar-ci') {
                 //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
@@ -108,7 +108,7 @@ public class Sonar {
                   -Dsonar.junit.reportPaths='target/surefire-reports' \
                   -Dsonar.modules=${modules} \
                   -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
-                  -Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
+                  -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
             }
         } else {
             logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
@@ -117,7 +117,7 @@ public class Sonar {
       }
    }
 
-    protected void jacocoIntegration(boolean jacocoEnable) {
+    protected String jacocoIntegration(boolean jacocoEnable) {
       //download combined integration testing coverage report: jacoco-it.exec
       if (jacocoEnable) {
           def jacocoItExec = 'jacoco-it.exec'
