@@ -29,7 +29,19 @@ public class Runner extends AbstractRunner {
             logger.info("shallowClone: " + shallowClone)
             scmClient.clone(shallowClone)
 
-            def project = Configuration.get("repo")
+            def sonarPropsExists = context.fileExists(".sonarqube")
+
+            if (sonarPropsExists) {
+              def sonarConfig = context.readFile(".sonarqube")
+              logger.info("Executing scanner with properties file .sonarqube")
+              loger.info(sonarconfig)
+            } else {
+              def project = Configuration.get("repo")
+              logger.info("Executing scanner with default properties")
+              executeSonarFullScan(project,
+                project,
+                "carina-api,carina-aws-s3,carina-commons,carina-core,carina-crypto,carina-dataprovider,carina-appcenter,carina-proxy,carina-reporting,carina-utils,carina-webdriver")
+            }
 			//TODO: decentralize sonar properties declaration
 			// 1. declare "executeSonarFullScan()" with no args ?!
 			// 2. organize reading project name and key, modules and all possible args from ".sonarqube" property file
@@ -38,8 +50,8 @@ public class Runner extends AbstractRunner {
 			// 5. send PR into the carina putting into this repo new ".sonarqube" file with
 			    // sonar.modules=carina-api,carina-aws-s3,carina-commons,carina-core,carina-crypto,carina-dataprovider,carina-appcenter,carina-proxy,carina-reporting,carina-utils,carina-webdriver
 			    // sonar.java.source=1.8
-			   
-            executeSonarFullScan(project, project, "carina-api,carina-aws-s3,carina-commons,carina-core,carina-crypto,carina-dataprovider,carina-appcenter,carina-proxy,carina-reporting,carina-utils,carina-webdriver")
+
+
         }
 
         context.node("master") {
