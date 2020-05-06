@@ -24,10 +24,14 @@ public class Runner extends AbstractRunner {
     public void onPush() {
         context.node("master") {
             logger.info("Runner->onPush")
+
             boolean shallowClone = !Configuration.get("onlyUpdated").toBoolean()
             logger.info("shallowClone: " + shallowClone)
             scmClient.clone(shallowClone)
             //TODO: implement Sonar scan for full reposiory
+
+            def project = Configuration.get("repo")
+            executeSonarFullScan(project, project, "")
         }
 
         context.node("master") {
