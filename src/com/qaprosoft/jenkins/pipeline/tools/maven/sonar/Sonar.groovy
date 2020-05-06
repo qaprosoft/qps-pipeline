@@ -58,24 +58,25 @@ public class Sonar {
 
     protected void executeSonarFullScan() {
         context.stage('Sonar Scanner') {
-          def sonarQubeEnv = getSonarEnv()
-          if (!sonarQubeEnv.isEmpty()) {
-              def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-              jacocoIntegration(jacocoEnable)
-              context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-              context.withSonarQubeEnv('sonar-ci') {
-                  //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
-                  def sonarHome = context.env.getEnvironment().get("sonarHome")
-                  def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
-                  // execute sonar scanner
-                      context.sh "${sonarHome}/bin/sonar-scanner \
-                          -Dsonar.projectBaseDir=${projectBaseDir} \
-                          -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
-                          -Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
-              } else {
-                  logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
-                  return
-              }
+            def sonarQubeEnv = getSonarEnv()
+            if (!sonarQubeEnv.isEmpty()) {
+                def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+                jacocoIntegration(jacocoEnable)
+                context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                context.withSonarQubeEnv('sonar-ci') {
+                    //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
+                    def sonarHome = context.env.getEnvironment().get("sonarHome")
+                    def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+                    // execute sonar scanner
+                        context.sh "${sonarHome}/bin/sonar-scanner \
+                            -Dsonar.projectBaseDir=${projectBaseDir} \
+                            -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
+                            -Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
+                }
+            } else {
+                logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
+                return
+            }
         }
     }
 
