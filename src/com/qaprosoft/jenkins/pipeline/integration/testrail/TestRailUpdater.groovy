@@ -205,7 +205,7 @@ class TestRailUpdater {
 
     protected def addResults(testRunId, testResultMap){
         def response = trc.addResultsForTests(testRunId, testResultMap.values())
-//        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
+        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
     }
     
     protected def parseTagData(integration){
