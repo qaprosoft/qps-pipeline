@@ -32,6 +32,7 @@ public class Runner extends AbstractRunner {
             def sonarPropsFile = context.findFiles(glob: "**/sonar-project.properties")
 
             if (sonarPropsFile.length == 1) {
+              compile()
               executeSonarFullScan()
             } else {
               def project = Configuration.get("repo")
