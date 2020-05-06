@@ -69,7 +69,7 @@ public class Sonar {
                     def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
                     // execute sonar scanner
                         context.sh "${sonarHome}/bin/sonar-scanner \
-                            -Dsonar.projectBaseDir=${projectBaseDir} \
+                            -Dsonar.projectBaseDir=.\
                             -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
                             -Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
                 }
