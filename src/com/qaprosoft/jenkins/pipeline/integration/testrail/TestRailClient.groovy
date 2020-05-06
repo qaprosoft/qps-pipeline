@@ -135,7 +135,7 @@ class TestRailClient extends HttpClient{
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder results: results
-//        logger.debug("REQUEST:\n" + formatJson(jsonBuilder))
+        logger.debug("REQUEST:\n" + formatJson(jsonBuilder))
         def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${this.username}:${this.password}")}"]],
                           contentType: 'APPLICATION_JSON',
                           httpMode: 'POST',
