@@ -70,6 +70,7 @@ public class Sonar {
                     // execute sonar scanner
                         context.sh "${sonarHome}/bin/sonar-scanner \
                             -Dsonar.projectBaseDir=.\
+                            -Dproject.settings=.sonarqube \
                             -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
                             -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
                 }
@@ -97,7 +98,6 @@ public class Sonar {
                 def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
                 // execute sonar scanner
                 context.sh "${sonarHome}/bin/sonar-scanner \
-                  -Dproject.settings=sonar.properties \
                   -Dsonar.projectBaseDir=${projectBaseDir} \
                   -Dsonar.projectName=${projectName} \
                   -Dsonar.projectKey=${projectKey} \
