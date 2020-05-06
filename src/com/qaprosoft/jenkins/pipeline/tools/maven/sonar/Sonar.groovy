@@ -95,7 +95,6 @@ public class Sonar {
 
                 // execute sonar scanner
                 context.sh "${sonarHome}/bin/sonar-scanner \
-					-Dsonar.projectBaseDir=${projectBaseDir} \
 					-Dsonar.projectName=${projectName} \
 					-Dsonar.projectKey=${projectKey} \
 					-Dsonar.projectVersion=1.${BUILD_NUMBER} \
