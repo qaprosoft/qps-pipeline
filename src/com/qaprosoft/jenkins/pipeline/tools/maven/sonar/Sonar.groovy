@@ -97,7 +97,7 @@ public class Sonar {
                 def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
                 // execute sonar scanner
                 context.sh "${sonarHome}/bin/sonar-scanner \
-                  -Dproject.settings=.sonarqube \
+                  -Dproject.settings=sonar.properties \
                   -Dsonar.projectBaseDir=${projectBaseDir} \
                   -Dsonar.projectName=${projectName} \
                   -Dsonar.projectKey=${projectKey} \

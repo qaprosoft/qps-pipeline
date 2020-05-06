@@ -29,7 +29,7 @@ public class Runner extends AbstractRunner {
             logger.info("shallowClone: " + shallowClone)
             scmClient.clone(shallowClone)
 
-            def sonarPropsFileExists = context.fileExists ".sonarqube"
+            def sonarPropsFileExists = context.fileExists "sonar.properties"
             compile()
             sonarFullScan(sonarPropsFileExists)
 			//TODO: decentralize sonar properties declaration
