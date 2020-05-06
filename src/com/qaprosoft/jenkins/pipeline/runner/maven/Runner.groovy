@@ -25,11 +25,8 @@ public class Runner extends AbstractRunner {
         context.node("master") {
             logger.info("Runner->onPush")
 
-            boolean shallowClone = Configuration.get("onlyUpdated").toBoolean()
-            logger.info("shallowClone: " + shallowClone)
-            scmClient.clone(shallowClone)
-
             def sonarPropsFileExists = context.fileExists ".sonarqube"
+            scmClient.clonePush()
             compile()
             sonarFullScan(sonarPropsFileExists)
 			//TODO: decentralize sonar properties declaration
