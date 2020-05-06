@@ -31,16 +31,7 @@ public class Runner extends AbstractRunner {
 
             def sonarPropsFileExists = context.fileExists "sonar-project.properties"
             compile()
-            if (sonarPropsFileExists) {
-              logger.info("Executing scanner with properties file")
-              executeSonarFullScan()
-            } else {
-              def project = Configuration.get("repo")
-              logger.info("Executing scanner with default properties")
-              executeSonarFullScan(project,
-                project,
-                "carina-api,carina-aws-s3,carina-commons,carina-core,carina-crypto,carina-dataprovider,carina-appcenter,carina-proxy,carina-reporting,carina-utils,carina-webdriver")
-            }
+            sonarFullScan(sonarPropsFileExists)
 			//TODO: decentralize sonar properties declaration
 			// 1. declare "executeSonarFullScan()" with no args ?!
 			// 2. organize reading project name and key, modules and all possible args from ".sonarqube" property file
