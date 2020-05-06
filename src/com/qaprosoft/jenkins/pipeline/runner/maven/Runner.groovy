@@ -34,7 +34,7 @@ public class Runner extends AbstractRunner {
             if (sonarPropsExists) {
               def sonarConfig = context.readFile(".sonarqube")
               logger.info("Executing scanner with properties file .sonarqube")
-              loger.info(sonarconfig)
+              logger.info(sonarconfig)
             } else {
               def project = Configuration.get("repo")
               logger.info("Executing scanner with default properties")
