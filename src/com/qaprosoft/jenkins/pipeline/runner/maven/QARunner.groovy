@@ -173,20 +173,6 @@ public class QARunner extends AbstractRunner {
 		testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
 	}
 
-    protected void compile() {
-        compile("pom.xml")
-    }
-
-    protected void compile(pomFile) {
-        context.stage('Maven Compile') {
-            // [VD] don't remove -U otherwise latest dependencies are not downloaded
-            // and PR can be marked as fail due to the compilation failure!
-            def goals = "-U clean compile test-compile -f ${pomFile}"
-
-            executeMavenGoals(goals)
-        }
-    }
-
 	protected void prepare() {
 		scmClient.clone(!onlyUpdated)
 		super.prepare()

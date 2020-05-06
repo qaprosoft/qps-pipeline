@@ -95,6 +95,7 @@ public class Sonar {
 
                 // execute sonar scanner
                 context.sh "${sonarHome}/bin/sonar-scanner \
+					-Dsonar.projectBaseDir=${projectBaseDir} \
 					-Dsonar.projectName=${projectName} \
 					-Dsonar.projectKey=${projectKey} \
 					-Dsonar.projectVersion=1.${BUILD_NUMBER} \
@@ -102,10 +103,10 @@ public class Sonar {
 					-Dsonar.sources='src/main' \
 					-Dsonar.tests='src/test' \
 					-Dsonar.java.binaries='target/classes' \
-					-Dsonar.junit.reportsPath='target/surefire-reports' \
+					-Dsonar.junit.reportPaths='target/surefire-reports' \
 					-Dsonar.modules=${modules} \
 					-Dsonar.jacoco.ReportPath='target/jacoco.exec' \
-					-Dsonar.jacoco.itReportPath='/tmp/${jacocoItExec}'"
+					-Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
             }
         }
     }

@@ -70,10 +70,24 @@ public class Maven {
             context.sh """
                         set +x
                         'mvn' -B ${goals}
-                        set -x 
+                        set -x
                        """
         } else {
             context.bat "mvn -B ${goals}"
+        }
+    }
+
+    public void compile() {
+        compile("pom.xml")
+    }
+
+    public void compile(pomFile) {
+        context.stage('Maven Compile') {
+            // [VD] don't remove -U otherwise latest dependencies are not downloaded
+            // and PR can be marked as fail due to the compilation failure!
+            def goals = "-U clean compile test-compile -f ${pomFile}"
+
+            executeMavenGoals(goals)
         }
     }
 }
