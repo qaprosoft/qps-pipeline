@@ -173,7 +173,7 @@ class TestRailUpdater {
     protected def filterTests(testRunId, assignedToId, testRailCaseIds, testResultMap, caseResultMap){
         Map filteredTestResultMap = testResultMap
         def tests = trc.getTests(testRunId)
-//        logger.debug("TESTS_MAP:\n" + formatJson(tests))
+        logger.debug("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
             for(testRailCaseId in testRailCaseIds){
                 if (testRailCaseId == test.case_id){
