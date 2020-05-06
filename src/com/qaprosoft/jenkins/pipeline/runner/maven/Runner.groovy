@@ -25,7 +25,7 @@ public class Runner extends AbstractRunner {
         context.node("master") {
             logger.info("Runner->onPush")
 
-            boolean shallowClone = !Configuration.get("onlyUpdated").toBoolean()
+            boolean shallowClone = Configuration.get("onlyUpdated").toBoolean()
             logger.info("shallowClone: " + shallowClone)
             scmClient.clone(shallowClone)
 
