@@ -29,10 +29,10 @@ public class Runner extends AbstractRunner {
             logger.info("shallowClone: " + shallowClone)
             scmClient.clone(shallowClone)
 
-            def sonarPropsFile = context.findFiles(glob: "**/sonar-project.properties")
-
-            if (sonarPropsFile.length == 1) {
-              compile()
+            def sonarPropsFileExsist = context.findFile 'sonar-project.properties'
+            compile()
+            if (sonarPropsFileExsist) {
+              logger.info("Executing scanner with properties file")
               executeSonarFullScan()
             } else {
               def project = Configuration.get("repo")
