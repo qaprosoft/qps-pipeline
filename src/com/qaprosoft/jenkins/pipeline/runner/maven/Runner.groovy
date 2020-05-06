@@ -28,10 +28,18 @@ public class Runner extends AbstractRunner {
             boolean shallowClone = !Configuration.get("onlyUpdated").toBoolean()
             logger.info("shallowClone: " + shallowClone)
             scmClient.clone(shallowClone)
-            //TODO: implement Sonar scan for full reposiory
 
             def project = Configuration.get("repo")
-            executeSonarFullScan(project, project, "")
+			//TODO: decentralize sonar properties declaration
+			// 1. declare "executeSonarFullScan()" with no args ?!
+			// 2. organize reading project name and key, modules and all possible args from ".sonarqube" property file
+			// 3. if no .sonarqube detected then project name and key equals to Configuration.get("repo"), modules are empty
+			// 4. switch QARunner as well to use simple executeSonarFullScan() call
+			// 5. send PR into the carina putting into this repo new ".sonarqube" file with
+			    // sonar.modules=carina-api,carina-aws-s3,carina-commons,carina-core,carina-crypto,carina-dataprovider,carina-appcenter,carina-proxy,carina-reporting,carina-utils,carina-webdriver
+			    // sonar.java.source=1.8
+			   
+            executeSonarFullScan(project, project, "carina-api,carina-aws-s3,carina-commons,carina-core,carina-crypto,carina-dataprovider,carina-appcenter,carina-proxy,carina-reporting,carina-utils,carina-webdriver")
         }
 
         context.node("master") {
