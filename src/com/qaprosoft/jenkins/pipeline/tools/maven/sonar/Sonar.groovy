@@ -76,11 +76,13 @@ public class Sonar {
                     // TODO: where is build number?
 
                     // execute sonar scanner
-                    context.sh "${sonarHome}/bin/sonar-scanner \
-                            -Dsonar.host.url=\${SONAR_HOST_URL} \
-                            -Dproject.settings=.sonarqube \
-                            -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
-                            -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
+					context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.host.url=\${SONAR_HOST_URL} -Dproject.settings=.sonarqube"
+
+//                    context.sh "${sonarHome}/bin/sonar-scanner \
+//                            -Dsonar.host.url=\${SONAR_HOST_URL} \
+//                            -Dproject.settings=.sonarqube \
+//                            -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
+//                            -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
                 }
             } else {
                 logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
