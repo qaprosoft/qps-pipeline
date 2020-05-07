@@ -68,7 +68,14 @@ public class Sonar {
                     context.sh "export"
 
                     def sonarHome = context.env.getEnvironment().get("sonarHome")
+					logger.debug("sonarHome: " + sonarHome)
+					def sonarHome2 = Configuration.get("sonarHome")
+					logger.debug("sonarHome2: " + sonarHome2)
+					
                     def sonarUrl = context.env.getEnvironment().get("SONAR_HOST_URL")
+					logger.debug("sonarUrl: " + sonarUrl)
+					def sonarUrl2 = Configuration.get("SONAR_HOST_URL")
+					logger.debug("sonarUrl2: " + sonarUrl2)
                     def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
                     // execute sonar scanner
                         context.sh "${sonarHome}/bin/sonar-scanner \
