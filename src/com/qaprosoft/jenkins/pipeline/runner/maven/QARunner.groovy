@@ -128,7 +128,7 @@ public class QARunner extends AbstractRunner {
                   } else {
                     logger.debug("Executing sonar scan with default configuration")
                     def project = Configuration.get("repo")
-                    executeSonarFUllScan(project, project, "")
+                    executeSonarFullScan(project, project, "")
                   }
               } catch (Exception e) {
                   logger.error("Scan failed.\n" + e.getMessage())
