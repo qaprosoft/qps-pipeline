@@ -28,7 +28,7 @@ public class Runner extends AbstractRunner {
             def sonarPropsFileExists = context.fileExists ".sonarqube"
             scmClient.clonePush()
             compile()
-            sonarFullScan(sonarPropsFileExists)
+			executeSonarFullScan()
 			//TODO: decentralize sonar properties declaration
 			// 1. declare "executeSonarFullScan()" with no args ?!
 			// 2. organize reading project name and key, modules and all possible args from ".sonarqube" property file

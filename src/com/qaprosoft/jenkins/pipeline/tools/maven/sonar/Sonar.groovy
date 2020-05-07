@@ -151,15 +151,4 @@ public class Sonar {
       return sonarQubeEnv
     }
 
-    protected void sonarFullScan(boolean configFileExists) {
-      if (configFileExists) {
-        logger.info("Executing scanner with properties file")
-        executeSonarFullScan()
-      } else {
-        logger.info("Executing scanner with default properties")
-        def project = Configuration.get("repo")
-        executeSonarFullScan(project, project, "")
-      }
-    }
-
 }
