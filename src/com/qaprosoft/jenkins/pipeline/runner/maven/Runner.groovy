@@ -36,10 +36,7 @@ public class Runner extends AbstractRunner {
               def project = Configuration.get("repo")
               // TODO for multi modules prject we should find a way of obtaining all modules
               executeSonarFullScan(project, project,
-                 "carina-api,carina-aws-s3,carina-commons,
-                 carina-core,carina-crypto,carina-dataprovider,
-                 carina-appcenter,carina-proxy,carina-reporting,
-                 carina-utils,carina-webdriver")
+                 "carina-api,carina-aws-s3,carina-commons,carina-core,carina-crypto,carina-dataprovider,carina-appcenter,carina-proxy,carina-reporting,carina-utils,carina-webdriver")
             }
 
 			//TODO: decentralize sonar properties declaration
