@@ -111,14 +111,25 @@ public class QARunner extends AbstractRunner {
 
               try {
                   prepare()
+
                   if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-		      logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-		      return
-               	  }
-		  scan()
-        	  getJenkinsJobsScanResult(currentBuild.rawBuild)
-              compile()
-        	  executeSonarFullScan()
+                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
+                    return
+                  }
+
+                  scan()
+                  getJenkinsJobsScanResult(currentBuild.rawBuild)
+                  compile()
+                  
+                  def sonarConfigFileExists = context.fileExists ".sonarqube"
+                  if (sonarConfigFileExists) {
+                    loger.debug("Executing sonar scan with .sonarqube properties file")
+                    executeSonarFullScan()
+                  } else {
+                    loger.debug("Executing sonar scan with default configuration")
+                    def project = Configuration.get("repo")
+                    executeSonarFUllScan(project, project, "")
+                  }
               } catch (Exception e) {
                   logger.error("Scan failed.\n" + e.getMessage())
                   getJenkinsJobsScanResult(null)
