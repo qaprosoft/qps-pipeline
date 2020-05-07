@@ -61,7 +61,7 @@ public class Sonar {
             def sonarQubeEnv = getSonarEnv()
             if (!sonarQubeEnv.isEmpty()) {
                 def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-                jacocoIntegration(jacocoEnable)
+                def (jacocoReportPath, jacocoReportPaths) = jacocoIntegration(jacocoEnable)
                 context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                 context.withSonarQubeEnv('sonar-ci') {
                     //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
@@ -72,7 +72,7 @@ public class Sonar {
 					context.sh "export"
 
                     // execute sonar scanner
-					context.sh "${sonarHome}/bin/sonar-scanner -Dproject.settings=.sonarqube"
+					context.sh "${sonarHome}/bin/sonar-scanner -Dproject.settings=.sonarqube ${jacocoReportPath} ${jacocoReportPaths}"
 					// context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.host.url=\${SONAR_HOST_URL} -Dproject.settings=.sonarqube"
 
 //                    context.sh "${sonarHome}/bin/sonar-scanner \
@@ -97,7 +97,7 @@ public class Sonar {
         def sonarQubeEnv = getSonarEnv()
         if (!sonarQubeEnv.isEmpty()) {
             def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-            def jacocoItExec = jacocoIntegration(jacocoEnable)
+            def (jacocoReportPath, jacocoReportPaths) = jacocoIntegration(jacocoEnable)
             context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
             context.withSonarQubeEnv('sonar-ci') {
                 //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
@@ -115,8 +115,8 @@ public class Sonar {
                   -Dsonar.java.binaries='target/classes' \
                   -Dsonar.junit.reportPaths='target/surefire-reports' \
                   -Dsonar.modules=${modules} \
-                  -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
-                  -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
+                  ${jacocoReportPath} \
+                  ${jacocoReportPaths} "
             }
         } else {
             logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
@@ -125,18 +125,23 @@ public class Sonar {
       }
    }
 
-    protected String jacocoIntegration(boolean jacocoEnable) {
+    def jacocoIntegration(boolean jacocoEnable) {
       //download combined integration testing coverage report: jacoco-it.exec
       if (jacocoEnable) {
           def jacocoItExec = 'jacoco-it.exec'
+          def jacocoReportPath = "-Dsonar.jacoco.reportPath='target/jacoco.exec'"
+          def jacocoReportPaths = "-Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
           def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
           def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
+
           context.withAWS(region: "${jacocoRegion}",credentials:'aws-jacoco-token') {
               def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
               logger.info("copyOutput: " + copyOutput)
           }
+          return [jacocoReportPath, jacocoReportPaths]
         } else {
-          logger.info("Jacoco integration is disabled")
+          logger.debug("Jacoco integration is disabled")
+          return ["", ""]
         }
     }
 
