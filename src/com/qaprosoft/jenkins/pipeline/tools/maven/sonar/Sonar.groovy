@@ -75,12 +75,6 @@ public class Sonar {
 
                     // TODO: where is build number?
 
-                    context.sh "echo ${sonarHome}/bin/sonar-scanner \
-                        -Dsonar.host.url=$\{SONAR_HOST_URL\} \
-                        -Dproject.settings=.sonarqube \
-                        -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
-                        -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
-
                     // execute sonar scanner
                     context.sh "${sonarHome}/bin/sonar-scanner \
                             -Dsonar.host.url=$\{SONAR_HOST_URL\} \
