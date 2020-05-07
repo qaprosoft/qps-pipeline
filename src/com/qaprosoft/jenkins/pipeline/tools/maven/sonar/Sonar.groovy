@@ -68,18 +68,22 @@ public class Sonar {
                     context.sh "export"
 
                     def sonarHome = context.env.getEnvironment().get("sonarHome")
-					logger.debug("sonarHome: " + sonarHome)
-					def sonarHome2 = Configuration.get("sonarHome")
-					logger.debug("sonarHome2: " + sonarHome2)
-					
+                    logger.debug("sonarHome: " + sonarHome)
+
                     def sonarUrl = context.env.getEnvironment().get("SONAR_HOST_URL")
-					logger.debug("sonarUrl: " + sonarUrl)
-					def sonarUrl2 = Configuration.get("SONAR_HOST_URL")
-					logger.debug("sonarUrl2: " + sonarUrl2)
-                    def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+                    logger.debug("sonarUrl: " + sonarUrl)
+
+                    // TODO: where is build number?
+
+                    context.sh "echo ${sonarHome}/bin/sonar-scanner \
+                        -Dsonar.host.url=$\{SONAR_HOST_URL\} \
+                        -Dproject.settings=.sonarqube \
+                        -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
+                        -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
+
                     // execute sonar scanner
-                        context.sh "${sonarHome}/bin/sonar-scanner \
-                            -Dsonar.host.url=${sonarUrl} \
+                    context.sh "${sonarHome}/bin/sonar-scanner \
+                            -Dsonar.host.url=$\{SONAR_HOST_URL\} \
                             -Dproject.settings=.sonarqube \
                             -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
                             -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
