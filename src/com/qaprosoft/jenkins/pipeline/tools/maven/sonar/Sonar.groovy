@@ -65,18 +65,14 @@ public class Sonar {
                 context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                 context.withSonarQubeEnv('sonar-ci') {
                     //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
-                    context.sh "export"
-
                     def sonarHome = context.env.getEnvironment().get("sonarHome")
                     logger.debug("sonarHome: " + sonarHome)
-
-                    def sonarUrl = context.env.getEnvironment().get("SONAR_HOST_URL")
-                    logger.debug("sonarUrl: " + sonarUrl)
 
                     // TODO: where is build number?
 
                     // execute sonar scanner
-					context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.host.url=\${SONAR_HOST_URL} -Dproject.settings=.sonarqube"
+					context.sh "${sonarHome}/bin/sonar-scanner -Dproject.settings=.sonarqube"
+					// context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.host.url=\${SONAR_HOST_URL} -Dproject.settings=.sonarqube"
 
 //                    context.sh "${sonarHome}/bin/sonar-scanner \
 //                            -Dsonar.host.url=\${SONAR_HOST_URL} \
