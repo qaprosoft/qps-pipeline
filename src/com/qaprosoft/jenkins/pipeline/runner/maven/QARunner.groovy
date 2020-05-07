@@ -117,10 +117,8 @@ public class QARunner extends AbstractRunner {
                	  }
 		  scan()
         	  getJenkinsJobsScanResult(currentBuild.rawBuild)
-                  def project = Configuration.get("repo")
-        	  //TODO: investigate howto override modules
-                  compile()
-        	  executeSonarFullScan(project, project, "")
+              compile()
+        	  executeSonarFullScan()
               } catch (Exception e) {
                   logger.error("Scan failed.\n" + e.getMessage())
                   getJenkinsJobsScanResult(null)
