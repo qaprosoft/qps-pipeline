@@ -120,13 +120,13 @@ public class QARunner extends AbstractRunner {
                   scan()
                   getJenkinsJobsScanResult(currentBuild.rawBuild)
                   compile()
-                  
+
                   def sonarConfigFileExists = context.fileExists ".sonarqube"
                   if (sonarConfigFileExists) {
-                    loger.debug("Executing sonar scan with .sonarqube properties file")
+                    logger.debug("Executing sonar scan with .sonarqube properties file")
                     executeSonarFullScan()
                   } else {
-                    loger.debug("Executing sonar scan with default configuration")
+                    logger.debug("Executing sonar scan with default configuration")
                     def project = Configuration.get("repo")
                     executeSonarFUllScan(project, project, "")
                   }
