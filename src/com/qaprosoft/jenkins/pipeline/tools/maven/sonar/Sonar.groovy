@@ -77,7 +77,7 @@ public class Sonar {
 
                     // execute sonar scanner
                     context.sh "${sonarHome}/bin/sonar-scanner \
-                            -Dsonar.host.url=\$\{SONAR_HOST_URL\} \
+                            -Dsonar.host.url=\${SONAR_HOST_URL} \
                             -Dproject.settings=.sonarqube \
                             -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
                             -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
