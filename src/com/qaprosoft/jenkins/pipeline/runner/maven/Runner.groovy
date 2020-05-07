@@ -34,7 +34,7 @@ public class Runner extends AbstractRunner {
             } else {
               logger.debug("Executing sonar scan with default configuration")
               def project = Configuration.get("repo")
-              executeSonarFUllScan(project, project, "")
+              executeSonarFullScan(project, project, "")
             }
 
 			//TODO: decentralize sonar properties declaration
