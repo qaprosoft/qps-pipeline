@@ -69,6 +69,7 @@ public class Sonar {
                     logger.debug("sonarHome: " + sonarHome)
 
                     // TODO: where is build number?
+					context.sh "export"
 
                     // execute sonar scanner
 					context.sh "${sonarHome}/bin/sonar-scanner -Dproject.settings=.sonarqube"
