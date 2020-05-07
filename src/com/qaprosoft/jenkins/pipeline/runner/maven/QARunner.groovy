@@ -172,7 +172,7 @@ public class QARunner extends AbstractRunner {
 	}
 
 	protected void prepare() {
-		scmClient.clone(!onlyUpdated)
+		scmClient.clonePush()
 		super.prepare()
 	}
 
