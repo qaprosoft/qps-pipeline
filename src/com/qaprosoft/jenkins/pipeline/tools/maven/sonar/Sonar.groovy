@@ -68,13 +68,12 @@ public class Sonar {
                     context.sh "export"
 
                     def sonarHome = context.env.getEnvironment().get("sonarHome")
-                    def sonarUrl = context.env.getEnvironment().get("SONAR_URL")
+                    def sonarUrl = context.env.getEnvironment().get("SONAR_HOST_URL")
                     def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
                     // execute sonar scanner
                         context.sh "${sonarHome}/bin/sonar-scanner \
-                            -Dsonar.projectBaseDir=.\
-                            -Dproject.settings=.sonarqube \
                             -Dsonar.host.url=${sonarUrl} \
+                            -Dproject.settings=.sonarqube \
                             -Dsonar.jacoco.ReportPath='target/jacoco.exec' \
                             -Dsonar.jacoco.reportPaths='/tmp/jacoco-it.exec'"
                 }
