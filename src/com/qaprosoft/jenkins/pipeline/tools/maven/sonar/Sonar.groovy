@@ -126,23 +126,25 @@ public class Sonar {
    }
 
     def jacocoIntegration(boolean jacocoEnable) {
-      //download combined integration testing coverage report: jacoco-it.exec
       if (jacocoEnable) {
-          def jacocoItExec = 'jacoco-it.exec'
-          def jacocoReportPath = "-Dsonar.jacoco.reportPath='target/jacoco.exec'"
-          def jacocoReportPaths = "-Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
-          def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
-          def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
+        def jacocoItExec = 'jacoco-it.exec'
+        def jacocoReportPath = "-Dsonar.jacoco.reportPath='target/jacoco.exec'"
+        def jacocoReportPaths = "-Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
+        def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+        def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
 
-          context.withAWS(region: "${jacocoRegion}",credentials:'aws-jacoco-token') {
-              def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
-              logger.info("copyOutput: " + copyOutput)
-          }
-          return [jacocoReportPath, jacocoReportPaths]
-        } else {
-          logger.debug("Jacoco integration is disabled")
-          return ["", ""]
+        //download combined integration testing coverage report: jacoco-it.exec
+        context.withAWS(region: "${jacocoRegion}", credentials:'aws-jacoco-token') {
+            def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
+            logger.info("copyOutput: " + copyOutput)
         }
+
+        return context.fileExists "tmp/${jacocoItExec}" ? [jacocoReportPath, jacocoReportPaths] : ["", ""]
+
+      } else {
+        logger.debug("Jacoco integration is disabled")
+        return ["", ""]
+      }
     }
 
     protected String getSonarEnv() {

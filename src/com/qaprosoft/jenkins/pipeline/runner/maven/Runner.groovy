@@ -25,9 +25,9 @@ public class Runner extends AbstractRunner {
         context.node("master") {
             logger.info("Runner->onPush")
 
-            def sonarConfigFileExists = context.fileExists ".sonarqube"
             scmClient.clonePush()
             compile()
+            def sonarConfigFileExists = context.fileExists ".sonarqube"
             if (sonarConfigFileExists) {
               logger.debug("Executing sonar scan with .sonarqube properties file")
               executeSonarFullScan()
