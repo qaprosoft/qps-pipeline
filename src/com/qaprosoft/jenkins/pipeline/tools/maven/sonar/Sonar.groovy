@@ -46,9 +46,9 @@ public class Sonar {
 							-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
 							-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
 							-Dsonar.projectVersion=${BUILD_NUMBER} \
-							-Dproject.settings=${SONARQUBE}
+							-Dproject.settings=${SONARQUBE} \
 							-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-							-Dsonar.analysis.mode=preview
+							-Dsonar.analysis.mode=preview"
 							/** **/
 						if (mavenSettingsConfig != null) {
 							executeMavenGoals(goals, mavenSettingsConfig)
@@ -71,25 +71,25 @@ public class Sonar {
 			} else {
 				logger.warn("Sonarqube is not configured correctly! Follow documentation Sonar integration steps to enable it.")
 			}
-				
+
 			def pomFiles = getProjectPomFiles()
 			pomFiles.each {
 				logger.debug(it)
 				compile()
-				
+
 				if (!isSonarAvailable) {
 					continue
 				}
 				//do compile and scanner for all high level pom.xml files
 				def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
 				def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
-			
+
 	            context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 	            context.withSonarQubeEnv('sonar-ci') {
 	                //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
 	                def sonarHome = context.env.getEnvironment().get("sonarHome")
 	                logger.debug("sonarHome: " + sonarHome)
-	
+
 					def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
 	                // execute sonar scanner
 					context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.projectVersion=${BUILD_NUMBER} -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths}"
@@ -101,27 +101,27 @@ public class Sonar {
 	protected def getJacocoReportPaths(boolean jacocoEnable) {
 		def jacocoReportPath = ""
 		def jacocoReportPaths = ""
-	
+
 		if (jacocoEnable) {
 			def jacocoItExec = 'jacoco-it.exec'
-	
+
 			def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
 			def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
-	
+
 			// download combined integration testing coverage report: jacoco-it.exec
 			// TODO: test if aws cli is installed on regular jenkins slaves as we are going to run it on each onPush event starting from 5.0
 			context.withAWS(region: "${jacocoRegion}", credentials:'aws-jacoco-token') {
 				def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
 				logger.info("copyOutput: " + copyOutput)
 			}
-	
-			
+
+
 			if (context.fileExists("tmp/${jacocoItExec}")) {
 				jacocoReportPath = "-Dsonar.jacoco.reportPath='target/jacoco.exec'"
 				jacocoReportPaths = "-Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
 			}
 		}
-		
+
 		return [jacocoReportPath, jacocoReportPaths]
 	}
 
