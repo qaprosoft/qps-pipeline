@@ -25,39 +25,60 @@ public class Sonar {
 			logger.warn("Sonarqube is not configured correctly! Follow documentation Sonar integration steps to enable it.")
 		}
 
-
 		def pomFiles = getProjectPomFiles()
 		pomFiles.each {
 			logger.debug(it)
+      compile()
 
-			if (!isSonarAvailable) {
-				compile()
-			} else {
-				// [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
-				context.stage('Sonar Scanner') {
-					context.withSonarQubeEnv(sonarQubeEnv) {
-						//TODO: test inclusions/exclusions...
-						// -Dsonar.inclusions=**/src/main/java/** \
-						// -Dsonar.test.inclusions=**/src/test/java/**
-            
-						def goals = "-U -f ${it} \
-							clean compile test-compile package sonar:sonar -DskipTests=true \
-							-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-							-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-							-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-							-Dsonar.projectVersion=${Configuration.get("BUILD_NUMBER")} \
-							-Dproject.settings=${SONARQUBE} \
-							-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-							-Dsonar.analysis.mode=preview"
-							/** **/
-						if (mavenSettingsConfig != null) {
-							executeMavenGoals(goals, mavenSettingsConfig)
-						} else {
-							executeMavenGoals(goals)
-						}
-					}
-				}
-			}
+      if (!isSonarAvailable) {
+        continue
+      }
+      //do compile and scanner for all high level pom.xml files
+      def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+      def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
+
+            context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+            context.withSonarQubeEnv('sonar-ci') {
+                //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
+                def sonarHome = context.env.getEnvironment().get("sonarHome")
+                logger.debug("sonarHome: " + sonarHome)
+
+        def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+                // execute sonar scanner
+        context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.projectVersion=${BUILD_NUMBER} \
+                   -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths} \
+                   -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
+                   -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
+                   -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+                   -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)}\
+                   -Dsonar.analysis.mode=preview"
+            }
+
+			// if (!isSonarAvailable) {
+			// 	compile()
+			// } else {
+			// 	// [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
+			// 	context.stage('Sonar Scanner') {
+			// 		context.withSonarQubeEnv(sonarQubeEnv) {
+			// 			def goals = "-U -f ${it} \
+			// 				clean compile test-compile package sonar:sonar -DskipTests=true \
+			// 				-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
+			// 				-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
+			// 				-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+			// 				-Dsonar.projectVersion=${Configuration.get("BUILD_NUMBER")} \
+			// 				-Dproject.settings=${SONARQUBE} \
+			// 				-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
+			// 				-Dsonar.analysis.mode=preview"
+			// 			if (mavenSettingsConfig != null) {
+			// 				executeMavenGoals(goals, mavenSettingsConfig)
+			// 			} else {
+			// 				executeMavenGoals(goals)
+			// 			}
+			// 		}
+			// 	}
+			// }
+
+
 		}
 	}
 
