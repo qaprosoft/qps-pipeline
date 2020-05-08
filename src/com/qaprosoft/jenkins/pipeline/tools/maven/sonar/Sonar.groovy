@@ -106,7 +106,10 @@ public class Sonar {
 				def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
 				def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
 
-	            context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+        logger.debug("jacocoReportPath: " + jacocoReportPath)
+        logger.debug("jacocoReportPaths: " + jacocoReportPaths)
+
+              context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 	            context.withSonarQubeEnv('sonar-ci') {
 	                //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
 	                def sonarHome = context.env.getEnvironment().get("sonarHome")
@@ -138,7 +141,7 @@ public class Sonar {
 			}
 
 
-			if (context.fileExists("tmp/${jacocoItExec}")) {
+			if (context.fileExists("/tmp/${jacocoItExec}")) {
 				jacocoReportPath = "-Dsonar.jacoco.reportPath='target/jacoco.exec'"
 				jacocoReportPaths = "-Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
 			}
