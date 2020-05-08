@@ -139,7 +139,7 @@ public class Sonar {
             logger.info("copyOutput: " + copyOutput)
         }
 
-        return context.fileExists "tmp/${jacocoItExec}" ? [jacocoReportPath, jacocoReportPaths] : ["", ""]
+        return context.fileExists("tmp/${jacocoItExec}") ? [jacocoReportPath, jacocoReportPaths] : ["", ""]
 
       } else {
         logger.debug("Jacoco integration is disabled")
