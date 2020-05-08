@@ -142,8 +142,8 @@ public class Sonar {
 
 
 			if (context.fileExists("/tmp/${jacocoItExec}")) {
-				jacocoReportPath = "-Dsonar.jacoco.reportPath='/target/jacoco.exec'"
-				jacocoReportPaths = "-Dsonar.jacoco.itReportPath='/tmp/${jacocoItExec}'"
+				jacocoReportPath = ""
+				jacocoReportPaths = "-Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
 			}
 		}
 
