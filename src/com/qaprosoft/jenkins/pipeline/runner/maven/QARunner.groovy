@@ -37,7 +37,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 @Grab('org.testng:testng:6.8.8')
 
 @Mixin([Maven, Sonar])
-public class QARunner extends AbstractRunner {
+public class QARunner extends Runner {
 
     protected Map dslObjects = new HashMap()
     protected def pipelineLibrary = "QPS-Pipeline"
@@ -83,6 +83,7 @@ public class QARunner extends AbstractRunner {
     }
 
     //Methods
+	@Override
     public void build() {
         logger.info("QARunner->build")
 
@@ -103,64 +104,36 @@ public class QARunner extends AbstractRunner {
 
 
     //Events
+	@Override
     public void onPush() {
-        context.node("master") {
-//            context.timestamps {
-              logger.info("QARunner->onPush")
-              setZafiraCreds()
+		context.node("master") {
+			//            context.timestamps {
+			logger.info("QARunner->onPush")
+			setZafiraCreds()
 
-              try {
-                  prepare()
+			try {
+				// it should be non shallow clone anyway to support full static code analysis
+				scmClient.clonePush()
 
-                  if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-                    logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-                    return
-                  }
+				prepare() // to init factiryRunner with ability toexecute jobDSL
 
-                  scan()
-                  getJenkinsJobsScanResult(currentBuild.rawBuild)
-                  compile()
+				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+					scan()
+					getJenkinsJobsScanResult(currentBuild.rawBuild)
+				}
 
-                  def sonarConfigFileExists = context.fileExists ".sonarqube"
-                  if (sonarConfigFileExists) {
-                    logger.debug("Executing sonar scan with .sonarqube properties file")
-                    executeSonarFullScan()
-                  } else {
-                    logger.debug("Executing sonar scan with default configuration")
-                    def project = Configuration.get("repo")
-                    executeSonarFullScan(project, project, "")
-                  }
-              } catch (Exception e) {
-                  logger.error("Scan failed.\n" + e.getMessage())
-                  getJenkinsJobsScanResult(null)
-                  this.currentBuild.result = BuildResult.FAILURE
-              }
-                clean()
-        //            }
-        }
+				executeFullScan()
+
+			} catch (Exception e) {
+				logger.error("Scan failed.\n" + e.getMessage())
+				getJenkinsJobsScanResult(null)
+				this.currentBuild.result = BuildResult.FAILURE
+			}
+			clean()
+			//            }
+		}
         context.node("master") {
             jenkinsFileScan()
-        }
-    }
-
-    public void onPullRequest() {
-        context.node("master") {
-            logger.info("QARunner->onPullRequest")
-            scmClient.clonePR()
-
-            def pomFiles = getProjectPomFiles()
-            pomFiles.each {
-                logger.debug(it)
-                //do compile and scanner for all high level pom.xml files
-                if (!executeSonarPRScan(it.value)) {
-                    compile(it.value)
-                }
-            }
-
-            //TODO: investigate whether we need this piece of code
-            //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
-            //                scmClient.mergePR()
-            //            }
         }
     }
 
@@ -180,11 +153,6 @@ public class QARunner extends AbstractRunner {
 		setTestRailCreds()
 
 		testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
-	}
-
-	protected void prepare() {
-		scmClient.clone(onlyUpdated)
-		super.prepare()
 	}
 
 	protected void scan() {
@@ -224,31 +192,6 @@ public class QARunner extends AbstractRunner {
 
     protected String getWorkspace() {
         return context.pwd()
-    }
-
-    protected def getProjectPomFiles() {
-        def pomFiles = []
-        def files = context.findFiles(glob: "**/pom.xml")
-
-        if (files.length > 0) {
-            logger.info("Number of pom.xml files to analyze: " + files.length)
-
-            int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
-            for (pomFile in files) {
-                def path = pomFile.path
-                int level = path.count("/")
-                logger.debug("file: " + path + "; level: " + level + "; curLevel: " + curLevel)
-                if (level < curLevel) {
-                    curLevel = level
-                    pomFiles.clear()
-                    pomFiles.add(pomFile.path)
-                } else if (level == curLevel) {
-                    pomFiles.add(pomFile.path)
-                }
-            }
-            logger.info("PROJECT POMS: " + pomFiles)
-        }
-        return pomFiles
     }
 
     protected def getSubProjectPomFiles(subDirectory) {

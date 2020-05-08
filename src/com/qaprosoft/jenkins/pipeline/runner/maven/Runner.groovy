@@ -24,31 +24,8 @@ public class Runner extends AbstractRunner {
     public void onPush() {
         context.node("master") {
             logger.info("Runner->onPush")
-
             scmClient.clonePush()
-            compile()
-            def sonarConfigFileExists = context.fileExists ".sonarqube"
-            if (sonarConfigFileExists) {
-              logger.debug("Executing sonar scan with .sonarqube properties file")
-              executeSonarFullScan()
-            } else {
-              logger.debug("Executing sonar scan with default configuration")
-              def project = Configuration.get("repo")
-              // TODO for multi modules prject we should find a way of obtaining all modules
-              executeSonarFullScan(project, project,
-                 "carina-api,carina-aws-s3,carina-commons,carina-core,carina-crypto,carina-dataprovider,carina-appcenter,carina-proxy,carina-reporting,carina-utils,carina-webdriver")
-            }
-
-			//TODO: decentralize sonar properties declaration
-			// 1. declare "executeSonarFullScan()" with no args ?!
-			// 2. organize reading project name and key, modules and all possible args from ".sonarqube" property file
-			// 3. if no .sonarqube detected then project name and key equals to Configuration.get("repo"), modules are empty
-			// 4. switch QARunner as well to use simple executeSonarFullScan() call
-			// 5. send PR into the carina putting into this repo new ".sonarqube" file with
-			    // sonar.modules=carina-api,carina-aws-s3,carina-commons,carina-core,carina-crypto,carina-dataprovider,carina-appcenter,carina-proxy,carina-reporting,carina-utils,carina-webdriver
-			    // sonar.java.source=1.8
-
-
+            executeFullScan()
         }
 
         context.node("master") {
@@ -60,15 +37,7 @@ public class Runner extends AbstractRunner {
         context.node("master") {
             logger.info("Runner->onPullRequest")
             scmClient.clonePR()
-
-            context.stage('Maven Compile') {
-                def goals = "clean compile test-compile -f pom.xml"
-
-                executeMavenGoals(goals)
-            }
-            context.stage('Sonar Scanner') {
-                executeSonarPRScan()
-            }
+            executePRScan()
 
             //TODO: investigate whether we need this piece of code
             //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
@@ -81,6 +50,7 @@ public class Runner extends AbstractRunner {
     public void build() {
         context.node("master") {
             logger.info("Runner->build")
+            //TODO: we are ready to produce building for any maven project: this is maven compile install goals
             throw new RuntimeException("Not implemented yet!")
         }
     }
