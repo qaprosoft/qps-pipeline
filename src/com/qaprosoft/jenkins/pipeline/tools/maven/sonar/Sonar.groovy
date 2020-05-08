@@ -39,13 +39,13 @@ public class Sonar {
 						//TODO: test inclusions/exclusions...
 						// -Dsonar.inclusions=**/src/main/java/** \
 						// -Dsonar.test.inclusions=**/src/test/java/**
-
-						def goals = "-U -f ${pomFile} \
+            
+						def goals = "-U -f ${it} \
 							clean compile test-compile package sonar:sonar -DskipTests=true \
 							-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
 							-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
 							-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-							-Dsonar.projectVersion=${BUILD_NUMBER} \
+							-Dsonar.projectVersion=${Configuration.get("BUILD_NUMBER")} \
 							-Dproject.settings=${SONARQUBE} \
 							-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
 							-Dsonar.analysis.mode=preview"
