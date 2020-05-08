@@ -22,7 +22,7 @@ public class Runner extends AbstractRunner {
 
     //Events
     public void onPush() {
-        context.node("master") {
+        context.node("maven") {
             logger.info("Runner->onPush")
             scmClient.clonePush()
             executeFullScan()
@@ -34,7 +34,7 @@ public class Runner extends AbstractRunner {
     }
 
     public void onPullRequest() {
-        context.node("master") {
+        context.node("maven") {
             logger.info("Runner->onPullRequest")
             scmClient.clonePR()
             executePRScan()
