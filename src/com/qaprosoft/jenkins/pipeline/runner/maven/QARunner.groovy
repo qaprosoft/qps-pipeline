@@ -37,7 +37,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 @Grab('org.testng:testng:6.8.8')
 
 @Mixin([Maven, Sonar])
-public class QARunner extends AbstractRunner {
+public class QARunner extends Runner {
 
     protected Map dslObjects = new HashMap()
     protected def pipelineLibrary = "QPS-Pipeline"
@@ -49,7 +49,7 @@ public class QARunner extends AbstractRunner {
     protected QTestUpdater qTestUpdater
 
     protected qpsInfraCrossBrowserMatrixName = "qps-infra-matrix"
-    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome; browser: firefox" // explicit versions removed as we gonna to deliver auto upgrade for browsers 
+    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome; browser: firefox" // explicit versions removed as we gonna to deliver auto upgrade for browsers
 
     //CRON related vars
     protected def listPipelines = []
@@ -83,13 +83,14 @@ public class QARunner extends AbstractRunner {
     }
 
     //Methods
+	@Override
     public void build() {
         logger.info("QARunner->build")
 
         // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
         setZafiraCreds()
         setSeleniumUrl()
-		
+
         if (!isParamEmpty(Configuration.get("scmURL"))){
             scmClient.setUrl(Configuration.get("scmURL"))
         }
@@ -103,55 +104,39 @@ public class QARunner extends AbstractRunner {
 
 
     //Events
+	@Override
     public void onPush() {
-        context.node("master") {
-//            context.timestamps {
-                logger.info("QARunner->onPush")
+		context.node("maven") {
+			//            context.timestamps {
+			logger.info("QARunner->onPush")
+			setZafiraCreds()
 
-                setZafiraCreds()
+			try {
+				// it should be non shallow clone anyway to support full static code analysis
+				scmClient.clonePush()
 
-                try {
-                    prepare()
-                    if (!isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
-                        logger.warn("do not continue scanner as none of suite was updated ( *.xml )")
-                        return
-                    }
-                    scan()
-                    getJenkinsJobsScanResult(currentBuild.rawBuild)
-                } catch (Exception e) {
-                    logger.error("Scan failed.\n" + e.getMessage())
-                    getJenkinsJobsScanResult(null)
-                    this.currentBuild.result = BuildResult.FAILURE
-                }
-                clean()
-//            }
-        }
+				prepare() // to init factiryRunner with ability toexecute jobDSL
+
+				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+					scan()
+					getJenkinsJobsScanResult(currentBuild.rawBuild)
+				}
+
+				executeFullScan()
+
+			} catch (Exception e) {
+				logger.error("Scan failed.\n" + e.getMessage())
+				getJenkinsJobsScanResult(null)
+				this.currentBuild.result = BuildResult.FAILURE
+			}
+			clean()
+			//            }
+		}
         context.node("master") {
             jenkinsFileScan()
         }
     }
 
-    public void onPullRequest() {
-        context.node("master") {
-            logger.info("QARunner->onPullRequest")
-            scmClient.clonePR()
-
-            def pomFiles = getProjectPomFiles()
-            pomFiles.each {
-                logger.debug(it)
-                //do compile and scanner for all high level pom.xml files
-                if (!executeSonarPRScan(it.value)) {
-                    compile(it.value)
-                }
-            }
-
-            //TODO: investigate whether we need this piece of code
-            //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
-            //                scmClient.mergePR()
-            //            }
-        }
-    }
-	
 	public void sendQTestResults() {
 		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
 		setZafiraCreds()
@@ -166,29 +151,10 @@ public class QARunner extends AbstractRunner {
 		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
 		setZafiraCreds()
 		setTestRailCreds()
-		
+
 		testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
 	}
 
-    protected void compile() {
-        compile("pom.xml")
-    }
-
-    protected void compile(pomFile) {
-        context.stage('Maven Compile') {
-            // [VD] don't remove -U otherwise latest dependencies are not downloaded
-            // and PR can be marked as fail due to the compilation failure!
-            def goals = "-U clean compile test-compile -f ${pomFile}"
-
-            executeMavenGoals(goals)
-        }
-    }
-
-	protected void prepare() {
-		scmClient.clone(!onlyUpdated)
-		super.prepare()
-	}    
-	
 	protected void scan() {
 
         context.stage("Scan Repository") {
@@ -211,7 +177,7 @@ public class QARunner extends AbstractRunner {
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch)
 
-				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"), 
+				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"),
 										Configuration.get("removedJobAction"),
 										Configuration.get("removedViewAction"))
             }
@@ -226,31 +192,6 @@ public class QARunner extends AbstractRunner {
 
     protected String getWorkspace() {
         return context.pwd()
-    }
-
-    protected def getProjectPomFiles() {
-        def pomFiles = []
-        def files = context.findFiles(glob: "**/pom.xml")
-
-        if (files.length > 0) {
-            logger.info("Number of pom.xml files to analyze: " + files.length)
-
-            int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
-            for (pomFile in files) {
-                def path = pomFile.path
-                int level = path.count("/")
-                logger.debug("file: " + path + "; level: " + level + "; curLevel: " + curLevel)
-                if (level < curLevel) {
-                    curLevel = level
-                    pomFiles.clear()
-                    pomFiles.add(pomFile.path)
-                } else if (level == curLevel) {
-                    pomFiles.add(pomFile.path)
-                }
-            }
-            logger.info("PROJECT POMS: " + pomFiles)
-        }
-        return pomFiles
     }
 
     protected def getSubProjectPomFiles(subDirectory) {
@@ -331,7 +272,7 @@ public class QARunner extends AbstractRunner {
 
             def suiteThreadCount = getSuiteAttribute(currentSuite, "thread-count")
             logger.info("suite thread-count: " + suiteThreadCount)
-            
+
             def suiteDataProviderThreadCount = getSuiteAttribute(currentSuite, "data-provider-thread-count")
             logger.info("suite data-provider-thread-count: " + suiteDataProviderThreadCount)
 
@@ -381,14 +322,14 @@ public class QARunner extends AbstractRunner {
                     cronJobName = cronJobName.trim()
 					def cronDesc = "project: ${repo}; type: cron"
 					def cronJobFactory = new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc, orgRepoScheduling)
-					
+
 					if (!dslObjects.containsKey(cronJobName)) {
 						// register CronJobFactory only if its declaration is missed
 						registerObject(cronJobName, cronJobFactory)
 					} else {
-						cronJobFactory = dslObjects.get(cronJobName) 
+						cronJobFactory = dslObjects.get(cronJobName)
 					}
-					
+
 					// try to detect scheduling in current suite
 					def scheduling = null
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING))) {
@@ -397,7 +338,7 @@ public class QARunner extends AbstractRunner {
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName))) {
 						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName)
 					}
-					
+
 					if (!isParamEmpty(scheduling)) {
 						logger.info("Setup scheduling for cron: ${cronJobName} value: ${scheduling}")
 						cronJobFactory.setScheduling(scheduling)
@@ -406,10 +347,10 @@ public class QARunner extends AbstractRunner {
             }
         }
     }
-	
+
 	protected def getSuiteAttribute(suite, attribute) {
 		def res = "1"
-		
+
 		def file = new File(suite.getFileName())
 		def documentBuilderFactory = DocumentBuilderFactory.newInstance()
 
@@ -828,7 +769,7 @@ public class QARunner extends AbstractRunner {
     protected void downloadResources() {
         //DO NOTHING as of now
 
-/*		
+/*
 		context.stage("Download Resources") {
 		def pomFile = getSubProjectFolder() + "/pom.xml"
 		logger.info("pomFile: " + pomFile)
@@ -844,7 +785,7 @@ public class QARunner extends AbstractRunner {
             executeMavenGoals("-U ${goals} -f ${pomFile}")
         }
     }
-	
+
 	protected void setSeleniumUrl() {
 		def seleniumUrl = Configuration.get(Configuration.Parameter.SELENIUM_URL)
 		logger.info("seleniumUrl: ${seleniumUrl}")
@@ -852,18 +793,18 @@ public class QARunner extends AbstractRunner {
 			// do not override from creds as looks like external service or user overrided this value
 			return
 		}
-			
+
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
 		logger.info("orgFolderName: ${orgFolderName}")
-		
+
 		def hubUrl = "${provider}_hub"
 		if (!isParamEmpty(orgFolderName)) {
 			hubUrl = "${orgFolderName}-${provider}_hub"
 		}
 		logger.info("hubUrl: ${hubUrl}")
-		
+
 		if (getCredentials(hubUrl)){
 			context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
@@ -883,7 +824,7 @@ public class QARunner extends AbstractRunner {
 			zafiraUpdater = new ZafiraUpdater(context)
 			return
 		}
-			
+
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def reportingServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
 		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
@@ -897,7 +838,7 @@ public class QARunner extends AbstractRunner {
 			}
 			logger.debug("reportingServiceUrl:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
 		}
-		
+
 		def reportingAccessToken = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
 		if (!isParamEmpty(orgFolderName)) {
 			reportingAccessToken = "${orgFolderName}" + "-" + reportingAccessToken
@@ -908,11 +849,11 @@ public class QARunner extends AbstractRunner {
 			}
 			logger.debug("reportingAccessToken:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
 		}
-		
+
 		// obligatory init zafiraUpdater after getting valid url and token
-		zafiraUpdater = new ZafiraUpdater(context)		
+		zafiraUpdater = new ZafiraUpdater(context)
 	}
-	
+
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
 		def testRailUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
@@ -926,7 +867,7 @@ public class QARunner extends AbstractRunner {
 			}
 			logger.debug("TestRail url:" + Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL))
 		}
-		
+
 		def testRailCreds = Configuration.CREDS_TESTRAIL
 		if (!isParamEmpty(orgFolderName)) {
 			testRailCreds = "${orgFolderName}" + "-" + testRailCreds
@@ -939,11 +880,11 @@ public class QARunner extends AbstractRunner {
 			logger.debug("TestRail username:" + Configuration.get(Configuration.Parameter.TESTRAIL_USERNAME))
 			logger.debug("TestRail password:" + Configuration.get(Configuration.Parameter.TESTRAIL_PASSWORD))
 		}
-		
+
 		// obligatory init testrailUpdater after getting valid url and creds reading
 		testRailUpdater = new TestRailUpdater(context)
 	}
-	
+
 	protected void setQTestCreds() {
 		// update QTest serviceUrl and accessToken parameter based on values from credentials
 		def qtestServiceUrl = Configuration.CREDS_QTEST_SERVICE_URL
@@ -957,7 +898,7 @@ public class QARunner extends AbstractRunner {
 			}
 			logger.info("${qtestServiceUrl}:" + Configuration.get(Configuration.Parameter.QTEST_SERVICE_URL))
 		}
-		
+
 		def qtestAccessToken = Configuration.CREDS_QTEST_ACCESS_TOKEN
 		if (!isParamEmpty(orgFolderName)) {
 			qtestAccessToken = "${orgFolderName}" + "-" + qtestAccessToken
@@ -968,7 +909,7 @@ public class QARunner extends AbstractRunner {
 			}
 			logger.info("${qtestAccessToken}:" + Configuration.get(Configuration.Parameter.QTEST_ACCESS_TOKEN))
 		}
-		
+
 		// obligatory init qtestUpdater after getting valid url and token
 		qTestUpdater = new QTestUpdater(context)
 	}
@@ -984,7 +925,7 @@ public class QARunner extends AbstractRunner {
 							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
 							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
 		}
-		
+
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
         ${zafiraGoals} \
@@ -1354,22 +1295,22 @@ public class QARunner extends AbstractRunner {
                         //launch test only if current suite support cron regression execution for current env
                         continue
                     }
-					
-					
-					// organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX 
+
+
+					// organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX
 					def supportedParamsMatrix = ""
 					boolean isParamsMatrixDeclared = false
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX))) {
 						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX)
 						logger.info("Declared ${JENKINS_REGRESSION_MATRIX} detected!")
 					}
-					
+
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline))) {
 						// override default parameters matrix using concrete cron params
 						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline)
 						logger.info("Declared ${JENKINS_REGRESSION_MATRIX}_${regressionPipeline} detected!")
 					}
-					
+
 					for (def supportedParams : supportedParamsMatrix.split(";")) {
 						if (isParamEmpty(supportedParams)) {
 							continue
@@ -1377,7 +1318,7 @@ public class QARunner extends AbstractRunner {
 						isParamsMatrixDeclared = true
 						supportedParams = supportedParams.trim()
 						logger.info("supportedParams: ${supportedParams}")
-						
+
 						Map supportedConfigurations = getSupportedConfigurations(supportedParams)
 						def pipelineMap = [:]
 						// put all not NULL args into the pipelineMap for execution
@@ -1443,7 +1384,7 @@ public class QARunner extends AbstractRunner {
                         putNotNull(pipelineMap, "queue_registration", queueRegistration)
                         registerPipeline(currentSuite, pipelineMap)
                     }
-					
+
                 }
             }
         }
@@ -1617,7 +1558,7 @@ public class QARunner extends AbstractRunner {
 					//do not append params_name as it it used only for naming
 					continue
 				}
-				
+
                 if (!isParamEmpty(param.getValue())) {
                     if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
                         jobParams.add(context.booleanParam(name: param.getKey(), value: param.getValue()))
@@ -1703,7 +1644,7 @@ public class QARunner extends AbstractRunner {
 
 		logger.info("getOrgFolderName.jobName: " + jobName)
 		logger.info("getOrgFolderName.nameCount: " + nameCount)
-		
+
 		def orgFolderName = ""
 		if (nameCount == 1 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
 			// testrail-updater - i.e. stage
