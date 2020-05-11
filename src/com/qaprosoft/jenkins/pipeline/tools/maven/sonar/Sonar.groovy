@@ -10,11 +10,7 @@ public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
 	  private static boolean isSonarAvailable
 
-    protected void executePRScan(){
-        executePRScan(null)
-    }
-
-	protected void executePRScan(mavenSettingsConfig){
+	protected void executePRScan(){
 		def sonarQubeEnv = getSonarEnv()
 		def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
 		if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
@@ -118,7 +114,7 @@ public class Sonar {
 
 			if (context.fileExists("/tmp/${jacocoItExec}")) {
 				jacocoReportPath = ""
-				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}"
+				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec},/target/jacoco.exec"
 			}
 		}
 
