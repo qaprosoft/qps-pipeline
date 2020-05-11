@@ -29,7 +29,7 @@ public class Sonar {
       compile()
 
       if (!isSonarAvailable) {
-        continue
+        return
       }
       //do compile and scanner for all high level pom.xml files
       def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
@@ -97,7 +97,7 @@ public class Sonar {
 				compile()
 
 				if (!isSonarAvailable) {
-					continue
+					return
 				}
 				//do compile and scanner for all high level pom.xml files
 				def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
