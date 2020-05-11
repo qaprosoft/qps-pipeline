@@ -85,7 +85,7 @@ public class Maven {
         context.stage('Maven Compile') {
             // [VD] don't remove -U otherwise latest dependencies are not downloaded
             // and PR can be marked as fail due to the compilation failure!
-            def goals = "-U clean compile test -f ${pomFile} -Dmaven.test.failure.ignore=true jacoco:report-aggregate"
+            def goals = "-U clean compile test install -f ${pomFile} -Dmaven.test.failure.ignore=true jacoco:report-aggregate"
 
             executeMavenGoals(goals)
         }
