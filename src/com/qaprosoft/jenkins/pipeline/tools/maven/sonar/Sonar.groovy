@@ -8,15 +8,13 @@ import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 @Mixin(Maven)
 public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
-
+	  private static boolean isSonarAvailable
 
     protected void executePRScan(){
         executePRScan(null)
     }
 
 	protected void executePRScan(mavenSettingsConfig){
-
-		boolean isSonarAvailable = false
 		def sonarQubeEnv = getSonarEnv()
 		def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
 		if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
@@ -85,7 +83,6 @@ public class Sonar {
 
 	protected void executeFullScan() {
 		context.stage('Sonar Scanner') {
-			boolean isSonarAvailable = false
 			def sonarQubeEnv = getSonarEnv()
 			def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
 			if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
@@ -115,9 +112,13 @@ public class Sonar {
 	                def sonarHome = context.env.getEnvironment().get("sonarHome")
 	                logger.debug("sonarHome: " + sonarHome)
 
-					def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+          def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+          def SONAR_LOG_LEVEL = ""
+          if (Configuration.get(Configuration.Parameter.QPS_PIPELINE_LOG_LEVEL).equals("DEBUG"))
+            SONAR_LOG_LEVEL = "-Dsonar.log.level=DEBUG"
+
 	                // execute sonar scanner
-					context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.projectVersion=${BUILD_NUMBER} -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths}"
+					context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.projectVersion=${BUILD_NUMBER} -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths} ${SONAR_LOG_LEVEL}"
 	            }
 			}
         }
@@ -143,7 +144,7 @@ public class Sonar {
 
 			if (context.fileExists("/tmp/${jacocoItExec}")) {
 				jacocoReportPath = ""
-				jacocoReportPaths = "-Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
+				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}"
 			}
 		}
 
