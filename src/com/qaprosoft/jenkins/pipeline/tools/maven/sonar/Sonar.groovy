@@ -114,7 +114,7 @@ public class Sonar {
 
           def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
           def SONAR_LOG_LEVEL = ""
-          if (Configuration.get(Configuration.Parameter.QPS_PIPELINE_LOG_LEVEL).equals("DEBUG"))
+          if (Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL).equals("DEBUG"))
             SONAR_LOG_LEVEL = "-Dsonar.log.level=DEBUG"
 
 	                // execute sonar scanner
