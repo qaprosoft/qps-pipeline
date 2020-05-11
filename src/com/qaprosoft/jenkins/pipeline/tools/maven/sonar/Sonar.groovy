@@ -52,32 +52,6 @@ public class Sonar {
                    -Dsonar.sourceEncoding=UTF-8 \
                    -Dsonar.analysis.mode=preview"
             }
-
-			// if (!isSonarAvailable) {
-			// 	compile()
-			// } else {
-			// 	// [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
-			// 	context.stage('Sonar Scanner') {
-			// 		context.withSonarQubeEnv(sonarQubeEnv) {
-			// 			def goals = "-U -f ${it} \
-			// 				clean compile test-compile package sonar:sonar -DskipTests=true \
-			// 				-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-			// 				-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-			// 				-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-			// 				-Dsonar.projectVersion=${Configuration.get("BUILD_NUMBER")} \
-			// 				-Dproject.settings=${SONARQUBE} \
-			// 				-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-			// 				-Dsonar.analysis.mode=preview"
-			// 			if (mavenSettingsConfig != null) {
-			// 				executeMavenGoals(goals, mavenSettingsConfig)
-			// 			} else {
-			// 				executeMavenGoals(goals)
-			// 			}
-			// 		}
-			// 	}
-			// }
-
-
 		}
 	}
 
