@@ -107,7 +107,7 @@ public class QARunner extends Runner {
 	@Override
     public void onPush() {
 		context.node("maven") {
-			//            context.timestamps {
+            context.timestamps {
 			logger.info("QARunner->onPush")
 			setZafiraCreds()
 
@@ -130,7 +130,7 @@ public class QARunner extends Runner {
 				this.currentBuild.result = BuildResult.FAILURE
 			}
 			clean()
-			//            }
+            }
 		}
         context.node("master") {
             jenkinsFileScan()
@@ -534,7 +534,7 @@ public class QARunner extends Runner {
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
                 try {
-//                    context.timestamps {
+                    context.timestamps {
                         prepareBuild(currentBuild)
                         scmClient.clone()
 
@@ -550,7 +550,7 @@ public class QARunner extends Runner {
                         }
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
-//                    }
+                    }
                 } catch (Exception e) {
                     //TODO: [VD] think about making currentBuild.result as FAILURE
                     logger.error(printStackTrace(e))

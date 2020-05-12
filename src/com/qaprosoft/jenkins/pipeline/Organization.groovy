@@ -50,7 +50,7 @@ class Organization extends BaseObject {
     public def register() {
         logger.info("Organization->register")
         context.node('master') {
-//            context.timestamps {
+            context.timestamps {
                 generateCreds()
                 generateCiItems()
                 logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
@@ -58,20 +58,20 @@ class Organization extends BaseObject {
                     setSecurity()
                 }
                 clean()
-//            }
+            }
         }
     }
 
     public def delete() {
         logger.info("Organization->register")
         context.node('master') {
-//            context.timestamps {
+            context.timestamps {
                 def folder = Configuration.get("folderName")
                 def userName = folder + "-user"
                 deleteFolder(folder)
                 deleteUser(userName)
                 clean()
-//            }
+            }
         }
     }
 	
