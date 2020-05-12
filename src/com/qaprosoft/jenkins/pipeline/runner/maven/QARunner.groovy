@@ -172,7 +172,7 @@ public class QARunner extends Runner {
             for (pomFile in pomFiles) {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent() ? Paths.get(pomFile).getParent().toString() : "."
-                loger.debug("subProject: " + subProject)
+                logger.debug("subProject: " + subProject)
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 def testNGFolderName = searchTestNgFolderName(subProject).toString()
                 def zafiraProject = getZafiraProject(subProjectFilter)
