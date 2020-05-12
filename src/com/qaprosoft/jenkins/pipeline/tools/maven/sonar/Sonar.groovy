@@ -8,15 +8,9 @@ import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 @Mixin(Maven)
 public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
+	  private static boolean isSonarAvailable
 
-
-    protected void executePRScan(){
-        executePRScan(null)
-    }
-
-	protected void executePRScan(mavenSettingsConfig){
-
-		boolean isSonarAvailable = false
+	protected void executePRScan(){
 		def sonarQubeEnv = getSonarEnv()
 		def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
 		if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
@@ -31,7 +25,7 @@ public class Sonar {
       compile()
 
       if (!isSonarAvailable) {
-        continue
+        return
       }
       //do compile and scanner for all high level pom.xml files
       def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
@@ -44,9 +38,12 @@ public class Sonar {
                 logger.debug("sonarHome: " + sonarHome)
 
         def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+        def SONAR_LOG_LEVEL = ""
+        if (context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()))
+          SONAR_LOG_LEVEL = "-Dsonar.log.level=DEBUG"
                 // execute sonar scanner
         context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.projectVersion=${BUILD_NUMBER} \
-                   -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths} \
+                   -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths} ${SONAR_LOG_LEVEL}\
                    -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                    -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
                    -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
@@ -54,38 +51,11 @@ public class Sonar {
                    -Dsonar.sourceEncoding=UTF-8 \
                    -Dsonar.analysis.mode=preview"
             }
-
-			// if (!isSonarAvailable) {
-			// 	compile()
-			// } else {
-			// 	// [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
-			// 	context.stage('Sonar Scanner') {
-			// 		context.withSonarQubeEnv(sonarQubeEnv) {
-			// 			def goals = "-U -f ${it} \
-			// 				clean compile test-compile package sonar:sonar -DskipTests=true \
-			// 				-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-			// 				-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-			// 				-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-			// 				-Dsonar.projectVersion=${Configuration.get("BUILD_NUMBER")} \
-			// 				-Dproject.settings=${SONARQUBE} \
-			// 				-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-			// 				-Dsonar.analysis.mode=preview"
-			// 			if (mavenSettingsConfig != null) {
-			// 				executeMavenGoals(goals, mavenSettingsConfig)
-			// 			} else {
-			// 				executeMavenGoals(goals)
-			// 			}
-			// 		}
-			// 	}
-			// }
-
-
 		}
 	}
 
 	protected void executeFullScan() {
 		context.stage('Sonar Scanner') {
-			boolean isSonarAvailable = false
 			def sonarQubeEnv = getSonarEnv()
 			def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
 			if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
@@ -100,7 +70,7 @@ public class Sonar {
 				compile()
 
 				if (!isSonarAvailable) {
-					continue
+					return
 				}
 				//do compile and scanner for all high level pom.xml files
 				def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
@@ -115,9 +85,13 @@ public class Sonar {
 	                def sonarHome = context.env.getEnvironment().get("sonarHome")
 	                logger.debug("sonarHome: " + sonarHome)
 
-					def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+          def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+          def SONAR_LOG_LEVEL = ""
+          if (context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()))
+            SONAR_LOG_LEVEL = "-Dsonar.log.level=DEBUG"
+
 	                // execute sonar scanner
-					context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.projectVersion=${BUILD_NUMBER} -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths}"
+					context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.projectVersion=${BUILD_NUMBER} -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths} ${SONAR_LOG_LEVEL}"
 	            }
 			}
         }
@@ -143,7 +117,7 @@ public class Sonar {
 
 			if (context.fileExists("/tmp/${jacocoItExec}")) {
 				jacocoReportPath = ""
-				jacocoReportPaths = "-Dsonar.jacoco.reportPaths='/tmp/${jacocoItExec}'"
+				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec},/target/jacoco.exec"
 			}
 		}
 
