@@ -117,7 +117,7 @@ public class QARunner extends Runner {
 
 				prepare() // to init factiryRunner with ability toexecute jobDSL
 
-				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
 					getJenkinsJobsScanResult(currentBuild.rawBuild)
 				}
