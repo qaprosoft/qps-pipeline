@@ -8,45 +8,64 @@ import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 @Mixin(Maven)
 public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
-	  private static boolean isSonarAvailable
+	private static boolean isSonarAvailable
+	
+	protected def context
+	protected Logger logger
+	protected ISCM scmClient
+	
+	public Sonar(context) {
+		this.context = context
+		this.logger = new Logger(context)
+		this.scmClient = new GitHub(context)
+	}
 
-	protected void executeFullScan(isPrClone=false) {
-		context.stage('Sonar Scanner') {
-			def sonarQubeEnv = getSonarEnv()
-			def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
-			if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
-				isSonarAvailable = true
-			} else {
-				logger.warn("Sonarqube is not configured correctly! Follow documentation Sonar integration steps to enable it.")
-			}
-
-			def pomFiles = getProjectPomFiles()
-			pomFiles.each {
-				logger.debug(it)
-				compile()
-
-				if (!isSonarAvailable) {
-					return
+	public void scan(isPrClone=false) {
+		//TODO: verify preliminary if "maven" nodes available
+		context.node("maven") {
+			context.stage('Sonar Scanner') {
+				
+				if (isPrClone) {
+					scmClient.clonePR()
+				} else {
+					// it should be non shallow clone anyway to support full static code analysis
+					scmClient.clonePush()
 				}
-				//do compile and scanner for all high level pom.xml files
-				def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-				def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
-
-        logger.debug("jacocoReportPath: " + jacocoReportPath)
-        logger.debug("jacocoReportPaths: " + jacocoReportPaths)
-
-              context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-	            context.withSonarQubeEnv('sonar-ci') {
-
-        def script = generateScript(isPrClone, jacocoReportPaths, jacocoReportPath)
-	                // execute sonar scanner
-					context.sh script
-	            }
-			}
-        }
+				
+				def sonarQubeEnv = getSonarEnv()
+				def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
+				if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
+					isSonarAvailable = true
+				} else {
+					logger.warn("Sonarqube is not configured correctly! Follow documentation Sonar integration steps to enable it.")
+				}
+	
+				def pomFiles = getProjectPomFiles()
+				pomFiles.each {
+					logger.debug(it)
+					compile()
+	
+					if (!isSonarAvailable) {
+						return
+					}
+					//do compile and scanner for all high level pom.xml files
+					def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+					def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
+	
+					logger.debug("jacocoReportPath: " + jacocoReportPath)
+					logger.debug("jacocoReportPaths: " + jacocoReportPaths)
+	
+					context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+		            	context.withSonarQubeEnv('sonar-ci') {
+							// execute sonar scanner
+							context.sh scannerScript(isPrClone, jacocoReportPaths, jacocoReportPath)
+		            }
+				}
+	        }
+		}
     }
 
-	protected def getJacocoReportPaths(boolean jacocoEnable) {
+	private def getJacocoReportPaths(boolean jacocoEnable) {
 		def jacocoReportPath = ""
 		def jacocoReportPaths = ""
 
@@ -65,15 +84,15 @@ public class Sonar {
 
 
 			if (context.fileExists("/tmp/${jacocoItExec}")) {
-				jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec"
-				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}"
+				jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec" //this for unit tests code coverage
+				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}" // this one is for integration testing coverage
 			}
 		}
 
 		return [jacocoReportPath, jacocoReportPaths]
 	}
 
-  protected def generateScript(isPrClone, jacocoReportPaths, jacocoReportPath) {
+  private def scannerScript(isPrClone, jacocoReportPaths, jacocoReportPath) {
     //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
     def sonarHome = context.env.getEnvironment().get("sonarHome")
     logger.debug("sonarHome: " + sonarHome)
@@ -95,9 +114,9 @@ public class Sonar {
                   -Dsonar.analysis.mode=preview"
     }
     return script
-}
+  }
 
-    protected String getSonarEnv() {
+    private String getSonarEnv() {
       def sonarQubeEnv = ''
       Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
           sonarQubeEnv = installation.getName()
@@ -105,28 +124,4 @@ public class Sonar {
       return sonarQubeEnv
     }
 
-	protected def getProjectPomFiles() {
-		def pomFiles = []
-		def files = context.findFiles(glob: "**/pom.xml")
-
-		if (files.length > 0) {
-			logger.info("Number of pom.xml files to analyze: " + files.length)
-
-			int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
-			for (pomFile in files) {
-				def path = pomFile.path
-				int level = path.count("/")
-				logger.debug("file: " + path + "; level: " + level + "; curLevel: " + curLevel)
-				if (level < curLevel) {
-					curLevel = level
-					pomFiles.clear()
-					pomFiles.add(pomFile.path)
-				} else if (level == curLevel) {
-					pomFiles.add(pomFile.path)
-				}
-			}
-			logger.info("PROJECT POMS: " + pomFiles)
-		}
-		return pomFiles
-	}
 }

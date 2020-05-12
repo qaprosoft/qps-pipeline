@@ -36,7 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 @Grab('org.testng:testng:6.8.8')
 
-@Mixin([Maven, Sonar])
+@Mixin([Maven])
 public class QARunner extends Runner {
 
     protected Map dslObjects = new HashMap()
@@ -112,8 +112,7 @@ public class QARunner extends Runner {
 			setZafiraCreds()
 
 			try {
-				// it should be non shallow clone anyway to support full static code analysis
-				scmClient.clonePush()
+				scmClient.clone(true)
 
 				prepare() // to init factiryRunner with ability toexecute jobDSL
 
@@ -122,7 +121,7 @@ public class QARunner extends Runner {
 					getJenkinsJobsScanResult(currentBuild.rawBuild)
 				}
 
-				executeFullScan()
+				sonar.scan()
 
 			} catch (Exception e) {
 				logger.error("Scan failed.\n" + e.getMessage())
@@ -130,7 +129,6 @@ public class QARunner extends Runner {
 				this.currentBuild.result = BuildResult.FAILURE
 			}
 			clean()
-			//            }
 		}
         context.node("master") {
             jenkinsFileScan()

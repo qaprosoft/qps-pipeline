@@ -9,14 +9,15 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 
-@Mixin([Maven, Sonar])
+@Mixin([Maven])
 public class Runner extends AbstractRunner {
-
     Logger logger
+    Sonar sonar
 
     public Runner(context) {
         super(context)
         scmClient = new GitHub(context)
+        sonar = new Sonar(context)
         logger = new Logger(context)
     }
 
@@ -25,7 +26,7 @@ public class Runner extends AbstractRunner {
         context.node("maven") {
             logger.info("Runner->onPush")
             scmClient.clonePush()
-            executeFullScan()
+            sonar.scan()
         }
 
         context.node("master") {
@@ -37,7 +38,7 @@ public class Runner extends AbstractRunner {
         context.node("maven") {
             logger.info("Runner->onPullRequest")
             scmClient.clonePR()
-            executeFullScan(true)
+            sonar.scan(true)
 
             //TODO: investigate whether we need this piece of code
             //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
