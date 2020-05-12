@@ -23,9 +23,8 @@ public class Runner extends AbstractRunner {
 
     //Events
     public void onPush() {
-        context.node("maven") {
+        context.node("master") {
             logger.info("Runner->onPush")
-            scmClient.clonePush()
             sonar.scan()
         }
 
@@ -35,9 +34,8 @@ public class Runner extends AbstractRunner {
     }
 
     public void onPullRequest() {
-        context.node("maven") {
+        context.node("master") {
             logger.info("Runner->onPullRequest")
-            scmClient.clonePR()
             sonar.scan(true)
 
             //TODO: investigate whether we need this piece of code
