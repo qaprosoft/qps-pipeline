@@ -106,7 +106,7 @@ public class QARunner extends Runner {
     //Events
 	@Override
     public void onPush() {
-		context.node("maven") {
+		context.node("master") {
 			//            context.timestamps {
 			logger.info("QARunner->onPush")
 			setZafiraCreds()
