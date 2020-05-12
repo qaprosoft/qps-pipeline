@@ -37,7 +37,7 @@ public class Runner extends AbstractRunner {
         context.node("maven") {
             logger.info("Runner->onPullRequest")
             scmClient.clonePR()
-            executePRScan()
+            executeFullScan(true)
 
             //TODO: investigate whether we need this piece of code
             //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {

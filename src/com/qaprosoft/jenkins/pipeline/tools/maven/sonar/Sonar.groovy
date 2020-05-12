@@ -10,51 +10,7 @@ public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
 	  private static boolean isSonarAvailable
 
-	protected void executePRScan(){
-		def sonarQubeEnv = getSonarEnv()
-		def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
-		if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
-			isSonarAvailable = true
-		} else {
-			logger.warn("Sonarqube is not configured correctly! Follow documentation Sonar integration steps to enable it.")
-		}
-
-		def pomFiles = getProjectPomFiles()
-		pomFiles.each {
-			logger.debug(it)
-      compile()
-
-      if (!isSonarAvailable) {
-        return
-      }
-      //do compile and scanner for all high level pom.xml files
-      def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-      def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
-
-            context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-            context.withSonarQubeEnv('sonar-ci') {
-                //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
-                def sonarHome = context.env.getEnvironment().get("sonarHome")
-                logger.debug("sonarHome: " + sonarHome)
-
-        def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
-        def SONAR_LOG_LEVEL = ""
-        if (context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()))
-          SONAR_LOG_LEVEL = "-Dsonar.log.level=DEBUG"
-                // execute sonar scanner
-        context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.projectVersion=${BUILD_NUMBER} \
-                   -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths} ${SONAR_LOG_LEVEL}\
-                   -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-                   -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-                   -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-                   -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-                   -Dsonar.sourceEncoding=UTF-8 \
-                   -Dsonar.analysis.mode=preview"
-            }
-		}
-	}
-
-	protected void executeFullScan() {
+	protected void executeFullScan(boolean isPrClone) {
 		context.stage('Sonar Scanner') {
 			def sonarQubeEnv = getSonarEnv()
 			def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
@@ -81,17 +37,10 @@ public class Sonar {
 
               context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 	            context.withSonarQubeEnv('sonar-ci') {
-	                //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
-	                def sonarHome = context.env.getEnvironment().get("sonarHome")
-	                logger.debug("sonarHome: " + sonarHome)
 
-          def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
-          def SONAR_LOG_LEVEL = ""
-          if (context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()))
-            SONAR_LOG_LEVEL = "-Dsonar.log.level=DEBUG"
-
+        def script = generateScript(isPrClone, jacocoReportPaths, jacocoReportPath)
 	                // execute sonar scanner
-					context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.projectVersion=${BUILD_NUMBER} -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths} ${SONAR_LOG_LEVEL}"
+					context.sh script
 	            }
 			}
         }
@@ -116,13 +65,38 @@ public class Sonar {
 
 
 			if (context.fileExists("/tmp/${jacocoItExec}")) {
-				jacocoReportPath = ""
-				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec},/target/jacoco.exec"
+				jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec"
+				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}"
 			}
 		}
 
 		return [jacocoReportPath, jacocoReportPaths]
 	}
+
+  protected def generateScript(isPrClone, jacocoReportPaths, jacocoReportPath) {
+    //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
+    def sonarHome = context.env.getEnvironment().get("sonarHome")
+    logger.debug("sonarHome: " + sonarHome)
+
+    def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+    def SONAR_LOG_LEVEL = context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()) ?  "DEBUG" : "INFO"
+
+    def script = "${sonarHome}/bin/sonar-scanner \
+                  -Dsonar.projectVersion=${BUILD_NUMBER} \
+                  -Dproject.settings=${SONARQUBE} \
+                  -Dsonar.log.level=${SONAR_LOG_LEVEL} \
+                  ${jacocoReportPaths} ${jacocoReportPath}
+                 "
+    if (isPrClone) {
+      script += " -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
+                  -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
+                  -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+                  -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
+                  -Dsonar.sourceEncoding=UTF-8 \
+                  -Dsonar.analysis.mode=preview"
+    }
+    return script
+}
 
     protected String getSonarEnv() {
       def sonarQubeEnv = ''
