@@ -38,9 +38,12 @@ public class Sonar {
                 logger.debug("sonarHome: " + sonarHome)
 
         def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+        def SONAR_LOG_LEVEL = ""
+        if (context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()))
+          SONAR_LOG_LEVEL = "-Dsonar.log.level=DEBUG"
                 // execute sonar scanner
         context.sh "${sonarHome}/bin/sonar-scanner -Dsonar.projectVersion=${BUILD_NUMBER} \
-                   -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths} \
+                   -Dproject.settings=${SONARQUBE} ${jacocoReportPath} ${jacocoReportPaths} ${SONAR_LOG_LEVEL}\
                    -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                    -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
                    -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
