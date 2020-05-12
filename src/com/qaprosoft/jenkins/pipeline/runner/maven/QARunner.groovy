@@ -106,8 +106,8 @@ public class QARunner extends Runner {
     //Events
 	@Override
     public void onPush() {
-		context.node("maven") {
-            context.timestamps {
+		context.node("master") {
+      context.timestamps {
 			logger.info("QARunner->onPush")
 			setZafiraCreds()
 
@@ -117,7 +117,7 @@ public class QARunner extends Runner {
 
 				prepare() // to init factiryRunner with ability toexecute jobDSL
 
-				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
 					getJenkinsJobsScanResult(currentBuild.rawBuild)
 				}
@@ -172,6 +172,7 @@ public class QARunner extends Runner {
             for (pomFile in pomFiles) {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent() ? Paths.get(pomFile).getParent().toString() : "."
+                logger.debug("subProject: " + subProject)
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 def testNGFolderName = searchTestNgFolderName(subProject).toString()
                 def zafiraProject = getZafiraProject(subProjectFilter)
