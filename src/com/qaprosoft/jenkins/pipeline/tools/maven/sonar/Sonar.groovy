@@ -4,16 +4,18 @@ import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
+import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 
 @Mixin(Maven)
 public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
 	private static boolean isSonarAvailable
-	
+
 	protected def context
 	protected Logger logger
 	protected ISCM scmClient
-	
+
 	public Sonar(context) {
 		this.context = context
 		this.logger = new Logger(context)
@@ -24,14 +26,14 @@ public class Sonar {
 		//TODO: verify preliminary if "maven" nodes available
 		context.node("maven") {
 			context.stage('Sonar Scanner') {
-				
+
 				if (isPrClone) {
 					scmClient.clonePR()
 				} else {
 					// it should be non shallow clone anyway to support full static code analysis
 					scmClient.clonePush()
 				}
-				
+
 				def sonarQubeEnv = getSonarEnv()
 				def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
 				if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
@@ -39,22 +41,22 @@ public class Sonar {
 				} else {
 					logger.warn("Sonarqube is not configured correctly! Follow documentation Sonar integration steps to enable it.")
 				}
-	
+
 				def pomFiles = getProjectPomFiles()
 				pomFiles.each {
 					logger.debug(it)
 					compile()
-	
+
 					if (!isSonarAvailable) {
 						return
 					}
 					//do compile and scanner for all high level pom.xml files
 					def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
 					def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
-	
+
 					logger.debug("jacocoReportPath: " + jacocoReportPath)
 					logger.debug("jacocoReportPaths: " + jacocoReportPaths)
-	
+
 					context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 		            	context.withSonarQubeEnv('sonar-ci') {
 							// execute sonar scanner
