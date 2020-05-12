@@ -10,7 +10,7 @@ public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
 	  private static boolean isSonarAvailable
 
-	protected void executeFullScan(boolean isPrClone) {
+	protected void executeFullScan(isPrClone=false) {
 		context.stage('Sonar Scanner') {
 			def sonarQubeEnv = getSonarEnv()
 			def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
@@ -85,7 +85,7 @@ public class Sonar {
                   -Dsonar.projectVersion=${BUILD_NUMBER} \
                   -Dproject.settings=${SONARQUBE} \
                   -Dsonar.log.level=${SONAR_LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
-                  
+
     if (isPrClone) {
       script += " -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                   -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
