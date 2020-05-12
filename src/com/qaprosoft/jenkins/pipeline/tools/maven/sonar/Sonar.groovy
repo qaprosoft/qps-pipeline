@@ -84,8 +84,8 @@ public class Sonar {
     def script = "${sonarHome}/bin/sonar-scanner \
                   -Dsonar.projectVersion=${BUILD_NUMBER} \
                   -Dproject.settings=${SONARQUBE} \
-                  -Dsonar.log.level=${SONAR_LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}
-                 "
+                  -Dsonar.log.level=${SONAR_LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
+                  
     if (isPrClone) {
       script += " -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                   -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
