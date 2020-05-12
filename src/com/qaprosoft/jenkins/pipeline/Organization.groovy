@@ -274,9 +274,9 @@ class Organization extends BaseObject {
     }
 	
 	protected def generateCreds() {
-		logger.debug("QPS_HOST: " + Configuration.get(Configuration.Parameter.QPS_HOST))
-		logger.debug("selenium: " + "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
-		registerHubCredentials(this.folderName, "selenium", "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
+		logger.debug("INFRA_HOST: " + Configuration.get(Configuration.Parameter.INFRA_HOST))
+		logger.debug("selenium: " + "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub")
+		registerHubCredentials(this.folderName, "selenium", "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub")
 
 		if (!isParamEmpty(this.reportingServiceUrl) && !isParamEmpty(this.reportingAccessToken)) {
 			registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
@@ -287,7 +287,7 @@ class Organization extends BaseObject {
 		context.stage("Register Hub Credentials") {
 			def orgFolderName = Configuration.get("folderName")
 			def provider = Configuration.get("provider")
-			// Example: http://demo.qaprosoft.com/ggr/wd/hub
+			// Example: http://demo.qaprosoft.com/selenoid/wd/hub
 			def url = Configuration.get("url")
 			
 			registerHubCredentials(orgFolderName, provider, url)

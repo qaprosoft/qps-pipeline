@@ -106,7 +106,7 @@ public class QARunner extends Runner {
     //Events
 	@Override
     public void onPush() {
-		context.node("maven") {
+		context.node("master") {
 			//            context.timestamps {
 			logger.info("QARunner->onPush")
 			setZafiraCreds()
@@ -117,7 +117,7 @@ public class QARunner extends Runner {
 
 				prepare() // to init factiryRunner with ability toexecute jobDSL
 
-				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") && onlyUpdated) {
+				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
 					getJenkinsJobsScanResult(currentBuild.rawBuild)
 				}
@@ -172,6 +172,7 @@ public class QARunner extends Runner {
             for (pomFile in pomFiles) {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent() ? Paths.get(pomFile).getParent().toString() : "."
+                logger.debug("subProject: " + subProject)
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 def testNGFolderName = searchTestNgFolderName(subProject).toString()
                 def zafiraProject = getZafiraProject(subProjectFilter)
@@ -933,7 +934,7 @@ public class QARunner extends Runner {
         -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
         -Dmax_screen_history=1 \
-        -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/eTAFReport\" \
+        -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/CarinaReport\" \
         -Dgit_branch=${Configuration.get("branch")} \
         -Dgit_commit=${Configuration.get("scm_commit")} \
         -Dgit_url=${Configuration.get("scm_url")} \
@@ -1630,7 +1631,7 @@ public class QARunner extends Runner {
 
     // Possible to override in private pipelines
     protected def getDebugHost() {
-        return context.env.getEnvironment().get("QPS_HOST")
+        return context.env.getEnvironment().get("INFRA_HOST")
     }
 
     // Possible to override in private pipelines
