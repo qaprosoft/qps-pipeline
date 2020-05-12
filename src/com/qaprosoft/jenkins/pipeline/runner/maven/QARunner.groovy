@@ -129,7 +129,7 @@ public class QARunner extends Runner {
 				this.currentBuild.result = BuildResult.FAILURE
 			}
 			clean()
-      //            }
+			//            }
 		}
         context.node("master") {
             jenkinsFileScan()
