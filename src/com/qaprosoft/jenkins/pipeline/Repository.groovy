@@ -43,11 +43,11 @@ class Repository extends BaseObject {
         Configuration.set("GITHUB_ORGANIZATION", Configuration.get(SCM_ORG))
         Configuration.set("GITHUB_HOST", Configuration.get(SCM_HOST))
         context.node('master') {
-//            context.timestamps {
+            context.timestamps {
                 prepare()
                 generateCiItems()
                 clean()
-//            }
+            }
         }
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
         def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
@@ -99,12 +99,12 @@ class Repository extends BaseObject {
                 def zafiraFields = Configuration.get("zafiraFields")
                 logger.debug("zafiraFields: " + zafiraFields)
                 if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def zafiraServiceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
+                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
                     def zafiraRefreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
-                    logger.debug("zafiraServiceURL: " + zafiraServiceURL)
+                    logger.debug("reportingServiceUrl: " + reportingServiceUrl)
                     logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
-                    if (!isParamEmpty(zafiraServiceURL) && !isParamEmpty(zafiraRefreshToken)){
-                        Organization.registerZafiraCredentials(repoFolder, zafiraServiceURL, zafiraRefreshToken)
+                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(zafiraRefreshToken)){
+                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, zafiraRefreshToken)
                     }
                 }
             }

@@ -9,14 +9,15 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 
-@Mixin([Maven, Sonar])
+@Mixin([Maven])
 public class Runner extends AbstractRunner {
-
     Logger logger
+    Sonar sonar
 
     public Runner(context) {
         super(context)
         scmClient = new GitHub(context)
+        sonar = new Sonar(context)
         logger = new Logger(context)
     }
 
@@ -24,10 +25,7 @@ public class Runner extends AbstractRunner {
     public void onPush() {
         context.node("master") {
             logger.info("Runner->onPush")
-            boolean shallowClone = !Configuration.get("onlyUpdated").toBoolean()
-            logger.info("shallowClone: " + shallowClone)
-            scmClient.clone(shallowClone)
-            //TODO: implement Sonar scan for full reposiory
+            sonar.scan()
         }
 
         context.node("master") {
@@ -38,16 +36,7 @@ public class Runner extends AbstractRunner {
     public void onPullRequest() {
         context.node("master") {
             logger.info("Runner->onPullRequest")
-            scmClient.clonePR()
-
-            context.stage('Maven Compile') {
-                def goals = "clean compile test-compile -f pom.xml"
-
-                executeMavenGoals(goals)
-            }
-            context.stage('Sonar Scanner') {
-                executeSonarPRScan()
-            }
+            sonar.scan(true)
 
             //TODO: investigate whether we need this piece of code
             //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
@@ -60,6 +49,7 @@ public class Runner extends AbstractRunner {
     public void build() {
         context.node("master") {
             logger.info("Runner->build")
+            //TODO: we are ready to produce building for any maven project: this is maven compile install goals
             throw new RuntimeException("Not implemented yet!")
         }
     }

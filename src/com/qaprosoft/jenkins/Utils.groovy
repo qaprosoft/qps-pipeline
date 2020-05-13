@@ -39,7 +39,6 @@ class Utils {
 		if (!isParamEmpty(currentSuite.getParameter(parameterName))) {
 			value = currentSuite.getParameter(parameterName)
 		}
-		
         return value
     }
 
@@ -61,4 +60,4 @@ class Utils {
     static boolean getBooleanParameterValue(parameter, currentSuite){
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
-}
+  }

@@ -1,113 +1,129 @@
 package com.qaprosoft.jenkins.pipeline.tools.maven.sonar
 
+import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
 import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
+import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 
 @Mixin(Maven)
 public class Sonar {
+    private static final String SONARQUBE = ".sonarqube"
+	private static boolean isSonarAvailable
 
-    protected void executeSonarPRScan(){
-        executeSonarPRScan("pom.xml")
+	protected def context
+	protected Logger logger
+	protected ISCM scmClient
+
+	public Sonar(context) {
+		this.context = context
+		this.logger = new Logger(context)
+		this.scmClient = new GitHub(context)
+	}
+
+	public void scan(isPrClone=false) {
+		//TODO: verify preliminary if "maven" nodes available
+		context.node("maven") {
+			context.stage('Sonar Scanner') {
+
+				if (isPrClone) {
+					scmClient.clonePR()
+				} else {
+					// it should be non shallow clone anyway to support full static code analysis
+					scmClient.clonePush()
+				}
+
+				def sonarQubeEnv = getSonarEnv()
+				def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
+				if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
+					isSonarAvailable = true
+				} else {
+					logger.warn("Sonarqube is not configured correctly! Follow documentation Sonar integration steps to enable it.")
+				}
+
+				def pomFiles = getProjectPomFiles()
+				pomFiles.each {
+					logger.debug(it)
+					compile()
+
+					if (!isSonarAvailable) {
+						return
+					}
+					//do compile and scanner for all high level pom.xml files
+					def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+					def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
+
+					logger.debug("jacocoReportPath: " + jacocoReportPath)
+					logger.debug("jacocoReportPaths: " + jacocoReportPaths)
+
+					context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+		            	context.withSonarQubeEnv('sonar-ci') {
+							// execute sonar scanner
+							context.sh scannerScript(isPrClone, jacocoReportPaths, jacocoReportPath)
+		            }
+				}
+	        }
+		}
     }
 
-    protected boolean executeSonarPRScan(pomFile){
-        return executeSonarPRScan(pomFile, null)
+	private def getJacocoReportPaths(boolean jacocoEnable) {
+		def jacocoReportPath = ""
+		def jacocoReportPaths = ""
+
+		if (jacocoEnable) {
+			def jacocoItExec = 'jacoco-it.exec'
+
+			def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+			def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
+
+			// download combined integration testing coverage report: jacoco-it.exec
+			// TODO: test if aws cli is installed on regular jenkins slaves as we are going to run it on each onPush event starting from 5.0
+			context.withAWS(region: "${jacocoRegion}", credentials:'aws-jacoco-token') {
+				def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
+				logger.info("copyOutput: " + copyOutput)
+			}
+
+
+			if (context.fileExists("/tmp/${jacocoItExec}")) {
+				jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec" //this for unit tests code coverage
+				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}" // this one is for integration testing coverage
+			}
+		}
+
+		return [jacocoReportPath, jacocoReportPaths]
+	}
+
+  private def scannerScript(isPrClone, jacocoReportPaths, jacocoReportPath) {
+    //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
+    def sonarHome = context.env.getEnvironment().get("sonarHome")
+    logger.debug("sonarHome: " + sonarHome)
+
+    def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+    def SONAR_LOG_LEVEL = context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()) ?  "DEBUG" : "INFO"
+
+    def script = "${sonarHome}/bin/sonar-scanner \
+                  -Dsonar.projectVersion=${BUILD_NUMBER} \
+                  -Dproject.settings=${SONARQUBE} \
+                  -Dsonar.log.level=${SONAR_LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
+
+    if (isPrClone) {
+      script += " -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
+                  -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
+                  -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+                  -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
+                  -Dsonar.sourceEncoding=UTF-8 \
+                  -Dsonar.analysis.mode=preview"
     }
+    return script
+  }
 
-    protected boolean executeSonarPRScan(pomFile, mavenSettingsConfig){
-        def sonarQubeEnv = ''
-        Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
-            sonarQubeEnv = installation.getName()
-        }
-        if(sonarQubeEnv.isEmpty()){
-			//TODO: add link to the doc about howto configur it correctly
-            logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan otherwise only compilation will be verified!")
-			// [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
-			return false
-        }
-
-        // [VD] do not remove "-U" arg otherwise fresh dependencies are not downloaded
-        context.stage('Sonar Scanner') {
-            context.withSonarQubeEnv(sonarQubeEnv) {
-                def goals = "-U -f ${pomFile} \
-					clean compile test-compile package sonar:sonar -DskipTests=true \
-					-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-					-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-					-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-					-Dsonar.projectKey=${Configuration.get("repo")} \
-					-Dsonar.projectName=${Configuration.get("repo")} \
-					-Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
-					-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
-					-Dsonar.sources=. \
-					-Dsonar.tests=. \
-					-Dsonar.inclusions=**/src/main/java/** \
-					-Dsonar.test.inclusions=**/src/test/java/** \
-					-Dsonar.java.source=1.8"
-                /** **/
-                if (mavenSettingsConfig != null) {
-                    executeMavenGoals(goals, mavenSettingsConfig)
-                } else {
-                    executeMavenGoals(goals)
-                }
-            }
-        }
-
-		return true
-
-    }
-
-    protected void executeSonarFullScan(String projectName, String projectKey, String modules) {
-        executeSonarFullScan(".", projectName, projectKey, modules)
-    }
-
-    protected void executeSonarFullScan(String projectBaseDir, String projectName, String projectKey, String modules) {
-        context.stage('Sonar Scanner') {
-            def sonarQubeEnv = ''
-            Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
-                sonarQubeEnv = installation.getName()
-            }
-            if(sonarQubeEnv.isEmpty()){
-                logger.warn("There is no SonarQube server configured. Please, configure Jenkins for performing SonarQube scan.")
-                return
-            }
-
-
-            //download combined integration testing coverage report: jacoco-it.exec
-            def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-            def jacocoItExec = 'jacoco-it.exec'
-            def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
-            def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
-            if (jacocoEnable) {
-                context.withAWS(region: "${jacocoRegion}",credentials:'aws-jacoco-token') {
-                    def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
-                    logger.info("copyOutput: " + copyOutput)
-                }
-            }
-
-
-            context.env.sonarHome = context.tool name: 'qps-sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-            context.withSonarQubeEnv('sonar-ci') {
-                //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
-                def sonarHome = context.env.getEnvironment().get("sonarHome")
-                def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
-
-                // execute sonar scanner
-                context.sh "${sonarHome}/bin/sonar-scanner \
-					-Dsonar.projectBaseDir=${projectBaseDir} \
-					-Dsonar.projectName=${projectName} \
-					-Dsonar.projectKey=${projectKey} \
-					-Dsonar.projectVersion=1.${BUILD_NUMBER} \
-					-Dsonar.java.source=1.8 \
-					-Dsonar.sources='src/main' \
-					-Dsonar.tests='src/test' \
-					-Dsonar.java.binaries='target/classes' \
-					-Dsonar.junit.reportsPath='target/surefire-reports' \
-					-Dsonar.modules=${modules} \
-					-Dsonar.jacoco.ReportPath='target/jacoco.exec' \
-					-Dsonar.jacoco.itReportPath='/tmp/${jacocoItExec}'"
-            }
-        }
+    private String getSonarEnv() {
+      def sonarQubeEnv = ''
+      Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
+          sonarQubeEnv = installation.getName()
+      }
+      return sonarQubeEnv
     }
 
 }
