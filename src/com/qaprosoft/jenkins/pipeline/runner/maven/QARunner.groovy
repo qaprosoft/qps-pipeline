@@ -1238,33 +1238,14 @@ public class QARunner extends Runner {
         def files = context.findFiles glob: subProjectFilter + "/**/*.xml"
         logger.info("Number of Test Suites to Scan Through: " + files.length)
         for (file in files){
-			//TODO: do we need extra verification like: !isTestNgSuite(currentSuitePath) 
+            //TODO: do we need extra verification like: !isTestNgSuite(currentSuitePath) 
             logger.info("Current suite path: " + file.path)
             XmlSuite currentSuite = parsePipeline(workspace + "/" + file.path)
             if (currentSuite == null) {
                 currentBuild.result = BuildResult.FAILURE
                 continue
             }
-            if(!isParamEmpty(currentSuite.getParameter("jenkinsPipelineLocales"))){
-				//TODO: remove jenkinsPipelineLocales after moving all logic to MatrixParams
-                generateMultilingualPipeline(currentSuite)
-            } else {
-                generatePipeline(currentSuite)
-            }
-        }
-    }
-
-	@Deprecated
-    protected def generateMultilingualPipeline(currentSuite){
-        def supportedLocales = getPipelineLocales(currentSuite)
-        if (supportedLocales.size() > 0){
-            multilingualMode = true
-            supportedLocales.each { locale ->
-                pipelineLocaleMap.put("locale", locale.key)
-                pipelineLocaleMap.put("language", locale.value)
-                generatePipeline(currentSuite)
-            }
-            pipelineLocaleMap.clear()
+            generatePipeline(currentSuite)
         }
     }
 
@@ -1282,12 +1263,11 @@ public class QARunner extends Runner {
         def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
         def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
         def priorityNum = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
-        def supportedBrowsers = !isParamEmpty(currentSuite.getParameter("jenkinsPipelineBrowsers"))?currentSuite.getParameter("jenkinsPipelineBrowsers"):""
         def currentBrowser = !isParamEmpty(getBrowser())?getBrowser():"NULL"
         def logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
                 "jobExecutionOrderNumber: ${orderNum};\n	email_list: ${emailList};\n	" +
                 "supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	" +
-                "supportedBrowsers: ${supportedBrowsers};\n\tcurrentBrowser: ${currentBrowser};"
+                "currentBrowser: ${currentBrowser};"
         logger.info(logLine)
 
         for (def regressionPipeline : regressionPipelines?.split(",")) {
@@ -1354,49 +1334,6 @@ public class QARunner extends Runner {
 						putMap(pipelineMap, supportedConfigurations)
 						registerPipeline(currentSuite, pipelineMap)
 					}
-					logger.debug("isParamsMatrixDeclared: ${isParamsMatrixDeclared}")
-					if (isParamsMatrixDeclared) {
-						//there is no need to use deprecated functionality for generating pipelines if ParamsMatrix was used otherwise we could run a little bit more jobs
-						continue
-					}
-
-					//TODO: remove deprecated functionality after switching to ParamsMatrix
-                    // replace cross-browser matrix by prepared configurations list to organize valid split by ";"
-                    supportedBrowsers = getCrossBrowserConfigurations(supportedBrowsers)
-
-                    for (def supportedBrowser : supportedBrowsers.split(";")) {
-                        supportedBrowser = supportedBrowser.trim()
-                        logger.info("supportedConfig: ${supportedBrowser}")
-                        /* supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
-                           supportedBrowser - splitted single browser name from supportedBrowsers
-                           currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
-                        Map supportedConfigurations = getSupportedConfigurations(supportedBrowser)
-                        if (!currentBrowser.equals(supportedBrowser) && !isParamEmpty(currentBrowser)) {
-                            logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
-                            continue
-                        }
-                        def pipelineMap = [:]
-                        // put all not NULL args into the pipelineMap for execution
-                        putMap(pipelineMap, pipelineLocaleMap)
-                        putMap(pipelineMap, supportedConfigurations)
-                        pipelineMap.put("name", regressionPipeline)
-						pipelineMap.put("params_name", supportedBrowser)
-                        pipelineMap.put("branch", Configuration.get("branch"))
-                        pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
-                        pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
-                        putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
-                        pipelineMap.put("jobName", jobName)
-                        pipelineMap.put("env", supportedEnv)
-                        pipelineMap.put("order", orderNum)
-                        pipelineMap.put("BuildPriority", priorityNum)
-                        putNotNullWithSplit(pipelineMap, "email_list", emailList)
-                        putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-                        putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
-                        putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
-                        putNotNull(pipelineMap, "queue_registration", queueRegistration)
-                        registerPipeline(currentSuite, pipelineMap)
-                    }
-
                 }
             }
         }
