@@ -61,6 +61,9 @@ public class QARunner extends Runner {
     protected static final String JOB_TYPE = "job_type"
 	protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
 	protected static final String JENKINS_REGRESSION_SCHEDULING = "jenkinsRegressionScheduling"
+	
+	protected static final String TEST_RESOURCES_PATH = "/src/test/resources/"
+	protected static final String CARINA_SUITES_PATH = TEST_RESOURCES_PATH +  "testng_suites/"
 
     public enum JobType {
         JOB("JOB"),
@@ -220,9 +223,6 @@ public class QARunner extends Runner {
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
 		
-		def testResourcesPath = "/src/test/resources/"
-		def carinaSuitePath = testResourcesPath + "testng_suites/"
-
         // VIEWS
         registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
         //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
@@ -238,7 +238,7 @@ public class QARunner extends Runner {
 			//verify if it is testNG suite xml file and continue scan only in this case!
 			def currentSuitePath = workspace + "/" + suitePath
 			
-			if (!currentSuitePath.contains(testResourcesPath) || !isTestNgSuite(currentSuitePath)) {
+			if (!currentSuitePath.contains(TEST_RESOURCES_PATH) || !isTestNgSuite(currentSuitePath)) {
 				logger.info("Skip from scanner as not a TestNG suite xml file: " + currentSuitePath)
 				// not under /src/test/resources or not a TestNG suite file
 				continue
@@ -246,16 +246,16 @@ public class QARunner extends Runner {
 
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
 			def suiteName = ""
-			if (currentSuitePath.contains(carinaSuitePath) && currentSuitePath.endsWith(".xml")) {
+			if (currentSuitePath.contains(CARINA_SUITES_PATH) && currentSuitePath.endsWith(".xml")) {
 				// carina core TestNG suite
-				int testResourceIndex = currentSuitePath.lastIndexOf(carinaSuitePath)
+				int testResourceIndex = currentSuitePath.lastIndexOf(CARINA_SUITES_PATH)
 				logger.debug("testResourceIndex : " + testResourceIndex)
-				suiteName = currentSuitePath.substring(testResourceIndex + carinaSuitePath.length(), currentSuitePath.length() - 4)
+				suiteName = currentSuitePath.substring(testResourceIndex + CARINA_SUITES_PATH.length(), currentSuitePath.length() - 4)
 			} else {
 				// external TestNG suite
-				int testResourceIndex = currentSuitePath.lastIndexOf(testResourcesPath)
+				int testResourceIndex = currentSuitePath.lastIndexOf(TEST_RESOURCES_PATH)
 				logger.debug("testResourceIndex : " + testResourceIndex)
-				suiteName = currentSuitePath.substring(testResourceIndex + testResourcesPath.length(), currentSuitePath.length())
+				suiteName = currentSuitePath.substring(testResourceIndex + TEST_RESOURCES_PATH.length(), currentSuitePath.length())
 			}
 			
 			if (suiteName.isEmpty()) {
@@ -1238,10 +1238,17 @@ public class QARunner extends Runner {
         def files = context.findFiles glob: subProjectFilter + "/**/*.xml"
         logger.info("Number of Test Suites to Scan Through: " + files.length)
         for (file in files){
-            //TODO: do we need extra verification like: !isTestNgSuite(currentSuitePath) 
-            logger.info("Current suite path: " + file.path)
-            XmlSuite currentSuite = parsePipeline(workspace + "/" + file.path)
+            def currentSuitePath = workspace + "/" + file.path
+            if (!currentSuitePath.contains(TEST_RESOURCES_PATH) || !isTestNgSuite(currentSuitePath)) {
+                logger.info("Skip from scanner as not a TestNG suite xml file: " + currentSuitePath)
+                // not under /src/test/resources or not a TestNG suite file
+                continue
+            }
+
+            logger.info("Current suite path: " + currentSuitePath)
+            XmlSuite currentSuite = parsePipeline(currentSuitePath)
             if (currentSuite == null) {
+                logger.error("ERROR! Unable to parse suite: " + currentSuitePath)
                 currentBuild.result = BuildResult.FAILURE
                 continue
             }
