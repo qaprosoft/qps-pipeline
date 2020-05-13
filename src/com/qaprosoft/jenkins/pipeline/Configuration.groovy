@@ -63,7 +63,7 @@ public class Configuration {
         GITHUB_API_URL("GITHUB_API_URL", "https://api.\${GITHUB_HOST}/"),
         GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft"),
         GITHUB_HTML_URL("GITHUB_HTML_URL", "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}"),
-        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, true),
+        GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
 
         INFRA_HOST("INFRA_HOST", "demo.qaprosoft.com"),
