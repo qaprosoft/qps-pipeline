@@ -61,6 +61,9 @@ public class QARunner extends Runner {
     protected static final String JOB_TYPE = "job_type"
 	protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
 	protected static final String JENKINS_REGRESSION_SCHEDULING = "jenkinsRegressionScheduling"
+	
+	protected static final String TEST_RESOURCES_PATH = "/src/test/resources/"
+	protected static final String CARINA_SUITES_PATH = TEST_RESOURCES_PATH +  "testng_suites/"
 
     public enum JobType {
         JOB("JOB"),
@@ -173,9 +176,8 @@ public class QARunner extends Runner {
                 def subProject = Paths.get(pomFile).getParent() ? Paths.get(pomFile).getParent().toString() : "."
                 logger.debug("subProject: " + subProject)
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
-                def testNGFolderName = searchTestNgFolderName(subProject).toString()
                 def zafiraProject = getZafiraProject(subProjectFilter)
-                generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch)
+                generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch)
 
 				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"),
 										Configuration.get("removedJobAction"),
@@ -203,33 +205,6 @@ public class QARunner extends Runner {
         return context.findFiles(glob: subDirectory + "**/pom.xml")
     }
 
-    def searchTestNgFolderName(subProject) {
-        def testNGFolderName = null
-        def poms = getSubProjectPomFiles(subProject)
-        logger.info("SUBPROJECT POMS: " + poms)
-        for(pom in poms){
-            testNGFolderName = parseTestNgFolderName(pom.path)
-            if (!isParamEmpty(testNGFolderName)){
-                break
-            }
-        }
-        return testNGFolderName
-    }
-
-    def parseTestNgFolderName(pomFile) {
-        def testNGFolderName = null
-        String pom = context.readFile pomFile
-        String tagName = "suiteXmlFile"
-        Matcher matcher = Pattern.compile(".*" + tagName + ".*").matcher(pom)
-        if (matcher.find()){
-            def suiteXmlPath = pom.substring(pom.lastIndexOf("<" + tagName + ">") + tagName.length() + 2, pom.indexOf("</" + tagName + ">".toString()))
-            Path suitePath = Paths.get(suiteXmlPath).getParent()
-            testNGFolderName = suitePath.getName(suitePath.getNameCount() - 1)
-            logger.info("TestNG folder name: " + testNGFolderName)
-        }
-        return testNGFolderName
-    }
-
     def getZafiraProject(subProjectFilter){
         def zafiraProject = "unknown"
         def zafiraProperties = context.findFiles glob: subProjectFilter + "/**/zafira.properties"
@@ -243,29 +218,49 @@ public class QARunner extends Runner {
         return zafiraProject
     }
 
-    def generateDslObjects(repoFolder, testNGFolderName, zafiraProject, subProject, subProjectFilter, branch){
+    def generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch){
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
-
+		
         // VIEWS
         registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
         //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
         //TODO: create default personalized view here
-        def suites = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
+        def suites = context.findFiles glob: subProjectFilter + "/**/*.xml"
         logger.info("SUITES: " + suites)
         // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
         for (File suite : suites) {
             def suitePath = suite.path
-            if (!suitePath.contains(".xml")) {
-                continue
-            }
-            def suiteName = suitePath.substring(suitePath.lastIndexOf(testNGFolderName) + testNGFolderName.length() + 1, suitePath.indexOf(".xml"))
+			logger.debug("suitePath: " + suitePath)
+			
+			//verify if it is testNG suite xml file and continue scan only in this case!
+			def currentSuitePath = workspace + "/" + suitePath
+			
+			if (!currentSuitePath.contains(TEST_RESOURCES_PATH) || !isTestNgSuite(currentSuitePath)) {
+				logger.info("Skip from scanner as not a TestNG suite xml file: " + currentSuitePath)
+				// not under /src/test/resources or not a TestNG suite file
+				continue
+			}
 
-            logger.info("SUITE_NAME: " + suiteName)
-            def currentSuitePath = workspace + "/" + suitePath
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
+			def suiteName = ""
+			if (currentSuitePath.contains(CARINA_SUITES_PATH) && currentSuitePath.endsWith(".xml")) {
+				// carina core TestNG suite
+				int testResourceIndex = currentSuitePath.lastIndexOf(CARINA_SUITES_PATH)
+				logger.debug("testResourceIndex : " + testResourceIndex)
+				suiteName = currentSuitePath.substring(testResourceIndex + CARINA_SUITES_PATH.length(), currentSuitePath.length() - 4)
+			} else {
+				// external TestNG suite
+				int testResourceIndex = currentSuitePath.lastIndexOf(TEST_RESOURCES_PATH)
+				logger.debug("testResourceIndex : " + testResourceIndex)
+				suiteName = currentSuitePath.substring(testResourceIndex + TEST_RESOURCES_PATH.length(), currentSuitePath.length())
+			}
+			
+			if (suiteName.isEmpty()) {
+				continue
+			}
 
             logger.info("suite name: " + suiteName)
             logger.info("suite path: " + suitePath)
@@ -393,6 +388,23 @@ public class QARunner extends Runner {
 			logger.error(printStackTrace(e))
 		}
 
+		return res
+	}
+
+	protected boolean isTestNgSuite(filePath){
+		logger.debug("filePath: " + filePath)
+		XmlSuite currentSuite = null
+		boolean res = false
+		try {
+			currentSuite = parseSuite(filePath)
+			res = true
+		} catch (FileNotFoundException e) {
+			logger.error("ERROR! Unable to find suite: " + filePath)
+			logger.error(printStackTrace(e))
+		} catch (Exception e) {
+			logger.debug("Unable to parse suite: " + filePath)
+			logger.debug(printStackTrace(e))
+		}
 		return res
 	}
 
@@ -1211,8 +1223,7 @@ public class QARunner extends Runner {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
                 def subProjectFilter = subProject.equals(".")?"**":subProject
-                def testNGFolderName = searchTestNgFolderName(subProject).toString()
-                generatePipeLineList(subProjectFilter, testNGFolderName)
+                generatePipeLineList(subProjectFilter)
                 logger.info "Finished Dynamic Mapping:"
                 listPipelines = sortPipelineList(listPipelines)
                 listPipelines.each { pipeline ->
@@ -1223,36 +1234,25 @@ public class QARunner extends Runner {
         }
     }
 
-    protected def generatePipeLineList(subProjectFilter, testNGFolderName){
-        def files = context.findFiles glob: subProjectFilter + "/**/" + testNGFolderName + "/**"
+    protected def generatePipeLineList(subProjectFilter){
+        def files = context.findFiles glob: subProjectFilter + "/**/*.xml"
         logger.info("Number of Test Suites to Scan Through: " + files.length)
         for (file in files){
-            logger.info("Current suite path: " + file.path)
-            XmlSuite currentSuite = parsePipeline(workspace + "/" + file.path)
+            def currentSuitePath = workspace + "/" + file.path
+            if (!currentSuitePath.contains(TEST_RESOURCES_PATH) || !isTestNgSuite(currentSuitePath)) {
+                logger.info("Skip from scanner as not a TestNG suite xml file: " + currentSuitePath)
+                // not under /src/test/resources or not a TestNG suite file
+                continue
+            }
+
+            logger.info("Current suite path: " + currentSuitePath)
+            XmlSuite currentSuite = parsePipeline(currentSuitePath)
             if (currentSuite == null) {
+                logger.error("ERROR! Unable to parse suite: " + currentSuitePath)
                 currentBuild.result = BuildResult.FAILURE
                 continue
             }
-            if(!isParamEmpty(currentSuite.getParameter("jenkinsPipelineLocales"))){
-				//TODO: remove jenkinsPipelineLocales after moving all logic to MatrixParams
-                generateMultilingualPipeline(currentSuite)
-            } else {
-                generatePipeline(currentSuite)
-            }
-        }
-    }
-
-	@Deprecated
-    protected def generateMultilingualPipeline(currentSuite){
-        def supportedLocales = getPipelineLocales(currentSuite)
-        if (supportedLocales.size() > 0){
-            multilingualMode = true
-            supportedLocales.each { locale ->
-                pipelineLocaleMap.put("locale", locale.key)
-                pipelineLocaleMap.put("language", locale.value)
-                generatePipeline(currentSuite)
-            }
-            pipelineLocaleMap.clear()
+            generatePipeline(currentSuite)
         }
     }
 
@@ -1270,12 +1270,11 @@ public class QARunner extends Runner {
         def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
         def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
         def priorityNum = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
-        def supportedBrowsers = !isParamEmpty(currentSuite.getParameter("jenkinsPipelineBrowsers"))?currentSuite.getParameter("jenkinsPipelineBrowsers"):""
         def currentBrowser = !isParamEmpty(getBrowser())?getBrowser():"NULL"
         def logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
                 "jobExecutionOrderNumber: ${orderNum};\n	email_list: ${emailList};\n	" +
                 "supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	" +
-                "supportedBrowsers: ${supportedBrowsers};\n\tcurrentBrowser: ${currentBrowser};"
+                "currentBrowser: ${currentBrowser};"
         logger.info(logLine)
 
         for (def regressionPipeline : regressionPipelines?.split(",")) {
@@ -1297,9 +1296,8 @@ public class QARunner extends Runner {
                     }
 
 
-					// organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX
+					// organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX or execute at once with default params
 					def supportedParamsMatrix = ""
-					boolean isParamsMatrixDeclared = false
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX))) {
 						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX)
 						logger.info("Declared ${JENKINS_REGRESSION_MATRIX} detected!")
@@ -1312,14 +1310,13 @@ public class QARunner extends Runner {
 					}
 
 					for (def supportedParams : supportedParamsMatrix.split(";")) {
-						if (isParamEmpty(supportedParams)) {
-							continue
+						if (!isParamEmpty(supportedParams)) {
+							supportedParams = supportedParams.trim()
+							logger.info("supportedParams: ${supportedParams}")
 						}
-						isParamsMatrixDeclared = true
-						supportedParams = supportedParams.trim()
-						logger.info("supportedParams: ${supportedParams}")
 
 						Map supportedConfigurations = getSupportedConfigurations(supportedParams)
+						logger.info("supportedConfigurations: ${supportedConfigurations}")
 						def pipelineMap = [:]
 						// put all not NULL args into the pipelineMap for execution
 						putMap(pipelineMap, pipelineLocaleMap)
@@ -1342,49 +1339,6 @@ public class QARunner extends Runner {
 						putMap(pipelineMap, supportedConfigurations)
 						registerPipeline(currentSuite, pipelineMap)
 					}
-					logger.debug("isParamsMatrixDeclared: ${isParamsMatrixDeclared}")
-					if (isParamsMatrixDeclared) {
-						//there is no need to use deprecated functionality for generating pipelines if ParamsMatrix was used otherwise we could run a little bit more jobs
-						continue
-					}
-
-					//TODO: remove deprecated functionality after switching to ParamsMatrix
-                    // replace cross-browser matrix by prepared configurations list to organize valid split by ";"
-                    supportedBrowsers = getCrossBrowserConfigurations(supportedBrowsers)
-
-                    for (def supportedBrowser : supportedBrowsers.split(";")) {
-                        supportedBrowser = supportedBrowser.trim()
-                        logger.info("supportedConfig: ${supportedBrowser}")
-                        /* supportedBrowsers - list of supported browsers for suite which are declared in testng suite xml file
-                           supportedBrowser - splitted single browser name from supportedBrowsers
-                           currentBrowser - explicilty selected browser on cron/pipeline level to execute tests */
-                        Map supportedConfigurations = getSupportedConfigurations(supportedBrowser)
-                        if (!currentBrowser.equals(supportedBrowser) && !isParamEmpty(currentBrowser)) {
-                            logger.info("Skip execution for browser: ${supportedBrowser}; currentBrowser: ${currentBrowser}")
-                            continue
-                        }
-                        def pipelineMap = [:]
-                        // put all not NULL args into the pipelineMap for execution
-                        putMap(pipelineMap, pipelineLocaleMap)
-                        putMap(pipelineMap, supportedConfigurations)
-                        pipelineMap.put("name", regressionPipeline)
-						pipelineMap.put("params_name", supportedBrowser)
-                        pipelineMap.put("branch", Configuration.get("branch"))
-                        pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
-                        pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
-                        putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
-                        pipelineMap.put("jobName", jobName)
-                        pipelineMap.put("env", supportedEnv)
-                        pipelineMap.put("order", orderNum)
-                        pipelineMap.put("BuildPriority", priorityNum)
-                        putNotNullWithSplit(pipelineMap, "email_list", emailList)
-                        putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-                        putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
-                        putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
-                        putNotNull(pipelineMap, "queue_registration", queueRegistration)
-                        registerPipeline(currentSuite, pipelineMap)
-                    }
-
                 }
             }
         }

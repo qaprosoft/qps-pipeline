@@ -184,23 +184,6 @@ public class Executor {
         return folderName
     }
 
-    static def getPipelineLocales(xmlSuite){
-        def supportedLocales = [:]
-        def jenkinsPipelineLocales = xmlSuite.getParameter("jenkinsPipelineLocales")
-        if (!isParamEmpty(jenkinsPipelineLocales)) {
-            for (String locale in jenkinsPipelineLocales.split(",")) {
-                if (locale.contains(":")){
-                    def languageLocaleArray = locale.split(":")
-                    supportedLocales.put(languageLocaleArray[0], languageLocaleArray[1])
-                } else {
-                    def language = locale.split("_")[0]
-                    supportedLocales.put(locale, language)
-                }
-            }
-        }
-        return supportedLocales
-    }
-
     static def getJobParameters(currentBuild){
         Map jobParameters = [:]
         def jobParams = currentBuild.rawBuild.getAction(ParametersAction)
