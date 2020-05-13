@@ -1296,9 +1296,8 @@ public class QARunner extends Runner {
                     }
 
 
-					// organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX
+					// organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX or execute at once with default params
 					def supportedParamsMatrix = ""
-					boolean isParamsMatrixDeclared = false
 					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX))) {
 						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX)
 						logger.info("Declared ${JENKINS_REGRESSION_MATRIX} detected!")
@@ -1311,14 +1310,13 @@ public class QARunner extends Runner {
 					}
 
 					for (def supportedParams : supportedParamsMatrix.split(";")) {
-						if (isParamEmpty(supportedParams)) {
-							continue
+						if (!isParamEmpty(supportedParams)) {
+							supportedParams = supportedParams.trim()
+							logger.info("supportedParams: ${supportedParams}")
 						}
-						isParamsMatrixDeclared = true
-						supportedParams = supportedParams.trim()
-						logger.info("supportedParams: ${supportedParams}")
 
 						Map supportedConfigurations = getSupportedConfigurations(supportedParams)
+						logger.info("supportedConfigurations: ${supportedConfigurations}")
 						def pipelineMap = [:]
 						// put all not NULL args into the pipelineMap for execution
 						putMap(pipelineMap, pipelineLocaleMap)
