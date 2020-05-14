@@ -32,7 +32,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
             scm {
                 git {
                     remote {
-                        //TODO: potential issue for unsecure github setup! 
+                        //TODO: potential issue for unsecure github setup!
                         github(this.organization + '/' + this.repo, 'https', host)
                         credentials("${organization}-${repo}")
                         refspec('+refs/pull/*:refs/remotes/origin/pr/*')
@@ -62,10 +62,13 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                     includedRegions('')
                     excludedRegions('')
                     onlyTriggerPhrase(false)
-                    commentFilePath('')
-                    msgSuccess('')
-                    msgFailure('')
-                    commitStatusContext('')
+                    extensions {
+                      commitStatus {
+                        context('Jenkins')
+                        completedStatus('SUCCESS', 'Successfull')
+                        completedStatus('FAILURE', 'Failure due to comilation error')
+                      }
+                    }
                 }
             }
 
