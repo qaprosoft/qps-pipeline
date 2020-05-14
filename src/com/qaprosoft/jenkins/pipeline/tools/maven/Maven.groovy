@@ -84,7 +84,7 @@ public class Maven {
     public void compile(pomFile) {
         context.stage('Maven Compile') {
             // [VD] don't remove -U otherwise latest dependencies are not downloaded
-            def jacocoGoal = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBolean() ? "jacoco:report-aggregate" : ""
+            def jacocoGoal = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean() ? "jacoco:report-aggregate" : ""
             // and PR can be marked as fail due to the compilation failure!
             def goals = "-U clean compile test -f ${pomFile} -Dmaven.test.failure.ignore=true ${jacocoGoal}"
 
