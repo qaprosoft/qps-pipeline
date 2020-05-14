@@ -14,6 +14,7 @@ public class Configuration {
     public final static def CREDS_TESTRAIL = "testrail_creds"
     public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
     public final static def CREDS_QTEST_ACCESS_TOKEN = "qtest_token"
+    public final static def CREDS_SONAR_GITHUB_OAUTH_TOKEN = "sonar_github_oauth_token"
 
     public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
     public final static def QTEST_UPDATER_JOBNAME = "qtest-updater"
@@ -114,6 +115,8 @@ public class Configuration {
         QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
         QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true),
         QTEST_ENABLE("qtest_enabled", "false"),
+
+        SONAR_GITHUB_OAUTH_TOKEN("SONAR_GITHUB_OAUTH_TOKEN", "", true)
 
         private final String key
         private final String value

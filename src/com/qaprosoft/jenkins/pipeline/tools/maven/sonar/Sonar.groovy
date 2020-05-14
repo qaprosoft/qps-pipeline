@@ -111,7 +111,7 @@ public class Sonar {
       script += " -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                   -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
                   -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-                  -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.GITHUB_OAUTH_TOKEN)} \
+                  -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN)} \
                   -Dsonar.sourceEncoding=UTF-8 \
                   -Dsonar.analysis.mode=preview"
     }

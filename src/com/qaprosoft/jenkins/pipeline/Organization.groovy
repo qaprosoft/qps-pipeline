@@ -30,6 +30,7 @@ class Organization extends BaseObject {
     protected def runnerClass
 	protected def reportingServiceUrl
 	protected def reportingAccessToken
+    protected def sonarGithubOAuth
 
 
     public Organization(context) {
@@ -45,6 +46,8 @@ class Organization extends BaseObject {
 		
 		this.reportingServiceUrl = Configuration.get("reportingServiceUrl")
 		this.reportingAccessToken = Configuration.get("reportingAccessToken")
+
+        this.sonarGithubOAuth = Configuration.get("sonarGithubOAuth")
     }
 
     public def register() {
@@ -280,6 +283,7 @@ class Organization extends BaseObject {
 
 		if (!isParamEmpty(this.reportingServiceUrl) && !isParamEmpty(this.reportingAccessToken)) {
 			registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
+            registerSonarGithubOAuth(this.folderName, this.sonarGithubOAuth)
 		}
 	}
 	
@@ -389,4 +393,13 @@ class Organization extends BaseObject {
         factoryRunner.run(dslObjects)
 	}
 
+    public static void registerSonarGithubOAuth(orgFolderName, token){
+        def sonarGithubOAuth = Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN
+
+        if (!isParamEmpty(orgFolderName)) {
+            sonarGithubOAuth = orgFolderName + "-" + sonarGithubOAuth
+        }
+
+        updateJenkinsCredentials(sonarGithubOAuth, "Sonar GithubOAuth token", Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN.getKey(), token)
+    }
 }
