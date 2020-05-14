@@ -62,13 +62,10 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                     includedRegions('')
                     excludedRegions('')
                     onlyTriggerPhrase(false)
-                    extensions {
-                      commitStatus {
-                        context('Jenkins')
-                        completedStatus('SUCCESS', 'Successfull')
-                        completedStatus('FAILURE', 'Failure due to comilation error')
-                      }
-                    }
+                    commentFilePath('')
+                    msgSuccess('')
+                    msgFailure('Failed due to compilation error')
+                    commitStatusContext('')
                 }
             }
 
