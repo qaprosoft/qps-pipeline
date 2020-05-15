@@ -86,7 +86,9 @@ public class Maven {
             // [VD] don't remove -U otherwise latest dependencies are not downloaded
             def jacocoGoal = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean() ? "jacoco:report-aggregate" : ""
             // and PR can be marked as fail due to the compilation failure!
-            def goals = "-U clean compile test -f ${pomFile} -Dmaven.test.failure.ignore=true ${jacocoGoal}"
+            //TODO: running test should be added to "build" method 
+            // def goals = "-U clean compile test -f ${pomFile} -Dmaven.test.failure.ignore=true ${jacocoGoal}"
+            def goals = "-U clean compile test -f ${pomFile} -DskipTests ${jacocoGoal}"
 
             executeMavenGoals(goals)
         }
