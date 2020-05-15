@@ -808,7 +808,7 @@ public class QARunner extends Runner {
 
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
-		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER) 
 		logger.info("orgFolderName: ${orgFolderName}")
 
 		def hubUrl = "${provider}_hub"
@@ -839,7 +839,7 @@ public class QARunner extends Runner {
 
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def reportingServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
-		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER)
 		logger.info("orgFolderName: " + orgFolderName)
 		if (!isParamEmpty(orgFolderName)) {
 			reportingServiceUrl = "${orgFolderName}" + "-" + reportingServiceUrl
@@ -869,7 +869,7 @@ public class QARunner extends Runner {
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
 		def testRailUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
-		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER)
 		if (!isParamEmpty(orgFolderName)) {
 			testRailUrl = "${orgFolderName}" + "-" + testRailUrl
 		}
@@ -900,7 +900,7 @@ public class QARunner extends Runner {
 	protected void setQTestCreds() {
 		// update QTest serviceUrl and accessToken parameter based on values from credentials
 		def qtestServiceUrl = Configuration.CREDS_QTEST_SERVICE_URL
-		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER)
 		if (!isParamEmpty(orgFolderName)) {
 			qtestServiceUrl = "${orgFolderName}" + "-" + qtestServiceUrl
 		}
@@ -1592,30 +1592,5 @@ public class QARunner extends Runner {
         def port = "8000"
         return port
     }
-
-	protected def getOrgFolderName(String jobName) {
-		int nameCount = Paths.get(jobName).getNameCount()
-
-		logger.info("getOrgFolderName.jobName: " + jobName)
-		logger.info("getOrgFolderName.nameCount: " + nameCount)
-
-		def orgFolderName = ""
-		if (nameCount == 1 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
-			// testrail-updater - i.e. stage
-			orgFolderName = ""
-		} else if (nameCount == 2 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
-			// stage/testrail-updater - i.e. stage
-			orgFolderName = Paths.get(jobName).getName(0).toString()
-		} else if (nameCount == 2) {
-			// carina-demo/API_Demo_Test - i.e. empty orgFolderName
-			orgFolderName = ""
-		} else if (nameCount == 3) { //TODO: need to test use-case with views!
-			// qaprosoft/carina-demo/API_Demo_Test - i.e. orgFolderName=qaprosoft
-			orgFolderName = Paths.get(jobName).getName(0).toString()
-		} else {
-			throw new RuntimeException("Invalid job organization structure: '${jobName}'!" )
-		}
-		return orgFolderName
-	}
 
 }

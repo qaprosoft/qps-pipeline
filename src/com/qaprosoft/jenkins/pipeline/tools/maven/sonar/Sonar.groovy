@@ -131,7 +131,7 @@ public class Sonar {
 	
 	
 	private void setSonarGithubToken() {
-		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
+		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER)
 		logger.info("orgFolderName: ${orgFolderName}")
 
 		def sonarGithubToken = Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN
