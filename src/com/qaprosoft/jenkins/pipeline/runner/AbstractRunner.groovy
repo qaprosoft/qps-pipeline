@@ -5,10 +5,11 @@ import java.nio.file.Paths
 
 public abstract class AbstractRunner extends BaseObject {
 	
-	private static final String organization = getOrganization()
+	private static String organization
 	
     public AbstractRunner(context) {
 		super(context)
+		this.organization = getOrganization()
     }
 
     //Methods
