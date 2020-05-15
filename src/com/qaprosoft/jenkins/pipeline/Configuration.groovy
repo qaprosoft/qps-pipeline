@@ -282,10 +282,12 @@ public class Configuration {
         return vars.get(paramName)
     }
 
+	@NonCPS
     public static void set(Parameter param, String value) {
         set(param.getKey(), value)
     }
 
+	@NonCPS
     public static void set(String paramName, String value) {
         vars.put(paramName, value)
     }
