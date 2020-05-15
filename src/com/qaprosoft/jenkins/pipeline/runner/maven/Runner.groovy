@@ -24,6 +24,7 @@ public class Runner extends AbstractRunner {
 
         //TODO: test if we can init it here
         setOrgFolderName()
+        setSonarGithubToken()
     }
 
     //Events
@@ -86,6 +87,25 @@ public class Runner extends AbstractRunner {
 		}
 		
 		Configuration.set(Configuration.Parameter.ORG_FOLDER, orgFolderName)
+		
+	}
+	
+	@NonCPS
+	private void setSonarGithubToken() {
+		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER)
+		logger.info("orgFolderName: ${orgFolderName}")
+
+		def sonarGithubToken = Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN
+		if (!isParamEmpty(orgFolderName)) {
+			sonarGithubToken = "${orgFolderName}" + "-" + sonarGithubToken
+		}
+		if (getCredentials(sonarGithubToken)){
+			context.withCredentials([context.usernamePassword(credentialsId:sonarGithubToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				Configuration.set(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN, context.env.VALUE)
+			}
+			logger.info("${sonarGithubToken}:" + Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN))
+		}
+
 	}
 
 }
