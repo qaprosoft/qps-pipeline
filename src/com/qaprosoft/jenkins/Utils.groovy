@@ -26,6 +26,7 @@ class Utils {
         return currentSuite
     }
 
+	@NonCPS
     static boolean isParamEmpty(value) {
         if (value == null) {
             return true
