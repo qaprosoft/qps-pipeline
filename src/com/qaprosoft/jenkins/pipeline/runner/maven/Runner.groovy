@@ -58,7 +58,8 @@ public class Runner extends AbstractRunner {
     }
 	
 	
-	protected void setOrgFolderName() {
+	@NonCPS
+	private void setOrgFolderName() {
 		String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
 		int nameCount = Paths.get(jobName).getNameCount()
 
