@@ -27,7 +27,6 @@ public class Runner extends AbstractRunner {
 
         //TODO: reorganize all credentials etc init based on approach below!
         setOrgFolderName()
-        setSonarGithubToken()
     }
 
     //Events
@@ -45,6 +44,7 @@ public class Runner extends AbstractRunner {
     public void onPullRequest() {
         context.node("master") {
             logger.info("Runner->onPullRequest")
+			setSonarGithubToken()
             sonar.scan(true)
 
             //TODO: investigate whether we need this piece of code
@@ -89,7 +89,6 @@ public class Runner extends AbstractRunner {
 		
 	}
 	
-	@NonCPS
 	private void setSonarGithubToken() {
 		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER)
 
