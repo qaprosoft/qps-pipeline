@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline.runner
 import com.qaprosoft.jenkins.BaseObject
 
 public abstract class AbstractRunner extends BaseObject {
+	
 	private static final String organization = getOrganization()
 	
     public AbstractRunner(context) {
@@ -31,7 +32,7 @@ public abstract class AbstractRunner extends BaseObject {
 	
 	
 	@NonCPS
-	private void getOrganization() {
+	private static void getOrganization() {
 		String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
 		int nameCount = Paths.get(jobName).getNameCount()
 
