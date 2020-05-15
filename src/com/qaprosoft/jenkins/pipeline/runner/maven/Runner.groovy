@@ -25,7 +25,7 @@ public class Runner extends AbstractRunner {
         sonar = new Sonar(context)
         logger = new Logger(context)
 
-        //TODO: test if we can init it here
+        //TODO: reorganize all credentials etc init based on approach below!
         setOrgFolderName()
         setSonarGithubToken()
     }
@@ -63,14 +63,10 @@ public class Runner extends AbstractRunner {
         }
     }
 	
-	
 	@NonCPS
 	private void setOrgFolderName() {
 		String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
 		int nameCount = Paths.get(jobName).getNameCount()
-
-//		logger.info("getOrgFolderName.jobName: " + jobName)
-//		logger.info("getOrgFolderName.nameCount: " + nameCount)
 
 		def orgFolderName = ""
 		if (nameCount == 1 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
@@ -96,19 +92,26 @@ public class Runner extends AbstractRunner {
 	@NonCPS
 	private void setSonarGithubToken() {
 		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER)
-		logger.info("orgFolderName: ${orgFolderName}")
 
 		def sonarGithubToken = Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN
-		if (!isParamEmpty(orgFolderName)) {
+		if (!isEmpty(orgFolderName)) {
 			sonarGithubToken = "${orgFolderName}" + "-" + sonarGithubToken
 		}
 		if (getCredentials(sonarGithubToken)){
 			context.withCredentials([context.usernamePassword(credentialsId:sonarGithubToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
 				Configuration.set(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN, context.env.VALUE)
 			}
-			logger.info("${sonarGithubToken}:" + Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN))
 		}
-
 	}
+	
+	@NonCPS
+	static boolean isEmpty(value) {
+		if (value == null) {
+			return true
+		}  else {
+			return value.toString().isEmpty() || value.toString().equalsIgnoreCase("NULL")
+		}
+	}
+
 
 }
