@@ -111,7 +111,6 @@ public class Executor {
         }
     }
 
-	@NonCPS
     static def getCredentials(id) {
         return SystemCredentialsProvider.getInstance().getStore().getCredentials(Domain.global()).find {
             it.id.equals(id.toString())
