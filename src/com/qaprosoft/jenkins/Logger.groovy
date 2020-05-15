@@ -34,6 +34,7 @@ class Logger {
         context.println log(LogLevel.DEBUG, message)
     }
 
+	@NonCPS
     public info(message){
         context.println log(LogLevel.INFO, message)
     }
