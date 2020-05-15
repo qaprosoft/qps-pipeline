@@ -12,6 +12,7 @@ import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 import java.nio.file.Paths
 
 import static com.qaprosoft.jenkins.Utils.*
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 @Mixin([Maven])
 public class Runner extends AbstractRunner {
