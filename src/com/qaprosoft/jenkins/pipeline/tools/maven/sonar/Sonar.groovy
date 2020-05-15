@@ -12,7 +12,7 @@ import static com.qaprosoft.jenkins.Utils.*
 @Mixin(Maven)
 public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
-	private static boolean isSonarAvailable
+	private static boolean isSonarAvailable = false
 
 	protected def context
 	protected Logger logger
@@ -39,9 +39,14 @@ public class Sonar {
 				def sonarQubeEnv = getSonarEnv()
 				def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
 				if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
-					isSonarAvailable = true
+					this.isSonarAvailable = true
 				} else {
-					logger.warn("Sonarqube is not configured correctly! Follow documentation Sonar integration steps to enable it.")
+					logger.warn("Sonarqube is not configured correctly! Follow Sonar integration documentation to enable it.")
+				}
+				
+				if (isPrClone && isParamEmpty(Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN))) {
+					this.isSonarAvailable = false
+					logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
 				}
 
 				def pomFiles = getProjectPomFiles()
@@ -49,7 +54,7 @@ public class Sonar {
 					logger.debug(it)
 					compile()
 
-					if (!isSonarAvailable) {
+					if (!this.isSonarAvailable) {
 						return
 					}
 					//do compile and scanner for all high level pom.xml files
@@ -75,6 +80,7 @@ public class Sonar {
     logger.debug("sonarHome: " + sonarHome)
 
     def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
+	//TODO: simplify just to get log level from global var
     def SONAR_LOG_LEVEL = context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()) ?  "DEBUG" : "INFO"
 
     def script = "${sonarHome}/bin/sonar-scanner \
@@ -86,11 +92,9 @@ public class Sonar {
 		script += " -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
 			-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
 			-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+			-Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN)} \
 			-Dsonar.sourceEncoding=UTF-8 \
 			-Dsonar.analysis.mode=preview"
-		if (!isParamEmpty(Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN))) {
-			script += " -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN)}"
-		}
 	}
 	return script
   }
