@@ -69,33 +69,6 @@ public class Sonar {
 		}
     }
 
-	private def getJacocoReportPaths(boolean jacocoEnable) {
-		def jacocoReportPath = ""
-		def jacocoReportPaths = ""
-
-		if (jacocoEnable) {
-			def jacocoItExec = 'jacoco-it.exec'
-
-			def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
-			def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
-
-			// download combined integration testing coverage report: jacoco-it.exec
-			// TODO: test if aws cli is installed on regular jenkins slaves as we are going to run it on each onPush event starting from 5.0
-			context.withAWS(region: "${jacocoRegion}", credentials:'aws-jacoco-token') {
-				def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
-				logger.info("copyOutput: " + copyOutput)
-			}
-
-
-			if (context.fileExists("/tmp/${jacocoItExec}")) {
-				jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec" //this for unit tests code coverage
-				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}" // this one is for integration testing coverage
-			}
-		}
-
-		return [jacocoReportPath, jacocoReportPaths]
-	}
-
   private def scannerScript(isPrClone, jacocoReportPaths, jacocoReportPath) {
     //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
     def sonarHome = context.env.getEnvironment().get("sonarHome")
@@ -130,4 +103,30 @@ public class Sonar {
       return sonarQubeEnv
     }
 
+	private def getJacocoReportPaths(boolean jacocoEnable) {
+		def jacocoReportPath = ""
+		def jacocoReportPaths = ""
+
+		if (jacocoEnable) {
+			def jacocoItExec = 'jacoco-it.exec'
+
+			def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+			def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
+
+			// download combined integration testing coverage report: jacoco-it.exec
+			// TODO: test if aws cli is installed on regular jenkins slaves as we are going to run it on each onPush event starting from 5.0
+			context.withAWS(region: "${jacocoRegion}", credentials:'aws-jacoco-token') {
+				def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
+				logger.info("copyOutput: " + copyOutput)
+			}
+
+
+			if (context.fileExists("/tmp/${jacocoItExec}")) {
+				jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec" //this for unit tests code coverage
+				jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}" // this one is for integration testing coverage
+			}
+		}
+
+		return [jacocoReportPath, jacocoReportPaths]
+	}
 }
