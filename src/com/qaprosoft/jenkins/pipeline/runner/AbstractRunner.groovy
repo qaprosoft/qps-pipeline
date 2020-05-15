@@ -34,7 +34,7 @@ public abstract class AbstractRunner extends BaseObject {
 	
 	
 	@NonCPS
-	private def getOrganization() {
+	protected def getOrganization() {
 		String jobName = context.env.getEnvironment().get("JOB_NAME") //Configuration.get(Configuration.Parameter.JOB_NAME)
 		int nameCount = Paths.get(jobName).getNameCount()
 
