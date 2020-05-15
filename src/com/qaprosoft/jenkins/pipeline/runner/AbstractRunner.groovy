@@ -5,7 +5,7 @@ import java.nio.file.Paths
 
 public abstract class AbstractRunner extends BaseObject {
 	
-	private static String organization
+	private String organization
 	
     public AbstractRunner(context) {
 		super(context)
@@ -34,7 +34,7 @@ public abstract class AbstractRunner extends BaseObject {
 	
 	
 	@NonCPS
-	private static void getOrganization() {
+	private void getOrganization() {
 		String jobName = context.env.getEnvironment().get("JOB_NAME") //Configuration.get(Configuration.Parameter.JOB_NAME)
 		int nameCount = Paths.get(jobName).getNameCount()
 
