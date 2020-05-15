@@ -7,6 +7,8 @@ import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 
+import static com.qaprosoft.jenkins.Utils.*
+
 @Mixin(Maven)
 public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
@@ -107,18 +109,18 @@ public class Sonar {
                   -Dproject.settings=${SONARQUBE} \
                   -Dsonar.log.level=${SONAR_LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
 
-    if (isPrClone) {
+	if (isPrClone) {
 		setSonarGithubToken()
 		script += " -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-                  -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-                  -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-                  -Dsonar.sourceEncoding=UTF-8 \
-                  -Dsonar.analysis.mode=preview"
-		if (!Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN).isEmpty()) {
+			-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
+			-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+			-Dsonar.sourceEncoding=UTF-8 \
+			-Dsonar.analysis.mode=preview"
+		if (!isParamEmpty(Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN))) {
 			script += " -Dsonar.github.oauth=${Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN)}"
 		}
-    }
-    return script
+	}
+	return script
   }
 
     private String getSonarEnv() {
