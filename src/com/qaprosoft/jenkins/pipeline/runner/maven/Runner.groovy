@@ -65,8 +65,8 @@ public class Runner extends AbstractRunner {
 		String jobName = Configuration.get(Configuration.Parameter.JOB_NAME)
 		int nameCount = Paths.get(jobName).getNameCount()
 
-		logger.info("getOrgFolderName.jobName: " + jobName)
-		logger.info("getOrgFolderName.nameCount: " + nameCount)
+//		logger.info("getOrgFolderName.jobName: " + jobName)
+//		logger.info("getOrgFolderName.nameCount: " + nameCount)
 
 		def orgFolderName = ""
 		if (nameCount == 1 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
