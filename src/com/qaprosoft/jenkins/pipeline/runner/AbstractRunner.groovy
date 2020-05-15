@@ -34,7 +34,7 @@ public abstract class AbstractRunner extends BaseObject {
 	
 	
 	@NonCPS
-	private void getOrganization() {
+	private def getOrganization() {
 		String jobName = context.env.getEnvironment().get("JOB_NAME") //Configuration.get(Configuration.Parameter.JOB_NAME)
 		int nameCount = Paths.get(jobName).getNameCount()
 
@@ -55,8 +55,7 @@ public abstract class AbstractRunner extends BaseObject {
 			throw new RuntimeException("Invalid job organization structure: '${jobName}'!" )
 		}
 		
-		Configuration.set(Configuration.Parameter.ORG_FOLDER, orgFolderName)
-		
+		return orgFolderName
 	}
 
 }
