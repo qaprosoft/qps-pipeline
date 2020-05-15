@@ -11,6 +11,8 @@ import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 
 import java.nio.file.Paths
 
+import static com.qaprosoft.jenkins.Utils.*
+
 @Mixin([Maven])
 public class Runner extends AbstractRunner {
     Logger logger

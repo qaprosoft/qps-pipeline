@@ -7,8 +7,6 @@ import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 
-import static com.qaprosoft.jenkins.Utils.*
-
 @Mixin(Maven)
 public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
