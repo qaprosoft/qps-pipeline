@@ -61,19 +61,28 @@ public class Runner extends AbstractRunner {
         }
     }
 	
-	private void setSonarGithubToken() {
+	protected def getToken(tokenName) {
+		def tokenValue = ""
 		def orgFolderName = getOrgFolder()
 		logger.info("orgFolderName: " + orgFolderName)
 
-		def sonarGithubToken = Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN
 		if (!isEmpty(orgFolderName)) {
-			sonarGithubToken = "${orgFolderName}" + "-" + sonarGithubToken
+			tokenName = "${orgFolderName}" + "-" + tokenName
 		}
-		if (getCredentials(sonarGithubToken)){
-			context.withCredentials([context.usernamePassword(credentialsId:sonarGithubToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN, context.env.VALUE)
+		
+		
+		if (getCredentials(tokenName)){
+			context.withCredentials([context.usernamePassword(credentialsId:tokenName, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				tokenValue=context.env.VALUE
 			}
 		}
+		logger.debug("tokenName: ${tokenName}; tokenValue: ${tokenValue}")
+		return tokenValue
+	}
+	
+	private void setSonarGithubToken() {
+		Configuration.set(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN, getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN))
+		logger.info("SONAR_GITHUB_OAUTH_TOKEN: " + Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN))
 	}
 	
 	@NonCPS
