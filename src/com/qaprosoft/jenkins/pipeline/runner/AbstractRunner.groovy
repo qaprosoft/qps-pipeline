@@ -5,11 +5,11 @@ import java.nio.file.Paths
 
 public abstract class AbstractRunner extends BaseObject {
 	
-	private String organization
+	private String organization = ""
 	
     public AbstractRunner(context) {
 		super(context)
-		this.organization = initOrganization()
+		initOrganization()
     }
 
     //Methods
@@ -32,9 +32,12 @@ public abstract class AbstractRunner extends BaseObject {
         }
     }
 	
+	protected def getOrganization() {
+		return this.organization
+	}	
 	
 	@NonCPS
-	protected def initOrganization() {
+	protected void initOrganization() {
 		String jobName = context.env.getEnvironment().get("JOB_NAME") //Configuration.get(Configuration.Parameter.JOB_NAME)
 		int nameCount = Paths.get(jobName).getNameCount()
 
@@ -55,11 +58,9 @@ public abstract class AbstractRunner extends BaseObject {
 			throw new RuntimeException("Invalid job organization structure: '${jobName}'!" )
 		}
 		
-		return orgFolderName
+		this.organization = orgFolderName
 	}
 	
-	protected def getOrganization() {
-		return this.organization
-	}
+
 
 }
