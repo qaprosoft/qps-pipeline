@@ -3,6 +3,8 @@ package com.qaprosoft.jenkins.pipeline.runner
 import com.qaprosoft.jenkins.BaseObject
 import java.nio.file.Paths
 
+import static com.qaprosoft.jenkins.pipeline.Executor.*
+
 public abstract class AbstractRunner extends BaseObject {
 	// organization folder name of the current job/runner
 	protected String organization = ""

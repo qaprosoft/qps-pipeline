@@ -12,7 +12,6 @@ import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 import java.nio.file.Paths
 
 import static com.qaprosoft.jenkins.Utils.*
-import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 @Mixin([Maven])
 public class Runner extends AbstractRunner {
@@ -67,14 +66,4 @@ public class Runner extends AbstractRunner {
 		logger.info("SONAR_GITHUB_OAUTH_TOKEN: " + Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN))
 	}
 	
-	@NonCPS
-	static boolean isEmpty(value) {
-		if (value == null) {
-			return true
-		}  else {
-			return value.toString().isEmpty() || value.toString().equalsIgnoreCase("NULL")
-		}
-	}
-
-
 }
