@@ -37,13 +37,7 @@ public class Runner extends AbstractRunner {
     public void onPullRequest() {
         context.node("master") {
             logger.info("Runner->onPullRequest")
-			setSonarGithubToken()
-            sonar.scan(true)
-
-            //TODO: investigate whether we need this piece of code
-            //            if (Configuration.get("ghprbPullTitle").contains("automerge")) {
-            //                scmClient.mergePR()
-            //            }
+            sonar.scanPR(getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN))
         }
     }
 
@@ -56,10 +50,5 @@ public class Runner extends AbstractRunner {
         }
     }
 	
-	
-	private void setSonarGithubToken() {
-		Configuration.set(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN, getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN))
-		logger.info("SONAR_GITHUB_OAUTH_TOKEN: " + Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN))
-	}
 	
 }

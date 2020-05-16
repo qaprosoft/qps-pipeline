@@ -23,6 +23,54 @@ public class Sonar {
 		this.logger = new Logger(context)
 		this.scmClient = new GitHub(context)
 	}
+	
+	public void scanPR(oauthToken) {
+		//TODO: verify preliminary if "maven" nodes available
+		context.node("maven") {
+			context.stage('Sonar Scanner') {
+
+				scmClient.clonePR()
+
+				def sonarQubeEnv = getSonarEnv()
+				def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
+				if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
+					this.isSonarAvailable = true
+				} else {
+					logger.warn("Sonarqube is not configured correctly! Follow Sonar integration documentation to enable it.")
+				}
+				
+				if (isPrClone && isParamEmpty(oauthToken)) {
+					this.isSonarAvailable = false
+					logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
+				}
+
+				def pomFiles = getProjectPomFiles()
+				pomFiles.each {
+					logger.debug(it)
+
+					context.withSonarQubeEnv(sonarQubeEnv) {
+						def goals = "-U -f ${it} \
+							clean compile test-compile package sonar:sonar -DskipTests=true \
+							-Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
+							-Dsonar.analysis.mode=preview  \
+							-Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
+							-Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
+							-Dsonar.projectKey=${Configuration.get("repo")} \
+							-Dsonar.projectName=${Configuration.get("repo")} \
+							-Dsonar.projectVersion=1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
+							-Dsonar.github.oauth=${oauthToken} \
+							-Dsonar.sources=. \
+							-Dsonar.tests=. \
+							-Dsonar.inclusions=**/src/main/java/** \
+							-Dsonar.test.inclusions=**/src/test/java/** \
+							-Dsonar.java.source=1.8"
+						/** **/
+						executeMavenGoals(goals)
+					}
+				}
+			}
+		}
+	}
 
 	public void scan(isPrClone=false) {
 		//TODO: verify preliminary if "maven" nodes available
