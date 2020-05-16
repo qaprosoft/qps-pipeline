@@ -549,8 +549,6 @@ public class QARunner extends Runner {
                         prepareBuild(currentBuild)
                         scmClient.clone()
 
-                        downloadResources()
-
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             buildJob()
                         }
@@ -775,18 +773,6 @@ public class QARunner extends Runner {
 
     protected void prepareForiOS() {
         logger.info("Runner->prepareForiOS")
-    }
-
-    protected void downloadResources() {
-        //DO NOTHING as of now
-
-/*
-		context.stage("Download Resources") {
-		def pomFile = getSubProjectFolder() + "/pom.xml"
-		logger.info("pomFile: " + pomFile)
-
-		executeMavenGoals("-B -U -f ${pomFile} clean process-resources process-test-resources")
-*/
     }
 
     protected void buildJob() {
