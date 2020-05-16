@@ -117,10 +117,9 @@ public class QARunner extends Runner {
 			try {
 				scmClient.clone(true)
 
-				prepare() // to init factiryRunner with ability toexecute jobDSL
-
 				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
+                    //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
 					getJenkinsJobsScanResult(currentBuild.rawBuild)
 				}
 
@@ -808,23 +807,9 @@ public class QARunner extends Runner {
 
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
-		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
-		logger.info("orgFolderName: ${orgFolderName}")
-
 		def hubUrl = "${provider}_hub"
-		if (!isParamEmpty(orgFolderName)) {
-			hubUrl = "${orgFolderName}-${provider}_hub"
-		}
-		logger.info("hubUrl: ${hubUrl}")
+        Configuration.set(Configuration.Parameter.SELENIUM_URL, getToken(hubUrl))
 
-		if (getCredentials(hubUrl)){
-			context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
-			}
-			logger.debug("hubUrl:" + Configuration.get(Configuration.Parameter.SELENIUM_URL))
-		} else {
-			throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
-		}
 	}
 
 	protected void setZafiraCreds() {
@@ -838,89 +823,29 @@ public class QARunner extends Runner {
 		}
 
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		def reportingServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
-		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
-		logger.info("orgFolderName: " + orgFolderName)
-		if (!isParamEmpty(orgFolderName)) {
-			reportingServiceUrl = "${orgFolderName}" + "-" + reportingServiceUrl
-		}
-		if (getCredentials(reportingServiceUrl)){
-			context.withCredentials([context.usernamePassword(credentialsId:reportingServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
-			}
-			logger.debug("reportingServiceUrl:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
-		}
-
-		def reportingAccessToken = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
-		if (!isParamEmpty(orgFolderName)) {
-			reportingAccessToken = "${orgFolderName}" + "-" + reportingAccessToken
-		}
-		if (getCredentials(reportingAccessToken)){
-			context.withCredentials([context.usernamePassword(credentialsId:reportingAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
-			}
-			logger.debug("reportingAccessToken:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
-		}
-
+		Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, getToken(Configuration.CREDS_ZAFIRA_SERVICE_URL))
+		Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, getToken(Configuration.CREDS_ZAFIRA_ACCESS_TOKEN))
+		
 		// obligatory init zafiraUpdater after getting valid url and token
 		zafiraUpdater = new ZafiraUpdater(context)
 	}
 
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
-		def testRailUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
-		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
-		if (!isParamEmpty(orgFolderName)) {
-			testRailUrl = "${orgFolderName}" + "-" + testRailUrl
-		}
-		if (getCredentials(testRailUrl)){
-			context.withCredentials([context.usernamePassword(credentialsId:testRailUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, context.env.VALUE)
-			}
-			logger.debug("TestRail url:" + Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL))
-		}
-
-		def testRailCreds = Configuration.CREDS_TESTRAIL
-		if (!isParamEmpty(orgFolderName)) {
-			testRailCreds = "${orgFolderName}" + "-" + testRailCreds
-		}
-		if (getCredentials(testRailCreds)) {
-			context.withCredentials([context.usernamePassword(credentialsId:testRailCreds, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-				Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, context.env.USERNAME)
-				Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, context.env.PASSWORD)
-			}
-			logger.debug("TestRail username:" + Configuration.get(Configuration.Parameter.TESTRAIL_USERNAME))
-			logger.debug("TestRail password:" + Configuration.get(Configuration.Parameter.TESTRAIL_PASSWORD))
-		}
-
+		Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, getToken(Configuration.CREDS_TESTRAIL_SERVICE_URL))
+        
+        def (userName, userPassword) = getUserCreds(Configuration.CREDS_TESTRAIL)
+        Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, userName)
+        Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, userPassword)
+        
 		// obligatory init testrailUpdater after getting valid url and creds reading
 		testRailUpdater = new TestRailUpdater(context)
 	}
 
 	protected void setQTestCreds() {
 		// update QTest serviceUrl and accessToken parameter based on values from credentials
-		def qtestServiceUrl = Configuration.CREDS_QTEST_SERVICE_URL
-		def orgFolderName = getOrgFolderName(Configuration.get(Configuration.Parameter.JOB_NAME))
-		if (!isParamEmpty(orgFolderName)) {
-			qtestServiceUrl = "${orgFolderName}" + "-" + qtestServiceUrl
-		}
-		if (getCredentials(qtestServiceUrl)){
-			context.withCredentials([context.usernamePassword(credentialsId:qtestServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.QTEST_SERVICE_URL, context.env.VALUE)
-			}
-			logger.info("${qtestServiceUrl}:" + Configuration.get(Configuration.Parameter.QTEST_SERVICE_URL))
-		}
-
-		def qtestAccessToken = Configuration.CREDS_QTEST_ACCESS_TOKEN
-		if (!isParamEmpty(orgFolderName)) {
-			qtestAccessToken = "${orgFolderName}" + "-" + qtestAccessToken
-		}
-		if (getCredentials(qtestAccessToken)){
-			context.withCredentials([context.usernamePassword(credentialsId:qtestAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.QTEST_ACCESS_TOKEN, context.env.VALUE)
-			}
-			logger.info("${qtestAccessToken}:" + Configuration.get(Configuration.Parameter.QTEST_ACCESS_TOKEN))
-		}
+		Configuration.set(Configuration.Parameter.QTEST_SERVICE_URL, getToken(Configuration.CREDS_QTEST_SERVICE_URL))
+		Configuration.set(Configuration.Parameter.QTEST_ACCESS_TOKEN, getToken(Configuration.CREDS_QTEST_ACCESS_TOKEN))
 
 		// obligatory init qtestUpdater after getting valid url and token
 		qTestUpdater = new QTestUpdater(context)
@@ -1592,30 +1517,5 @@ public class QARunner extends Runner {
         def port = "8000"
         return port
     }
-
-	protected def getOrgFolderName(String jobName) {
-		int nameCount = Paths.get(jobName).getNameCount()
-
-		logger.info("getOrgFolderName.jobName: " + jobName)
-		logger.info("getOrgFolderName.nameCount: " + nameCount)
-
-		def orgFolderName = ""
-		if (nameCount == 1 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
-			// testrail-updater - i.e. stage
-			orgFolderName = ""
-		} else if (nameCount == 2 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
-			// stage/testrail-updater - i.e. stage
-			orgFolderName = Paths.get(jobName).getName(0).toString()
-		} else if (nameCount == 2) {
-			// carina-demo/API_Demo_Test - i.e. empty orgFolderName
-			orgFolderName = ""
-		} else if (nameCount == 3) { //TODO: need to test use-case with views!
-			// qaprosoft/carina-demo/API_Demo_Test - i.e. orgFolderName=qaprosoft
-			orgFolderName = Paths.get(jobName).getName(0).toString()
-		} else {
-			throw new RuntimeException("Invalid job organization structure: '${jobName}'!" )
-		}
-		return orgFolderName
-	}
 
 }

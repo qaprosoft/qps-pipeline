@@ -39,8 +39,4 @@ public abstract class BaseObject {
 		factoryRunner.setDslClasspath(additionalClasspath)
 	}
 	
-	protected void prepare() {
-		factoryRunner.prepare()
-	}
-
 }
