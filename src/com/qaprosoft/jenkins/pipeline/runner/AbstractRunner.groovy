@@ -79,6 +79,24 @@ public abstract class AbstractRunner extends BaseObject {
 		logger.debug("tokenName: ${tokenName}; tokenValue: ${tokenValue}")
 		return tokenValue
 	}
+    
+    protected def getUserCreds(tokenName) {
+        def name = ""
+        def password = ""
+
+        if (!isParamEmpty(this.organization)) {
+            tokenName = "${this.organization}" + "-" + tokenName
+        }
+
+        if (getCredentials(tokenName)){
+            context.withCredentials([context.usernamePassword(credentialsId:tokenName, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
+                name=context.env.USERNAME
+                password=context.env.PASSWORD
+            }
+        }
+        logger.debug("tokenName: ${tokenName}; name: ${name}; password: ${password}")
+        return [name, password]
+    }
 
 
 }

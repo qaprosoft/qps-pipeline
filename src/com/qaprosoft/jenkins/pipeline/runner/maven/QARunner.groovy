@@ -807,23 +807,9 @@ public class QARunner extends Runner {
 
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
-		def orgFolderName = getOrgFolder()
-		logger.info("orgFolderName: ${orgFolderName}")
-
 		def hubUrl = "${provider}_hub"
-		if (!isParamEmpty(orgFolderName)) {
-			hubUrl = "${orgFolderName}-${provider}_hub"
-		}
-		logger.info("hubUrl: ${hubUrl}")
+        Configuration.set(Configuration.Parameter.SELENIUM_URL, getToken(hubUrl))
 
-		if (getCredentials(hubUrl)){
-			context.withCredentials([context.usernamePassword(credentialsId:hubUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.SELENIUM_URL, context.env.VALUE)
-			}
-			logger.debug("hubUrl:" + Configuration.get(Configuration.Parameter.SELENIUM_URL))
-		} else {
-			throw new RuntimeException("Invalid hub provider specified: '${provider}'! Unable to proceed with testing.")
-		}
 	}
 
 	protected void setZafiraCreds() {
@@ -847,21 +833,11 @@ public class QARunner extends Runner {
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
 		Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, getToken(Configuration.CREDS_TESTRAIL_SERVICE_URL))
-
-		//TODO: implement getUser which return username and passord together		
-		def testRailCreds = Configuration.CREDS_TESTRAIL
-		if (!isParamEmpty(orgFolderName)) {
-			testRailCreds = "${orgFolderName}" + "-" + testRailCreds
-		}
-		if (getCredentials(testRailCreds)) {
-			context.withCredentials([context.usernamePassword(credentialsId:testRailCreds, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-				Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, context.env.USERNAME)
-				Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, context.env.PASSWORD)
-			}
-			logger.debug("TestRail username:" + Configuration.get(Configuration.Parameter.TESTRAIL_USERNAME))
-			logger.debug("TestRail password:" + Configuration.get(Configuration.Parameter.TESTRAIL_PASSWORD))
-		}
-
+        
+        def (userName, userPassword) = getUserCreds(Configuration.CREDS_TESTRAIL)
+        Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, userName)
+        Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, userPassword)
+        
 		// obligatory init testrailUpdater after getting valid url and creds reading
 		testRailUpdater = new TestRailUpdater(context)
 	}
