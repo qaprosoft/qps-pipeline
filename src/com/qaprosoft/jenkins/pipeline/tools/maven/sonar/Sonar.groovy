@@ -54,17 +54,14 @@ public class Sonar {
                 def pomFiles = getProjectPomFiles()
                 pomFiles.each {
                     logger.debug(it)
-                    compile()
+                    //do compile and scanner for all high level pom.xml files
+                    compile(it)
 
                     if (!this.isSonarAvailable) {
                         return
                     }
-                    //do compile and scanner for all high level pom.xml files
                     def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
                     def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
-
-                    logger.debug("jacocoReportPath: " + jacocoReportPath)
-                    logger.debug("jacocoReportPaths: " + jacocoReportPaths)
 
                     context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                     context.withSonarQubeEnv('sonar-ci') {
@@ -136,6 +133,9 @@ private def getJacocoReportPaths(boolean jacocoEnable) {
             jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec" //this for unit tests code coverage
             jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}" // this one is for integration testing coverage
         }
+        
+        logger.debug("jacocoReportPath: " + jacocoReportPath)
+        logger.debug("jacocoReportPaths: " + jacocoReportPaths)
     }
 
     return [jacocoReportPath, jacocoReportPaths]
