@@ -26,12 +26,12 @@ public class Sonar {
         this.scmClient = new GitHub(context)
     }
 
-    public void scan(isPrClone=false) {
+    public void scan(isPullRequest=false) {
         //TODO: verify preliminary if "maven" nodes available
         context.node("maven") {
             context.stage('Sonar Scanner') {
 
-                if (isPrClone) {
+                if (isPullRequest) {
                     scmClient.clonePR()
                 } else {
                     // it should be non shallow clone anyway to support full static code analysis
@@ -46,7 +46,7 @@ public class Sonar {
                     logger.warn("Sonarqube is not configured correctly! Follow Sonar integration documentation to enable it.")
                 }
 
-                if (isPrClone && isParamEmpty(this.githubToken)) {
+                if (isPullRequest && isParamEmpty(this.githubToken)) {
                     this.isSonarAvailable = false
                     logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
                 }
@@ -66,7 +66,7 @@ public class Sonar {
                     context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                     context.withSonarQubeEnv('sonar-ci') {
                         // execute sonar scanner
-                        context.sh scannerScript(isPrClone, jacocoReportPaths, jacocoReportPath)
+                        context.sh scannerScript(isPullRequest, jacocoReportPaths, jacocoReportPath)
                     }
                 }
             }
@@ -78,7 +78,7 @@ public class Sonar {
         this.githubToken = token
     }
 
-    private def scannerScript(isPrClone, jacocoReportPaths, jacocoReportPath) {
+    private def scannerScript(isPullRequest, jacocoReportPaths, jacocoReportPath) {
         //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
         def sonarHome = context.env.getEnvironment().get("sonarHome")
         logger.debug("sonarHome: " + sonarHome)
@@ -92,7 +92,7 @@ public class Sonar {
                   -Dproject.settings=${SONARQUBE} \
                   -Dsonar.log.level=${SONAR_LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
 
-        if (isPrClone) {
+        if (isPullRequest) {
             script += " -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
                 -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
                 -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
