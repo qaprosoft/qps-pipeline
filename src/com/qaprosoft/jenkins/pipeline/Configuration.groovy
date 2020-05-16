@@ -116,6 +116,7 @@ public class Configuration {
         QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true),
         QTEST_ENABLE("qtest_enabled", "false"),
 
+        //TODO:  reorganize logic to operate with tokens without Configuration enum!
         SONAR_GITHUB_OAUTH_TOKEN("SONAR_GITHUB_OAUTH_TOKEN", "", true)
 
         private final String key
