@@ -119,6 +119,7 @@ public class QARunner extends Runner {
 
 				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
+                    //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
 					getJenkinsJobsScanResult(currentBuild.rawBuild)
 				}
 
