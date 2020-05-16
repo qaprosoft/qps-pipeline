@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline.runner
 import com.qaprosoft.jenkins.BaseObject
 import java.nio.file.Paths
 
+import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 public abstract class AbstractRunner extends BaseObject {
@@ -66,7 +67,7 @@ public abstract class AbstractRunner extends BaseObject {
 	protected def getToken(tokenName) {
 		def tokenValue = ""
 
-		if (!isEmpty(this.organization)) {
+		if (!isParamEmpty(this.organization)) {
 			tokenName = "${this.organization}" + "-" + tokenName
 		}
 		
