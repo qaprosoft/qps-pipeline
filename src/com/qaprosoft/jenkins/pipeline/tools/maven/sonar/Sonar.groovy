@@ -53,7 +53,7 @@ public class Sonar {
 
                 def pomFiles = getProjectPomFiles()
                 pomFiles.each {
-                    logger.debug(it)
+                    logger.debug("pomFile: " + it)
                     //do compile and scanner for all high level pom.xml files
                     compile(it)
 
