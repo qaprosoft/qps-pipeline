@@ -33,10 +33,4 @@ public abstract class BaseObject {
 
         currentBuild = context.currentBuild
     }
-
-    //TODO: [VD] think about moving into AbstractRunner!
-    protected void setDslClasspath(additionalClasspath) {
-        factoryRunner.setDslClasspath(additionalClasspath)
-    }
-
 }

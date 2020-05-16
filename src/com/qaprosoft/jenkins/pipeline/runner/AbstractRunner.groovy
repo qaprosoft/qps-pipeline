@@ -22,6 +22,9 @@ public abstract class AbstractRunner extends BaseObject {
     abstract public void onPush()
     abstract public void onPullRequest()
 
+    /*
+     * Execute custom pipeline/jobdsl steps from Jenkinsfile
+     */
     protected void jenkinsFileScan() {
         if (!context.fileExists('Jenkinsfile')) {
             // do nothing
@@ -35,10 +38,17 @@ public abstract class AbstractRunner extends BaseObject {
         }
     }
 
+    /*
+     * Get organization folder value
+     * @return organization String
+     */
     protected def getOrgFolder() {
         return this.organization
     }
 
+    /*
+     * Determined current organization folder by job name
+     */
     @NonCPS
     protected void initOrganization() {
         String jobName = context.env.getEnvironment().get("JOB_NAME") //Configuration.get(Configuration.Parameter.JOB_NAME)
@@ -64,6 +74,12 @@ public abstract class AbstractRunner extends BaseObject {
         this.organization = orgFolderName
     }
 
+    /*
+     * Get token key from Jenkins credentials based on organization
+     *
+     * @param tokenName Jenkins credentials id
+     * @return token value
+     */
     protected def getToken(tokenName) {
         def tokenValue = ""
 
@@ -80,6 +96,12 @@ public abstract class AbstractRunner extends BaseObject {
         return tokenValue
     }
 
+    /*
+     * Get username and password from Jenkins credentials based on organization
+     * 
+     * @param tokenName Jenkins credentials id
+     * @return name and password
+     */
     protected def getUserCreds(tokenName) {
         def name = ""
         def password = ""
@@ -96,6 +118,13 @@ public abstract class AbstractRunner extends BaseObject {
         }
         logger.debug("tokenName: ${tokenName}; name: ${name}; password: ${password}")
         return [name, password]
+    }
+    
+    /*
+     * set DslClasspath to support custom JobDSL logic
+     */
+    protected void setDslClasspath(additionalClasspath) {
+        factoryRunner.setDslClasspath(additionalClasspath)
     }
 
 
