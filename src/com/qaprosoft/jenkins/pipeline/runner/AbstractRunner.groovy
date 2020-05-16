@@ -4,8 +4,8 @@ import com.qaprosoft.jenkins.BaseObject
 import java.nio.file.Paths
 
 public abstract class AbstractRunner extends BaseObject {
-	
-	private String organization = ""
+	// organization folder name of the current job/runner
+	protected String organization = ""
 	
     public AbstractRunner(context) {
 		super(context)
