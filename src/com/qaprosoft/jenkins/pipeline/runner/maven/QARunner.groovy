@@ -117,8 +117,6 @@ public class QARunner extends Runner {
 			try {
 				scmClient.clone(true)
 
-				prepare() // to init factiryRunner with ability toexecute jobDSL
-
 				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
 					getJenkinsJobsScanResult(currentBuild.rawBuild)
