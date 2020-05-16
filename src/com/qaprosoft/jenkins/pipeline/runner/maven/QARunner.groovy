@@ -836,48 +836,18 @@ public class QARunner extends Runner {
 		}
 
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		def reportingServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
-		def orgFolderName = getOrgFolder()
-		logger.info("orgFolderName: " + orgFolderName)
-		if (!isParamEmpty(orgFolderName)) {
-			reportingServiceUrl = "${orgFolderName}" + "-" + reportingServiceUrl
-		}
-		if (getCredentials(reportingServiceUrl)){
-			context.withCredentials([context.usernamePassword(credentialsId:reportingServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, context.env.VALUE)
-			}
-			logger.debug("reportingServiceUrl:" + Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL))
-		}
-
-		def reportingAccessToken = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
-		if (!isParamEmpty(orgFolderName)) {
-			reportingAccessToken = "${orgFolderName}" + "-" + reportingAccessToken
-		}
-		if (getCredentials(reportingAccessToken)){
-			context.withCredentials([context.usernamePassword(credentialsId:reportingAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, context.env.VALUE)
-			}
-			logger.debug("reportingAccessToken:" + Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))
-		}
-
+		Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, getToken(Configuration.CREDS_ZAFIRA_SERVICE_URL))
+		Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, getToken(Configuration.CREDS_ZAFIRA_ACCESS_TOKEN))
+		
 		// obligatory init zafiraUpdater after getting valid url and token
 		zafiraUpdater = new ZafiraUpdater(context)
 	}
 
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
-		def testRailUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
-		def orgFolderName = getOrgFolder()
-		if (!isParamEmpty(orgFolderName)) {
-			testRailUrl = "${orgFolderName}" + "-" + testRailUrl
-		}
-		if (getCredentials(testRailUrl)){
-			context.withCredentials([context.usernamePassword(credentialsId:testRailUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, context.env.VALUE)
-			}
-			logger.debug("TestRail url:" + Configuration.get(Configuration.Parameter.TESTRAIL_SERVICE_URL))
-		}
+		Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, getToken(Configuration.CREDS_TESTRAIL_SERVICE_URL))
 
+		//TODO: implement getUser which return username and passord together		
 		def testRailCreds = Configuration.CREDS_TESTRAIL
 		if (!isParamEmpty(orgFolderName)) {
 			testRailCreds = "${orgFolderName}" + "-" + testRailCreds
@@ -897,28 +867,8 @@ public class QARunner extends Runner {
 
 	protected void setQTestCreds() {
 		// update QTest serviceUrl and accessToken parameter based on values from credentials
-		def qtestServiceUrl = Configuration.CREDS_QTEST_SERVICE_URL
-		def orgFolderName = getOrgFolder()
-		if (!isParamEmpty(orgFolderName)) {
-			qtestServiceUrl = "${orgFolderName}" + "-" + qtestServiceUrl
-		}
-		if (getCredentials(qtestServiceUrl)){
-			context.withCredentials([context.usernamePassword(credentialsId:qtestServiceUrl, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.QTEST_SERVICE_URL, context.env.VALUE)
-			}
-			logger.info("${qtestServiceUrl}:" + Configuration.get(Configuration.Parameter.QTEST_SERVICE_URL))
-		}
-
-		def qtestAccessToken = Configuration.CREDS_QTEST_ACCESS_TOKEN
-		if (!isParamEmpty(orgFolderName)) {
-			qtestAccessToken = "${orgFolderName}" + "-" + qtestAccessToken
-		}
-		if (getCredentials(qtestAccessToken)){
-			context.withCredentials([context.usernamePassword(credentialsId:qtestAccessToken, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				Configuration.set(Configuration.Parameter.QTEST_ACCESS_TOKEN, context.env.VALUE)
-			}
-			logger.info("${qtestAccessToken}:" + Configuration.get(Configuration.Parameter.QTEST_ACCESS_TOKEN))
-		}
+		Configuration.set(Configuration.Parameter.QTEST_SERVICE_URL, getToken(Configuration.CREDS_QTEST_SERVICE_URL))
+		Configuration.set(Configuration.Parameter.QTEST_ACCESS_TOKEN, getToken(Configuration.CREDS_QTEST_ACCESS_TOKEN))
 
 		// obligatory init qtestUpdater after getting valid url and token
 		qTestUpdater = new QTestUpdater(context)
