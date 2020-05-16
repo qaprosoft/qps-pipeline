@@ -9,7 +9,7 @@ public abstract class AbstractRunner extends BaseObject {
 	
     public AbstractRunner(context) {
 		super(context)
-		this.organization = getOrganization()
+		this.organization = initOrganization()
     }
 
     //Methods
@@ -34,7 +34,7 @@ public abstract class AbstractRunner extends BaseObject {
 	
 	
 	@NonCPS
-	protected def getOrganization() {
+	protected def initOrganization() {
 		String jobName = context.env.getEnvironment().get("JOB_NAME") //Configuration.get(Configuration.Parameter.JOB_NAME)
 		int nameCount = Paths.get(jobName).getNameCount()
 
@@ -56,6 +56,10 @@ public abstract class AbstractRunner extends BaseObject {
 		}
 		
 		return orgFolderName
+	}
+	
+	protected def getOrganization() {
+		return this.organization
 	}
 
 }

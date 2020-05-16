@@ -75,7 +75,6 @@ public class Configuration {
         ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, true),
         ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", mustOverride),
 
-        ORG_FOLDER("ORG_FOLDER", mustOverride),
         JOB_URL("JOB_URL", mustOverride),
         JOB_NAME("JOB_NAME", mustOverride),
         JOB_BASE_NAME("JOB_BASE_NAME", mustOverride),

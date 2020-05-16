@@ -808,7 +808,7 @@ public class QARunner extends Runner {
 
 		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
 		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
-		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER) 
+		def orgFolderName = getOrganization()
 		logger.info("orgFolderName: ${orgFolderName}")
 
 		def hubUrl = "${provider}_hub"
@@ -839,7 +839,7 @@ public class QARunner extends Runner {
 
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
 		def reportingServiceUrl = Configuration.CREDS_ZAFIRA_SERVICE_URL
-		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER)
+		def orgFolderName = getOrganization()
 		logger.info("orgFolderName: " + orgFolderName)
 		if (!isParamEmpty(orgFolderName)) {
 			reportingServiceUrl = "${orgFolderName}" + "-" + reportingServiceUrl
@@ -869,7 +869,7 @@ public class QARunner extends Runner {
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
 		def testRailUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
-		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER)
+		def orgFolderName = getOrganization()
 		if (!isParamEmpty(orgFolderName)) {
 			testRailUrl = "${orgFolderName}" + "-" + testRailUrl
 		}
@@ -900,7 +900,7 @@ public class QARunner extends Runner {
 	protected void setQTestCreds() {
 		// update QTest serviceUrl and accessToken parameter based on values from credentials
 		def qtestServiceUrl = Configuration.CREDS_QTEST_SERVICE_URL
-		def orgFolderName = Configuration.get(Configuration.Parameter.ORG_FOLDER)
+		def orgFolderName = getOrganization()
 		if (!isParamEmpty(orgFolderName)) {
 			qtestServiceUrl = "${orgFolderName}" + "-" + qtestServiceUrl
 		}
