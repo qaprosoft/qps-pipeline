@@ -61,6 +61,21 @@ public abstract class AbstractRunner extends BaseObject {
 		this.organization = orgFolderName
 	}
 	
+	protected def getToken(tokenName) {
+		def tokenValue = ""
+
+		if (!isEmpty(this.organization)) {
+			tokenName = "${this.organization}" + "-" + tokenName
+		}
+		
+		if (getCredentials(tokenName)){
+			context.withCredentials([context.usernamePassword(credentialsId:tokenName, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
+				tokenValue=context.env.VALUE
+			}
+		}
+		logger.debug("tokenName: ${tokenName}; tokenValue: ${tokenValue}")
+		return tokenValue
+	}
 
 
 }

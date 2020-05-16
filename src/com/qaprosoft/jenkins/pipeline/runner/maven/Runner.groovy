@@ -61,24 +61,6 @@ public class Runner extends AbstractRunner {
         }
     }
 	
-	protected def getToken(tokenName) {
-		def tokenValue = ""
-		def orgFolderName = getOrgFolder()
-		logger.info("orgFolderName: " + orgFolderName)
-
-		if (!isEmpty(orgFolderName)) {
-			tokenName = "${orgFolderName}" + "-" + tokenName
-		}
-		
-		
-		if (getCredentials(tokenName)){
-			context.withCredentials([context.usernamePassword(credentialsId:tokenName, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-				tokenValue=context.env.VALUE
-			}
-		}
-		logger.debug("tokenName: ${tokenName}; tokenValue: ${tokenValue}")
-		return tokenValue
-	}
 	
 	private void setSonarGithubToken() {
 		Configuration.set(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN, getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN))
