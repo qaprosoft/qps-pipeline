@@ -70,10 +70,53 @@ public class Maven {
             context.sh """
                         set +x
                         'mvn' -B ${goals}
-                        set -x 
+                        set -x
                        """
         } else {
             context.bat "mvn -B ${goals}"
         }
     }
+
+    public void compile(pomFile='pom.xml', isPullRequest=false) {
+        context.stage('Maven Compile') {
+            // [VD] don't remove -U otherwise latest dependencies are not downloaded
+            def goals = "-U clean compile test -f ${pomFile}"
+            def extraGoals = ""
+            extraGoals += Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean() ? "jacoco:report-aggregate" : ""
+            if (isPullRequest) {
+                // no need to run unit tests for PR analysis
+                extraGoals += " -DskipTests"
+            } else {
+                //run unit tests to detect code coverage but don't fail the build in case of any failure
+                //TODO: for build process we can't use below goal!
+                extraGoals += " -Dmaven.test.failure.ignore=true"
+            }
+            executeMavenGoals("${goals} ${extraGoals}")
+        }
+    }
+
+    protected def getProjectPomFiles() {
+  		def pomFiles = []
+  		def files = context.findFiles(glob: "**/pom.xml")
+
+  		if (files.length > 0) {
+  			logger.info("Number of pom.xml files to analyze: " + files.length)
+
+  			int curLevel = 5 //do not analyze projects where highest pom.xml level is lower or equal 5
+  			for (pomFile in files) {
+  				def path = pomFile.path
+  				int level = path.count("/")
+  				logger.debug("file: " + path + "; level: " + level + "; curLevel: " + curLevel)
+  				if (level < curLevel) {
+  					curLevel = level
+  					pomFiles.clear()
+  					pomFiles.add(pomFile.path)
+  				} else if (level == curLevel) {
+  					pomFiles.add(pomFile.path)
+  				}
+  			}
+  			logger.info("PROJECT POMS: " + pomFiles)
+  		}
+  		return pomFiles
+  	}
 }

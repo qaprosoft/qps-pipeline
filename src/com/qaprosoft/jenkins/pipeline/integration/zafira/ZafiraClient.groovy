@@ -237,7 +237,7 @@ class ZafiraClient extends HttpClient {
 			return true
 		}
 		
-		if (isParamEmpty(this.refreshToken) || isParamEmpty(this.serviceURL)) {
+		if (isParamEmpty(this.refreshToken) || isParamEmpty(this.serviceURL) || Configuration.mustOverride.equals(this.serviceURL)) {
 			return false
 		}
 

@@ -14,6 +14,7 @@ public class Configuration {
     public final static def CREDS_TESTRAIL = "testrail_creds"
     public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
     public final static def CREDS_QTEST_ACCESS_TOKEN = "qtest_token"
+    public final static def CREDS_SONAR_GITHUB_OAUTH_TOKEN = "sonar_github_oauth_token"
 
     public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
     public final static def QTEST_UPDATER_JOBNAME = "qtest-updater"
@@ -66,7 +67,7 @@ public class Configuration {
         GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, true),
         GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
 
-        QPS_HOST("QPS_HOST", "demo.qaprosoft.com"),
+        INFRA_HOST("INFRA_HOST", "demo.qaprosoft.com"),
 
         SELENIUM_URL("SELENIUM_URL", mustOverride, true),
         HUB_MODE("hub_mode", "selenium"),
@@ -79,8 +80,8 @@ public class Configuration {
         JOB_BASE_NAME("JOB_BASE_NAME", mustOverride),
         BUILD_NUMBER("BUILD_NUMBER", mustOverride),
 
-        SCREEN_RECORD_FTP("screen_record_ftp", "ftp://\${QPS_HOST}/%s.mp4"),
-        SCREEN_RECORD_HOST("screen_record_host", "http://\${QPS_HOST}/video/%s"),
+        SCREEN_RECORD_FTP("screen_record_ftp", "ftp://\${INFRA_HOST}/%s.mp4"),
+        SCREEN_RECORD_HOST("screen_record_host", "http://\${INFRA_HOST}/video/%s"),
         SCREEN_RECORD_USER("screen_record_user", "qpsdemo"),
         SCREEN_RECORD_PASS("screen_record_pass", "qpsdemo"),
         SCREEN_RECORD_DURATION("screen_record_duration", "1800"),
@@ -91,7 +92,7 @@ public class Configuration {
         VNC_DESKTOP("vnc_desktop", "%s://%s:%s/vnc/%s"),
         VNC_MOBILE("vnc_mobile", "%s://%s:%s/websockify"),
         VNC_PROTOCOL("vnc_protocol", "ws"),
-        VNC_HOST("vnc_host", "\${QPS_HOST}"),
+        VNC_HOST("vnc_host", "\${INFRA_HOST}"),
         VNC_PORT("vnc_port", "80"),
 
         ENABLE_VNC("capabilities.enableVNC", "true"),
@@ -114,6 +115,9 @@ public class Configuration {
         QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
         QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true),
         QTEST_ENABLE("qtest_enabled", "false"),
+
+        //TODO:  reorganize logic to operate with tokens without Configuration enum!
+        SONAR_GITHUB_OAUTH_TOKEN("SONAR_GITHUB_OAUTH_TOKEN", "", true)
 
         private final String key
         private final String value

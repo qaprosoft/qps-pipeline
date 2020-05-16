@@ -231,7 +231,7 @@ class TestRailUpdater {
                 if (testCase.status_id != 1){
                     testCase.comment = testInfo.message
                 }
-                testCase.testURL = "${integration.zafiraServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
+                testCase.testURL = "${integration.reportingServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
             } else {
                 testCase = testCasesMap.get(testCaseId)
             }

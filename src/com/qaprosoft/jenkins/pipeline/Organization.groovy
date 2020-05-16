@@ -1,12 +1,13 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.LauncherJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.QTestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestRailJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.RegisterRepositoryJobFactory
 import com.qaprosoft.jenkins.pipeline.integration.zebrunner.ZebrunnerUpdater
+import com.qaprosoft.jenkins.pipeline.runner.maven.QARunner
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
@@ -17,42 +18,42 @@ import jenkins.security.ApiTokenProperty
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-class Organization {
+class Organization extends BaseObject {
 
-    protected def context
     protected ISCM scmClient
-    protected Logger logger
-    protected Configuration configuration = new Configuration(context)
+    protected ZebrunnerUpdater zebrunnerUpdater
+	
     protected Map dslObjects = new LinkedHashMap()
 	
 	protected def folderName
     protected def pipelineLibrary
     protected def runnerClass
-	protected def zafiraServiceURL
-	protected def zafiraAccessToken
-    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
-    protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
+	protected def reportingServiceUrl
+	protected def reportingAccessToken
+    protected def sonarGithubOAuth
 
 
     public Organization(context) {
-        this.context = context
+		super(context)
         scmClient = new GitHub(context)
-        logger = new Logger(context)
+		
+		zebrunnerUpdater = new ZebrunnerUpdater(context)
 		
 		this.folderName = Configuration.get("folderName")
 		
         this.pipelineLibrary = Configuration.get("pipelineLibrary")
         this.runnerClass =  Configuration.get("runnerClass")
 		
-		this.zafiraServiceURL = Configuration.get("zafiraServiceURL")
-		this.zafiraAccessToken = Configuration.get("zafiraAccessToken")
+		this.reportingServiceUrl = Configuration.get("reportingServiceUrl")
+		this.reportingAccessToken = Configuration.get("reportingAccessToken")
+
+        this.sonarGithubOAuth = Configuration.get("sonarGithubOAuth")
     }
 
-    def register() {
+    public def register() {
         logger.info("Organization->register")
         context.node('master') {
-//            context.timestamps {
-                prepare()
+            context.timestamps {
                 generateCreds()
                 generateCiItems()
                 logger.info("securityEnabled: " + Configuration.get("securityEnabled"))
@@ -60,28 +61,56 @@ class Organization {
                     setSecurity()
                 }
                 clean()
-//            }
+            }
         }
     }
 
-    def delete() {
+    public def delete() {
         logger.info("Organization->register")
         context.node('master') {
-//            context.timestamps {
+            context.timestamps {
                 def folder = Configuration.get("folderName")
                 def userName = folder + "-user"
-                prepare()
                 deleteFolder(folder)
                 deleteUser(userName)
                 clean()
-//            }
+            }
         }
     }
+	
+	
+	public def registerQTestCredentials() {
+		logger.info("Organization->registerQTestCredentials")
+		context.node('master') {
+			def orgFolderName = Configuration.get("folderName")
+			
+			// Example: https://<CHANGE_ME>/api/v3/
+			def url = Configuration.get("url")
+			def token = Configuration.get("token")
+	
+			registerQTestCredentials(orgFolderName, url, token)
+		}
+	}
 
+	public def registerTestRailCredentials() {
+		logger.info("Organization->registerTestRailCredentials")
+		context.node('master') {
+			def orgFolderName = Configuration.get("folderName")
+			
+			// Example: https://mytenant.testrail.com?/api/v2/
+			def url = Configuration.get("url")
+			def username = Configuration.get("username")
+			def password = Configuration.get("password")
+	
+			registerTestRailCredentials(orgFolderName, url, username, password)
+		}
+	}
+	
     protected def deleteFolder(folderName) {
         context.stage("Delete folder") {
             def folder = getJenkinsFolderByName(folderName)
             if (!isParamEmpty(folder)){
+                deleteUserFolderPermissions(folderName)
                 folder.delete()
             }
         }
@@ -91,6 +120,7 @@ class Organization {
         context.stage("Delete user") {
             def user = User.getById(userName, false)
             if (!isParamEmpty(user)){
+                deleteUserGlobalPermissions(userName)
                 user.delete()
             }
         }
@@ -104,18 +134,9 @@ class Organization {
             }
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
-            registerObject("testrail_job", new TestRailJobFactory(folder, getTestRailScript(), Configuration.TESTRAIL_UPDATER_JOBNAME, "Custom job testrail"))
-            registerObject("qtest_job", new QTestJobFactory(folder, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
 
-            context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-            context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
-                    sandbox: true,
-                    removedConfigFilesAction: 'IGNORE',
-                    removedJobAction: 'IGNORE',
-                    removedViewAction: 'IGNORE',
-                    targets: FACTORY_TARGET,
-                    ignoreExisting: false
-        }
+            factoryRunner.run(dslObjects)
+		}
     }
 
     protected void registerObject(name, object) {
@@ -170,6 +191,11 @@ class Organization {
         authStrategy.add(hudson.model.Hudson.READ, userName)
     }
 
+    protected def deleteUserGlobalPermissions(userName){
+        def authStrategy = Jenkins.instance.getAuthorizationStrategy()
+        authStrategy.remove(hudson.model.Hudson.READ, userName)
+    }
+
     protected def grantUserFolderPermissions(folderName, userName) {
         def folder = getJenkinsFolderByName(folderName)
         if (folder == null){
@@ -217,6 +243,27 @@ class Organization {
         folder.save()
     }
 
+    protected def deleteUserFolderPermissions(folderName) {
+        def folder = getJenkinsFolderByName(folderName)
+        if (folder == null){
+            logger.error("No folder ${folderName} was detected.")
+            return
+        }
+        def authProperty = folder.properties.find {
+            it instanceof AuthorizationMatrixProperty
+        }
+
+        if (authProperty == null){
+            logger.info("Permissions has been already deleted for ${folderName}")
+            return
+        }
+
+        authProperty.setInheritanceStrategy(new NonInheritingStrategy())
+
+        authProperty.remove(it, userName)
+        folder.save()
+    }
+
     protected def generateIntegrationParemetersMap(userName, tokenValue, folder){
         def integrationParameters = [:]
         String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split("/job/")[0]
@@ -233,12 +280,6 @@ class Organization {
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
         }
-    }
-
-    protected void prepare() {
-        String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
-        String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
-        scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
     }
 
     protected clean() {
@@ -264,12 +305,13 @@ class Organization {
     }
 	
 	protected def generateCreds() {
-		logger.debug("QPS_HOST: " + Configuration.get(Configuration.Parameter.QPS_HOST))
-		logger.debug("selenium: " + "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
-		registerHubCredentials(this.folderName, "selenium", "http://demo:demo@\${QPS_HOST}/ggr/wd/hub")
+		logger.debug("INFRA_HOST: " + Configuration.get(Configuration.Parameter.INFRA_HOST))
+		logger.debug("selenium: " + "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub")
+		registerHubCredentials(this.folderName, "selenium", "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub")
 
-		if (!isParamEmpty(this.zafiraServiceURL) && !isParamEmpty(this.zafiraAccessToken)) {
-			registerZafiraCredentials(this.folderName, this.zafiraServiceURL, this.zafiraAccessToken)
+		if (!isParamEmpty(this.reportingServiceUrl) && !isParamEmpty(this.reportingAccessToken)) {
+			registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
+            registerSonarGithubOAuth(this.folderName, this.sonarGithubOAuth)
 		}
 	}
 	
@@ -277,7 +319,7 @@ class Organization {
 		context.stage("Register Hub Credentials") {
 			def orgFolderName = Configuration.get("folderName")
 			def provider = Configuration.get("provider")
-			// Example: http://demo.qaprosoft.com/ggr/wd/hub
+			// Example: http://demo.qaprosoft.com/selenoid/wd/hub
 			def url = Configuration.get("url")
 			
 			registerHubCredentials(orgFolderName, provider, url)
@@ -298,46 +340,31 @@ class Organization {
 		}
 	}
 	
-	public def registerZafiraCredentials(){
+	public def registerReportingCredentials(){
 		context.stage("Register Zafira Credentials") {
-			Organization.registerZafiraCredentials(this.folderName, this.zafiraServiceURL, this.zafiraAccessToken)
+			Organization.registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
 		}
 	}
 	
-	public static void registerZafiraCredentials(orgFolderName, zafiraServiceURL, zafiraAccessToken){
-		def zafiraURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
-		def zafiraTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
+	public static void registerReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
+		def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
+		def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
 		
 		if (!isParamEmpty(orgFolderName)) {
-			zafiraURLCredentials = orgFolderName + "-" + zafiraURLCredentials
-			zafiraTokenCredentials = orgFolderName + "-" + zafiraTokenCredentials
+            reportingURLCredentials = orgFolderName + "-" + reportingURLCredentials
+            reportingTokenCredentials = orgFolderName + "-" + reportingTokenCredentials
 		}
 
-		if (isParamEmpty(zafiraServiceURL)){
-			throw new RuntimeException("Unable to register Zafira credentials! Required field 'zafiraServiceURL' is missing!")
+		if (isParamEmpty(reportingServiceUrl)){
+			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingServiceUrl' is missing!")
 		}
 		
-		if ( isParamEmpty(zafiraAccessToken)){
-			throw new RuntimeException("Unable to register Zafira credentials! Required field 'zafiraAccessToken' is missing!")
+		if ( isParamEmpty(reportingAccessToken)){
+			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingAccessToken' is missing!")
 		}
 
-		updateJenkinsCredentials(zafiraURLCredentials, "Zafira service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), zafiraServiceURL)
-		updateJenkinsCredentials(zafiraTokenCredentials, "Zafira access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), zafiraAccessToken)
-	}
-	
-	
-	public def registerTestRailCredentials() {
-		context.stage("Register TestRail Credentials") {
-			def orgFolderName = Configuration.get("folderName")
-			
-			// Example: https://mytenant.testrail.com?/api/v2/
-			def url = Configuration.get("url")		
-			def username = Configuration.get("username")
-			def password = Configuration.get("password")
-	
-			
-			registerTestRailCredentials(orgFolderName, url, username, password)
-		}
+		updateJenkinsCredentials(reportingURLCredentials, "Reporting service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), reportingServiceUrl)
+		updateJenkinsCredentials(reportingTokenCredentials, "Reporting access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), reportingAccessToken)
 	}
 	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
@@ -363,19 +390,10 @@ class Organization {
 
 		updateJenkinsCredentials(testrailURLCredentials, "TestRail Service API URL", Configuration.Parameter.TESTRAIL_SERVICE_URL.getKey(), url)
 		updateJenkinsCredentials(testrailUserCredentials, "TestRaul User credentials", username, password)
-		
-	}
-	
-	public def registerQTestCredentials() {
-		context.stage("Register QTest Credentials") {
-			def orgFolderName = Configuration.get("folderName")
-			
-			// Example: https://<CHANGE_ME>/api/v3/
-			def url = Configuration.get("url")
-			def token = Configuration.get("token")
-	
-			registerQTestCredentials(orgFolderName, url, token)
-		}
+
+        registerObject("testrail_job", new TestRailJobFactory(orgFolderName, getTestRailScript(), Configuration.TESTRAIL_UPDATER_JOBNAME, "Custom job testrail"))
+
+        factoryRunner.run(dslObjects)
 	}
 	
 	protected def registerQTestCredentials(orgFolderName, url, token) {
@@ -397,6 +415,19 @@ class Organization {
 		
 		updateJenkinsCredentials(qtestURLCredentials, "QTest Service API URL", Configuration.Parameter.QTEST_SERVICE_URL.getKey(), url)
 		updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
+
+        registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
+
+        factoryRunner.run(dslObjects)
 	}
 
+    public static void registerSonarGithubOAuth(orgFolderName, token){
+        def sonarGithubOAuth = Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN
+
+        if (!isParamEmpty(orgFolderName)) {
+            sonarGithubOAuth = orgFolderName + "-" + sonarGithubOAuth
+        }
+
+        updateJenkinsCredentials(sonarGithubOAuth, "Sonar GithubOAuth token", Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN.getKey(), token)
+    }
 }

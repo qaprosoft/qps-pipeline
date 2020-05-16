@@ -1,6 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
-import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
@@ -15,14 +15,9 @@ import java.nio.file.Paths
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-class Repository {
+class Repository extends BaseObject {
 
-    def context
     protected ISCM scmClient
-    protected Logger logger
-    protected Configuration configuration = new Configuration(context)
-    protected final def FACTORY_TARGET = "qps-pipeline/src/com/qaprosoft/jenkins/Factory.groovy"
-    protected final def EXTRA_CLASSPATH = "qps-pipeline/src"
     protected def pipelineLibrary
     protected def runnerClass
     protected def rootFolder
@@ -36,10 +31,9 @@ class Repository {
     protected Map dslObjects = new LinkedHashMap()
 
     public Repository(context) {
-        this.context = context
+		super(context)
 
         scmClient = new GitHub(context)
-        logger = new Logger(context)
         pipelineLibrary = Configuration.get("pipelineLibrary")
         runnerClass = Configuration.get("runnerClass")
     }
@@ -49,11 +43,11 @@ class Repository {
         Configuration.set("GITHUB_ORGANIZATION", Configuration.get(SCM_ORG))
         Configuration.set("GITHUB_HOST", Configuration.get(SCM_HOST))
         context.node('master') {
-//            context.timestamps {
+            context.timestamps {
                 prepare()
                 generateCiItems()
                 clean()
-//            }
+            }
         }
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
         def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
@@ -79,16 +73,13 @@ class Repository {
 
     }
 
-    private void prepare() {
+    protected void prepare() {
         def githubOrganization = Configuration.get(SCM_ORG)
         def credentialsId = "${githubOrganization}-${Configuration.get(REPO)}"
 
         updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get(SCM_USER), Configuration.get(SCM_TOKEN))
 
         scmClient.clone(true)
-        String QPS_PIPELINE_GIT_URL = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_URL)
-        String QPS_PIPELINE_GIT_BRANCH = Configuration.get(Configuration.Parameter.QPS_PIPELINE_GIT_BRANCH)
-        scmClient.clone(QPS_PIPELINE_GIT_URL, QPS_PIPELINE_GIT_BRANCH, "qps-pipeline")
     }
 
 
@@ -107,13 +98,13 @@ class Repository {
                 def zafiraFields = Configuration.get("zafiraFields")
                 logger.debug("zafiraFields: " + zafiraFields)
                 if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def zafiraServiceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
+                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
                     def zafiraRefreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
-                    logger.debug("zafiraServiceURL: " + zafiraServiceURL)
+                    logger.debug("reportingServiceUrl: " + reportingServiceUrl)
                     logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
-					if (!isParamEmpty(zafiraServiceURL) && !isParamEmpty(zafiraRefreshToken)){
-						Organization.registerZafiraCredentials(repoFolder, zafiraServiceURL, zafiraRefreshToken)
-					}
+                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(zafiraRefreshToken)){
+                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, zafiraRefreshToken)
+                    }
                 }
             }
 
@@ -181,16 +172,7 @@ class Repository {
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
-            // put into the factories.json all declared jobdsl factories to verify and create/recreate/remove etc
-            context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-
-            context.jobDsl additionalClasspath: EXTRA_CLASSPATH,
-                    sandbox: true,
-                    removedConfigFilesAction: 'IGNORE',
-                    removedJobAction: 'IGNORE',
-                    removedViewAction: 'IGNORE',
-                    targets: FACTORY_TARGET,
-                    ignoreExisting: false
+			factoryRunner.run(dslObjects)
 
         }
     }

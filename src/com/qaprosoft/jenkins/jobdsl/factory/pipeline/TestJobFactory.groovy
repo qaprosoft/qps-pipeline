@@ -19,19 +19,25 @@ public class TestJobFactory extends PipelineFactory {
     def suiteName
     def orgRepoScheduling
 
-    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling) {
+    def threadCount
+    def dataProviderThreadCount
+
+    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, 
+            sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount) {
         this.folder = folder
         this.description = jobDesc
         this.pipelineScript = pipelineScript
         this.host = host
         this.repo = repo
         this.organization = organization
-		this.branch = branch
+        this.branch = branch
         this.sub_project = sub_project
         this.zafira_project = zafira_project
         this.suitePath = suitePath
         this.suiteName = suiteName
         this.orgRepoScheduling = orgRepoScheduling
+        this.threadCount = threadCount
+        this.dataProviderThreadCount = dataProviderThreadCount
     }
 
     def create() {
@@ -65,7 +71,7 @@ public class TestJobFactory extends PipelineFactory {
                     choiceListProvider {
                         textareaChoiceListProvider {
                             choiceListText(getEnvironments(currentSuite))
-                            defaultChoice('')
+                            defaultChoice(getDefaultChoiceValue(currentSuite))
                             addEditedValue(false)
                             whenToAdd('Triggered')
                         }
@@ -163,7 +169,11 @@ public class TestJobFactory extends PipelineFactory {
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
                 configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
-                stringParam('thread_count', getSuiteParameter("1", "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
+                // TODO: #711 completely remove custom jenkinsDefaultThreadCount parameter logic
+                stringParam('thread_count', getSuiteParameter(this.threadCount, "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
+                if (!"1".equals(this.dataProviderThreadCount)) {
+                    stringParam('data_provider_thread_count', this.dataProviderThreadCount, 'number of threads for data provider, number')
+                }
                 stringParam('email_list',  getSuiteParameter("", "jenkinsEmail", currentSuite), 'List of Users to be emailed after the test')
                 configure addHiddenParameter('failure_email_list', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
                 choiceParam('retry_count', getRetryCountArray(currentSuite), 'Number of Times to Retry a Failed Test')
