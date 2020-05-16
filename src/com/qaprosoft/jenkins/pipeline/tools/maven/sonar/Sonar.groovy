@@ -55,7 +55,7 @@ public class Sonar {
                 pomFiles.each {
                     logger.debug("pomFile: " + it)
                     //do compile and scanner for all high level pom.xml files
-                    compile(it)
+                    compile(it, isPullRequest)
 
                     if (!this.isSonarAvailable) {
                         return
