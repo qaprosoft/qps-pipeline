@@ -99,45 +99,45 @@ public class Sonar {
                 -Dsonar.github.oauth=${this.githubToken} \
                 -Dsonar.sourceEncoding=UTF-8 \
                 -Dsonar.analysis.mode=preview"
-    }
-    return script
-}
-
-private String getSonarEnv() {
-    def sonarQubeEnv = ''
-    Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
-        sonarQubeEnv = installation.getName()
-    }
-    return sonarQubeEnv
-}
-
-private def getJacocoReportPaths(boolean jacocoEnable) {
-    def jacocoReportPath = ""
-    def jacocoReportPaths = ""
-
-    if (jacocoEnable) {
-        def jacocoItExec = 'jacoco-it.exec'
-
-        def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
-        def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
-
-        // download combined integration testing coverage report: jacoco-it.exec
-        // TODO: test if aws cli is installed on regular jenkins slaves as we are going to run it on each onPush event starting from 5.0
-        context.withAWS(region: "${jacocoRegion}", credentials:'aws-jacoco-token') {
-            def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
-            logger.info("copyOutput: " + copyOutput)
         }
-
-
-        if (context.fileExists("/tmp/${jacocoItExec}")) {
-            jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec" //this for unit tests code coverage
-            jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}" // this one is for integration testing coverage
-        }
-        
-        logger.debug("jacocoReportPath: " + jacocoReportPath)
-        logger.debug("jacocoReportPaths: " + jacocoReportPaths)
+        return script
     }
 
-    return [jacocoReportPath, jacocoReportPaths]
-}
+    private String getSonarEnv() {
+        def sonarQubeEnv = ''
+        Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
+            sonarQubeEnv = installation.getName()
+        }
+        return sonarQubeEnv
+    }
+
+    private def getJacocoReportPaths(boolean jacocoEnable) {
+        def jacocoReportPath = ""
+        def jacocoReportPaths = ""
+
+        if (jacocoEnable) {
+            def jacocoItExec = 'jacoco-it.exec'
+
+            def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
+            def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
+
+            // download combined integration testing coverage report: jacoco-it.exec
+            // TODO: test if aws cli is installed on regular jenkins slaves as we are going to run it on each onPush event starting from 5.0
+            context.withAWS(region: "${jacocoRegion}", credentials:'aws-jacoco-token') {
+                def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
+                logger.info("copyOutput: " + copyOutput)
+            }
+
+
+            if (context.fileExists("/tmp/${jacocoItExec}")) {
+                jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec" //this for unit tests code coverage
+                jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}" // this one is for integration testing coverage
+            }
+            
+            logger.debug("jacocoReportPath: " + jacocoReportPath)
+            logger.debug("jacocoReportPaths: " + jacocoReportPaths)
+        }
+    
+        return [jacocoReportPath, jacocoReportPaths]
+    }
 }
