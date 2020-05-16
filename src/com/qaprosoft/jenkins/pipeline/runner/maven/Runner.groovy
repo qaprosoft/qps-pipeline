@@ -19,7 +19,6 @@ public class Runner extends AbstractRunner {
         scmClient = new GitHub(context)
         sonar = new Sonar(context)
         logger = new Logger(context)
-
     }
 
     //Events
@@ -34,14 +33,13 @@ public class Runner extends AbstractRunner {
         }
     }
 
-    public void onPullRequest() {
-        context.node("master") {
-            logger.info("Runner->onPullRequest")
-            // sonar.scanPR(getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN))
-			setSonarGithubToken()
+	public void onPullRequest() {
+		context.node("master") {
+			logger.info("Runner->onPullRequest")
+			sonar.setToken(getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN))
 			sonar.scan(true)
-        }
-    }
+		}
+	}
 
     //Methods
     public void build() {
@@ -51,9 +49,5 @@ public class Runner extends AbstractRunner {
             throw new RuntimeException("Not implemented yet!")
         }
     }
-	
-	private void setSonarGithubToken() {
-		Configuration.set(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN, getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN))
-		logger.info("SONAR_GITHUB_OAUTH_TOKEN: " + Configuration.get(Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN))
-	}
+
 }
