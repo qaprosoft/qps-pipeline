@@ -39,7 +39,7 @@ public class Sonar {
 					logger.warn("Sonarqube is not configured correctly! Follow Sonar integration documentation to enable it.")
 				}
 				
-				if (isPrClone && isParamEmpty(oauthToken)) {
+				if (isParamEmpty(oauthToken)) {
 					this.isSonarAvailable = false
 					logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
 				}
