@@ -62,7 +62,7 @@ public class Runner extends AbstractRunner {
     }
 	
 	private void setSonarGithubToken() {
-		def orgFolderName = getOrganization()
+		def orgFolderName = getOrgFolder()
 		logger.info("orgFolderName: " + orgFolderName)
 
 		def sonarGithubToken = Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN

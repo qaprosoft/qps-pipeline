@@ -32,7 +32,7 @@ public abstract class AbstractRunner extends BaseObject {
         }
     }
 	
-	protected def getOrganization() {
+	protected def getOrgFolder() {
 		return this.organization
 	}	
 	
