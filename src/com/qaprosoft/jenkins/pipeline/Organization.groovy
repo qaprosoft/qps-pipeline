@@ -110,6 +110,7 @@ class Organization extends BaseObject {
         context.stage("Delete folder") {
             def folder = getJenkinsFolderByName(folderName)
             if (!isParamEmpty(folder)){
+                deleteUserFolderPermissions(folderName)
                 folder.delete()
             }
         }
@@ -119,6 +120,7 @@ class Organization extends BaseObject {
         context.stage("Delete user") {
             def user = User.getById(userName, false)
             if (!isParamEmpty(user)){
+                deleteUserGlobalPermissions(userName)
                 user.delete()
             }
         }
@@ -189,6 +191,11 @@ class Organization extends BaseObject {
         authStrategy.add(hudson.model.Hudson.READ, userName)
     }
 
+    protected def deleteUserGlobalPermissions(userName){
+        def authStrategy = Jenkins.instance.getAuthorizationStrategy()
+        authStrategy.remove(hudson.model.Hudson.READ, userName)
+    }
+
     protected def grantUserFolderPermissions(folderName, userName) {
         def folder = getJenkinsFolderByName(folderName)
         if (folder == null){
@@ -233,6 +240,27 @@ class Organization extends BaseObject {
         permissionsArray.each {
             authProperty.add(it, userName)
         }
+        folder.save()
+    }
+
+    protected def deleteUserFolderPermissions(folderName) {
+        def folder = getJenkinsFolderByName(folderName)
+        if (folder == null){
+            logger.error("No folder ${folderName} was detected.")
+            return
+        }
+        def authProperty = folder.properties.find {
+            it instanceof AuthorizationMatrixProperty
+        }
+
+        if (authProperty == null){
+            logger.info("Permissions has been already deleted for ${folderName}")
+            return
+        }
+
+        authProperty.setInheritanceStrategy(new NonInheritingStrategy())
+
+        authProperty.remove(it, userName)
         folder.save()
     }
 
