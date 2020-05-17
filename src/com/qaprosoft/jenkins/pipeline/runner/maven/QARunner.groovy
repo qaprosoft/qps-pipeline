@@ -116,18 +116,12 @@ public class QARunner extends Runner {
 
 			try {
 				scmClient.clone(true)
-
-				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
+				if (isUpdated(this.currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
-                    //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
-					getJenkinsJobsScanResult(currentBuild.rawBuild)
 				}
-
 				sonar.scan()
-
 			} catch (Exception e) {
 				logger.error("Scan failed.\n" + e.getMessage())
-				getJenkinsJobsScanResult(null)
 				this.currentBuild.result = BuildResult.FAILURE
 			}
 			clean()
@@ -164,7 +158,7 @@ public class QARunner extends Runner {
             def repoFolder = parseFolderName(getWorkspace())
             def branch = Configuration.get("branch")
 
-            currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+            this.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
             def workspace = getWorkspace()
             logger.info("WORKSPACE: ${workspace}")
@@ -182,6 +176,8 @@ public class QARunner extends Runner {
 										Configuration.get("removedJobAction"),
 										Configuration.get("removedViewAction"))
             }
+            
+            getJenkinsJobsScanResult(this.currentBuild.rawBuild)
         }
     }
 
@@ -546,7 +542,7 @@ public class QARunner extends Runner {
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
-                        prepareBuild(currentBuild)
+                        prepareBuild(this.currentBuild)
                         scmClient.clone()
 
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
@@ -565,10 +561,10 @@ public class QARunner extends Runner {
                     logger.error(printStackTrace(e))
                     testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
                     if (!isParamEmpty(testRun)) {
-                        def abortedTestRun = zafiraUpdater.abortTestRun(uuid, currentBuild)
+                        def abortedTestRun = zafiraUpdater.abortTestRun(uuid, this.currentBuild)
                         if ((!isParamEmpty(abortedTestRun)
                                 && !StatusMapper.ZafiraStatus.ABORTED.name().equals(abortedTestRun.status)
-                                && !BuildResult.ABORTED.name().equals(currentBuild.result)) || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
+                                && !BuildResult.ABORTED.name().equals(this.currentBuild.result)) || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
                             zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         }
                     }
@@ -577,7 +573,7 @@ public class QARunner extends Runner {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     if(!isParamEmpty(testRun)) {
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
-                        zafiraUpdater.setBuildResult(uuid, currentBuild)
+                        zafiraUpdater.setBuildResult(uuid, this.currentBuild)
                     } else {
                         //try to find build result from CarinaReport if any
                     }
@@ -864,7 +860,7 @@ public class QARunner extends Runner {
         -Dci_build=${Configuration.get(Configuration.Parameter.BUILD_NUMBER)} \
         clean test"
 
-        addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
+        addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), this.currentBuild))
         addCapability("suite", suiteName)
         addCapabilityIfPresent("rerun_failures", "zafira_rerun_failures")
         addOptionalCapability("enableVideo", "Video recording was enabled.", "capabilities.enableVideo", "true")
@@ -1125,7 +1121,7 @@ public class QARunner extends Runner {
             def repo = Configuration.get("repo")
             def branch = Configuration.get("branch")
 
-            currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+            this.currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
             def pomFiles = getProjectPomFiles()
             for(pomFile in pomFiles){
@@ -1160,7 +1156,7 @@ public class QARunner extends Runner {
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
             if (currentSuite == null) {
                 logger.error("ERROR! Unable to parse suite: " + currentSuitePath)
-                currentBuild.result = BuildResult.FAILURE
+                this.currentBuild.result = BuildResult.FAILURE
                 continue
             }
             generatePipeline(currentSuite)
