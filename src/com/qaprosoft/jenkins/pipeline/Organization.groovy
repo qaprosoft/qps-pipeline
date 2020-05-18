@@ -20,14 +20,14 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Organization extends BaseObject {
 
+    private static final String PIPELINE_LIBRARY = "QPS-Pipeline"
+    private static final String RUNNER_CLASS = "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner"
     protected ISCM scmClient
     protected ZebrunnerUpdater zebrunnerUpdater
-	
+
     protected Map dslObjects = new LinkedHashMap()
-	
+
 	protected def folderName
-    protected def pipelineLibrary
-    protected def runnerClass
 	protected def reportingServiceUrl
 	protected def reportingAccessToken
     protected def sonarGithubOAuth
@@ -36,14 +36,12 @@ class Organization extends BaseObject {
     public Organization(context) {
 		super(context)
         scmClient = new GitHub(context)
-		
+
 		zebrunnerUpdater = new ZebrunnerUpdater(context)
-		
+
 		this.folderName = Configuration.get("folderName")
 		
-        this.pipelineLibrary = Configuration.get("pipelineLibrary")
-        this.runnerClass =  Configuration.get("runnerClass")
-		
+
 		this.reportingServiceUrl = Configuration.get("reportingServiceUrl")
 		this.reportingAccessToken = Configuration.get("reportingAccessToken")
 
@@ -77,17 +75,17 @@ class Organization extends BaseObject {
             }
         }
     }
-	
-	
+
+
 	public def registerQTestCredentials() {
 		logger.info("Organization->registerQTestCredentials")
 		context.node('master') {
 			def orgFolderName = Configuration.get("folderName")
-			
+
 			// Example: https://<CHANGE_ME>/api/v3/
 			def url = Configuration.get("url")
 			def token = Configuration.get("token")
-	
+
 			registerQTestCredentials(orgFolderName, url, token)
 		}
 	}
@@ -96,16 +94,16 @@ class Organization extends BaseObject {
 		logger.info("Organization->registerTestRailCredentials")
 		context.node('master') {
 			def orgFolderName = Configuration.get("folderName")
-			
+
 			// Example: https://mytenant.testrail.com?/api/v2/
 			def url = Configuration.get("url")
 			def username = Configuration.get("username")
 			def password = Configuration.get("password")
-	
+
 			registerTestRailCredentials(orgFolderName, url, username, password)
 		}
 	}
-	
+
     protected def deleteFolder(folderName) {
         context.stage("Delete folder") {
             def folder = getJenkinsFolderByName(folderName)
@@ -125,7 +123,7 @@ class Organization extends BaseObject {
             }
         }
     }
-	
+
     protected def generateCiItems() {
 		def folder = this.folderName
         context.stage("Register Organization") {
@@ -133,7 +131,7 @@ class Organization extends BaseObject {
                 registerObject("project_folder", new FolderFactory(folder, ""))
             }
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
-            registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
+            registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', PIPELINE_LIBRARY, RUNNER_CLASS))
 
             factoryRunner.run(dslObjects)
 		}
@@ -275,11 +273,7 @@ class Organization extends BaseObject {
     }
 
     protected String getPipelineScript() {
-        if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
-        } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
-        }
+      return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).build()"
     }
 
     protected clean() {
@@ -289,21 +283,13 @@ class Organization extends BaseObject {
     }
 
     protected String getTestRailScript() {
-        if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
-        } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
-        }
+      return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).sendTestRailResults()"
     }
 
     protected String getQTestScript() {
-        if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
-        } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
-        }
+      return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).sendQTestResults()"
     }
-	
+
 	protected def generateCreds() {
 		logger.debug("INFRA_HOST: " + Configuration.get(Configuration.Parameter.INFRA_HOST))
 		logger.debug("selenium: " + "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub")
@@ -314,18 +300,18 @@ class Organization extends BaseObject {
             registerSonarGithubOAuth(this.folderName, this.sonarGithubOAuth)
 		}
 	}
-	
+
 	public def registerHubCredentials() {
 		context.stage("Register Hub Credentials") {
 			def orgFolderName = Configuration.get("folderName")
 			def provider = Configuration.get("provider")
 			// Example: http://demo.qaprosoft.com/selenoid/wd/hub
 			def url = Configuration.get("url")
-			
+
 			registerHubCredentials(orgFolderName, provider, url)
 		}
 	}
-	
+
 	protected def registerHubCredentials(orgFolderName, provider, url) {
 		if (isParamEmpty(url)){
 			throw new RuntimeException("Required 'url' field is missing!")
@@ -334,22 +320,22 @@ class Organization extends BaseObject {
 		if (!isParamEmpty(orgFolderName)) {
 			hubURLCredName = "${orgFolderName}" + "-" + hubURLCredName
 		}
-		
+
 		if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", Configuration.Parameter.SELENIUM_URL.getKey(), url)) {
 			logger.info("${hubURLCredName} was successfully registered.")
 		}
 	}
-	
+
 	public def registerReportingCredentials(){
 		context.stage("Register Zafira Credentials") {
 			Organization.registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
 		}
 	}
-	
+
 	public static void registerReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
 		def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
 		def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
-		
+
 		if (!isParamEmpty(orgFolderName)) {
             reportingURLCredentials = orgFolderName + "-" + reportingURLCredentials
             reportingTokenCredentials = orgFolderName + "-" + reportingTokenCredentials
@@ -358,7 +344,7 @@ class Organization extends BaseObject {
 		if (isParamEmpty(reportingServiceUrl)){
 			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingServiceUrl' is missing!")
 		}
-		
+
 		if ( isParamEmpty(reportingAccessToken)){
 			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingAccessToken' is missing!")
 		}
@@ -366,11 +352,11 @@ class Organization extends BaseObject {
 		updateJenkinsCredentials(reportingURLCredentials, "Reporting service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), reportingServiceUrl)
 		updateJenkinsCredentials(reportingTokenCredentials, "Reporting access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), reportingAccessToken)
 	}
-	
+
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
 		def testrailURLCredentials = Configuration.CREDS_TESTRAIL_SERVICE_URL
 		def testrailUserCredentials = Configuration.CREDS_TESTRAIL
-		
+
 		if (!isParamEmpty(orgFolderName)) {
 			testrailURLCredentials = orgFolderName + "-" + testrailURLCredentials
 			testrailUserCredentials = orgFolderName + "-" + testrailUserCredentials
@@ -379,11 +365,11 @@ class Organization extends BaseObject {
 		if (isParamEmpty(url)){
 			throw new RuntimeException("Unable to register TestRail credentials! Required field 'url' is missing!")
 		}
-		
+
 		if (isParamEmpty(username)){
 			throw new RuntimeException("Unable to register TestRail credentials! Required field 'username' is missing!")
 		}
-		
+
 		if (isParamEmpty(password)){
 			throw new RuntimeException("Unable to register TestRail credentials! Required field 'password' is missing!")
 		}
@@ -395,11 +381,11 @@ class Organization extends BaseObject {
 
         factoryRunner.run(dslObjects)
 	}
-	
+
 	protected def registerQTestCredentials(orgFolderName, url, token) {
 		def qtestURLCredentials = Configuration.CREDS_QTEST_SERVICE_URL
 		def qtestTokenCredentials = Configuration.CREDS_QTEST_ACCESS_TOKEN
-		
+
 		if (!isParamEmpty(orgFolderName)) {
 			qtestURLCredentials = orgFolderName + "-" + qtestURLCredentials
 			qtestTokenCredentials = orgFolderName + "-" + qtestTokenCredentials
@@ -408,11 +394,11 @@ class Organization extends BaseObject {
 		if (isParamEmpty(url)){
 			throw new RuntimeException("Unable to register QTest credentials! Required field 'url' is missing!")
 		}
-		
+
 		if (isParamEmpty(token)){
 			throw new RuntimeException("Unable to register QTest credentials! Required field 'token' is missing!")
 		}
-		
+
 		updateJenkinsCredentials(qtestURLCredentials, "QTest Service API URL", Configuration.Parameter.QTEST_SERVICE_URL.getKey(), url)
 		updateJenkinsCredentials(qtestTokenCredentials, "QTest access token", Configuration.Parameter.QTEST_ACCESS_TOKEN.getKey(), token)
 
