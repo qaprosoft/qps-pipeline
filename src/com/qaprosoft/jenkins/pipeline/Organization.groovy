@@ -19,6 +19,8 @@ import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Organization extends BaseObject {
+    private static final String PIPELINE_LIBRARY = "QPS-Pipeline"
+    private static final String RUNNER_CLASS = "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner"
 
     protected ISCM scmClient
     protected ZebrunnerUpdater zebrunnerUpdater
@@ -289,19 +291,11 @@ class Organization extends BaseObject {
     }
 
     protected String getTestRailScript() {
-        if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
-        } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendTestRailResults()"
-        }
+        return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).sendTestRailResults()"
     }
 
     protected String getQTestScript() {
-        if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
-        } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).sendQTestResults()"
-        }
+        return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).sendQTestResults()"
     }
 	
 	protected def generateCreds() {
