@@ -95,6 +95,12 @@ public class Maven {
         }
     }
 
+    public void buildProject(goals) {
+        context.stage("Maven Build") {
+            executeMavenGoals(goals)
+        }
+    }
+
     protected def getProjectPomFiles() {
   		def pomFiles = []
   		def files = context.findFiles(glob: "**/pom.xml")
