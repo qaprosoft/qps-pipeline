@@ -133,6 +133,13 @@ class Organization extends BaseObject {
                 registerObject("project_folder", new FolderFactory(folder, ""))
             }
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
+            if (isParamEmpty(pipelineLibrary)) {
+                pipelineLibrary = "QPS-Pipeline"
+            }
+            if (isParamEmpty(runnerClass)) {
+                pipelineLibrary = com.qaprosoft.jenkins.pipeline.runner.maven.QARunner
+            }
+
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
 
             factoryRunner.run(dslObjects)
