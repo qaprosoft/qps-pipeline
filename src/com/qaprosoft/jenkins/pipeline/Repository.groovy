@@ -176,9 +176,9 @@ class Repository extends BaseObject {
             // TODO: maybe for custom runner classes for dev repo we can check if the runnerClass field is in the list of pre register runner classes
             // https://github.com/qaprosoft/jenkins-master/issues/225
             // https://github.com/qaprosoft/jenkins-master/issues/222
-            def isValidRunner = runnerClass.contains("com.qaprosoft.jenkins.pipeline.runner.maven.") ? true : false
+            def isMavenRunner = runnerClass.contains("com.qaprosoft.jenkins.pipeline.runner.maven.") ? true : false
 
-            if (isValidRunner) {
+            if (isMavenRunner) {
                 registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
             }
 
