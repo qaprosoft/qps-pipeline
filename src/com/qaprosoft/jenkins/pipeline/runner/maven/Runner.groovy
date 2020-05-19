@@ -46,6 +46,7 @@ public class Runner extends AbstractRunner {
         context.node("master") {
             logger.info("Runner->build")
             context.node("maven") {
+                scmClient.clone()
                 buildProject()
             }
             //TODO: we are ready to produce building for any maven project: this is maven compile install goals

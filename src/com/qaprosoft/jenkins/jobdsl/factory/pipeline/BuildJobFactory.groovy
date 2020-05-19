@@ -12,9 +12,10 @@ public class BuildJobFactory extends PipelineFactory {
     def repo
     def organization
     def branch
+    def scmUrl
 
 
-    public BuildJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch) {
+    public BuildJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch, scmUrl) {
         this.name = jobName
         this.folder = folder
         this.pipelineScript = pipelineScript
@@ -22,6 +23,7 @@ public class BuildJobFactory extends PipelineFactory {
         this.repo = repo
         this.organization = organization
         this.branch = branch
+        this.scmUrl = scmUrl
     }
 
     def create() {
