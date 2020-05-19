@@ -16,7 +16,7 @@ public class BuildJobFactory extends PipelineFactory {
     //folder, pipelineScript, host, repo, organization, branch,
     //            sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount
 
-    public TestJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch) {
+    public BuildJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch) {
 
         this.host = host
         this.repo = repo
