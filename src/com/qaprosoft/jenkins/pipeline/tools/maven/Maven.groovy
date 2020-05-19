@@ -95,13 +95,6 @@ public class Maven {
         }
     }
 
-    public void buildProject() {
-        context.stage("Maven Build") {
-            def goals = "-U clean install"
-            executeMavenGoals(goals)
-        }
-    }
-
     protected def getProjectPomFiles() {
   		def pomFiles = []
   		def files = context.findFiles(glob: "**/pom.xml")

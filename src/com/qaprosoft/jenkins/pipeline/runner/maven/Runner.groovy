@@ -48,7 +48,9 @@ public class Runner extends AbstractRunner {
             //TODO: verify if any maven nodes are available
             context.node("maven") {
                 scmClient.clone()
-                buildProject()
+                context.stage("Maven Build") {
+                    executeMavenGoals(Configuration.get("maven_goals"))
+                }
             }
         }
     }
