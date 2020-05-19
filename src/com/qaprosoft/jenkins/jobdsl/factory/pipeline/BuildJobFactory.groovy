@@ -28,18 +28,18 @@ public class BuildJobFactory extends PipelineFactory {
         logger.info("BuildJobFactory->create")
 
         def pipelineJob = super.create()
+
         pipelineJob.with {
 
-            booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
-            //booleanParam('debug', false, 'Check to start tests in remote debug mode.')
-
+            configure booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
             configure stringParam('branch', branch, "SCM repository branch to build against")
             configure addHiddenParameter('repo', '', repo)
             configure addHiddenParameter('GITHUB_HOST', '', host)
             configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
             configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-            stringParam('email_list',  "", 'List of Users to be emailed after the test')
-            }
+            configure stringParam('email_list',  "", 'List of Users to be emailed after the test')
+
+        }
 
         return pipelineJob
     }

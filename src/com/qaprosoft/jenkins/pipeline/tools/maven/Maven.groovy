@@ -95,8 +95,9 @@ public class Maven {
         }
     }
 
-    public void buildProject(goals) {
+    public void buildProject() {
         context.stage("Maven Build") {
+            def goals = "-U clean install"
             executeMavenGoals(goals)
         }
     }

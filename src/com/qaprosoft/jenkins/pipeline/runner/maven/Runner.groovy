@@ -45,10 +45,11 @@ public class Runner extends AbstractRunner {
     public void build() {
         context.node("master") {
             logger.info("Runner->build")
-            def goals = "-U clean install"
-            buildProject(goals)
+            context.node("maven") {
+                buildProject()
+            }
             //TODO: we are ready to produce building for any maven project: this is maven compile install goals
-            throw new RuntimeException("Not implemented yet!")
+            //throw new RuntimeException("Not implemented yet!")
         }
     }
 
