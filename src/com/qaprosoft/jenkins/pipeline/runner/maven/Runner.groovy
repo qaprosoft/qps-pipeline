@@ -43,10 +43,13 @@ public class Runner extends AbstractRunner {
 
     //Methods
     public void build() {
-        context.node("master") {
+        //TODO: verify if any maven nodes are available
+        context.node("maven") {
             logger.info("Runner->build")
-            //TODO: we are ready to produce building for any maven project: this is maven compile install goals
-            throw new RuntimeException("Not implemented yet!")
+            scmClient.clone()
+            context.stage("Maven Build") {
+                executeMavenGoals(Configuration.get("maven_goals"))
+            }
         }
     }
 

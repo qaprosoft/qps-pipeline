@@ -6,6 +6,7 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.BuildJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
@@ -49,22 +50,22 @@ class Repository extends BaseObject {
                 clean()
             }
         }
-        // execute new _trigger-<repo> to regenerate other views/jobs/etc
-        def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
+            // execute new _trigger-<repo> to regenerate other views/jobs/etc
+            def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
 
-        if (!isParamEmpty(this.rootFolder)) {
-            onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
-        }
-        context.build job: onPushJobLocation,
-                propagate: true,
-                parameters: [
-                        context.string(name: 'repo', value: Configuration.get(REPO)),
-                        context.string(name: 'branch', value: Configuration.get(BRANCH)),
-                        context.booleanParam(name: 'onlyUpdated', value: false),
-                        context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
-                        context.string(name: 'removedJobAction', value: 'DELETE'),
-                        context.string(name: 'removedViewAction', value: 'DELETE'),
-                ]
+            if (!isParamEmpty(this.rootFolder)) {
+                onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
+            }
+            context.build job: onPushJobLocation,
+                    propagate: true,
+                    parameters: [
+                            context.string(name: 'repo', value: Configuration.get(REPO)),
+                            context.string(name: 'branch', value: Configuration.get(BRANCH)),
+                            context.booleanParam(name: 'onlyUpdated', value: false),
+                            context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
+                            context.string(name: 'removedJobAction', value: 'DELETE'),
+                            context.string(name: 'removedViewAction', value: 'DELETE'),
+                    ]
     }
 
     public void create() {
@@ -150,7 +151,7 @@ class Repository extends BaseObject {
             def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
             logger.error("zafiraFields: " + zafiraFields)
 
-            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*"))
+            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*|build"))
 
             def pullRequestFreestyleJobDescription = "To finish GitHub Pull Request Checker setup, please, follow the steps below:\n" +
                     "- Manage Jenkins -> Configure System -> Populate 'GitHub Pull Request Builder': usr should have admin privileges, Auto-manage webhooks should be enabled\n" +
@@ -171,6 +172,15 @@ class Repository extends BaseObject {
 
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
+
+            // TODO: maybe for custom runner classes for dev repo we can check if the runnerClass field is in the list of pre register runner classes
+            // https://github.com/qaprosoft/jenkins-master/issues/225
+            // https://github.com/qaprosoft/jenkins-master/issues/222
+            def isMavenRunner = runnerClass.contains("com.qaprosoft.jenkins.pipeline.runner.maven.") ? true : false
+
+            if (isMavenRunner) {
+                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
+            }
 
 			factoryRunner.run(dslObjects)
 
