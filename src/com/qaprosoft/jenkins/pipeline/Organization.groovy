@@ -137,7 +137,7 @@ class Organization extends BaseObject {
                 pipelineLibrary = "QPS-Pipeline"
             }
             if (isParamEmpty(runnerClass)) {
-                pipelineLibrary = com.qaprosoft.jenkins.pipeline.runner.maven.QARunner
+                pipelineLibrary = "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner"
             }
 
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
