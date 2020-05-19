@@ -31,13 +31,15 @@ public class BuildJobFactory extends PipelineFactory {
 
         pipelineJob.with {
 
-            configure booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
-            configure stringParam('branch', branch, "SCM repository branch to build against")
-            configure addHiddenParameter('repo', '', repo)
-            configure addHiddenParameter('GITHUB_HOST', '', host)
-            configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
-            configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-            configure stringParam('email_list',  "", 'List of Users to be emailed after the test')
+            parameters {
+                configure booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
+                configure stringParam('branch', branch, "SCM repository branch to build against")
+                configure addHiddenParameter('repo', '', repo)
+                configure addHiddenParameter('GITHUB_HOST', '', host)
+                configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
+                configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
+                configure stringParam('email_list',  "", 'List of Users to be emailed after the test')
+            }
 
         }
 
