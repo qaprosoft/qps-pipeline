@@ -12,19 +12,18 @@ public class BuildJobFactory extends PipelineFactory {
     def repo
     def organization
     def branch
-
-    //folder, pipelineScript, host, repo, organization, branch,
-    //            sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount
+    def jobName
+    def folder
+    def pipelineScript
 
     public BuildJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch) {
-
+        this.jobName = jobName
+        this.folder = folder
+        this.pipelineScript = pipelineScript
         this.host = host
         this.repo = repo
         this.organization = organization
         this.branch = branch
-        this.jobName = jobName
-        this.folder = folder
-        this.pipelineScript = pipelineScript
     }
 
     def create() {
