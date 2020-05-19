@@ -34,6 +34,7 @@ public class BuildJobFactory extends PipelineFactory {
         pipelineJob.with {
 
             parameters {
+                configure stringParam('maven_goals', '-U clean install', "Maven goals to build the project")
                 configure booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
                 configure stringParam('branch', branch, "SCM repository branch to build against")
                 configure addHiddenParameter('repo', '', repo)

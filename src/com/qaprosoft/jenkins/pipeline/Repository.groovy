@@ -178,7 +178,7 @@ class Repository extends BaseObject {
             // https://github.com/qaprosoft/jenkins-master/issues/222
             def isDevRepo = "com.qaprosoft.jenkins.pipeline.runner.maven.Runner".equals(runnerClass) ? true : false
             if (isDevRepo) {
-                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "build-" + Configuration.get(REPO), githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
+                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
             }
 
 			factoryRunner.run(dslObjects)
