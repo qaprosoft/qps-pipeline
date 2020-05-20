@@ -64,6 +64,12 @@ public class TestJobFactory extends PipelineFactory {
                 }
             }
 
+            options {
+                if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
+                    disableConcurrentBuilds()
+                }
+            }
+
             //** Properties & Parameters Area **//*
             parameters {
                 extensibleChoiceParameterDefinition {
@@ -78,12 +84,6 @@ public class TestJobFactory extends PipelineFactory {
                     }
                     editable(true)
                     description('Environment to test against')
-                }
-
-                options {
-                    if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
-                        disableConcurrentBuilds()
-                    }
                 }
 
                 booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
