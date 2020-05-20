@@ -28,7 +28,7 @@ class Organization extends BaseObject {
     protected Map dslObjects = new LinkedHashMap()
 	
 	protected def folderName
-    protected def pipelineLibrary
+    protected def reportingServiceUrl
 	protected def reportingAccessToken
     protected def sonarGithubOAuth
 
