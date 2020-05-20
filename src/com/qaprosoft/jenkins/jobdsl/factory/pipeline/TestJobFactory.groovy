@@ -80,6 +80,12 @@ public class TestJobFactory extends PipelineFactory {
                     description('Environment to test against')
                 }
 
+                options {
+                    if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
+                        disableConcurrentBuilds()
+                    }
+                }
+
                 booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
                 //booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
@@ -181,10 +187,6 @@ public class TestJobFactory extends PipelineFactory {
                 stringParam('test_run_rules', '', 'Ex. PRIORITY=>P1&&P2;;OWNER=>user;;\nIf not empty, adding queued tests will be disabled.')
                 configure addHiddenParameter('overrideFields', '' , getSuiteParameter("", "overrideFields", currentSuite))
                 configure addHiddenParameter('zafiraFields', '' , getSuiteParameter("", "zafiraFields", currentSuite))
-
-                if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
-                    disableConcurrentBuilds()
-                }
 
                 Map paramsMap = currentSuite.getAllParameters()
                 logger.info("ParametersMap: ${paramsMap}")
