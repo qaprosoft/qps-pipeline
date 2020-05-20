@@ -80,10 +80,6 @@ public class TestJobFactory extends PipelineFactory {
                     description('Environment to test against')
                 }
 
-                if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
-                    disableConcurrentBuilds()
-                }
-
                 booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
                 //booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
@@ -213,6 +209,9 @@ public class TestJobFactory extends PipelineFactory {
                                 break
                         }
                     }
+                }
+                if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
+                    disableConcurrentBuilds()
                 }
             }
         }
