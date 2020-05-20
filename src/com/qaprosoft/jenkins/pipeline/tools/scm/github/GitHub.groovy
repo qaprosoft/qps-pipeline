@@ -74,7 +74,7 @@ class GitHub implements ISCM {
                         userName = context.env.USERNAME
                         userPassword = context.env.PASSWORD
                     }
-                    logger.debug("tokenName: ${tokenName}; name: ${context.env.USERNAME}; password: ${context.env.PASSWORD}")
+                    logger.debug("tokenName: ${tokenName}; name: ${userName}; password: ${userPassword}")
                 } else {
                     throw new RuntimeException("Unable to run from fork repo as ${tokenName} token is not registered on CI!")
                 }
