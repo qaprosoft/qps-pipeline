@@ -28,9 +28,7 @@ class Organization extends BaseObject {
     protected Map dslObjects = new LinkedHashMap()
 	
 	protected def folderName
-    protected def pipelineLibrary
-    protected def runnerClass
-	protected def reportingServiceUrl
+    protected def reportingServiceUrl
 	protected def reportingAccessToken
     protected def sonarGithubOAuth
 
@@ -42,9 +40,6 @@ class Organization extends BaseObject {
 		zebrunnerUpdater = new ZebrunnerUpdater(context)
 		
 		this.folderName = Configuration.get("folderName")
-		
-        this.pipelineLibrary = Configuration.get("pipelineLibrary")
-        this.runnerClass =  Configuration.get("runnerClass")
 		
 		this.reportingServiceUrl = Configuration.get("reportingServiceUrl")
 		this.reportingAccessToken = Configuration.get("reportingAccessToken")
@@ -135,7 +130,8 @@ class Organization extends BaseObject {
                 registerObject("project_folder", new FolderFactory(folder, ""))
             }
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
-            registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
+
+            registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', ''))
 
             factoryRunner.run(dslObjects)
 		}
@@ -277,11 +273,7 @@ class Organization extends BaseObject {
     }
 
     protected String getPipelineScript() {
-        if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
-        } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
-        }
+        return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).build()"
     }
 
     protected clean() {
