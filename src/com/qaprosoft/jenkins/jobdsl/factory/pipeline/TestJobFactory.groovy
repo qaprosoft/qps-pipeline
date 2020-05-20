@@ -212,8 +212,7 @@ public class TestJobFactory extends PipelineFactory {
                 }
                 if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
                     options {
-                            disableConcurrentBuilds()
-                        }
+                        disableConcurrentBuilds()
                     }
                 }
             }
