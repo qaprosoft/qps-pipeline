@@ -183,9 +183,7 @@ public class TestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('zafiraFields', '' , getSuiteParameter("", "zafiraFields", currentSuite))
 
                 if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
-                    options {
-                        disableConcurrentBuilds()
-                    }
+                    disableConcurrentBuilds()
                 }
 
                 Map paramsMap = currentSuite.getAllParameters()
