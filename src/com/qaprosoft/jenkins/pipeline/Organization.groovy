@@ -121,7 +121,7 @@ class Organization extends BaseObject {
         context.stage("Delete user") {
             def user = User.getById(userName, false)
             if (!isParamEmpty(user)){
-                deleteUserGlobalPermissions(userName)
+                // deleteUserGlobalPermissions(userName)
                 user.delete()
             }
         }
@@ -192,11 +192,11 @@ class Organization extends BaseObject {
         authStrategy.add(hudson.model.Hudson.READ, userName)
     }
 
-    protected def deleteUserGlobalPermissions(userName){
+/*    protected def deleteUserGlobalPermissions(userName){
         def authStrategy = Jenkins.instance.getAuthorizationStrategy()
         authStrategy.remove(hudson.model.Hudson.READ, userName)
     }
-
+*/
     protected def grantUserFolderPermissions(folderName, userName) {
         def folder = getJenkinsFolderByName(folderName)
         if (folder == null){
