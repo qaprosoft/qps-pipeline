@@ -112,7 +112,6 @@ class Organization extends BaseObject {
         context.stage("Delete folder") {
             def folder = getJenkinsFolderByName(folderName)
             if (!isParamEmpty(folder)){
-                deleteUserFolderPermissions(folderName)
                 folder.delete()
             }
         }
@@ -242,27 +241,6 @@ class Organization extends BaseObject {
         permissionsArray.each {
             authProperty.add(it, userName)
         }
-        folder.save()
-    }
-
-    protected def deleteUserFolderPermissions(folderName) {
-        def folder = getJenkinsFolderByName(folderName)
-        if (folder == null){
-            logger.error("No folder ${folderName} was detected.")
-            return
-        }
-        def authProperty = folder.properties.find {
-            it instanceof AuthorizationMatrixProperty
-        }
-
-        if (authProperty == null){
-            logger.info("Permissions has been already deleted for ${folderName}")
-            return
-        }
-
-        authProperty.setInheritanceStrategy(new NonInheritingStrategy())
-
-        authProperty.remove(it, userName)
         folder.save()
     }
 
