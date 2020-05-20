@@ -81,9 +81,7 @@ public class TestJobFactory extends PipelineFactory {
                 }
 
                 if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
-                    options {
-                        disableConcurrentBuilds()
-                    }
+                    disableConcurrentBuilds()
                 }
 
                 booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
