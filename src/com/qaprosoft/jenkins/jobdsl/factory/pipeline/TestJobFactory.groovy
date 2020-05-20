@@ -182,6 +182,12 @@ public class TestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('overrideFields', '' , getSuiteParameter("", "overrideFields", currentSuite))
                 configure addHiddenParameter('zafiraFields', '' , getSuiteParameter("", "zafiraFields", currentSuite))
 
+                if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
+                    options {
+                        disableConcurrentBuilds()
+                    }
+                }
+
                 Map paramsMap = currentSuite.getAllParameters()
                 logger.info("ParametersMap: ${paramsMap}")
                 for (param in paramsMap) {
@@ -208,11 +214,6 @@ public class TestJobFactory extends PipelineFactory {
                             default:
                                 break
                         }
-                    }
-                }
-                if (!isParamEmpty(currentSuite.getParameter("jenkinsConcurrentBuild")) && currentSuite.getParameter("jenkinsConcurrentBuild")== "true") {
-                    options {
-                        disableConcurrentBuilds()
                     }
                 }
             }
