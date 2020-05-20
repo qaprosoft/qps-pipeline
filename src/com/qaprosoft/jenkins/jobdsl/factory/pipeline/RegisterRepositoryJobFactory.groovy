@@ -40,4 +40,8 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
         }
         return pipelineJob
     }
+
+    String getPipelineScript() {
+        return "@Library(\'QPS-Pipeline\')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).register()"
+    }
 }
