@@ -41,6 +41,7 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
         return pipelineJob
     }
 
+    //This method is needed for inserting pipeline script into an appropriate field
     String getPipelineScript() {
         return "@Library(\'QPS-Pipeline\')\nimport com.qaprosoft.jenkins.pipeline.Repository;\nnew Repository(this).register()"
     }
