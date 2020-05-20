@@ -66,11 +66,15 @@ class GitHub implements ISCM {
                 def tokenName = 'token_' + "${userId}"
                 def userCredentials = getCredentials(tokenName)
                 if (userCredentials) {
+                    def userName = ""
+                    def userPassword = ""
                     context.withCredentials([context.usernamePassword(credentialsId:tokenName, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
                         gitUrl = "https://${scmHost}/${context.env.USERNAME}/${repo}"
                         credentialsId = tokenName
-                        logger.debug("tokenName: ${tokenName}; name: ${context.env.USERNAME}; password: ${context.env.PASSWORD}")
+                        userName = context.env.USERNAME
+                        userPassword = context.env.PASSWORD
                     }
+                    logger.debug("tokenName: ${tokenName}; name: ${context.env.USERNAME}; password: ${context.env.PASSWORD}")
                 } else {
                     throw new RuntimeException("Unable to run from fork repo as ${tokenName} token is not registered on CI!")
                 }
