@@ -43,6 +43,10 @@ class Repository extends BaseObject {
     }
 
     public void register() {
+        if (!isParamEmpty(Configuration.get(REPORTING_SERVICE_URL)) && !isParamEmpty(Configuration.get(REPORTING_ACCESS_TOKEN))) {
+            logger.info("Repository: register reporting credentials")
+            registerReportingCredentials(this.rootFolder, Configuration.get(REPORTING_SERVICE_URL), Configuration.get(REPORTING_ACCESS_TOKEN))
+        }
         logger.info("Repository->register")
         Configuration.set("GITHUB_ORGANIZATION", Configuration.get(SCM_ORG))
         Configuration.set("GITHUB_HOST", Configuration.get(SCM_HOST))
@@ -53,27 +57,22 @@ class Repository extends BaseObject {
                 clean()
             }
         }
-            // execute new _trigger-<repo> to regenerate other views/jobs/etc
-            def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
+        // execute new _trigger-<repo> to regenerate other views/jobs/etc
+        def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
 
-            if (!isParamEmpty(this.rootFolder)) {
-                onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
-            }
-            context.build job: onPushJobLocation,
-                    propagate: true,
-                    parameters: [
-                            context.string(name: 'repo', value: Configuration.get(REPO)),
-                            context.string(name: 'branch', value: Configuration.get(BRANCH)),
-                            context.booleanParam(name: 'onlyUpdated', value: false),
-                            context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
-                            context.string(name: 'removedJobAction', value: 'DELETE'),
-                            context.string(name: 'removedViewAction', value: 'DELETE'),
-                    ]
-
-        logger.info("1111111\n" + Configuration.get(REPORTING_SERVICE_URL) + "\n" + Configuration.get(REPORTING_SERVICE_URL) + "\n1111111")
-        if (!isParamEmpty(Configuration.get(REPORTING_SERVICE_URL)) && !isParamEmpty(Configuration.get(REPORTING_ACCESS_TOKEN))) {
-            registerReportingCredentials(this.rootFolder, Configuration.get(REPORTING_SERVICE_URL), Configuration.get(REPORTING_ACCESS_TOKEN))
+        if (!isParamEmpty(this.rootFolder)) {
+            onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
         }
+        context.build job: onPushJobLocation,
+                propagate: true,
+                parameters: [
+                        context.string(name: 'repo', value: Configuration.get(REPO)),
+                        context.string(name: 'branch', value: Configuration.get(BRANCH)),
+                        context.booleanParam(name: 'onlyUpdated', value: false),
+                        context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
+                        context.string(name: 'removedJobAction', value: 'DELETE'),
+                        context.string(name: 'removedViewAction', value: 'DELETE'),
+                ]
     }
 
     public void registerReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
