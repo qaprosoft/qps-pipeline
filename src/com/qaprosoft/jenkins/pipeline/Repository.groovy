@@ -28,6 +28,9 @@ class Repository extends BaseObject {
     private static final String BRANCH = "branch"
     private static final String SCM_USER = "scmUser"
     private static final String SCM_TOKEN = "scmToken"
+    private static final String REPORTING_SERVICE_URL = "reportingServiceUrl"
+    private static final String REPORTING_ACCESS_TOKEN = "reportingAccessToken"
+
 
     protected Map dslObjects = new LinkedHashMap()
 
@@ -66,6 +69,30 @@ class Repository extends BaseObject {
                             context.string(name: 'removedJobAction', value: 'DELETE'),
                             context.string(name: 'removedViewAction', value: 'DELETE'),
                     ]
+        if (!isParamEmpty(Configuration.get(REPORTING_SERVICE_URL)) && !isParamEmpty(Configuration.get(REPORTING_ACCESS_TOKEN))) {
+            registerReportingCredentials(this.rootFolder, Configuration.get(REPORTING_SERVICE_URL), Configuration.get(REPORTING_ACCESS_TOKEN))
+        }
+    }
+
+    public void registerReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
+        def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
+        def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
+
+        if (!isParamEmpty(orgFolderName)) {
+            reportingURLCredentials = orgFolderName + "-" + reportingURLCredentials
+            reportingTokenCredentials = orgFolderName + "-" + reportingTokenCredentials
+        }
+
+        if (isParamEmpty(reportingServiceUrl)){
+            throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingServiceUrl' is missing!")
+        }
+
+        if ( isParamEmpty(reportingAccessToken)){
+            throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingAccessToken' is missing!")
+        }
+
+        updateJenkinsCredentials(reportingURLCredentials, "Reporting service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), reportingServiceUrl)
+        updateJenkinsCredentials(reportingTokenCredentials, "Reporting access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), reportingAccessToken)
     }
 
     public void create() {

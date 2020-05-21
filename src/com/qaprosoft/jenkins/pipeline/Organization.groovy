@@ -273,10 +273,9 @@ class Organization extends BaseObject {
 		logger.debug("selenium: " + "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub")
 		registerHubCredentials(this.folderName, "selenium", "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub")
 
-		if (!isParamEmpty(this.reportingServiceUrl) && !isParamEmpty(this.reportingAccessToken)) {
-			registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
+		//if (!isParamEmpty(this.reportingServiceUrl) && !isParamEmpty(this.reportingAccessToken)) {
             registerSonarGithubOAuth(this.folderName, this.sonarGithubOAuth)
-		}
+		//}
 	}
 	
 	public def registerHubCredentials() {
@@ -302,33 +301,6 @@ class Organization extends BaseObject {
 		if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", Configuration.Parameter.SELENIUM_URL.getKey(), url)) {
 			logger.info("${hubURLCredName} was successfully registered.")
 		}
-	}
-	
-	public def registerReportingCredentials(){
-		context.stage("Register Zafira Credentials") {
-			Organization.registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
-		}
-	}
-	
-	public static void registerReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
-		def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
-		def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
-		
-		if (!isParamEmpty(orgFolderName)) {
-            reportingURLCredentials = orgFolderName + "-" + reportingURLCredentials
-            reportingTokenCredentials = orgFolderName + "-" + reportingTokenCredentials
-		}
-
-		if (isParamEmpty(reportingServiceUrl)){
-			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingServiceUrl' is missing!")
-		}
-		
-		if ( isParamEmpty(reportingAccessToken)){
-			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingAccessToken' is missing!")
-		}
-
-		updateJenkinsCredentials(reportingURLCredentials, "Reporting service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), reportingServiceUrl)
-		updateJenkinsCredentials(reportingTokenCredentials, "Reporting access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), reportingAccessToken)
 	}
 	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
