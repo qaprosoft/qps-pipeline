@@ -273,9 +273,9 @@ class Organization extends BaseObject {
 		logger.debug("selenium: " + "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub")
 		registerHubCredentials(this.folderName, "selenium", "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub")
 
-		//if (!isParamEmpty(this.reportingServiceUrl) && !isParamEmpty(this.reportingAccessToken)) {
+		if (!isParamEmpty(this.sonarGithubOAuth)) {
             registerSonarGithubOAuth(this.folderName, this.sonarGithubOAuth)
-		//}
+		}
 	}
 	
 	public def registerHubCredentials() {
