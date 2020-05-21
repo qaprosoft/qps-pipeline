@@ -70,7 +70,7 @@ class Repository extends BaseObject {
                             context.string(name: 'removedViewAction', value: 'DELETE'),
                     ]
 
-        logger.info("1111111\n" + Configuration.get(REPORTING_SERVICE_URL) + "\n" + Configuration.get(REPORTING_SERVICE_URL) + "1111111")
+        logger.info("1111111\n" + Configuration.get(REPORTING_SERVICE_URL) + "\n" + Configuration.get(REPORTING_SERVICE_URL) + "\n1111111")
         if (!isParamEmpty(Configuration.get(REPORTING_SERVICE_URL)) && !isParamEmpty(Configuration.get(REPORTING_ACCESS_TOKEN))) {
             registerReportingCredentials(this.rootFolder, Configuration.get(REPORTING_SERVICE_URL), Configuration.get(REPORTING_ACCESS_TOKEN))
         }
