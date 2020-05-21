@@ -48,7 +48,7 @@ class Logger {
 
     private def log(LogLevel logLevel, message){
         if (logLevel.value >= pipelineLogLevel.value){
-            context.println "${logLevel}: ${message}"
+            context.println "[${logLevel}] ${message}"
         }
     }
 
