@@ -31,30 +31,25 @@ class Logger {
     }
 
     public debug(message){
-        context.println log(LogLevel.DEBUG, message)
+        log(LogLevel.DEBUG, message)
     }
 
     public info(message){
-        context.println log(LogLevel.INFO, message)
+        log(LogLevel.INFO, message)
     }
 
     public warn(message){
-        context.println log(LogLevel.WARN, message)
+        log(LogLevel.WARN, message)
     }
 
     public error(message){
-        context.println log(LogLevel.ERROR, message)
+        log(LogLevel.ERROR, message)
     }
 
     private def log(LogLevel logLevel, message){
-        def logMessage = ""
         if (logLevel.value >= pipelineLogLevel.value){
-            logMessage = "${message}"
-            if (contextType == ContextType.JOB_DSL){
-                logMessage = logMessage +"\n"
-            }
+            context.echo "${logLevel}: ${message}"
         }
-        return logMessage
     }
 
 }
