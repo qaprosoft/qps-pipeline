@@ -32,7 +32,7 @@ public class BuildJobFactory extends PipelineFactory {
 
             parameters {
                 configure stringParam('maven_goals', '-U clean install', "Maven goals to build the project")
-                configure booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
+                configure booleanParam('fork', false, "Reuse forked repository for ${repo}.")
                 configure stringParam('branch', branch, "SCM repository branch to build against")
                 configure addHiddenParameter('repo', '', repo)
                 configure addHiddenParameter('GITHUB_HOST', '', host)

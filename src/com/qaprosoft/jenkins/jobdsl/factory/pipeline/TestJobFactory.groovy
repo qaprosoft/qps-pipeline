@@ -81,7 +81,7 @@ public class TestJobFactory extends PipelineFactory {
                     description('Environment to test against')
                 }
 
-                booleanParam('fork', false, "Reuse forked repository for ${repo} repository.")
+                booleanParam('fork', false, "Reuse forked repository for ${repo}.")
                 //booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
                 //** Requires Active Choices Plug-in v1.2+ **//*
