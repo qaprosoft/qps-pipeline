@@ -225,7 +225,7 @@ class Repository extends BaseObject {
 
     private void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
-            logger.warn("WARNING! key ${name} already defined and will be replaced!")
+            logger.warn("key ${name} already defined and will be replaced!")
             logger.info("Old Item: ${dslObjects.get(name).dump()}")
             logger.info("New Item: ${object.dump()}")
         }
