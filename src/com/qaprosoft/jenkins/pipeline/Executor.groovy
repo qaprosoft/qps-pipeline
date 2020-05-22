@@ -111,6 +111,14 @@ public class Executor {
         }
     }
 
+    static def removeJenkinsCredentials(id) {
+        def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
+        def credentials = getCredentials(id)
+        if (credentials){
+            credentialsStore.removeCredentials(Domain.global(), credentials)
+        }
+    }
+
     static def getCredentials(id) {
         return SystemCredentialsProvider.getInstance().getStore().getCredentials(Domain.global()).find {
             it.id.equals(id.toString())
