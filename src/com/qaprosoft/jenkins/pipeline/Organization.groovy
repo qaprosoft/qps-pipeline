@@ -331,21 +331,19 @@ class Organization extends BaseObject {
 		updateJenkinsCredentials(reportingTokenCredentials, "Reporting access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), reportingAccessToken)
 	}
 
-    public static void deregisterReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
+    public def deregisterReportingCredentials(){
+        context.stage("Deregister Zafira Credentials") {
+            Organization.deregisterReportingCredentials(this.folderName)
+        }
+    }
+
+    public static void deregisterReportingCredentials(orgFolderName){
         def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
         def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
 
         if (!isParamEmpty(orgFolderName)) {
             reportingURLCredentials = orgFolderName + "-" + reportingURLCredentials
             reportingTokenCredentials = orgFolderName + "-" + reportingTokenCredentials
-        }
-
-        if (isParamEmpty(reportingServiceUrl)){
-            throw new RuntimeException("Unable to deregister reporting credentials! Required field 'reportingServiceUrl' is missing!")
-        }
-
-        if ( isParamEmpty(reportingAccessToken)){
-            throw new RuntimeException("Unable to deregister reporting credentials! Required field 'reportingAccessToken' is missing!")
         }
 
         removeJenkinsCredentials(reportingURLCredentials)
