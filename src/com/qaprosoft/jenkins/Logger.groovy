@@ -40,7 +40,7 @@ class Logger {
 
     private def log(logLevel, message){
         if (logLevel.value >= pipelineLogLevel.value){
-            context.println "${ansiCode}[${logLevel}] ${message}${ANSI_RESET}"
+            context.println "[${logLevel}] ${message}"
         }
     }
 }
