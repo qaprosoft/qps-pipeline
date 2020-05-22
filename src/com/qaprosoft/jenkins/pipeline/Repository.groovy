@@ -45,11 +45,9 @@ class Repository extends BaseObject {
         Configuration.set("GITHUB_HOST", Configuration.get(SCM_HOST))
         context.node('master') {
             context.timestamps {
-                ansiColor('xterm') {
-                    prepare()
-                    generateCiItems()
-                    clean()
-                }
+                prepare()
+                generateCiItems()
+                clean()
             }
         }
         

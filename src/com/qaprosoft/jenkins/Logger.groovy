@@ -49,7 +49,9 @@ class Logger {
 
     private def log(logLevel, message, ansiCode){
         if (logLevel.value >= pipelineLogLevel.value){
-            context.printf "${ansiCode}[${logLevel}] ${message}${ANSI_RESET}"
+            context.ansiColor('xterm') {
+                context.printf "${ansiCode}[${logLevel}] ${message}${ANSI_RESET}"
+            }
         }
     }
 
