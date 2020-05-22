@@ -35,15 +35,13 @@ public class FactoryRunner {
             prepare()
         }
 
-        context.ansiColor('xterm') {
-            context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
-            context.jobDsl additionalClasspath: this.additionalClasspath,
-            removedConfigFilesAction: removedConfigFilesAction,
-            removedJobAction: removedJobAction,
-            removedViewAction: removedViewAction,
-            targets: FACTORY_TARGET,
-            ignoreExisting: false
-        }
+        context.writeFile file: "factories.json", text: JsonOutput.toJson(dslObjects)
+        context.jobDsl additionalClasspath: this.additionalClasspath,
+        removedConfigFilesAction: removedConfigFilesAction,
+        removedJobAction: removedJobAction,
+        removedViewAction: removedViewAction,
+        targets: FACTORY_TARGET,
+        ignoreExisting: false
     }
 
     public void setDslClasspath(additionalClasspath) {

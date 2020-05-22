@@ -25,9 +25,11 @@ class Logger {
 
     def context
     LogLevel pipelineLogLevel
+    boolean isJobDSL
 
     Logger(context) {
         this.context = context
+        this.isJobDSL = context.binding.variables.get("QPS_PIPELINE_LOG_LEVEL") ? true : false
         this.pipelineLogLevel = context.binding.variables.get("QPS_PIPELINE_LOG_LEVEL") ? LogLevel.valueOf(context.binding.variables.QPS_PIPELINE_LOG_LEVEL) : LogLevel.valueOf(context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL"))
     }
 
@@ -49,7 +51,12 @@ class Logger {
 
     private def log(logLevel, message, ansiCode){
         if (logLevel.value >= pipelineLogLevel.value){
-            context.println "${ansiCode}[${logLevel}] ${message}${ANSI_RESET}"
+            if (this.isJobDSL) {
+                // jobDSL output can't produce ansi colored logs
+                context.println "[${logLevel}] ${message}"
+            } else {
+                context.println "${ansiCode}[${logLevel}] ${message}${ANSI_RESET}"
+            }
         }
     }
 
