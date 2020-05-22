@@ -23,24 +23,24 @@ class Logger {
     }
 
     public debug(message){
-        log(LogLevel.DEBUG, message, ANSI_BLACK)
+        log(LogLevel.DEBUG, message)
     }
 
     public info(message){
-        log(LogLevel.INFO, message, ANSI_BLACK)
+        log(LogLevel.INFO, message)
     }
 
     public warn(message){
-        log(LogLevel.WARN, message, ANSI_YELLOW)
+        log(LogLevel.WARN, message)
     }
 
     public error(message){
-        log(LogLevel.ERROR, message, ANSI_RED)
+        log(LogLevel.ERROR, message)
     }
 
-    private def log(logLevel, message, ansiCode){
+    private def log(logLevel, message){
         if (logLevel.value >= pipelineLogLevel.value){
-            context.printf "${ansiCode}[${logLevel}] ${message}${ANSI_RESET}"
+            context.println "${ansiCode}[${logLevel}] ${message}${ANSI_RESET}"
         }
     }
 }
