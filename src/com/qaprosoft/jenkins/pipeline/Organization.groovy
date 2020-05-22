@@ -275,8 +275,11 @@ class Organization extends BaseObject {
 
 		if (!isParamEmpty(this.reportingServiceUrl) && !isParamEmpty(this.reportingAccessToken)) {
 			registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
-            registerSonarGithubOAuth(this.folderName, this.sonarGithubOAuth)
 		}
+
+        if (!isParamEmpty(this.sonarGithubOAuth)) {
+            registerSonarGithubOAuth(this.folderName, this.sonarGithubOAuth)
+        }
 	}
 	
 	public def registerHubCredentials() {
@@ -310,7 +313,7 @@ class Organization extends BaseObject {
 		}
 	}
 	
-	public static void registerReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
+	public void registerReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
 		def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
 		def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
 		

@@ -4,6 +4,7 @@ import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
+import com.qaprosoft.jenkins.pipeline.Organization
 import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.BuildJobFactory
@@ -28,8 +29,11 @@ class Repository extends BaseObject {
     private static final String BRANCH = "branch"
     private static final String SCM_USER = "scmUser"
     private static final String SCM_TOKEN = "scmToken"
+    private static final String REPORTING_SERVICE_URL = "reportingServiceUrl"
+    private static final String REPORTING_ACCESS_TOKEN = "reportingAccessToken"
 
     protected Map dslObjects = new LinkedHashMap()
+    protected organization = new Organization()
 
     public Repository(context) {
 		super(context)
@@ -40,6 +44,9 @@ class Repository extends BaseObject {
     }
 
     public void register() {
+        logger.info("Repository->registerReportingCredentials")
+        organization.registerReportingCredentials(this.rootFolder, Configuration.get(REPORTING_SERVICE_URL), Configuration.get(REPORTING_ACCESS_TOKEN))
+
         logger.info("Repository->register")
         Configuration.set("GITHUB_ORGANIZATION", Configuration.get(SCM_ORG))
         Configuration.set("GITHUB_HOST", Configuration.get(SCM_HOST))

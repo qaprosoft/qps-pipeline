@@ -34,6 +34,8 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
                 configure stringParam('scmToken', '', 'CSM token with read permissions')
                 configure addExtensibleChoice('pipelineLibrary', "gc_PIPELINE_LIBRARY", "Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases", "QPS-Pipeline")
                 configure addExtensibleChoice('runnerClass', "gc_RUNNER_CLASS", "Pipeline runner class", "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner")
+                configure stringParam('reportingServiceUrl', 'http://reporting-service:8080/reporting-service', 'Get reportingServiceUrl in Zebrunner account and profile menu')
+                configure stringParam('reportingAccessToken', 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicGFzc3dvcmQiOiJXNSs1N0FwTmN0UDd1ZlNYdy8xazhZdGUvNVFKUkFZUCIsInRlbmFudCI6InphZmlyYSIsImV4cCI6MTMwNDM2ODQ2OTM3fQ.T0WsjjDldQyYbacw2eD54gztHbgbdEcGoLGOHh1QXkqu7Gk0_Z4DPM-rjLP_hQnRaphmND-jsscRjbuvWG3sfQ', 'Generate token in Zebrunner account and profile menu')
                 configure addHiddenParameter('zafiraFields', '', '')
                 configure addHiddenParameter('userId', '', '2')
             }
