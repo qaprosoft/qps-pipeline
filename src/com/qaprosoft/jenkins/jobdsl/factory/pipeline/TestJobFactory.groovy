@@ -170,8 +170,6 @@ public class TestJobFactory extends PipelineFactory {
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
                 configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
-                // TODO: #711 completely remove custom jenkinsDefaultThreadCount parameter logic
-                stringParam('thread_count', getSuiteParameter(this.threadCount, "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
                 if (!"1".equals(this.dataProviderThreadCount)) {
                     stringParam('data_provider_thread_count', this.dataProviderThreadCount, 'number of threads for data provider, number')
                 }

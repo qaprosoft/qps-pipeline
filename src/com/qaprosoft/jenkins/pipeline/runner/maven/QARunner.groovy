@@ -1236,6 +1236,7 @@ public class QARunner extends Runner {
 						pipelineMap.put("branch", Configuration.get("branch"))
 						pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
 						pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
+                        //???
 						putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
 						pipelineMap.put("jobName", jobName)
 						pipelineMap.put("env", supportedEnv)
