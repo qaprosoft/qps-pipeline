@@ -334,7 +334,6 @@ class Organization extends BaseObject {
     public def deregisterOrganizationCredentials(){
         context.stage("Deregister Organization Credentials") {
             Organization.deregisterOrganizationCredentials(this.folderName)
-            logger.info('11111\n' + !isParamEmpty(Configuration.get("reporting_service_url")))
         }
     }
 
