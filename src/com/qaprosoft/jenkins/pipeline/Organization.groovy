@@ -14,6 +14,7 @@ import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixPropert
 import groovy.json.JsonOutput
 import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jenkins.security.ApiTokenProperty
+import com.qaprosoft.jenkins.Logger
 
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
