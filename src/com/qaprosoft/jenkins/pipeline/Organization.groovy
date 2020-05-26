@@ -14,7 +14,6 @@ import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixPropert
 import groovy.json.JsonOutput
 import org.jenkinsci.plugins.matrixauth.inheritance.NonInheritingStrategy
 import jenkins.security.ApiTokenProperty
-import com.qaprosoft.jenkins.Logger
 
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -338,7 +337,7 @@ class Organization extends BaseObject {
         }
     }
 
-    public static void deregisterOrganizationCredentials(orgFolderName){
+    public void deregisterOrganizationCredentials(orgFolderName){
         def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
         def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
         def testrailServiceUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
