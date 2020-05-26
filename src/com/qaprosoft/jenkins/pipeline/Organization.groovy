@@ -337,7 +337,7 @@ class Organization extends BaseObject {
         }
     }
 
-    public void deregisterOrganizationCredentials(orgFolderName){
+    public static void deregisterOrganizationCredentials(orgFolderName){
         def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
         def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
         def testrailServiceUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
