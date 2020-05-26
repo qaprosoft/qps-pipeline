@@ -329,17 +329,11 @@ public class Executor {
             // due to the refactoring from 4.9 pr checker is executed by upstream trigger!
             // i.e. we have to detect upstream build to analyze real cause and other PR related data
             Cause.UpstreamCause cause = build.getCause(Cause.UpstreamCause.class);
-            logger.debug("cause: " + cause)
             build = cause.getUpstreamRun();
-            logger.debug("build: " + build)
         }
         
         c = Ghprb.getCause(build)
-        
-        logger.debug("GhprbCause: ${c}")
         GhprbTrigger trigger = Ghprb.extractTrigger(build)
-        logger.debug("trigger: ${trigger}")
-
         
         GhprbPullRequest ghprbPullRequest = trigger.getRepository().getPullRequest(c.getPullID())
         for(ghLabel in ghprbPullRequest.getPullRequest().getLabels()) {
