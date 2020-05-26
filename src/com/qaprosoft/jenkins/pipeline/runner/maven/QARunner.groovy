@@ -398,7 +398,7 @@ public class QARunner extends Runner {
 			currentSuite = parseSuite(filePath)
 			res = true
 		} catch (FileNotFoundException e) {
-			logger.error("ERROR! Unable to find suite: " + filePath)
+			logger.error("Unable to find suite: " + filePath)
 			logger.error(printStackTrace(e))
 		} catch (Exception e) {
 			logger.debug("Unable to parse suite: " + filePath)
@@ -413,10 +413,10 @@ public class QARunner extends Runner {
         try {
             currentSuite = parseSuite(filePath)
         } catch (FileNotFoundException e) {
-            logger.error("ERROR! Unable to find suite: " + filePath)
+            logger.error("Unable to find suite: " + filePath)
             logger.error(printStackTrace(e))
         } catch (Exception e) {
-            logger.error("ERROR! Unable to parse suite: " + filePath)
+            logger.error("Unable to parse suite: " + filePath)
             logger.error(printStackTrace(e))
         }
         return currentSuite
@@ -440,7 +440,7 @@ public class QARunner extends Runner {
 
     protected void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
-            logger.warn("WARNING! key ${name} already defined and will be replaced!")
+            logger.warn("key ${name} already defined and will be replaced!")
             logger.info("Old Item: ${dslObjects.get(name).dump()}")
             logger.info("New Item: ${object.dump()}")
         }
@@ -1087,7 +1087,7 @@ public class QARunner extends Runner {
             for (int i = 0; i < reports.length; i++) {
                 def parentFile = new File(reports[i].path).getParentFile()
                 if (parentFile == null) {
-                    logger.error("ERROR! Parent report is null! for " + reports[i].path)
+                    logger.error("Parent report is null! for " + reports[i].path)
                     continue
                 }
                 def reportDir = parentFile.getPath()
@@ -1159,7 +1159,7 @@ public class QARunner extends Runner {
             logger.info("Current suite path: " + currentSuitePath)
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
             if (currentSuite == null) {
-                logger.error("ERROR! Unable to parse suite: " + currentSuitePath)
+                logger.error("Unable to parse suite: " + currentSuitePath)
                 currentBuild.result = BuildResult.FAILURE
                 continue
             }

@@ -50,22 +50,23 @@ class Repository extends BaseObject {
                 clean()
             }
         }
-            // execute new _trigger-<repo> to regenerate other views/jobs/etc
-            def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
+        
+        // execute new _trigger-<repo> to regenerate other views/jobs/etc
+        def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
 
-            if (!isParamEmpty(this.rootFolder)) {
-                onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
-            }
-            context.build job: onPushJobLocation,
-                    propagate: true,
-                    parameters: [
-                            context.string(name: 'repo', value: Configuration.get(REPO)),
-                            context.string(name: 'branch', value: Configuration.get(BRANCH)),
-                            context.booleanParam(name: 'onlyUpdated', value: false),
-                            context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
-                            context.string(name: 'removedJobAction', value: 'DELETE'),
-                            context.string(name: 'removedViewAction', value: 'DELETE'),
-                    ]
+        if (!isParamEmpty(this.rootFolder)) {
+            onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
+        }
+        context.build job: onPushJobLocation,
+                propagate: true,
+                parameters: [
+                        context.string(name: 'repo', value: Configuration.get(REPO)),
+                        context.string(name: 'branch', value: Configuration.get(BRANCH)),
+                        context.booleanParam(name: 'onlyUpdated', value: false),
+                        context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
+                        context.string(name: 'removedJobAction', value: 'DELETE'),
+                        context.string(name: 'removedViewAction', value: 'DELETE'),
+                ]
     }
 
     public void create() {
@@ -225,7 +226,7 @@ class Repository extends BaseObject {
 
     private void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
-            logger.warn("WARNING! key ${name} already defined and will be replaced!")
+            logger.warn("key ${name} already defined and will be replaced!")
             logger.info("Old Item: ${dslObjects.get(name).dump()}")
             logger.info("New Item: ${object.dump()}")
         }
