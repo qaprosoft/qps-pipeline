@@ -338,12 +338,50 @@ class Organization extends BaseObject {
     }
 
     public static void deregisterOrganizationCredentials(orgFolderName){
-        def creds = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(com.cloudbees.plugins.credentials.common.StandardUsernameCredentials.class,  Jenkins.instance, null, null)
-        for (cred in creds) {
-            println(cred.id)
-            if (cred.id.contains(orgFolderName)) {
-                removeJenkinsCredentials(cred.id)
-            }
+        def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
+        def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
+        def testrailServiceUrl = Configuration.CREDS_TESTRAIL_SERVICE_URL
+        def testrailCreds = Configuration.CREDS_TESTRAIL
+        def qtestServiceUrl = Configuration.CREDS_QTEST_SERVICE_URL
+        def qtestAccessToken = Configuration.CREDS_QTEST_ACCESS_TOKEN
+        def sonarGithubOAuthToken = Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN
+
+        if (!isParamEmpty(orgFolderName)) {
+            reportingURLCredentials = orgFolderName + "-" + reportingURLCredentials
+            reportingTokenCredentials = orgFolderName + "-" + reportingTokenCredentials
+            testrailServiceUrl = orgFolderName + "-" + testrailServiceUrl
+            testrailCreds = orgFolderName + "-" + testrailCreds
+            qtestServiceUrl = orgFolderName + "-" + qtestServiceUrl
+            qtestAccessToken = orgFolderName + "-" + qtestAccessToken
+            sonarGithubOAuthToken = orgFolderName + "-" + sonarGithubOAuthToken
+        }
+
+        if (!isParamEmpty(Configuration.get("reportingURLCredentials")) && Configuration.get("reportingURLCredentials").toBoolean()) {
+            removeJenkinsCredentials(reportingURLCredentials)
+        }
+
+        if (!isParamEmpty(Configuration.get("reportingTokenCredentials")) && Configuration.get("reportingTokenCredentials").toBoolean()) {
+            removeJenkinsCredentials(reportingTokenCredentials)
+        }
+
+        if (!isParamEmpty(Configuration.get("testrailServiceUrl")) && Configuration.get("testrailServiceUrl").toBoolean()) {
+            removeJenkinsCredentials(testrailServiceUrl)
+        }
+
+        if (!isParamEmpty(Configuration.get("testrailCreds")) && Configuration.get("testrailCreds").toBoolean()) {
+            removeJenkinsCredentials(testrailCreds)
+        }
+
+        if (!isParamEmpty(Configuration.get("qtestServiceUrl")) && Configuration.get("qtestServiceUrl").toBoolean()) {
+            removeJenkinsCredentials(qtestServiceUrl)
+        }
+
+        if (!isParamEmpty(Configuration.get("qtestAccessToken")) && Configuration.get("qtestAccessToken").toBoolean()) {
+            removeJenkinsCredentials(qtestAccessToken)
+        }
+
+        if (!isParamEmpty(Configuration.get("sonarGithubOAuthToken")) && Configuration.get("sonarGithubOAuthToken").toBoolean()) {
+            removeJenkinsCredentials(sonarGithubOAuthToken)
         }
     }
 	
