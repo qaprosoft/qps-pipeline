@@ -355,7 +355,7 @@ class Organization extends BaseObject {
             qtestAccessToken = orgFolderName + "-" + qtestAccessToken
             sonarGithubOAuthToken = orgFolderName + "-" + sonarGithubOAuthToken
         }
-
+        logger.info('11111\n' + Configuration.get("reporting_service_url"))
         if (!isParamEmpty(Configuration.get("reporting_service_url")) && Configuration.get("reporting_service_url").toBoolean()) {
             removeJenkinsCredentials(reportingURLCredentials)
         }
