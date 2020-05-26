@@ -357,31 +357,31 @@ class Organization extends BaseObject {
             sonarGithubOAuthToken = orgFolderName + "-" + sonarGithubOAuthToken
         }
 
-        if (!isParamEmpty(Configuration.get("reporting_service_url")) && Configuration.get("reporting_service_url").toBoolean()) {
+        if (!isParamEmpty(Configuration.get("reporting_service_url")) && Configuration.get("reporting_service_url").toBoolean() == true) {
             removeJenkinsCredentials(reportingURLCredentials)
         }
 
-        if (!isParamEmpty(Configuration.get("reporting_access_token")) && Configuration.get("reporting_access_token").toBoolean()) {
+        if (!isParamEmpty(Configuration.get("reporting_access_token")) && Configuration.get("reporting_access_token").toBoolean() == true) {
             removeJenkinsCredentials(reportingTokenCredentials)
         }
 
-        if (!isParamEmpty(Configuration.get("testrail_service_url")) && Configuration.get("testrail_service_url").toBoolean()) {
+        if (!isParamEmpty(Configuration.get("testrail_service_url")) && Configuration.get("testrail_service_url").toBoolean() == true) {
             removeJenkinsCredentials(testrailServiceUrl)
         }
 
-        if (!isParamEmpty(Configuration.get("testrail_creds")) && Configuration.get("testrail_creds").toBoolean()) {
+        if (!isParamEmpty(Configuration.get("testrail_creds")) && Configuration.get("testrail_creds").toBoolean() == true) {
             removeJenkinsCredentials(testrailCreds)
         }
 
-        if (!isParamEmpty(Configuration.get("qtest_service_url")) && Configuration.get("qtest_service_url").toBoolean()) {
+        if (!isParamEmpty(Configuration.get("qtest_service_url")) && Configuration.get("qtest_service_url").toBoolean() == true) {
             removeJenkinsCredentials(qtestServiceUrl)
         }
 
-        if (!isParamEmpty(Configuration.get("qtest_token")) && Configuration.get("qtest_token").toBoolean()) {
+        if (!isParamEmpty(Configuration.get("qtest_token")) && Configuration.get("qtest_token").toBoolean() == true) {
             removeJenkinsCredentials(qtestAccessToken)
         }
 
-        if (!isParamEmpty(Configuration.get("sonar_github_oauth_token")) && Configuration.get("sonar_github_oauth_token").toBoolean()) {
+        if (!isParamEmpty(Configuration.get("sonar_github_oauth_token")) && Configuration.get("sonar_github_oauth_token").toBoolean() == true) {
             removeJenkinsCredentials(sonarGithubOAuthToken)
         }
     }
