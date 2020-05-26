@@ -331,23 +331,20 @@ class Organization extends BaseObject {
 		updateJenkinsCredentials(reportingTokenCredentials, "Reporting access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), reportingAccessToken)
 	}
 
-    public def deregisterReportingCredentials(){
-        context.stage("Deregister Zafira Credentials") {
-            Organization.deregisterReportingCredentials(this.folderName)
+    public def deregisterOrganizationCredentials(){
+        context.stage("Deregister Organization Credentials") {
+            Organization.deregisterOrganizationCredentials(this.folderName)
         }
     }
 
-    public static void deregisterReportingCredentials(orgFolderName){
-        def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
-        def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
-
-        if (!isParamEmpty(orgFolderName)) {
-            reportingURLCredentials = orgFolderName + "-" + reportingURLCredentials
-            reportingTokenCredentials = orgFolderName + "-" + reportingTokenCredentials
+    public static void deregisterOrganizationCredentials(orgFolderName){
+        def creds = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(com.cloudbees.plugins.credentials.common.StandardUsernameCredentials.class,  Jenkins.instance, null, null)
+        for (cred in creds) {
+            println(cred.id)
+            if (cred.id.contains(orgFolderName)) {
+                removeJenkinsCredentials(cred.id)
+            }
         }
-
-        removeJenkinsCredentials(reportingURLCredentials)
-        removeJenkinsCredentials(reportingTokenCredentials)
     }
 	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {
