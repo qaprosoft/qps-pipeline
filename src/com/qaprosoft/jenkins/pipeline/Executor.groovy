@@ -386,7 +386,6 @@ public class Executor {
                                     "BuildPriority",
                                     "auto_screenshot",
                                     "enableVideo",
-                                    "test_run_rules",
                                     "recoveryMode",
                                     "capabilities"
 

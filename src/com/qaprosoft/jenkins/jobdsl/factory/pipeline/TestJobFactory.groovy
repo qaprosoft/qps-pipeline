@@ -179,7 +179,6 @@ public class TestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('failure_email_list', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
                 choiceParam('retry_count', getRetryCountArray(currentSuite), 'Number of Times to Retry a Failed Test')
                 booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
-                stringParam('test_run_rules', '', 'Ex. PRIORITY=>P1&&P2;;OWNER=>user;;\nIf not empty, adding queued tests will be disabled.')
                 configure addHiddenParameter('overrideFields', '' , getSuiteParameter("", "overrideFields", currentSuite))
                 configure addHiddenParameter('zafiraFields', '' , getSuiteParameter("", "zafiraFields", currentSuite))
 
