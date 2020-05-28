@@ -281,7 +281,7 @@ class Organization extends BaseObject {
 		}
 
         if (customPipeline) {
-            updateJenkinsCredentials(this.folderName, String.valueOf(customPipeline))
+            registerCustomPipelineCreds(this.folderName, customPipeline)
         }
 
 
@@ -410,6 +410,6 @@ class Organization extends BaseObject {
             customPipeline = orgFolderName + "-" + token
         }
 
-        updateJenkinsCredentials(customPipeline, "", Configuration.CREDS_CUSTOM_PIPELINE + " token", token)
+        updateJenkinsCredentials(customPipeline, "", Configuration.CREDS_CUSTOM_PIPELINE + " token", String.valueOf(token))
     }
 }
