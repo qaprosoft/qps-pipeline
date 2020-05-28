@@ -281,7 +281,7 @@ class Organization extends BaseObject {
 		}
 
         if (customPipeline) {
-            updateJenkinsCredentials(this.folderName, Configuration.get("customPipeline").toString())
+            updateJenkinsCredentials(this.folderName, String.valueOf(Configuration.get("customPipeline")))
         }
 
 
