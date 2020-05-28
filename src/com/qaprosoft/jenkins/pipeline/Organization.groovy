@@ -46,7 +46,7 @@ class Organization extends BaseObject {
 		this.reportingAccessToken = Configuration.get("reportingAccessToken")
 
         this.sonarGithubOAuth = Configuration.get("sonarGithubOAuth")
-        this.customPipeline = Configuration.get("customPipeline")?.toBoolean()
+        this.customPipeline = Configuration.get("customPipeline")
     }
 
     public def register() {
@@ -280,7 +280,7 @@ class Organization extends BaseObject {
             registerSonarGithubOAuth(this.folderName, this.sonarGithubOAuth)
 		}
 
-        if (customPipeline) {
+        if (customPipeline?.toBoolean()) {
             registerCustomPipelineCreds(this.folderName, customPipeline)
         }
 
