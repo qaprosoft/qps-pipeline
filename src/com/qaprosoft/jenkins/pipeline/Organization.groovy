@@ -407,9 +407,9 @@ class Organization extends BaseObject {
         def customPipelineCreds = Configuration.CREDS_CUSTOM_PIPELINE
 
         if (!isParamEmpty(orgFolderName)) {
-            customPipeline = orgFolderName + "-" + token
+            customPipeline = orgFolderName + "-" + customPipelineCreds
         }
 
-        updateJenkinsCredentials(customPipeline, "", Configuration.CREDS_CUSTOM_PIPELINE + " token", String.valueOf(token))
+        updateJenkinsCredentials(customPipeline, "", Configuration.CREDS_CUSTOM_PIPELINE + " token", token)
     }
 }

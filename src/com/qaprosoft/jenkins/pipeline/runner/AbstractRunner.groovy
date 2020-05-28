@@ -26,8 +26,8 @@ public abstract class AbstractRunner extends BaseObject {
      * Execute custom pipeline/jobdsl steps from Jenkinsfile
      */
     protected void jenkinsFileScan() {
-        def isCustomPipelineEnabled = getToken(configuration.CREDS_CUSTOM_PIPELINE)
-        logger.info(isCustomPipelineEnabled)
+        def isCustomPipelineEnabled = getToken(Configuration.CREDS_CUSTOM_PIPELINE)
+        logger.info("isCustomPipelineEnabled: " + isCustomPipelineEnabled)
         def currentUser = hudson.model.User.current()
 
         if (!isCustomPipelineEnabled) {
