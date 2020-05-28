@@ -247,7 +247,7 @@ public class QARunner extends Runner {
 			def suiteName = ""
 			if (currentSuitePath.toLowerCase().contains(CARINA_SUITES_PATH) && currentSuitePath.endsWith(".xml")) {
 				// carina core TestNG suite
-				int testResourceIndex = currentSuitePath.lastIndexOf(CARINA_SUITES_PATH)
+				int testResourceIndex = currentSuitePath.toLowerCase().lastIndexOf(CARINA_SUITES_PATH)
 				logger.debug("testResourceIndex : " + testResourceIndex)
 				suiteName = currentSuitePath.substring(testResourceIndex + CARINA_SUITES_PATH.length(), currentSuitePath.length() - 4)
 			} else {
