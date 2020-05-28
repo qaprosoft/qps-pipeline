@@ -261,11 +261,11 @@ class Organization extends BaseObject {
     }
 
     protected String getTestRailScript() {
-        return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).sendTestRailResults()"
+        return "@Library(\'${Configuration.getGlobalProperty("gc_PIPELINE_LIBRARY")}\')\nimport ${Configuration.getGlobalProperty("gc_RUNNER_CLASS")};\nnew ${Configuration.getGlobalProperty("gc_RUNNER_CLASS")}(this).sendTestRailResults()"
     }
 
     protected String getQTestScript() {
-        return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).sendQTestResults()"
+        return "@Library(\'${Configuration.getGlobalProperty("gc_PIPELINE_LIBRARY")}\')\nimport ${Configuration.getGlobalProperty("gc_RUNNER_CLASS")};\nnew ${Configuration.getGlobalProperty("gc_RUNNER_CLASS")}(this).sendQTestResults()"
     }
 	
 	protected def generateCreds() {
