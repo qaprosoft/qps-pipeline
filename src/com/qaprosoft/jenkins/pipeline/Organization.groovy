@@ -128,7 +128,7 @@ class Organization extends BaseObject {
             if (!isParamEmpty(folder)) {
                 registerObject("project_folder", new FolderFactory(folder, ""))
             }
-            registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
+            registerObject("launcher_job", new LauncherJobFactory(folder, getLauncherScript(), "launcher", "Custom job launcher"))
 
             registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', ''))
 
@@ -258,6 +258,10 @@ class Organization extends BaseObject {
         context.stage('Wipe out Workspace') {
             context.deleteDir()
         }
+    }
+
+    protected String getLauncherScript() {
+        return "@Library(\'${Configuration.getGlobalProperty("gc_PIPELINE_LIBRARY")}\')\nimport ${Configuration.getGlobalProperty("gc_RUNNER_CLASS")};\nnew ${Configuration.getGlobalProperty("gc_RUNNER_CLASS")}(this).build()"
     }
 
     protected String getTestRailScript() {
