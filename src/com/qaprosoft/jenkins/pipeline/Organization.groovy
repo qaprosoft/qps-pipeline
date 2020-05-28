@@ -31,6 +31,7 @@ class Organization extends BaseObject {
     protected def reportingServiceUrl
 	protected def reportingAccessToken
     protected def sonarGithubOAuth
+    protected def customPipeline
 
 
     public Organization(context) {
@@ -45,6 +46,7 @@ class Organization extends BaseObject {
 		this.reportingAccessToken = Configuration.get("reportingAccessToken")
 
         this.sonarGithubOAuth = Configuration.get("sonarGithubOAuth")
+        this.customPipeline = Configuration.get("customPipeline")?.toBoolean
     }
 
     public def register() {
@@ -277,6 +279,12 @@ class Organization extends BaseObject {
 			registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
             registerSonarGithubOAuth(this.folderName, this.sonarGithubOAuth)
 		}
+
+        if (customPipeline) {
+            updateJenkinsCredentials(this.folderName, Configuration.get("customPipeline"))
+        }
+
+
 	}
 	
 	public def registerHubCredentials() {
@@ -393,5 +401,15 @@ class Organization extends BaseObject {
         }
 
         updateJenkinsCredentials(sonarGithubOAuth, "Sonar GithubOAuth token", Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN.getKey(), token)
+    }
+
+    public def registerCustomPipelineCreds(orgFolderName, token) {
+        def customPipelineCreds = Configuration.CREDS_CUSTOM_PIPELINE
+
+        if (!isParamEmpty(orgFolderName)) {
+            customPipeline = orgFolderName + "-" + token
+        }
+
+        updateJenkinsCredentials(customPipeline, "", Configuration.CREDS_CUSTOM_PIPELINE + " token", token)
     }
 }
