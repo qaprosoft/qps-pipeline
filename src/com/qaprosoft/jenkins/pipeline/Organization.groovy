@@ -403,13 +403,13 @@ class Organization extends BaseObject {
         updateJenkinsCredentials(sonarGithubOAuth, "Sonar GithubOAuth token", Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN.getKey(), token)
     }
 
-    public def registerCustomPipelineCreds(orgFolderName, token) {
+    protected def registerCustomPipelineCreds(orgFolderName, token) {
         def customPipelineCreds = Configuration.CREDS_CUSTOM_PIPELINE
 
         if (!isParamEmpty(orgFolderName)) {
             customPipeline = orgFolderName + "-" + customPipelineCreds
         }
 
-        updateJenkinsCredentials(customPipeline, "", Configuration.CREDS_CUSTOM_PIPELINE + " token", token)
+        updateJenkinsCredentials(customPipeline, "", Configuration.CREDS_CUSTOM_PIPELINE + "-token", token)
     }
 }

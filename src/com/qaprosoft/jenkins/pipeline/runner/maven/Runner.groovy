@@ -25,7 +25,7 @@ public class Runner extends AbstractRunner {
     public void onPush() {
         context.node("master") {
             logger.info("Runner->onPush")
-            //sonar.scan()
+            sonar.scan()
         }
 
         context.node("master") {
