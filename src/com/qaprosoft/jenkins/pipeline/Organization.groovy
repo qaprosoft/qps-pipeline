@@ -46,7 +46,7 @@ class Organization extends BaseObject {
 		this.reportingAccessToken = Configuration.get("reportingAccessToken")
 
         this.sonarGithubOAuth = Configuration.get("sonarGithubOAuth")
-        this.customPipeline = Configuration.get("customPipeline")?.toBoolean
+        this.customPipeline = Configuration.get("customPipeline")?.toBoolean()
     }
 
     public def register() {
