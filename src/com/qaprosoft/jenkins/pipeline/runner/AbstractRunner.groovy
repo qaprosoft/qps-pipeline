@@ -27,6 +27,7 @@ public abstract class AbstractRunner extends BaseObject {
      */
     protected void jenkinsFileScan() {
         def isCustomPipelineEnabled = getToken(configuration.CREDS_CUSTOM_PIPELINE)
+        logger.info(isCustomPipelineEnabled)
         def currentUser = hudson.model.User.current()
 
         if (!isCustomPipelineEnabled) {
