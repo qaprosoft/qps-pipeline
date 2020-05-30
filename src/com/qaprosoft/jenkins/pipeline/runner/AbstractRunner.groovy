@@ -3,6 +3,7 @@ package com.qaprosoft.jenkins.pipeline.runner
 import com.qaprosoft.jenkins.BaseObject
 import java.nio.file.Paths
 
+import com.qaprosoft.jenkins.pipeline.Configuration
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
@@ -26,8 +27,15 @@ public abstract class AbstractRunner extends BaseObject {
      * Execute custom pipeline/jobdsl steps from Jenkinsfile
      */
     protected void jenkinsFileScan() {
+        def isCustomPipelineEnabled = getToken(Configuration.CREDS_CUSTOM_PIPELINE)
+
+        if (!isCustomPipelineEnabled) {
+            logger.warn("Custom pipeline execution is not enabled")
+            return
+        }
+
         if (!context.fileExists('Jenkinsfile')) {
-            // do nothing
+            logger.warn("Jenkinsfile doesn't exist in your repository")
             return
         }
 

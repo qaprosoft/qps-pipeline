@@ -15,6 +15,7 @@ public class Configuration {
     public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
     public final static def CREDS_QTEST_ACCESS_TOKEN = "qtest_token"
     public final static def CREDS_SONAR_GITHUB_OAUTH_TOKEN = "sonar_github_oauth_token"
+    public final static def CREDS_CUSTOM_PIPELINE = "jenkinsfile"
 
     public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
     public final static def QTEST_UPDATER_JOBNAME = "qtest-updater"
