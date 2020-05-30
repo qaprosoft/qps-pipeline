@@ -28,7 +28,6 @@ public abstract class AbstractRunner extends BaseObject {
      */
     protected void jenkinsFileScan() {
         def isCustomPipelineEnabled = getToken(Configuration.CREDS_CUSTOM_PIPELINE)
-        def currentUser = hudson.model.User.current()
 
         if (!isCustomPipelineEnabled) {
             logger.warn("Custom pipeline execution is not enabled")
@@ -37,11 +36,6 @@ public abstract class AbstractRunner extends BaseObject {
 
         if (!context.fileExists('Jenkinsfile')) {
             logger.warn("Jenkinsfile doesn't exist in your repository")
-            return
-        }
-
-        if (!currentUser.hasPermission(Jenkins.ADMINISTER)) {
-            logger.warn("Login as an administrator to be able to execute custom pipeline script")
             return
         }
 
