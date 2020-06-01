@@ -124,6 +124,7 @@ public class QARunner extends Runner {
 				}
 
 				sonar.scan()
+				jenkinsFileScan()
 
 			} catch (Exception e) {
 				logger.error("Scan failed.\n" + e.getMessage())
@@ -133,9 +134,6 @@ public class QARunner extends Runner {
 			clean()
             }
 		}
-        context.node("master") {
-            jenkinsFileScan()
-        }
     }
 
 	public void sendQTestResults() {
