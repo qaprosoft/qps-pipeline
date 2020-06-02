@@ -45,10 +45,10 @@ class Sonar {
                     logger.warn("Sonarqube is not configured correctly! Follow Sonar integration documentation to enable it.")
                 }
 
-                if (isPullRequest && isParamEmpty(githubToken)) {
-                    isSonarAvailable = false
-                    logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
-                }
+//                if (isPullRequest && isParamEmpty(githubToken)) {
+//                    isSonarAvailable = false
+//                    logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
+//                }
 
                 if (!isSonarAvailable) {
                     return
@@ -59,8 +59,18 @@ class Sonar {
                 context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                 context.withSonarQubeEnv('sonar-ci') {
                     // execute sonar scanner
-                    context.sh "./gradlew sonarqube -Dsonar.verbose=true"
-//                        context.sh scannerScript(isPullRequest, jacocoReportPaths, jacocoReportPath)
+//                    context.sh "./gradlew sonarqube -Dsonar.verbose=true -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")}"
+                    if (isPullRequest) {
+                        context.sh "./gradlew clean sonarqube " +
+                                "-Dsonar.verbose=true " +
+                                "-Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} " +
+                                "-Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} " +
+                                "-Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} " +
+                                "-Dsonar.pullrequest.provider=github "
+//                                "-Dsonar.pullrequest.github.repository=zebrunner/iam-service"
+                    } else {
+                        context.sh "./gradlew clean sonarqube -Dsonar.verbose=true -Dsonar.branch.name=${Configuration.get("branch")}"
+                    }
                 }
             }
         }
