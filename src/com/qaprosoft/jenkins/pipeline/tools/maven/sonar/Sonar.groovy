@@ -55,7 +55,19 @@ public class Sonar {
                 pomFiles.each {
                     logger.debug("pomFile: " + it)
                     //do compile and scanner for all high level pom.xml files
-                    compile(it, isPullRequest)
+                    // [VD] don't remove -U otherwise latest dependencies are not downloaded
+                    def goals = "-U clean compile test -f ${pomFile}"
+                    def extraGoals = ""
+                    extraGoals += Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean() ? "jacoco:report-aggregate" : ""
+                    if (isPullRequest) {
+                        // no need to run unit tests for PR analysis
+                        extraGoals += " -DskipTests"
+                    } else {
+                        //run unit tests to detect code coverage but don't fail the build in case of any failure
+                        //TODO: for build process we can't use below goal!
+                        extraGoals += " -Dmaven.test.failure.ignore=true"
+                    }
+                    executeMavenGoals("${goals} ${extraGoals}")
 
                     if (!this.isSonarAvailable) {
                         return
