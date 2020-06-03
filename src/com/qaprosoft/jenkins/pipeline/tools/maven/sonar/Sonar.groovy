@@ -56,7 +56,7 @@ public class Sonar {
                     logger.debug("pomFile: " + it)
                     //do compile and scanner for all high level pom.xml files
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
-                    def goals = "-U clean compile test -f ${pomFile}"
+                    def goals = "-U clean compile test -f ${it}"
                     def extraGoals = ""
                     extraGoals += Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean() ? "jacoco:report-aggregate" : ""
                     if (isPullRequest) {
