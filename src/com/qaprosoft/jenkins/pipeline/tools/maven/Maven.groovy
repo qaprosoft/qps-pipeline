@@ -59,7 +59,7 @@ public class Maven {
         }
     }
 
-    public def buildGoals(goals) {
+    private def buildGoals(goals) {
         if(context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name())){
             goals = goals + " -e -X"
         }
