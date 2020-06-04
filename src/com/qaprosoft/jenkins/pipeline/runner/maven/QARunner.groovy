@@ -176,10 +176,17 @@ public class QARunner extends Runner {
         }
     }
 
-    protected clean() {
-        context.stage('Wipe out Workspace') {
-            context.deleteDir()
-        }
+    protected clean(nodeName="master") {
+        Maven(
+            [
+                node:nodeName,
+                methods:[
+                    context.stage('Wipe out Workspace') {
+                        context.deleteDir()
+                    }
+                ]
+            ]
+        )
     }
 
     protected String getWorkspace() {
@@ -574,7 +581,7 @@ public class QARunner extends Runner {
                     }
                     publishJenkinsReports()
                     sendCustomizedEmail()
-                    clean()
+                    clean(nodeName)
                     customNotify()
 
                     if (Configuration.get("testrail_enabled")?.toBoolean()) {
