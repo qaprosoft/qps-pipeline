@@ -5,7 +5,7 @@ import com.qaprosoft.jenkins.Logger
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-public class Maven {
+public class MavenExecutor {
     //TODO: migreate to traits as only it is supported in pipelines
     // https://issues.jenkins-ci.org/browse/JENKINS-46145
 

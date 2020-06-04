@@ -3,13 +3,11 @@ package com.qaprosoft.jenkins.pipeline.tools.maven.sonar
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
-import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 
 import static com.qaprosoft.jenkins.Utils.*
 
-@Mixin(Maven)
 public class Sonar {
     private static final String SONARQUBE = ".sonarqube"
     private static boolean isSonarAvailable = false
@@ -28,61 +26,64 @@ public class Sonar {
 
     public void scan(isPullRequest=false) {
         //TODO: verify preliminary if "maven" nodes available
-        context.node("maven") {
-            context.stage('Sonar Scanner') {
-
-                if (isPullRequest) {
-                    scmClient.clonePR()
-                } else {
-                    // it should be non shallow clone anyway to support full static code analysis
-                    scmClient.clonePush()
-                }
-
-                def sonarQubeEnv = getSonarEnv()
-                def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
-                if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
-                    this.isSonarAvailable = true
-                } else {
-                    logger.warn("Sonarqube is not configured correctly! Follow Sonar integration documentation to enable it.")
-                }
-
-                if (isPullRequest && isParamEmpty(this.githubToken)) {
-                    this.isSonarAvailable = false
-                    logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
-                }
-
-                def pomFiles = getProjectPomFiles()
-                pomFiles.each {
-                    logger.debug("pomFile: " + it)
-                    //do compile and scanner for all high level pom.xml files
-                    // [VD] don't remove -U otherwise latest dependencies are not downloaded
-                    def goals = "-U clean compile test -f ${it}"
-                    def extraGoals = ""
-                    extraGoals += Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean() ? "jacoco:report-aggregate" : ""
+        Maven([
+            node:"maven",
+            methods:[
+                context.stage('Sonar Scanner') {
                     if (isPullRequest) {
-                        // no need to run unit tests for PR analysis
-                        extraGoals += " -DskipTests"
+                        scmClient.clonePR()
                     } else {
-                        //run unit tests to detect code coverage but don't fail the build in case of any failure
-                        //TODO: for build process we can't use below goal!
-                        extraGoals += " -Dmaven.test.failure.ignore=true"
+                        // it should be non shallow clone anyway to support full static code analysis
+                        scmClient.clonePush()
                     }
-                    executeMavenGoals("${goals} ${extraGoals}")
 
-                    if (!this.isSonarAvailable) {
-                        return
+                    def sonarQubeEnv = getSonarEnv()
+                    def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
+                    if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
+                        this.isSonarAvailable = true
+                    } else {
+                        logger.warn("Sonarqube is not configured correctly! Follow Sonar integration documentation to enable it.")
                     }
-                    def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-                    def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
 
-                    context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                    context.withSonarQubeEnv('sonar-ci') {
-                        // execute sonar scanner
-                        context.sh scannerScript(isPullRequest, jacocoReportPaths, jacocoReportPath)
+                    if (isPullRequest && isParamEmpty(this.githubToken)) {
+                        this.isSonarAvailable = false
+                        logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
+                    }
+
+                    def pomFiles = getProjectPomFiles()
+                    pomFiles.each {
+                        logger.debug("pomFile: " + it)
+                        //do compile and scanner for all high level pom.xml files
+                        // [VD] don't remove -U otherwise latest dependencies are not downloaded
+                        def goals = "-U clean compile test -f ${it}"
+                        def extraGoals = ""
+                        extraGoals += Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean() ? "jacoco:report-aggregate" : ""
+                        if (isPullRequest) {
+                            // no need to run unit tests for PR analysis
+                            extraGoals += " -DskipTests"
+                        } else {
+                            //run unit tests to detect code coverage but don't fail the build in case of any failure
+                            //TODO: for build process we can't use below goal!
+                            extraGoals += " -Dmaven.test.failure.ignore=true"
+                        }
+                        executeMavenGoals("${goals} ${extraGoals}")
+
+                        if (!this.isSonarAvailable) {
+                            return
+                        }
+                        def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+                        def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
+
+                        context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                        context.withSonarQubeEnv('sonar-ci') {
+                            // execute sonar scanner
+                            context.sh scannerScript(isPullRequest, jacocoReportPaths, jacocoReportPath)
+                        }
                     }
                 }
-            }
-        }
+                ]
+            ]
+        )
     }
 
     public void setToken(token) {

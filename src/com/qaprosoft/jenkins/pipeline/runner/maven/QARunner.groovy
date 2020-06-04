@@ -8,35 +8,24 @@ import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
 import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
 import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
-import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
-import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
-import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 import com.wangyin.parameter.WHideParameterDefinition
 import groovy.json.JsonBuilder
-import groovy.json.JsonOutput
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import org.testng.xml.XmlSuite
 
-import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 // #608 imports
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import javax.xml.parsers.DocumentBuilder;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 
 
 @Grab('org.testng:testng:6.8.8')
 
-@Mixin([Maven])
 public class QARunner extends Runner {
 
     protected Map dslObjects = new HashMap()
@@ -109,31 +98,35 @@ public class QARunner extends Runner {
     //Events
 	@Override
     public void onPush() {
-		context.node("master") {
-      context.timestamps {
-			logger.info("QARunner->onPush")
-			setZafiraCreds()
+        Maven([
+            node:"master",
+            methods:[
+                context.timestamps {
+                    logger.info("QARunner->onPush")
+                    setZafiraCreds()
 
-			try {
-				scmClient.clone(true)
+                    try {
+                        scmClient.clone(true)
 
-				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
-					scan()
-                    //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
-					getJenkinsJobsScanResult(currentBuild.rawBuild)
-				}
+                        if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
+                            scan()
+                            //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
+                            getJenkinsJobsScanResult(currentBuild.rawBuild)
+                        }
 
-				sonar.scan()
-				jenkinsFileScan()
+                        sonar.scan()
+                        jenkinsFileScan()
 
-			} catch (Exception e) {
-				logger.error("Scan failed.\n" + e.getMessage())
-				getJenkinsJobsScanResult(null)
-				this.currentBuild.result = BuildResult.FAILURE
-			}
-			clean()
-            }
-		}
+                    } catch (Exception e) {
+                        logger.error("Scan failed.\n" + e.getMessage())
+                        getJenkinsJobsScanResult(null)
+                        this.currentBuild.result = BuildResult.FAILURE
+                    }
+                    clean()
+                }
+                ]
+            ]
+        )
     }
 
 	public void sendQTestResults() {
