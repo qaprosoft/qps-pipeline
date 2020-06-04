@@ -134,7 +134,7 @@ class Organization extends BaseObject {
                 registerObject("project_folder", new FolderFactory(folder, ""))
             }
             registerObject("launcher_job", new LauncherJobFactory(folder, getPipelineScript(), "launcher", "Custom job launcher"))
-            registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', pipelineLibrary, runnerClass))
+            registerObject("register_repository_job", new RegisterRepositoryJobFactory(folder, 'RegisterRepository', '', PIPELINE_LIBRARY, RUNNER_CLASS))
 
             factoryRunner.run(dslObjects)
 		}
@@ -255,7 +255,7 @@ class Organization extends BaseObject {
     }
 
     protected String getPipelineScript() {
-        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+        if ("QPS-Pipeline".equals(PIPELINE_LIBRARY)) {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
