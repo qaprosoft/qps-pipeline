@@ -21,11 +21,11 @@ public class Runner extends AbstractRunner {
 
     //Events
     public void onPush() {
+        logger.info("Runner->onPush")
+        sonar.scan()
         Maven([
             node:"master",
             methods:[
-                logger.info("Runner->onPush"),
-                sonar.scan(),
                 jenkinsFileScan()
                 ]
             ]
@@ -33,11 +33,11 @@ public class Runner extends AbstractRunner {
     }
 
 	public void onPullRequest() {
+        logger.info("Runner->onPullRequest"),
+        sonar.setToken(getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN)),
         Maven([
             node:"master",
             methods:[
-                logger.info("Runner->onPullRequest"),
-                sonar.setToken(getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN)),
                 sonar.scan(true)
                 ]
             ]
@@ -47,16 +47,17 @@ public class Runner extends AbstractRunner {
     //Methods
     public void build() {
         //TODO: verify if any maven nodes are available
-        Maven([
-            node:"maven",
-            methods:[
-                logger.info("Runner->build"),
-                scmClient.clone(),
-                context.stage("Maven Build") {
-                    executeMavenGoals(Configuration.get("maven_goals"))
-                }
+        logger.info("Runner->build")
+        scmClient.clone()
+        context.stage("Maven Build") {
+            Maven([
+                    node   : "maven",
+                    methods: [
+                            executeMavenGoals(Configuration.get("maven_goals"))
+
+                    ]
                 ]
-            ]
-        )
+            )
+        }
     }
 }

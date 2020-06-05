@@ -98,35 +98,35 @@ public class QARunner extends Runner {
     //Events
 	@Override
     public void onPush() {
-        Maven([
-            node:"master",
-            methods:[
-                context.timestamps {
-                    logger.info("QARunner->onPush")
-                    setZafiraCreds()
+        context.timestamps {
+            logger.info("QARunner->onPush")
+            setZafiraCreds()
 
-                    try {
-                        scmClient.clone(true)
+            try {
+                scmClient.clone(true)
 
-                        if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
-                            scan()
-                            //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
-                            getJenkinsJobsScanResult(currentBuild.rawBuild)
-                        }
-
-                        sonar.scan()
-                        jenkinsFileScan()
-
-                    } catch (Exception e) {
-                        logger.error("Scan failed.\n" + e.getMessage())
-                        getJenkinsJobsScanResult(null)
-                        this.currentBuild.result = BuildResult.FAILURE
-                    }
-                    clean()
+                if (isUpdated(currentBuild, "**.xml,**/zafira.properties") || !onlyUpdated) {
+                    scan()
+                    //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
+                    getJenkinsJobsScanResult(currentBuild.rawBuild)
                 }
-                ]
-            ]
-        )
+
+                sonar.scan()
+                Maven([
+                    node : "master",
+                    methods: [
+                        jenkinsFileScan()
+                        ]
+                    ]
+                )
+
+            } catch (Exception e) {
+                logger.error("Scan failed.\n" + e.getMessage())
+                getJenkinsJobsScanResult(null)
+                this.currentBuild.result = BuildResult.FAILURE
+            }
+            clean()
+        }
     }
 
 	public void sendQTestResults() {
@@ -177,16 +177,9 @@ public class QARunner extends Runner {
     }
 
     protected clean(nodeName="master") {
-        Maven(
-            [
-                node:nodeName,
-                methods:[
-                    context.stage('Wipe out Workspace') {
-                        context.deleteDir()
-                    }
-                ]
-            ]
-        )
+        context.stage('Wipe out Workspace') {
+            context.deleteDir()
+        }
     }
 
     protected String getWorkspace() {
@@ -581,7 +574,7 @@ public class QARunner extends Runner {
                     }
                     publishJenkinsReports()
                     sendCustomizedEmail()
-                    clean(nodeName)
+                    clean()
                     customNotify()
 
                     if (Configuration.get("testrail_enabled")?.toBoolean()) {
