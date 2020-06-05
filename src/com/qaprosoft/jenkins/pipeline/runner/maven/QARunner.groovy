@@ -8,18 +8,28 @@ import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
 import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
 import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
+import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
+import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 import com.wangyin.parameter.WHideParameterDefinition
 import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import org.testng.xml.XmlSuite
 
+import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 // #608 imports
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import javax.xml.parsers.DocumentBuilder;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
