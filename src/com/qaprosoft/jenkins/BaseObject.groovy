@@ -18,7 +18,7 @@ public abstract class BaseObject {
     protected ISCM scmClient
     protected ISCM scmSshClient
     
-    protected boolean isSshClient = false
+    protected boolean isSsh = false
 
     protected def currentBuild
 
@@ -37,11 +37,11 @@ public abstract class BaseObject {
     }
     
     public def setSshClient() {
-        this.isSshClient = true
+        this.isSsh = true
     }
     
-    public def getScmClient() {
-        if (this.isSshClient) {
+    public def getScm() {
+        if (this.isSsh) {
             return this.scmSshClient
         } else {
             return this.scmClient

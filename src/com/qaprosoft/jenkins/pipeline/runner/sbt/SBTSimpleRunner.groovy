@@ -26,7 +26,7 @@ class SBTSimpleRunner extends AbstractSBTRunner {
 
                         context.env.getEnvironment()
 
-                        getScmClient().clone()
+                        getScm().clone()
 
                         def sbtHome = context.tool 'SBT'
 

@@ -27,10 +27,10 @@ public class Sonar extends BaseObject {
             context.stage('Sonar Scanner') {
 
                 if (isPullRequest) {
-                    getScmClient().clonePR()
+                    getScm().clonePR()
                 } else {
                     // it should be non shallow clone anyway to support full static code analysis
-                    getScmClient().clonePush()
+                    getScm().clonePush()
                 }
 
                 def sonarQubeEnv = getSonarEnv()
