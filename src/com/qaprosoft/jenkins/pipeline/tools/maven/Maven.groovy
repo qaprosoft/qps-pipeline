@@ -77,24 +77,6 @@ public class Maven {
         }
     }
 
-    public void compile(pomFile='pom.xml', isPullRequest=false) {
-        context.stage('Maven Compile') {
-            // [VD] don't remove -U otherwise latest dependencies are not downloaded
-            def goals = "-U clean compile test -f ${pomFile}"
-            def extraGoals = ""
-            extraGoals += Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean() ? "jacoco:report-aggregate" : ""
-            if (isPullRequest) {
-                // no need to run unit tests for PR analysis
-                extraGoals += " -DskipTests"
-            } else {
-                //run unit tests to detect code coverage but don't fail the build in case of any failure
-                //TODO: for build process we can't use below goal!
-                extraGoals += " -Dmaven.test.failure.ignore=true"
-            }
-            executeMavenGoals("${goals} ${extraGoals}")
-        }
-    }
-
     protected def getProjectPomFiles() {
   		def pomFiles = []
   		def files = context.findFiles(glob: "**/pom.xml")

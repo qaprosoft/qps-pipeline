@@ -777,7 +777,7 @@ public class QARunner extends Runner {
         context.stage('Run Test Suite') {
             def goals = getMavenGoals()
             def pomFile = getMavenPomFile()
-            executeMavenGoals("-U ${goals} -f ${pomFile}")
+            context.mavenBuild("-U ${goals} -f ${pomFile}")
         }
     }
 

@@ -4,14 +4,12 @@ import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
-import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
-import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
+import com.qaprosoft.jenkins.pipeline.tools.maven.Mavenimport com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 
 import static com.qaprosoft.jenkins.Utils.*
 
-@Mixin(Maven)
-public class Sonar extends BaseObject {
+@Mixin(Maven)public class Sonar extends BaseObject {
     private static final String SONARQUBE = ".sonarqube"
     private static boolean isSonarAvailable = false
 
@@ -62,7 +60,7 @@ public class Sonar extends BaseObject {
                         //TODO: for build process we can't use below goal!
                         extraGoals += " -Dmaven.test.failure.ignore=true"
                     }
-                    executeMavenGoals("${goals} ${extraGoals}")
+                    context.mavenBuild("${goals} ${extraGoals}")
 
                     if (!this.isSonarAvailable) {
                         return
