@@ -79,7 +79,7 @@ class Repository extends BaseObject {
 
         updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get(SCM_USER), Configuration.get(SCM_TOKEN))
 
-        scmClient.clone(true)
+        getScm().clone(true)
     }
 
 
@@ -235,7 +235,4 @@ class Repository extends BaseObject {
         }
     }
 	
-	public def setSshClient() {
-		scmClient = new SshGitHub(context)
-	}
 }

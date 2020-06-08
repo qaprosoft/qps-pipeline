@@ -19,7 +19,6 @@ class SBTCustomRunner extends AbstractRunner {
 
     public SBTCustomRunner(context) {
         super(context)
-        scmClient = new GitHub(context)
     }
 
     @Override
@@ -34,7 +33,7 @@ class SBTCustomRunner extends AbstractRunner {
 
                         context.env.getEnvironment()
 
-                        scmClient.clone()
+                        getScm().clone()
 
                         def sbtHome = context.tool 'SBT'
 

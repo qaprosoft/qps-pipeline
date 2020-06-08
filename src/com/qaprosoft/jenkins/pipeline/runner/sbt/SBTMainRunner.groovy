@@ -12,7 +12,6 @@ class SBTMainRunner extends AbstractSBTRunner {
 
     public SBTMainRunner(context) {
         super(context)
-        scmClient = new GitHub(context)
     }
 
     @Override
@@ -26,7 +25,7 @@ class SBTMainRunner extends AbstractSBTRunner {
 
                         context.env.getEnvironment()
 
-                        scmClient.clone()
+                        getScm().clone()
 
                         def sbtHome = context.tool 'SBT'
 
