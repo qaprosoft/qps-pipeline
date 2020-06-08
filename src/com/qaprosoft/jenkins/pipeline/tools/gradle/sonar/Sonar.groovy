@@ -1,12 +1,10 @@
-package com.qaprosoft.jenkins.pipeline.tools.gradle
+package com.qaprosoft.jenkins.pipeline.tools.gradle.sonar
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import hudson.plugins.sonar.SonarGlobalConfiguration
-
-import static com.qaprosoft.jenkins.Utils.isParamEmpty
 
 class Sonar {
 
@@ -26,8 +24,8 @@ class Sonar {
     }
 
     void scan(isPullRequest = false) {
-        //TODO: verify preliminary if "maven" nodes available
-        context.node("maven") {
+        //TODO: verify preliminary if "gradle" nodes available
+        context.node("gradle") {
             context.stage('Sonar Scanner') {
 
                 if (isPullRequest) {
@@ -45,31 +43,31 @@ class Sonar {
                     logger.warn("Sonarqube is not configured correctly! Follow Sonar integration documentation to enable it.")
                 }
 
-//                if (isPullRequest && isParamEmpty(githubToken)) {
-//                    isSonarAvailable = false
-//                    logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
-//                }
-
                 if (!isSonarAvailable) {
                     return
                 }
-//                    def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-//                    def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
+
+                def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+                def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
 
                 context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                 context.withSonarQubeEnv('sonar-ci') {
-                    // execute sonar scanner
-//                    context.sh "./gradlew sonarqube -Dsonar.verbose=true -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")}"
+                    //TODO: simplify just to get log level from global var
+                    def SONAR_LOG_LEVEL = context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()) ? "DEBUG" : "INFO"
                     if (isPullRequest) {
-                        context.sh "./gradlew clean sonarqube " +
-                                "-Dsonar.verbose=true " +
-                                "-Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} " +
-                                "-Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} " +
-                                "-Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} " +
-                                "-Dsonar.pullrequest.provider=github "
-//                                "-Dsonar.pullrequest.github.repository=zebrunner/iam-service"
+                        context.sh "./gradlew clean sonarqube \
+                                -Dsonar.verbose=true \
+                                -Dsonar.log.level=${SONAR_LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath} \
+                                -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
+                                -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
+                                -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
+                                -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
                     } else {
-                        context.sh "./gradlew clean sonarqube -Dsonar.verbose=true -Dsonar.branch.name=${Configuration.get("branch")}"
+                        // TODO by sbrenko: Should be fixed. branch is always equal to 'master'
+                        context.sh "./gradlew clean sonarqube \
+                                -Dsonar.verbose=true \
+                                -Dsonar.log.level=${SONAR_LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath} \
+                                -Dsonar.branch.name=${Configuration.get("branch")}"
                     }
                 }
             }
@@ -81,6 +79,7 @@ class Sonar {
         githubToken = token
     }
 
+    // TODO by sbrenko: Might be removed
     private def scannerScript(isPullRequest, jacocoReportPaths, jacocoReportPath) {
         //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
         def sonarHome = context.env.getEnvironment().get("sonarHome")
