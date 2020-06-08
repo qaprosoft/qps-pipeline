@@ -1,5 +1,6 @@
 import groovy.transform.Field
 import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.Logger
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 @Field final String MAVEN_TOOL = 'M3'
