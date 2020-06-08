@@ -4,13 +4,12 @@ import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
-import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 
 import static com.qaprosoft.jenkins.Utils.*
 
-@Mixin(Maven)public class Sonar extends BaseObject {
+public class Sonar extends BaseObject {
     private static final String SONARQUBE = ".sonarqube"
     private static boolean isSonarAvailable = false
 
@@ -45,12 +44,11 @@ import static com.qaprosoft.jenkins.Utils.*
                     logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
                 }
 
-                def pomFiles = getProjectPomFiles()
-                pomFiles.each {
-                    logger.debug("pomFile: " + it)
+                for (pomFile in context.getPomFiles()) {
+                    logger.debug("pomFile: " + pomFile)
                     //do compile and scanner for all high level pom.xml files
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
-                    def goals = "-U clean compile test -f ${it}"
+                    def goals = "-U clean compile test -f ${pomFile}"
                     def extraGoals = ""
                     extraGoals += Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean() ? "jacoco:report-aggregate" : ""
                     if (isPullRequest) {

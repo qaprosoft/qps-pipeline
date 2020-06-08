@@ -9,7 +9,6 @@ import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
 import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
 import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
-import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 import com.wangyin.parameter.WHideParameterDefinition
 import groovy.json.JsonBuilder
@@ -36,7 +35,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 @Grab('org.testng:testng:6.8.8')
 
-@Mixin([Maven])
 public class QARunner extends Runner {
 
     protected Map dslObjects = new HashMap()
@@ -167,8 +165,7 @@ public class QARunner extends Runner {
             def workspace = getWorkspace()
             logger.info("WORKSPACE: ${workspace}")
 
-            def pomFiles = getProjectPomFiles()
-            for (pomFile in pomFiles) {
+            for (pomFile in context.getPomFiles()) {
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
                 def subProject = Paths.get(pomFile).getParent() ? Paths.get(pomFile).getParent().toString() : "."
                 logger.debug("subProject: " + subProject)
@@ -1125,8 +1122,7 @@ public class QARunner extends Runner {
 
             currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
-            def pomFiles = getProjectPomFiles()
-            for(pomFile in pomFiles){
+            for(pomFile in context.getPomFiles()){
                 // clear list of pipelines for each sub-project
                 listPipelines.clear()
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
