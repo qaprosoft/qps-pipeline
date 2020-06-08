@@ -6,10 +6,8 @@ import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
 import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 
-@Mixin([Maven])
 public class Runner extends AbstractRunner {
     Sonar sonar
 
@@ -45,7 +43,7 @@ public class Runner extends AbstractRunner {
             logger.info("Runner->build")
             scmClient.clone()
             context.stage("Maven Build") {
-                executeMavenGoals(Configuration.get("maven_goals"))
+                context.mavenBuild(Configuration.get("maven_goals"))
             }
         }
     }
