@@ -17,6 +17,8 @@ public abstract class BaseObject {
 
     protected ISCM scmClient
     protected ISCM scmSshClient
+    
+    protected boolean isScmSshClient = false
 
     protected def currentBuild
 
@@ -32,5 +34,17 @@ public abstract class BaseObject {
         this.factoryRunner = new FactoryRunner(context)
 
         currentBuild = context.currentBuild
+    }
+    
+    public def setSshClient() {
+        this.isScmSshClient = true
+    }
+    
+    public def getScmClient() {
+        if (this.isScmSshClient) {
+            return this.scmSshClient
+        } else {
+            return this.scmClient
+        }
     }
 }

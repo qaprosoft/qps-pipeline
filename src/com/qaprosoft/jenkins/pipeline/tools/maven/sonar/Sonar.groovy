@@ -1,5 +1,6 @@
 package com.qaprosoft.jenkins.pipeline.tools.maven.sonar
 
+import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
@@ -10,20 +11,14 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import static com.qaprosoft.jenkins.Utils.*
 
 @Mixin(Maven)
-public class Sonar {
+public class Sonar extends BaseObject {
     private static final String SONARQUBE = ".sonarqube"
     private static boolean isSonarAvailable = false
 
     protected static def githubToken
 
-    protected def context
-    protected Logger logger
-    protected ISCM scmClient
-
     public Sonar(context) {
-        this.context = context
-        this.logger = new Logger(context)
-        this.scmClient = new GitHub(context)
+        super(context)
     }
 
     public void scan(isPullRequest=false) {
@@ -32,10 +27,10 @@ public class Sonar {
             context.stage('Sonar Scanner') {
 
                 if (isPullRequest) {
-                    scmClient.clonePR()
+                    getScmClient().clonePR()
                 } else {
                     // it should be non shallow clone anyway to support full static code analysis
-                    scmClient.clonePush()
+                    getScmClient().clonePush()
                 }
 
                 def sonarQubeEnv = getSonarEnv()

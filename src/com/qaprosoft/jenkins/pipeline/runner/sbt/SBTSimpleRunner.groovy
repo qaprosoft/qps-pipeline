@@ -12,7 +12,6 @@ class SBTSimpleRunner extends AbstractSBTRunner {
 
     public SBTSimpleRunner(context) {
         super(context)
-        scmClient = new GitHub(context)
     }
 
     @Override
@@ -27,7 +26,7 @@ class SBTSimpleRunner extends AbstractSBTRunner {
 
                         context.env.getEnvironment()
 
-                        scmClient.clone()
+                        getScmClient().clone()
 
                         def sbtHome = context.tool 'SBT'
 

@@ -115,7 +115,7 @@ public class QARunner extends Runner {
 			setZafiraCreds()
 
 			try {
-				scmClient.clone(true)
+				getScmClient().clone(true)
 
 				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
@@ -547,7 +547,7 @@ public class QARunner extends Runner {
                 try {
                     context.timestamps {
                         prepareBuild(currentBuild)
-                        scmClient.clone()
+                        getScmClient().clone()
 
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             buildJob()
@@ -1119,7 +1119,7 @@ public class QARunner extends Runner {
     protected void runCron() {
         logger.info("QARunner->runCron")
         context.node("master") {
-            scmClient.clone()
+            getScmClient().clone()
             listPipelines = []
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repo = Configuration.get("repo")

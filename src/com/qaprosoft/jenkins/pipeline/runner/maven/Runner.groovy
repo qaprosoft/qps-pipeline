@@ -11,14 +11,11 @@ import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
 
 @Mixin([Maven])
 public class Runner extends AbstractRunner {
-    Logger logger
     Sonar sonar
 
     public Runner(context) {
         super(context)
-        scmClient = new GitHub(context)
         sonar = new Sonar(context)
-        logger = new Logger(context)
     }
 
     //Events
@@ -50,4 +47,9 @@ public class Runner extends AbstractRunner {
         }
     }
 
+    @Override
+    public def setSshClient() {
+        sonar.setSshClient()
+        super.setSshClient()
+    }
 }
