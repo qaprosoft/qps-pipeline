@@ -4,7 +4,8 @@ import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
 import hudson.plugins.sonar.SonarGlobalConfiguration
-import com.qaprosoft.jenkins.pipeline.tools.maven.Mavenimport com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
+import com.qaprosoft.jenkins.pipeline.tools.maven.Maven
+import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 
 import static com.qaprosoft.jenkins.Utils.*
