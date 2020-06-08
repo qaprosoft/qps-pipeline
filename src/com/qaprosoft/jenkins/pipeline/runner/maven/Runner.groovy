@@ -47,7 +47,7 @@ public class Runner extends AbstractRunner {
         }
     }
 
-    @Override
+    @NonCPS
     public def setSshClient() {
         sonar.setSshClient()
         super.setSshClient()
