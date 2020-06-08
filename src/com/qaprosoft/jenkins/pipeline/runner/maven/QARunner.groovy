@@ -63,7 +63,7 @@ public class QARunner extends Runner {
 	protected static final String JENKINS_REGRESSION_SCHEDULING = "jenkinsRegressionScheduling"
 	
 	protected static final String RESOURCES_PATH = "/resources/"
-	protected static final String CARINA_SUITES_PATH = TEST_RESOURCES_PATH +  "testng_suites/"
+	protected static final String CARINA_SUITES_PATH = RESOURCES_PATH +  "testng_suites/"
 
     public enum JobType {
         JOB("JOB"),
