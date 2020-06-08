@@ -36,7 +36,7 @@ public abstract class BaseObject {
         currentBuild = context.currentBuild
     }
     
-    @NonSCP
+    @NonCPS
     public def setSshClient() {
         this.isSsh = true
     }
