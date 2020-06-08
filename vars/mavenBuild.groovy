@@ -27,7 +27,7 @@ private def buildGoals(goals) {
     // parse goals replacing sensitive info by *******
     if (isUnix()) {
         def filteredGoals = filterSecuredParams(goals)
-        logger.info("mvn -B ${filteredGoals}")
+        println("mvn -B ${filteredGoals}")
         sh """
            set +x
              'mvn' -B ${goals}
