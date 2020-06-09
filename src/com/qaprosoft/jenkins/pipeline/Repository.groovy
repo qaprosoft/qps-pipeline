@@ -198,7 +198,7 @@ class Repository extends BaseObject {
         try {
             extendsQARunner = Class.forName(runnerClass, false, Thread.currentThread().getContextClassLoader()) in QARunner
         } catch(ClassNotFoundException e) {
-            logger.warn("${runnerClass} not found in current project domain.")
+            throw new RuntimeException("${runnerClass} not found in current project domain.")
         }
         return extendsQARunner
     }
