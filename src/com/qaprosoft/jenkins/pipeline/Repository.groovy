@@ -170,7 +170,9 @@ class Repository extends BaseObject {
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), checkExtensionConstraint(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, zafiraFields))
+            def extendsQARunner = Class.forName(runnerClass, false, Thread.currentThread().getContextClassLoader()) in QARunner
+
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), extendsQARunner, "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, zafiraFields))
 
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
@@ -191,16 +193,6 @@ class Repository extends BaseObject {
 
     private clean() {
         context.stage('Wipe out Workspace') { context.deleteDir() }
-    }
-
-    private boolean checkExtensionConstraint() {
-        def extendsQARunner = false
-        try {
-            extendsQARunner = Class.forName(runnerClass, false, Thread.currentThread().getContextClassLoader()) in QARunner
-        } catch(ClassNotFoundException e) {
-            throw new RuntimeException("${runnerClass} not found in current project domain.")
-        }
-        return extendsQARunner
     }
 
     private String getOnPullRequestScript() {
