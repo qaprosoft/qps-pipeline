@@ -13,8 +13,9 @@ public class PushJobFactory extends PipelineFactory {
     def scmRepoUrl
     def userId
     def zafiraFields
+    def extendsQARunner
 
-    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, zafiraFields) {
+    public PushJobFactory(folder, pipelineScript, extendsQARunner, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, zafiraFields) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
@@ -26,6 +27,7 @@ public class PushJobFactory extends PipelineFactory {
         this.scmRepoUrl = scmRepoUrl
         this.userId = userId
         this.zafiraFields = zafiraFields
+        this.extendsQARunner = extendsQARunner
     }
 
     def create() {
@@ -49,7 +51,7 @@ public class PushJobFactory extends PipelineFactory {
                 stringParam('repo', repo, 'GitHub repository for scanning')
                 //TODO: analyze howto support several gc_GIT_BRACH basing on project
                 stringParam('branch', this.branch, "SCM repository branch to run against")
-                if (pipelineScript.contains("com.qaprosoft.jenkins.pipeline.runner.maven.QARunner")) {
+                if (extendsQARunner) {
                     booleanParam('onlyUpdated', true, '	If chosen, scan will be performed only in case of any change in *.xml suites.')
                 }
                 choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
