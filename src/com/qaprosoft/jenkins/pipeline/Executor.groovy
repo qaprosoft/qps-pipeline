@@ -92,6 +92,7 @@ public class Executor {
     static def getReportParameters(reportDir, reportFiles, reportName) {
         def reportParameters = [allowMissing: false,
                                 alwaysLinkToLastBuild: false,
+                                includes: '**/*.html, **/*.js, **/*.css, **/*.jpj, **/*.jpeg, **/*.log, **/*.png',
                                 keepAll: true,
                                 reportDir: reportDir,
                                 reportFiles: reportFiles,
