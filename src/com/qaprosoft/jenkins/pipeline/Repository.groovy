@@ -172,7 +172,7 @@ class Repository extends BaseObject {
 
             def isTestNgRunner = Class.forName(runnerClass, false, Thread.currentThread().getContextClassLoader()) in QARunner
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), isTestNgRunner, "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, zafiraFields))
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields))
 
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
