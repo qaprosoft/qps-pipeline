@@ -7,7 +7,6 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.QTestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.TestRailJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.RegisterRepositoryJobFactory
 import com.qaprosoft.jenkins.pipeline.integration.zebrunner.ZebrunnerUpdater
-import com.qaprosoft.jenkins.pipeline.runner.maven.QARunner
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty
@@ -20,7 +19,7 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Organization extends BaseObject {
     private static final String PIPELINE_LIBRARY = "QPS-Pipeline"
-    private static final String RUNNER_CLASS = "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner"
+    private static final String RUNNER_CLASS = "com.qaprosoft.jenkins.pipeline.runner.maven.TestNG"
 
     protected ISCM scmClient
     protected ZebrunnerUpdater zebrunnerUpdater
