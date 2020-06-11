@@ -3,7 +3,6 @@ package com.qaprosoft.jenkins.pipeline
 import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.BuildJobFactory
@@ -12,7 +11,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.pipeline.runner.maven.QARunner
-import groovy.json.JsonOutput
+
 import java.nio.file.Paths
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -101,12 +100,12 @@ class Repository extends BaseObject {
                 def zafiraFields = Configuration.get("zafiraFields")
                 logger.debug("zafiraFields: " + zafiraFields)
                 if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
-                    def zafiraRefreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)
+                    def reportingRefreshToken = Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)
                     logger.debug("reportingServiceUrl: " + reportingServiceUrl)
-                    logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
-                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(zafiraRefreshToken)){
-                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, zafiraRefreshToken)
+                    logger.debug("reportingRefreshToken: " + reportingRefreshToken)
+                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)){
+                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, reportingRefreshToken)
                     }
                 }
             }

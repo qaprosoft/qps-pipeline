@@ -89,7 +89,7 @@ public class QARunner extends Runner {
         logger.info("QARunner->build")
 
         // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-        setZafiraCreds()
+        setReportingCreds()
         setSeleniumUrl()
 
         if (!isParamEmpty(Configuration.get("scmURL"))){
@@ -110,7 +110,7 @@ public class QARunner extends Runner {
 		context.node("master") {
       context.timestamps {
 			logger.info("QARunner->onPush")
-			setZafiraCreds()
+			setReportingCreds()
 
 			try {
 				getScm().clone(true)
@@ -136,7 +136,7 @@ public class QARunner extends Runner {
 
 	public void sendQTestResults() {
 		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-		setZafiraCreds()
+		setReportingCreds()
 		setQTestCreds()
 
 		def ci_run_id = Configuration.get("ci_run_id")
@@ -146,7 +146,7 @@ public class QARunner extends Runner {
 
 	public void sendTestRailResults() {
 		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-		setZafiraCreds()
+		setReportingCreds()
 		setTestRailCreds()
 
 		testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
@@ -793,7 +793,7 @@ public class QARunner extends Runner {
 
 	}
 
-	protected void setZafiraCreds() {
+	protected void setReportingCreds() {
 		def zafiraFields = Configuration.get("zafiraFields")
 		logger.debug("zafiraFields: " + zafiraFields)
 		if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
@@ -804,8 +804,8 @@ public class QARunner extends Runner {
 		}
 
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, getToken(Configuration.CREDS_ZAFIRA_SERVICE_URL))
-		Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, getToken(Configuration.CREDS_ZAFIRA_ACCESS_TOKEN))
+		Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
+		Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
 		
 		// obligatory init zafiraUpdater after getting valid url and token
 		zafiraUpdater = new ZafiraUpdater(context)
@@ -1450,7 +1450,7 @@ public class QARunner extends Runner {
     public void rerunJobs(){
         context.stage('Rerun Tests'){
             //updates zafira credentials with values from Jenkins Credentials (if present)
-			setZafiraCreds()
+			setReportingCreds()
             zafiraUpdater.smartRerun()
         }
     }
