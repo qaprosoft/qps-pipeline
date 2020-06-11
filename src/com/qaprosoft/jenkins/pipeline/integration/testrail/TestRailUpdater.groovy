@@ -7,19 +7,19 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
-import com.qaprosoft.jenkins.pipeline.integration.reporting.reportingClient
+import com.qaprosoft.jenkins.pipeline.integration.reporting.ReportingClient
 import com.qaprosoft.jenkins.pipeline.integration.reporting.IntegrationTag
 
 class TestRailUpdater {
 
     private def context
-    private reportingClient zc
+    private ReportingClient zc
     private TestRailClient trc
     private Logger logger
 
     public TestRailUpdater(context) {
         this.context = context
-        zc = new reportingClient(context)
+        zc = new ReportingClient(context)
         trc = new TestRailClient(context)
         logger = new Logger(context)
     }
