@@ -826,13 +826,13 @@ public class QARunner extends Runner {
     protected String getMavenGoals() {
 		// When reporting is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
 		def reportingGoals = "-Dreporting_enabled=false -Dmaven.test.failure.ignore=false"
-		if (!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)) &&
-			!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))) {
+		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) &&
+			!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))) {
 			// Ignore maven build result if Reporting integration is enabled
 			reportingGoals = "-Dmaven.test.failure.ignore=true \
 							-Dreporting_enabled=true \
-							-Dreporting_service_url=${Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)} \
-							-Dreporting_access_token=${Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)}"
+							-Dreporting_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
+							-Dreporting_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
 		}
 
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
@@ -877,8 +877,8 @@ public class QARunner extends Runner {
         // This is an array of parameters, that we need to exclude from list of transmitted parameters to maven
         def necessaryMavenParams  = [
                 "capabilities",
-                "REPORTING_SERVICE_URL",
-                "REPORTING_ACCESS_TOKEN",
+                "ZAFIRA_SERVICE_URL",
+                "ZAFIRA_ACCESS_TOKEN",
                 "reportingFields",
                 "CORE_LOG_LEVEL",
                 "JACOCO_BUCKET",
@@ -1056,7 +1056,7 @@ public class QARunner extends Runner {
     protected void publishJenkinsReports() {
         context.stage('Results') {
             publishReport('**/reports/qa/emailable-report.html', "CarinaReport")
-            publishReport('**/reporting/report.html', "reportingReport")
+            publishReport('**/reporting/report.html', "ZafiraReport")
             //publishReport('**/artifacts/**', 'Artifacts')
             publishReport('**/*.dump', 'DumpReports')
             publishReport('**/*.har', 'HarReports')

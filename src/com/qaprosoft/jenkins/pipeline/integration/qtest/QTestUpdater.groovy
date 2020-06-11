@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.pipeline.integration.qtest
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.integration.reporting.IntegrationTag
-import com.qaprosoft.jenkins.pipeline.integration.reporting.reportingClient
+import com.qaprosoft.jenkins.pipeline.integration.reporting.ReportingClient
 import com.qaprosoft.jenkins.pipeline.Configuration
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -11,13 +11,13 @@ class QTestUpdater {
 
     // Make sure that in Automation Settings input statuses configured as PASSED, FAILED, SKIPPED!
     private def context
-    private reportingClient zc
+    private ReportingClient zc
     private QTestClient qTestClient
     private Logger logger
 
     public QTestUpdater(context) {
         this.context = context
-        zc = new reportingClient(context)
+        zc = new ReportingClient(context)
         qTestClient = new QTestClient(context)
         logger = new Logger(context)
     }
