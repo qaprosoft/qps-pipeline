@@ -2,24 +2,24 @@ package com.qaprosoft.jenkins.pipeline.integration.testrail
 
 
 import com.qaprosoft.jenkins.Logger
-import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
+import com.qaprosoft.jenkins.pipeline.integration.reporting.StatusMapper
 import com.qaprosoft.jenkins.pipeline.Configuration
 
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
-import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraClient
-import com.qaprosoft.jenkins.pipeline.integration.zafira.IntegrationTag
+import com.qaprosoft.jenkins.pipeline.integration.reporting.reportingClient
+import com.qaprosoft.jenkins.pipeline.integration.reporting.IntegrationTag
 
 class TestRailUpdater {
 
     private def context
-    private ZafiraClient zc
+    private reportingClient zc
     private TestRailClient trc
     private Logger logger
 
     public TestRailUpdater(context) {
         this.context = context
-        zc = new ZafiraClient(context)
+        zc = new reportingClient(context)
         trc = new TestRailClient(context)
         logger = new Logger(context)
     }
@@ -30,7 +30,7 @@ class TestRailUpdater {
 		return
 	}
 		
-        // export all tag related metadata from Zafira
+        // export all tag related metadata from reporting
         def integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
         logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
@@ -66,7 +66,7 @@ class TestRailUpdater {
 
         def createdAfter = integration.createdAfter
 
-        // get all cases from TestRail by project and suite and compare with exported from Zafira
+        // get all cases from TestRail by project and suite and compare with exported from reporting
         // only cases available in both maps should be registered later
         def testRailCaseIds = parseCases(projectId, suiteId)
         def filteredCaseResultMap = filterCaseResultMap(caseResultMap, testRailCaseIds)

@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.integration.zafira
+package com.qaprosoft.jenkins.pipeline.integration.reporting
 
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
@@ -6,32 +6,32 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-class ZafiraUpdater {
+class ReportingUpdater {
 
     private def context
-    private ZafiraClient zc
+    private ReportingClient zc
     private Logger logger
     private def testRun
 
-    public ZafiraUpdater(context) {
+    public ReportingUpdater(context) {
         this.context = context
-        zc = new ZafiraClient(context)
+        zc = new ReportingClient(context)
         logger = new Logger(context)
     }
 
     def getTestRunByCiRunId(uuid) {
         def testRun = zc.getTestRunByCiRunId(uuid)
         if (isParamEmpty(testRun)) {
-            logger.error("TestRun is not found in Zafira!")
+            logger.error("TestRun is not found in Reporting!")
             return
         }
         return testRun
     }
 
-    public def queueZafiraTestRun(uuid) {
+    public def queueReportingTestRun(uuid) {
         if (isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
             if (isParamEmpty(Configuration.get('test_run_rules'))){
-                def response = zc.queueZafiraTestRun(uuid)
+                def response = zc.queueReportingTestRun(uuid)
                 logger.info("Queued TestRun: " + formatJson(response))
             }
         }
@@ -79,28 +79,28 @@ class ZafiraUpdater {
         }
         abortedTestRun = zc.abortTestRun(uuid, failureReason)
 
-        //Checks if testRun is present in Zafira and sends Zafira-generated report
+        //Checks if testRun is present in Reporting and sends Reporting-generated report
         if (!isParamEmpty(abortedTestRun)){
             //Sends email to admin if testRun was aborted
-            if (abortedTestRun.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
+            if (abortedTestRun.status.equals(StatusMapper.ReportingStatus.ABORTED.name())){
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
             } else {
                 sendFailureEmail(uuid, Configuration.get("email_list"))
             }
         } else {
-            //If testRun is not available in Zafira, sends email to admins by means of Jenkins
-            logger.error("Unable to abort testrun! Probably run is not registered in Zafira.")
-            //Explicitly send email via Jenkins (emailext) as nothing is registered in Zafira
-            def body = "${bodyHeader}\nRebuild: ${jobBuildUrl}/rebuild/parameterized\nZafiraReport: ${jobBuildUrl}/ZafiraReport\n\nConsole: ${jobBuildUrl}/console\n${failureLog}"
+            //If testRun is not available in Reporting, sends email to admins by means of Jenkins
+            logger.error("Unable to abort testrun! Probably run is not registered in Reporting.")
+            //Explicitly send email via Jenkins (emailext) as nothing is registered in Reporting
+            def body = "${bodyHeader}\nRebuild: ${jobBuildUrl}/rebuild/parameterized\nReportingReport: ${jobBuildUrl}/ReportingReport\n\nConsole: ${jobBuildUrl}/console\n${failureLog}"
             context.emailext getEmailParams(body, subject, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
         }
         return abortedTestRun
     }
 
-    public def sendZafiraEmail(uuid, emailList) {
+    public def sendReportingEmail(uuid, emailList) {
         def testRun = getTestRunByCiRunId(uuid)
         if (isParamEmpty(testRun)){
-            logger.error("No testRun with uuid " + uuid + "found in Zafira")
+            logger.error("No testRun with uuid " + uuid + "found in reporting")
             return
         }
         if (!isParamEmpty(emailList)) {
@@ -112,14 +112,14 @@ class ZafiraUpdater {
         }
     }
 
-    public void exportZafiraReport(uuid, workspace) {
-        String zafiraReport = zc.exportZafiraReport(uuid)
-        if (isParamEmpty(zafiraReport)){
-            logger.error("UNABLE TO GET TESTRUN! Probably it is not registered in Zafira.")
+    public void exportreportingReport(uuid, workspace) {
+        String reportingReport = zc.exportreportingReport(uuid)
+        if (isParamEmpty(reportingReport)){
+            logger.error("UNABLE TO GET TESTRUN! Probably it is not registered in reporting.")
             return
         }
-        logger.debug(zafiraReport)
-        context.writeFile file: "${workspace}/zafira/report.html", text: zafiraReport
+        logger.debug(reportingReport)
+        context.writeFile file: "${workspace}/reporting/report.html", text: reportingReport
     }
 
     public def sendFailureEmail(uuid, emailList) {
@@ -161,7 +161,7 @@ class ZafiraUpdater {
         }
     }
 
-    public boolean isZafiraRerun(uuid){
+    public boolean isreportingRerun(uuid){
         return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
     }
 

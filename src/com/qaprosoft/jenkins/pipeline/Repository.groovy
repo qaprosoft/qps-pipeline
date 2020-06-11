@@ -3,7 +3,6 @@ package com.qaprosoft.jenkins.pipeline
 import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.BuildJobFactory
@@ -12,7 +11,7 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.pipeline.runner.maven.QARunner
-import groovy.json.JsonOutput
+
 import java.nio.file.Paths
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -98,15 +97,15 @@ class Repository extends BaseObject {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
             } else {
-                def zafiraFields = Configuration.get("zafiraFields")
-                logger.debug("zafiraFields: " + zafiraFields)
-                if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
-                    def zafiraRefreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+                def reportingFields = Configuration.get("reportingFields")
+                logger.debug("reportingFields: " + reportingFields)
+                if (!isParamEmpty(reportingFields) && reportingFields.contains("reporting_service_url") && reportingFields.contains("reporting_access_token")) {
+                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)
+                    def reportingRefreshToken = Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)
                     logger.debug("reportingServiceUrl: " + reportingServiceUrl)
-                    logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
-                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(zafiraRefreshToken)){
-                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, zafiraRefreshToken)
+                    logger.debug("reportingRefreshToken: " + reportingRefreshToken)
+                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)){
+                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, reportingRefreshToken)
                     }
                 }
             }
@@ -150,8 +149,8 @@ class Repository extends BaseObject {
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get(REPO)}")
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
-            def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
-            logger.error("zafiraFields: " + zafiraFields)
+            def reportingFields = isParamEmpty(Configuration.get("reportingFields")) ? '' : Configuration.get("reportingFields")
+            logger.error("reportingFields: " + reportingFields)
 
             registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*|build"))
 
@@ -172,7 +171,7 @@ class Repository extends BaseObject {
 
             def isTestNgRunner = Class.forName(runnerClass, false, Thread.currentThread().getContextClassLoader()) in QARunner
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields))
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, reportingFields))
 
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))

@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.integration.zafira
+package com.qaprosoft.jenkins.pipeline.integration.reporting
 
 class StatusMapper {
 
@@ -14,7 +14,7 @@ class StatusMapper {
         }
     }
 
-    enum ZafiraStatus {
+    enum ReportingStatus {
         PASSED(1),
         FAILED(5),
         SKIPPED(3),
@@ -23,13 +23,13 @@ class StatusMapper {
         IN_PROGRESS(3),
 
         final int value
-        ZafiraStatus(int value) {
+        ReportingStatus(int value) {
             this.value = value
         }
     }
 
-    static def getTestRailStatus(String zafiraStringStatus){
-        ZafiraStatus zafiraStatus = ZafiraStatus.valueOf(zafiraStringStatus)
-        return zafiraStatus.value
+    static def getTestRailStatus(String reportingStringStatus){
+        ReportingStatus reportingStatus = ReportingStatus.valueOf(reportingStringStatus)
+        return reportingStatus.value
     }
 }

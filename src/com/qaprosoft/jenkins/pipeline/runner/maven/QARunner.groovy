@@ -6,30 +6,21 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.integration.qtest.QTestUpdater
 import com.qaprosoft.jenkins.pipeline.integration.testrail.TestRailUpdater
-import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
-import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraUpdater
-import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
-import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
+import com.qaprosoft.jenkins.pipeline.integration.reporting.StatusMapper
+import com.qaprosoft.jenkins.pipeline.integration.reporting.ReportingUpdater
 import com.wangyin.parameter.WHideParameterDefinition
 import groovy.json.JsonBuilder
-import groovy.json.JsonOutput
 import javaposse.jobdsl.plugin.actions.GeneratedJobsBuildAction
 import jp.ikedam.jenkins.plugins.extensible_choice_parameter.ExtensibleChoiceParameterDefinition
 import org.testng.xml.XmlSuite
 
-import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 // #608 imports
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import javax.xml.parsers.DocumentBuilder;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 
 
@@ -42,7 +33,7 @@ public class QARunner extends Runner {
     protected def runnerClass = "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner"
     protected def onlyUpdated = false
     protected def uuid
-    protected ZafiraUpdater zafiraUpdater
+    protected ReportingUpdater reportingUpdater
     protected TestRailUpdater testRailUpdater
     protected QTestUpdater qTestUpdater
 
@@ -89,7 +80,7 @@ public class QARunner extends Runner {
         logger.info("QARunner->build")
 
         // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-        setZafiraCreds()
+        setReportingCreds()
         setSeleniumUrl()
 
         if (!isParamEmpty(Configuration.get("scmURL"))){
@@ -110,12 +101,12 @@ public class QARunner extends Runner {
 		context.node("master") {
       context.timestamps {
 			logger.info("QARunner->onPush")
-			setZafiraCreds()
+			setReportingCreds()
 
 			try {
 				getScm().clone(true)
 
-				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
+				if (isUpdated(currentBuild,"**.xml,**/reporting.properties") || !onlyUpdated) {
 					scan()
                     //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
 					getJenkinsJobsScanResult(currentBuild.rawBuild)
@@ -136,7 +127,7 @@ public class QARunner extends Runner {
 
 	public void sendQTestResults() {
 		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-		setZafiraCreds()
+		setReportingCreds()
 		setQTestCreds()
 
 		def ci_run_id = Configuration.get("ci_run_id")
@@ -146,7 +137,7 @@ public class QARunner extends Runner {
 
 	public void sendTestRailResults() {
 		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-		setZafiraCreds()
+		setReportingCreds()
 		setTestRailCreds()
 
 		testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
@@ -170,8 +161,8 @@ public class QARunner extends Runner {
                 def subProject = Paths.get(pomFile).getParent() ? Paths.get(pomFile).getParent().toString() : "."
                 logger.debug("subProject: " + subProject)
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
-                def zafiraProject = getZafiraProject(subProjectFilter)
-                generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch)
+                def reportingProject = getReportingProject(subProjectFilter)
+                generateDslObjects(repoFolder, reportingProject, subProject, subProjectFilter, branch)
 
 				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"),
 										Configuration.get("removedJobAction"),
@@ -199,20 +190,20 @@ public class QARunner extends Runner {
         return context.findFiles(glob: subDirectory + "**/pom.xml")
     }
 
-    def getZafiraProject(subProjectFilter){
-        def zafiraProject = "unknown"
-        def zafiraProperties = context.findFiles glob: subProjectFilter + "/**/zafira.properties"
-        zafiraProperties.each {
+    def getReportingProject(subProjectFilter){
+        def ReportingProject = "unknown"
+        def reportingProperties = context.findFiles glob: subProjectFilter + "/**/reporting.properties"
+        reportingProperties.each {
             Map properties  = context.readProperties file: it.path
-            if (!isParamEmpty(properties.zafira_project)){
-                zafiraProject = properties.zafira_project
-                logger.info("ZafiraProject: " + zafiraProject)
+            if (!isParamEmpty(properties.reporting_project)){
+                reportingProject = properties.reporting_project
+                logger.info("ReportingProject: " + ReportingProject)
             }
         }
-        return zafiraProject
+        return reportingProject
     }
 
-    def generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch){
+    def generateDslObjects(repoFolder, reportingProject, subProject, subProjectFilter, branch){
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
@@ -271,10 +262,10 @@ public class QARunner extends Runner {
                 suiteOwner = suiteOwner.split(",")[0].trim()
             }
 
-            def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
+            def currentReportingProject = getSuiteParameter(reportingProject, "reporting_project", currentSuite)
 
             // put standard views factory into the map
-            registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+            registerObject(currentReportingProject, new ListViewFactory(repoFolder, currentReportingProject.toUpperCase(), ".*${currentReportingProject}.*"))
             registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
 
             switch(suiteName.toLowerCase()){
@@ -301,8 +292,8 @@ public class QARunner extends Runner {
             //pipeline job
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
-            def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling, suiteThreadCount, suiteDataProviderThreadCount))
+            def jobDesc = "project: ${repo}; reporting_project: ${currentReportingProject}; owner: ${suiteOwner}"
+            registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentReportingProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling, suiteThreadCount, suiteDataProviderThreadCount))
 
 			//cron job
             if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
@@ -453,7 +444,7 @@ public class QARunner extends Runner {
                 jenkinsJobsScanResult.jenkinsJobs = generateJenkinsJobs(build)
                 jenkinsJobsScanResult.success = true
             }
-            zafiraUpdater.createLaunchers(jenkinsJobsScanResult)
+            reportingUpdater.createLaunchers(jenkinsJobsScanResult)
         } catch (Exception e) {
             throw new RuntimeException("Something went wrong during launchers creation", e)
         }
@@ -534,7 +525,7 @@ public class QARunner extends Runner {
         def isRerun = isRerun()
         String nodeName = "master"
         context.node(nodeName) {
-            zafiraUpdater.queueZafiraTestRun(uuid)
+            reportingUpdater.queueReportingTestRun(uuid)
             nodeName = chooseNode()
         }
         context.node(nodeName) {
@@ -547,10 +538,10 @@ public class QARunner extends Runner {
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
                             buildJob()
                         }
-                        testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
+                        testRun = reportingUpdater.getTestRunByCiRunId(uuid)
                         if(!isParamEmpty(testRun)){
-                            zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-                            zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                            reportingUpdater.sendReportingEmail(uuid, overrideRecipients(Configuration.get("email_list")))
+                            reportingUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         }
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
@@ -558,21 +549,21 @@ public class QARunner extends Runner {
                 } catch (Exception e) {
                     //TODO: [VD] think about making currentBuild.result as FAILURE
                     logger.error(printStackTrace(e))
-                    testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
+                    testRun = reportingUpdater.getTestRunByCiRunId(uuid)
                     if (!isParamEmpty(testRun)) {
-                        def abortedTestRun = zafiraUpdater.abortTestRun(uuid, currentBuild)
+                        def abortedTestRun = reportingUpdater.abortTestRun(uuid, currentBuild)
                         if ((!isParamEmpty(abortedTestRun)
-                                && !StatusMapper.ZafiraStatus.ABORTED.name().equals(abortedTestRun.status)
+                                && !StatusMapper.ReportingStatus.ABORTED.name().equals(abortedTestRun.status)
                                 && !BuildResult.ABORTED.name().equals(currentBuild.result)) || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
-                            zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                            reportingUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         }
                     }
                     throw e
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
                     if(!isParamEmpty(testRun)) {
-                        zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
-                        zafiraUpdater.setBuildResult(uuid, currentBuild)
+                        reportingUpdater.exportReportingReport(uuid, getWorkspace())
+                        reportingUpdater.setBuildResult(uuid, currentBuild)
                     } else {
                         //try to find build result from CarinaReport if any
                     }
@@ -644,7 +635,7 @@ public class QARunner extends Runner {
 
     // Possible to override in private pipelines
     protected boolean isRerun() {
-        return zafiraUpdater.isZafiraRerun(uuid)
+        return reportingUpdater.isReportingRerun(uuid)
     }
 
     // Possible to override in private pipelines
@@ -793,22 +784,22 @@ public class QARunner extends Runner {
 
 	}
 
-	protected void setZafiraCreds() {
-		def zafiraFields = Configuration.get("zafiraFields")
-		logger.debug("zafiraFields: " + zafiraFields)
-		if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+	protected void setReportingCreds() {
+		def reportingFields = Configuration.get("reportingFields")
+		logger.debug("reportingFields: " + reportingFields)
+		if (!isParamEmpty(reportingFields) && reportingFields.contains("reporting_service_url") && reportingFields.contains("reporting_access_token")) {
 			//already should be parsed and inited as part of Configuration
-			//TODO: improve code quality having single return and zafiraUpdater init
-			zafiraUpdater = new ZafiraUpdater(context)
+			//TODO: improve code quality having single return and reportingUpdater init
+			reportingUpdater = new ReportingUpdater(context)
 			return
 		}
 
-		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, getToken(Configuration.CREDS_ZAFIRA_SERVICE_URL))
-		Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, getToken(Configuration.CREDS_ZAFIRA_ACCESS_TOKEN))
+		// update Reporting serviceUrl and accessToken parameter based on values from credentials
+		Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
+		Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
 		
-		// obligatory init zafiraUpdater after getting valid url and token
-		zafiraUpdater = new ZafiraUpdater(context)
+		// obligatory init reportingUpdater after getting valid url and token
+		reportingUpdater = new ReportingUpdater(context)
 	}
 
 	protected void setTestRailCreds() {
@@ -833,20 +824,20 @@ public class QARunner extends Runner {
 	}
 
     protected String getMavenGoals() {
-		// When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
-		def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
-		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) &&
-			!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))) {
-			// Ignore maven build result if Zafira integration is enabled
-			zafiraGoals = "-Dmaven.test.failure.ignore=true \
-							-Dzafira_enabled=true \
-							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
-							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
+		// When reporting is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
+		def reportingGoals = "-Dreporting_enabled=false -Dmaven.test.failure.ignore=false"
+		if (!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)) &&
+			!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))) {
+			// Ignore maven build result if Reporting integration is enabled
+			reportingGoals = "-Dmaven.test.failure.ignore=true \
+							-Dreporting_enabled=true \
+							-Dreporting_service_url=${Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)} \
+							-Dreporting_access_token=${Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)}"
 		}
 
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
-        ${zafiraGoals} \
+        ${reportingGoals} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
         -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
@@ -861,7 +852,7 @@ public class QARunner extends Runner {
 
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
         addCapability("suite", suiteName)
-        addCapabilityIfPresent("rerun_failures", "zafira_rerun_failures")
+        addCapabilityIfPresent("rerun_failures", "reporting_rerun_failures")
         addOptionalCapability("enableVideo", "Video recording was enabled.", "capabilities.enableVideo", "true")
         // [VD] getting debug host works only on specific nodes which are detecetd by chooseNode.
         // on this stage this method is not fucntion properly!
@@ -886,9 +877,9 @@ public class QARunner extends Runner {
         // This is an array of parameters, that we need to exclude from list of transmitted parameters to maven
         def necessaryMavenParams  = [
                 "capabilities",
-                "ZAFIRA_SERVICE_URL",
-                "ZAFIRA_ACCESS_TOKEN",
-                "zafiraFields",
+                "REPORTING_SERVICE_URL",
+                "REPORTING_ACCESS_TOKEN",
+                "reportingFields",
                 "CORE_LOG_LEVEL",
                 "JACOCO_BUCKET",
                 "JACOCO_REGION",
@@ -1065,7 +1056,7 @@ public class QARunner extends Runner {
     protected void publishJenkinsReports() {
         context.stage('Results') {
             publishReport('**/reports/qa/emailable-report.html', "CarinaReport")
-            publishReport('**/zafira/report.html', "ZafiraReport")
+            publishReport('**/reporting/report.html', "reportingReport")
             //publishReport('**/artifacts/**', 'Artifacts')
             publishReport('**/*.dump', 'DumpReports')
             publishReport('**/*.har', 'HarReports')
@@ -1238,7 +1229,7 @@ public class QARunner extends Runner {
 						putNotNullWithSplit(pipelineMap, "email_list", emailList)
 						putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
 						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
-						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
+						putNotNull(pipelineMap, "reportingFields", Configuration.get("reportingFields"))
 						putNotNull(pipelineMap, "queue_registration", queueRegistration)
 						// supported config matrix should be applied at the end to be able to override default args like retry_count etc
 						putMap(pipelineMap, supportedConfigurations)
@@ -1449,9 +1440,9 @@ public class QARunner extends Runner {
 
     public void rerunJobs(){
         context.stage('Rerun Tests'){
-            //updates zafira credentials with values from Jenkins Credentials (if present)
-			setZafiraCreds()
-            zafiraUpdater.smartRerun()
+            //updates reporting credentials with values from Jenkins Credentials (if present)
+			setReportingCreds()
+            reportingUpdater.smartRerun()
         }
     }
 

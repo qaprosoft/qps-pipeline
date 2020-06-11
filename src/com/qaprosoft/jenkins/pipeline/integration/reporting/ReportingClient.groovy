@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.integration.zafira
+package com.qaprosoft.jenkins.pipeline.integration.reporting
 
 import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 import groovy.json.JsonBuilder
@@ -6,24 +6,24 @@ import static com.qaprosoft.jenkins.Utils.*
 import com.qaprosoft.jenkins.pipeline.Configuration
 
 /*
- * Prerequisites: valid ZAFIRA_SERVICE_URL and ZAFIRA_ACCESS_TOKEN already defined in Configuration
+ * Prerequisites: valid REPORTING_SERVICE_URL and REPORTING_ACCESS_TOKEN already defined in Configuration
  */
 
-class ZafiraClient extends HttpClient {
+class ReportingClient extends HttpClient {
 
     private String serviceURL
     private String refreshToken
     private String authToken
     private long tokenExpTime
 
-    public ZafiraClient(context) {
+    public ReportingClient(context) {
         super(context)
-        this.serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
-        this.refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+        this.serviceURL = Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)
+        this.refreshToken = Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)
     }
 
-    public def queueZafiraTestRun(uuid) {
-        if (!isZafiraConnected()) {
+    public def queueReportingTestRun(uuid) {
+        if (!isReportingConnected()) {
             return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -34,7 +34,7 @@ class ZafiraClient extends HttpClient {
                 ciRunId: uuid,
                 ciParentUrl: replaceTrailingSlash(Configuration.get("ci_parent_url")),
                 ciParentBuild: Configuration.get("ci_parent_build"),
-                project: Configuration.get("zafira_project")
+                project: Configuration.get("reporting_project")
 
         logger.info("REQUEST: " + jsonBuilder.toPrettyString())
         String requestBody = jsonBuilder.toString()
@@ -50,7 +50,7 @@ class ZafiraClient extends HttpClient {
     }
 
     public def smartRerun() {
-        if (!isZafiraConnected()) {
+        if (!isReportingConnected()) {
             return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -76,7 +76,7 @@ class ZafiraClient extends HttpClient {
     }
 
     public def abortTestRun(uuid, failureReason) {
-        if (!isZafiraConnected()) {
+        if (!isReportingConnected()) {
             return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -96,7 +96,7 @@ class ZafiraClient extends HttpClient {
     }
 
     public def sendEmail(uuid, emailList, filter) {
-        if (!isZafiraConnected()) {
+        if (!isReportingConnected()) {
             return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -116,7 +116,7 @@ class ZafiraClient extends HttpClient {
     }
 
     public def sendSlackNotification(uuid, channels) {
-        if (!isZafiraConnected()) {
+        if (!isReportingConnected()) {
             return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
@@ -128,7 +128,7 @@ class ZafiraClient extends HttpClient {
     }
 
     public def exportTagData(uuid, tagName) {
-        if (!isZafiraConnected()) {
+        if (!isReportingConnected()) {
             return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
@@ -140,7 +140,7 @@ class ZafiraClient extends HttpClient {
     }
 
     public def sendFailureEmail(uuid, emailList, suiteOwner, suiteRunner) {
-        if (!isZafiraConnected()) {
+        if (!isReportingConnected()) {
             return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -159,8 +159,8 @@ class ZafiraClient extends HttpClient {
         return sendRequest(parameters)
     }
 
-    public def exportZafiraReport(uuid) {
-        if (!isZafiraConnected()) {
+    public def exportReportingReport(uuid) {
+        if (!isReportingConnected()) {
             return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
@@ -173,7 +173,7 @@ class ZafiraClient extends HttpClient {
     }
 
     public def getTestRunByCiRunId(uuid) {
-        if (!isZafiraConnected()) {
+        if (!isReportingConnected()) {
             return
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
@@ -187,7 +187,7 @@ class ZafiraClient extends HttpClient {
 
 
     public def createLaunchers(jenkinsJobsScanResult) {
-        if (!isZafiraConnected()) {
+        if (!isReportingConnected()) {
             return
         }
 
@@ -208,7 +208,7 @@ class ZafiraClient extends HttpClient {
     }
 
     public def createJob(jobUrl) {
-        if (!isZafiraConnected()) {
+        if (!isReportingConnected()) {
             return
         }
         JsonBuilder jsonBuilder = new JsonBuilder()
@@ -231,8 +231,8 @@ class ZafiraClient extends HttpClient {
         return authToken == null || System.currentTimeMillis() > tokenExpTime
     }
 
-    /** Verify if ZafiraConnected and refresh authToken if needed. Return false if connection can't be established or disabled **/
-    protected boolean isZafiraConnected() {
+    /** Verify if ReportingConnected and refresh authToken if needed. Return false if connection can't be established or disabled **/
+    protected boolean isReportingConnected() {
 		if (!isTokenExpired()) {
 			return true
 		}
@@ -258,9 +258,9 @@ class ZafiraClient extends HttpClient {
         Map properties = (Map)sendRequestFormatted(parameters)
         logger.debug("properties: " + properties)
         if (isParamEmpty(properties)) {
-            // #669: no sense to start tests if zafira is configured and not available! 
+            // #669: no sense to start tests if reporting is configured and not available!
             logger.info("properties: " + properties)
-            throw new RuntimeException("Unable to get auth token, check Zafira integration!")
+            throw new RuntimeException("Unable to get auth token, check Reporting integration!")
         }
         this.authToken = properties.type + " " + properties.accessToken
         logger.debug("authToken: " + authToken)

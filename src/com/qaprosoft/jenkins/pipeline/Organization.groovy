@@ -313,14 +313,14 @@ class Organization extends BaseObject {
 	}
 	
 	public def registerReportingCredentials(){
-		context.stage("Register Zafira Credentials") {
+		context.stage("Register Reporting Credentials") {
 			Organization.registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
 		}
 	}
 	
 	public static void registerReportingCredentials(orgFolderName, reportingServiceUrl, reportingAccessToken){
-		def reportingURLCredentials = Configuration.CREDS_ZAFIRA_SERVICE_URL
-		def reportingTokenCredentials = Configuration.CREDS_ZAFIRA_ACCESS_TOKEN
+		def reportingURLCredentials = Configuration.CREDS_REPORTING_SERVICE_URL
+		def reportingTokenCredentials = Configuration.CREDS_REPORTING_ACCESS_TOKEN
 		
 		if (!isParamEmpty(orgFolderName)) {
             reportingURLCredentials = orgFolderName + "-" + reportingURLCredentials
@@ -335,8 +335,8 @@ class Organization extends BaseObject {
 			throw new RuntimeException("Unable to register reporting credentials! Required field 'reportingAccessToken' is missing!")
 		}
 
-		updateJenkinsCredentials(reportingURLCredentials, "Reporting service URL", Configuration.Parameter.ZAFIRA_SERVICE_URL.getKey(), reportingServiceUrl)
-		updateJenkinsCredentials(reportingTokenCredentials, "Reporting access token", Configuration.Parameter.ZAFIRA_ACCESS_TOKEN.getKey(), reportingAccessToken)
+		updateJenkinsCredentials(reportingURLCredentials, "Reporting service URL", Configuration.Parameter.REPORTING_SERVICE_URL.getKey(), reportingServiceUrl)
+		updateJenkinsCredentials(reportingTokenCredentials, "Reporting access token", Configuration.Parameter.REPORTING_ACCESS_TOKEN.getKey(), reportingAccessToken)
 	}
 	
 	protected def registerTestRailCredentials(orgFolderName, url, username, password) {

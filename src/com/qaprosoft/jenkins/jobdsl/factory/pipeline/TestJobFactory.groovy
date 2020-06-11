@@ -14,7 +14,7 @@ public class TestJobFactory extends PipelineFactory {
     def organization
     def branch
     def sub_project
-    def zafira_project
+    def reporting_project
     def suitePath
     def suiteName
     def orgRepoScheduling
@@ -23,7 +23,7 @@ public class TestJobFactory extends PipelineFactory {
     def dataProviderThreadCount
 
     public TestJobFactory(folder, pipelineScript, host, repo, organization, branch, 
-            sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount) {
+            sub_project, reporting_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount) {
         this.folder = folder
         this.description = jobDesc
         this.pipelineScript = pipelineScript
@@ -32,7 +32,7 @@ public class TestJobFactory extends PipelineFactory {
         this.organization = organization
         this.branch = branch
         this.sub_project = sub_project
-        this.zafira_project = zafira_project
+        this.reporting_project = reporting_project
         this.suitePath = suitePath
         this.suiteName = suiteName
         this.orgRepoScheduling = orgRepoScheduling
@@ -162,7 +162,7 @@ public class TestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
                 configure addHiddenParameter('sub_project', '', sub_project)
-                configure addHiddenParameter('zafira_project', '', zafira_project)
+                configure addHiddenParameter('reporting_project', '', reporting_project)
                 configure addHiddenParameter('suite', '', suiteName)
                 configure addHiddenParameter('ci_parent_url', '', '')
                 configure addHiddenParameter('ci_parent_build', '', '')
@@ -180,7 +180,7 @@ public class TestJobFactory extends PipelineFactory {
                 choiceParam('retry_count', getRetryCountArray(currentSuite), 'Number of Times to Retry a Failed Test')
                 booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
                 configure addHiddenParameter('overrideFields', '' , getSuiteParameter("", "overrideFields", currentSuite))
-                configure addHiddenParameter('zafiraFields', '' , getSuiteParameter("", "zafiraFields", currentSuite))
+                configure addHiddenParameter('reportingFields', '' , getSuiteParameter("", "reportingFields", currentSuite))
 
                 Map paramsMap = currentSuite.getAllParameters()
                 logger.info("ParametersMap: ${paramsMap}")

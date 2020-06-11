@@ -1,8 +1,8 @@
 package com.qaprosoft.jenkins.pipeline.integration.qtest
 
 import com.qaprosoft.jenkins.Logger
-import com.qaprosoft.jenkins.pipeline.integration.zafira.IntegrationTag
-import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraClient
+import com.qaprosoft.jenkins.pipeline.integration.reporting.IntegrationTag
+import com.qaprosoft.jenkins.pipeline.integration.reporting.reportingClient
 import com.qaprosoft.jenkins.pipeline.Configuration
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -11,13 +11,13 @@ class QTestUpdater {
 
     // Make sure that in Automation Settings input statuses configured as PASSED, FAILED, SKIPPED!
     private def context
-    private ZafiraClient zc
+    private reportingClient zc
     private QTestClient qTestClient
     private Logger logger
 
     public QTestUpdater(context) {
         this.context = context
-        zc = new ZafiraClient(context)
+        zc = new reportingClient(context)
         qTestClient = new QTestClient(context)
         logger = new Logger(context)
     }
@@ -28,10 +28,10 @@ class QTestUpdater {
             return
         }
 
-        def zafiraIntegrationData = exportIntegrationDataFromZafira(uuid)
-        def parsedIntegrationData = parseIntegrationParams(zafiraIntegrationData)
+        def reportingIntegrationData = exportIntegrationDataFromreporting(uuid)
+        def parsedIntegrationData = parseIntegrationParams(reportingIntegrationData)
 
-        /* Values from zafira integration data */
+        /* Values from reporting integration data */
         def projectId = parsedIntegrationData.projectId
         def cycleName = parsedIntegrationData.customParams.cycle_name
         def startedAt = parsedIntegrationData.startedAt
@@ -39,7 +39,7 @@ class QTestUpdater {
         def env = parsedIntegrationData.env
         def testCasesMap = parsedIntegrationData.testCasesMap
 
-        // Get id of test cycle, passed from zafira
+        // Get id of test cycle, passed from reporting
         def rootTestCycleId = getCycleIdByName(projectId, cycleName)
 
         if (projectId.toInteger() == 10) {
@@ -47,10 +47,10 @@ class QTestUpdater {
         }
         /* Upload subhierarchy of test cycles stored under parent cycle */
         def testRunsSubHierarchy = qTestClient.getTestRunsSubHierarchy(projectId)
-        /* Create map to store already extracted from zafira module hierarchies */
+        /* Create map to store already extracted from reporting module hierarchies */
         Map<Object, Map> testModuleHierarchiesMap = new HashMap()
-        testCasesMap.values().each { zafiraTestCase ->
-            def testCaseId = zafiraTestCase.case_id
+        testCasesMap.values().each { reportingTestCase ->
+            def testCaseId = reportingTestCase.case_id
             /* upload QTest testCase object */
             def qTestTestCase = qTestClient.getTestCase(projectId, testCaseId)
             if (isParamEmpty(qTestTestCase)) {
@@ -79,7 +79,7 @@ class QTestUpdater {
             def suite = getOrAddTestSuite(projectId, currentTestCycleId, env)
             def suiteId = suite.id
             def testRun = getOrAddTestRun(projectId, suiteId, testCaseId, qTestTestCase.name)
-            def results = uploadTestRunResults(zafiraTestCase, startedAt, finishedAt, testRun, projectId)
+            def results = uploadTestRunResults(reportingTestCase, startedAt, finishedAt, testRun, projectId)
             logger.debug("UPLOADED_RESULTS: " + formatJson(results))
         }
     }
@@ -163,14 +163,14 @@ class QTestUpdater {
     }
 
     /**
-     * Exports data necessary for intregration from Zafira by
+     * Exports data necessary for intregration from reporting by
      * @param uuid.
      * Data is based on QTEST_TESTCASE_UUID tag values
      * and 'qtest_cycle_name', 'qtest_suite_name' custom arguments
      * from testRun config XML.
      * @return
      */
-    private Object exportIntegrationDataFromZafira(uuid) {
+    private Object exportIntegrationDataFromreporting(uuid) {
         def integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
         if (isParamEmpty(integration)) {
             throw new RuntimeException("Integration object is empty, nothing to update in QTest.")

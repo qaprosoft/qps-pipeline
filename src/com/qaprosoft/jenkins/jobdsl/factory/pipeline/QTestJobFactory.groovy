@@ -17,7 +17,7 @@ public class QTestJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
-                configure stringParam('ci_run_id', '', "Zafira test run id")
+                configure stringParam('ci_run_id', '', "reporting test run id")
                 configure stringParam('os', '', 'OS name')
                 configure stringParam('os_version', '', 'OS version')
                 configure stringParam('browser', '', 'Browser name')
