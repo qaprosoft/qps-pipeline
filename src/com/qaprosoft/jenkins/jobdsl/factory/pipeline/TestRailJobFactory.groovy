@@ -17,7 +17,7 @@ public class TestRailJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
-                configure stringParam('ci_run_id', '', "Zafira test run ci_run_id")
+                configure stringParam('ci_run_id', '', "Reporting test run ci_run_id")
                 configure booleanParam('include_all', false, 'Register all cases from suite into the run if true or only executed for false')
                 configure stringParam('milestone', '', 'Milestone name if needed')
                 configure stringParam('run_name', '', 'Custom or existing TestRail run name')
