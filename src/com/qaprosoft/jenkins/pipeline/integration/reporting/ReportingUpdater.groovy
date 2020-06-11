@@ -112,8 +112,8 @@ class ReportingUpdater {
         }
     }
 
-    public void exportreportingReport(uuid, workspace) {
-        String reportingReport = zc.exportreportingReport(uuid)
+    public void exportReportingReport(uuid, workspace) {
+        String reportingReport = zc.exportReportingReport(uuid)
         if (isParamEmpty(reportingReport)){
             logger.error("UNABLE TO GET TESTRUN! Probably it is not registered in reporting.")
             return
