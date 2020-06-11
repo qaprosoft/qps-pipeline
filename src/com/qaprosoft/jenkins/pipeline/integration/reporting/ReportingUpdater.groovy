@@ -161,7 +161,7 @@ class ReportingUpdater {
         }
     }
 
-    public boolean isreportingRerun(uuid){
+    public boolean isReportingRerun(uuid){
         return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
     }
 
