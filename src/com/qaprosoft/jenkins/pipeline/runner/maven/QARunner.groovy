@@ -271,7 +271,7 @@ public class QARunner extends Runner {
                 suiteOwner = suiteOwner.split(",")[0].trim()
             }
 
-            def currentReportingProject = getSuiteParameter(reportingProject, "reporting_project", currentSuite)
+            def currentReportingProject = getSuiteParameter(reportingProject, "zafira_project", currentSuite)
 
             // put standard views factory into the map
             registerObject(currentReportingProject, new ListViewFactory(repoFolder, currentReportingProject.toUpperCase(), ".*${currentReportingProject}.*"))
