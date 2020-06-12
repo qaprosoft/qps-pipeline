@@ -2,7 +2,7 @@ package com.qaprosoft.jenkins.pipeline.tools.gradle
 
 class Gradle {
 
-    void buildGradle(version){
+    void buildGradle(version) {
         context.stage('Gradle Build') {
             logger.debug("Gradle->buildGradle")
             if (context.isUnix()) {
@@ -16,7 +16,7 @@ class Gradle {
 
     }
 
-    void performGradleSonarqubeScan(){
+    void performGradleSonarqubeScan() {
         context.stage("Gradle Sonar Scan") {
             if (context.isUnix()) {
                 context.sh './gradlew sonarqube'

@@ -47,7 +47,8 @@ public class QARunner extends Runner {
     protected QTestUpdater qTestUpdater
 
     protected qpsInfraCrossBrowserMatrixName = "qps-infra-matrix"
-    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome; browser: firefox" // explicit versions removed as we gonna to deliver auto upgrade for browsers
+    protected qpsInfraCrossBrowserMatrixValue = "browser: chrome; browser: firefox"
+    // explicit versions removed as we gonna to deliver auto upgrade for browsers
 
     //CRON related vars
     protected def listPipelines = []
@@ -57,16 +58,17 @@ public class QARunner extends Runner {
     protected boolean multilingualMode = false
 
     protected static final String JOB_TYPE = "job_type"
-	protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
-	protected static final String JENKINS_REGRESSION_SCHEDULING = "jenkinsRegressionScheduling"
-	
-	protected static final String RESOURCES_PATH = "/resources/"
-	protected static final String CARINA_SUITES_PATH = RESOURCES_PATH +  "testng_suites/"
+    protected static final String JENKINS_REGRESSION_MATRIX = "jenkinsRegressionMatrix"
+    protected static final String JENKINS_REGRESSION_SCHEDULING = "jenkinsRegressionScheduling"
+
+    protected static final String RESOURCES_PATH = "/resources/"
+    protected static final String CARINA_SUITES_PATH = RESOURCES_PATH + "testng_suites/"
 
     public enum JobType {
         JOB("JOB"),
         CRON("CRON")
         String type
+
         JobType(String type) {
             this.type = type
         }
@@ -79,12 +81,12 @@ public class QARunner extends Runner {
     }
 
     public QARunner(context, jobType) {
-        this (context)
+        this(context)
         this.jobType = jobType
     }
 
     //Methods
-	@Override
+    @Override
     public void build() {
         logger.info("QARunner->build")
 
@@ -92,7 +94,7 @@ public class QARunner extends Runner {
         setReportingCreds()
         setSeleniumUrl()
 
-        if (!isParamEmpty(Configuration.get("scmURL"))){
+        if (!isParamEmpty(Configuration.get("scmURL"))) {
             scmClient.setUrl(Configuration.get("scmURL"))
         }
         if (jobType.equals(JobType.JOB)) {
@@ -105,54 +107,54 @@ public class QARunner extends Runner {
 
 
     //Events
-	@Override
+    @Override
     public void onPush() {
-		context.node("master") {
-      context.timestamps {
-			logger.info("QARunner->onPush")
-			setReportingCreds()
+        context.node("master") {
+            context.timestamps {
+                logger.info("QARunner->onPush")
+                setReportingCreds()
 
-			try {
-				getScm().clone(true)
+                try {
+                    getScm().clone(true)
 
-				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
-					scan()
-                    //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
-					getJenkinsJobsScanResult(currentBuild.rawBuild)
-				}
+                    if (isUpdated(currentBuild, "**.xml,**/zafira.properties") || !onlyUpdated) {
+                        scan()
+                        //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
+                        getJenkinsJobsScanResult(currentBuild.rawBuild)
+                    }
 
-				sonar.scan()
-				jenkinsFileScan()
+                    sonar.scan()
+                    jenkinsFileScan()
 
-			} catch (Exception e) {
-				logger.error("Scan failed.\n" + e.getMessage())
-				getJenkinsJobsScanResult(null)
-				this.currentBuild.result = BuildResult.FAILURE
-			}
-			clean()
+                } catch (Exception e) {
+                    logger.error("Scan failed.\n" + e.getMessage())
+                    getJenkinsJobsScanResult(null)
+                    this.currentBuild.result = BuildResult.FAILURE
+                }
+                clean()
             }
-		}
+        }
     }
 
-	public void sendQTestResults() {
-		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-		setReportingCreds()
-		setQTestCreds()
+    public void sendQTestResults() {
+        // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
+        setReportingCreds()
+        setQTestCreds()
 
-		def ci_run_id = Configuration.get("ci_run_id")
-		Configuration.set("qtest_enabled", "true")
-		qTestUpdater.updateTestRun(ci_run_id)
-	}
+        def ci_run_id = Configuration.get("ci_run_id")
+        Configuration.set("qtest_enabled", "true")
+        qTestUpdater.updateTestRun(ci_run_id)
+    }
 
-	public void sendTestRailResults() {
-		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-		setReportingCreds()
-		setTestRailCreds()
+    public void sendTestRailResults() {
+        // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
+        setReportingCreds()
+        setTestRailCreds()
 
-		testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
-	}
+        testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
+    }
 
-	protected void scan() {
+    protected void scan() {
 
         context.stage("Scan Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
@@ -173,9 +175,9 @@ public class QARunner extends Runner {
                 def zafiraProject = getZafiraProject(subProjectFilter)
                 generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch)
 
-				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"),
-										Configuration.get("removedJobAction"),
-										Configuration.get("removedViewAction"))
+                factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"),
+                        Configuration.get("removedJobAction"),
+                        Configuration.get("removedViewAction"))
             }
         }
     }
@@ -191,7 +193,7 @@ public class QARunner extends Runner {
     }
 
     protected def getSubProjectPomFiles(subDirectory) {
-        if (".".equals(subDirectory)){
+        if (".".equals(subDirectory)) {
             subDirectory = ""
         } else {
             subDirectory = subDirectory + "/"
@@ -199,12 +201,12 @@ public class QARunner extends Runner {
         return context.findFiles(glob: subDirectory + "**/pom.xml")
     }
 
-    def getZafiraProject(subProjectFilter){
+    def getZafiraProject(subProjectFilter) {
         def zafiraProject = "unknown"
         def zafiraProperties = context.findFiles glob: subProjectFilter + "/**/zafira.properties"
         zafiraProperties.each {
-            Map properties  = context.readProperties file: it.path
-            if (!isParamEmpty(properties.zafira_project)){
+            Map properties = context.readProperties file: it.path
+            if (!isParamEmpty(properties.zafira_project)) {
                 zafiraProject = properties.zafira_project
                 logger.info("ZafiraProject: " + zafiraProject)
             }
@@ -212,11 +214,11 @@ public class QARunner extends Runner {
         return zafiraProject
     }
 
-    def generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch){
+    def generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch) {
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
-		
+
         // VIEWS
         registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
         //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
@@ -227,34 +229,34 @@ public class QARunner extends Runner {
         // find all tetsng suite xml files and launch dsl creator scripts (views, folders, jobs etc)
         for (File suite : suites) {
             def suitePath = suite.path
-			logger.debug("suitePath: " + suitePath)
-			
-			//verify if it is testNG suite xml file and continue scan only in this case!
-			def currentSuitePath = workspace + "/" + suitePath
-			
-			if (!currentSuitePath.contains(RESOURCES_PATH) || !isTestNgSuite(currentSuitePath)) {
-				logger.info("Skip from scanner as not a TestNG suite xml file: " + currentSuitePath)
-				// not under /src/test/resources or not a TestNG suite file
-				continue
-			}
+            logger.debug("suitePath: " + suitePath)
+
+            //verify if it is testNG suite xml file and continue scan only in this case!
+            def currentSuitePath = workspace + "/" + suitePath
+
+            if (!currentSuitePath.contains(RESOURCES_PATH) || !isTestNgSuite(currentSuitePath)) {
+                logger.info("Skip from scanner as not a TestNG suite xml file: " + currentSuitePath)
+                // not under /src/test/resources or not a TestNG suite file
+                continue
+            }
 
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
-			def suiteName = ""
-			if (currentSuitePath.toLowerCase().contains(CARINA_SUITES_PATH) && currentSuitePath.endsWith(".xml")) {
-				// carina core TestNG suite
-				int testResourceIndex = currentSuitePath.toLowerCase().lastIndexOf(CARINA_SUITES_PATH)
-				logger.debug("testResourceIndex : " + testResourceIndex)
-				suiteName = currentSuitePath.substring(testResourceIndex + CARINA_SUITES_PATH.length(), currentSuitePath.length() - 4)
-			} else {
-				// external TestNG suite
-				int testResourceIndex = currentSuitePath.lastIndexOf(RESOURCES_PATH)
-				logger.debug("testResourceIndex : " + testResourceIndex)
-				suiteName = currentSuitePath.substring(testResourceIndex + RESOURCES_PATH.length(), currentSuitePath.length())
-			}
-			
-			if (suiteName.isEmpty()) {
-				continue
-			}
+            def suiteName = ""
+            if (currentSuitePath.toLowerCase().contains(CARINA_SUITES_PATH) && currentSuitePath.endsWith(".xml")) {
+                // carina core TestNG suite
+                int testResourceIndex = currentSuitePath.toLowerCase().lastIndexOf(CARINA_SUITES_PATH)
+                logger.debug("testResourceIndex : " + testResourceIndex)
+                suiteName = currentSuitePath.substring(testResourceIndex + CARINA_SUITES_PATH.length(), currentSuitePath.length() - 4)
+            } else {
+                // external TestNG suite
+                int testResourceIndex = currentSuitePath.lastIndexOf(RESOURCES_PATH)
+                logger.debug("testResourceIndex : " + testResourceIndex)
+                suiteName = currentSuitePath.substring(testResourceIndex + RESOURCES_PATH.length(), currentSuitePath.length())
+            }
+
+            if (suiteName.isEmpty()) {
+                continue
+            }
 
             logger.info("suite name: " + suiteName)
             logger.info("suite path: " + suitePath)
@@ -277,7 +279,7 @@ public class QARunner extends Runner {
             registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
             registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
 
-            switch(suiteName.toLowerCase()){
+            switch (suiteName.toLowerCase()) {
                 case ~/^.*api.*$/:
                     registerObject("API_VIEW", new ListViewFactory(repoFolder, "API", "", ".*(?i)api.*"))
                     break
@@ -304,105 +306,105 @@ public class QARunner extends Runner {
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
             registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling, suiteThreadCount, suiteDataProviderThreadCount))
 
-			//cron job
+            //cron job
             if (!isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))) {
                 def cronJobNames = currentSuite.getParameter("jenkinsRegressionPipeline")
                 for (def cronJobName : cronJobNames.split(",")) {
                     cronJobName = cronJobName.trim()
-					def cronDesc = "project: ${repo}; type: cron"
-					def cronJobFactory = new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc, orgRepoScheduling)
+                    def cronDesc = "project: ${repo}; type: cron"
+                    def cronJobFactory = new CronJobFactory(repoFolder, getCronPipelineScript(), cronJobName, host, repo, organization, branch, currentSuitePath, cronDesc, orgRepoScheduling)
 
-					if (!dslObjects.containsKey(cronJobName)) {
-						// register CronJobFactory only if its declaration is missed
-						registerObject(cronJobName, cronJobFactory)
-					} else {
-						cronJobFactory = dslObjects.get(cronJobName)
-					}
+                    if (!dslObjects.containsKey(cronJobName)) {
+                        // register CronJobFactory only if its declaration is missed
+                        registerObject(cronJobName, cronJobFactory)
+                    } else {
+                        cronJobFactory = dslObjects.get(cronJobName)
+                    }
 
-					// try to detect scheduling in current suite
-					def scheduling = null
-					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING))) {
-						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING)
-					}
-					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName))) {
-						scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName)
-					}
+                    // try to detect scheduling in current suite
+                    def scheduling = null
+                    if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING))) {
+                        scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING)
+                    }
+                    if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName))) {
+                        scheduling = currentSuite.getParameter(JENKINS_REGRESSION_SCHEDULING + "_" + cronJobName)
+                    }
 
-					if (!isParamEmpty(scheduling)) {
-						logger.info("Setup scheduling for cron: ${cronJobName} value: ${scheduling}")
-						cronJobFactory.setScheduling(scheduling)
-					}
+                    if (!isParamEmpty(scheduling)) {
+                        logger.info("Setup scheduling for cron: ${cronJobName} value: ${scheduling}")
+                        cronJobFactory.setScheduling(scheduling)
+                    }
                 }
             }
         }
     }
 
-	protected def getSuiteAttribute(suite, attribute) {
-		def res = "1"
+    protected def getSuiteAttribute(suite, attribute) {
+        def res = "1"
 
-		def file = new File(suite.getFileName())
-		def documentBuilderFactory = DocumentBuilderFactory.newInstance()
+        def file = new File(suite.getFileName())
+        def documentBuilderFactory = DocumentBuilderFactory.newInstance()
 
-		documentBuilderFactory.setValidating(false)
-		documentBuilderFactory.setNamespaceAware(true)
-		try {
-			documentBuilderFactory.setFeature("http://xml.org/sax/features/namespaces", false)
-			documentBuilderFactory.setFeature("http://xml.org/sax/features/validation", false)
-			documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false)
-			documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        documentBuilderFactory.setValidating(false)
+        documentBuilderFactory.setNamespaceAware(true)
+        try {
+            documentBuilderFactory.setFeature("http://xml.org/sax/features/namespaces", false)
+            documentBuilderFactory.setFeature("http://xml.org/sax/features/validation", false)
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false)
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 
-			def documentBuilder = documentBuilderFactory.newDocumentBuilder()
-			def document = documentBuilder.parse(file)
+            def documentBuilder = documentBuilderFactory.newDocumentBuilder()
+            def document = documentBuilder.parse(file)
 
-			for (int i = 0; i < document.getChildNodes().getLength(); i++) {
-				def nodeMapAttributes = document.getChildNodes().item(i).getAttributes()
-				if (nodeMapAttributes == null) {
-					continue
-				}
+            for (int i = 0; i < document.getChildNodes().getLength(); i++) {
+                def nodeMapAttributes = document.getChildNodes().item(i).getAttributes()
+                if (nodeMapAttributes == null) {
+                    continue
+                }
 
-				// get "name" from suite element
-				// <suite verbose="1" name="Carina Demo Tests - API Sample" thread-count="3" >
-				Node nodeName = nodeMapAttributes.getNamedItem("name")
-				if (nodeName == null) {
-					continue
-				}
+                // get "name" from suite element
+                // <suite verbose="1" name="Carina Demo Tests - API Sample" thread-count="3" >
+                Node nodeName = nodeMapAttributes.getNamedItem("name")
+                if (nodeName == null) {
+                    continue
+                }
 
-				if (suite.getName().equals(nodeName.getNodeValue())) {
-					// valid suite node detected
-					Node nodeAttribute = nodeMapAttributes.getNamedItem(attribute)
-					if (nodeAttribute != null) {
-						res = nodeAttribute.getNodeValue()
-						break
-					}
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Unable to get attribute '" + attribute +"' from suite: " + suite.getFileName() + "!")
-			logger.error(e.getMessage())
-			logger.error(printStackTrace(e))
-		}
+                if (suite.getName().equals(nodeName.getNodeValue())) {
+                    // valid suite node detected
+                    Node nodeAttribute = nodeMapAttributes.getNamedItem(attribute)
+                    if (nodeAttribute != null) {
+                        res = nodeAttribute.getNodeValue()
+                        break
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Unable to get attribute '" + attribute + "' from suite: " + suite.getFileName() + "!")
+            logger.error(e.getMessage())
+            logger.error(printStackTrace(e))
+        }
 
-		return res
-	}
+        return res
+    }
 
-	protected boolean isTestNgSuite(filePath){
-		logger.debug("filePath: " + filePath)
-		XmlSuite currentSuite = null
-		boolean res = false
-		try {
-			currentSuite = parseSuite(filePath)
-			res = true
-		} catch (FileNotFoundException e) {
-			logger.error("Unable to find suite: " + filePath)
-			logger.error(printStackTrace(e))
-		} catch (Exception e) {
-			logger.debug("Unable to parse suite: " + filePath)
-			logger.debug(printStackTrace(e))
-		}
-		return res
-	}
+    protected boolean isTestNgSuite(filePath) {
+        logger.debug("filePath: " + filePath)
+        XmlSuite currentSuite = null
+        boolean res = false
+        try {
+            currentSuite = parseSuite(filePath)
+            res = true
+        } catch (FileNotFoundException e) {
+            logger.error("Unable to find suite: " + filePath)
+            logger.error(printStackTrace(e))
+        } catch (Exception e) {
+            logger.debug("Unable to parse suite: " + filePath)
+            logger.debug(printStackTrace(e))
+        }
+        return res
+    }
 
-    protected XmlSuite parsePipeline(filePath){
+    protected XmlSuite parsePipeline(filePath) {
         logger.debug("filePath: " + filePath)
         XmlSuite currentSuite = null
         try {
@@ -459,7 +461,7 @@ public class QARunner extends Runner {
         }
     }
 
-    protected def generateJenkinsJobs(build){
+    protected def generateJenkinsJobs(build) {
         List jenkinsJobs = []
         build.getAction(GeneratedJobsBuildAction).modifiedObjects.each { job ->
             def jobFullName = replaceStartSlash(job.jobName)
@@ -469,7 +471,7 @@ public class QARunner extends Runner {
         return jenkinsJobs
     }
 
-    protected def generateJenkinsJob(jobFullName){
+    protected def generateJenkinsJob(jobFullName) {
         Map jenkinsJob = [:]
 
         def job = getItemByFullName(jobFullName)
@@ -479,18 +481,18 @@ public class QARunner extends Runner {
         jenkinsJob.type = parameters.job_type
         parameters.remove("job_type")
         jenkinsJob.url = jobUrl
-        jenkinsJob.parameters  = new JsonBuilder(parameters).toPrettyString()
+        jenkinsJob.parameters = new JsonBuilder(parameters).toPrettyString()
 
         return jenkinsJob
     }
 
     protected def getObjectValue(obj) {
         def value
-        if (obj instanceof ExtensibleChoiceParameterDefinition){
+        if (obj instanceof ExtensibleChoiceParameterDefinition) {
             value = obj.choiceListProvider.getChoiceList()
         } else if (obj instanceof ChoiceParameterDefinition) {
             value = obj.choices
-        }  else {
+        } else {
             value = obj.defaultValue
         }
         return value
@@ -507,7 +509,7 @@ public class QARunner extends Runner {
                     if (prm.split('=').size() == 2) {
                         parameters.put("capabilities." + prm.split('=')[0], prm.split('=')[1])
                     } else {
-                        logger.error("Invalid capability param: ${prm}" )
+                        logger.error("Invalid capability param: ${prm}")
                     }
                 }
             }
@@ -517,7 +519,7 @@ public class QARunner extends Runner {
             def value = getObjectValue(parameterDefinition)
 
             if (!(parameterDefinition instanceof WHideParameterDefinition) || JOB_TYPE.equals(parameterDefinition.name)) {
-                if(isJobParameterValid(parameterDefinition.name)){
+                if (isJobParameterValid(parameterDefinition.name)) {
                     parameters.put(parameterDefinition.name, value)
                 }
             }
@@ -548,7 +550,7 @@ public class QARunner extends Runner {
                             buildJob()
                         }
                         testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
-                        if(!isParamEmpty(testRun)){
+                        if (!isParamEmpty(testRun)) {
                             zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
                             zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
                         }
@@ -570,7 +572,7 @@ public class QARunner extends Runner {
                     throw e
                 } finally {
                     //TODO: send notification via email, slack, hipchat and whatever... based on subscription rules
-                    if(!isParamEmpty(testRun)) {
+                    if (!isParamEmpty(testRun)) {
                         zafiraUpdater.exportZafiraReport(uuid, getWorkspace())
                         zafiraUpdater.setBuildResult(uuid, currentBuild)
                     } else {
@@ -586,10 +588,10 @@ public class QARunner extends Runner {
 
                         // TODO: rename include_all to something testrail related
                         def includeAll = Configuration.get("include_all")?.toBoolean()
-                        def milestoneName = !isParamEmpty(Configuration.get("testrail_milestone"))?Configuration.get("testrail_milestone"):""
-                        def runName = !isParamEmpty(Configuration.get("testrail_run_name"))?Configuration.get("testrail_run_name"):""
+                        def milestoneName = !isParamEmpty(Configuration.get("testrail_milestone")) ? Configuration.get("testrail_milestone") : ""
+                        def runName = !isParamEmpty(Configuration.get("testrail_run_name")) ? Configuration.get("testrail_run_name") : ""
                         def runExists = Configuration.get("run_exists")?.toBoolean()
-                        def assignee = !isParamEmpty(Configuration.get("testrail_assignee"))?Configuration.get("testrail_assignee"):""
+                        def assignee = !isParamEmpty(Configuration.get("testrail_assignee")) ? Configuration.get("testrail_assignee") : ""
 
                         context.node("master") {
                             context.build job: jobName,
@@ -605,10 +607,10 @@ public class QARunner extends Runner {
                                     ]
                         }
                     }
-                    if(Configuration.get("qtest_enabled")?.toBoolean()){
+                    if (Configuration.get("qtest_enabled")?.toBoolean()) {
                         String jobName = getCurrentFolderFullName(Configuration.QTEST_UPDATER_JOBNAME)
-                        def os = !isParamEmpty(Configuration.get("capabilities.os"))?Configuration.get("capabilities.os"):""
-                        def osVersion = !isParamEmpty(Configuration.get("capabilities.os_version"))?Configuration.get("capabilities.os_version"):""
+                        def os = !isParamEmpty(Configuration.get("capabilities.os")) ? Configuration.get("capabilities.os") : ""
+                        def osVersion = !isParamEmpty(Configuration.get("capabilities.os_version")) ? Configuration.get("capabilities.os_version") : ""
                         def browser = getBrowser()
                         context.node("master") {
                             context.build job: jobName,
@@ -702,8 +704,8 @@ public class QARunner extends Runner {
         String env = Configuration.get("env")
         String browser = getBrowser()
         String browserVersion = getBrowserVersion()
-		String locale = Configuration.get("locale")
-		String language = Configuration.get("language")
+        String locale = Configuration.get("locale")
+        String language = Configuration.get("language")
 
         context.stage('Preparation') {
             currentBuild.displayName = "#${buildNumber}|${suite}|${branch}"
@@ -716,12 +718,12 @@ public class QARunner extends Runner {
             if (!isParamEmpty(browserVersion)) {
                 currentBuild.displayName += "|${browserVersion}"
             }
-			if (!isParamEmpty(locale)) {
-				currentBuild.displayName += "|${locale}"
-			}
-			if (!isParamEmpty(language)) {
-				currentBuild.displayName += "|${language}"
-			}
+            if (!isParamEmpty(locale)) {
+                currentBuild.displayName += "|${locale}"
+            }
+            if (!isParamEmpty(language)) {
+                currentBuild.displayName += "|${language}"
+            }
             currentBuild.description = "${suite}"
             if (isMobile()) {
                 //this is mobile test
@@ -778,71 +780,71 @@ public class QARunner extends Runner {
         }
     }
 
-	protected void setSeleniumUrl() {
-		def seleniumUrl = Configuration.get(Configuration.Parameter.SELENIUM_URL)
-		logger.info("seleniumUrl: ${seleniumUrl}")
-		if (!isParamEmpty(seleniumUrl) && !Configuration.mustOverride.equals(seleniumUrl)) {
-			// do not override from creds as looks like external service or user overrided this value
-			return
-		}
+    protected void setSeleniumUrl() {
+        def seleniumUrl = Configuration.get(Configuration.Parameter.SELENIUM_URL)
+        logger.info("seleniumUrl: ${seleniumUrl}")
+        if (!isParamEmpty(seleniumUrl) && !Configuration.mustOverride.equals(seleniumUrl)) {
+            // do not override from creds as looks like external service or user overrided this value
+            return
+        }
 
-		// update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
-		def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
-		def hubUrl = "${provider}_hub"
+        // update SELENIUM_URL parameter based on capabilities.provider. Local "selenium" is default provider
+        def provider = !isParamEmpty(Configuration.get("capabilities.provider")) ? Configuration.get("capabilities.provider") : "selenium"
+        def hubUrl = "${provider}_hub"
         Configuration.set(Configuration.Parameter.SELENIUM_URL, getToken(hubUrl))
 
-	}
+    }
 
-	protected void setReportingCreds() {
-		def zafiraFields = Configuration.get("zafiraFields")
-		logger.debug("zafiraFields: " + zafiraFields)
-		if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-			//already should be parsed and inited as part of Configuration
-			//TODO: improve code quality having single return and zafiraUpdater init
-			zafiraUpdater = new ZafiraUpdater(context)
-			return
-		}
+    protected void setReportingCreds() {
+        def zafiraFields = Configuration.get("zafiraFields")
+        logger.debug("zafiraFields: " + zafiraFields)
+        if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+            //already should be parsed and inited as part of Configuration
+            //TODO: improve code quality having single return and zafiraUpdater init
+            zafiraUpdater = new ZafiraUpdater(context)
+            return
+        }
 
-		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
-		Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
-		
-		// obligatory init zafiraUpdater after getting valid url and token
-		zafiraUpdater = new ZafiraUpdater(context)
-	}
+        // update Zafira serviceUrl and accessToken parameter based on values from credentials
+        Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
+        Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
 
-	protected void setTestRailCreds() {
-		// update testRail integration items from credentials
-		Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, getToken(Configuration.CREDS_TESTRAIL_SERVICE_URL))
-        
+        // obligatory init zafiraUpdater after getting valid url and token
+        zafiraUpdater = new ZafiraUpdater(context)
+    }
+
+    protected void setTestRailCreds() {
+        // update testRail integration items from credentials
+        Configuration.set(Configuration.Parameter.TESTRAIL_SERVICE_URL, getToken(Configuration.CREDS_TESTRAIL_SERVICE_URL))
+
         def (userName, userPassword) = getUserCreds(Configuration.CREDS_TESTRAIL)
         Configuration.set(Configuration.Parameter.TESTRAIL_USERNAME, userName)
         Configuration.set(Configuration.Parameter.TESTRAIL_PASSWORD, userPassword)
-        
-		// obligatory init testrailUpdater after getting valid url and creds reading
-		testRailUpdater = new TestRailUpdater(context)
-	}
 
-	protected void setQTestCreds() {
-		// update QTest serviceUrl and accessToken parameter based on values from credentials
-		Configuration.set(Configuration.Parameter.QTEST_SERVICE_URL, getToken(Configuration.CREDS_QTEST_SERVICE_URL))
-		Configuration.set(Configuration.Parameter.QTEST_ACCESS_TOKEN, getToken(Configuration.CREDS_QTEST_ACCESS_TOKEN))
+        // obligatory init testrailUpdater after getting valid url and creds reading
+        testRailUpdater = new TestRailUpdater(context)
+    }
 
-		// obligatory init qtestUpdater after getting valid url and token
-		qTestUpdater = new QTestUpdater(context)
-	}
+    protected void setQTestCreds() {
+        // update QTest serviceUrl and accessToken parameter based on values from credentials
+        Configuration.set(Configuration.Parameter.QTEST_SERVICE_URL, getToken(Configuration.CREDS_QTEST_SERVICE_URL))
+        Configuration.set(Configuration.Parameter.QTEST_ACCESS_TOKEN, getToken(Configuration.CREDS_QTEST_ACCESS_TOKEN))
+
+        // obligatory init qtestUpdater after getting valid url and token
+        qTestUpdater = new QTestUpdater(context)
+    }
 
     protected String getMavenGoals() {
-		// When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
-		def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
-		if (!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)) &&
-			!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))) {
-			// Ignore maven build result if Zafira integration is enabled
-			zafiraGoals = "-Dmaven.test.failure.ignore=true \
+        // When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
+        def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
+        if (!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)) &&
+                !isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))) {
+            // Ignore maven build result if Zafira integration is enabled
+            zafiraGoals = "-Dmaven.test.failure.ignore=true \
 							-Dzafira_enabled=true \
 							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)} \
 							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)}"
-		}
+        }
 
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
@@ -882,9 +884,10 @@ public class QARunner extends Runner {
         logger.debug("goals: ${goals}")
         return goals
     }
+
     protected def addMVNParams(params) {
         // This is an array of parameters, that we need to exclude from list of transmitted parameters to maven
-        def necessaryMavenParams  = [
+        def necessaryMavenParams = [
                 "capabilities",
                 "REPORTING_SERVICE_URL",
                 "REPORTING_ACCESS_TOKEN",
@@ -962,7 +965,7 @@ public class QARunner extends Runner {
      */
     protected def addCapabilityIfPresent(parameterName, capabilityName) {
         def capabilityValue = Configuration.get(parameterName)
-        if(!isParamEmpty(capabilityValue))
+        if (!isParamEmpty(capabilityValue))
             addCapability(capabilityName, capabilityValue)
     }
 
@@ -1122,12 +1125,12 @@ public class QARunner extends Runner {
 
             currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
 
-            for(pomFile in context.getPomFiles()){
+            for (pomFile in context.getPomFiles()) {
                 // clear list of pipelines for each sub-project
                 listPipelines.clear()
                 // Ternary operation to get subproject path. "." means that no subfolder is detected
-                def subProject = Paths.get(pomFile).getParent()?Paths.get(pomFile).getParent().toString():"."
-                def subProjectFilter = subProject.equals(".")?"**":subProject
+                def subProject = Paths.get(pomFile).getParent() ? Paths.get(pomFile).getParent().toString() : "."
+                def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 generatePipeLineList(subProjectFilter)
                 logger.info "Finished Dynamic Mapping:"
                 listPipelines = sortPipelineList(listPipelines)
@@ -1139,10 +1142,10 @@ public class QARunner extends Runner {
         }
     }
 
-    protected def generatePipeLineList(subProjectFilter){
+    protected def generatePipeLineList(subProjectFilter) {
         def files = context.findFiles glob: subProjectFilter + "/**/*.xml"
         logger.info("Number of Test Suites to Scan Through: " + files.length)
-        for (file in files){
+        for (file in files) {
             def currentSuitePath = workspace + "/" + file.path
             if (!currentSuitePath.contains(RESOURCES_PATH) || !isTestNgSuite(currentSuitePath)) {
                 logger.info("Skip from scanner as not a TestNG suite xml file: " + currentSuitePath)
@@ -1166,16 +1169,16 @@ public class QARunner extends Runner {
             return
         }
 
-        def jobName = !isParamEmpty(currentSuite.getParameter("jenkinsJobName"))?replaceSpecialSymbols(currentSuite.getParameter("jenkinsJobName")):replaceSpecialSymbols(currentSuite.getName())
-        def regressionPipelines = !isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline"))?currentSuite.getParameter("jenkinsRegressionPipeline"):""
+        def jobName = !isParamEmpty(currentSuite.getParameter("jenkinsJobName")) ? replaceSpecialSymbols(currentSuite.getParameter("jenkinsJobName")) : replaceSpecialSymbols(currentSuite.getName())
+        def regressionPipelines = !isParamEmpty(currentSuite.getParameter("jenkinsRegressionPipeline")) ? currentSuite.getParameter("jenkinsRegressionPipeline") : ""
         def orderNum = getJobExecutionOrderNumber(currentSuite)
         def executionMode = currentSuite.getParameter("jenkinsJobExecutionMode")
         def supportedEnvs = getSuiteParameter(currentSuite.getParameter("jenkinsEnvironments"), "jenkinsPipelineEnvironments", currentSuite)
         def currentEnvs = getCronEnv(currentSuite)
-        def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration"))?currentSuite.getParameter("jenkinsQueueRegistration"):Configuration.get("queue_registration")
-        def emailList = !isParamEmpty(Configuration.get("email_list"))?Configuration.get("email_list"):currentSuite.getParameter("jenkinsEmail")
-        def priorityNum = !isParamEmpty(Configuration.get("BuildPriority"))?Configuration.get("BuildPriority"):"5"
-        def currentBrowser = !isParamEmpty(getBrowser())?getBrowser():"NULL"
+        def queueRegistration = !isParamEmpty(currentSuite.getParameter("jenkinsQueueRegistration")) ? currentSuite.getParameter("jenkinsQueueRegistration") : Configuration.get("queue_registration")
+        def emailList = !isParamEmpty(Configuration.get("email_list")) ? Configuration.get("email_list") : currentSuite.getParameter("jenkinsEmail")
+        def priorityNum = !isParamEmpty(Configuration.get("BuildPriority")) ? Configuration.get("BuildPriority") : "5"
+        def currentBrowser = !isParamEmpty(getBrowser()) ? getBrowser() : "NULL"
         def logLine = "regressionPipelines: ${regressionPipelines};\n	jobName: ${jobName};\n	" +
                 "jobExecutionOrderNumber: ${orderNum};\n	email_list: ${emailList};\n	" +
                 "supportedEnvs: ${supportedEnvs};\n	currentEnv(s): ${currentEnvs};\n	" +
@@ -1183,7 +1186,7 @@ public class QARunner extends Runner {
         logger.info(logLine)
 
         for (def regressionPipeline : regressionPipelines?.split(",")) {
-			regressionPipeline = regressionPipeline.trim()
+            regressionPipeline = regressionPipeline.trim()
             if (!Configuration.get(Configuration.Parameter.JOB_BASE_NAME).equals(regressionPipeline)) {
                 //launch test only if current regressionPipeline exists among regressionPipelines
                 continue
@@ -1201,55 +1204,55 @@ public class QARunner extends Runner {
                     }
 
 
-					// organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX or execute at once with default params
-					def supportedParamsMatrix = ""
-					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX))) {
-						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX)
-						logger.info("Declared ${JENKINS_REGRESSION_MATRIX} detected!")
-					}
+                    // organize children pipeline jobs according to the JENKINS_REGRESSION_MATRIX or execute at once with default params
+                    def supportedParamsMatrix = ""
+                    if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX))) {
+                        supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX)
+                        logger.info("Declared ${JENKINS_REGRESSION_MATRIX} detected!")
+                    }
 
-					if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline))) {
-						// override default parameters matrix using concrete cron params
-						supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline)
-						logger.info("Declared ${JENKINS_REGRESSION_MATRIX}_${regressionPipeline} detected!")
-					}
+                    if (!isParamEmpty(currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline))) {
+                        // override default parameters matrix using concrete cron params
+                        supportedParamsMatrix = currentSuite.getParameter(JENKINS_REGRESSION_MATRIX + "_" + regressionPipeline)
+                        logger.info("Declared ${JENKINS_REGRESSION_MATRIX}_${regressionPipeline} detected!")
+                    }
 
-					for (def supportedParams : supportedParamsMatrix.split(";")) {
-						if (!isParamEmpty(supportedParams)) {
-							supportedParams = supportedParams.trim()
-							logger.info("supportedParams: ${supportedParams}")
-						}
+                    for (def supportedParams : supportedParamsMatrix.split(";")) {
+                        if (!isParamEmpty(supportedParams)) {
+                            supportedParams = supportedParams.trim()
+                            logger.info("supportedParams: ${supportedParams}")
+                        }
 
-						Map supportedConfigurations = getSupportedConfigurations(supportedParams)
-						logger.info("supportedConfigurations: ${supportedConfigurations}")
-						def pipelineMap = [:]
-						// put all not NULL args into the pipelineMap for execution
-						putMap(pipelineMap, pipelineLocaleMap)
-						pipelineMap.put("name", regressionPipeline)
-						pipelineMap.put("params_name", supportedParams)
-						pipelineMap.put("branch", Configuration.get("branch"))
-						pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
-						pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
-						putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
-						pipelineMap.put("jobName", jobName)
-						pipelineMap.put("env", supportedEnv)
-						pipelineMap.put("order", orderNum)
-						pipelineMap.put("BuildPriority", priorityNum)
-						putNotNullWithSplit(pipelineMap, "email_list", emailList)
-						putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
-						putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
-						putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
-						putNotNull(pipelineMap, "queue_registration", queueRegistration)
-						// supported config matrix should be applied at the end to be able to override default args like retry_count etc
-						putMap(pipelineMap, supportedConfigurations)
-						registerPipeline(currentSuite, pipelineMap)
-					}
+                        Map supportedConfigurations = getSupportedConfigurations(supportedParams)
+                        logger.info("supportedConfigurations: ${supportedConfigurations}")
+                        def pipelineMap = [:]
+                        // put all not NULL args into the pipelineMap for execution
+                        putMap(pipelineMap, pipelineLocaleMap)
+                        pipelineMap.put("name", regressionPipeline)
+                        pipelineMap.put("params_name", supportedParams)
+                        pipelineMap.put("branch", Configuration.get("branch"))
+                        pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
+                        pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
+                        putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
+                        pipelineMap.put("jobName", jobName)
+                        pipelineMap.put("env", supportedEnv)
+                        pipelineMap.put("order", orderNum)
+                        pipelineMap.put("BuildPriority", priorityNum)
+                        putNotNullWithSplit(pipelineMap, "email_list", emailList)
+                        putNotNullWithSplit(pipelineMap, "executionMode", executionMode)
+                        putNotNull(pipelineMap, "overrideFields", Configuration.get("overrideFields"))
+                        putNotNull(pipelineMap, "zafiraFields", Configuration.get("zafiraFields"))
+                        putNotNull(pipelineMap, "queue_registration", queueRegistration)
+                        // supported config matrix should be applied at the end to be able to override default args like retry_count etc
+                        putMap(pipelineMap, supportedConfigurations)
+                        registerPipeline(currentSuite, pipelineMap)
+                    }
                 }
             }
         }
     }
 
-    protected def getOrderNum(suite){
+    protected def getOrderNum(suite) {
         def orderNum = suite.getParameter("jenkinsJobExecutionOrder").toString()
         if (orderNum.equals("null")) {
             orderNum = "0"
@@ -1261,7 +1264,7 @@ public class QARunner extends Runner {
         return orderNum
     }
 
-    protected def getJobExecutionOrderNumber(suite){
+    protected def getJobExecutionOrderNumber(suite) {
         def orderNum = suite.getParameter("jenkinsJobExecutionOrder")
         if (isParamEmpty(orderNum)) {
             orderNum = 0
@@ -1283,7 +1286,7 @@ public class QARunner extends Runner {
         listPipelines.add(pipelineMap)
     }
 
-    protected getSupportedConfigurations(configDetails){
+    protected getSupportedConfigurations(configDetails) {
         def valuesMap = [:]
         // browser: chrome; browser: firefox;
         // browser: chrome, browser_version: 74;
@@ -1366,7 +1369,7 @@ public class QARunner extends Runner {
         def stageName = ""
         String jobName = jobParams.get("jobName")
         String env = jobParams.get("env")
-		String paramsName = jobParams.get("params_name")
+        String paramsName = jobParams.get("params_name")
 
         String browser = jobParams.get("browser")
         String browser_version = jobParams.get("browser_version")
@@ -1376,13 +1379,13 @@ public class QARunner extends Runner {
         if (!isParamEmpty(jobName)) {
             stageName += "Stage: ${jobName} "
         }
-		if (!isParamEmpty(env)) {
-			stageName += "Environment: ${env} "
-		}
-		if (!isParamEmpty(paramsName)) {
-			stageName += "Params: ${paramsName} "
-		}
-		//TODO: investigate if we can remove lower param for naming after adding "params_name"
+        if (!isParamEmpty(env)) {
+            stageName += "Environment: ${env} "
+        }
+        if (!isParamEmpty(paramsName)) {
+            stageName += "Params: ${paramsName} "
+        }
+        //TODO: investigate if we can remove lower param for naming after adding "params_name"
         if (!isParamEmpty(browser)) {
             stageName += "Browser: ${browser} "
         }
@@ -1413,10 +1416,10 @@ public class QARunner extends Runner {
 
             //add current build params from cron
             for (param in Configuration.getParams()) {
-				if ("params_name".equals(param.getKey())) {
-					//do not append params_name as it it used only for naming
-					continue
-				}
+                if ("params_name".equals(param.getKey())) {
+                    //do not append params_name as it it used only for naming
+                    continue
+                }
 
                 if (!isParamEmpty(param.getValue())) {
                     if ("false".equalsIgnoreCase(param.getValue().toString()) || "true".equalsIgnoreCase(param.getValue().toString())) {
@@ -1447,10 +1450,10 @@ public class QARunner extends Runner {
         }
     }
 
-    public void rerunJobs(){
-        context.stage('Rerun Tests'){
+    public void rerunJobs() {
+        context.stage('Rerun Tests') {
             //updates zafira credentials with values from Jenkins Credentials (if present)
-			setReportingCreds()
+            setReportingCreds()
             zafiraUpdater.smartRerun()
         }
     }
@@ -1458,16 +1461,16 @@ public class QARunner extends Runner {
     public void publishUnitTestResults() {
         //publish junit/cobertura reports
         context.junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
-        context.step([$class: 'CoberturaPublisher',
-                      autoUpdateHealth: false,
+        context.step([$class             : 'CoberturaPublisher',
+                      autoUpdateHealth   : false,
                       autoUpdateStability: false,
                       coberturaReportFile: '**/target/site/cobertura/coverage.xml',
-                      failUnhealthy: false,
-                      failUnstable: false,
-                      maxNumberOfBuilds: 0,
-                      onlyStable: false,
-                      sourceEncoding: 'ASCII',
-                      zoomCoverageChart: false])
+                      failUnhealthy      : false,
+                      failUnstable       : false,
+                      maxNumberOfBuilds  : 0,
+                      onlyStable         : false,
+                      sourceEncoding     : 'ASCII',
+                      zoomCoverageChart  : false])
     }
 
     public void mergeBranch() {
@@ -1481,7 +1484,7 @@ public class QARunner extends Runner {
         }
     }
 
-    def getSettingsFileProviderContent(fileId){
+    def getSettingsFileProviderContent(fileId) {
         context.configFileProvider([context.configFile(fileId: fileId, variable: "MAVEN_SETTINGS")]) {
             context.readFile context.env.MAVEN_SETTINGS
         }

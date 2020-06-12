@@ -38,7 +38,7 @@ public class BuildJobFactory extends PipelineFactory {
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-                configure stringParam('email_list',  "", 'List of Users to be emailed after the test')
+                configure stringParam('email_list', "", 'List of Users to be emailed after the test')
             }
 
         }

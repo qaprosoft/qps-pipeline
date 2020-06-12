@@ -15,15 +15,15 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
     def create() {
         logger.info("RegisterRepositoryJobFactory->create")
         def pipelineJob = super.create()
-		def repo = ""
-		if ("qaprosoft".equals(this.folder) || "".equals(this.folder)) {
-			repo = "carina-demo"
-		}
-		def org = "qaprosoft"
-		if (!this.folder.isEmpty()) {
-			org = this.folder
-		}
-		
+        def repo = ""
+        if ("qaprosoft".equals(this.folder) || "".equals(this.folder)) {
+            repo = "carina-demo"
+        }
+        def org = "qaprosoft"
+        if (!this.folder.isEmpty()) {
+            org = this.folder
+        }
+
         pipelineJob.with {
             parameters {
                 configure stringParam('scmHost', 'github.com', 'Source Control Management host')
