@@ -6,7 +6,7 @@ import static com.qaprosoft.jenkins.Utils.*
 import com.qaprosoft.jenkins.pipeline.Configuration
 
 /*
- * Prerequisites: valid ZAFIRA_SERVICE_URL and ZAFIRA_ACCESS_TOKEN already defined in Configuration
+ * Prerequisites: valid REPORTING_SERVICE_URL and REPORTING_ACCESS_TOKEN already defined in Configuration
  */
 
 class ZafiraClient extends HttpClient {
@@ -18,8 +18,8 @@ class ZafiraClient extends HttpClient {
 
     public ZafiraClient(context) {
         super(context)
-        this.serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
-        this.refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+        this.serviceURL = Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)
+        this.refreshToken = Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)
     }
 
     public def queueZafiraTestRun(uuid) {

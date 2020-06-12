@@ -8,8 +8,8 @@ public class Configuration {
 
     public final static def mustOverride = "{must_override}"
 
-    public final static def CREDS_ZAFIRA_SERVICE_URL = "zafira_service_url"
-    public final static def CREDS_ZAFIRA_ACCESS_TOKEN = "zafira_access_token"
+    public final static def CREDS_REPORTING_SERVICE_URL = "reporting_service_url"
+    public final static def CREDS_REPORTING_ACCESS_TOKEN = "reporting_access_token"
     public final static def CREDS_TESTRAIL_SERVICE_URL = "testrail_service_url"
     public final static def CREDS_TESTRAIL = "testrail_creds"
     public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
@@ -73,8 +73,8 @@ public class Configuration {
         SELENIUM_URL("SELENIUM_URL", mustOverride, true),
         HUB_MODE("hub_mode", "selenium"),
 
-        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, true),
-        ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", mustOverride),
+        REPORTING_ACCESS_TOKEN("REPORTING_ACCESS_TOKEN", mustOverride, true),
+        REPORTING_SERVICE_URL("REPORTING_SERVICE_URL", mustOverride),
 
         JOB_URL("JOB_URL", mustOverride),
         JOB_NAME("JOB_NAME", mustOverride),

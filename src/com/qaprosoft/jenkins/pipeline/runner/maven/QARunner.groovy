@@ -9,5 +9,4 @@ public class QARunner extends TestNG {
     public QARunner(context, jobType) {
         super(context, jobType)
     }
-
 }

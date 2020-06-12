@@ -30,7 +30,7 @@ class TestRailUpdater {
 		return
 	}
 		
-        // export all tag related metadata from Zafira
+        // export all tag related metadata from Reporting service
         def integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
         logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
@@ -66,7 +66,7 @@ class TestRailUpdater {
 
         def createdAfter = integration.createdAfter
 
-        // get all cases from TestRail by project and suite and compare with exported from Zafira
+        // get all cases from TestRail by project and suite and compare with exported from Reporting service
         // only cases available in both maps should be registered later
         def testRailCaseIds = parseCases(projectId, suiteId)
         def filteredCaseResultMap = filterCaseResultMap(caseResultMap, testRailCaseIds)
