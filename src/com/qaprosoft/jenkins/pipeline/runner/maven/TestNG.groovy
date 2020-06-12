@@ -87,7 +87,7 @@ public class TestNG extends Runner {
         logger.info("TestNG->build")
 
         // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-        setZafiraCreds()
+        setReportingCreds()
         setSeleniumUrl()
 
         if (!isParamEmpty(Configuration.get("scmURL"))){
@@ -108,7 +108,7 @@ public class TestNG extends Runner {
 		context.node("master") {
       context.timestamps {
 			logger.info("TestNG->onPush")
-			setZafiraCreds()
+			setReportingCreds()
 
 			try {
 				getScm().clone(true)
@@ -134,7 +134,7 @@ public class TestNG extends Runner {
 
 	public void sendQTestResults() {
 		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-		setZafiraCreds()
+		setReportingCreds()
 		setQTestCreds()
 
 		def ci_run_id = Configuration.get("ci_run_id")
@@ -144,7 +144,7 @@ public class TestNG extends Runner {
 
 	public void sendTestRailResults() {
 		// set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-		setZafiraCreds()
+		setReportingCreds()
 		setTestRailCreds()
 
 		testRailUpdater.updateTestRun(Configuration.get("ci_run_id"))
@@ -791,7 +791,7 @@ public class TestNG extends Runner {
 
 	}
 
-	protected void setZafiraCreds() {
+	protected void setReportingCreds() {
 		def zafiraFields = Configuration.get("zafiraFields")
 		logger.debug("zafiraFields: " + zafiraFields)
 		if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
@@ -802,8 +802,8 @@ public class TestNG extends Runner {
 		}
 
 		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		Configuration.set(Configuration.Parameter.ZAFIRA_SERVICE_URL, getToken(Configuration.CREDS_ZAFIRA_SERVICE_URL))
-		Configuration.set(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN, getToken(Configuration.CREDS_ZAFIRA_ACCESS_TOKEN))
+		Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
+		Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
 		
 		// obligatory init zafiraUpdater after getting valid url and token
 		zafiraUpdater = new ZafiraUpdater(context)
@@ -833,13 +833,13 @@ public class TestNG extends Runner {
     protected String getMavenGoals() {
 		// When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
 		def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
-		if (!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)) &&
-			!isParamEmpty(Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN))) {
+		if (!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)) &&
+			!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))) {
 			// Ignore maven build result if Zafira integration is enabled
 			zafiraGoals = "-Dmaven.test.failure.ignore=true \
 							-Dzafira_enabled=true \
-							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)} \
-							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)}"
+							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)} \
+							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)}"
 		}
 
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
@@ -884,8 +884,8 @@ public class TestNG extends Runner {
         // This is an array of parameters, that we need to exclude from list of transmitted parameters to maven
         def necessaryMavenParams  = [
                 "capabilities",
-                "ZAFIRA_SERVICE_URL",
-                "ZAFIRA_ACCESS_TOKEN",
+                "REPORTING_SERVICE_URL",
+                "REPORTING_ACCESS_TOKEN",
                 "zafiraFields",
                 "CORE_LOG_LEVEL",
                 "JACOCO_BUCKET",
@@ -1448,7 +1448,7 @@ public class TestNG extends Runner {
     public void rerunJobs(){
         context.stage('Rerun Tests'){
             //updates zafira credentials with values from Jenkins Credentials (if present)
-			setZafiraCreds()
+			setReportingCreds()
             zafiraUpdater.smartRerun()
         }
     }
