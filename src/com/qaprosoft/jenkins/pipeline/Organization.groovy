@@ -18,7 +18,7 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Organization extends BaseObject {
     private static final String PIPELINE_LIBRARY = "QPS-Pipeline"
-    private static final String RUNNER_CLASS = "com.qaprosoft.jenkins.pipeline.runner.maven.QARunner"
+    private static final String RUNNER_CLASS = "com.qaprosoft.jenkins.pipeline.runner.maven.TestNG"
 
     protected ISCM scmClient
     protected ZebrunnerUpdater zebrunnerUpdater
