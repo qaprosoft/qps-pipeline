@@ -34,8 +34,8 @@ class Repository extends BaseObject {
         super(context)
 
         scmClient = new GitHub(context)
-        pipelineLibrary = Configuration.get("pipelineLibrary")
-        runnerClass = Configuration.get("runnerClass")
+        this.pipelineLibrary = Configuration.get("pipelineLibrary")
+        this.runnerClass = Configuration.get("runnerClass")
     }
 
     public void register() {
@@ -168,7 +168,12 @@ class Repository extends BaseObject {
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-            def isTestNgRunner = Class.forName(runnerClass, false, Thread.currentThread().getContextClassLoader()) in TestNG
+            
+            if (!'QPS-Pipeline'.equals(this.pipelineLibrary)) {
+                //load custom library to check inheritance for isTestNGRunner
+                context.library this.pipelineLibrary
+            }
+            def isTestNgRunner = Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in TestNG
 
             registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields))
 
