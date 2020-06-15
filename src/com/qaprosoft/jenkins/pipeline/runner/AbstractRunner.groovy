@@ -13,11 +13,11 @@ public abstract class AbstractRunner extends BaseObject {
     protected String buildNameTemplate = "${BUILD_NUMBER}"
     protected final String BUILD_NAME_SEPARATOR = "|"
 
-    public String getBuildName() {
-        return this.buildNameTemplate
+    public String getBuildNameTemplate(buildNameTemplate) {
+        return this.buildNameTemplate = buildNameTemplate
     }
 
-    protected String setBuildName() {
+    protected String setBuildNameTemplate() {
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
         String suite = Configuration.get("suite")
@@ -46,44 +46,10 @@ public abstract class AbstractRunner extends BaseObject {
             if (!isParamEmpty(language)) {
                 buildNameTemplate += BUILD_NAME_SEPARATOR + "${language}"
             }
-            currentBuild.description = "${suite}"
-            if (isMobile()) {
-                //this is mobile test
-                prepareForMobile()
+            if (!isParamEmpty(node)) {
+                buildNameTemplate += BUILD_NAME_SEPARATOR + "${node}"
             }
         }
-    }
-
-    protected void prepareForMobile() {
-        logger.info("Runner->prepareForMobile")
-        def devicePool = Configuration.get("devicePool")
-        def platform = Configuration.get("job_type")
-
-        if (platform.equalsIgnoreCase("android")) {
-            logger.info("Runner->prepareForAndroid")
-            Configuration.set("mobile_app_clear_cache", "true")
-            Configuration.set("capabilities.autoGrantPermissions", "true")
-            Configuration.set("capabilities.noSign", "true")
-            Configuration.set("capabilities.appWaitDuration", "270000")
-            Configuration.set("capabilities.androidInstallTimeout", "270000")
-            Configuration.set("capabilities.adbExecTimeout", "270000")
-        } else if (platform.equalsIgnoreCase("ios")) {
-            logger.info("Runner->prepareForiOS")
-        } else {
-            logger.warn("Unable to identify mobile platform: ${platform}")
-        }
-
-        //general mobile capabilities
-        Configuration.set("capabilities.provider", "mcloud")
-
-
-        // ATTENTION! Obligatory remove device from the params otherwise
-        // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
-        // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
-        Configuration.remove("device")
-        //TODO: move it to the global jenkins variable
-        Configuration.set("capabilities.newCommandTimeout", "180")
-        Configuration.set("java.awt.headless", "true")
     }
 
     public AbstractRunner(context) {

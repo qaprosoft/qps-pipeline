@@ -72,14 +72,14 @@ public class TestNG extends Runner {
 
     public TestNG(context) {
         super(context)
-
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
+        setBuildNameTemplate("${BUILD_NUMBER}${suite}${branch}${env}${browser}${browserVersion}${locale}${language}${node}")
     }
 
     public TestNG(context, jobType) {
         this (context)
         this.jobType = jobType
-        setBuildName("${BUILD_NUMBER}${suite}${branch}${env}${browser}${browserVersion}${locale}${language}${node}")
+        setBuildNameTemplate("${BUILD_NUMBER}${suite}${branch}${env}${browser}${browserVersion}${locale}${language}${node}")
     }
 
     //Methods
@@ -541,6 +541,7 @@ public class TestNG extends Runner {
                 try {
                     context.timestamps {
                         currentBuild.displayName = setBuildName()
+                        prepareForMobile()
                         getScm().clone()
 
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
@@ -623,6 +624,40 @@ public class TestNG extends Runner {
                     }
                 }
             }
+        }
+    }
+
+    protected void prepareForMobile() {
+        if (isMobile()) {
+            logger.info("Runner->prepareForMobile")
+            def devicePool = Configuration.get("devicePool")
+            def platform = Configuration.get("job_type")
+
+            if (platform.equalsIgnoreCase("android")) {
+                logger.info("Runner->prepareForAndroid")
+                Configuration.set("mobile_app_clear_cache", "true")
+                Configuration.set("capabilities.autoGrantPermissions", "true")
+                Configuration.set("capabilities.noSign", "true")
+                Configuration.set("capabilities.appWaitDuration", "270000")
+                Configuration.set("capabilities.androidInstallTimeout", "270000")
+                Configuration.set("capabilities.adbExecTimeout", "270000")
+            } else if (platform.equalsIgnoreCase("ios")) {
+                logger.info("Runner->prepareForiOS")
+            } else {
+                logger.warn("Unable to identify mobile platform: ${platform}")
+            }
+
+            //general mobile capabilities
+            Configuration.set("capabilities.provider", "mcloud")
+
+
+            // ATTENTION! Obligatory remove device from the params otherwise
+            // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
+            // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
+            Configuration.remove("device")
+            //TODO: move it to the global jenkins variable
+            Configuration.set("capabilities.newCommandTimeout", "180")
+            Configuration.set("java.awt.headless", "true")
         }
     }
 
