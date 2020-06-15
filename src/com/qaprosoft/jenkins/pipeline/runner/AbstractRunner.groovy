@@ -55,7 +55,7 @@ public abstract class AbstractRunner extends BaseObject {
     public AbstractRunner(context) {
         super(context)
         initOrganization()
-        setBuildName()
+        setBuildNameTemplate("${BUILD_NUMBER}${branch}")
     }
 
     //Methods
