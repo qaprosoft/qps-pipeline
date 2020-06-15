@@ -10,10 +10,86 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 public abstract class AbstractRunner extends BaseObject {
     // organization folder name of the current job/runner
     protected String organization = ""
+    protected String buildNameTemplate = "${BUILD_NUMBER}"
+    protected final String BUILD_NAME_SEPARATOR = "|"
+
+    public String getBuildName() {
+        return this.buildNameTemplate
+    }
+
+    protected String setBuildName() {
+        Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
+        String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+        String suite = Configuration.get("suite")
+        String branch = Configuration.get("branch")
+        String env = Configuration.get("env")
+        String browser = getBrowser()
+        String browserVersion = getBrowserVersion()
+        String locale = Configuration.get("locale")
+        String language = Configuration.get("language")
+        String node = Configuration.get("node")
+
+        context.stage('Preparation') {
+            buildNameTemplate = "#${buildNumber}|${suite}|${branch}"
+            if (!isParamEmpty(env)) {
+                buildNameTemplate += BUILD_NAME_SEPARATOR + "${env}"
+            }
+            if (!isParamEmpty(browser)) {
+                buildNameTemplate += BUILD_NAME_SEPARATOR +  "${browser}"
+            }
+            if (!isParamEmpty(browserVersion)) {
+                buildNameTemplate += BUILD_NAME_SEPARATOR + "${browserVersion}"
+            }
+            if (!isParamEmpty(locale)) {
+                buildNameTemplate += BUILD_NAME_SEPARATOR + "${locale}"
+            }
+            if (!isParamEmpty(language)) {
+                buildNameTemplate += BUILD_NAME_SEPARATOR + "${language}"
+            }
+            currentBuild.description = "${suite}"
+            if (isMobile()) {
+                //this is mobile test
+                prepareForMobile()
+            }
+        }
+    }
+
+    protected void prepareForMobile() {
+        logger.info("Runner->prepareForMobile")
+        def devicePool = Configuration.get("devicePool")
+        def platform = Configuration.get("job_type")
+
+        if (platform.equalsIgnoreCase("android")) {
+            logger.info("Runner->prepareForAndroid")
+            Configuration.set("mobile_app_clear_cache", "true")
+            Configuration.set("capabilities.autoGrantPermissions", "true")
+            Configuration.set("capabilities.noSign", "true")
+            Configuration.set("capabilities.appWaitDuration", "270000")
+            Configuration.set("capabilities.androidInstallTimeout", "270000")
+            Configuration.set("capabilities.adbExecTimeout", "270000")
+        } else if (platform.equalsIgnoreCase("ios")) {
+            logger.info("Runner->prepareForiOS")
+        } else {
+            logger.warn("Unable to identify mobile platform: ${platform}")
+        }
+
+        //general mobile capabilities
+        Configuration.set("capabilities.provider", "mcloud")
+
+
+        // ATTENTION! Obligatory remove device from the params otherwise
+        // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
+        // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
+        Configuration.remove("device")
+        //TODO: move it to the global jenkins variable
+        Configuration.set("capabilities.newCommandTimeout", "180")
+        Configuration.set("java.awt.headless", "true")
+    }
 
     public AbstractRunner(context) {
         super(context)
         initOrganization()
+        setBuildName()
     }
 
     //Methods
@@ -142,6 +218,4 @@ public abstract class AbstractRunner extends BaseObject {
     protected void setDslClasspath(additionalClasspath) {
         factoryRunner.setDslClasspath(additionalClasspath)
     }
-
-
 }

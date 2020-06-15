@@ -79,6 +79,7 @@ public class TestNG extends Runner {
     public TestNG(context, jobType) {
         this (context)
         this.jobType = jobType
+        setBuildName("${BUILD_NUMBER}${suite}${branch}${env}${browser}${browserVersion}${locale}${language}${node}")
     }
 
     //Methods
@@ -539,7 +540,7 @@ public class TestNG extends Runner {
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
-                        prepareBuild(currentBuild)
+                        currentBuild.displayName = setBuildName()
                         getScm().clone()
 
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
@@ -687,85 +688,6 @@ public class TestNG extends Runner {
         }
         logger.info("node: " + Configuration.get("node"))
         return Configuration.get("node")
-    }
-
-    //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
-    protected void prepareBuild(currentBuild) {
-
-        Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
-
-        String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String suite = Configuration.get("suite")
-        String branch = Configuration.get("branch")
-        String env = Configuration.get("env")
-        String browser = getBrowser()
-        String browserVersion = getBrowserVersion()
-		String locale = Configuration.get("locale")
-		String language = Configuration.get("language")
-
-        context.stage('Preparation') {
-            currentBuild.displayName = "#${buildNumber}|${suite}|${branch}"
-            if (!isParamEmpty(env)) {
-                currentBuild.displayName += "|" + "${env}"
-            }
-            if (!isParamEmpty(browser)) {
-                currentBuild.displayName += "|${browser}"
-            }
-            if (!isParamEmpty(browserVersion)) {
-                currentBuild.displayName += "|${browserVersion}"
-            }
-			if (!isParamEmpty(locale)) {
-				currentBuild.displayName += "|${locale}"
-			}
-			if (!isParamEmpty(language)) {
-				currentBuild.displayName += "|${language}"
-			}
-            currentBuild.description = "${suite}"
-            if (isMobile()) {
-                //this is mobile test
-                prepareForMobile()
-            }
-        }
-    }
-
-    protected void prepareForMobile() {
-        logger.info("Runner->prepareForMobile")
-        def devicePool = Configuration.get("devicePool")
-        def platform = Configuration.get("job_type")
-
-        if (platform.equalsIgnoreCase("android")) {
-            prepareForAndroid()
-        } else if (platform.equalsIgnoreCase("ios")) {
-            prepareForiOS()
-        } else {
-            logger.warn("Unable to identify mobile platform: ${platform}")
-        }
-
-        //general mobile capabilities
-        Configuration.set("capabilities.provider", "mcloud")
-
-
-        // ATTENTION! Obligatory remove device from the params otherwise
-        // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
-        // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
-        Configuration.remove("device")
-        //TODO: move it to the global jenkins variable
-        Configuration.set("capabilities.newCommandTimeout", "180")
-        Configuration.set("java.awt.headless", "true")
-    }
-
-    protected void prepareForAndroid() {
-        logger.info("Runner->prepareForAndroid")
-        Configuration.set("mobile_app_clear_cache", "true")
-        Configuration.set("capabilities.autoGrantPermissions", "true")
-        Configuration.set("capabilities.noSign", "true")
-        Configuration.set("capabilities.appWaitDuration", "270000")
-        Configuration.set("capabilities.androidInstallTimeout", "270000")
-        Configuration.set("capabilities.adbExecTimeout", "270000")
-    }
-
-    protected void prepareForiOS() {
-        logger.info("Runner->prepareForiOS")
     }
 
     protected void buildJob() {
