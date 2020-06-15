@@ -10,6 +10,7 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 /*
  * BaseObject to operate with pipeline context, loggers and runners
  */
+
 public abstract class BaseObject {
     protected def context
     protected Logger logger
@@ -17,7 +18,7 @@ public abstract class BaseObject {
 
     protected ISCM scmClient
     protected ISCM scmSshClient
-    
+
     protected boolean isSsh = false
 
     protected def currentBuild
@@ -35,12 +36,12 @@ public abstract class BaseObject {
 
         currentBuild = context.currentBuild
     }
-    
+
     @NonCPS
     public def setSshClient() {
         this.isSsh = true
     }
-    
+
     public def getScm() {
         if (this.isSsh) {
             return this.scmSshClient

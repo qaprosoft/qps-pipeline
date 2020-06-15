@@ -19,7 +19,7 @@ public class Sonar extends BaseObject {
         super(context)
     }
 
-    public void scan(isPullRequest=false) {
+    public void scan(isPullRequest = false) {
         //TODO: verify preliminary if "maven" nodes available
         context.node("maven") {
             context.stage('Sonar Scanner') {
@@ -89,7 +89,7 @@ public class Sonar extends BaseObject {
 
         def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
         //TODO: simplify just to get log level from global var
-        def SONAR_LOG_LEVEL = context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()) ?  "DEBUG" : "INFO"
+        def SONAR_LOG_LEVEL = context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()) ? "DEBUG" : "INFO"
 
         def script = "${sonarHome}/bin/sonar-scanner \
                   -Dsonar.projectVersion=${BUILD_NUMBER} \
@@ -127,7 +127,7 @@ public class Sonar extends BaseObject {
 
             // download combined integration testing coverage report: jacoco-it.exec
             // TODO: test if aws cli is installed on regular jenkins slaves as we are going to run it on each onPush event starting from 5.0
-            context.withAWS(region: "${jacocoRegion}", credentials:'aws-jacoco-token') {
+            context.withAWS(region: "${jacocoRegion}", credentials: 'aws-jacoco-token') {
                 def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
                 logger.info("copyOutput: " + copyOutput)
             }
@@ -135,13 +135,14 @@ public class Sonar extends BaseObject {
 
             if (context.fileExists("/tmp/${jacocoItExec}")) {
                 jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec" //this for unit tests code coverage
-                jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}" // this one is for integration testing coverage
+                jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}"
+                // this one is for integration testing coverage
             }
-            
+
             logger.debug("jacocoReportPath: " + jacocoReportPath)
             logger.debug("jacocoReportPaths: " + jacocoReportPaths)
         }
-    
+
         return [jacocoReportPath, jacocoReportPaths]
     }
 }

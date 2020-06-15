@@ -31,7 +31,7 @@ class Repository extends BaseObject {
     protected Map dslObjects = new LinkedHashMap()
 
     public Repository(context) {
-		super(context)
+        super(context)
 
         scmClient = new GitHub(context)
         pipelineLibrary = Configuration.get("pipelineLibrary")
@@ -49,7 +49,7 @@ class Repository extends BaseObject {
                 clean()
             }
         }
-        
+
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
         def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
 
@@ -103,7 +103,7 @@ class Repository extends BaseObject {
                     def reportingRefreshToken = Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)
                     logger.debug("reportingServiceUrl: " + reportingServiceUrl)
                     logger.debug("reportingRefreshToken: " + reportingRefreshToken)
-                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)){
+                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
                         Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, reportingRefreshToken)
                     }
                 }
@@ -184,7 +184,7 @@ class Repository extends BaseObject {
                 registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
             }
 
-			factoryRunner.run(dslObjects)
+            factoryRunner.run(dslObjects)
 
         }
     }
@@ -233,7 +233,7 @@ class Repository extends BaseObject {
         }
         dslObjects.put(name, object)
     }
-	
+
     public def registerCredentials() {
         context.stage("Register Credentials") {
             def user = Configuration.get(SCM_USER)
@@ -246,5 +246,5 @@ class Repository extends BaseObject {
             }
         }
     }
-	
+
 }

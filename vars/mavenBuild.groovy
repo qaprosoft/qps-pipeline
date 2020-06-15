@@ -17,13 +17,13 @@ def call(goals = '-U clean compile test', mavenSettingsConfig = '', mavenLocalRe
             // Maven settings and global settings can also be defined in Jenkins Global Tools Configuration
             mavenSettingsConfig: "${mavenSettingsConfig}",
             mavenLocalRepo: "${mavenLocalRepo}") {
-                // Run the maven build
-                buildGoals(goals)
-            }
+        // Run the maven build
+        buildGoals(goals)
+    }
 }
 
 private def buildGoals(goals) {
-    if(env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name())){
+    if (env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name())) {
         goals = goals + " -e -X"
     }
     // parse goals replacing sensitive info by *******

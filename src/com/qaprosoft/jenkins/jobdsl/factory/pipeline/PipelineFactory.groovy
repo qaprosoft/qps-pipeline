@@ -30,7 +30,7 @@ public class PipelineFactory extends JobFactory {
     }
 
     def create() {
-        def pipelineJob = _dslFactory.pipelineJob(getFullName()){
+        def pipelineJob = _dslFactory.pipelineJob(getFullName()) {
             description "${description}"
             logRotator { numToKeep logRotator }
 
@@ -129,8 +129,8 @@ public class PipelineFactory extends JobFactory {
         }
     }
 
-    protected def parseSheduling(scheduling){
-        if (scheduling.contains("::")){
+    protected def parseSheduling(scheduling) {
+        if (scheduling.contains("::")) {
             def multilineArray = scheduling.split("::")
             def multilineValue = ""
             multilineArray.each { value ->

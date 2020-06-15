@@ -3,7 +3,7 @@ package com.qaprosoft.jenkins.pipeline.integration.zebrunner
 import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 import groovy.json.JsonBuilder
 
-class ZebrunnerClient extends HttpClient{
+class ZebrunnerClient extends HttpClient {
 
     public ZebrunnerClient(context) {
         super(context)
@@ -17,10 +17,10 @@ class ZebrunnerClient extends HttpClient{
                 integrationParameters: integrationParameters
         logger.info("REQUEST: " + jsonBuilder.toPrettyString())
         def parameters = [customHeaders: [[name: 'Authorization', value: "${accessToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: "${jsonBuilder}",
-                          url: callbackURL]
+                          contentType  : 'APPLICATION_JSON',
+                          httpMode     : 'POST',
+                          requestBody  : "${jsonBuilder}",
+                          url          : callbackURL]
         return sendRequestFormatted(parameters)
     }
 }

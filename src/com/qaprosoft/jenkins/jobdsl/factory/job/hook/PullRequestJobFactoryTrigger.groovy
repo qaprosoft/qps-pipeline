@@ -72,7 +72,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
             steps {
                 downstreamParameterized {
                     trigger('onPullRequest-' + this.repo) {
-                        block{
+                        block {
                             buildStepFailure('FAILURE')
                             failure('FAILURE')
                             unstable('UNSTABLE')
