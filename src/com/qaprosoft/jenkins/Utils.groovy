@@ -60,4 +60,13 @@ class Utils {
     static boolean getBooleanParameterValue(parameter, currentSuite) {
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
+
+    static def replaceMultipleSymbolsToOne(String value, String symbol) {
+        if (value.contains(symbol + symbol)) {
+            value.replaceAll(symbol + symbol, symbol)
+            replaceSpecialSymbols(value, symbol)
+        } else {
+            return value
+        }
+    }
 }

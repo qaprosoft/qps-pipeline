@@ -10,32 +10,21 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 public abstract class AbstractRunner extends BaseObject {
     // organization folder name of the current job/runner
     protected String organization = ""
-    protected String buildNameTemplate = "BUILD_NUMBER"
-    protected String buildName = ""
-    protected final String BUILD_NAME_SEPARATOR = "|"
+    protected String displayNameTemplate = "#${BUILD_NUMBER}|${branch}"
+    protected final String DISPLAY_NAME_SEPARATOR = "|"
 
     public AbstractRunner(context) {
         super(context)
         initOrganization()
-        setBuildName("BUILD_NUMBER|branch")
     }
 
-    public String getBuildName() {
-        return this.buildName
-    }
-
-    protected void setBuildName(String buildNameTemplate) {
-        if (isParamEmpty(buildNameTemplate)) {
-            this.buildNameTemplate = buildNameTemplate
-        }
+    protected String getDisplayName() {
         //set exact values instead of name-strings
-        for (item in buildNameTemplate.split(BUILD_NAME_SEPARATOR)) {
-            if (!isParamEmpty(Configuration.get("${item}"))) {
-                this.buildName += Configuration.get("${item}") + BUILD_NAME_SEPARATOR
-            }
-        }
-        //delete last character BUILD_NAME_SEPARATOR
-        this.buildName = this.buildName.substring(0, this.buildName.length() - 1)
+        return replaceSpecialSymbols(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR)
+    }
+
+    protected void setDisplayNameTemplate(String template) {
+        this.displayNameTemplate = template
     }
 
     //Methods

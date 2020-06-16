@@ -73,13 +73,13 @@ public class TestNG extends Runner {
     public TestNG(context) {
         super(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
-        setBuildName("BUILD_NUMBER|suite|branch|env|browser|browserVersion|locale|language")
+        setDisplayNameTemplate("#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}")
     }
 
     public TestNG(context, jobType) {
         this (context)
         this.jobType = jobType
-        setBuildName("BUILD_NUMBER|suite|branch|env|browser|browserVersion|locale|language")
+        setDisplayNameTemplate("#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}")
     }
 
     //Methods
@@ -154,7 +154,13 @@ public class TestNG extends Runner {
 	protected void scan() {
 
         context.stage("Scan Repository") {
-            currentBuild.displayName = getBuildName()
+            def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+            def repo = Configuration.get("repo")
+            def repoFolder = parseFolderName(getWorkspace())
+            def branch = Configuration.get("branch")
+
+            setDisplayNameTemplate("#${buildNumber}|${repo}|${branch}")
+            currentBuild.displayName = getDisplayName()
 
             def workspace = getWorkspace()
             logger.info("WORKSPACE: ${workspace}")
@@ -165,7 +171,7 @@ public class TestNG extends Runner {
                 logger.debug("subProject: " + subProject)
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 def zafiraProject = getZafiraProject(subProjectFilter)
-                generateDslObjects(parseFolderName(getWorkspace()), zafiraProject, subProject, subProjectFilter, Configuration.get("branch"))
+                generateDslObjects(parseFolderName(repoFolder, zafiraProject, subProject, subProjectFilter, branch))
 
 				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"),
 										Configuration.get("removedJobAction"),
@@ -1084,8 +1090,12 @@ public class TestNG extends Runner {
         context.node("master") {
             getScm().clone()
             listPipelines = []
+            def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
+            def repo = Configuration.get("repo")
+            def branch = Configuration.get("branch")
 
-            currentBuild.displayName = getBuildName()
+            setDisplayNameTemplate("#${buildNumber}|${repo}|${branch}")
+            currentBuild.displayName = getDisplayName()
 
             for(pomFile in context.getPomFiles()){
                 // clear list of pipelines for each sub-project
