@@ -32,7 +32,7 @@ public abstract class AbstractRunner extends BaseObject {
                     this.buildName += Configuration.get("${item}") + BUILD_NAME_SEPARATOR
                 }
             }
-            //delete last character "|"
+            //delete last character BUILD_NAME_SEPARATOR
             this.buildName = this.buildName.substring(0, this.buildName.length() - 1)
         }
     }
