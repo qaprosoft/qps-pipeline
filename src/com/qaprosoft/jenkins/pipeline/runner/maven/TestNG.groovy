@@ -171,7 +171,7 @@ public class TestNG extends Runner {
                 logger.debug("subProject: " + subProject)
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 def zafiraProject = getZafiraProject(subProjectFilter)
-                generateDslObjects(parseFolderName(repoFolder, zafiraProject, subProject, subProjectFilter, branch))
+                generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch)
 
 				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"),
 										Configuration.get("removedJobAction"),
