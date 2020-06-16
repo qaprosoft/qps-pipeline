@@ -14,6 +14,12 @@ public abstract class AbstractRunner extends BaseObject {
     protected String buildName = ""
     protected final String BUILD_NAME_SEPARATOR = "|"
 
+    public AbstractRunner(context) {
+        super(context)
+        initOrganization()
+        setBuildName("BUILD_NUMBER|branch")
+    }
+
     public String getBuildName() {
         return this.buildName
     }
@@ -28,12 +34,6 @@ public abstract class AbstractRunner extends BaseObject {
             //delete last character "|"
             this.buildName = this.buildName.substring(0, this.buildName.length() - 1)
         }
-    }
-
-    public AbstractRunner(context) {
-        super(context)
-        initOrganization()
-        setBuildName("BUILD_NUMBER|branch")
     }
 
     //Methods
