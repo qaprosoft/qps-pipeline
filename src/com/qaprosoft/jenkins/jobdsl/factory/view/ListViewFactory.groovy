@@ -10,11 +10,7 @@ public class ListViewFactory extends DslFactory {
     def descFilter
     def nameFilter
 
-    public ListViewFactory(folder, name, descFilter) {
-        this(folder, name, descFilter, "")
-    }
-
-    public ListViewFactory(folder, name, descFilter, nameFilter) {
+    public ListViewFactory(folder, name, descFilter, nameFilter="") {
         this.folder = folder
         this.name = name
         this.descFilter = descFilter
