@@ -10,7 +10,7 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 public abstract class AbstractRunner extends BaseObject {
     // organization folder name of the current job/runner
     protected String organization = ""
-    protected String buildNameTemplate = "${BUILD_NUMBER}"
+    protected String buildNameTemplate = "BUILD_NUMBER"
     protected String buildName = ""
     protected final String BUILD_NAME_SEPARATOR = "|"
 
