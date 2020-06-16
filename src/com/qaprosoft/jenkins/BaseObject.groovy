@@ -14,6 +14,7 @@ public abstract class BaseObject {
     protected def context
     protected Logger logger
     protected FactoryRunner factoryRunner // object to be able to start JobDSL anytime we need
+    protected Map dslObjects
 
     protected ISCM scmClient
     protected ISCM scmSshClient
@@ -30,6 +31,7 @@ public abstract class BaseObject {
         this.logger = new Logger(context)
         this.scmClient = new GitHub(context)
         this.scmSshClient = new SshGitHub(context)
+        this.dslObjects = new LinkedHashMap()
 
         this.factoryRunner = new FactoryRunner(context)
 
@@ -47,5 +49,14 @@ public abstract class BaseObject {
         } else {
             return this.scmClient
         }
+    }
+
+    protected void registerObject(name, object) {
+        if (dslObjects.containsKey(name)) {
+            logger.warn("key ${name} already defined and will be replaced!")
+            logger.info("Old Item: ${dslObjects.get(name).dump()}")
+            logger.info("New Item: ${object.dump()}")
+        }
+        dslObjects.put(name, object)
     }
 }

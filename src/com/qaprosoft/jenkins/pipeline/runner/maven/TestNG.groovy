@@ -35,7 +35,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 public class TestNG extends Runner {
 
-    protected Map dslObjects = new HashMap()
     protected def pipelineLibrary = "QPS-Pipeline"
     protected def runnerClass = "com.qaprosoft.jenkins.pipeline.runner.maven.TestNG"
     protected def onlyUpdated = false
@@ -429,15 +428,6 @@ public class TestNG extends Runner {
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
         }
-    }
-
-    protected void registerObject(name, object) {
-        if (dslObjects.containsKey(name)) {
-            logger.warn("key ${name} already defined and will be replaced!")
-            logger.info("Old Item: ${dslObjects.get(name).dump()}")
-            logger.info("New Item: ${object.dump()}")
-        }
-        dslObjects.put(name, object)
     }
 
     protected def getJenkinsJobsScanResult(build) {

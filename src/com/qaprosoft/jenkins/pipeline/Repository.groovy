@@ -28,8 +28,6 @@ class Repository extends BaseObject {
     private static final String SCM_USER = "scmUser"
     private static final String SCM_TOKEN = "scmToken"
 
-    protected Map dslObjects = new LinkedHashMap()
-
     public Repository(context) {
 		super(context)
 
@@ -223,15 +221,6 @@ class Repository extends BaseObject {
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
         }
-    }
-
-    private void registerObject(name, object) {
-        if (dslObjects.containsKey(name)) {
-            logger.warn("key ${name} already defined and will be replaced!")
-            logger.info("Old Item: ${dslObjects.get(name).dump()}")
-            logger.info("New Item: ${object.dump()}")
-        }
-        dslObjects.put(name, object)
     }
 	
     public def registerCredentials() {

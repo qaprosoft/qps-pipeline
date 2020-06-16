@@ -23,8 +23,6 @@ class Organization extends BaseObject {
     protected ISCM scmClient
     protected ZebrunnerUpdater zebrunnerUpdater
 	
-    protected Map dslObjects = new LinkedHashMap()
-	
 	protected def folderName
     protected def reportingServiceUrl
 	protected def reportingAccessToken
@@ -134,10 +132,6 @@ class Organization extends BaseObject {
 
             factoryRunner.run(dslObjects)
 		}
-    }
-
-    protected void registerObject(name, object) {
-        dslObjects.put(name, object)
     }
 
     protected def setSecurity(){
