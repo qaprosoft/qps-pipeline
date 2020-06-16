@@ -24,7 +24,7 @@ public abstract class AbstractRunner extends BaseObject {
         return this.buildName
     }
 
-    private void setBuildName(String buildNameTemplate) {
+    protected void setBuildName(String buildNameTemplate) {
         if (isParamEmpty(buildNameTemplate)) {
             this.buildNameTemplate = buildNameTemplate
         }
