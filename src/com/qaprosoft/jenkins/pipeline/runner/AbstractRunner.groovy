@@ -30,7 +30,7 @@ public abstract class AbstractRunner extends BaseObject {
         }
         //set exact values instead of name-strings
         for (item in buildNameTemplate.split(BUILD_NAME_SEPARATOR)) {
-            if (isParamEmpty(Configuration.get("${item}"))) {
+            if (!isParamEmpty(Configuration.get("${item}"))) {
                 this.buildName += Configuration.get("${item}") + BUILD_NAME_SEPARATOR
             }
         }
