@@ -13,11 +13,11 @@ public abstract class AbstractRunner extends BaseObject {
     protected String buildNameTemplate = "${BUILD_NUMBER}"
     protected final String BUILD_NAME_SEPARATOR = "|"
 
-    public String getBuildNameTemplate(buildNameTemplate) {
-        return this.buildNameTemplate = buildNameTemplate
+    public String getBuildNameTemplate() {
+        return this.buildNameTemplate
     }
 
-    protected String setBuildNameTemplate() {
+    protected String setBuildNameTemplate(buildNameTemplate) {
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
         String suite = Configuration.get("suite")

@@ -540,7 +540,7 @@ public class TestNG extends Runner {
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
-                        currentBuild.displayName = setBuildName()
+                        currentBuild.displayName = getBuildNameTemplate()
                         prepareForMobile()
                         getScm().clone()
 
