@@ -53,9 +53,10 @@ public abstract class BaseObject {
 
     protected void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
-            logger.warn("key ${name} already defined and will be replaced!")
-            logger.info("Old Item: ${dslObjects.get(name).dump()}")
-            logger.info("New Item: ${object.dump()}")
+            //logger.warn("key ${name} already defined and will be replaced!")
+            //logger.info("Old Item: ${dslObjects.get(name).dump()}")
+            //logger.info("New Item: ${object.dump()}")
+            return
         }
         dslObjects.put(name, object)
     }
