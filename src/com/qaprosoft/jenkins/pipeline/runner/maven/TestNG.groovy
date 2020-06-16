@@ -215,7 +215,7 @@ public class TestNG extends Runner {
         def repo = Configuration.get("repo")
 		
         // VIEWS
-        registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
+        registerObject("cron", initListViewFactory(repoFolder, 'CRON', '.*cron.*'))
         //registerObject(project, new ListViewFactory(jobFolder, project.toUpperCase(), ".*${project}.*"))
 
         //TODO: create default personalized view here
@@ -271,21 +271,21 @@ public class TestNG extends Runner {
             def currentZafiraProject = getSuiteParameter(zafiraProject, "zafira_project", currentSuite)
 
             // put standard views factory into the map
-            registerObject(currentZafiraProject, new ListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
-            registerObject(suiteOwner, new ListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
+            registerObject(currentZafiraProject, initListViewFactory(repoFolder, currentZafiraProject.toUpperCase(), ".*${currentZafiraProject}.*"))
+            registerObject(suiteOwner, initListViewFactory(repoFolder, suiteOwner, ".*${suiteOwner}"))
 
             switch(suiteName.toLowerCase()){
                 case ~/^.*api.*$/:
-                    registerObject("API_VIEW", new ListViewFactory(repoFolder, "API", "", ".*(?i)api.*"))
+                    registerObject("API_VIEW", initListViewFactory(repoFolder, "API", "", ".*(?i)api.*"))
                     break
                 case ~/^.*web.*$/:
-                    registerObject("WEB_VIEW", new ListViewFactory(repoFolder, "WEB", "", ".*(?i)web.*"))
+                    registerObject("WEB_VIEW", initListViewFactory(repoFolder, "WEB", "", ".*(?i)web.*"))
                     break
                 case ~/^.*android.*$/:
-                    registerObject("ANDROID_VIEW", new ListViewFactory(repoFolder, "ANDROID", "", ".*(?i)android.*"))
+                    registerObject("ANDROID_VIEW", initListViewFactory(repoFolder, "ANDROID", "", ".*(?i)android.*"))
                     break
                 case ~/^.*ios.*$/:
-                    registerObject("IOS_VIEW", new ListViewFactory(repoFolder, "IOS", "", ".*(?i)ios.*"))
+                    registerObject("IOS_VIEW", initListViewFactory(repoFolder, "IOS", "", ".*(?i)ios.*"))
                     break
             }
 
@@ -1473,6 +1473,12 @@ public class TestNG extends Runner {
         context.configFileProvider([context.configFile(fileId: fileId, variable: "MAVEN_SETTINGS")]) {
             context.readFile context.env.MAVEN_SETTINGS
         }
+    }
+
+    // Possible to override in privare pipelines with your custom ListViewFactory
+    // NOTE: for defining custom ListViewFactory you should extend our own ListViewFactory
+    protected def initListViewFactory(folder, name, descFilter, nameFilter="") {
+        return new ListViewFactory(folder, name, descFilter, nameFilter)
     }
 
     // Possible to override in private pipelines
