@@ -73,13 +73,11 @@ public class TestNG extends Runner {
     public TestNG(context) {
         super(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
-        setDisplayNameTemplate("#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}")
     }
 
     public TestNG(context, jobType) {
         this (context)
         this.jobType = jobType
-        setDisplayNameTemplate("#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}")
     }
 
     //Methods
@@ -113,7 +111,7 @@ public class TestNG extends Runner {
 
 			try {
 				getScm().clone(true)
-
+                setDisplayNameTemplate("#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}")
 				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
                     //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
