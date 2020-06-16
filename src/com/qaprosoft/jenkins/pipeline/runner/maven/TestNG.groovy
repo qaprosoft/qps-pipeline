@@ -728,12 +728,12 @@ public class TestNG extends Runner {
         Configuration.set("capabilities.adbExecTimeout", "270000")
     }
 
-protected void prepareForiOS() {
-    logger.info("Runner->prepareForiOS")
-}
+    protected void prepareForiOS() {
+        logger.info("Runner->prepareForiOS")
+    }
 
 
-protected void buildJob() {
+    protected void buildJob() {
         context.stage('Run Test Suite') {
             def goals = getMavenGoals()
             def pomFile = getMavenPomFile()
