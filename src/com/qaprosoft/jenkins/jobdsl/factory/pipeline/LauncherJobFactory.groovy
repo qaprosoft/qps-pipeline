@@ -22,8 +22,8 @@ public class LauncherJobFactory extends PipelineFactory {
             parameters {
                 configure stringParam('branch', 'master', "SCM repository branch to run against")
                 configure stringParam('suite', 'api', "TestNG suite file name (without \".xml\" extension)")
-                configure stringParam('zafiraFields', 'platform=API,thread_count=5' , "Custom parameters to run job with")
-                configure addHiddenParameter('scmURL', '' , "GitHub repository https URL with token (read permissions only is enough)")
+                configure stringParam('zafiraFields', 'platform=API,thread_count=5', "Custom parameters to run job with")
+                configure addHiddenParameter('scmURL', '', "GitHub repository https URL with token (read permissions only is enough)")
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addHiddenParameter('queue_registration', '', "false")
                 configure addHiddenParameter('rerun_failures', '', "false")

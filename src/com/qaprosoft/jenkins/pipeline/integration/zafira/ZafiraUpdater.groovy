@@ -30,7 +30,7 @@ class ZafiraUpdater {
 
     public def queueZafiraTestRun(uuid) {
         if (isParamEmpty(Configuration.get("queue_registration")) || Configuration.get("queue_registration").toBoolean()) {
-            if (isParamEmpty(Configuration.get('test_run_rules'))){
+            if (isParamEmpty(Configuration.get('test_run_rules'))) {
                 def response = zc.queueZafiraTestRun(uuid)
                 logger.info("Queued TestRun: " + formatJson(response))
             }
@@ -61,12 +61,12 @@ class ZafiraUpdater {
             subject = getFailureSubject(FailureCause.COMPILATION_FAILURE.value, jobName, env, buildNumber)
             failureLog = getLogDetailsForEmail(currentBuild, "ERROR")
             failureReason = URLEncoder.encode("${FailureCause.COMPILATION_FAILURE.value}:\n" + failureLog, "UTF-8")
-        } else  if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
+        } else if (currentBuild.rawBuild.log.contains("Cancelling nested steps due to timeout")) {
             currentBuild.result = BuildResult.ABORTED
             bodyHeader = "Unable to continue tests due to the abort by timeout ${jobBuildUrl}\n"
             subject = getFailureSubject(FailureCause.TIMED_OUT.value, jobName, env, buildNumber)
             failureReason = "Aborted by timeout"
-        } else  if (currentBuild.rawBuild.log.contains("Aborted by ")) {
+        } else if (currentBuild.rawBuild.log.contains("Aborted by ")) {
             currentBuild.result = BuildResult.ABORTED
             bodyHeader = "Unable to continue tests due to the abort by " + getAbortCause(currentBuild) + " ${jobBuildUrl}\n"
             subject = getFailureSubject(FailureCause.ABORTED.value, jobName, env, buildNumber)
@@ -80,9 +80,9 @@ class ZafiraUpdater {
         abortedTestRun = zc.abortTestRun(uuid, failureReason)
 
         //Checks if testRun is present in Zafira and sends Zafira-generated report
-        if (!isParamEmpty(abortedTestRun)){
+        if (!isParamEmpty(abortedTestRun)) {
             //Sends email to admin if testRun was aborted
-            if (abortedTestRun.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())){
+            if (abortedTestRun.status.equals(StatusMapper.ZafiraStatus.ABORTED.name())) {
                 sendFailureEmail(uuid, Configuration.get(Configuration.Parameter.ADMIN_EMAILS))
             } else {
                 sendFailureEmail(uuid, Configuration.get("email_list"))
@@ -99,7 +99,7 @@ class ZafiraUpdater {
 
     public def sendZafiraEmail(uuid, emailList) {
         def testRun = getTestRunByCiRunId(uuid)
-        if (isParamEmpty(testRun)){
+        if (isParamEmpty(testRun)) {
             logger.error("No testRun with uuid " + uuid + "found in Zafira")
             return
         }
@@ -114,7 +114,7 @@ class ZafiraUpdater {
 
     public void exportZafiraReport(uuid, workspace) {
         String zafiraReport = zc.exportZafiraReport(uuid)
-        if (isParamEmpty(zafiraReport)){
+        if (isParamEmpty(zafiraReport)) {
             logger.error("UNABLE TO GET TESTRUN! Probably it is not registered in Zafira.")
             return
         }
@@ -123,16 +123,16 @@ class ZafiraUpdater {
     }
 
     public def sendFailureEmail(uuid, emailList) {
-        if (isParamEmpty(emailList)){
+        if (isParamEmpty(emailList)) {
             logger.info("No failure email recipients was provided")
             return
         }
         def suiteOwner = true
         def suiteRunner = false
-        if (Configuration.get("suiteOwner")){
+        if (Configuration.get("suiteOwner")) {
             suiteOwner = Configuration.get("suiteOwner")
         }
-        if (Configuration.get("suiteRunner")){
+        if (Configuration.get("suiteRunner")) {
             suiteRunner = Configuration.get("suiteRunner")
         }
         return zc.sendFailureEmail(uuid, emailList, suiteOwner, suiteRunner)
@@ -142,10 +142,10 @@ class ZafiraUpdater {
         def testRun = getTestRunByCiRunId(uuid)
         if (!isParamEmpty(testRun)) {
             logger.debug("testRun: " + testRun.dump())
-            if (isFailure(testRun.status)){
+            if (isFailure(testRun.status)) {
                 logger.debug("marking currentBuild.result as FAILURE")
                 currentBuild.result = BuildResult.FAILURE
-            } else if (isPassed(testRun.status)){
+            } else if (isPassed(testRun.status)) {
                 logger.debug("marking currentBuild.result as SUCCESS")
                 currentBuild.result = BuildResult.SUCCESS
             } else {
@@ -156,12 +156,12 @@ class ZafiraUpdater {
     }
 
     public def sendSlackNotification(uuid, channels) {
-        if (!isParamEmpty(channels)){
+        if (!isParamEmpty(channels)) {
             return zc.sendSlackNotification(uuid, channels)
         }
     }
 
-    public boolean isZafiraRerun(uuid){
+    public boolean isZafiraRerun(uuid) {
         return !isParamEmpty(zc.getTestRunByCiRunId(uuid))
     }
 
@@ -169,7 +169,7 @@ class ZafiraUpdater {
         return zc.createLaunchers(jenkinsJobsScanResult)
     }
 
-    public def createJob(jobUrl){
+    public def createJob(jobUrl) {
         return zc.createJob(jobUrl)
     }
 

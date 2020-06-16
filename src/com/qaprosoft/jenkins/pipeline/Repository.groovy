@@ -29,11 +29,11 @@ class Repository extends BaseObject {
     private static final String SCM_TOKEN = "scmToken"
 
     public Repository(context) {
-		super(context)
+        super(context)
 
         scmClient = new GitHub(context)
-        pipelineLibrary = Configuration.get("pipelineLibrary")
-        runnerClass = Configuration.get("runnerClass")
+        this.pipelineLibrary = Configuration.get("pipelineLibrary")
+        this.runnerClass = Configuration.get("runnerClass")
     }
 
     public void register() {
@@ -47,7 +47,7 @@ class Repository extends BaseObject {
                 clean()
             }
         }
-        
+
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
         def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
 
@@ -101,7 +101,7 @@ class Repository extends BaseObject {
                     def reportingRefreshToken = Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)
                     logger.debug("reportingServiceUrl: " + reportingServiceUrl)
                     logger.debug("reportingRefreshToken: " + reportingRefreshToken)
-                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)){
+                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
                         Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, reportingRefreshToken)
                     }
                 }
@@ -166,7 +166,12 @@ class Repository extends BaseObject {
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-            def isTestNgRunner = Class.forName(runnerClass, false, Thread.currentThread().getContextClassLoader()) in TestNG
+            
+            if (!'QPS-Pipeline'.equals(this.pipelineLibrary)) {
+                //load custom library to check inheritance for isTestNGRunner
+                context.library this.pipelineLibrary
+            }
+            def isTestNgRunner = Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in TestNG
 
             registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields))
 
@@ -182,7 +187,7 @@ class Repository extends BaseObject {
                 registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
             }
 
-			factoryRunner.run(dslObjects)
+            factoryRunner.run(dslObjects)
 
         }
     }
@@ -222,7 +227,7 @@ class Repository extends BaseObject {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
         }
     }
-	
+
     public def registerCredentials() {
         context.stage("Register Credentials") {
             def user = Configuration.get(SCM_USER)
@@ -235,5 +240,5 @@ class Repository extends BaseObject {
             }
         }
     }
-	
+
 }

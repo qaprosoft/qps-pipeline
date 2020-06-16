@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat
 
 
 @InheritConstructors
-abstract class AbstractSBTRunner extends AbstractRunner{
+abstract class AbstractSBTRunner extends AbstractRunner {
 
     def date = new Date()
     def sdf = new SimpleDateFormat("yyyyMMddHHmmss")

@@ -14,7 +14,7 @@ public class CronJobFactory extends PipelineFactory {
     def repo
     def organization
     def branch
-	def suitePath
+    def suitePath
     def scheduling
     def orgRepoScheduling
 
@@ -27,13 +27,13 @@ public class CronJobFactory extends PipelineFactory {
         this.repo = repo
         this.organization = organization
         this.branch = branch
-		this.suitePath = suitePath
+        this.suitePath = suitePath
         this.orgRepoScheduling = orgRepoScheduling
     }
 
     def create() {
         logger.info("CronJobFactory->create")
-		XmlSuite currentSuite = parseSuite(suitePath)
+        XmlSuite currentSuite = parseSuite(suitePath)
         def pipelineJob = super.create()
 
         pipelineJob.with {
@@ -66,15 +66,15 @@ public class CronJobFactory extends PipelineFactory {
                 configure stringParam('branch', this.branch, "SCM repository branch to run against")
                 stringParam('email_list', '', 'List of Users to be emailed after the test. If empty then populate from jenkinsEmail suite property')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "5")
-                configure addHiddenParameter('zafiraFields', '' , '')
+                configure addHiddenParameter('zafiraFields', '', '')
             }
 
         }
         return pipelineJob
     }
-	
-	def setScheduling(scheduling) {
-		this.scheduling = scheduling
-	}
+
+    def setScheduling(scheduling) {
+        this.scheduling = scheduling
+    }
 
 }
