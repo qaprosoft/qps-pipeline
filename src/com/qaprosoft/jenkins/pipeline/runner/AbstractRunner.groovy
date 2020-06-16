@@ -11,60 +11,29 @@ public abstract class AbstractRunner extends BaseObject {
     // organization folder name of the current job/runner
     protected String organization = ""
     protected String buildNameTemplate = "${BUILD_NUMBER}"
+    protected String buildName = ""
     protected final String BUILD_NAME_SEPARATOR = "|"
 
-    public String getBuildNameTemplate() {
-        return this.buildNameTemplate
+    public String getBuildName() {
+        return this.buildName
     }
 
-    //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
-    protected String setBuildNameTemplate(buildNameTemplate) {
-        Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
-        String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String suite = Configuration.get("suite")
-        String branch = Configuration.get("branch")
-        String env = Configuration.get("env")
-        String browser = getBrowser()
-        String browserVersion = getBrowserVersion()
-        String locale = Configuration.get("locale")
-        String language = Configuration.get("language")
-        String node = Configuration.get("node")
-
-        context.stage('Preparation') {
-            if (!isParamEmpty(buildNumber) && buildNameTemplate.contains("BUILD_NUMBER")) {
-                buildNameTemplate += BUILD_NAME_SEPARATOR + "${buildNumber}"
+    private void setBuildName(String buildNameTemplate) {
+        if (!isParamEmpty(buildNameTemplate)) {
+            this.buildNameTemplate = replaceMultipleSymbolsToOne(buildNameTemplate, BUILD_NAME_SEPARATOR)
+            //set exact values instead of name-strings
+            for (item in buildNameTemplate.split(BUILD_NAME_SEPARATOR)) {
+                this.buildName += Configuration.get("${item}") + "|"
             }
-            if (!isParamEmpty(suite) && buildNameTemplate.contains("suite")) {
-                buildNameTemplate += BUILD_NAME_SEPARATOR + "${suite}"
-            }
-            if (!isParamEmpty(branch) && buildNameTemplate.contains("branch")) {
-                buildNameTemplate += BUILD_NAME_SEPARATOR + "${branch}"
-            }
-            if (!isParamEmpty(env) && buildNameTemplate.contains("env")) {
-                buildNameTemplate += BUILD_NAME_SEPARATOR + "${env}"
-            }
-            if (!isParamEmpty(browser) && buildNameTemplate.contains("browser")) {
-                buildNameTemplate += BUILD_NAME_SEPARATOR +  "${browser}"
-            }
-            if (!isParamEmpty(browserVersion) && buildNameTemplate.contains("browserVersion")) {
-                buildNameTemplate += BUILD_NAME_SEPARATOR + "${browserVersion}"
-            }
-            if (!isParamEmpty(locale) && buildNameTemplate.contains("locale")) {
-                buildNameTemplate += BUILD_NAME_SEPARATOR + "${locale}"
-            }
-            if (!isParamEmpty(language) && buildNameTemplate.contains("language")) {
-                buildNameTemplate += BUILD_NAME_SEPARATOR + "${language}"
-            }
-            if (!isParamEmpty(node) && buildNameTemplate.contains("node")) {
-                buildNameTemplate += BUILD_NAME_SEPARATOR + "${node}"
-            }
+            //delete last character "|"
+            this.buildName = this.buildName.substring(0, this.buildName.length() - 1)
         }
     }
 
     public AbstractRunner(context) {
         super(context)
         initOrganization()
-        setBuildNameTemplate("${BUILD_NUMBER}${branch}")
+        setBuildName("BUILD_NUMBER|branch")
     }
 
     //Methods
@@ -193,4 +162,6 @@ public abstract class AbstractRunner extends BaseObject {
     protected void setDslClasspath(additionalClasspath) {
         factoryRunner.setDslClasspath(additionalClasspath)
     }
+
+
 }

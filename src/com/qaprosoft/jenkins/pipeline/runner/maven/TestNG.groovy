@@ -73,13 +73,13 @@ public class TestNG extends Runner {
     public TestNG(context) {
         super(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
-        setBuildNameTemplate("${BUILD_NUMBER}${suite}${branch}${env}${browser}${browserVersion}${locale}${language}${node}")
+        setBuildName("BUILD_NUMBER|suite|branch|env|browser|browserVersion|locale|language")
     }
 
     public TestNG(context, jobType) {
         this (context)
         this.jobType = jobType
-        setBuildNameTemplate("${BUILD_NUMBER}${suite}${branch}${env}${browser}${browserVersion}${locale}${language}${node}")
+        setBuildName("BUILD_NUMBER|suite|branch|env|browser|browserVersion|locale|language")
     }
 
     //Methods
@@ -540,8 +540,7 @@ public class TestNG extends Runner {
             context.wrap([$class: 'BuildUser']) {
                 try {
                     context.timestamps {
-                        currentBuild.displayName = getBuildNameTemplate()
-                        prepareForMobile()
+                        prepareBuild(currentBuild)
                         getScm().clone()
 
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
@@ -691,9 +690,22 @@ public class TestNG extends Runner {
         return Configuration.get("node")
     }
 
+    //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
+    protected void prepareBuild(currentBuild) {
+        Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
+
+        context.stage('Preparation') {
+            currentBuild.displayName = getBuildName()
+            if (isMobile()) {
+                //this is mobile test
+                prepareForMobile()
+            }
+        }
+    }
+
     protected void prepareForMobile() {
         logger.info("Runner->prepareForMobile")
-        def devicePool = Configuration.get("devicePool")
+        def devicePool = Configuration.get("devicePool") //this parameter is not using
         def platform = Configuration.get("job_type")
 
         if (platform.equalsIgnoreCase("android")) {
@@ -730,7 +742,6 @@ public class TestNG extends Runner {
     protected void prepareForiOS() {
         logger.info("Runner->prepareForiOS")
     }
-
 
     protected void buildJob() {
         context.stage('Run Test Suite') {
