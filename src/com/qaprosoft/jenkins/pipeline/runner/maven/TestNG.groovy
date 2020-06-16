@@ -154,12 +154,7 @@ public class TestNG extends Runner {
 	protected void scan() {
 
         context.stage("Scan Repository") {
-            def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            def repo = Configuration.get("repo")
-            def repoFolder = parseFolderName(getWorkspace())
-            def branch = Configuration.get("branch")
-
-            currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+            currentBuild.displayName = getBuildName()
 
             def workspace = getWorkspace()
             logger.info("WORKSPACE: ${workspace}")
@@ -170,7 +165,7 @@ public class TestNG extends Runner {
                 logger.debug("subProject: " + subProject)
                 def subProjectFilter = subProject.equals(".") ? "**" : subProject
                 def zafiraProject = getZafiraProject(subProjectFilter)
-                generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch)
+                generateDslObjects(parseFolderName(getWorkspace()), zafiraProject, subProject, subProjectFilter, Configuration.get("branch"))
 
 				factoryRunner.run(dslObjects, Configuration.get("removedConfigFilesAction"),
 										Configuration.get("removedJobAction"),
@@ -1089,11 +1084,8 @@ public class TestNG extends Runner {
         context.node("master") {
             getScm().clone()
             listPipelines = []
-            def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            def repo = Configuration.get("repo")
-            def branch = Configuration.get("branch")
 
-            currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+            currentBuild.displayName = getBuildName()
 
             for(pomFile in context.getPomFiles()){
                 // clear list of pipelines for each sub-project
