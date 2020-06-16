@@ -31,23 +31,31 @@ public abstract class AbstractRunner extends BaseObject {
         String node = Configuration.get("node")
 
         context.stage('Preparation') {
-            buildNameTemplate = "#${buildNumber}|${suite}|${branch}"
-            if (!isParamEmpty(env)) {
+            if (!isParamEmpty(buildNumber) && buildNameTemplate.contains("BUILD_NUMBER")) {
+                buildNameTemplate += BUILD_NAME_SEPARATOR + "${buildNumber}"
+            }
+            if (!isParamEmpty(suite) && buildNameTemplate.contains("suite")) {
+                buildNameTemplate += BUILD_NAME_SEPARATOR + "${suite}"
+            }
+            if (!isParamEmpty(branch) && buildNameTemplate.contains("branch")) {
+                buildNameTemplate += BUILD_NAME_SEPARATOR + "${branch}"
+            }
+            if (!isParamEmpty(env) && buildNameTemplate.contains("env")) {
                 buildNameTemplate += BUILD_NAME_SEPARATOR + "${env}"
             }
-            if (!isParamEmpty(browser)) {
+            if (!isParamEmpty(browser) && buildNameTemplate.contains("browser")) {
                 buildNameTemplate += BUILD_NAME_SEPARATOR +  "${browser}"
             }
-            if (!isParamEmpty(browserVersion)) {
+            if (!isParamEmpty(browserVersion) && buildNameTemplate.contains("browserVersion")) {
                 buildNameTemplate += BUILD_NAME_SEPARATOR + "${browserVersion}"
             }
-            if (!isParamEmpty(locale)) {
+            if (!isParamEmpty(locale) && buildNameTemplate.contains("locale")) {
                 buildNameTemplate += BUILD_NAME_SEPARATOR + "${locale}"
             }
-            if (!isParamEmpty(language)) {
+            if (!isParamEmpty(language) && buildNameTemplate.contains("language")) {
                 buildNameTemplate += BUILD_NAME_SEPARATOR + "${language}"
             }
-            if (!isParamEmpty(node)) {
+            if (!isParamEmpty(node) && buildNameTemplate.contains("node")) {
                 buildNameTemplate += BUILD_NAME_SEPARATOR + "${node}"
             }
         }
