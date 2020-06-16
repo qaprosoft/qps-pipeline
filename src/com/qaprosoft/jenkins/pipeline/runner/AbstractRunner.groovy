@@ -26,10 +26,11 @@ public abstract class AbstractRunner extends BaseObject {
 
     private void setBuildName(String buildNameTemplate) {
         if (!isParamEmpty(buildNameTemplate)) {
-            this.buildNameTemplate = replaceMultipleSymbolsToOne(buildNameTemplate, BUILD_NAME_SEPARATOR)
             //set exact values instead of name-strings
             for (item in buildNameTemplate.split(BUILD_NAME_SEPARATOR)) {
-                this.buildName += Configuration.get("${item}") + "|"
+                if (isParamEmpty(Configuration.get("${item}"))) {
+                    this.buildName += Configuration.get("${item}") + "|"
+                }
             }
             //delete last character "|"
             this.buildName = this.buildName.substring(0, this.buildName.length() - 1)
