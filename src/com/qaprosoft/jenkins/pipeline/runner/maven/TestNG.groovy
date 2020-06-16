@@ -691,7 +691,6 @@ public class TestNG extends Runner {
         return Configuration.get("node")
     }
 
-    //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
     protected void prepareForMobile() {
         logger.info("Runner->prepareForMobile")
         def devicePool = Configuration.get("devicePool")

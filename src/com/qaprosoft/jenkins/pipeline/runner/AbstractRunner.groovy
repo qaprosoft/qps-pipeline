@@ -17,6 +17,7 @@ public abstract class AbstractRunner extends BaseObject {
         return this.buildNameTemplate
     }
 
+    //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
     protected String setBuildNameTemplate(buildNameTemplate) {
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
         String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
