@@ -627,40 +627,6 @@ public class TestNG extends Runner {
         }
     }
 
-    protected void prepareForMobile() {
-        if (isMobile()) {
-            logger.info("Runner->prepareForMobile")
-            def devicePool = Configuration.get("devicePool")
-            def platform = Configuration.get("job_type")
-
-            if (platform.equalsIgnoreCase("android")) {
-                logger.info("Runner->prepareForAndroid")
-                Configuration.set("mobile_app_clear_cache", "true")
-                Configuration.set("capabilities.autoGrantPermissions", "true")
-                Configuration.set("capabilities.noSign", "true")
-                Configuration.set("capabilities.appWaitDuration", "270000")
-                Configuration.set("capabilities.androidInstallTimeout", "270000")
-                Configuration.set("capabilities.adbExecTimeout", "270000")
-            } else if (platform.equalsIgnoreCase("ios")) {
-                logger.info("Runner->prepareForiOS")
-            } else {
-                logger.warn("Unable to identify mobile platform: ${platform}")
-            }
-
-            //general mobile capabilities
-            Configuration.set("capabilities.provider", "mcloud")
-
-
-            // ATTENTION! Obligatory remove device from the params otherwise
-            // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
-            // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
-            Configuration.remove("device")
-            //TODO: move it to the global jenkins variable
-            Configuration.set("capabilities.newCommandTimeout", "180")
-            Configuration.set("java.awt.headless", "true")
-        }
-    }
-
     private String getCurrentFolderFullName(String jobName) {
         String baseJobName = jobName
         def fullJobName = Configuration.get(Configuration.Parameter.JOB_NAME)
@@ -725,7 +691,49 @@ public class TestNG extends Runner {
         return Configuration.get("node")
     }
 
-    protected void buildJob() {
+    //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
+    protected void prepareForMobile() {
+        logger.info("Runner->prepareForMobile")
+        def devicePool = Configuration.get("devicePool")
+        def platform = Configuration.get("job_type")
+
+        if (platform.equalsIgnoreCase("android")) {
+            prepareForAndroid()
+        } else if (platform.equalsIgnoreCase("ios")) {
+            prepareForiOS()
+        } else {
+            logger.warn("Unable to identify mobile platform: ${platform}")
+        }
+
+        //general mobile capabilities
+        Configuration.set("capabilities.provider", "mcloud")
+
+
+        // ATTENTION! Obligatory remove device from the params otherwise
+        // hudson.remoting.Channel$CallSiteStackTrace: Remote call to JNLP4-connect connection from qpsinfra_jenkins-slave_1.qpsinfra_default/172.19.0.9:39487
+        // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
+        Configuration.remove("device")
+        //TODO: move it to the global jenkins variable
+        Configuration.set("capabilities.newCommandTimeout", "180")
+        Configuration.set("java.awt.headless", "true")
+    }
+
+    protected void prepareForAndroid() {
+        logger.info("Runner->prepareForAndroid")
+        Configuration.set("mobile_app_clear_cache", "true")
+        Configuration.set("capabilities.autoGrantPermissions", "true")
+        Configuration.set("capabilities.noSign", "true")
+        Configuration.set("capabilities.appWaitDuration", "270000")
+        Configuration.set("capabilities.androidInstallTimeout", "270000")
+        Configuration.set("capabilities.adbExecTimeout", "270000")
+    }
+
+protected void prepareForiOS() {
+    logger.info("Runner->prepareForiOS")
+}
+
+
+protected void buildJob() {
         context.stage('Run Test Suite') {
             def goals = getMavenGoals()
             def pomFile = getMavenPomFile()
