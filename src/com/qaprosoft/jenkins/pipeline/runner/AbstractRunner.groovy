@@ -25,16 +25,17 @@ public abstract class AbstractRunner extends BaseObject {
     }
 
     private void setBuildName(String buildNameTemplate) {
-        if (!isParamEmpty(buildNameTemplate)) {
-            //set exact values instead of name-strings
-            for (item in buildNameTemplate.split(BUILD_NAME_SEPARATOR)) {
-                if (isParamEmpty(Configuration.get("${item}"))) {
-                    this.buildName += Configuration.get("${item}") + BUILD_NAME_SEPARATOR
-                }
-            }
-            //delete last character BUILD_NAME_SEPARATOR
-            this.buildName = this.buildName.substring(0, this.buildName.length() - 1)
+        if (isParamEmpty(buildNameTemplate)) {
+            this.buildNameTemplate = buildNameTemplate
         }
+        //set exact values instead of name-strings
+        for (item in buildNameTemplate.split(BUILD_NAME_SEPARATOR)) {
+            if (isParamEmpty(Configuration.get("${item}"))) {
+                this.buildName += Configuration.get("${item}") + BUILD_NAME_SEPARATOR
+            }
+        }
+        //delete last character BUILD_NAME_SEPARATOR
+        this.buildName = this.buildName.substring(0, this.buildName.length() - 1)
     }
 
     //Methods
