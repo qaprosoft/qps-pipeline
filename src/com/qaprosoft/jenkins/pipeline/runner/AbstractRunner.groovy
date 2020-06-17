@@ -25,7 +25,7 @@ public abstract class AbstractRunner extends BaseObject {
 
     @NonCPS
     protected void setDisplayNameTemplate(String template) {
-        template = template.replaceAll("[\\NULL\\null]")
+        template = template.replaceAll("[\\NULL\\null]", '')
         template = replaceMultipleSymbolsToOne(template, DISPLAY_NAME_SEPARATOR)
         this.displayNameTemplate = template
     }
