@@ -16,6 +16,7 @@ public abstract class AbstractRunner extends BaseObject {
     public AbstractRunner(context) {
         super(context)
         initOrganization()
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
     }
 
     protected String getDisplayName() {

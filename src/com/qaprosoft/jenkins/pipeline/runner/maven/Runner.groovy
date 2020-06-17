@@ -13,6 +13,7 @@ public class Runner extends AbstractRunner {
     public Runner(context) {
         super(context)
         sonar = new Sonar(context)
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
     }
 
     //Events
@@ -41,7 +42,6 @@ public class Runner extends AbstractRunner {
         context.node("maven") {
             logger.info("Runner->build")
             scmClient.clone()
-            setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
             context.stage("Maven Build") {
                 context.mavenBuild(Configuration.get("maven_goals"))
             }
