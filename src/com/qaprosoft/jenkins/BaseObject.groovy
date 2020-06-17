@@ -51,7 +51,8 @@ public abstract class BaseObject {
             return this.scmClient
         }
     }
-
+    
+    // TODO: think about possibility to allow custom ListViewFactory registration
     protected void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {
             logger.debug("key ${name} already defined and will be replaced!")
