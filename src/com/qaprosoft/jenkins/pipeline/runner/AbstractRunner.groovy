@@ -20,13 +20,12 @@ public abstract class AbstractRunner extends BaseObject {
     }
 
     protected String getDisplayName() {
-        return Configuration.resolveVars(this.displayNameTemplate)
+        return replaceMultipleSymbolsToOne(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR)
     }
 
     @NonCPS
     protected void setDisplayNameTemplate(String template) {
         template = template.replaceAll("(?i)null", '')
-        template = replaceMultipleSymbolsToOne(template, DISPLAY_NAME_SEPARATOR)
         this.displayNameTemplate = template
     }
 

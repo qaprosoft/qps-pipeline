@@ -61,7 +61,6 @@ class Utils {
         return !isParamEmpty(currentSuite.getParameter(parameter)) && currentSuite.getParameter(parameter).toBoolean()
     }
 
-    @NonCPS
     static def replaceMultipleSymbolsToOne(String value, String symbol) {
         if (value.contains(symbol + symbol)) {
             value = value.replaceAll(symbol + symbol, symbol)
