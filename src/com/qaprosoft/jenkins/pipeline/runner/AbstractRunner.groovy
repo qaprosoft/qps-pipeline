@@ -10,7 +10,7 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 public abstract class AbstractRunner extends BaseObject {
     // organization folder name of the current job/runner
     protected String organization = ""
-    protected String displayNameTemplate = "#${BUILD_NUMBER}|${branch}"
+    protected String displayNameTemplate = '#${BUILD_NUMBER}|${branch}'
     protected final String DISPLAY_NAME_SEPARATOR = "|"
 
     public AbstractRunner(context) {
@@ -19,8 +19,7 @@ public abstract class AbstractRunner extends BaseObject {
     }
 
     protected String getDisplayName() {
-        //set exact values instead of name-strings
-        return Configuration.resolveVars(this.displayNameTemplate)
+        return replaceMultipleSymbolsToOne(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR)
     }
 
     protected void setDisplayNameTemplate(String template) {
