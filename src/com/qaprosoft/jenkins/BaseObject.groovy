@@ -15,6 +15,7 @@ public abstract class BaseObject {
     protected def context
     protected Logger logger
     protected FactoryRunner factoryRunner // object to be able to start JobDSL anytime we need
+    protected Map dslObjects
 
     protected ISCM scmClient
     protected ISCM scmSshClient
@@ -31,6 +32,7 @@ public abstract class BaseObject {
         this.logger = new Logger(context)
         this.scmClient = new GitHub(context)
         this.scmSshClient = new SshGitHub(context)
+        this.dslObjects = new LinkedHashMap()
 
         this.factoryRunner = new FactoryRunner(context)
 
@@ -48,5 +50,15 @@ public abstract class BaseObject {
         } else {
             return this.scmClient
         }
+    }
+    
+    // TODO: think about possibility to allow custom ListViewFactory registration
+    protected void registerObject(name, object) {
+        if (dslObjects.containsKey(name)) {
+            logger.debug("key ${name} already defined and will be replaced!")
+            logger.debug("Old Item: ${dslObjects.get(name).dump()}")
+            logger.debug("New Item: ${object.dump()}")
+        }
+        dslObjects.put(name, object)
     }
 }
