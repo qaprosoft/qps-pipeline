@@ -41,7 +41,6 @@ public class Runner extends AbstractRunner {
         context.node("maven") {
             logger.info("Runner->build")
             scmClient.clone()
-            setDisplayNameTemplate("#${BUILD_NUMBER}|${branch}")
             context.stage("Maven Build") {
                 context.mavenBuild(Configuration.get("maven_goals"))
             }
