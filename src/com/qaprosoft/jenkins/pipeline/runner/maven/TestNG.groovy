@@ -111,7 +111,7 @@ public class TestNG extends Runner {
 
 			try {
 				getScm().clone(true)
-                setDisplayNameTemplate("#\${BUILD_NUMBER}|\${suite}|\${branch}|\${env}|\${browser}|\${browserVersion}|\${locale}|\${language}")
+                setDisplayNameTemplate("#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}")
 				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
                     //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
