@@ -64,7 +64,7 @@ class Utils {
     static def replaceMultipleSymbolsToOne(String value, String symbol) {
         if (value.contains(symbol + symbol)) {
             value.replaceAll(symbol + symbol, symbol)
-            replaceSpecialSymbols(value, symbol)
+            replaceMultipleSymbolsToOne(value, symbol)
         } else {
             return value
         }

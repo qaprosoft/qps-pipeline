@@ -23,9 +23,9 @@ public abstract class AbstractRunner extends BaseObject {
         logger.info('11111')
         logger.info(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR)
         logger.info('22222')
-        logger.info(replaceSpecialSymbols(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR))
+        logger.info(replaceMultipleSymbolsToOne(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR))
         logger.info('33333')
-        return replaceSpecialSymbols(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR)
+        return replaceMultipleSymbolsToOne(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR)
     }
 
     protected void setDisplayNameTemplate(String template) {
