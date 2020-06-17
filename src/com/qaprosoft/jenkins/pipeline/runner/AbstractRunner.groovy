@@ -20,6 +20,11 @@ public abstract class AbstractRunner extends BaseObject {
 
     protected String getDisplayName() {
         //set exact values instead of name-strings
+        logger.info('11111')
+        logger.info(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR)
+        logger.info('22222')
+        logger.info(replaceSpecialSymbols(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR))
+        logger.info('33333')
         return replaceSpecialSymbols(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR)
     }
 
