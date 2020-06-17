@@ -694,7 +694,7 @@ public class TestNG extends Runner {
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
 
         context.stage('Preparation') {
-            currentBuild.displayName = getBuildName()
+            currentBuild.displayName = getDisplayName()
             if (isMobile()) {
                 //this is mobile test
                 prepareForMobile()
