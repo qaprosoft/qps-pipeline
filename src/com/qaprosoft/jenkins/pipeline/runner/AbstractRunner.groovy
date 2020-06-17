@@ -23,6 +23,7 @@ public abstract class AbstractRunner extends BaseObject {
         return replaceMultipleSymbolsToOne(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR)
     }
 
+    @NonCPS
     protected void setDisplayNameTemplate(String template) {
         this.displayNameTemplate = template
     }
