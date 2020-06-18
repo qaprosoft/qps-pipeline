@@ -13,6 +13,7 @@ public class Runner extends AbstractRunner {
     public Runner(context) {
         super(context)
         sonar = new Sonar(context)
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
     }
 
     //Events

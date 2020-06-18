@@ -10,10 +10,25 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 public abstract class AbstractRunner extends BaseObject {
     // organization folder name of the current job/runner
     protected String organization = ""
+    protected String displayNameTemplate = '#${BUILD_NUMBER}|${branch}'
+    protected final String DISPLAY_NAME_SEPARATOR = "|"
 
     public AbstractRunner(context) {
         super(context)
         initOrganization()
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
+    }
+
+    protected String getDisplayName() {
+        def String displayName = Configuration.resolveVars(this.displayNameTemplate)
+        displayName = displayName.replaceAll("(?i)null", '')
+        displayName = replaceMultipleSymbolsToOne(displayName, DISPLAY_NAME_SEPARATOR)
+        return displayName
+    }
+
+    @NonCPS
+    protected void setDisplayNameTemplate(String template) {
+        this.displayNameTemplate = template
     }
 
     //Methods

@@ -71,13 +71,14 @@ public class TestNG extends Runner {
 
     public TestNG(context) {
         super(context)
-
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
     }
 
     public TestNG(context, jobType) {
         this (context)
         this.jobType = jobType
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
     }
 
     //Methods
@@ -111,7 +112,6 @@ public class TestNG extends Runner {
 
 			try {
 				getScm().clone(true)
-
 				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
 					scan()
                     //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
@@ -157,7 +157,8 @@ public class TestNG extends Runner {
             def repoFolder = parseFolderName(getWorkspace())
             def branch = Configuration.get("branch")
 
-            currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+            setDisplayNameTemplate("#${buildNumber}|${repo}|${branch}")
+            currentBuild.displayName = getDisplayName()
 
             def workspace = getWorkspace()
             logger.info("WORKSPACE: ${workspace}")
@@ -681,36 +682,10 @@ public class TestNG extends Runner {
 
     //TODO: moved almost everything into argument to be able to move this methoud outside of the current class later if necessary
     protected void prepareBuild(currentBuild) {
-
         Configuration.set("BUILD_USER_ID", getBuildUser(currentBuild))
 
-        String buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-        String suite = Configuration.get("suite")
-        String branch = Configuration.get("branch")
-        String env = Configuration.get("env")
-        String browser = getBrowser()
-        String browserVersion = getBrowserVersion()
-		String locale = Configuration.get("locale")
-		String language = Configuration.get("language")
-
         context.stage('Preparation') {
-            currentBuild.displayName = "#${buildNumber}|${suite}|${branch}"
-            if (!isParamEmpty(env)) {
-                currentBuild.displayName += "|" + "${env}"
-            }
-            if (!isParamEmpty(browser)) {
-                currentBuild.displayName += "|${browser}"
-            }
-            if (!isParamEmpty(browserVersion)) {
-                currentBuild.displayName += "|${browserVersion}"
-            }
-			if (!isParamEmpty(locale)) {
-				currentBuild.displayName += "|${locale}"
-			}
-			if (!isParamEmpty(language)) {
-				currentBuild.displayName += "|${language}"
-			}
-            currentBuild.description = "${suite}"
+            currentBuild.displayName = getDisplayName()
             if (isMobile()) {
                 //this is mobile test
                 prepareForMobile()
@@ -1108,7 +1083,8 @@ public class TestNG extends Runner {
             def repo = Configuration.get("repo")
             def branch = Configuration.get("branch")
 
-            currentBuild.displayName = "#${buildNumber}|${repo}|${branch}"
+            setDisplayNameTemplate("#${buildNumber}|${repo}|${branch}")
+            currentBuild.displayName = getDisplayName()
 
             for(pomFile in context.getPomFiles()){
                 // clear list of pipelines for each sub-project
