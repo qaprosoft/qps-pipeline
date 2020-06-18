@@ -66,7 +66,7 @@ class Utils {
             value = value.replace(symbol + symbol, symbol)
             replaceMultipleSymbolsToOne(value, symbol)
         } else {
-            //delete last character if it == symbol
+            //delete last character if character == symbol
             if (value[-1] == symbol) {
                 value = value.substring(0, value.length() - 1)
             }
