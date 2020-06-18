@@ -20,7 +20,7 @@ public abstract class AbstractRunner extends BaseObject {
     }
 
     protected String getDisplayName() {
-        this.displayNameTemplate = this.displayNameTemplate.replaceAll("(?i)null", '')
+        this.displayNameTemplate = this.displayNameTemplate.replaceAll("null", '')
         this.displayNameTemplate = replaceMultipleSymbolsToOne(this.displayNameTemplate, DISPLAY_NAME_SEPARATOR)
         return Configuration.resolveVars(this.displayNameTemplate)
     }
