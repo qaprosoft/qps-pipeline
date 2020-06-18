@@ -63,9 +63,13 @@ class Utils {
 
     static def replaceMultipleSymbolsToOne(String value, String symbol) {
         if (value.contains(symbol + symbol)) {
-            value = value.replaceAll(symbol + symbol, symbol)
+            value = value.replace(symbol + symbol, symbol)
             replaceMultipleSymbolsToOne(value, symbol)
         } else {
+            //delete last character if it == symbol
+            if (value[-1] == symbol) {
+                value = value.substring(0, value.length() - 1)
+            }
             return value
         }
     }
