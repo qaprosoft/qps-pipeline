@@ -20,7 +20,7 @@ public abstract class AbstractRunner extends BaseObject {
     }
 
     protected String getDisplayName() {
-        return replaceMultipleSymbolsToOne(Configuration.resolveVars(this.displayNameTemplate), DISPLAY_NAME_SEPARATOR)
+        return Configuration.resolveVars(replaceMultipleSymbolsToOne(this.displayNameTemplate, DISPLAY_NAME_SEPARATOR))
     }
 
     @NonCPS
