@@ -21,8 +21,14 @@ public abstract class AbstractRunner extends BaseObject {
 
     protected String getDisplayName() {
         def String displayName = Configuration.resolveVars(this.displayNameTemplate)
+        logger.info("11111")
+        logger.info(displayName)
         displayName = displayName.replaceAll("(?i)null", '')
+        logger.info("22222")
+        logger.info(displayName)
         displayName = replaceMultipleSymbolsToOne(displayName, DISPLAY_NAME_SEPARATOR)
+        logger.info("33333")
+        logger.info(displayName)
         return displayName
     }
 
