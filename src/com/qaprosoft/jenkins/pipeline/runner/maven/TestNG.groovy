@@ -917,9 +917,9 @@ public class TestNG extends Runner {
         logger.info("111111")
         logger.info("parameterName: " + parameterName)
         logger.info("222222")
-        logger.info("capabilityName: " + capabilityName)
+        logger.info("Configuration.get(parameterName): " + Configuration.get(parameterName))
         logger.info("333333")
-        logger.info("capabilityValue: " + capabilityValue)
+        logger.info("Configuration.get(parameterName)?: " + Configuration.get(parameterName)?)
         if (Configuration.get(parameterName)?.toBoolean()) {
             logger.info(message)
             Configuration.set(capabilityName, capabilityValue)
