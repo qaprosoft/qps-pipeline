@@ -70,12 +70,20 @@ class TestRailClient extends HttpClient{
         includeAll = includeAll.toBoolean()
         // default request body without milestone id
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder suite_id: suiteId,
-                name: testRunName,
-                assignedto_id: assignedToId,
-                include_all: includeAll,
-                case_ids: caseIds
-
+        if (!includeAll) {
+            jsonBuilder suite_id: suiteId,
+                    name: testRunName,
+                    assignedto_id: assignedToId,
+                    include_all: includeAll,
+                    case_ids: caseIds
+        } else {
+            // no need to specify cases if all of them should be registered in test run
+            jsonBuilder suite_id: suiteId,
+            name: testRunName,
+            assignedto_id: assignedToId,
+            include_all: includeAll
+        }
+        
         if (!isParamEmpty(milestoneId)) {
             // insert milestone id into the request body
             jsonBuilder = new JsonBuilder()
