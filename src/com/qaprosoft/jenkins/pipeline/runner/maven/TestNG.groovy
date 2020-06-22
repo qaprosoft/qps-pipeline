@@ -825,7 +825,7 @@ public class TestNG extends Runner {
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
         addCapability("suite", suiteName)
         addCapabilityIfPresent("rerun_failures", "zafira_rerun_failures")
-        addOptionalCapability("capabilities.enableVideo", "Video recording was enabled.", "capabilities.enableVideo", Configuration.get("enableVideo"))
+        addOptionalCapability("capabilities.enableVideo", "Video recording was enabled.", "capabilities.enableVideo", "true")
         // [VD] getting debug host works only on specific nodes which are detecetd by chooseNode.
         // on this stage this method is not fucntion properly!
         //TODO: move 8000 port into the global var
@@ -914,6 +914,12 @@ public class TestNG extends Runner {
      * Enables capability if its value is present in configuration and is true
      */
     protected def addOptionalCapability(parameterName, message, capabilityName, capabilityValue) {
+        logger.info("111111")
+        logger.info("parameterName" + parameterName)
+        logger.info("222222")
+        logger.info("capabilityName" + capabilityName)
+        logger.info("333333")
+        logger.info("capabilityValue" + capabilityValue)
         if (Configuration.get(parameterName)?.toBoolean()) {
             logger.info(message)
             Configuration.set(capabilityName, capabilityValue)
