@@ -161,7 +161,7 @@ class TestRailUpdater {
         logger.info("filterCaseResultMap started")
         def filteredCaseResultMap = caseResultMap
         caseResultMap.each { testCase ->
-            if (testCase.key in testRailCaseIds) {
+            if (testCase.key.toString() in testRailCaseIds) {
                 logger.debug("add existing case: " + testCase.key)
                 actualCases.add(testCase)
             } else {
