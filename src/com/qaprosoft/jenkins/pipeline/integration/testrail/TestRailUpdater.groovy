@@ -153,6 +153,7 @@ class TestRailUpdater {
     }
 
     protected def filterCaseResultMap(caseResultMap, testRailCaseIds){
+        logger.info("filterCaseResultMap started")
         def filteredCaseResultMap = caseResultMap
         caseResultMap.each { testCase ->
             boolean isValid = false
@@ -164,9 +165,10 @@ class TestRailUpdater {
             }
             if (!isValid){
                 filteredCaseResultMap.remove(testCase.value.case_id)
-                logger.error("Removed non-existing case: ${testCase.value.case_id}.\nPlease adjust your test code using valid platfrom/language/locale filters for TestRail cases registration.")
             }
         }
+        
+        logger.info("filterCaseResultMap finished")
         return filteredCaseResultMap
     }
 
