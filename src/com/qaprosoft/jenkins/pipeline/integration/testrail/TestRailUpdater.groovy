@@ -163,6 +163,8 @@ class TestRailUpdater {
         caseResultMap.each { testCase ->
             if (testRailCaseIds.contains(testCase.key)) {
                 actualCases.add(testCase)
+            } else {
+                logger.warn("removed non-existing case: {testCase.key}")
             }
         }
         
