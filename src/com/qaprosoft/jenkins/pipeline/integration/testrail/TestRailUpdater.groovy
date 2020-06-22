@@ -153,6 +153,10 @@ class TestRailUpdater {
     }
 
     protected def filterCaseResultMap(caseResultMap, testRailCaseIds){
+        logger.debug("testRailCaseIds: " + testRailCaseIds)
+        
+        logger.debug("caseResultMap: " + caseResultMap)
+        
         logger.info("filterCaseResultMap started")
         def filteredCaseResultMap = caseResultMap
         caseResultMap.each { testCase ->
