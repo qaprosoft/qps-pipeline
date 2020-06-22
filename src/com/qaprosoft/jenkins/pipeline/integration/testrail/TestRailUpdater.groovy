@@ -164,10 +164,10 @@ class TestRailUpdater {
             if (testRailCaseIds.contains(testCase.key)) {
                 actualCases.add(testCase)
             } else {
-                logger.warn("removed non-existing case: {testCase.key}")
+                logger.warn("removed non-existing case: " + testCase.key)
             }
         }
-        
+        logger.debug("actualCases: " + actualCases)
         logger.info("filterCaseResultMap finished")
         return actualCases
     }
