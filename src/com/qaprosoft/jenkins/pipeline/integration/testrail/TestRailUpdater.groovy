@@ -160,6 +160,10 @@ class TestRailUpdater {
         logger.info("filterCaseResultMap started")
         def filteredCaseResultMap = caseResultMap
         caseResultMap.each { testCase ->
+            if (!testRailCaseIds.contains(testCase.key)) {
+                filteredCaseResultMap.remove(testCase.key)
+            }
+/*            
             boolean isValid = false
             for(testRailCaseId in testRailCaseIds){
                 if (testRailCaseId.toString().equals(testCase.value.case_id)){
@@ -170,6 +174,7 @@ class TestRailUpdater {
             if (!isValid){
                 filteredCaseResultMap.remove(testCase.value.case_id)
             }
+*/
         }
         
         logger.info("filterCaseResultMap finished")
