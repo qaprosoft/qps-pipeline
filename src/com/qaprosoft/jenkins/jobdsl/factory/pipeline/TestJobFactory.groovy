@@ -1,7 +1,5 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-import jline.internal.Configuration
-
 @Grab('org.testng:testng:6.8.8')
 
 import static com.qaprosoft.jenkins.Utils.*
@@ -105,7 +103,6 @@ public class TestJobFactory extends PipelineFactory {
                 def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
                 def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
                 def enableVideo = getSuiteParameter("true", "enableVideo", currentSuite).toBoolean()
-                Configuration.set("capabilities.enableVideo", getSuiteParameter("true", "enableVideo", currentSuite).toBoolean())
 
                 def jobType = getSuiteParameter("api", "jenkinsJobType", currentSuite).toLowerCase()
                 // TODO: add ios_web, android_web if needed
