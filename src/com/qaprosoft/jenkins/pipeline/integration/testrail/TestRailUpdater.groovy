@@ -142,11 +142,11 @@ class TestRailUpdater {
     }
 
     protected def parseCases(projectId, suiteId){
-        Set testRailCaseIds = new HashSet()
+        HashSet<String> testRailCaseIds = new HashSet<String>();
         def cases = trc.getCases(projectId, suiteId)
 //        logger.debug("SUITE_CASES: " + formatJson(cases))
         cases.each { testCase ->
-            testRailCaseIds.add(testCase.id)
+            testRailCaseIds.add(testCase.id.toString())
         }
 //        logger.debug("VALID_CASES: " + formatJson(validTestCases))
         return testRailCaseIds
