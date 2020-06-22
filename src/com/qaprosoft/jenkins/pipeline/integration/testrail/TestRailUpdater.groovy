@@ -153,32 +153,21 @@ class TestRailUpdater {
     }
 
     protected def filterCaseResultMap(caseResultMap, testRailCaseIds){
-        logger.debug("testRailCaseIds: " + testRailCaseIds)
+        Map actualCases = new HashMap<>()
         
+        logger.debug("testRailCaseIds: " + testRailCaseIds)
         logger.debug("caseResultMap: " + caseResultMap)
         
         logger.info("filterCaseResultMap started")
         def filteredCaseResultMap = caseResultMap
         caseResultMap.each { testCase ->
-            if (!testRailCaseIds.contains(testCase.key)) {
-                filteredCaseResultMap.remove(testCase.key)
+            if (testRailCaseIds.contains(testCase.key)) {
+                actualCases.add(testCase)
             }
-/*            
-            boolean isValid = false
-            for(testRailCaseId in testRailCaseIds){
-                if (testRailCaseId.toString().equals(testCase.value.case_id)){
-                    isValid = true
-                    break
-                }
-            }
-            if (!isValid){
-                filteredCaseResultMap.remove(testCase.value.case_id)
-            }
-*/
         }
         
         logger.info("filterCaseResultMap finished")
-        return filteredCaseResultMap
+        return actualCases
     }
 
     protected def filterTests(testRunId, assignedToId, testRailCaseIds, testResultMap, caseResultMap){
