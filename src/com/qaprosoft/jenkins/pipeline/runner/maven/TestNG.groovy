@@ -825,8 +825,6 @@ public class TestNG extends Runner {
         addCapability("ci_build_cause", getBuildCause((Configuration.get(Configuration.Parameter.JOB_NAME)), currentBuild))
         addCapability("suite", suiteName)
         addCapabilityIfPresent("rerun_failures", "zafira_rerun_failures")
-        Configuration.set("capabilities.enableVideo", getSuiteParameter("true", "enableVideo", currentSuite).toBoolean())
-        logger.info("11111\n" + getSuiteParameter("true", "enableVideo", currentSuite).toBoolean() + "\n22222")
         addOptionalCapability("enableVideo", "Video recording was enabled.", "capabilities.enableVideo", "true")
         // [VD] getting debug host works only on specific nodes which are detecetd by chooseNode.
         // on this stage this method is not fucntion properly!
