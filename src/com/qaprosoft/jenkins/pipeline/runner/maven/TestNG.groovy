@@ -914,7 +914,8 @@ public class TestNG extends Runner {
      * Enables capability if its value is present in configuration and is true
      */
     protected def addOptionalCapability(parameterName, message, capabilityName, capabilityValue) {
-        if (Configuration.get(parameterName).toBoolean()) {
+        logger.info("111111\n" + Configuration.get(parameterName)?.toBoolean())
+        if (Configuration.get(parameterName)?.toBoolean()) {
             logger.info(message)
             Configuration.set(capabilityName, capabilityValue)
         }

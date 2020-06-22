@@ -102,7 +102,7 @@ public class TestJobFactory extends PipelineFactory {
                 }
                 def defaultMobilePool = getSuiteParameter("ANY", "jenkinsMobileDefaultPool", currentSuite)
                 def autoScreenshot = getSuiteParameter("false", "jenkinsAutoScreenshot", currentSuite).toBoolean()
-                def enableVideo = getSuiteParameter("true", "enableVideo", currentSuite).toBoolean()
+                def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
 
                 def jobType = getSuiteParameter("api", "jenkinsJobType", currentSuite).toLowerCase()
                 // TODO: add ios_web, android_web if needed
