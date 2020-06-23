@@ -570,7 +570,7 @@ public class TestNG extends Runner {
                     clean()
                     customNotify()
 
-                    if (Configuration.get("testrail_enabled")?.toBoolean()) {
+                    if (Configuration.get("testrail_enabled")?.toBoolean() && !isParamEmpty(getCredentials(organization+ "-testrail_service_url")) && !isParamEmpty(getCredentials(organization + "-testrail_creds"))) {
                         String jobName = getCurrentFolderFullName(Configuration.TESTRAIL_UPDATER_JOBNAME)
 
                         // TODO: rename include_all to something testrail related
@@ -870,7 +870,6 @@ public class TestNG extends Runner {
                 "TESTRAIL_SERVICE_URL",
                 "TESTRAIL_USERNAME",
                 "TESTRAIL_PASSWORD",
-                "TESTRAIL_ENABLE",
                 "testrail_enabled",
                 "QTEST_SERVICE_URL",
                 "QTEST_ACCESS_TOKEN",

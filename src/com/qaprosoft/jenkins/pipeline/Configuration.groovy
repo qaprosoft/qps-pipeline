@@ -111,7 +111,6 @@ public class Configuration {
         TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", ""), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
         TESTRAIL_USERNAME("TESTRAIL_USERNAME", ""),
         TESTRAIL_PASSWORD("TESTRAIL_PASSWORD", "", true),
-        TESTRAIL_ENABLE("testrail_enabled", "false"),
 
         QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
         QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true),
