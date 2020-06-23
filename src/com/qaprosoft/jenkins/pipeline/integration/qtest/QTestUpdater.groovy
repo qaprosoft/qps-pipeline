@@ -23,7 +23,7 @@ class QTestUpdater {
     }
 
     public void updateTestRun(uuid) {
-        if (!Configuration.get(Configuration.Parameter.QTEST_ENABLE).toBoolean() || !qTestClient.isAvailable()) {
+        if (!qTestClient.isAvailable()) {
             // do nothing
             return
         }
