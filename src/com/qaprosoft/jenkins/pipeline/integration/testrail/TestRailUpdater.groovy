@@ -185,7 +185,8 @@ class TestRailUpdater {
             def testCase = caseResultMap.get(testCaseId)
             if (!isParamEmpty(testCase)){
                 resultToAdd.status_id = testCase.status_id
-                resultToAdd.comment = testCase.testURL + "\n\n" + testCase.comment
+                //resultToAdd.comment = testCase.testURL + "\n\n" + testCase.comment
+                resultToAdd.comment = testCase.testURL
                 resultToAdd.defects = testCase.defects
                 resultToAdd.assignedto_id = assignedToId
                 if (resultToAdd.status_id != 3) {
@@ -230,7 +231,7 @@ class TestRailUpdater {
                 if (testCase.status_id != 1){
                     testCase.comment = testInfo.message
                 }
-                testCase.testURL = "${integration.reportingServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
+                testCase.testURL = "${integration.zafiraServiceUrl}/tests/runs/${integration.testRunId}/info/${testInfo.id}"
             } else {
                 testCase = testCasesMap.get(testCaseId)
             }
