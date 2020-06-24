@@ -569,7 +569,7 @@ public class TestNG extends Runner {
                     clean()
                     customNotify()
 
-                    if (Configuration.get("testrail_enabled")?.toBoolean() && !isParamEmpty(getCredentials(organization + "-testrail_service_url")) && !isParamEmpty(getCredentials(organization + "-testrail_creds"))) {
+                    if (Configuration.get("testrail_enabled")?.toBoolean() && !isParamEmpty(getCurrentFolderFullName(Configuration.TESTRAIL_UPDATER_JOBNAME))) {
                         String jobName = getCurrentFolderFullName(Configuration.TESTRAIL_UPDATER_JOBNAME)
 
                         // TODO: rename include_all to something testrail related
@@ -593,7 +593,7 @@ public class TestNG extends Runner {
                                     ]
                         }
                     }
-                    if (Configuration.get("qtest_enabled")?.toBoolean() && !isParamEmpty(getCredentials(organization+ "-qtest_service_url")) && !isParamEmpty(getCredentials(organization + "-qtest_token"))) {
+                    if (Configuration.get("qtest_enabled")?.toBoolean() && !isParamEmpty(getCurrentFolderFullName(Configuration.QTEST_UPDATER_JOBNAME))) {
                         String jobName = getCurrentFolderFullName(Configuration.QTEST_UPDATER_JOBNAME)
                         def os = !isParamEmpty(Configuration.get("capabilities.os"))?Configuration.get("capabilities.os"):""
                         def osVersion = !isParamEmpty(Configuration.get("capabilities.os_version"))?Configuration.get("capabilities.os_version"):""
