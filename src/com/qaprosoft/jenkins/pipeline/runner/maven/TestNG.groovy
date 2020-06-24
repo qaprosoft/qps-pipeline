@@ -137,7 +137,7 @@ public class TestNG extends Runner {
 		setQTestCreds()
 
 		def ci_run_id = Configuration.get("ci_run_id")
-		qTestUpdater.updateTestRun(ci_run_id, organization)
+		qTestUpdater.updateTestRun(ci_run_id)
 	}
 
 	public void sendTestRailResults() {
