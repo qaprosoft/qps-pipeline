@@ -83,7 +83,7 @@ class TestRailUpdater {
             testRailRunId = getTestRailRunId(testRunName, null, milestoneId, projectId, suiteId, createdAfter, Configuration.get("testrail_search_interval"))
         }
 
-        testResultMap = filterTests(testRailRunId, assignedToId, testRailCaseIds, testResultMap, filteredCaseResultMap)
+        testResultMap = filterTests(testRailRunId, assignedToId, testResultMap, filteredCaseResultMap)
         addResults(testRailRunId, testResultMap)
     }
 
@@ -142,55 +142,59 @@ class TestRailUpdater {
     }
 
     protected def parseCases(projectId, suiteId) {
-        Set testRailCaseIds = new HashSet()
+        HashSet<String> testRailCaseIds = new HashSet<String>();
         def cases = trc.getCases(projectId, suiteId)
 //        logger.debug("SUITE_CASES: " + formatJson(cases))
         cases.each { testCase ->
-            testRailCaseIds.add(testCase.id)
+            testRailCaseIds.add(testCase.id.toString())
         }
 //        logger.debug("VALID_CASES: " + formatJson(validTestCases))
         return testRailCaseIds
     }
 
     protected def filterCaseResultMap(caseResultMap, testRailCaseIds) {
+        Map actualCases = new HashMap<>()
+        
+        logger.debug("testRailCaseIds: " + testRailCaseIds)
+        logger.debug("caseResultMap: " + caseResultMap)
+        
+        logger.info("filterCaseResultMap started")
         def filteredCaseResultMap = caseResultMap
         caseResultMap.each { testCase ->
-            boolean isValid = false
-            for (testRailCaseId in testRailCaseIds) {
-                if (testRailCaseId.toString().equals(testCase.value.case_id)) {
-                    isValid = true
-                    break
-                }
-            }
-            if (!isValid) {
-                filteredCaseResultMap.remove(testCase.value.case_id)
-                logger.error("Removed non-existing case: ${testCase.value.case_id}.\nPlease adjust your test code using valid platfrom/language/locale filters for TestRail cases registration.")
+            if (testCase.key in testRailCaseIds) {
+                logger.debug("add existing case: " + testCase.key)
+                actualCases.put(testCase.key, testCase.value)
+            } else {
+                logger.warn("removed non-existing case: " + testCase.key)
             }
         }
-        return filteredCaseResultMap
+        logger.debug("actualCases: " + actualCases)
+        logger.info("filterCaseResultMap finished")
+        return actualCases
     }
 
-    protected def filterTests(testRunId, assignedToId, testRailCaseIds, testResultMap, caseResultMap) {
+    protected def filterTests(testRunId, assignedToId, testResultMap, caseResultMap) {
         Map filteredTestResultMap = testResultMap
         def tests = trc.getTests(testRunId)
-//        logger.debug("TESTS_MAP:\n" + formatJson(tests))
+        
+        logger.debug("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
-            for (testRailCaseId in testRailCaseIds) {
-                if (testRailCaseId == test.case_id) {
-                    Map resultToAdd = new HashMap()
-                    resultToAdd.test_id = test.id
-                    String testCaseId = test.case_id.toString()
-                    def testCase = caseResultMap.get(testCaseId)
-                    if (!isParamEmpty(testCase)) {
-                        resultToAdd.status_id = testCase.status_id
-                        resultToAdd.comment = testCase.testURL + "\n\n" + testCase.comment
-                        resultToAdd.defects = testCase.defects
-                        resultToAdd.assignedto_id = assignedToId
-                        if (resultToAdd.status_id != 3) {
-                            filteredTestResultMap.put(resultToAdd.test_id, resultToAdd)
-                        }
-                        break
-                    }
+            Map resultToAdd = new HashMap()
+            resultToAdd.test_id = test.id
+            String testCaseId = test.case_id.toString()
+            def testCase = caseResultMap.get(testCaseId)
+            if (!isParamEmpty(testCase)){
+                resultToAdd.status_id = testCase.status_id
+                if (isParamEmpty(testCase.comment)) {
+                    resultToAdd.comment = testCase.testURL
+                } else {
+                    resultToAdd.comment = testCase.testURL + "\n\n" + testCase.comment
+                }
+                
+                resultToAdd.defects = testCase.defects
+                resultToAdd.assignedto_id = assignedToId
+                if (resultToAdd.status_id != 3) {
+                    filteredTestResultMap.put(resultToAdd.test_id, resultToAdd)
                 }
             }
         }
@@ -231,7 +235,7 @@ class TestRailUpdater {
                 if (testCase.status_id != 1) {
                     testCase.comment = testInfo.message
                 }
-                testCase.testURL = "${integration.reportingServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
+                testCase.testURL = "${integration.zafiraServiceUrl}/tests/runs/${integration.testRunId}/info/${testInfo.id}"
             } else {
                 testCase = testCasesMap.get(testCaseId)
             }
