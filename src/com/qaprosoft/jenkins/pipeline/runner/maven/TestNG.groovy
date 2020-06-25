@@ -695,7 +695,6 @@ public class TestNG extends Runner {
 
     protected void prepareForMobile() {
         logger.info("Runner->prepareForMobile")
-        def devicePool = Configuration.get("devicePool")
         def platform = Configuration.get("job_type")
 
         if (platform.equalsIgnoreCase("android")) {
