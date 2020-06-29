@@ -44,6 +44,7 @@ class Sonar extends BaseObject {
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
                                 -Dsonar.github.oauth=${this.githubToken} \
+                                -Dsonar.pullrequest.github.endpoint=https://api.github.com \
                                 -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
                         logger.info("extraGoals: " + extraGoals)
                     } else {
