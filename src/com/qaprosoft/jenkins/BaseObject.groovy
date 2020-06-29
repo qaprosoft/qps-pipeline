@@ -59,5 +59,6 @@ public abstract class BaseObject {
             logger.debug("Old Item: ${dslObjects.get(name).dump()}")
             logger.debug("New Item: ${object.dump()}")
         }
+        dslObjects.put(name, object)
     }
 }
