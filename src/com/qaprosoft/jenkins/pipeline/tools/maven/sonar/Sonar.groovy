@@ -10,7 +10,9 @@ import static com.qaprosoft.jenkins.Utils.*
 @InheritConstructors
 class Sonar extends BaseObject {
 
-     protected static def githubToken
+    private static final String SONARQUBE = ".sonarqube"
+
+    protected static def githubToken
 
     public void scan(isPullRequest=false) {
         //TODO: verify preliminary if "maven" nodes available
@@ -39,8 +41,7 @@ class Sonar extends BaseObject {
                     if (isPullRequest) {
                         // no need to run unit tests for PR analysis
                         extraGoals += " -DskipTests \
-                                -Dsonar.auth.github.clientId.secured=Iv1.6ea84df2ce3c37a6 \
-                                -Dsonar.auth.github.clientSecret.secured=2aa0b3f86542d000adc5f5c084bfbc2d8998eb80 \
+                                -Dproject.settings=${SONARQUBE} \
                                 -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")}\
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
