@@ -10,6 +10,8 @@ import static com.qaprosoft.jenkins.Utils.*
 @InheritConstructors
 class Sonar extends BaseObject {
 
+     protected static def githubToken
+
     public void scan(isPullRequest=false) {
         //TODO: verify preliminary if "maven" nodes available
         context.node("maven") {
@@ -41,6 +43,7 @@ class Sonar extends BaseObject {
                                 -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")}\
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
+                                -Dsonar.github.oauth=${this.githubToken} \
                                 -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
                         logger.info("extraGoals: " + extraGoals)
                     } else {
