@@ -64,7 +64,7 @@ public class Sonar extends BaseObject {
                         //TODO: for build process we can't use below goal!
                         extraGoals += " -Dmaven.test.failure.ignore=true"
                     }
-                    context.mavenBuild("${goals} ${extraGoals}"
+                    context.mavenBuild("${goals} ${extraGoals}")
                 }
             }
         }
