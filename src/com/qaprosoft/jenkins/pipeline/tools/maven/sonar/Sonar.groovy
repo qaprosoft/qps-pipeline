@@ -33,6 +33,7 @@ public class Sonar extends BaseObject {
 
                 def sonarQubeEnv = getSonarEnv()
                 def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
+
                 if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
                     this.isSonarAvailable = true
                 } else {
@@ -44,13 +45,17 @@ public class Sonar extends BaseObject {
                     logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
                 }
 
+                def SONAR_LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
+
                 for (pomFile in context.getPomFiles()) {
                     logger.debug("pomFile: " + pomFile)
                     //do compile and scanner for all high level pom.xml files
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
-                    def goals = "-U clean compile test -f ${pomFile}"
-                    def extraGoals = ""
-                    extraGoals += Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean() ? "jacoco:report-aggregate" : ""
+                    def jacocoEnable = configuration.getGlobalProperty(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+                    def goals = "-U clean compile test -f ${pomFile} sonar:sonasr"
+                    def extraGoals = jacocoEnable ? 'jacoco:report-aggregate' : ''
+                    def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
+
                     if (isPullRequest) {
                         // no need to run unit tests for PR analysis
                         extraGoals += " -DskipTests"
@@ -59,19 +64,7 @@ public class Sonar extends BaseObject {
                         //TODO: for build process we can't use below goal!
                         extraGoals += " -Dmaven.test.failure.ignore=true"
                     }
-                    context.mavenBuild("${goals} ${extraGoals}")
-
-                    if (!this.isSonarAvailable) {
-                        return
-                    }
-                    def jacocoEnable = Configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-                    def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
-
-                    context.env.sonarHome = context.tool name: 'sonar-ci-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                    context.withSonarQubeEnv('sonar-ci') {
-                        // execute sonar scanner
-                        context.sh scannerScript(isPullRequest, jacocoReportPaths, jacocoReportPath)
-                    }
+                    context.mavenBuild("${goals} ${extraGoals}"
                 }
             }
         }
@@ -80,31 +73,6 @@ public class Sonar extends BaseObject {
     public void setToken(token) {
         logger.debug("set sonar github token: " + token)
         this.githubToken = token
-    }
-
-    private def scannerScript(isPullRequest, jacocoReportPaths, jacocoReportPath) {
-        //TODO: [VD] find a way for easier env getter. how about making Configuration syncable with current env as well...
-        def sonarHome = context.env.getEnvironment().get("sonarHome")
-        logger.debug("sonarHome: " + sonarHome)
-
-        def BUILD_NUMBER = Configuration.get("BUILD_NUMBER")
-        //TODO: simplify just to get log level from global var
-        def SONAR_LOG_LEVEL = context.env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name()) ? "DEBUG" : "INFO"
-
-        def script = "${sonarHome}/bin/sonar-scanner \
-                  -Dsonar.projectVersion=${BUILD_NUMBER} \
-                  -Dproject.settings=${SONARQUBE} \
-                  -Dsonar.log.level=${SONAR_LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
-
-        if (isPullRequest) {
-            script += " -Dsonar.github.endpoint=${Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_API_URL)}")} \
-                -Dsonar.github.pullRequest=${Configuration.get("ghprbPullId")} \
-                -Dsonar.github.repository=${Configuration.get("ghprbGhRepository")} \
-                -Dsonar.github.oauth=${this.githubToken} \
-                -Dsonar.sourceEncoding=UTF-8 \
-                -Dsonar.analysis.mode=preview"
-        }
-        return script
     }
 
     private String getSonarEnv() {
@@ -121,7 +89,6 @@ public class Sonar extends BaseObject {
 
         if (jacocoEnable) {
             def jacocoItExec = 'jacoco-it.exec'
-
             def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
             def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
 
@@ -131,7 +98,6 @@ public class Sonar extends BaseObject {
                 def copyOutput = context.sh script: "aws s3 cp s3://${jacocoBucket}/${jacocoItExec} /tmp/${jacocoItExec}", returnStdout: true
                 logger.info("copyOutput: " + copyOutput)
             }
-
 
             if (context.fileExists("/tmp/${jacocoItExec}")) {
                 jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec" //this for unit tests code coverage
