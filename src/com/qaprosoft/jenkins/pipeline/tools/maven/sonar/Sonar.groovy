@@ -32,13 +32,14 @@ public class Sonar extends BaseObject {
                 }
 
                 def SONAR_LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
+                def SONAR_WEB_HOST_URL = Configuration.get("INFRA_HOST") + "/sonarqube"
 
                 for (pomFile in context.getPomFiles()) {
                     logger.debug("pomFile: " + pomFile)
                     //do compile and scanner for all high level pom.xml files
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
                     def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dproject.settings=${SONARQUBE} -Dsonar.host.url=${Configuration.get("INFRA_HOST") + "/sonarqube"}"
+                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dproject.settings=${SONARQUBE} -Dsonar.host.url=${SONAR_WEB_HOST_URL}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate' : ''
                     def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
 
