@@ -42,8 +42,7 @@ class Sonar extends BaseObject {
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
                                 -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
-                        logger.info("goals: " + ${goals})
-                        logger.info("extraGoals: " + ${extraGoals})
+                        logger.info("extraGoals: " + extraGoals)
                     } else {
                         //run unit tests to detect code coverage but don't fail the build in case of any failure
                         //TODO: for build process we can't use below goal!
