@@ -31,20 +31,6 @@ public class Sonar extends BaseObject {
                     getScm().clonePush()
                 }
 
-                def sonarQubeEnv = getSonarEnv()
-                def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
-
-                if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
-                    isSonarAvailable = true
-                } else {
-                    logger.warn("Sonarqube is not configured correctly! Follow Sonar integration documentation to enable it.")
-                }
-
-                if (isPullRequest && isParamEmpty(githubToken)) {
-                    isSonarAvailable = false
-                    logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
-                }
-
                 def SONAR_LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
 
                 for (pomFile in context.getPomFiles()) {
@@ -52,7 +38,8 @@ public class Sonar extends BaseObject {
                     //do compile and scanner for all high level pom.xml files
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
                     def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dproject.settings=${SONARQUBE} -Dsonar.host.url=${Configuration.get("INFRA_HOST") + "/sonarqube"}"
+                    logger.info("sonar.web.host=${Configuration.get("INFRA_HOST") + "/sonarqube"}")
+                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dproject.settings=${SONARQUBE} -Dsonar.web.host=${Configuration.get("INFRA_HOST") + "/sonarqube"}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate' : ''
                     def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
 
