@@ -1,29 +1,19 @@
 package com.qaprosoft.jenkins.pipeline.tools.maven.sonar
 
+import groovy.transform.InheritConstructors
 import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
-import hudson.plugins.sonar.SonarGlobalConfiguration
-import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
-import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 
 import static com.qaprosoft.jenkins.Utils.*
 
-public class Sonar extends BaseObject {
-    private static final String SONARQUBE = ".sonarqube"
-    private static boolean isSonarAvailable = false
-
-    protected static def githubToken
-
-    public Sonar(context) {
-        super(context)
-    }
+@InheritConstructors
+class Sonar extends BaseObject {
 
     public void scan(isPullRequest=false) {
         //TODO: verify preliminary if "maven" nodes available
         context.node("maven") {
             context.stage('Sonar Scanner') {
-
                 if (isPullRequest) {
                     getScm().clonePR()
                 } else {
@@ -32,20 +22,25 @@ public class Sonar extends BaseObject {
                 }
 
                 def LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
-                def WEB_HOST_URL = getWebHostUrl()
+                def SONAR_URL = Configuration.get('SONAR_URL')
+
+                def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+                def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
+                // [VD] don't remove -U otherwise latest dependencies are not downloaded
+                def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.log.level=${LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
+                def extraGoals = jacocoEnable ? 'jacoco:report-aggregate' : ''
 
                 for (pomFile in context.getPomFiles()) {
                     logger.debug("pomFile: " + pomFile)
-                    //do compile and scanner for all high level pom.xml files
-                    // [VD] don't remove -U otherwise latest dependencies are not downloaded
-                    def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dsonar.host.url=${WEB_HOST_URL} -Dsonar.log.level=${LOG_LEVEL}"
-                    def extraGoals = jacocoEnable ? 'jacoco:report-aggregate' : ''
-                    def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
-
+                    //do compile and scanner for all high level pom.xml file
                     if (isPullRequest) {
                         // no need to run unit tests for PR analysis
-                        extraGoals += " -DskipTests"
+                        extraGoals += " -DskipTests \
+                                -Dsonar.verbose=true \
+                                -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")}\
+                                -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
+                                -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
+                                -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
                     } else {
                         //run unit tests to detect code coverage but don't fail the build in case of any failure
                         //TODO: for build process we can't use below goal!
@@ -55,15 +50,6 @@ public class Sonar extends BaseObject {
                 }
             }
         }
-    }
-
-    private String getWebHostUrl() {
-        return "http://${Configuration.get('INFRA_HOST')}/sonarqube"
-    }
-
-    public void setToken(token) {
-        logger.debug("set sonar github token: " + token)
-        githubToken = token
     }
 
     private def getJacocoReportPaths(boolean jacocoEnable) {
