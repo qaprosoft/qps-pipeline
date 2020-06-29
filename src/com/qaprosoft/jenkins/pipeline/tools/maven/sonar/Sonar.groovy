@@ -31,15 +31,15 @@ public class Sonar extends BaseObject {
                     getScm().clonePush()
                 }
 
-                def SONAR_LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
-                def SONAR_WEB_HOST_URL = Configuration.get("INFRA_HOST") + "/sonarqube"
+                def LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
+                def WEB_HOST_URL = getSonarWebHostUrl()
 
                 for (pomFile in context.getPomFiles()) {
                     logger.debug("pomFile: " + pomFile)
                     //do compile and scanner for all high level pom.xml files
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
                     def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
-                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dproject.settings=${SONARQUBE} -Dsonar.host.url=http://54.197.68.167/sonarqube"
+                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dsonar.host.url=${WEB_HOST_URL} -Dsonar.log.level=${LOG_LEVEL}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate' : ''
                     def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
 
@@ -57,17 +57,13 @@ public class Sonar extends BaseObject {
         }
     }
 
+    private String getWebHostUrl() {
+        return "http://${Configuration.get('INFRA_HOST')}/sonarqube"
+    }
+
     public void setToken(token) {
         logger.debug("set sonar github token: " + token)
         githubToken = token
-    }
-
-    private String getSonarEnv() {
-        def sonarQubeEnv = ''
-        Jenkins.getInstance().getDescriptorByType(SonarGlobalConfiguration.class).getInstallations().each { installation ->
-            sonarQubeEnv = installation.getName()
-        }
-        return sonarQubeEnv
     }
 
     private def getJacocoReportPaths(boolean jacocoEnable) {
