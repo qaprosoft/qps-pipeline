@@ -54,6 +54,11 @@ class Sonar extends BaseObject {
         }
     }
 
+    public void setToken(token) {
+        logger.debug("set sonar github token: " + token)
+        this.githubToken = token
+    }
+
     private def getHostUrl() {
         return "http://${Configuration.get('INFRA_HOST')}/sonarqube"
     }
