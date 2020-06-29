@@ -19,7 +19,7 @@ public class Sonar extends BaseObject {
         super(context)
     }
 
-    public void scan(isPullRequest = false) {
+    public void scan(isPullRequest=false) {
         //TODO: verify preliminary if "maven" nodes available
         context.node("maven") {
             context.stage('Sonar Scanner') {
@@ -35,13 +35,13 @@ public class Sonar extends BaseObject {
                 def sonarConfigFileExists = context.fileExists "${SONARQUBE}"
 
                 if (!sonarQubeEnv.isEmpty() && sonarConfigFileExists) {
-                    this.isSonarAvailable = true
+                    isSonarAvailable = true
                 } else {
                     logger.warn("Sonarqube is not configured correctly! Follow Sonar integration documentation to enable it.")
                 }
 
-                if (isPullRequest && isParamEmpty(this.githubToken)) {
-                    this.isSonarAvailable = false
+                if (isPullRequest && isParamEmpty(githubToken)) {
+                    isSonarAvailable = false
                     logger.warn("Sonarqube Github OAuth token is not configured correctly! Follow Sonar integration documentation to setup PullRequest checker.")
                 }
 
@@ -72,7 +72,7 @@ public class Sonar extends BaseObject {
 
     public void setToken(token) {
         logger.debug("set sonar github token: " + token)
-        this.githubToken = token
+        githubToken = token
     }
 
     private String getSonarEnv() {
