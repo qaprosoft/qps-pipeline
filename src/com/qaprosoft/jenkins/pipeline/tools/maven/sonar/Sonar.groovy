@@ -40,6 +40,8 @@ class Sonar extends BaseObject {
                         // no need to run unit tests for PR analysis
                         extraGoals += " -DskipTests \
                                 -Dsonar.verbose=true \
+                                -Dsonar.alm.github.app.id=739e79305b650f9b4351 \
+                                -Dsonar.alm.github.app.privateKey.secured=bace72363d1e958ffc390e56d2746831e39a0c70 \
                                 -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")}\
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
