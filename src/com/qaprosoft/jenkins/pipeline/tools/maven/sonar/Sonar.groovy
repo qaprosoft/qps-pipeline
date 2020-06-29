@@ -32,7 +32,7 @@ public class Sonar extends BaseObject {
                 }
 
                 def LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
-                def WEB_HOST_URL = getSonarWebHostUrl()
+                def WEB_HOST_URL = getWebHostUrl()
 
                 for (pomFile in context.getPomFiles()) {
                     logger.debug("pomFile: " + pomFile)
