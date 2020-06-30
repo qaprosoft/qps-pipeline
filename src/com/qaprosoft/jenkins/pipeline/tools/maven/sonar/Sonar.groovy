@@ -41,9 +41,6 @@ class Sonar extends BaseObject {
                     if (isPullRequest) {
                         // no need to run unit tests for PR analysis
                         extraGoals += " -DskipTests \
-                                -Dsonar.alm.github.app.id=70790 \
-                                -Dsonar.alm.github.app.name=SonarQubePRChecksQps \
-                                -Dsonar.alm.github.app.privateKey.secured=00:e2:b6:d1:ad:84:73:e3:75:e9:59:e8:64:82:6c:48:ba:14:c4:2e \
                                 -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")}\
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
