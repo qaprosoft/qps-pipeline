@@ -45,6 +45,8 @@ public class TestJobFactory extends PipelineFactory {
 
         XmlSuite currentSuite = parseSuite(suitePath)
 
+        logger.info("111111\n${currentSuite}\n2222222")
+
         this.name = !isParamEmpty(currentSuite.getParameter("jenkinsJobName")) ? currentSuite.getParameter("jenkinsJobName") : currentSuite.getName()
         name = replaceSpecialSymbols(name)
         logger.info("JenkinsJobName: ${name}")
