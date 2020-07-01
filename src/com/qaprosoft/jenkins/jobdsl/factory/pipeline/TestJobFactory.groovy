@@ -45,8 +45,6 @@ public class TestJobFactory extends PipelineFactory {
 
         XmlSuite currentSuite = parseSuite(suitePath)
 
-        logger.info("111111\n${currentSuite}\n2222222")
-
         this.name = !isParamEmpty(currentSuite.getParameter("jenkinsJobName")) ? currentSuite.getParameter("jenkinsJobName") : currentSuite.getName()
         name = replaceSpecialSymbols(name)
         logger.info("JenkinsJobName: ${name}")
@@ -107,6 +105,9 @@ public class TestJobFactory extends PipelineFactory {
                 def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
 
                 def jobType = getSuiteParameter("api", "jenkinsJobType", currentSuite).toLowerCase()
+
+                logger.info("1111\n${currentSuite.getAllParameters()}")
+
                 // TODO: add ios_web, android_web if needed
                 switch (jobType) {
                     case "api":
@@ -148,6 +149,7 @@ public class TestJobFactory extends PipelineFactory {
 
                         break
                 }
+                logger.info("2222\n${currentSuite.getAllParameters()}")
                 configure addHiddenParameter('job_type', '', jobType)
 
                 def hubProvider = getSuiteParameter("", "provider", currentSuite)
@@ -184,8 +186,10 @@ public class TestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('overrideFields', '', getSuiteParameter("", "overrideFields", currentSuite))
                 configure addHiddenParameter('zafiraFields', '', getSuiteParameter("", "zafiraFields", currentSuite))
 
+                logger.info("3333\n${currentSuite.getAllParameters()}")
+
                 Map paramsMap = currentSuite.getAllParameters()
-                logger.info("ParametersMap: ${paramsMap}")
+                logger.info(" : ${paramsMap}")
                 for (param in paramsMap) {
                     // read each param and parse for generating custom project fields
                     //	<parameter name="stringParam::name::desc" value="value" />
@@ -212,6 +216,7 @@ public class TestJobFactory extends PipelineFactory {
                         }
                     }
                 }
+                logger.info("4444\n${currentSuite.getAllParameters()}")
             }
         }
         return pipelineJob
