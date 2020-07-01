@@ -36,7 +36,7 @@ class Sonar extends BaseObject {
                     logger.debug("pomFile: " + pomFile)
                     //do compile and scanner for all high level pom.xml file
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
-                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.log.level=${LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
+                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.log.level=${LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath} -Dsonar.branch.name=${Configuration.get("branch")}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate' : ''
                     if (isPullRequest) {
                         // no need to run unit tests for PR analysis
