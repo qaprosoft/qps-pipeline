@@ -31,7 +31,6 @@ public class Runner extends AbstractRunner {
     public void onPullRequest() {
         context.node("master") {
             logger.info("Runner->onPullRequest")
-            sonar.setToken(getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN))
             sonar.scan(true)
         }
     }

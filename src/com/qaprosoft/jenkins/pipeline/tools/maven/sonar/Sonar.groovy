@@ -3,16 +3,11 @@ package com.qaprosoft.jenkins.pipeline.tools.maven.sonar
 import groovy.transform.InheritConstructors
 import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.Logger
-import com.qaprosoft.jenkins.pipeline.Configuration
 
 import static com.qaprosoft.jenkins.Utils.*
 
 @InheritConstructors
 class Sonar extends BaseObject {
-
-    private static final String SONARQUBE = ".sonarqube"
-
-    protected static def githubToken
 
     public void scan(isPullRequest=false) {
         //TODO: verify preliminary if "maven" nodes available
@@ -28,7 +23,7 @@ class Sonar extends BaseObject {
                 def LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
                 def SONAR_URL = getHostUrl()
 
-                def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+                def jacocoEnable = configuration.get(configuration.Parameter.JACOCO_ENABLE).toBoolean()
                 def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
                 
             
@@ -42,15 +37,15 @@ class Sonar extends BaseObject {
                         // no need to run unit tests for PR analysis
                         extraGoals += " -DskipTests \
                                 -Dsonar.verbose=true \
-                                -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
-                                -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
-                                -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
-                                -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
+                                -Dsonar.pullrequest.key=${configuration.get("ghprbPullId")} \
+                                -Dsonar.pullrequest.branch=${configuration.get("ghprbSourceBranch")} \
+                                -Dsonar.pullrequest.base=${configuration.get("ghprbTargetBranch")} \
+                                -Dsonar.pullrequest.github.repository=${configuration.get("ghprbGhRepository")}"
                         logger.debug("extraGoals: " + extraGoals)
                     } else {
                         //run unit tests to detect code coverage but don't fail the build in case of any failure
                         //TODO: for build process we can't use below goal!
-                        extraGoals += " -Dmaven.test.failure.ignore=true -Dsonar.branch.name=${Configuration.get("branch")}"
+                        extraGoals += " -Dmaven.test.failure.ignore=true -Dsonar.branch.name=${configuration.get("branch")}"
                     }
                     context.mavenBuild("${goals} ${extraGoals}")
                 }
@@ -58,13 +53,8 @@ class Sonar extends BaseObject {
         }
     }
 
-    public void setToken(token) {
-        logger.debug("set sonar github token: " + token)
-        this.githubToken = token
-    }
-
     private def getHostUrl() {
-        return "http://${Configuration.get('INFRA_HOST')}/sonarqube"
+        return "http://${configuration.get('INFRA_HOST')}/sonarqube"
     }
 
     private def getJacocoReportPaths(boolean jacocoEnable) {
@@ -73,8 +63,8 @@ class Sonar extends BaseObject {
 
         if (jacocoEnable) {
             def jacocoItExec = 'jacoco-it.exec'
-            def jacocoBucket = Configuration.get(Configuration.Parameter.JACOCO_BUCKET)
-            def jacocoRegion = Configuration.get(Configuration.Parameter.JACOCO_REGION)
+            def jacocoBucket = configuration.get(configuration.Parameter.JACOCO_BUCKET)
+            def jacocoRegion = configuration.get(configuration.Parameter.JACOCO_REGION)
 
             // download combined integration testing coverage report: jacoco-it.exec
             // TODO: test if aws cli is installed on regular jenkins slaves as we are going to run it on each onPush event starting from 5.0
