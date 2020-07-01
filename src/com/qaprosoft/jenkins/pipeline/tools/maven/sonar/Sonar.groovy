@@ -36,7 +36,10 @@ class Sonar extends BaseObject {
                     logger.debug("pomFile: " + pomFile)
                     //do compile and scanner for all high level pom.xml file
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
-                    def goals = "-U clean compile test verify -f ${pomFile} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.log.level=${LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
+                    def goals = "-U clean compile test verify -f ${pomFile} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.log.level=${LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath} \
+                                -Dsonar.auth.github.clientId.secured=Iv1.6ea84df2ce3c37a6 \
+                                -Dsonar.auth.github.clientSecret.secured=2aa0b3f86542d000adc5f5c084bfbc2d8998eb80 \
+                                -Dsonar.pullrequest.github.endpoint=https://api.github.com"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate' : ''
                     if (isPullRequest) {
                         // no need to run unit tests for PR analysis
@@ -45,7 +48,6 @@ class Sonar extends BaseObject {
                                 -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
-                                -Dsonar.pullrequest.github.endpoint=https://api.github.com \
                                 -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
                         logger.info("extraGoals: " + extraGoals)
                     } else {
