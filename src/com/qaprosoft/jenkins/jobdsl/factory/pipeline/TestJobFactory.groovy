@@ -66,6 +66,7 @@ public class TestJobFactory extends PipelineFactory {
 
             //** Properties & Parameters Area **//*
             parameters {
+                logger.info("1111\n${currentSuite.getAllParameters()}")
                 concurrentBuild(getSuiteParameter(true, "jenkinsConcurrentBuild", currentSuite).toBoolean())
                 extensibleChoiceParameterDefinition {
                     name('env')
@@ -106,7 +107,7 @@ public class TestJobFactory extends PipelineFactory {
 
                 def jobType = getSuiteParameter("api", "jenkinsJobType", currentSuite).toLowerCase()
 
-                logger.info("1111\n${currentSuite.getAllParameters()}")
+                logger.info("2222\n${currentSuite.getAllParameters()}")
 
                 // TODO: add ios_web, android_web if needed
                 switch (jobType) {
@@ -149,7 +150,6 @@ public class TestJobFactory extends PipelineFactory {
 
                         break
                 }
-                logger.info("2222\n${currentSuite.getAllParameters()}")
                 configure addHiddenParameter('job_type', '', jobType)
 
                 def hubProvider = getSuiteParameter("", "provider", currentSuite)
@@ -186,8 +186,6 @@ public class TestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('overrideFields', '', getSuiteParameter("", "overrideFields", currentSuite))
                 configure addHiddenParameter('zafiraFields', '', getSuiteParameter("", "zafiraFields", currentSuite))
 
-                logger.info("3333\n${currentSuite.getAllParameters()}")
-
                 Map paramsMap = currentSuite.getAllParameters()
                 logger.info(" : ${paramsMap}")
                 for (param in paramsMap) {
@@ -216,7 +214,6 @@ public class TestJobFactory extends PipelineFactory {
                         }
                     }
                 }
-                logger.info("4444\n${currentSuite.getAllParameters()}")
             }
         }
         return pipelineJob
