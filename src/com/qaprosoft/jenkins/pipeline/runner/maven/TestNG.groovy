@@ -655,6 +655,10 @@ public class TestNG extends Runner {
                 logger.info("Suite Type: ANDROID")
                 Configuration.set("node", "android")
                 break;
+            case "android-tv":
+                logger.info("Suite Type: ANDROID TV")
+                Configuration.set("node", "android-tv")
+                break;   
             case "ios":
             case "ios-web":
                 logger.info("Suite Type: iOS")
@@ -694,9 +698,9 @@ public class TestNG extends Runner {
 
     protected void prepareForMobile() {
         logger.info("Runner->prepareForMobile")
-        def platform = Configuration.get("job_type")
+        def platform = Configuration.get("job_type").toLowerCase()
 
-        if (platform.equalsIgnoreCase("android")) {
+        if (platform.contains("android")) {
             prepareForAndroid()
         } else if (platform.equalsIgnoreCase("ios")) {
             prepareForiOS()
@@ -893,8 +897,8 @@ public class TestNG extends Runner {
     }
 
     protected def addVideoStreamingCapability(message, capabilityName, capabilityValue) {
-        def node = Configuration.get("node")
-        if ("web".equalsIgnoreCase(node) || "android".equalsIgnoreCase(node)) {
+        def node = Configuration.get("node").toLowerCase()
+        if ("web".equalsIgnoreCase(node) || node.contains("android")) {
             logger.info(message)
             Configuration.set(capabilityName, capabilityValue)
         }
