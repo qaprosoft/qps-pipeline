@@ -106,9 +106,6 @@ public class TestJobFactory extends PipelineFactory {
                 def enableVideo = getSuiteParameter("true", "jenkinsEnableVideo", currentSuite).toBoolean()
 
                 def jobType = getSuiteParameter("api", "jenkinsJobType", currentSuite).toLowerCase()
-
-                logger.info("2222\n${currentSuite.getAllParameters()}")
-
                 // TODO: add ios_web, android_web if needed
                 switch (jobType) {
                     case "api":
@@ -187,7 +184,7 @@ public class TestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('zafiraFields', '', getSuiteParameter("", "zafiraFields", currentSuite))
 
                 Map paramsMap = currentSuite.getAllParameters()
-                logger.info(" : ${paramsMap}")
+                logger.info("ParametersMap: ${paramsMap}")
                 for (param in paramsMap) {
                     // read each param and parse for generating custom project fields
                     //	<parameter name="stringParam::name::desc" value="value" />
