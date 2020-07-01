@@ -36,12 +36,13 @@ class Sonar extends BaseObject {
                     logger.debug("pomFile: " + pomFile)
                     //do compile and scanner for all high level pom.xml file
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
-                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.log.level=${LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath} -Dsonar.branch.name=${Configuration.get("branch")}"
+                    def goals = "-U clean compile test verify -f ${pomFile} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.log.level=${LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate' : ''
                     if (isPullRequest) {
                         // no need to run unit tests for PR analysis
                         extraGoals += " -DskipTests \
-                                -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")}\
+                                -Dsonar.verbose=true \
+                                -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
                                 -Dsonar.pullrequest.github.endpoint=https://api.github.com \
@@ -50,7 +51,7 @@ class Sonar extends BaseObject {
                     } else {
                         //run unit tests to detect code coverage but don't fail the build in case of any failure
                         //TODO: for build process we can't use below goal!
-                        extraGoals += " -Dmaven.test.failure.ignore=true"
+                        extraGoals += " -Dmaven.test.failure.ignore=true -Dsonar.branch.name=${Configuration.get("branch")}"
                     }
                     context.mavenBuild("${goals} ${extraGoals}")
                 }
