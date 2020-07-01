@@ -32,8 +32,9 @@ class Sonar extends BaseObject {
                     logger.debug("pomFile: " + pomFile)
                     //do compile and scanner for all high level pom.xml file
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
-                    def goals = "-U clean compile test verify -f ${pomFile} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.log.level=${LOG_LEVEL} ${jacocoReportPaths} ${jacocoReportPath}"
-                    def extraGoals = jacocoEnable ? 'jacoco:report-aggregate' : ''
+                    def goals = "-U clean compile test verify -f ${pomFile} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.log.level=${LOG_LEVEL}"
+                    def extraGoals = jacocoEnable ? 'jacoco:report-aggregate ${jacocoReportPaths} ${jacocoReportPath}' : ''
+
                     if (isPullRequest) {
                         // no need to run unit tests for PR analysis
                         extraGoals += " -DskipTests \
@@ -42,12 +43,13 @@ class Sonar extends BaseObject {
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
                                 -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
-                        logger.debug("extraGoals: " + extraGoals)
                     } else {
                         //run unit tests to detect code coverage but don't fail the build in case of any failure
                         //TODO: for build process we can't use below goal!
                         extraGoals += " -Dmaven.test.failure.ignore=true -Dsonar.branch.name=${Configuration.get("branch")}"
                     }
+
+                    logger.debug("extraGoals: " + extraGoals)
                     context.mavenBuild("${goals} ${extraGoals}")
                 }
             }
@@ -76,8 +78,7 @@ class Sonar extends BaseObject {
 
             if (context.fileExists("/tmp/${jacocoItExec}")) {
                 jacocoReportPath = "-Dsonar.jacoco.reportPath=/target/jacoco.exec" //this for unit tests code coverage
-                jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}"
-                // this one is for integration testing coverage
+                jacocoReportPaths = "-Dsonar.jacoco.reportPaths=/tmp/${jacocoItExec}" // this one is for integration testing coverage
             }
 
             logger.debug("jacocoReportPath: " + jacocoReportPath)
