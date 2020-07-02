@@ -28,7 +28,7 @@ class Sonar extends BaseObject {
                     getScm().clonePush()
                 }
 
-                logger.info(sonarClient.getServerStatus())
+                logger.info("sonarServerRequest :" + sonarClient.getServerStatus())
 
                 def LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
                 def SONAR_URL = configuration.getGlobalProperty("SONAR_URL")
