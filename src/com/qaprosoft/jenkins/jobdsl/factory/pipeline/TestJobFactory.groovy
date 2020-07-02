@@ -40,10 +40,22 @@ public class TestJobFactory extends PipelineFactory {
         this.dataProviderThreadCount = dataProviderThreadCount
     }
 
+    def set_parameters_map() {
+        Map parametersMap = new LinkedHashMap()
+
+        parametersMap.put(1, "booleanParam")
+        parametersMap.put(2, "stringParam")
+        parametersMap.put(3, "hiddenParam")
+        parametersMap.put(4, "extensibleChoice")
+        parametersMap.put(5, "choiceParam")
+
+    }
+
     def create() {
         logger.info("TestJobFactory->create")
 
         XmlSuite currentSuite = parseSuite(suitePath)
+        set_parameters_map(currentSuite)
 
         this.name = !isParamEmpty(currentSuite.getParameter("jenkinsJobName")) ? currentSuite.getParameter("jenkinsJobName") : currentSuite.getName()
         name = replaceSpecialSymbols(name)
@@ -66,7 +78,6 @@ public class TestJobFactory extends PipelineFactory {
 
             //** Properties & Parameters Area **//*
             parameters {
-                logger.info("1111\n${currentSuite.getAllParameters()}")
                 concurrentBuild(getSuiteParameter(true, "jenkinsConcurrentBuild", currentSuite).toBoolean())
                 extensibleChoiceParameterDefinition {
                     name('env')
