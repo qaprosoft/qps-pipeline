@@ -236,12 +236,12 @@ class ZafiraClient extends HttpClient {
 		if (!isTokenExpired()) {
 			return true
 		}
-		
+
 		if (isParamEmpty(this.refreshToken) || isParamEmpty(this.serviceURL) || Configuration.mustOverride.equals(this.serviceURL)) {
 			return false
 		}
 
-		
+
         logger.debug("refreshToken: " + refreshToken)
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder refreshToken: this.refreshToken
@@ -253,7 +253,7 @@ class ZafiraClient extends HttpClient {
                           httpMode: 'POST',
                           validResponseCodes: "200:404",
                           requestBody: requestBody,
-                          url: this.serviceURL + "/api/auth/refresh"]
+                          url: getIamUrl() + "/v1/api/auth/refresh"]
         logger.debug("parameters: " + parameters)
         Map properties = (Map)sendRequestFormatted(parameters)
         logger.debug("properties: " + properties)
@@ -268,4 +268,7 @@ class ZafiraClient extends HttpClient {
         return true
     }
 
+    private String getIamUrl() {
+        serviceURL.split("reporting-service")[0] + "api/iam"
+    }
 }
