@@ -270,7 +270,6 @@ class Organization extends BaseObject {
 
         if (!isParamEmpty(this.reportingServiceUrl) && !isParamEmpty(this.reportingAccessToken)) {
             registerReportingCredentials(this.folderName, this.reportingServiceUrl, this.reportingAccessToken)
-            registerSonarGithubOAuth(this.folderName, this.sonarGithubOAuth)
         }
 
         if (customPipeline?.toBoolean()) {
@@ -384,16 +383,6 @@ class Organization extends BaseObject {
         registerObject("qtest_job", new QTestJobFactory(orgFolderName, getQTestScript(), Configuration.QTEST_UPDATER_JOBNAME, "Custom job qtest"))
 
         factoryRunner.run(dslObjects)
-    }
-
-    public static void registerSonarGithubOAuth(orgFolderName, token) {
-        def sonarGithubOAuth = Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN
-
-        if (!isParamEmpty(orgFolderName)) {
-            sonarGithubOAuth = orgFolderName + "-" + sonarGithubOAuth
-        }
-
-        updateJenkinsCredentials(sonarGithubOAuth, "Sonar GithubOAuth token", Configuration.Parameter.SONAR_GITHUB_OAUTH_TOKEN.getKey(), token)
     }
 
     protected def registerCustomPipelineCreds(orgFolderName, token) {
