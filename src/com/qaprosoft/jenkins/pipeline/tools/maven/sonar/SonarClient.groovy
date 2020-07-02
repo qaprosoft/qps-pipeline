@@ -4,10 +4,11 @@ import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 
 class SonarClient extends HttpClient {
 
-	String serviceUrl
+	private String serviceUrl
 
 	SonarClient(context) {
 		super(context)
+		serviceUrl = Configuration.get("SONAR_URL")
 	}
 
 	protected def getServerStatus() {
@@ -15,7 +16,10 @@ class SonarClient extends HttpClient {
 							httpMode			: 'GET',
 							validResponseCodes  : '200',
 							url 				: serviceUrl + '/api/system/status' ]
-		return sendRequestFormatted(parameters)
+		return sendRequestFormatted(parameters).find() {it.status}
 	}
 
+	protected boolean isAvailable() {
+		return getServerStatus().equals('UP') ? true : false
+	}
 }

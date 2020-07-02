@@ -29,13 +29,12 @@ class Sonar extends BaseObject {
                 }
 
                 def LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
-                def SONAR_URL = configuration.getGlobalProperty("SONAR_URL")
 
-                logger.info('SONAR_URL :' + SONAR_URL)
-
-                sonarClient.setServiceUrl(SONAR_URL)
+                logger.info('SONAR_URL :' + sonarClient.getServiceUrl())
 
                 logger.info("sonarServerRequest :" + sonarClient.getServerStatus())
+
+                def sonarGoals = sonarClient.isAvailabe() ? "sonar:sonar -Dsonar.host.url=${this.sonarClient.getServiceUrl()} -Dsonar.log.level=${LOG_LEVEL}" : ""
 
                 def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
                 def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
@@ -45,7 +44,7 @@ class Sonar extends BaseObject {
                     logger.debug("pomFile: " + pomFile)
                     //do compile and scanner for all high level pom.xml files
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
-                    def goals = "-U clean compile test -f ${pomFile} sonar:sonar -Dsonar.host.url=${SONAR_URL} -Dsonar.log.level=${LOG_LEVEL}"
+                    def goals = "-U clean compile test -f ${pomFile}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate ${jacocoReportPaths} ${jacocoReportPath}' : ''
 
                     if (isPullRequest) {
@@ -63,7 +62,7 @@ class Sonar extends BaseObject {
                     }
 
                     logger.debug("extraGoals: " + extraGoals)
-                    context.mavenBuild("${goals} ${extraGoals}")
+                    context.mavenBuild("${goals} ${extraGoals} ${sonarGoals}")
                 }
             }
         }
