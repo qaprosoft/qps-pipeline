@@ -5,11 +5,12 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 
 class SonarClient extends HttpClient {
 
-	private String serviceUrl;
+	private String serviceUrl
 
 	SonarClient(context) {
 		super(context)
 		serviceUrl = Configuration.get('SONAR_URL')
+		logger.info("sonar_url: " + serviceUrl)
 	}
 
 	protected def getServerStatus() {
