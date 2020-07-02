@@ -22,7 +22,7 @@ class Sonar extends BaseObject {
                 }
 
                 def LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
-                def SONAR_URL = Configuration.get("SONAR_URL")
+                def SONAR_URL = configuration.getGlobalProperty("SONAR_URL")
 
                 def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
                 def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
