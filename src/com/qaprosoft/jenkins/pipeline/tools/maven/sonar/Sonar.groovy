@@ -10,6 +10,13 @@ import static com.qaprosoft.jenkins.Utils.*
 @InheritConstructors
 class Sonar extends BaseObject {
 
+    private def sonarClient
+
+    Sonar(context) {
+        super(context)
+        sonarClient = new SonarClient(context)
+    }
+
     public void scan(isPullRequest=false) {
         //TODO: verify preliminary if "maven" nodes available
         context.node("maven") {
@@ -20,6 +27,8 @@ class Sonar extends BaseObject {
                     // it should be non shallow clone anyway to support full static code analysis
                     getScm().clonePush()
                 }
+
+                logger.info(sonarClient.getServerStatus())
 
                 def LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
                 def SONAR_URL = configuration.getGlobalProperty("SONAR_URL")
