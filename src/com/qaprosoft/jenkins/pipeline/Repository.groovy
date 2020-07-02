@@ -3,14 +3,14 @@ package com.qaprosoft.jenkins.pipeline
 import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import com.qaprosoft.jenkins.pipeline.tools.scm.github.ssh.SshGitHub
 import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.BuildJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
-import groovy.json.JsonOutput
+import com.qaprosoft.jenkins.pipeline.runner.maven.TestNG
 import java.nio.file.Paths
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
@@ -28,14 +28,12 @@ class Repository extends BaseObject {
     private static final String SCM_USER = "scmUser"
     private static final String SCM_TOKEN = "scmToken"
 
-    protected Map dslObjects = new LinkedHashMap()
-
     public Repository(context) {
-		super(context)
+        super(context)
 
         scmClient = new GitHub(context)
-        pipelineLibrary = Configuration.get("pipelineLibrary")
-        runnerClass = Configuration.get("runnerClass")
+        this.pipelineLibrary = Configuration.get("pipelineLibrary")
+        this.runnerClass = Configuration.get("runnerClass")
     }
 
     public void register() {
@@ -49,6 +47,7 @@ class Repository extends BaseObject {
                 clean()
             }
         }
+
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
         def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
 
@@ -98,12 +97,12 @@ class Repository extends BaseObject {
                 def zafiraFields = Configuration.get("zafiraFields")
                 logger.debug("zafiraFields: " + zafiraFields)
                 if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
-                    def zafiraRefreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)
+                    def reportingRefreshToken = Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)
                     logger.debug("reportingServiceUrl: " + reportingServiceUrl)
-                    logger.debug("zafiraRefreshToken: " + zafiraRefreshToken)
-                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(zafiraRefreshToken)){
-                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, zafiraRefreshToken)
+                    logger.debug("reportingRefreshToken: " + reportingRefreshToken)
+                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
+                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, reportingRefreshToken)
                     }
                 }
             }
@@ -150,7 +149,7 @@ class Repository extends BaseObject {
             def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
             logger.error("zafiraFields: " + zafiraFields)
 
-            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*"))
+            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*|build"))
 
             def pullRequestFreestyleJobDescription = "To finish GitHub Pull Request Checker setup, please, follow the steps below:\n" +
                     "- Manage Jenkins -> Configure System -> Populate 'GitHub Pull Request Builder': usr should have admin privileges, Auto-manage webhooks should be enabled\n" +
@@ -167,12 +166,28 @@ class Repository extends BaseObject {
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
                     "- Select application/json in \"Content Type\" field\n- Tick \"Send me everything.\" option\n- Click \"Add webhook\" button"
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, zafiraFields))
+            
+            if (!'QPS-Pipeline'.equals(this.pipelineLibrary)) {
+                //load custom library to check inheritance for isTestNGRunner
+                context.library this.pipelineLibrary
+            }
+            def isTestNgRunner = Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in TestNG
+
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields))
 
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
-			factoryRunner.run(dslObjects)
+            // TODO: maybe for custom runner classes for dev repo we can check if the runnerClass field is in the list of pre register runner classes
+            // https://github.com/qaprosoft/jenkins-master/issues/225
+            // https://github.com/qaprosoft/jenkins-master/issues/222
+            def isMavenRunner = runnerClass.contains("com.qaprosoft.jenkins.pipeline.runner.maven.") ? true : false
+
+            if (isMavenRunner) {
+                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
+            }
+
+            factoryRunner.run(dslObjects)
 
         }
     }
@@ -213,15 +228,6 @@ class Repository extends BaseObject {
         }
     }
 
-    private void registerObject(name, object) {
-        if (dslObjects.containsKey(name)) {
-            logger.warn("WARNING! key ${name} already defined and will be replaced!")
-            logger.info("Old Item: ${dslObjects.get(name).dump()}")
-            logger.info("New Item: ${object.dump()}")
-        }
-        dslObjects.put(name, object)
-    }
-	
     public def registerCredentials() {
         context.stage("Register Credentials") {
             def user = Configuration.get(SCM_USER)
@@ -234,5 +240,5 @@ class Repository extends BaseObject {
             }
         }
     }
-	
+
 }

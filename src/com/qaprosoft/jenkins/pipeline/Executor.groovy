@@ -33,6 +33,7 @@ public class Executor {
         ABORTED("ABORTED")
 
         final String value
+
         FailureCause(String value) {
             this.value = value
         }
@@ -45,34 +46,34 @@ public class Executor {
         }
         return ci_run_id
     }
-	
-	static def getBrowser(){
-		// get browserName from capabilities or browser parameter. "browser" param has higher priority to support old cron pipeline matrix
-		String browser = ""
-		if (!isParamEmpty(Configuration.get("capabilities.browserName"))) {
-			browser = Configuration.get("capabilities.browserName")
-		}
-		
-		if (!isParamEmpty(Configuration.get("browser"))) {
-			browser = Configuration.get("browser")
-		}
 
-		return browser
-	}
-	
-	static def getBrowserVersion(){
-		// get browserVersion from capabilities or browser_version parameter. "browser_version" param has higher priority to support old cron pipeline matrix
-		String browserVersion = ""
-		if (!isParamEmpty(Configuration.get("capabilities.browserVersion"))) {
-			browserVersion = Configuration.get("capabilities.browserVersion")
-		}
-		
-		if (!isParamEmpty(Configuration.get("browser_version"))) {
-			browserVersion = Configuration.get("browser_version")
-		}
-		
-		return browserVersion
-	}
+    static def getBrowser() {
+        // get browserName from capabilities or browser parameter. "browser" param has higher priority to support old cron pipeline matrix
+        String browser = ""
+        if (!isParamEmpty(Configuration.get("capabilities.browserName"))) {
+            browser = Configuration.get("capabilities.browserName")
+        }
+
+        if (!isParamEmpty(Configuration.get("browser"))) {
+            browser = Configuration.get("browser")
+        }
+
+        return browser
+    }
+
+    static def getBrowserVersion() {
+        // get browserVersion from capabilities or browser_version parameter. "browser_version" param has higher priority to support old cron pipeline matrix
+        String browserVersion = ""
+        if (!isParamEmpty(Configuration.get("capabilities.browserVersion"))) {
+            browserVersion = Configuration.get("capabilities.browserVersion")
+        }
+
+        if (!isParamEmpty(Configuration.get("browser_version"))) {
+            browserVersion = Configuration.get("browser_version")
+        }
+
+        return browserVersion
+    }
 
     static def getEmailParams(body, subject, to) {
         return getEmailParams(body, subject, to, "")
@@ -80,30 +81,31 @@ public class Executor {
 
     static def getEmailParams(body, subject, to, attachments) {
         def params = [attachmentsPattern: attachments,
-              attachLog: true,
-                      body: body,
+                      attachLog         : true,
+                      body              : body,
                       recipientProviders: [[$class: 'DevelopersRecipientProvider'],
                                            [$class: 'RequesterRecipientProvider']],
-                      subject: subject,
-                      to: to]
+                      subject           : subject,
+                      to                : to]
         return params
     }
 
     static def getReportParameters(reportDir, reportFiles, reportName) {
-        def reportParameters = [allowMissing: false,
+        def reportParameters = [allowMissing         : false,
                                 alwaysLinkToLastBuild: false,
-                                keepAll: true,
-                                reportDir: reportDir,
-                                reportFiles: reportFiles,
-                                reportName: reportName]
+                                includes             : '**/*.html, **/*.js, **/*.css, **/*.jpj, **/*.jpeg, **/*.log, **/*.png',
+                                keepAll              : true,
+                                reportDir            : reportDir,
+                                reportFiles          : reportFiles,
+                                reportName           : reportName]
         return reportParameters
     }
 
     static def updateJenkinsCredentials(id, description, user, password) {
-        if (!isParamEmpty(password) && !isParamEmpty(user)){
+        if (!isParamEmpty(password) && !isParamEmpty(user)) {
             def credentialsStore = SystemCredentialsProvider.getInstance().getStore()
             def credentials = getCredentials(id)
-            if (credentials){
+            if (credentials) {
                 credentialsStore.removeCredentials(Domain.global(), credentials)
             }
             Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, id, description, user, password)
@@ -127,9 +129,9 @@ public class Executor {
     }
 
     static boolean isMobile() {
- 		    if (isParamEmpty(Configuration.get("job_type"))) {
-			    return false
-		    }
+        if (isParamEmpty(Configuration.get("job_type"))) {
+            return false
+        }
         def platform = Configuration.get("job_type").toLowerCase()
         return platform.contains("android") || platform.contains("ios")
     }
@@ -149,11 +151,11 @@ public class Executor {
         return content
     }
 
-    static def getObjectResponse(response){
+    static def getObjectResponse(response) {
         return new JsonSlurper().parseText(response)
     }
 
-    static def formatJson(json){
+    static def formatJson(json) {
         JsonBuilder builder = new JsonBuilder(json)
         return builder.toPrettyString()
     }
@@ -163,8 +165,8 @@ public class Executor {
 
         if (workspace.contains("jobs/")) {
             def array = workspace.split("jobs/")
-            for (def i = 1; i < array.size() - 1; i++){
-                folderName  = folderName + array[i]
+            for (def i = 1; i < array.size() - 1; i++) {
+                folderName = folderName + array[i]
             }
             folderName = replaceTrailingSlash(folderName)
         } else if (workspace.contains("workspace/")) {
@@ -173,8 +175,8 @@ public class Executor {
 
             workspace = workspace.split("workspace/")[1]
             def array = workspace.split("/")
-            for (def i = 0; i < array.size() - 1; i++){
-                folderName  = folderName + "/" + array[i]
+            for (def i = 0; i < array.size() - 1; i++) {
+                folderName = folderName + "/" + array[i]
             }
         } else {
             def array = workspace.split("/")
@@ -184,7 +186,7 @@ public class Executor {
         return folderName
     }
 
-    static def getJobParameters(currentBuild){
+    static def getJobParameters(currentBuild) {
         Map jobParameters = [:]
         def jobParams = currentBuild.rawBuild.getAction(ParametersAction)
         for (param in jobParams) {
@@ -218,15 +220,15 @@ public class Executor {
         return currentJob
     }
 
-    static String getFailureSubject(cause, jobName, env, buildNumber){
+    static String getFailureSubject(cause, jobName, env, buildNumber) {
         return "${cause}: ${jobName} - ${env} - Build # ${buildNumber}!"
     }
 
-    static String getLogDetailsForEmail(currentBuild, logPattern){
+    static String getLogDetailsForEmail(currentBuild, logPattern) {
         def failureLog = ""
         int lineCount = 0
-        for(logLine in currentBuild.rawBuild.getLog(50)) {
-            if (logLine.contains(logPattern) && lineCount < 10){
+        for (logLine in currentBuild.rawBuild.getLog(50)) {
+            if (logLine.contains(logPattern) && lineCount < 10) {
                 failureLog = failureLog + "${logLine}\n"
                 lineCount++
             }
@@ -234,7 +236,7 @@ public class Executor {
         return failureLog
     }
 
-    static def getJobUrl(jobFullName){
+    static def getJobUrl(jobFullName) {
         String separator = "/job/"
         String jenkinsUrl = Configuration.get(Configuration.Parameter.JOB_URL).split(separator)[0]
         jobFullName.split("/").each {
@@ -251,8 +253,7 @@ public class Executor {
         }
     }
 
-    static String getAbortCause(currentBuild)
-    {
+    static String getAbortCause(currentBuild) {
         def abortCause = ''
         def actions = currentBuild.getRawBuild().getActions(jenkins.model.InterruptedBuildAction)
         for (action in actions) {
@@ -282,11 +283,9 @@ public class Executor {
                 /* Searches GitHubPushCause among CauseActions */
                 else if (action.findCause(com.cloudbees.jenkins.GitHubPushCause.class)) {
                     buildCause = "SCMPUSHTRIGGER"
-                }
-                else if (action.findCause(org.jenkinsci.plugins.ghprb.GhprbCause.class)) {
+                } else if (action.findCause(org.jenkinsci.plugins.ghprb.GhprbCause.class)) {
                     buildCause = "SCMGHPRBTRIGGER"
-                }
-                else {
+                } else {
                     buildCause = "MANUALTRIGGER"
                 }
 
@@ -306,10 +305,10 @@ public class Executor {
                 for (path in entry.getPaths()) {
                     Path pathObject = Paths.get(path.getPath())
                     /* Checks whether any changed file matches one of patterns */
-                    for (pattern in patterns.split(",")){
+                    for (pattern in patterns.split(",")) {
                         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern)
                         /* As only match is found stop search*/
-                        if (matcher.matches(pathObject)){
+                        if (matcher.matches(pathObject)) {
                             isUpdated = true
                             return
                         }
@@ -322,7 +321,7 @@ public class Executor {
 
     static def isLabelApplied(build, label) {
         boolean isApplied = false
-        
+
         //get github pull request cause from current build if any
         GhprbCause c = Ghprb.getCause(build)
         if (c == null) {
@@ -331,13 +330,13 @@ public class Executor {
             Cause.UpstreamCause cause = build.getCause(Cause.UpstreamCause.class);
             build = cause.getUpstreamRun();
         }
-        
+
         c = Ghprb.getCause(build)
         GhprbTrigger trigger = Ghprb.extractTrigger(build)
-        
+
         GhprbPullRequest ghprbPullRequest = trigger.getRepository().getPullRequest(c.getPullID())
-        for(ghLabel in ghprbPullRequest.getPullRequest().getLabels()) {
-            if (ghLabel.getName() == label){
+        for (ghLabel in ghprbPullRequest.getPullRequest().getLabels()) {
+            if (ghLabel.getName() == label) {
                 isApplied = true
                 break
             }
@@ -357,7 +356,7 @@ public class Executor {
         def changeLogSets = currentBuild.rawBuild.changeSets
         changeLogSets.each { changeLogSet ->
             for (entry in changeLogSet.getItems()) {
-                if (entry.getMsg().contains(trigger)){
+                if (entry.getMsg().contains(trigger)) {
                     isRequired = true
                     return
                 }
@@ -386,7 +385,6 @@ public class Executor {
                                     "BuildPriority",
                                     "auto_screenshot",
                                     "enableVideo",
-                                    "test_run_rules",
                                     "recoveryMode",
                                     "capabilities"
 
@@ -418,11 +416,11 @@ public class Executor {
 
     }
 
-    static def getDefectsString(String defects, String newDefects){
-        if (isParamEmpty(defects)){
+    static def getDefectsString(String defects, String newDefects) {
+        if (isParamEmpty(defects)) {
             defects = newDefects
         } else {
-            if (!isParamEmpty(newDefects)){
+            if (!isParamEmpty(newDefects)) {
                 defects = "${defects},${newDefects}"
             }
         }
@@ -430,7 +428,7 @@ public class Executor {
     }
 
 
-    static def setDefaultIfEmpty(stringKey, enumKey){
+    static def setDefaultIfEmpty(stringKey, enumKey) {
         def configValue = Configuration.get(stringKey)
         if (isParamEmpty(configValue)) {
             configValue = Configuration.get(enumKey)
@@ -455,26 +453,26 @@ public class Executor {
             pipelineMap.put(mapItem.key, mapItem.value)
         }
     }
-	
-	static def filterSecuredParams(goals) {
-		def arrayOfParmeters = goals.split()
-		def resultSpringOfParameters = ''
-		for (parameter in arrayOfParmeters) {
-			def resultString = ''
-			if (parameter.contains("token") || parameter.contains("TOKEN")) {
-				def arrayOfString = parameter.split("=")
-				resultString = arrayOfString[0] + "=********"
-			} else if (parameter.contains("-Dselenium_host")){
-				def pattern = "(\\-Dselenium_host=http:\\/\\/.+:)\\S+(@.+)"
-				Matcher matcher = Pattern.compile(pattern).matcher(parameter)
-				while (matcher.find()) {
-					resultString = matcher.group(1) + "********" + matcher.group(2)
-				}
-			} else {
-				resultString = parameter
-			}
-			resultSpringOfParameters += resultString + ' '
-		}
-		return resultSpringOfParameters
-	}
+
+    static def filterSecuredParams(goals) {
+        def arrayOfParmeters = goals.split()
+        def resultSpringOfParameters = ''
+        for (parameter in arrayOfParmeters) {
+            def resultString = ''
+            if (parameter.contains("token") || parameter.contains("TOKEN")) {
+                def arrayOfString = parameter.split("=")
+                resultString = arrayOfString[0] + "=********"
+            } else if (parameter.contains("-Dselenium_host")) {
+                def pattern = "(\\-Dselenium_host=http:\\/\\/.+:)\\S+(@.+)"
+                Matcher matcher = Pattern.compile(pattern).matcher(parameter)
+                while (matcher.find()) {
+                    resultString = matcher.group(1) + "********" + matcher.group(2)
+                }
+            } else {
+                resultString = parameter
+            }
+            resultSpringOfParameters += resultString + ' '
+        }
+        return resultSpringOfParameters
+    }
 }

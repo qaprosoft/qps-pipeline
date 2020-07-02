@@ -8,17 +8,18 @@ public class Configuration {
 
     public final static def mustOverride = "{must_override}"
 
-    public final static def CREDS_ZAFIRA_SERVICE_URL = "zafira_service_url"
-    public final static def CREDS_ZAFIRA_ACCESS_TOKEN = "zafira_access_token"
+    public final static def CREDS_REPORTING_SERVICE_URL = "reporting_service_url"
+    public final static def CREDS_REPORTING_ACCESS_TOKEN = "reporting_access_token"
     public final static def CREDS_TESTRAIL_SERVICE_URL = "testrail_service_url"
     public final static def CREDS_TESTRAIL = "testrail_creds"
     public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
     public final static def CREDS_QTEST_ACCESS_TOKEN = "qtest_token"
     public final static def CREDS_SONAR_GITHUB_OAUTH_TOKEN = "sonar_github_oauth_token"
+    public final static def CREDS_CUSTOM_PIPELINE = "jenkinsfile"
 
     public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
     public final static def QTEST_UPDATER_JOBNAME = "qtest-updater"
-    
+
     private static final String CAPABILITIES = "capabilities"
 
     //list of CI job params as a map
@@ -72,8 +73,8 @@ public class Configuration {
         SELENIUM_URL("SELENIUM_URL", mustOverride, true),
         HUB_MODE("hub_mode", "selenium"),
 
-        ZAFIRA_ACCESS_TOKEN("ZAFIRA_ACCESS_TOKEN", mustOverride, true),
-        ZAFIRA_SERVICE_URL("ZAFIRA_SERVICE_URL", mustOverride),
+        REPORTING_ACCESS_TOKEN("REPORTING_ACCESS_TOKEN", mustOverride, true),
+        REPORTING_SERVICE_URL("REPORTING_SERVICE_URL", mustOverride),
 
         JOB_URL("JOB_URL", mustOverride),
         JOB_NAME("JOB_NAME", mustOverride),
@@ -110,11 +111,9 @@ public class Configuration {
         TESTRAIL_SERVICE_URL("TESTRAIL_SERVICE_URL", ""), // "https://<CHANGE_ME>.testrail.com?/api/v2/"
         TESTRAIL_USERNAME("TESTRAIL_USERNAME", ""),
         TESTRAIL_PASSWORD("TESTRAIL_PASSWORD", "", true),
-        TESTRAIL_ENABLE("testrail_enabled", "false"),
 
         QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
         QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true),
-        QTEST_ENABLE("qtest_enabled", "false"),
 
         //TODO:  reorganize logic to operate with tokens without Configuration enum!
         SONAR_GITHUB_OAUTH_TOKEN("SONAR_GITHUB_OAUTH_TOKEN", "", true)
@@ -183,19 +182,19 @@ public class Configuration {
         //3. Replace vars and/or params with capabilities prefix
         parseValues(params.get(CAPABILITIES), ";", CAPABILITIES)
 
-		//TODO: wrap 3a and 3b into the single method or remove after fixing cron matrix
-		//3.a to support old "browser" capability as parameter
-		if (params.get("browser") != null) {
-			if (!params.get("browser").isEmpty() && !params.get("browser").equalsIgnoreCase("NULL")) {
-				putParamCaseInsensitive("capabilities.browserName", params.get("browser"))
-			}
-		}
-		//3.b to support old "browser_version" capability as parameter
-		if (params.get("browser_version") != null) {
-			if (!params.get("browser_version").isEmpty() && !params.get("browser_version").equalsIgnoreCase("NULL")) {
-				putParamCaseInsensitive("capabilities.browserVersion", params.get("browser_version"))
-			}
-		}
+        //TODO: wrap 3a and 3b into the single method or remove after fixing cron matrix
+        //3.a to support old "browser" capability as parameter
+        if (params.get("browser") != null) {
+            if (!params.get("browser").isEmpty() && !params.get("browser").equalsIgnoreCase("NULL")) {
+                putParamCaseInsensitive("capabilities.browserName", params.get("browser"))
+            }
+        }
+        //3.b to support old "browser_version" capability as parameter
+        if (params.get("browser_version") != null) {
+            if (!params.get("browser_version").isEmpty() && !params.get("browser_version").equalsIgnoreCase("NULL")) {
+                putParamCaseInsensitive("capabilities.browserVersion", params.get("browser_version"))
+            }
+        }
 
         //4. Replace vars and/or params with zafiraFields values
         parseValues(params.get("zafiraFields"))
@@ -227,18 +226,18 @@ public class Configuration {
         // public static void set(Map args) - ???
     }
 
-	@NonCPS
-	private static void parseValues(values){
-		parseValues(values, ",")
-	}
+    @NonCPS
+    private static void parseValues(values) {
+        parseValues(values, ",")
+    }
 
     @NonCPS
-    private static void parseValues(values, separator){
+    private static void parseValues(values, separator) {
         parseValues(values, separator, "")
     }
 
     @NonCPS
-    private static void parseValues(values, separator, keyPrefix){
+    private static void parseValues(values, separator, keyPrefix) {
         if (values) {
             for (value in values.split(separator)) {
                 def keyValueArray = value.trim().split("=")

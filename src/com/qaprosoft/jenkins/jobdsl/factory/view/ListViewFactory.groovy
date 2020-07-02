@@ -13,7 +13,7 @@ public class ListViewFactory extends DslFactory {
     public ListViewFactory(folder, name, descFilter) {
         this(folder, name, descFilter, "")
     }
-
+    
     public ListViewFactory(folder, name, descFilter, nameFilter) {
         this.folder = folder
         this.name = name

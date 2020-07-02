@@ -8,6 +8,7 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 /*
  * Prerequisites: valid QTEST_SERVICE_URL and QTEST_ACCESS_TOKEN already defined in Configuration 
  */
+
 class QTestClient extends HttpClient {
 
     private String serviceURL
@@ -26,74 +27,74 @@ class QTestClient extends HttpClient {
     }
 
     public def getCycles(projectId) {
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-cycles"]
+                          url               : this.serviceURL + "projects/${projectId}/test-cycles"]
         return sendRequestFormatted(parameters)
     }
 
     public def getSubCycles(parentCycleId, projectId) {
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-cycles?parentId=${parentCycleId}&parentType=test-cycle"]
+                          url               : this.serviceURL + "projects/${projectId}/test-cycles?parentId=${parentCycleId}&parentType=test-cycle"]
         return sendRequestFormatted(parameters)
     }
 
     public def getTestSuites(projectId, parentCycleId) {
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-suites?parentId=${parentCycleId}&parentType=test-cycle"]
+                          url               : this.serviceURL + "projects/${projectId}/test-suites?parentId=${parentCycleId}&parentType=test-cycle"]
         return sendRequestFormatted(parameters)
     }
 
     public def getTestRuns(projectId, parentSuiteId) {
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-runs?parentId=${parentSuiteId}&parentType=test-suite"]
+                          url               : this.serviceURL + "projects/${projectId}/test-runs?parentId=${parentSuiteId}&parentType=test-suite"]
         return sendRequestFormatted(parameters)
     }
 
     public def getTestRunsSubHierarchy(projectId) {
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-runs/subhierarchy"]
+                          url               : this.serviceURL + "projects/${projectId}/test-runs/subhierarchy"]
         return sendRequestFormatted(parameters)
     }
 
     public def getTestCase(projectId, testCaseId) {
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-cases/${testCaseId}"]
+                          url               : this.serviceURL + "projects/${projectId}/test-cases/${testCaseId}"]
         return sendRequestFormatted(parameters)
     }
 
     public def getModule(projectId, moduleId) {
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200:404",
-                          url: this.serviceURL + "projects/${projectId}/modules/${moduleId}"]
+                          url               : this.serviceURL + "projects/${projectId}/modules/${moduleId}"]
         return sendRequestFormatted(parameters)
     }
 
     public def getLog(projectId, testRunId) {
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/test-logs/last-run"]
+                          url               : this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/test-logs/last-run"]
         return sendRequestFormatted(parameters)
     }
 
@@ -101,12 +102,12 @@ class QTestClient extends HttpClient {
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder name: name
         logger.debug("REQUEST_PARAMS: " + jsonBuilder.toString())
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: "${jsonBuilder}",
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : "${jsonBuilder}",
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-cycles?parentId=${parentCycleId}&parentType=test-cycle"]
+                          url               : this.serviceURL + "projects/${projectId}/test-cycles?parentId=${parentCycleId}&parentType=test-cycle"]
         return sendRequestFormatted(parameters)
     }
 
@@ -114,12 +115,12 @@ class QTestClient extends HttpClient {
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder name: name
         logger.debug("REQUEST_PARAMS: " + jsonBuilder.toString())
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: "${jsonBuilder}",
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : "${jsonBuilder}",
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-suites?parentId=${parentcCycleId}&parentType=test-cycle"]
+                          url               : this.serviceURL + "projects/${projectId}/test-suites?parentId=${parentcCycleId}&parentType=test-cycle"]
         return sendRequestFormatted(parameters)
     }
 
@@ -128,12 +129,12 @@ class QTestClient extends HttpClient {
         jsonBuilder name: name,
                 test_case: [id: testCaseId]
         logger.debug("REQUEST_PARAMS: " + jsonBuilder.toString())
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: "${jsonBuilder}",
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : "${jsonBuilder}",
                           validResponseCodes: "200:201",
-                          url: this.serviceURL + "projects/${projectId}/test-runs?parentId=${parentSuiteId}&parentType=test-suite"]
+                          url               : this.serviceURL + "projects/${projectId}/test-runs?parentId=${parentSuiteId}&parentType=test-suite"]
         return sendRequestFormatted(parameters)
     }
 
@@ -146,12 +147,12 @@ class QTestClient extends HttpClient {
                 note: note
 
         logger.debug("REQUEST_PARAMS: " + formatJson(jsonBuilder))
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: "${jsonBuilder}",
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : "${jsonBuilder}",
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/auto-test-logs"]
+                          url               : this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/auto-test-logs"]
         return sendRequestFormatted(parameters)
     }
 
@@ -162,12 +163,12 @@ class QTestClient extends HttpClient {
                 status: status
 
         logger.debug("REQUEST_PARAMS: " + formatJson(jsonBuilder))
-        def parameters = [customHeaders: [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'PUT',
-                          requestBody: "${jsonBuilder}",
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "bearer ${context.env.TOKEN}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'PUT',
+                          requestBody       : "${jsonBuilder}",
                           validResponseCodes: "200",
-                          url: this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/auto-test-logs/${logsId}"]
+                          url               : this.serviceURL + "projects/${projectId}/test-runs/${testRunId}/auto-test-logs/${logsId}"]
         return sendRequestFormatted(parameters)
     }
 }
