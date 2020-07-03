@@ -20,8 +20,7 @@ class SonarClient extends HttpClient {
 	}
 
 	protected boolean isAvailable() {
-		def status = getServerStatus().find() {it.status}
-		return status.equals('UP') ? true : false
+		return "UP".equals(getServerStatus().get("status"))
 	}
 
 	public void setServiceUrl(String url) {
