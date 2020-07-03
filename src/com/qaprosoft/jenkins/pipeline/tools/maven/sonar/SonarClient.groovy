@@ -22,4 +22,12 @@ class SonarClient extends HttpClient {
 	protected boolean isAvailable() {
 		return getServerStatus().equals('UP') ? true : false
 	}
+
+	public void setServiceUrl(String url) {
+		serviceUrl = url
+	}
+
+	public String getServiceUrl() {
+		return serviceUrl
+	}
 }
