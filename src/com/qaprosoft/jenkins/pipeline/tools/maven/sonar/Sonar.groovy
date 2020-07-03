@@ -33,7 +33,9 @@ class Sonar extends BaseObject {
                                  -Dsonar.log.level=${this.logger.pipelineLogLevel} \
                                  -Dsonar.branch.name=${Configuration.get("branch")}"
 
-                if (!sc.isAvailable()) {
+                def isSonarAvailable = sc.isAvailable()
+
+                if (!isSonarAvailable)) {
                     logger.warn("The sonarqube ${this.sc.getServiceUrl()} server is not available, sonarqube scan will be skipped!")
                     sonarGoals = ""
                 }
@@ -45,7 +47,7 @@ class Sonar extends BaseObject {
                     def goals = "-U clean compile test -f ${pomFile}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate ${jacocoReportPaths} ${jacocoReportPath}' : ''
 
-                    if (isPullRequest) {
+                    if (isPullRequest && isSonarAvailable) {
                         // such param should be remove to decorate pr
                         sonarGoals.minus("-Dsonar.branch.name=${Configuration.get("branch")}")
                         // no need to run unit tests for PR analysis
