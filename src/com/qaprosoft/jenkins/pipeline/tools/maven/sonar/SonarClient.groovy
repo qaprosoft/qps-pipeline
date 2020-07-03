@@ -12,10 +12,10 @@ class SonarClient extends HttpClient {
 	}
 
 	protected def getServerStatus() {
-		def parameters = [	contentType			: 'APPLICATION_JSON',
-							httpMode			: 'GET',
-							validResponseCodes  : '200',
-							url 				: serviceUrl + '/api/system/status' ]
+        def parameters = [contentType        : 'APPLICATION_JSON',
+                          httpMode           : 'GET',
+                          validResponseCodes : '200',
+                          url                : serviceURL + + '/api/system/status']
 		return sendRequestFormatted(parameters)
 	}
 
