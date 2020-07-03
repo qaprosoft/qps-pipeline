@@ -47,22 +47,28 @@ class Sonar extends BaseObject {
                     def goals = "-U clean compile test -f ${pomFile}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate ${jacocoReportPaths} ${jacocoReportPath}' : ''
 
-                    if (isPullRequest && isSonarAvailable) {
-                        // such param should be remove to decorate pr
-                        sonarGoals.minus("-Dsonar.branch.name=${Configuration.get("branch")}")
+                    if (isPullRequest) {
                         // no need to run unit tests for PR analysis
                         goals += " -DskipTests"
-                        // goals needed to decorete pr with sonar analysis
-                        sonarGoals += " -Dsonar.verbose=true \
-                                -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
-                                -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
-                                -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
-                                -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
+
+                        if (isSonarAvailable) {
+                            // such param should be remove to decorate pr
+                            sonarGoals.minus("-Dsonar.branch.name=${Configuration.get("branch")}")
+                            // goals needed to decorete pr with sonar analysis
+                            sonarGoals += " -Dsonar.verbose=true \
+                                    -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
+                                    -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
+                                    -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
+                                    -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
+                        
+                        } 
+                        
                     } else {
                         //run unit tests to detect code coverage but don't fail the build in case of any failure
                         //TODO: for build process we can't use below goal!
                         extraGoals += " -Dmaven.test.failure.ignore=true"
                     }
+
                     context.mavenBuild("${goals} ${extraGoals} ${sonarGoals}")
                 }
             }
