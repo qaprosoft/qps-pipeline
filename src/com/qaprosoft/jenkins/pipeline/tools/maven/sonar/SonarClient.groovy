@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins.pipeline.tools.maven.sonar
 
 import com.qaprosoft.jenkins.pipeline.integration.HttpClient
+import com.qaprosoft.jenkins.pipeline.Configuration
 
 class SonarClient extends HttpClient {
 
@@ -8,7 +9,7 @@ class SonarClient extends HttpClient {
 
 	SonarClient(context) {
 		super(context)
-		serviceUrl = Configuration.get("SONAR_URL")
+		serviceUrl = Configuration.get(Configuration.Parameter.SONAR_SERVICE_URL)
 	}
 
 	protected def getServerStatus() {

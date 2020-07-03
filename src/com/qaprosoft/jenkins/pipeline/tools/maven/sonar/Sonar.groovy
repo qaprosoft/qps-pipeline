@@ -28,16 +28,17 @@ class Sonar extends BaseObject {
                     getScm().clonePush()
                 }
 
-                def LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
-
-                logger.info("sonarServerRequest :" + sonarClient.getServerStatus())
-
-                def sonarGoals = sonarClient.isAvailabe() ? "sonar:sonar -Dsonar.host.url=${this.sonarClient.getServiceUrl()} -Dsonar.log.level=${LOG_LEVEL}" : ""
-
-                def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE).toBoolean()
+                def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE)?.toBoolean()
                 def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
-                
-            
+
+                def logLevel = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
+                def sonarGoals = "sonar:sonar -Dsonar.host.url=${this.sonarClient.getServiceUrl()} -Dsonar.log.level=${logLevel}"
+
+                if (!sonarClient.isAvailabe()) {
+                    logger.warn("The sonarqube ${this.sonarClient.getServiceUrl()} server is not available, sonarqube scan will be skipped!")
+                    sonarGoals = ""
+                }
+                            
                 for (pomFile in context.getPomFiles()) {
                     logger.debug("pomFile: " + pomFile)
                     //do compile and scanner for all high level pom.xml files
@@ -45,9 +46,9 @@ class Sonar extends BaseObject {
                     def goals = "-U clean compile test -f ${pomFile}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate ${jacocoReportPaths} ${jacocoReportPath}' : ''
 
-                    if (isPullRequest) {
+                    if (isPullRequest && sonarClient.isAvailabe()) {
                         // no need to run unit tests for PR analysis
-                        extraGoals += " -DskipTests \
+                        sonarGoals += " -DskipTests \
                                 -Dsonar.verbose=true \
                                 -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
@@ -59,7 +60,6 @@ class Sonar extends BaseObject {
                         extraGoals += " -Dmaven.test.failure.ignore=true -Dsonar.branch.name=${Configuration.get("branch")}"
                     }
 
-                    logger.debug("extraGoals: " + extraGoals)
                     context.mavenBuild("${goals} ${extraGoals} ${sonarGoals}")
                 }
             }
