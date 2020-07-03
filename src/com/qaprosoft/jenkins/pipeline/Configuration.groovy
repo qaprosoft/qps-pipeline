@@ -112,9 +112,7 @@ public class Configuration {
         TESTRAIL_PASSWORD("TESTRAIL_PASSWORD", "", true),
 
         QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
-        QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true),
-
-        SONAR_SERVICE_URL("SONAR_URL", "")
+        QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true)
 
         private final String key
         private final String value
