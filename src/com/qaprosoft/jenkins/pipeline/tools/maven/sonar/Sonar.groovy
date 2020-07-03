@@ -36,7 +36,7 @@ class Sonar extends BaseObject {
                 logger.info("Sonar URL > " + sc.getServiceUrl())
                 def sonarGoals = "sonar:sonar -Dsonar.host.url=${this.sc.getServiceUrl()} -Dsonar.log.level=${logLevel}"
 
-                if (!sc.isAvailabe()) {
+                if (!sc.isAvailable()) {
                     logger.warn("The sonarqube ${this.sc.getServiceUrl()} server is not available, sonarqube scan will be skipped!")
                     sonarGoals = ""
                 }
@@ -48,7 +48,7 @@ class Sonar extends BaseObject {
                     def goals = "-U clean compile test -f ${pomFile}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate ${jacocoReportPaths} ${jacocoReportPath}' : ''
 
-                    if (isPullRequest && sc.isAvailabe()) {
+                    if (isPullRequest && sc.isAvailable()) {
                         // no need to run unit tests for PR analysis
                         sonarGoals += " -DskipTests \
                                 -Dsonar.verbose=true \
