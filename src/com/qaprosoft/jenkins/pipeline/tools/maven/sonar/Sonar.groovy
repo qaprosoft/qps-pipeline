@@ -30,8 +30,6 @@ class Sonar extends BaseObject {
 
                 def LOG_LEVEL = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
 
-                logger.info('SONAR_URL :' + sonarClient.getServiceUrl())
-
                 logger.info("sonarServerRequest :" + sonarClient.getServerStatus())
 
                 def sonarGoals = sonarClient.isAvailabe() ? "sonar:sonar -Dsonar.host.url=${this.sonarClient.getServiceUrl()} -Dsonar.log.level=${LOG_LEVEL}" : ""
