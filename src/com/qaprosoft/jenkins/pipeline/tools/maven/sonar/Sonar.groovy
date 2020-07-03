@@ -55,7 +55,7 @@ class Sonar extends BaseObject {
                         // no need to run unit tests for PR analysis
                         goals += "-DskipTests"
                         // goals needed to decorete pr with sonar analysis
-                        def sonarPrGoals += "-Dsonar.verbose=true \
+                        sonarGoals += "-Dsonar.verbose=true \
                                 -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
@@ -65,7 +65,7 @@ class Sonar extends BaseObject {
                         //TODO: for build process we can't use below goal!
                         extraGoals += " -Dmaven.test.failure.ignore=true"
                     }
-                    context.mavenBuild("${goals} ${extraGoals} ${sonarGoals} ${sonarPrGoals}")
+                    context.mavenBuild("${goals} ${extraGoals} ${sonarGoals}")
                 }
             }
         }
