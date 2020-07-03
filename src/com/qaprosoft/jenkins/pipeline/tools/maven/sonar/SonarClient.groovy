@@ -9,6 +9,7 @@ class SonarClient extends HttpClient {
 
 	SonarClient(context) {
 		super(context)
+		serviceUrl = context.env.getEnvironment().get("SONAR_URL")
 	}
 
 	protected def getServerStatus() {

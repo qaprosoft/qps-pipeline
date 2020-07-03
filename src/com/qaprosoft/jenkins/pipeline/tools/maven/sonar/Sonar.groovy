@@ -27,14 +27,15 @@ class Sonar extends BaseObject {
                     // it should be non shallow clone anyway to support full static code analysis
                     getScm().clonePush()
                 }
-                sc.setServiceUrl(configuration.getGlobalProperty("SONAR_URL"))
 
                 def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE)?.toBoolean()
                 def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
 
                 def logLevel = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
-                logger.info("Sonar URL > " + sc.getServiceUrl())
-                def sonarGoals = "sonar:sonar -Dsonar.host.url=${this.sc.getServiceUrl()} -Dsonar.log.level=${logLevel}"
+                def sonarGoals = " sonar:sonar \
+                                 -Dsonar.host.url=${this.sc.getServiceUrl()} \
+                                 -Dsonar.log.level=${logLevel} \
+                                 -Dsonar.branch.name=${Configuration.get("branch")}"
 
                 if (!sc.isAvailable()) {
                     logger.warn("The sonarqube ${this.sc.getServiceUrl()} server is not available, sonarqube scan will be skipped!")
@@ -48,10 +49,13 @@ class Sonar extends BaseObject {
                     def goals = "-U clean compile test -f ${pomFile}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate ${jacocoReportPaths} ${jacocoReportPath}' : ''
 
-                    if (isPullRequest && sc.isAvailable()) {
+                    if (isPullRequest) {
+                        // such param should be remove to decorate pr
+                        sonarGoals.minus("-Dsonar.branch.name=${Configuration.get("branch")}")
                         // no need to run unit tests for PR analysis
-                        sonarGoals += " -DskipTests \
-                                -Dsonar.verbose=true \
+                        goals += "-DskipTests"
+                        // goals needed to decorete pr with sonar analysis
+                        def sonarPrGoals += "-Dsonar.verbose=true \
                                 -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
@@ -59,10 +63,9 @@ class Sonar extends BaseObject {
                     } else {
                         //run unit tests to detect code coverage but don't fail the build in case of any failure
                         //TODO: for build process we can't use below goal!
-                        extraGoals += " -Dmaven.test.failure.ignore=true -Dsonar.branch.name=${Configuration.get("branch")}"
+                        extraGoals += " -Dmaven.test.failure.ignore=true"
                     }
-
-                    context.mavenBuild("${goals} ${extraGoals} ${sonarGoals}")
+                    context.mavenBuild("${goals} ${extraGoals} ${sonarGoals} ${sonarPrGoals}")
                 }
             }
         }
