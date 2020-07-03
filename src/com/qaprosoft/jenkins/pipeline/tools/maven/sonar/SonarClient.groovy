@@ -16,11 +16,12 @@ class SonarClient extends HttpClient {
 							httpMode			: 'GET',
 							validResponseCodes  : '200',
 							url 				: serviceUrl + '/api/system/status' ]
-		return sendRequestFormatted(parameters).find() {it.status}
+		return sendRequestFormatted(parameters)
 	}
 
 	protected boolean isAvailable() {
-		return getServerStatus().equals('UP') ? true : false
+		def status = getServerStatus().find() {it.status}
+		return status.equals('UP') ? true : false
 	}
 
 	public void setServiceUrl(String url) {
