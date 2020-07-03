@@ -35,7 +35,7 @@ class Sonar extends BaseObject {
 
                 def isSonarAvailable = sc.isAvailable()
 
-                if (!isSonarAvailable)) {
+                if (!isSonarAvailable) {
                     logger.warn("The sonarqube ${this.sc.getServiceUrl()} server is not available, sonarqube scan will be skipped!")
                     sonarGoals = ""
                 }
