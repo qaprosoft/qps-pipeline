@@ -28,10 +28,9 @@ class Sonar extends BaseObject {
                 def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE)?.toBoolean()
                 def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
 
-                def logLevel = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
                 def sonarGoals = " sonar:sonar \
                                  -Dsonar.host.url=${this.sc.getServiceUrl()} \
-                                 -Dsonar.log.level=${logLevel} \
+                                 -Dsonar.log.level=${this.logger.pipelineLogLevel} \
                                  -Dsonar.branch.name=${Configuration.get("branch")}"
 
                 if (!sc.isAvailable()) {
