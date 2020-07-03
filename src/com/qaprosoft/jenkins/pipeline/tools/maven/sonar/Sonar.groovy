@@ -10,11 +10,11 @@ import static com.qaprosoft.jenkins.Utils.*
 @InheritConstructors
 class Sonar extends BaseObject {
 
-    private def sonarClient
+    private SonarClient sc
 
     Sonar(context) {
         super(context)
-        sonarClient = new SonarClient(context)
+        sc = new SonarClient(context)
     }
 
     public void scan(isPullRequest=false) {
@@ -27,16 +27,17 @@ class Sonar extends BaseObject {
                     // it should be non shallow clone anyway to support full static code analysis
                     getScm().clonePush()
                 }
+                sc.setServiceUrl(configuration.getGlobalProperty("SONAR_URL"))
 
                 def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE)?.toBoolean()
                 def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
 
                 def logLevel = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
-                logger.info("Sonar URL > " + sonarClient.getServiceUrl())
-                def sonarGoals = "sonar:sonar -Dsonar.host.url=${this.sonarClient.getServiceUrl()} -Dsonar.log.level=${logLevel}"
+                logger.info("Sonar URL > " + sc.getServiceUrl())
+                def sonarGoals = "sonar:sonar -Dsonar.host.url=${this.sc.getServiceUrl()} -Dsonar.log.level=${logLevel}"
 
-                if (!sonarClient.isAvailabe()) {
-                    logger.warn("The sonarqube ${this.sonarClient.getServiceUrl()} server is not available, sonarqube scan will be skipped!")
+                if (!sc.isAvailabe()) {
+                    logger.warn("The sonarqube ${this.sc.getServiceUrl()} server is not available, sonarqube scan will be skipped!")
                     sonarGoals = ""
                 }
                             
@@ -47,7 +48,7 @@ class Sonar extends BaseObject {
                     def goals = "-U clean compile test -f ${pomFile}"
                     def extraGoals = jacocoEnable ? 'jacoco:report-aggregate ${jacocoReportPaths} ${jacocoReportPath}' : ''
 
-                    if (isPullRequest && sonarClient.isAvailabe()) {
+                    if (isPullRequest && sc.isAvailabe()) {
                         // no need to run unit tests for PR analysis
                         sonarGoals += " -DskipTests \
                                 -Dsonar.verbose=true \
