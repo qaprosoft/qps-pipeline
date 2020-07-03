@@ -32,7 +32,7 @@ class Sonar extends BaseObject {
                 def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
 
                 def logLevel = configuration.getGlobalProperty('QPS_PIPELINE_LOG_LEVEL').equals(Logger.LogLevel.DEBUG.name()) ? 'DEBUG' : 'INFO'
-                logger.info("Sonar URL > " + sonarClient.getServiceUrl)
+                logger.info("Sonar URL > " + sonarClient.getServiceUrl())
                 def sonarGoals = "sonar:sonar -Dsonar.host.url=${this.sonarClient.getServiceUrl()} -Dsonar.log.level=${logLevel}"
 
                 if (!sonarClient.isAvailabe()) {
