@@ -2,10 +2,7 @@ package com.qaprosoft.jenkins.pipeline.tools.maven.sonar
 
 import groovy.transform.InheritConstructors
 import com.qaprosoft.jenkins.BaseObject
-import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.Configuration
-
-import static com.qaprosoft.jenkins.Utils.*
 
 @InheritConstructors
 class Sonar extends BaseObject {
@@ -53,9 +50,9 @@ class Sonar extends BaseObject {
                         // such param should be remove to decorate pr
                         sonarGoals.minus("-Dsonar.branch.name=${Configuration.get("branch")}")
                         // no need to run unit tests for PR analysis
-                        goals += "-DskipTests"
+                        goals += " -DskipTests"
                         // goals needed to decorete pr with sonar analysis
-                        sonarGoals += "-Dsonar.verbose=true \
+                        sonarGoals += " -Dsonar.verbose=true \
                                 -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
                                 -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                                 -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
