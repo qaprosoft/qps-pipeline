@@ -807,16 +807,19 @@ public class TestNG extends Runner {
 	}
 
     protected String getMavenGoals() {
-		// When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
-		def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
-		if (!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)) &&
-			!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))) {
-			// Ignore maven build result if Zafira integration is enabled
-			zafiraGoals = "-Dmaven.test.failure.ignore=true \
+        // When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
+        def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
+        logger.debug("REPORTING_SERVICE_URL: " + Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL))
+        logger.debug("REPORTING_ACCESS_TOKEN: " + Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))
+
+        if (!Configuration.mustOverride.equals(Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)) 
+            && !Configuration.mustOverride.equals(Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))) {
+            // Ignore maven build result if Zafira integration is enabled
+            zafiraGoals = "-Dmaven.test.failure.ignore=true \
 							-Dzafira_enabled=true \
 							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)} \
 							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)}"
-		}
+        }
 
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
