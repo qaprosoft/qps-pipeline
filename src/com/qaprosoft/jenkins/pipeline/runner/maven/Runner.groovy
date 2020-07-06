@@ -21,7 +21,6 @@ public class Runner extends AbstractRunner {
             getScm().clonePush()
             // [VD] don't remove -U otherwise latest dependencies are not downloaded
             compile("-U clean compile test -Dmaven.test.failure.ignore=true", false)
-            
             jenkinsFileScan()
         }
     }
@@ -29,7 +28,6 @@ public class Runner extends AbstractRunner {
     public void onPullRequest() {
         context.node("maven") {
             logger.info("Runner->onPullRequest")
-            
             getScm().clonePR()
             compile("-U clean compile test -DskipTests", true)
         }
@@ -48,15 +46,17 @@ public class Runner extends AbstractRunner {
     }
     
     protected void compile(goals, isPullRequest=false) {
-        for (pomFile in context.getPomFiles()) {
-            logger.debug("pomFile: " + pomFile)
-            //do compilation icluding sonar/jacoco goals if needed
-            def sonarGoals = sc.getGoals(isPullRequest)
-            if (!isParamEmpty(sonarGoals)) {
-                //added maven specific goal
-                sonarGoals += " sonar:sonar"
+        context.stage("Maven Compile") {
+            for (pomFile in context.getPomFiles()) {
+                logger.debug("pomFile: " + pomFile)
+                //do compilation icluding sonar/jacoco goals if needed
+                def sonarGoals = sc.getGoals(isPullRequest)
+                if (!isParamEmpty(sonarGoals)) {
+                    //added maven specific goal
+                    sonarGoals += " sonar:sonar"
+                }
+                context.mavenBuild("-f ${pomFile} ${goals} ${sonarGoals}")
             }
-            context.mavenBuild("-f ${pomFile} ${goals} ${sonarGoals}")
         }
     }
 

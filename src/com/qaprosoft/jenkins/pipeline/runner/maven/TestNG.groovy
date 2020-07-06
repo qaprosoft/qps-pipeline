@@ -105,7 +105,7 @@ public class TestNG extends Runner {
     //Events
     @Override
     public void onPush() {
-        context.node("maven") {
+        context.node("master") {
             context.timestamps {
                 logger.info("TestNG->onPush")
                 setReportingCreds()
@@ -1463,4 +1463,11 @@ public class TestNG extends Runner {
         return port
     }
 
+    @Override
+    protected void compile(goals, isPullRequest=false) {
+        context.node("maven") {
+            //TODO: test if cloning on maven is required
+            super.compile(goals, isPullRequest)
+        }
+    }
 }
