@@ -29,7 +29,7 @@ class SonarClient extends HttpClient {
                     -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
                     -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
         } else {
-            goals += " sonar:sonar -Dsonar.branch.name=${Configuration.get("branch")}"
+            goals += " -Dsonar.branch.name=${Configuration.get("branch")}"
         }
 
         // jacoco goals are valuable only when sonar is intergated as of now!

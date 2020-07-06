@@ -5,16 +5,12 @@ import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.tools.SonarClient
 
 public class Runner extends AbstractRunner {
-
-    SonarClient sc
 
     public Runner(context) {
         super(context)
         
-        sc = new SonarClient(context)
         setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
     }
 
@@ -56,13 +52,12 @@ public class Runner extends AbstractRunner {
             logger.debug("pomFile: " + pomFile)
             //do compilation icluding sonar/jacoco goals if needed
             def sonarGoals = sc.getGoals(isPullRequest)
+            if (!isParamEmpty(sonarGoals)) {
+                //added maven specific goal
+                sonarGoals += " sonar:sonar"
+            }
             context.mavenBuild("-f ${pomFile} ${goals} ${sonarGoals}")
         }
     }
 
-    @NonCPS
-    public def setSshClient() {
-        sc.setSshClient()
-        super.setSshClient()
-    }
 }
