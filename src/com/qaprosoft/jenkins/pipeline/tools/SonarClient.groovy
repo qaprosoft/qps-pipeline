@@ -1,20 +1,18 @@
-package com.qaprosoft.jenkins.pipeline.tools.maven.sonar
+package com.qaprosoft.jenkins.pipeline.tools
 
-import groovy.transform.InheritConstructors
-import com.qaprosoft.jenkins.BaseObject
+import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 import com.qaprosoft.jenkins.pipeline.Configuration
 
-@InheritConstructors
-class Sonar extends BaseObject {
+class SonarClient extends HttpClient {
 
-    private SonarClient sc
+	private String serviceUrl
 
-    Sonar(context) {
-        super(context)
-        sc = new SonarClient(context)
-    }
+	SonarClient(context) {
+		super(context)
+		serviceUrl = context.env.getEnvironment().get("SONAR_URL")
+	}
 
-    public void scan(isPullRequest=false) {
+	public void scan(isPullRequest=false) {
         //TODO: verify preliminary if "maven" nodes available
         context.node("maven") {
             context.stage('Sonar Scanner') {
@@ -25,19 +23,11 @@ class Sonar extends BaseObject {
                     getScm().clonePush()
                 }
 
-                def jacocoEnable = configuration.get(Configuration.Parameter.JACOCO_ENABLE)?.toBoolean()
-                def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
-
-                def sonarGoals = " sonar:sonar \
-                                 -Dsonar.host.url=${this.sc.getServiceUrl()} \
-                                 -Dsonar.log.level=${this.logger.pipelineLogLevel} \
-                                 -Dsonar.branch.name=${Configuration.get("branch")}"
-
-                def isSonarAvailable = sc.isAvailable()
+                def isSonarAvailable = "UP".equals(getServerStatus()?.get("status"))
+                def isJacocoEnabled = Configuration.get(Configuration.Parameter.JACOCO_ENABLE)?.toBoolean()
 
                 if (!isSonarAvailable) {
-                    logger.warn("The sonarqube ${this.sc.getServiceUrl()} server is not available, sonarqube scan will be skipped!")
-                    sonarGoals = ""
+                    logger.warn("The sonarqube ${this.serviceUrl()} server is not available, sonarqube scan will be skipped!")
                 }
                             
                 for (pomFile in context.getPomFiles()) {
@@ -45,7 +35,8 @@ class Sonar extends BaseObject {
                     //do compile and scanner for all high level pom.xml files
                     // [VD] don't remove -U otherwise latest dependencies are not downloaded
                     def goals = "-U clean compile test -f ${pomFile}"
-                    def extraGoals = jacocoEnable ? 'jacoco:report-aggregate ${jacocoReportPaths} ${jacocoReportPath}' : ''
+                    def sonarGoals = isSonarAvailable ? getGoals() : ''
+                	def extraGoals = isJacocoEnabled ? getJacocoGoals() : ''
 
                     if (isPullRequest) {
                         // no need to run unit tests for PR analysis
@@ -54,13 +45,7 @@ class Sonar extends BaseObject {
                         if (isSonarAvailable) {
                             // such param should be remove to decorate pr
                             sonarGoals.minus("-Dsonar.branch.name=${Configuration.get("branch")}")
-                            // goals needed to decorete pr with sonar analysis
-                            sonarGoals += " -Dsonar.verbose=true \
-                                    -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
-                                    -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
-                                    -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
-                                    -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
-                        
+                            sonarGoals += getGoals(true)
                         } 
                         
                     } else {
@@ -73,6 +58,35 @@ class Sonar extends BaseObject {
                 }
             }
         }
+    }
+
+    protected String getGoals(isPullRequest=false) {
+    	if (isPullRequest) {
+    		// goals needed to decorete pr with sonar analysis
+    		return " -Dsonar.verbose=true \
+                    -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
+                    -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
+                    -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
+                    -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
+    	}
+
+    	return " sonar:sonar \
+	             -Dsonar.host.url=${this.serviceUrl} \
+	             -Dsonar.log.level=${this.logger.pipelineLogLevel} \
+	             -Dsonar.branch.name=${Configuration.get("branch")}"
+    }
+
+    protected def getServerStatus() {
+        def parameters = [contentType        : 'APPLICATION_JSON',
+                          httpMode           : 'GET',
+                          validResponseCodes : '200',
+                          url                : serviceUrl + '/api/system/status']
+		return sendRequestFormatted(parameters)
+	}
+
+    protected String getJacocoGoals(jacocoEnable) {
+    	def (jacocoReportPath, jacocoReportPaths) = getJacocoReportPaths(jacocoEnable)
+    	return 'jacoco:report-aggregate ${jacocoReportPaths} ${jacocoReportPath}'
     }
 
     private def getJacocoReportPaths(boolean jacocoEnable) {
@@ -102,4 +116,5 @@ class Sonar extends BaseObject {
 
         return [jacocoReportPath, jacocoReportPaths]
     }
+
 }
