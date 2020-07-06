@@ -105,6 +105,8 @@ public class TestNG extends Runner {
     //Events
     @Override
     public void onPush() {
+        boolean isValid = false
+        
         context.node("master") {
             context.timestamps {
                 logger.info("TestNG->onPush")
@@ -118,15 +120,21 @@ public class TestNG extends Runner {
                         getJenkinsJobsScanResult(currentBuild.rawBuild)
                     }
 
-                    // compile("-U clean compile test -Dmaven.test.failure.ignore=true")
                     jenkinsFileScan()
-
+                    isValid = true
                 } catch (Exception e) {
                     logger.error("Scan failed.\n" + e.getMessage())
                     getJenkinsJobsScanResult(null)
                     this.currentBuild.result = BuildResult.FAILURE
                 }
+                
                 clean()
+            }
+        }
+        
+        context.node("maven") {
+            if (isValid) {
+                compile("-U clean compile test -Dmaven.test.failure.ignore=true")
             }
         }
     }
@@ -1463,21 +1471,4 @@ public class TestNG extends Runner {
         return port
     }
 
-    @Override
-    protected void compile(goals, isPullRequest=false) {
-        context.node("maven") {
-            context.stage("Maven Compile") {
-                for (pomFile in context.getPomFiles()) {
-                    logger.debug("pomFile: " + pomFile)
-                    //do compilation icluding sonar/jacoco goals if needed
-                    def sonarGoals = sc.getGoals(isPullRequest)
-                    if (!isParamEmpty(sonarGoals)) {
-                        //added maven specific goal
-                        sonarGoals += " sonar:sonar"
-                    }
-                    context.mavenBuild("-f ${pomFile} ${goals} ${sonarGoals}")
-                }
-            }
-        }
-    }
 }
