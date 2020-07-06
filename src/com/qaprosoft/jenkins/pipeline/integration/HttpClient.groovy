@@ -1,20 +1,13 @@
 package com.qaprosoft.jenkins.pipeline.integration
 
-import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.BaseObject
+import groovy.transform.InheritConstructors
 
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
-abstract class HttpClient {
-
-    protected def context
-    protected Logger logger
-
-    public HttpClient(context) {
-        this.context = context
-        this.logger = new Logger(context)
-    }
-
+@InheritConstructors
+abstract class HttpClient extends BaseObject {
 
     /** Sends httpRequest using passed parameters */
     protected def sendRequestFormatted(requestParams) {

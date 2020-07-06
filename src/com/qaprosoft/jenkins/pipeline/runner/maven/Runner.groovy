@@ -5,14 +5,15 @@ import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
+import com.qaprosoft.jenkins.pipeline.tools.SonarClient
 
 public class Runner extends AbstractRunner {
-    Sonar sonar
+
+    SonarClient sc
 
     public Runner(context) {
         super(context)
-        sonar = new Sonar(context)
+        sc = new SonarClient(context)
         setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
     }
 
@@ -20,9 +21,8 @@ public class Runner extends AbstractRunner {
     public void onPush() {
         context.node("master") {
             logger.info("Runner->onPush")
-            sonar.scan()
+            sc.scan()
         }
-
         context.node("master") {
             jenkinsFileScan()
         }
@@ -31,7 +31,7 @@ public class Runner extends AbstractRunner {
     public void onPullRequest() {
         context.node("master") {
             logger.info("Runner->onPullRequest")
-            sonar.scan(true)
+            sc.scan(true)
         }
     }
 
@@ -49,7 +49,7 @@ public class Runner extends AbstractRunner {
 
     @NonCPS
     public def setSshClient() {
-        sonar.setSshClient()
+        sc.setSshClient()
         super.setSshClient()
     }
 }
