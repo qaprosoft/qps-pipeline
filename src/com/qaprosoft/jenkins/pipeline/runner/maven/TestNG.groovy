@@ -118,7 +118,7 @@ public class TestNG extends Runner {
                         getJenkinsJobsScanResult(currentBuild.rawBuild)
                     }
 
-                    compile("-U clean compile test -Dmaven.test.failure.ignore=true")
+                    // compile("-U clean compile test -Dmaven.test.failure.ignore=true")
                     jenkinsFileScan()
 
                 } catch (Exception e) {
