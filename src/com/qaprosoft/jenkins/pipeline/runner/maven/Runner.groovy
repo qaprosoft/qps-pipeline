@@ -49,6 +49,7 @@ public class Runner extends AbstractRunner {
 
     @NonCPS
     public def setSshClient() {
+        sc.setSshClient()
         super.setSshClient()
     }
 }
