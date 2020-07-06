@@ -684,7 +684,7 @@ public class QARunner extends Runner {
                 break;
             default:
                 logger.info("Suite Type: Default")
-                Configuration.set("node", "master")
+                Configuration.set("node", "default")
         }
 
         def nodeLabel = Configuration.get("node_label")
