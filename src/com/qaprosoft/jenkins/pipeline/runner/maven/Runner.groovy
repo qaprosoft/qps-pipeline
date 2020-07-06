@@ -3,6 +3,8 @@ package com.qaprosoft.jenkins.pipeline.runner.maven
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 
+import static com.qaprosoft.jenkins.Utils.*
+
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
 
