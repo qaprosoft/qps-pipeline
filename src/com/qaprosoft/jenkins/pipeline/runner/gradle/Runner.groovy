@@ -6,6 +6,8 @@ import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
 
+import static com.qaprosoft.jenkins.Utils.*
+
 public class Runner extends AbstractRunner {
 
     public Runner(context) {
@@ -40,7 +42,8 @@ public class Runner extends AbstractRunner {
             logger.info("Runner->build")
             scmClient.clone()
             context.stage("Gradle Build") {
-                compile("./gradlew clean")
+                //TODO: finish implementation later as we have for maven
+                context.sh "./gradlew clean"
             }
         }
     }

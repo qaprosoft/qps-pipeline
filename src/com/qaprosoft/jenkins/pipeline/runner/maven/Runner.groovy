@@ -3,10 +3,10 @@ package com.qaprosoft.jenkins.pipeline.runner.maven
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 
-import static com.qaprosoft.jenkins.Utils.*
-
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
+
+import static com.qaprosoft.jenkins.Utils.*
 
 public class Runner extends AbstractRunner {
 
@@ -22,7 +22,9 @@ public class Runner extends AbstractRunner {
             logger.info("Runner->onPush")
             getScm().clonePush()
             // [VD] don't remove -U otherwise latest dependencies are not downloaded
-            compile("-U clean compile test -Dmaven.test.failure.ignore=true", false)
+            compile("-U clean compile test -DskipTests", false)
+            
+            //TODO: test if we can execute Jenkinsfile jobdsl on maven node 
             jenkinsFileScan()
         }
     }
