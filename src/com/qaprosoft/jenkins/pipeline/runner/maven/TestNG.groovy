@@ -1466,8 +1466,18 @@ public class TestNG extends Runner {
     @Override
     protected void compile(goals, isPullRequest=false) {
         context.node("maven") {
-            //TODO: test if cloning on maven is required
-            super.compile(goals, isPullRequest)
+            context.stage("Maven Compile") {
+                for (pomFile in context.getPomFiles()) {
+                    logger.debug("pomFile: " + pomFile)
+                    //do compilation icluding sonar/jacoco goals if needed
+                    def sonarGoals = sc.getGoals(isPullRequest)
+                    if (!isParamEmpty(sonarGoals)) {
+                        //added maven specific goal
+                        sonarGoals += " sonar:sonar"
+                    }
+                    context.mavenBuild("-f ${pomFile} ${goals} ${sonarGoals}")
+                }
+            }
         }
     }
 }
