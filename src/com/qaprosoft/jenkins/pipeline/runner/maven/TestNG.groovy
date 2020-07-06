@@ -118,7 +118,7 @@ public class TestNG extends Runner {
 					getJenkinsJobsScanResult(currentBuild.rawBuild)
 				}
 
-				sonar.scan()
+				sc.scan()
 				jenkinsFileScan()
 
 			} catch (Exception e) {

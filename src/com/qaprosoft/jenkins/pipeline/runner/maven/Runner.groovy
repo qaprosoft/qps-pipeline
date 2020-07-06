@@ -8,6 +8,7 @@ import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.pipeline.tools.SonarClient
 
 public class Runner extends AbstractRunner {
+
     SonarClient sc
 
     public Runner(context) {
@@ -48,7 +49,6 @@ public class Runner extends AbstractRunner {
 
     @NonCPS
     public def setSshClient() {
-        sonar.setSshClient()
         super.setSshClient()
     }
 }
