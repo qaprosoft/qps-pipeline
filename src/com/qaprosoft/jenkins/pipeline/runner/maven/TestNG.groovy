@@ -103,32 +103,32 @@ public class TestNG extends Runner {
 
 
     //Events
-	@Override
+    @Override
     public void onPush() {
-		context.node("master") {
-      context.timestamps {
-			logger.info("TestNG->onPush")
-			setReportingCreds()
+        context.node("maven") {
+            context.timestamps {
+                logger.info("TestNG->onPush")
+                setReportingCreds()
 
-			try {
-				getScm().clone(true)
-				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
-					scan()
-                    //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
-					getJenkinsJobsScanResult(currentBuild.rawBuild)
-				}
+                try {
+                    getScm().clone(true)
+                    if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
+                        scan()
+                        //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
+                        getJenkinsJobsScanResult(currentBuild.rawBuild)
+                    }
 
-				sc.scan()
-				jenkinsFileScan()
+                    compile("-U clean compile test -Dmaven.test.failure.ignore=true")
+                    jenkinsFileScan()
 
-			} catch (Exception e) {
-				logger.error("Scan failed.\n" + e.getMessage())
-				getJenkinsJobsScanResult(null)
-				this.currentBuild.result = BuildResult.FAILURE
-			}
-			clean()
+                } catch (Exception e) {
+                    logger.error("Scan failed.\n" + e.getMessage())
+                    getJenkinsJobsScanResult(null)
+                    this.currentBuild.result = BuildResult.FAILURE
+                }
+                clean()
             }
-		}
+        }
     }
 
 	public void sendQTestResults() {

@@ -13,25 +13,29 @@ public class Runner extends AbstractRunner {
 
     public Runner(context) {
         super(context)
+        
         sc = new SonarClient(context)
         setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
     }
 
     //Events
     public void onPush() {
-        context.node("master") {
+        context.node("maven") {
             logger.info("Runner->onPush")
-            sc.scan()
-        }
-        context.node("master") {
+            getScm().clonePush()
+            // [VD] don't remove -U otherwise latest dependencies are not downloaded
+            compile("-U clean compile test -Dmaven.test.failure.ignore=true", false)
+            
             jenkinsFileScan()
         }
     }
 
     public void onPullRequest() {
-        context.node("master") {
+        context.node("maven") {
             logger.info("Runner->onPullRequest")
-            sc.scan(true)
+            
+            getScm().clonePR()
+            compile("-U clean compile test -DskipTests", true)
         }
     }
 
@@ -44,6 +48,15 @@ public class Runner extends AbstractRunner {
             context.stage("Maven Build") {
                 context.mavenBuild(Configuration.get("maven_goals"))
             }
+        }
+    }
+    
+    protected void compile(goals, isPullRequest=false) {
+        for (pomFile in context.getPomFiles()) {
+            logger.debug("pomFile: " + pomFile)
+            //do compilation icluding sonar/jacoco goals if needed
+            def sonarGoals = sc.getGoals(isPullRequest)
+            context.mavenBuild("-f ${pomFile} ${goals} ${sonarGoals}")
         }
     }
 
