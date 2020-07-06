@@ -659,6 +659,7 @@ public class QARunner extends Runner {
 
     protected String chooseNode() {
         def jobType = !isParamEmpty(Configuration.get(JOB_TYPE)) ? Configuration.get(JOB_TYPE) : ""
+        logger.debug("jobType: " + jobType)
         switch (jobType.toLowerCase()) {
             case "api":
             case "none":
