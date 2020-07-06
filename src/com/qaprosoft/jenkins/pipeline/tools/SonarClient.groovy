@@ -44,7 +44,7 @@ class SonarClient extends HttpClient {
 
                         if (isSonarAvailable) {
                             // such param should be remove to decorate pr
-                            sonarGoals.minus("-Dsonar.branch.name=${Configuration.get("branch")}")
+                            sonarGoals = sonarGoals.minus("-Dsonar.branch.name=${Configuration.get("branch")}")
                             sonarGoals += getGoals(true)
                         } 
                         
