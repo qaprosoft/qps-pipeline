@@ -178,12 +178,7 @@ class Repository extends BaseObject {
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
-            // TODO: maybe for custom runner classes for dev repo we can check if the runnerClass field is in the list of pre register runner classes
-            // https://github.com/qaprosoft/jenkins-master/issues/225
-            // https://github.com/qaprosoft/jenkins-master/issues/222
-            def isMavenRunner = runnerClass.contains("com.qaprosoft.jenkins.pipeline.runner.maven.") ? true : false
-
-            if (isMavenRunner) {
+            if (isTestNgRunner) {
                 registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
             }
 
