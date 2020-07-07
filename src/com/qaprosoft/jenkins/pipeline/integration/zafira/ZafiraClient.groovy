@@ -253,19 +253,23 @@ class ZafiraClient extends HttpClient {
                           httpMode: 'POST',
                           validResponseCodes: "200:404",
                           requestBody: requestBody,
-                          url: this.serviceURL + "/api/auth/refresh"]
+                          url: getIamUrl() + "/v1/auth/refresh"]
+
         logger.debug("parameters: " + parameters)
-        Map properties = (Map)sendRequestFormatted(parameters)
+        Map properties = (Map) sendRequestFormatted(parameters)
         logger.debug("properties: " + properties)
         if (isParamEmpty(properties)) {
             // #669: no sense to start tests if zafira is configured and not available! 
             logger.info("properties: " + properties)
             throw new RuntimeException("Unable to get auth token, check Zafira integration!")
         }
-        this.authToken = properties.type + " " + properties.accessToken
+        this.authToken = properties.authTokenType + " " + properties.authToken
         logger.debug("authToken: " + authToken)
         this.tokenExpTime = System.currentTimeMillis() + 470 * 60 * 1000 //8 hours - interval '10 minutes'
         return true
     }
 
+    private String getIamUrl() {
+        serviceURL.split("reporting-service")[0] + "api/iam"
+    }
 }
