@@ -1,4 +1,4 @@
-package com.qaprosoft.jenkins.pipeline.tools
+package com.qaprosoft.jenkins.pipeline.integration.sonar
 
 import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 import com.qaprosoft.jenkins.pipeline.Configuration
