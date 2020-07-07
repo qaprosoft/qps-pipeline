@@ -246,7 +246,7 @@ class Organization extends BaseObject {
     }
 
     protected String getPipelineScript() {
-        return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).build()"
+        return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).runJob()"
     }
 
     protected clean() {
