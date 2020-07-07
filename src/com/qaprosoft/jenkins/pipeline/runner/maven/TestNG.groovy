@@ -441,7 +441,7 @@ public class TestNG extends Runner {
         if (!isParamEmpty(parameters.job_type)) {
             jenkinsJob.type = parameters.job_type
         } else {
-            jenkinsJob.type = 'cron'
+            jenkinsJob.type = 'CRON'
         }
 
         parameters.remove("job_type")
