@@ -48,7 +48,6 @@ public class TestNG extends Runner {
 
     //CRON related vars
     protected def listPipelines = []
-    protected JobType jobType = JobType.JOB
     protected Map pipelineLocaleMap = [:]
     protected orderedJobExecNum = 0
     protected boolean multilingualMode = false
@@ -60,47 +59,13 @@ public class TestNG extends Runner {
 	protected static final String RESOURCES_PATH = "/resources/"
 	protected static final String CARINA_SUITES_PATH = RESOURCES_PATH +  "testng_suites/"
 
-    public enum JobType {
-        JOB("JOB"),
-        CRON("CRON")
-        String type
-        JobType(String type) {
-            this.type = type
-        }
-    }
+
 
     public TestNG(context) {
         super(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
         setDisplayNameTemplate('#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
     }
-
-    public TestNG(context, jobType) {
-        this (context)
-        this.jobType = jobType
-        setDisplayNameTemplate('#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
-    }
-
-    //Methods
-	@Override
-    public void build() {
-        logger.info("TestNG->build")
-
-        // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-        setReportingCreds()
-        setSeleniumUrl()
-
-        if (!isParamEmpty(Configuration.get("scmURL"))){
-            scmClient.setUrl(Configuration.get("scmURL"))
-        }
-        if (jobType.equals(JobType.JOB)) {
-            runJob()
-        }
-        if (jobType.equals(JobType.CRON)) {
-            runCron()
-        }
-    }
-
 
     //Events
     @Override
@@ -425,17 +390,17 @@ public class TestNG extends Runner {
 
     protected String getPipelineScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runJob()"
         } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runJob()"
         }
     }
 
     protected String getCronPipelineScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runCron()"
         } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runCron()"
         }
     }
 
@@ -523,7 +488,16 @@ public class TestNG extends Runner {
         return parameters
     }
 
-    protected void runJob() {
+    public void runJob() {
+        // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
+        setReportingCreds()
+        setSeleniumUrl()
+        
+        //TODO: test if we should support scmURL
+        if (!isParamEmpty(Configuration.get("scmURL"))){
+            scmClient.setUrl(Configuration.get("scmURL"))
+        }
+        
         logger.info("TestNG->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
@@ -1087,9 +1061,14 @@ public class TestNG extends Runner {
         }
     }
 
-    protected void runCron() {
+    public void runCron() {
         logger.info("TestNG->runCron")
         context.node("master") {
+            //TODO: test if we should support scmURL
+            if (!isParamEmpty(Configuration.get("scmURL"))){
+                scmClient.setUrl(Configuration.get("scmURL"))
+            }
+
             getScm().clone()
             listPipelines = []
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
