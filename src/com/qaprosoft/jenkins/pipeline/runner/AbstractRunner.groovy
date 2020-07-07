@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins.pipeline.runner
 
 import com.qaprosoft.jenkins.BaseObject
+import com.qaprosoft.jenkins.pipeline.integration.sonar.SonarClient
 import java.nio.file.Paths
 
 import com.qaprosoft.jenkins.pipeline.Configuration
@@ -8,6 +9,8 @@ import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 public abstract class AbstractRunner extends BaseObject {
+    SonarClient sc
+    
     // organization folder name of the current job/runner
     protected String organization = ""
     protected String displayNameTemplate = '#${BUILD_NUMBER}|${branch}'
@@ -15,6 +18,9 @@ public abstract class AbstractRunner extends BaseObject {
 
     public AbstractRunner(context) {
         super(context)
+        
+        sc = new SonarClient(context)
+        
         initOrganization()
         setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
     }
@@ -42,6 +48,12 @@ public abstract class AbstractRunner extends BaseObject {
     /*
      * Execute custom pipeline/jobdsl steps from Jenkinsfile
      */
+    
+    @NonCPS
+    public def setSshClient() {
+        sc.setSshClient()
+        super.setSshClient()
+    }
 
     protected void jenkinsFileScan() {
         def isCustomPipelineEnabled = getToken(Configuration.CREDS_CUSTOM_PIPELINE)

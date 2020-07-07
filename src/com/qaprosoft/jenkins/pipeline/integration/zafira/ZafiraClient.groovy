@@ -198,11 +198,12 @@ class ZafiraClient extends HttpClient {
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
 
+        //TODO: identify if we have to define as valid response 200 and 404
         def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
                           contentType       : 'APPLICATION_JSON',
                           httpMode          : 'POST',
                           requestBody       : requestBody,
-                          validResponseCodes: "200",
+                          validResponseCodes: "200:404",
                           url               : this.serviceURL + "/api/launchers/create"]
         return sendRequestFormatted(parameters)
     }
