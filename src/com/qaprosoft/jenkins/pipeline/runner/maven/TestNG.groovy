@@ -443,7 +443,7 @@ public class TestNG extends Runner {
         } else {
             jenkinsJob.type = 'cron'
         }
-    }
+
         parameters.remove("job_type")
         jenkinsJob.url = jobUrl
         jenkinsJob.parameters  = new JsonBuilder(parameters).toPrettyString()
