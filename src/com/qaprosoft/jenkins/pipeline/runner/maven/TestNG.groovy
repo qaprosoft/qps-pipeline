@@ -92,8 +92,6 @@ public class TestNG extends Runner {
                     getJenkinsJobsScanResult(null)
                     this.currentBuild.result = BuildResult.FAILURE
                 }
-                
-                clean()
             }
         }
         
@@ -102,6 +100,7 @@ public class TestNG extends Runner {
                 getScm().clonePush()
                 compile("-U clean compile test -DskipTests")
             }
+            clean()
         }
     }
 
