@@ -92,16 +92,15 @@ public class TestNG extends Runner {
                     getJenkinsJobsScanResult(null)
                     this.currentBuild.result = BuildResult.FAILURE
                 }
-
-                context.node("maven") {
-                    if (isValid) {
-                            //getScm().clonePush()
-                            compile("-U clean compile test -DskipTests")
-                        }
-                    }
-
-                clean()
             }
+        }
+
+        context.node("maven") {
+            if (isValid) {
+                compile("-U clean compile test -DskipTests")
+            }
+    
+            clean()
         }
     }
 
