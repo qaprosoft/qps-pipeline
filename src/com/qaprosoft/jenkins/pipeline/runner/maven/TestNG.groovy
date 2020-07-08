@@ -439,6 +439,7 @@ public class TestNG extends Runner {
         if (!isParamEmpty(parameters.job_type)) {
             jenkinsJob.type = parameters.job_type
         } else {
+            //TODO: contact with zebrunner insight team to confirm it is valid/expceted jobType for crons
             jenkinsJob.type = 'CRON'
         }
 
