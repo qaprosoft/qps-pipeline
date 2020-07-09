@@ -430,6 +430,7 @@ public class TestNG extends Runner {
             def jenkinsJob = generateJenkinsJob(jobFullName)
             jenkinsJobs.add(jenkinsJob)
         }
+        logger.debug("jenkinsJobs for launchers: " + jenkinsJobs)
         return jenkinsJobs
     }
 
