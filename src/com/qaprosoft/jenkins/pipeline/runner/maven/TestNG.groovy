@@ -766,24 +766,23 @@ public class TestNG extends Runner {
 
 	}
 
-	protected void setReportingCreds() {
-		def zafiraFields = Configuration.get("zafiraFields")
-		logger.debug("zafiraFields: " + zafiraFields)
-		if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-			//already should be parsed and inited as part of Configuration
-			//TODO: improve code quality having single return and zafiraUpdater init
+    protected void setReportingCreds() {
+        def zafiraFields = Configuration.get("zafiraFields")
+        if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+            // init Zafira serviceUrl and accessToken parameter based on zafiraFields parameter
             logger.debug("init ZafiraUpdater from zafiraFields: " + zafiraFields)
-			zafiraUpdater = new ZafiraUpdater(context)
-			return
-		}
+            Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, Configuration.get("zafira_service_url"))
+            Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, Configuration.get("zafira_access_token"))
+        } else {
+            // init Zafira serviceUrl and accessToken parameter based on values from credentials
+            logger.debug("init ZafiraUpdater from credentials")
+            Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
+            Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
+        }
 
-		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
-		Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
-		
-		// obligatory init zafiraUpdater after getting valid url and token
-		zafiraUpdater = new ZafiraUpdater(context)
-	}
+        // obligatory init zafiraUpdater after getting valid url and token
+        zafiraUpdater = new ZafiraUpdater(context)
+    }
 
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
