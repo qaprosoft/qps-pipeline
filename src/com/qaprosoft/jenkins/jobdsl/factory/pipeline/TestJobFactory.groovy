@@ -43,11 +43,11 @@ public class TestJobFactory extends PipelineFactory {
     def set_parameters_map() {
         Map parametersMap = new LinkedHashMap()
 
-        parametersMap.put(1, "booleanParam")
-        parametersMap.put(2, "stringParam")
-        parametersMap.put(3, "hiddenParam")
-        parametersMap.put(4, "extensibleChoice")
-        parametersMap.put(5, "choiceParam")
+        parametersMap.put("param1", "booleanParam")
+        parametersMap.put("param2", "stringParam")
+        parametersMap.put("param3", "hiddenParam")
+        parametersMap.put("param4", "extensibleChoice")
+        parametersMap.put("param5", "choiceParam")
 
     }
 
