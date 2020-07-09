@@ -776,6 +776,8 @@ public class TestNG extends Runner {
         } else {
             // init Zafira serviceUrl and accessToken parameter based on values from credentials
             logger.debug("init ZafiraUpdater from credentials")
+            logger.debug("REPORTING_SERVICE_URL: " + getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
+            logger.debug("REPORTING_ACCESS_TOKEN: " + getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
             Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
             Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
         }
