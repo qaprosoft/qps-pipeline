@@ -40,7 +40,7 @@ public class TestJobFactory extends PipelineFactory {
         this.dataProviderThreadCount = dataProviderThreadCount
     }
 
-    def set_parameters_map() {
+    def set_parameters_map(currentSuite) {
         Map parametersMap = new LinkedHashMap()
 
         parametersMap.put("param1", "booleanParam")
