@@ -96,10 +96,14 @@ public class TestNG extends Runner {
         }
         
         context.node("maven") {
-            if (isValid) {
-                compile("-U clean compile test -DskipTests")
+            context.timestamps {
+                if (isValid) {
+                    getScm().clonePush()
+                    compile("-U clean compile test -DskipTests")
+                }
+                
+                clean()
             }
-            clean()
         }
     }
 
