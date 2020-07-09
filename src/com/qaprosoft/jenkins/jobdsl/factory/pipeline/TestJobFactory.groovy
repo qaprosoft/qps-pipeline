@@ -21,6 +21,7 @@ public class TestJobFactory extends PipelineFactory {
 
     def threadCount
     def dataProviderThreadCount
+    Map parametersMap = new LinkedHashMap()
 
     public TestJobFactory(folder, pipelineScript, host, repo, organization, branch,
                           sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount) {
@@ -40,22 +41,43 @@ public class TestJobFactory extends PipelineFactory {
         this.dataProviderThreadCount = dataProviderThreadCount
     }
 
-    def set_parameters_map(currentSuite) {
-        Map parametersMap = new LinkedHashMap()
+    def registerParameter(parameterName, value) {
+        //parametersMap.put(key, value)
+        parametersMap.put(parameterName, value)
+        setParameter(parameterName)
+    }
 
-        parametersMap.put("param1", "booleanParam")
-        parametersMap.put("param2", "stringParam")
-        parametersMap.put("param3", "hiddenParam")
-        parametersMap.put("param4", "extensibleChoice")
-        parametersMap.put("param5", "choiceParam")
-
+    def setParameter(param) {
+        // read each param and parse for generating custom project fields
+        //	<parameter name="stringParam::name::desc" value="value" />
+        //	<parameter name="stringParam::name" value="value" />
+        logger.debug("Parameter: ${param}")
+        def delimiter = "::"
+        if (param.key.contains(delimiter)) {
+            def (type, name, desc, code) = param.key.split(delimiter)
+            switch (type.toLowerCase()) {
+                case "hiddenparam":
+                    configure addHiddenParameter(name, desc, param.value)
+                    break
+                case "stringparam":
+                    stringParam(name, param.value, desc)
+                    break
+                case "choiceparam":
+                    choiceParam(name, Arrays.asList(param.value.split(',')), desc)
+                    break
+                case "booleanparam":
+                    booleanParam(name, param.value.toBoolean(), desc)
+                    break
+                default:
+                    break
+            }
+        }
     }
 
     def create() {
         logger.info("TestJobFactory->create")
 
         XmlSuite currentSuite = parseSuite(suitePath)
-        set_parameters_map(currentSuite)
 
         this.name = !isParamEmpty(currentSuite.getParameter("jenkinsJobName")) ? currentSuite.getParameter("jenkinsJobName") : currentSuite.getName()
         name = replaceSpecialSymbols(name)
@@ -121,106 +143,90 @@ public class TestJobFactory extends PipelineFactory {
                 switch (jobType) {
                     case "api":
                         // API tests specific
-                        configure stringParam('capabilities', getSuiteParameter("platformName=API", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        registerParameter('stringparam::capabilities::Reserved for any semicolon separated W3C driver capabilities.', getSuiteParameter("platformName=API", "capabilities", currentSuite))
                         break
                     case "web":
                         // WEB tests specific
-                        configure stringParam('capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite), 'Provide semicolon separated W3C driver capabilities.')
+                        registerParameter('stringparam::capabilities::Provide semicolon separated W3C driver capabilities.', getSuiteParameter("browserName=chrome", "capabilities", currentSuite))
                         configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
-                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        registerParameter('booleanparam::auto_screenshot::Generate screenshots automatically during the test', autoScreenshot)
+                        registerParameter('booleanparam::enableVideo::Enable video recording', enableVideo)
                         break
                     case "android":
-                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDROID;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        registerParameter('booleanparam::auto_screenshot::Generate screenshots automatically during the test', autoScreenshot)
+                        registerParameter('booleanparam::enableVideo::Enable video recording', enableVideo)
+                        registerParameter('stringparam::capabilities::Reserved for any semicolon separated W3C driver capabilities.', getSuiteParameter("platformName=ANDROID;deviceName=" + defaultMobilePool, "capabilities", currentSuite))
                         break
                     case "android-web":
-                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDROID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        registerParameter('booleanparam::auto_screenshot::Generate screenshots automatically during the test', autoScreenshot)
+                        registerParameter('booleanparam::enableVideo::Enable video recording', enableVideo)
+                        registerParameter('stringparam::capabilities::Reserved for any semicolon separated W3C driver capabilities.', getSuiteParameter("platformName=ANDROID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite))
                         break
                     case "ios":
-                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        registerParameter('booleanparam::auto_screenshot::Generate screenshots automatically during the test', autoScreenshot)
+                        registerParameter('booleanparam::enableVideo::Enable video recording', enableVideo)
+                        registerParameter('stringparam::capabilities::Reserved for any semicolon separated W3C driver capabilities.', getSuiteParameter("platformName=iOS;deviceName=" + defaultMobilePool, "capabilities", currentSuite))
                         break
                     case "ios-web":
-                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
-                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
-                        configure stringParam('capabilities', getSuiteParameter("platformName=iOS;browserName=safari;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        registerParameter('booleanparam::auto_screenshot::Generate screenshots automatically during the test', autoScreenshot)
+                        registerParameter('booleanparam::enableVideo::Enable video recording', enableVideo)
+                        registerParameter('stringparam::capabilities::Reserved for any semicolon separated W3C driver capabilities.', getSuiteParameter("platformName=iOS;browserName=safari;deviceName=" + defaultMobilePool, "capabilities", currentSuite))
                         break
                 // web ios: capabilities: browserName=safari, deviceName=ANY
                 // web android: capabilities: browserName=chrome, deviceName=ANY
                     default:
-                        configure stringParam('capabilities', getSuiteParameter("platformName=*", "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
-                        booleanParam('auto_screenshot', false, 'Generate screenshots automatically during the test')
-
+                        registerParameter('stringparam::capabilities::Reserved for any semicolon separated W3C driver capabilities.', getSuiteParameter("platformName=*", "capabilities", currentSuite))
+                        registerParameter('booleanparam::auto_screenshot::Generate screenshots automatically during the test', false)
                         break
                 }
-                configure addHiddenParameter('job_type', '', jobType)
+
+
+
+
+                registerParameter('hiddenparam::job_type::', jobType)
 
                 def hubProvider = getSuiteParameter("", "provider", currentSuite)
                 if (!isParamEmpty(hubProvider)) {
-                    configure addHiddenParameter('capabilities.provider', 'hub provider name', hubProvider)
+                    registerParameter('hiddenparam::capabilities.provider::hub provider name', hubProvider)
                 }
 
                 def nodeLabel = getSuiteParameter("", "jenkinsNodeLabel", currentSuite)
                 if (!isParamEmpty(nodeLabel)) {
-                    configure addHiddenParameter('node_label', 'customized node label', nodeLabel)
+                    registerParameter('hiddenparam::node_label::customized node label', nodeLabel)
                 }
-                configure stringParam('branch', this.branch, "SCM repository branch to run against")
-                configure addHiddenParameter('repo', '', repo)
-                configure addHiddenParameter('GITHUB_HOST', '', host)
-                configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
-                configure addHiddenParameter('sub_project', '', sub_project)
-                configure addHiddenParameter('zafira_project', '', zafira_project)
-                configure addHiddenParameter('suite', '', suiteName)
-                configure addHiddenParameter('ci_parent_url', '', '')
-                configure addHiddenParameter('ci_parent_build', '', '')
-                configure addHiddenParameter('slack_channels', '', getSuiteParameter("", "jenkinsSlackChannels", currentSuite))
+                registerParameter('stringparam::branch::SCM repository branch to run against', this.branch)
+                registerParameter('hiddenparam::repo::', repo)
+                registerParameter('hiddenparam::GITHUB_HOST::', host)
+                registerParameter('hiddenparam::GITHUB_ORGANIZATION::', organization)
+                registerParameter('hiddenparam::sub_project::', sub_project)
+                registerParameter('hiddenparam::zafira_project::', zafira_project)
+                registerParameter('hiddenparam::suite::', suiteName)
+                registerParameter('hiddenparam::ci_parent_url::', '')
+                registerParameter('hiddenparam::ci_parent_build::', '')
+                registerParameter('hiddenparam::slack_channels::', getSuiteParameter("", "jenkinsSlackChannels", currentSuite))
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-                configure addHiddenParameter('queue_registration', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
+                registerParameter('hiddenparam::queue_registration::', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
                 // TODO: #711 completely remove custom jenkinsDefaultThreadCount parameter logic
-                stringParam('thread_count', getSuiteParameter(this.threadCount, "jenkinsDefaultThreadCount", currentSuite), 'number of threads, number')
+                registerParameter('stringparam::thread_count::number of threads, number', getSuiteParameter(this.threadCount, "jenkinsDefaultThreadCount", currentSuite))
                 if (!"1".equals(this.dataProviderThreadCount)) {
-                    stringParam('data_provider_thread_count', this.dataProviderThreadCount, 'number of threads for data provider, number')
+                    registerParameter('stringparam::data_provider_thread_count::number of threads for data provider, number', this.dataProviderThreadCount)
                 }
-                stringParam('email_list', getSuiteParameter("", "jenkinsEmail", currentSuite), 'List of Users to be emailed after the test')
-                configure addHiddenParameter('failure_email_list', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
-                choiceParam('retry_count', getRetryCountArray(currentSuite), 'Number of Times to Retry a Failed Test')
-                booleanParam('rerun_failures', false, 'During \"Rebuild\" pick it to execute only failed cases')
-                configure addHiddenParameter('overrideFields', '', getSuiteParameter("", "overrideFields", currentSuite))
-                configure addHiddenParameter('zafiraFields', '', getSuiteParameter("", "zafiraFields", currentSuite))
+                registerParameter('stringparam::email_list::List of Users to be emailed after the test', getSuiteParameter("", "jenkinsEmail", currentSuite))
+                registerParameter('hiddenparam::failure_email_list::', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
+                registerParameter('choiceparam::retry_count::Number of Times to Retry a Failed Test', getRetryCountArray(currentSuite))
+                registerParameter('booleanparam::rerun_failures::During "Rebuild" pick it to execute only failed cases', false)
+                registerParameter('hiddenparam::overrideFields::', getSuiteParameter("", "overrideFields", currentSuite))
+                registerParameter('hiddenparam::zafiraFields::', getSuiteParameter("", "zafiraFields", currentSuite))
 
+
+
+
+                //set parameters from suite
                 Map paramsMap = currentSuite.getAllParameters()
                 logger.info("ParametersMap: ${paramsMap}")
                 for (param in paramsMap) {
-                    // read each param and parse for generating custom project fields
-                    //	<parameter name="stringParam::name::desc" value="value" />
-                    //	<parameter name="stringParam::name" value="value" />
-                    logger.debug("Parameter: ${param}")
-                    def delimiter = "::"
-                    if (param.key.contains(delimiter)) {
-                        def (type, name, desc) = param.key.split(delimiter)
-                        switch (type.toLowerCase()) {
-                            case "hiddenparam":
-                                configure addHiddenParameter(name, desc, param.value)
-                                break
-                            case "stringparam":
-                                stringParam(name, param.value, desc)
-                                break
-                            case "choiceparam":
-                                choiceParam(name, Arrays.asList(param.value.split(',')), desc)
-                                break
-                            case "booleanparam":
-                                booleanParam(name, param.value.toBoolean(), desc)
-                                break
-                            default:
-                                break
-                        }
-                    }
+                    set_parameter(param)
                 }
             }
         }
