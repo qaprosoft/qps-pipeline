@@ -772,7 +772,7 @@ public class TestNG extends Runner {
 		if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
 			//already should be parsed and inited as part of Configuration
 			//TODO: improve code quality having single return and zafiraUpdater init
-            logger.debug("init ZafiraUpdater from zafiraFields: " + zafirafields)
+            logger.debug("init ZafiraUpdater from zafiraFields: " + zafiraFields)
 			zafiraUpdater = new ZafiraUpdater(context)
 			return
 		}
