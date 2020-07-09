@@ -42,31 +42,29 @@ public class TestJobFactory extends PipelineFactory {
     }
 
     def registerParameter(parameterName, value) {
-        //parametersMap.put(key, value)
         parametersMap.put(parameterName, value)
-        setParameter(parameterName)
     }
 
-    def setParameter(param) {
+    def setParameter(param, value) {
         // read each param and parse for generating custom project fields
         //	<parameter name="stringParam::name::desc" value="value" />
         //	<parameter name="stringParam::name" value="value" />
         logger.debug("Parameter: ${param}")
         def delimiter = "::"
         if (param.key.contains(delimiter)) {
-            def (type, name, desc, code) = param.key.split(delimiter)
+            def (type, name, desc) = param.key.split(delimiter)
             switch (type.toLowerCase()) {
                 case "hiddenparam":
                     configure addHiddenParameter(name, desc, param.value)
                     break
                 case "stringparam":
-                    stringParam(name, param.value, desc)
+                    stringParam(name, value, desc)
                     break
                 case "choiceparam":
-                    choiceParam(name, Arrays.asList(param.value.split(',')), desc)
+                    choiceParam(name, Arrays.asList(value.split(',')), desc)
                     break
                 case "booleanparam":
-                    booleanParam(name, param.value.toBoolean(), desc)
+                    booleanParam(name, value.toBoolean(), desc)
                     break
                 default:
                     break
@@ -180,9 +178,6 @@ public class TestJobFactory extends PipelineFactory {
                         break
                 }
 
-
-
-
                 registerParameter('hiddenparam::job_type::', jobType)
 
                 def hubProvider = getSuiteParameter("", "provider", currentSuite)
@@ -219,8 +214,10 @@ public class TestJobFactory extends PipelineFactory {
                 registerParameter('hiddenparam::overrideFields::', getSuiteParameter("", "overrideFields", currentSuite))
                 registerParameter('hiddenparam::zafiraFields::', getSuiteParameter("", "zafiraFields", currentSuite))
 
-
-
+                //set necessary parameters
+                for (key in parametersMap) {
+                    setParameter(key, parametersMap.get(key))
+                }
 
                 //set parameters from suite
                 Map paramsMap = currentSuite.getAllParameters()
