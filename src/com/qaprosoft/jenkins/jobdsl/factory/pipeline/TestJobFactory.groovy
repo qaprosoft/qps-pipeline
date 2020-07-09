@@ -49,9 +49,7 @@ public class TestJobFactory extends PipelineFactory {
         // read each param and parse for generating custom project fields
         //	<parameter name="stringParam::name::desc" value="value" />
         //	<parameter name="stringParam::name" value="value" />
-        if (isParamEmpty(value)) {
-            value = ''
-        }
+        logger.info("PARAM | VALUE : ${param} | ${value}")
         logger.debug("Parameter: ${param}")
         def delimiter = "::"
         if (param.key.contains(delimiter)) {
