@@ -202,7 +202,7 @@ class ZafiraClient extends HttpClient {
                           contentType       : 'APPLICATION_JSON',
                           httpMode          : 'POST',
                           requestBody       : requestBody,
-                          validResponseCodes: "200:404",
+                          validResponseCodes: "200",
                           url               : this.serviceURL + "/api/launchers/create"]
         return sendRequestFormatted(parameters)
     }
