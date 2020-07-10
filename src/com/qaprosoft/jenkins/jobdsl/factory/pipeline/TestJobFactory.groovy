@@ -21,7 +21,7 @@ public class TestJobFactory extends PipelineFactory {
 
     def threadCount
     def dataProviderThreadCount
-    Map parametersMap = new LinkedHashMap()
+    Map parametersMap = new HashMap()
 
     public TestJobFactory(folder, pipelineScript, host, repo, organization, branch,
                           sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount) {
