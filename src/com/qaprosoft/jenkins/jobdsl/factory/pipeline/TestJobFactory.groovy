@@ -21,7 +21,7 @@ public class TestJobFactory extends PipelineFactory {
 
     def threadCount
     def dataProviderThreadCount
-    Map parametersMap = new HashMap()
+    Map parametersMap = new LinkedHashMap()
 
     public TestJobFactory(folder, pipelineScript, host, repo, organization, branch,
                           sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount) {
@@ -215,7 +215,7 @@ public class TestJobFactory extends PipelineFactory {
                 registerParameter('hiddenparam::zafiraFields::', getSuiteParameter("", "zafiraFields", currentSuite))
 
                 //set necessary parameters
-                for (key in parametersMap) {
+                for (key in parametersMap.keySet()) {
                     logger.info("KEY_VAL: ${key}, ${parametersMap.get(key)}")
                     setParameter(key, parametersMap.get(key))
                 }
