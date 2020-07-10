@@ -199,7 +199,7 @@ public class TestJobFactory extends PipelineFactory {
                     //	<parameter name="stringParam::name::desc" value="value" />
                     //	<parameter name="stringParam::name" value="value" />
                     logger.debug("Parameter: ${param}")
-                    value = parametersMap.get(param)
+                    def value = parametersMap.get(param)
                     def delimiter = "::"
                     if (param.contains(delimiter)) {
                         def (type, name, desc) = param.split(delimiter)
