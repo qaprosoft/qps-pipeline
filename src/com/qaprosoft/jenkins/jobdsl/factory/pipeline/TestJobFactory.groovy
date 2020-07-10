@@ -49,17 +49,14 @@ public class TestJobFactory extends PipelineFactory {
         // read each param and parse for generating custom project fields
         //	<parameter name="stringParam::name::desc" value="value" />
         //	<parameter name="stringParam::name" value="value" />
-        logger.info("PARAM | VALUE : ${param} | ${value}")
         logger.debug("Parameter: ${param}")
-        if (isParamEmpty(value)) {
-            value = '0'
-        }
         def delimiter = "::"
         if (param.key.contains(delimiter)) {
             def (type, name, desc) = param.key.split(delimiter)
+            logger.info("TYPE_NAME_DESCR_VALUE -> ${type}, ${name}, ${desc}, ${value}")
             switch (type.toLowerCase()) {
                 case "hiddenparam":
-                    configure addHiddenParameter(name, desc, param.value)
+                    configure addHiddenParameter(name, desc, value)
                     break
                 case "stringparam":
                     stringParam(name, value, desc)
