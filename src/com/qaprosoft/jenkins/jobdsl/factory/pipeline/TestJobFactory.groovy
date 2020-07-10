@@ -53,7 +53,6 @@ public class TestJobFactory extends PipelineFactory {
         def delimiter = "::"
         if (param.key.contains(delimiter)) {
             def (type, name, desc) = param.key.split(delimiter)
-            logger.info("TYPE_NAME_DESCR_VALUE -> ${type}, ${name}, ${desc}, ${value}")
             switch (type.toLowerCase()) {
                 case "hiddenparam":
                     configure addHiddenParameter(name, desc, value)
@@ -217,6 +216,7 @@ public class TestJobFactory extends PipelineFactory {
 
                 //set necessary parameters
                 for (key in parametersMap) {
+                    logger.info("KEY_VAL: ${key}, ${parametersMap.get(key)}")
                     setParameter(key, parametersMap.get(key))
                 }
 
