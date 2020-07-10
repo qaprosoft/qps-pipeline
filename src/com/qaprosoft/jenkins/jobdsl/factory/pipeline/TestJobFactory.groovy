@@ -45,33 +45,6 @@ public class TestJobFactory extends PipelineFactory {
         parametersMap.put(parameterName, value)
     }
 
-    def setParameter(param, value) {
-        // read each param and parse for generating custom project fields
-        //	<parameter name="stringParam::name::desc" value="value" />
-        //	<parameter name="stringParam::name" value="value" />
-        logger.debug("Parameter: ${param}")
-        def delimiter = "::"
-        if (param.contains(delimiter)) {
-            def (type, name, desc) = param.split(delimiter)
-            switch (type.toLowerCase()) {
-                case "hiddenparam":
-                    configure addHiddenParameter(name, desc, value)
-                    break
-                case "stringparam":
-                    stringParam(name, value, desc)
-                    break
-                case "choiceparam":
-                    choiceParam(name, Arrays.asList(value.split(',')), desc)
-                    break
-                case "booleanparam":
-                    booleanParam(name, value.toBoolean(), desc)
-                    break
-                default:
-                    break
-            }
-        }
-    }
-
     def create() {
         logger.info("TestJobFactory->create")
 
@@ -216,15 +189,41 @@ public class TestJobFactory extends PipelineFactory {
 
                 //set necessary parameters
                 for (key in parametersMap.keySet()) {
-                    logger.info("KEY_VAL: ${key}, ${parametersMap.get(key)}")
                     setParameter(key, parametersMap.get(key))
                 }
 
                 //set parameters from suite
                 Map paramsMap = currentSuite.getAllParameters()
+                for (param in paramsMap) {
+                    setParameter(param.key, param.value)
+                }
+
                 logger.info("ParametersMap: ${paramsMap}")
                 for (param in paramsMap) {
-                    set_parameter(param)
+                    // read each param and parse for generating custom project fields
+                    //	<parameter name="stringParam::name::desc" value="value" />
+                    //	<parameter name="stringParam::name" value="value" />
+                    logger.debug("Parameter: ${param}")
+                    def delimiter = "::"
+                    if (param.contains(delimiter)) {
+                        def (type, name, desc) = param.split(delimiter)
+                        switch (type.toLowerCase()) {
+                            case "hiddenparam":
+                                configure addHiddenParameter(name, desc, value)
+                                break
+                            case "stringparam":
+                                stringParam(name, value, desc)
+                                break
+                            case "choiceparam":
+                                choiceParam(name, Arrays.asList(value.split(',')), desc)
+                                break
+                            case "booleanparam":
+                                booleanParam(name, value.toBoolean(), desc)
+                                break
+                            default:
+                                break
+                        }
+                    }
                 }
             }
         }
