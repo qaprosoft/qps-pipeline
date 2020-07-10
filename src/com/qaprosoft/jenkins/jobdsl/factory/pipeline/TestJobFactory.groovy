@@ -51,8 +51,8 @@ public class TestJobFactory extends PipelineFactory {
         //	<parameter name="stringParam::name" value="value" />
         logger.debug("Parameter: ${param}")
         def delimiter = "::"
-        if (param.key.contains(delimiter)) {
-            def (type, name, desc) = param.key.split(delimiter)
+        if (param.contains(delimiter)) {
+            def (type, name, desc) = param.split(delimiter)
             switch (type.toLowerCase()) {
                 case "hiddenparam":
                     configure addHiddenParameter(name, desc, value)
