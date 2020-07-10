@@ -189,7 +189,7 @@ public class TestJobFactory extends PipelineFactory {
 
                 //set necessary parameters
                 for (key in parametersMap.keySet()) {
-                    setParameter(key, parametersMap.get(key))
+                    setParameter(key, parametersMap.get(key).toString())
                 }
 
                 //set parameters from suite
@@ -199,11 +199,12 @@ public class TestJobFactory extends PipelineFactory {
                 }
 
                 logger.info("ParametersMap: ${paramsMap}")
-                for (param in paramsMap) {
+                for (param in parametersMap.keySet()) {
                     // read each param and parse for generating custom project fields
                     //	<parameter name="stringParam::name::desc" value="value" />
                     //	<parameter name="stringParam::name" value="value" />
                     logger.debug("Parameter: ${param}")
+                    value = parametersMap.get(param)
                     def delimiter = "::"
                     if (param.contains(delimiter)) {
                         def (type, name, desc) = param.split(delimiter)
