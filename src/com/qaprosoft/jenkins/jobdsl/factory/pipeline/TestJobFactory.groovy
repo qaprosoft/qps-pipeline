@@ -51,25 +51,23 @@ public class TestJobFactory extends PipelineFactory {
         //	<parameter name="stringParam::name" value="value" />
         logger.debug("Parameter: ${param}")
         def delimiter = "::"
-        parameters {
-            if (param.contains(delimiter)) {
-                def (type, name, desc) = param.split(delimiter)
-                switch (type.toLowerCase()) {
-                    case "hiddenparam":
-                        configure addHiddenParameter(name, desc, value)
-                        break
-                    case "stringparam":
-                        stringParam(name, value, desc)
-                        break
-                    case "choiceparam":
-                        choiceParam(name, Arrays.asList(value.split(',')), desc)
-                        break
-                    case "booleanparam":
-                        booleanParam(name, value.toBoolean(), desc)
-                        break
-                    default:
-                        break
-                }
+        if (param.contains(delimiter)) {
+            def (type, name, desc) = param.split(delimiter)
+            switch (type.toLowerCase()) {
+                case "hiddenparam":
+                    configure addHiddenParameter(name, desc, value)
+                    break
+                case "stringparam":
+                    stringParam(name, value, desc)
+                    break
+                case "choiceparam":
+                    choiceParam(name, Arrays.asList(value.split(',')), desc)
+                    break
+                case "booleanparam":
+                    booleanParam(name, value.toBoolean(), desc)
+                    break
+                default:
+                    break
             }
         }
     }
@@ -215,18 +213,19 @@ public class TestJobFactory extends PipelineFactory {
                 registerParameter('booleanparam::rerun_failures::During "Rebuild" pick it to execute only failed cases', false)
                 registerParameter('hiddenparam::overrideFields::', getSuiteParameter("", "overrideFields", currentSuite))
                 registerParameter('hiddenparam::zafiraFields::', getSuiteParameter("", "zafiraFields", currentSuite))
-            }
-            //set necessary parameters
-            for (key in parametersMap.keySet()) {
-                logger.info("KEY_VAL: ${key}, ${parametersMap.get(key)}")
-                setParameter(key, parametersMap.get(key))
-            }
 
-            //set parameters from suite
-            Map paramsMap = currentSuite.getAllParameters()
-            logger.info("ParametersMap: ${paramsMap}")
-            for (param in paramsMap) {
-                set_parameter(param)
+                //set necessary parameters
+                for (key in parametersMap.keySet()) {
+                    logger.info("KEY_VAL: ${key}, ${parametersMap.get(key)}")
+                    setParameter(key, parametersMap.get(key))
+                }
+
+                //set parameters from suite
+                Map paramsMap = currentSuite.getAllParameters()
+                logger.info("ParametersMap: ${paramsMap}")
+                for (param in paramsMap) {
+                    set_parameter(param)
+                }
             }
         }
         return pipelineJob
