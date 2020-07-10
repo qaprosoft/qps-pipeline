@@ -215,19 +215,18 @@ public class TestJobFactory extends PipelineFactory {
                 registerParameter('booleanparam::rerun_failures::During "Rebuild" pick it to execute only failed cases', false)
                 registerParameter('hiddenparam::overrideFields::', getSuiteParameter("", "overrideFields", currentSuite))
                 registerParameter('hiddenparam::zafiraFields::', getSuiteParameter("", "zafiraFields", currentSuite))
+            }
+            //set necessary parameters
+            for (key in parametersMap.keySet()) {
+                logger.info("KEY_VAL: ${key}, ${parametersMap.get(key)}")
+                setParameter(key, parametersMap.get(key))
+            }
 
-                //set necessary parameters
-                for (key in parametersMap.keySet()) {
-                    logger.info("KEY_VAL: ${key}, ${parametersMap.get(key)}")
-                    setParameter(key, parametersMap.get(key))
-                }
-
-                //set parameters from suite
-                Map paramsMap = currentSuite.getAllParameters()
-                logger.info("ParametersMap: ${paramsMap}")
-                for (param in paramsMap) {
-                    set_parameter(param)
-                }
+            //set parameters from suite
+            Map paramsMap = currentSuite.getAllParameters()
+            logger.info("ParametersMap: ${paramsMap}")
+            for (param in paramsMap) {
+                set_parameter(param)
             }
         }
         return pipelineJob
