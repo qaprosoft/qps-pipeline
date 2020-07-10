@@ -51,23 +51,25 @@ public class TestJobFactory extends PipelineFactory {
         //	<parameter name="stringParam::name" value="value" />
         logger.debug("Parameter: ${param}")
         def delimiter = "::"
-        if (param.contains(delimiter)) {
-            def (type, name, desc) = param.split(delimiter)
-            switch (type.toLowerCase()) {
-                case "hiddenparam":
-                    configure addHiddenParameter(name, desc, value)
-                    break
-                case "stringparam":
-                    stringParam(name, value, desc)
-                    break
-                case "choiceparam":
-                    choiceParam(name, Arrays.asList(value.split(',')), desc)
-                    break
-                case "booleanparam":
-                    booleanParam(name, value.toBoolean(), desc)
-                    break
-                default:
-                    break
+        parameters {
+            if (param.contains(delimiter)) {
+                def (type, name, desc) = param.split(delimiter)
+                switch (type.toLowerCase()) {
+                    case "hiddenparam":
+                        configure addHiddenParameter(name, desc, value)
+                        break
+                    case "stringparam":
+                        stringParam(name, value, desc)
+                        break
+                    case "choiceparam":
+                        choiceParam(name, Arrays.asList(value.split(',')), desc)
+                        break
+                    case "booleanparam":
+                        booleanParam(name, value.toBoolean(), desc)
+                        break
+                    default:
+                        break
+                }
             }
         }
     }
