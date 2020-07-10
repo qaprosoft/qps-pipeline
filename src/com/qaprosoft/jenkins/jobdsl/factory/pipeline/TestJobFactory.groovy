@@ -51,6 +51,9 @@ public class TestJobFactory extends PipelineFactory {
         //	<parameter name="stringParam::name" value="value" />
         logger.info("PARAM | VALUE : ${param} | ${value}")
         logger.debug("Parameter: ${param}")
+        if (isParamEmpty(value)) {
+            value = '0'
+        }
         def delimiter = "::"
         if (param.key.contains(delimiter)) {
             def (type, name, desc) = param.key.split(delimiter)
