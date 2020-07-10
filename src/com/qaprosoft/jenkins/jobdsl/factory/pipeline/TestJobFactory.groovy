@@ -151,7 +151,7 @@ public class TestJobFactory extends PipelineFactory {
                         break
                 }
 
-                setParameterToMap('hiddenparam::job_type::', jobType)
+                setParameterToMap('hiddenparam::job_type', jobType)
 
                 def hubProvider = getSuiteParameter("", "provider", currentSuite)
                 if (!isParamEmpty(hubProvider)) {
@@ -163,29 +163,29 @@ public class TestJobFactory extends PipelineFactory {
                     setParameterToMap('hiddenparam::node_label::customized node label', nodeLabel)
                 }
                 setParameterToMap('stringparam::branch::SCM repository branch to run against', this.branch)
-                setParameterToMap('hiddenparam::repo::', repo)
-                setParameterToMap('hiddenparam::GITHUB_HOST::', host)
-                setParameterToMap('hiddenparam::GITHUB_ORGANIZATION::', organization)
-                setParameterToMap('hiddenparam::sub_project::', sub_project)
-                setParameterToMap('hiddenparam::zafira_project::', zafira_project)
-                setParameterToMap('hiddenparam::suite::', suiteName)
-                setParameterToMap('hiddenparam::ci_parent_url::', '')
-                setParameterToMap('hiddenparam::ci_parent_build::', '')
-                setParameterToMap('hiddenparam::slack_channels::', getSuiteParameter("", "jenkinsSlackChannels", currentSuite))
+                setParameterToMap('hiddenparam::repo', repo)
+                setParameterToMap('hiddenparam::GITHUB_HOST', host)
+                setParameterToMap('hiddenparam::GITHUB_ORGANIZATION', organization)
+                setParameterToMap('hiddenparam::sub_project', sub_project)
+                setParameterToMap('hiddenparam::zafira_project', zafira_project)
+                setParameterToMap('hiddenparam::suite', suiteName)
+                setParameterToMap('hiddenparam::ci_parent_url', '')
+                setParameterToMap('hiddenparam::ci_parent_build', '')
+                setParameterToMap('hiddenparam::slack_channels', getSuiteParameter("", "jenkinsSlackChannels", currentSuite))
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-                setParameterToMap('hiddenparam::queue_registration::', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
+                setParameterToMap('hiddenparam::queue_registration', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite))
                 // TODO: #711 completely remove custom jenkinsDefaultThreadCount parameter logic
                 setParameterToMap('stringparam::thread_count::number of threads, number', getSuiteParameter(this.threadCount, "jenkinsDefaultThreadCount", currentSuite))
                 if (!"1".equals(this.dataProviderThreadCount)) {
                     setParameterToMap('stringparam::data_provider_thread_count::number of threads for data provider, number', this.dataProviderThreadCount)
                 }
                 setParameterToMap('stringparam::email_list::List of Users to be emailed after the test', getSuiteParameter("", "jenkinsEmail", currentSuite))
-                setParameterToMap('hiddenparam::failure_email_list::', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
+                setParameterToMap('hiddenparam::failure_email_list', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
                 setParameterToMap('choiceparam::retry_count::Number of Times to Retry a Failed Test', getRetryCountArray(currentSuite))
                 setParameterToMap('booleanparam::rerun_failures::During "Rebuild" pick it to execute only failed cases', false)
-                setParameterToMap('hiddenparam::overrideFields::', getSuiteParameter("", "overrideFields", currentSuite))
-                setParameterToMap('hiddenparam::zafiraFields::', getSuiteParameter("", "zafiraFields", currentSuite))
+                setParameterToMap('hiddenparam::overrideFields', getSuiteParameter("", "overrideFields", currentSuite))
+                setParameterToMap('hiddenparam::zafiraFields', getSuiteParameter("", "zafiraFields", currentSuite))
 
                 //set parameters from suite
                 Map paramsMap = currentSuite.getAllParameters()
