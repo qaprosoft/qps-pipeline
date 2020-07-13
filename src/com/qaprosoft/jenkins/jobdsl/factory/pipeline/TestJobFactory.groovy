@@ -202,8 +202,6 @@ public class TestJobFactory extends PipelineFactory {
                     def value = parametersMap.get(param)
                     def delimiter = "::"
                     if (param.contains(delimiter)) {
-                        logger.info("1111 " + param.split(delimiter))
-                        //def (type, name, desc) = param.split(delimiter)
                         def type, name, desc
                         if (param.split(delimiter).length == 2) {
                             (type, name) = param.split(delimiter)
@@ -219,6 +217,7 @@ public class TestJobFactory extends PipelineFactory {
                                 stringParam(name, value, desc)
                                 break
                             case "choiceparam":
+                                logger.info("1111" + value)
                                 choiceParam(name, Arrays.asList(value), desc)
                                 break
                             case "booleanparam":
