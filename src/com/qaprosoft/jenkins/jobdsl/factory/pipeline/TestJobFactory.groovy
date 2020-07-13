@@ -219,7 +219,7 @@ public class TestJobFactory extends PipelineFactory {
                                 stringParam(name, value, desc)
                                 break
                             case "choiceparam":
-                                choiceParam(name, Arrays.asList(value.split(',')), desc)
+                                choiceParam(name, Arrays.asList(value), desc)
                                 break
                             case "booleanparam":
                                 booleanParam(name, value.toBoolean(), desc)
