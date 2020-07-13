@@ -203,7 +203,14 @@ public class TestJobFactory extends PipelineFactory {
                     def delimiter = "::"
                     if (param.contains(delimiter)) {
                         logger.info("1111 " + param.split(delimiter))
-                        def (type, name, desc) = param.split(delimiter)
+                        //def (type, name, desc) = param.split(delimiter)
+                        def type, name, desc
+                        if (param.split(delimiter).length == 2) {
+                            (type, name) = param.split(delimiter)
+                            desc = ""
+                        } else if (param.split(delimiter).length == 3) {
+                            (type, name, desc) = param.split(delimiter)
+                        }
                         switch (type.toLowerCase()) {
                             case "hiddenparam":
                                 configure addHiddenParameter(name, desc, value)
