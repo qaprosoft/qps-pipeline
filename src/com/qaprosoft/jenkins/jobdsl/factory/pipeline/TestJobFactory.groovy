@@ -218,7 +218,7 @@ public class TestJobFactory extends PipelineFactory {
                                 break
                             case "choiceparam":
                                 logger.info("1111" + value)
-                                choiceParam(name, Arrays.asList(value), desc)
+                                choiceParam(name, Arrays.asList(value.split(",")), desc)
                                 break
                             case "booleanparam":
                                 booleanParam(name, value.toBoolean(), desc)
