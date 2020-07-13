@@ -1,18 +1,40 @@
 package com.qaprosoft.jenkins.pipeline.runner
 
 import com.qaprosoft.jenkins.BaseObject
+import com.qaprosoft.jenkins.pipeline.integration.sonar.SonarClient
 import java.nio.file.Paths
 
+import com.qaprosoft.jenkins.pipeline.Configuration
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 public abstract class AbstractRunner extends BaseObject {
+    SonarClient sc
+    
     // organization folder name of the current job/runner
     protected String organization = ""
+    protected String displayNameTemplate = '#${BUILD_NUMBER}|${branch}'
+    protected final String DISPLAY_NAME_SEPARATOR = "|"
 
     public AbstractRunner(context) {
         super(context)
+        
+        sc = new SonarClient(context)
+        
         initOrganization()
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
+    }
+
+    protected String getDisplayName() {
+        def String displayName = Configuration.resolveVars(this.displayNameTemplate)
+        displayName = displayName.replaceAll("(?i)null", '')
+        displayName = replaceMultipleSymbolsToOne(displayName, DISPLAY_NAME_SEPARATOR)
+        return displayName
+    }
+
+    @NonCPS
+    protected void setDisplayNameTemplate(String template) {
+        this.displayNameTemplate = template
     }
 
     //Methods
@@ -20,14 +42,29 @@ public abstract class AbstractRunner extends BaseObject {
 
     //Events
     abstract public void onPush()
+
     abstract public void onPullRequest()
 
     /*
      * Execute custom pipeline/jobdsl steps from Jenkinsfile
      */
+    
+    @NonCPS
+    public def setSshClient() {
+        sc.setSshClient()
+        super.setSshClient()
+    }
+
     protected void jenkinsFileScan() {
+        def isCustomPipelineEnabled = getToken(Configuration.CREDS_CUSTOM_PIPELINE)
+
+        if (!isCustomPipelineEnabled) {
+            logger.warn("Custom pipeline execution is not enabled")
+            return
+        }
+
         if (!context.fileExists('Jenkinsfile')) {
-            // do nothing
+            logger.warn("Jenkinsfile doesn't exist in your repository")
             return
         }
 
@@ -42,6 +79,7 @@ public abstract class AbstractRunner extends BaseObject {
      * Get organization folder value
      * @return organization String
      */
+
     protected def getOrgFolder() {
         return this.organization
     }
@@ -49,9 +87,11 @@ public abstract class AbstractRunner extends BaseObject {
     /*
      * Determined current organization folder by job name
      */
+
     @NonCPS
     protected void initOrganization() {
-        String jobName = context.env.getEnvironment().get("JOB_NAME") //Configuration.get(Configuration.Parameter.JOB_NAME)
+        String jobName = context.env.getEnvironment().get("JOB_NAME")
+        //Configuration.get(Configuration.Parameter.JOB_NAME)
         int nameCount = Paths.get(jobName).getNameCount()
 
         def orgFolderName = ""
@@ -68,7 +108,7 @@ public abstract class AbstractRunner extends BaseObject {
             // qaprosoft/carina-demo/API_Demo_Test - i.e. orgFolderName=qaprosoft
             orgFolderName = Paths.get(jobName).getName(0).toString()
         } else {
-            throw new RuntimeException("Invalid job organization structure: '${jobName}'!" )
+            throw new RuntimeException("Invalid job organization structure: '${jobName}'!")
         }
 
         this.organization = orgFolderName
@@ -80,6 +120,7 @@ public abstract class AbstractRunner extends BaseObject {
      * @param tokenName Jenkins credentials id
      * @return token value
      */
+
     protected def getToken(tokenName) {
         def tokenValue = ""
 
@@ -87,9 +128,9 @@ public abstract class AbstractRunner extends BaseObject {
             tokenName = "${this.organization}" + "-" + tokenName
         }
 
-        if (getCredentials(tokenName)){
-            context.withCredentials([context.usernamePassword(credentialsId:tokenName, usernameVariable:'KEY', passwordVariable:'VALUE')]) {
-                tokenValue=context.env.VALUE
+        if (getCredentials(tokenName)) {
+            context.withCredentials([context.usernamePassword(credentialsId: tokenName, usernameVariable: 'KEY', passwordVariable: 'VALUE')]) {
+                tokenValue = context.env.VALUE
             }
         }
         logger.debug("tokenName: ${tokenName}; tokenValue: ${tokenValue}")
@@ -102,6 +143,7 @@ public abstract class AbstractRunner extends BaseObject {
      * @param tokenName Jenkins credentials id
      * @return name and password
      */
+
     protected def getUserCreds(tokenName) {
         def name = ""
         def password = ""
@@ -110,19 +152,20 @@ public abstract class AbstractRunner extends BaseObject {
             tokenName = "${this.organization}" + "-" + tokenName
         }
 
-        if (getCredentials(tokenName)){
-            context.withCredentials([context.usernamePassword(credentialsId:tokenName, usernameVariable:'USERNAME', passwordVariable:'PASSWORD')]) {
-                name=context.env.USERNAME
-                password=context.env.PASSWORD
+        if (getCredentials(tokenName)) {
+            context.withCredentials([context.usernamePassword(credentialsId: tokenName, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                name = context.env.USERNAME
+                password = context.env.PASSWORD
             }
         }
         logger.debug("tokenName: ${tokenName}; name: ${name}; password: ${password}")
         return [name, password]
     }
-    
+
     /*
      * set DslClasspath to support custom JobDSL logic
      */
+
     protected void setDslClasspath(additionalClasspath) {
         factoryRunner.setDslClasspath(additionalClasspath)
     }

@@ -2,7 +2,6 @@ package com.qaprosoft.jenkins.pipeline.integration
 
 import com.qaprosoft.jenkins.Logger
 
-import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 abstract class HttpClient {
@@ -15,11 +14,10 @@ abstract class HttpClient {
         this.logger = new Logger(context)
     }
 
-
     /** Sends httpRequest using passed parameters */
     protected def sendRequestFormatted(requestParams) {
         def response = sendRequest(requestParams)
-        if (response){
+        if (response) {
             return getObjectResponse(response)
         }
     }
@@ -32,7 +30,7 @@ abstract class HttpClient {
         } catch (Exception e) {
             logger.error(printStackTrace(e))
         }
-        if (!response || response.status >= 400){
+        if (!response || response.status >= 400) {
             // [VD] as we don't remember the reason of making build as FAILURE we commented these lines
 //            if (!requestParams.url.contains("queue")) {
 //                context.currentBuild.result = BuildResult.FAILURE

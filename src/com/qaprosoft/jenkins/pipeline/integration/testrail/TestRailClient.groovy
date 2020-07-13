@@ -10,7 +10,7 @@ import com.qaprosoft.jenkins.pipeline.Configuration
  * Prerequisites: valid TESTRAIL_SERVICE_URL, TESTRAIL_USERNAME and TESTRAIL_PASSWORD already defined in Configuration
  */
 
-class TestRailClient extends HttpClient{
+class TestRailClient extends HttpClient {
 
     private String serviceURL
     private String username
@@ -26,10 +26,10 @@ class TestRailClient extends HttpClient{
 
         this.isAvailable = !serviceURL.isEmpty() && !this.username.isEmpty() && !this.password.isEmpty()
     }
-	
-	public boolean isAvailable() {
-		return isAvailable
-	}
+
+    public boolean isAvailable() {
+        return isAvailable
+    }
 
     public def getRuns(createdAfter, createdBy, milestoneId, projectId, suiteId) {
         def requestArgs = "get_runs/${projectId}&created_after=${createdAfter}&suite_id=${suiteId}"
@@ -70,12 +70,20 @@ class TestRailClient extends HttpClient{
         includeAll = includeAll.toBoolean()
         // default request body without milestone id
         JsonBuilder jsonBuilder = new JsonBuilder()
-        jsonBuilder suite_id: suiteId,
-                name: testRunName,
-                assignedto_id: assignedToId,
-                include_all: includeAll,
-                case_ids: caseIds
-
+        if (!includeAll) {
+            jsonBuilder suite_id: suiteId,
+                    name: testRunName,
+                    assignedto_id: assignedToId,
+                    include_all: includeAll,
+                    case_ids: caseIds
+        } else {
+            // no need to specify cases if all of them should be registered in test run
+            jsonBuilder suite_id: suiteId,
+            name: testRunName,
+            assignedto_id: assignedToId,
+            include_all: includeAll
+        }
+        
         if (!isParamEmpty(milestoneId)) {
             // insert milestone id into the request body
             jsonBuilder = new JsonBuilder()
@@ -97,7 +105,7 @@ class TestRailClient extends HttpClient{
     }
 
     public def getUserIdByEmail(userEmail) {
-        if (isParamEmpty(userEmail)){
+        if (isParamEmpty(userEmail)) {
             userEmail = context.env.USERNAME
         }
         def parameters = [customHeaders: [[name: 'Authorization', value: "Basic ${encodeToBase64("${this.username}:${this.password}")}"]],
@@ -130,7 +138,7 @@ class TestRailClient extends HttpClient{
     }
 
     public def addResultsForTests(testRunId, results) {
-        if (isParamEmpty(results)){
+        if (isParamEmpty(results)) {
             return results
         }
         JsonBuilder jsonBuilder = new JsonBuilder()

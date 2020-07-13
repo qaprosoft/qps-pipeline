@@ -23,7 +23,7 @@ class QTestUpdater {
     }
 
     public void updateTestRun(uuid) {
-        if (!Configuration.get(Configuration.Parameter.QTEST_ENABLE).toBoolean() || !qTestClient.isAvailable()) {
+        if (!qTestClient.isAvailable()) {
             // do nothing
             return
         }
@@ -305,7 +305,7 @@ class QTestUpdater {
         Map testCase = new HashMap()
         testCase.case_id = testCaseId.trim()
         testCase.status = testInfo.status
-        testCase.testURL = "${integration.reportingServiceUrl}/#!/tests/runs/${integration.testRunId}/info/${testInfo.id}"
+        testCase.testURL = "${integration.zafiraServiceUrl}/tests/runs/${integration.testRunId}/info/${testInfo.id}"
         return testCase
     }
 }

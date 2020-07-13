@@ -6,7 +6,7 @@ import static com.qaprosoft.jenkins.Utils.*
 import com.qaprosoft.jenkins.pipeline.Configuration
 
 /*
- * Prerequisites: valid ZAFIRA_SERVICE_URL and ZAFIRA_ACCESS_TOKEN already defined in Configuration
+ * Prerequisites: valid REPORTING_SERVICE_URL and REPORTING_ACCESS_TOKEN already defined in Configuration
  */
 
 class ZafiraClient extends HttpClient {
@@ -18,8 +18,8 @@ class ZafiraClient extends HttpClient {
 
     public ZafiraClient(context) {
         super(context)
-        this.serviceURL = Configuration.get(Configuration.Parameter.ZAFIRA_SERVICE_URL)
-        this.refreshToken = Configuration.get(Configuration.Parameter.ZAFIRA_ACCESS_TOKEN)
+        this.serviceURL = Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)
+        this.refreshToken = Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)
     }
 
     public def queueZafiraTestRun(uuid) {
@@ -40,12 +40,12 @@ class ZafiraClient extends HttpClient {
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
 
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: requestBody,
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : requestBody,
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/queue"]
+                          url               : this.serviceURL + "/api/tests/runs/queue"]
         return sendRequestFormatted(parameters)
     }
 
@@ -65,13 +65,13 @@ class ZafiraClient extends HttpClient {
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
 
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: requestBody,
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : requestBody,
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
-                          timeout: 300000]
+                          url               : this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
+                          timeout           : 300000]
         return sendRequestFormatted(parameters)
     }
 
@@ -86,12 +86,12 @@ class ZafiraClient extends HttpClient {
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
 
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: requestBody,
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : requestBody,
                           validResponseCodes: "200:500",
-                          url: this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
+                          url               : this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
         return sendRequestFormatted(parameters)
     }
 
@@ -106,12 +106,12 @@ class ZafiraClient extends HttpClient {
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
 
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: requestBody,
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : requestBody,
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
+                          url               : this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
         return sendRequest(parameters)
     }
 
@@ -119,11 +119,11 @@ class ZafiraClient extends HttpClient {
         if (!isZafiraConnected()) {
             return
         }
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "/api/slack/testrun/${uuid}/finish?channels=${channels}"]
+                          url               : this.serviceURL + "/api/slack/testrun/${uuid}/finish?channels=${channels}"]
         return sendRequest(parameters)
     }
 
@@ -131,11 +131,11 @@ class ZafiraClient extends HttpClient {
         if (!isZafiraConnected()) {
             return
         }
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url: this.serviceURL + "/api/tags/${uuid}/integration?integrationTag=${tagName}"]
+                          url               : this.serviceURL + "/api/tags/${uuid}/integration?integrationTag=${tagName}"]
         return sendRequestFormatted(parameters)
     }
 
@@ -150,12 +150,12 @@ class ZafiraClient extends HttpClient {
 
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: requestBody,
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : requestBody,
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
+                          url               : this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
         return sendRequest(parameters)
     }
 
@@ -163,11 +163,11 @@ class ZafiraClient extends HttpClient {
         if (!isZafiraConnected()) {
             return
         }
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200:500",
-                          url: this.serviceURL + "/api/tests/runs/${uuid}/export"]
+                          url               : this.serviceURL + "/api/tests/runs/${uuid}/export"]
 
         return sendRequest(parameters)
     }
@@ -176,11 +176,11 @@ class ZafiraClient extends HttpClient {
         if (!isZafiraConnected()) {
             return
         }
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'GET',
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'GET',
                           validResponseCodes: "200:404",
-                          url: this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"]
+                          url               : this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"]
 
         return sendRequestFormatted(parameters)
     }
@@ -198,12 +198,12 @@ class ZafiraClient extends HttpClient {
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
 
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: requestBody,
-                          validResponseCodes: "200",
-                          url: this.serviceURL + "/api/launchers/create"]
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : requestBody,
+                          validResponseCodes: "200:404",
+                          url               : this.serviceURL + "/api/launchers/create"]
         return sendRequestFormatted(parameters)
     }
 
@@ -218,12 +218,12 @@ class ZafiraClient extends HttpClient {
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
 
-        def parameters = [customHeaders: [[name: 'Authorization', value: "${authToken}"]],
-                          contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
-                          requestBody: requestBody,
+        def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
+                          contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
+                          requestBody       : requestBody,
                           validResponseCodes: "200:401",
-                          url: this.serviceURL + "/api/jobs/url"]
+                          url               : this.serviceURL + "/api/jobs/url"]
         return sendRequestFormatted(parameters)
     }
 
@@ -233,15 +233,18 @@ class ZafiraClient extends HttpClient {
 
     /** Verify if ZafiraConnected and refresh authToken if needed. Return false if connection can't be established or disabled **/
     protected boolean isZafiraConnected() {
-		if (!isTokenExpired()) {
-			return true
-		}
-		
-		if (isParamEmpty(this.refreshToken) || isParamEmpty(this.serviceURL) || Configuration.mustOverride.equals(this.serviceURL)) {
-			return false
-		}
+        if (!isTokenExpired()) {
+            logger.debug("zafira connected")
+            return true
+        }
 
-		
+        if (isParamEmpty(this.refreshToken) || isParamEmpty(this.serviceURL) || Configuration.mustOverride.equals(this.serviceURL)) {
+            logger.debug("zafira is not connected!")
+            logger.debug("refreshToken: ${this.refreshToken}; serviceURL: ${this.serviceURL};")
+            return false
+        }
+
+
         logger.debug("refreshToken: " + refreshToken)
         JsonBuilder jsonBuilder = new JsonBuilder()
         jsonBuilder refreshToken: this.refreshToken
@@ -249,13 +252,13 @@ class ZafiraClient extends HttpClient {
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
 
-        def parameters = [contentType: 'APPLICATION_JSON',
-                          httpMode: 'POST',
+        def parameters = [contentType       : 'APPLICATION_JSON',
+                          httpMode          : 'POST',
                           validResponseCodes: "200:404",
-                          requestBody: requestBody,
-                          url: this.serviceURL + "/api/auth/refresh"]
+                          requestBody       : requestBody,
+                          url               : this.serviceURL + "/api/auth/refresh"]
         logger.debug("parameters: " + parameters)
-        Map properties = (Map)sendRequestFormatted(parameters)
+        Map properties = (Map) sendRequestFormatted(parameters)
         logger.debug("properties: " + properties)
         if (isParamEmpty(properties)) {
             // #669: no sense to start tests if zafira is configured and not available! 

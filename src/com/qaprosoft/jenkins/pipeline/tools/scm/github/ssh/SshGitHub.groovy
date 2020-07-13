@@ -30,7 +30,7 @@ class SshGitHub extends GitHub {
             def forceArg = isForce ? "--force" : ""
             context.sh "git push ${forceArg} --progress origin HEAD:${target}"
         }
-    }	
+    }
 
     public def setUrl(url) {
         gitHtmlUrl = url

@@ -9,6 +9,7 @@ class StatusMapper {
         RETEST(4),
         FAILED(5),
         final int value
+
         TestRailStatus(int value) {
             this.value = value
         }
@@ -23,12 +24,13 @@ class StatusMapper {
         IN_PROGRESS(3),
 
         final int value
+
         ZafiraStatus(int value) {
             this.value = value
         }
     }
 
-    static def getTestRailStatus(String zafiraStringStatus){
+    static def getTestRailStatus(String zafiraStringStatus) {
         ZafiraStatus zafiraStatus = ZafiraStatus.valueOf(zafiraStringStatus)
         return zafiraStatus.value
     }
