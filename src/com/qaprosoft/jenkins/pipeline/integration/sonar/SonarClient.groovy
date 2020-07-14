@@ -21,7 +21,7 @@ class SonarClient extends HttpClient {
         }
 
         if (!isAvailable()) {
-            logger.warn("The sonarqube ${this.serviceUrl()} server is not available, sonarqube scan will be skipped!")
+            logger.warn("The sonarqube ${this.serviceUrl} server is not available, sonarqube scan will be skipped!")
             return goals
         }
 
