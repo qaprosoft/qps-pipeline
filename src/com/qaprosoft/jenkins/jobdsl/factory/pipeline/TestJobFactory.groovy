@@ -187,7 +187,7 @@ public class TestJobFactory extends PipelineFactory {
                 }
                 setParameterToMap('stringparam::email_list::List of Users to be emailed after the test', getSuiteParameter("", "jenkinsEmail", currentSuite))
                 setParameterToMap('hiddenparam::failure_email_list', getSuiteParameter("", "jenkinsFailedEmail", currentSuite))
-                setParameterToMap('choiceparam::retry_count::Number of Times to Retry a Failed Test', getRetryCountArray(currentSuite).split(','))
+                setParameterToMap('choiceparam::retry_count::Number of Times to Retry a Failed Test', getRetryCountArray(currentSuite))
                 setParameterToMap('booleanparam::rerun_failures::During "Rebuild" pick it to execute only failed cases', false)
                 setParameterToMap('hiddenparam::overrideFields', getSuiteParameter("", "overrideFields", currentSuite))
                 setParameterToMap('hiddenparam::zafiraFields', getSuiteParameter("", "zafiraFields", currentSuite))
@@ -223,7 +223,11 @@ public class TestJobFactory extends PipelineFactory {
                                 break
                             case "choiceparam":
                                 logger.info("1111 " + value)
-                                choiceParam(name, value, desc)
+                                if (value instanceof String) {
+                                    choiceParam(name, value.split(','), desc)
+                                } else {
+                                    choiceParam(name, value, desc)
+                                }
                                 break
                             case "booleanparam":
                                 booleanParam(name, value.toBoolean(), desc)
