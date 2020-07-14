@@ -42,7 +42,16 @@ class SonarClient extends HttpClient {
             httpMode           : 'GET',
             validResponseCodes : '200',
             url                : serviceUrl + '/api/system/status']
-        return "UP".equals(sendRequestFormatted(parameters)?.get("status"))
+
+        def isAvailable = false
+
+        try {
+            isAvailable = "UP".equals(sendRequestFormatted(parameters)?.get("status"))
+        } catch(Exception e) {
+            logger.error(e.getMessage())
+        } finally {
+            return isAvailable
+        }
     }
 
     private String getJacocoGoals() {
