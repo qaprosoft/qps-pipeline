@@ -235,7 +235,7 @@ public class TestJobFactory extends PipelineFactory {
 
     protected def getRetryCountArray(currentSuite) {
         def retryCount = getSuiteParameter(0, "jenkinsDefaultRetryCount", currentSuite).toInteger()
-        List retryCountList = new ArrayList(Arrays.asList(0, 1, 2, 3))
+        def retryCountList = [0, 1, 2, 3]
         if (retryCount != 0) {
             retryCountList.add(0, retryCount)
         }
