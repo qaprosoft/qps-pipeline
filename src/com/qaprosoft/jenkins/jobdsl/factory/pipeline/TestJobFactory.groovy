@@ -45,6 +45,15 @@ public class TestJobFactory extends PipelineFactory {
         parametersMap.put(parameterName, value)
     }
 
+    protected def getRetryCountArray(currentSuite) {
+        def retryCount = getSuiteParameter(0, "jenkinsDefaultRetryCount", currentSuite).toInteger()
+        List retryCountList = new ArrayList(Arrays.asList(0, 1, 2, 3))
+        if (retryCount != 0) {
+            retryCountList.add(0, retryCount)
+        }
+        return retryCountList
+    }
+
     def create() {
         logger.info("TestJobFactory->create")
 
@@ -217,8 +226,8 @@ public class TestJobFactory extends PipelineFactory {
                                 stringParam(name, value, desc)
                                 break
                             case "choiceparam":
-                                logger.info("1111 " + [value])
-                                choiceParam(name, [value], desc)
+                                logger.info("1111 " + value)
+                                choiceParam(name, value, desc)
                                 break
                             case "booleanparam":
                                 booleanParam(name, value.toBoolean(), desc)
@@ -231,15 +240,6 @@ public class TestJobFactory extends PipelineFactory {
             }
         }
         return pipelineJob
-    }
-
-    protected def getRetryCountArray(currentSuite) {
-        def retryCount = getSuiteParameter(0, "jenkinsDefaultRetryCount", currentSuite).toInteger()
-        List retryCountList = new ArrayList(Arrays.asList(0, 1, 2, 3))
-        if (retryCount != 0) {
-            retryCountList.add(0, retryCount)
-        }
-        return retryCountList
     }
 
     protected String listToString(currentSuite, parameterName) {
