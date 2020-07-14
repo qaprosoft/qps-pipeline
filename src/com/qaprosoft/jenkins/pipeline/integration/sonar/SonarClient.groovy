@@ -15,6 +15,11 @@ class SonarClient extends HttpClient {
     public String getGoals(isPullRequest=false) {
         def goals = ""
 
+        if (!serviceUrl) {
+            logger.warn("The url for the sonarqube server is not configured, sonarqube scan will be skipped!")
+            return goals
+        }
+
         if (!isAvailable()) {
             logger.warn("The sonarqube ${this.serviceUrl()} server is not available, sonarqube scan will be skipped!")
             return goals
