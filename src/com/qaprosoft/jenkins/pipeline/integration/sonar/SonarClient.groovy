@@ -3,6 +3,8 @@ package com.qaprosoft.jenkins.pipeline.integration.sonar
 import com.qaprosoft.jenkins.pipeline.integration.HttpClient
 import com.qaprosoft.jenkins.pipeline.Configuration
 
+import static com.qaprosoft.jenkins.Utils.*
+
 class SonarClient extends HttpClient {
 
     private String serviceUrl
@@ -15,7 +17,7 @@ class SonarClient extends HttpClient {
     public String getGoals(isPullRequest=false) {
         def goals = ""
 
-        if (!serviceUrl) {
+        if (!isParamEmpty(serviceUrl)) {
             logger.warn("The url for the sonarqube server is not configured, sonarqube scan will be skipped!")
             return goals
         }
