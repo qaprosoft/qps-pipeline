@@ -17,7 +17,7 @@ class SonarClient extends HttpClient {
     public String getGoals(isPullRequest=false) {
         def goals = ""
 
-        if (!isParamEmpty(serviceUrl)) {
+        if (isParamEmpty(serviceUrl)) {
             logger.warn("The url for the sonarqube server is not configured, sonarqube scan will be skipped!")
             return goals
         }
