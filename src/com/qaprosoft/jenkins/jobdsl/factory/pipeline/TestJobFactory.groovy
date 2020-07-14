@@ -222,7 +222,6 @@ public class TestJobFactory extends PipelineFactory {
                                 stringParam(name, value, desc)
                                 break
                             case "choiceparam":
-                                logger.info("1111 " + value)
                                 if (value instanceof String) {
                                     choiceParam(name, Arrays.asList(value.split(',')), desc)
                                 } else {
