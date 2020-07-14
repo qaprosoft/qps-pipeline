@@ -14,7 +14,6 @@ public class Configuration {
     public final static def CREDS_TESTRAIL = "testrail_creds"
     public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
     public final static def CREDS_QTEST_ACCESS_TOKEN = "qtest_token"
-    public final static def CREDS_SONAR_GITHUB_OAUTH_TOKEN = "sonar_github_oauth_token"
     public final static def CREDS_CUSTOM_PIPELINE = "jenkinsfile"
 
     public final static def TESTRAIL_UPDATER_JOBNAME = "testrail-updater"
@@ -113,10 +112,7 @@ public class Configuration {
         TESTRAIL_PASSWORD("TESTRAIL_PASSWORD", "", true),
 
         QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
-        QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true),
-
-        //TODO:  reorganize logic to operate with tokens without Configuration enum!
-        SONAR_GITHUB_OAUTH_TOKEN("SONAR_GITHUB_OAUTH_TOKEN", "", true)
+        QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true)
 
         private final String key
         private final String value

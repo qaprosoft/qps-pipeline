@@ -128,6 +128,11 @@ public class TestJobFactory extends PipelineFactory {
                         setParameterToMap('booleanparam::enableVideo::Enable video recording', enableVideo)
                         setParameterToMap('stringparam::capabilities::Reserved for any semicolon separated W3C driver capabilities.', getSuiteParameter("platformName=ANDROID;deviceName=" + defaultMobilePool, "capabilities", currentSuite))
                         break
+                    case "android-tv":
+                        booleanParam('auto_screenshot', autoScreenshot, 'Generate screenshots automatically during the test')
+                        booleanParam('enableVideo', enableVideo, 'Enable video recording')
+                        configure stringParam('capabilities', getSuiteParameter("platformName=ANDROID;deviceName=" + defaultMobilePool, "capabilities", currentSuite), 'Reserved for any semicolon separated W3C driver capabilities.')
+                        break
                     case "android-web":
                         setParameterToMap('booleanparam::auto_screenshot::Generate screenshots automatically during the test', autoScreenshot)
                         setParameterToMap('booleanparam::enableVideo::Enable video recording', enableVideo)

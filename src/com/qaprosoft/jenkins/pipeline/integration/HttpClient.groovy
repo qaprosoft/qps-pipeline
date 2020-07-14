@@ -2,7 +2,6 @@ package com.qaprosoft.jenkins.pipeline.integration
 
 import com.qaprosoft.jenkins.Logger
 
-import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 abstract class HttpClient {
@@ -14,7 +13,6 @@ abstract class HttpClient {
         this.context = context
         this.logger = new Logger(context)
     }
-
 
     /** Sends httpRequest using passed parameters */
     protected def sendRequestFormatted(requestParams) {

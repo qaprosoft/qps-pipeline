@@ -5,34 +5,35 @@ import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 
 //[VD] do not remove this important import!
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.tools.maven.sonar.Sonar
+
+import static com.qaprosoft.jenkins.Utils.*
 
 public class Runner extends AbstractRunner {
-    Sonar sonar
 
     public Runner(context) {
         super(context)
-        sonar = new Sonar(context)
+        
         setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
     }
 
     //Events
     public void onPush() {
-        context.node("master") {
+        context.node("maven") {
             logger.info("Runner->onPush")
-            sonar.scan()
-        }
-
-        context.node("master") {
+            getScm().clonePush()
+            // [VD] don't remove -U otherwise latest dependencies are not downloaded
+            compile("-U clean compile test -DskipTests", false)
+            
+            //TODO: test if we can execute Jenkinsfile jobdsl on maven node 
             jenkinsFileScan()
         }
     }
 
     public void onPullRequest() {
-        context.node("master") {
+        context.node("maven") {
             logger.info("Runner->onPullRequest")
-            sonar.setToken(getToken(Configuration.CREDS_SONAR_GITHUB_OAUTH_TOKEN))
-            sonar.scan(true)
+            getScm().clonePR()
+            compile("-U clean compile test -DskipTests", true)
         }
     }
 
@@ -47,10 +48,20 @@ public class Runner extends AbstractRunner {
             }
         }
     }
-
-    @NonCPS
-    public def setSshClient() {
-        sonar.setSshClient()
-        super.setSshClient()
+    
+    protected void compile(goals, isPullRequest=false) {
+        context.stage("Maven Compile") {
+            for (pomFile in context.getPomFiles()) {
+                logger.debug("pomFile: " + pomFile)
+                //do compilation icluding sonar/jacoco goals if needed
+                def sonarGoals = sc.getGoals(isPullRequest)
+                if (!isParamEmpty(sonarGoals)) {
+                    //added maven specific goal
+                    sonarGoals += " sonar:sonar"
+                }
+                context.mavenBuild("-f ${pomFile} ${goals} ${sonarGoals}")
+            }
+        }
     }
+
 }
