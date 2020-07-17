@@ -10,6 +10,37 @@ public class PipelineFactory extends JobFactory {
     def pipelineScript = ""
     def suiteOwner = ""
 
+    Map parametersMap = new LinkedHashMap(
+        "custom_capabilities", "NULL",
+        "auto_screenshot", "false",
+        "enableVideo", "true",
+        "capabilities", "platformName=*",
+        "job_type", "api",
+        "capabilities.provider", "",
+        "node_label", "",
+        "branch", "",
+        "repo", "",
+        "GITHUB_HOST", "",
+        "GITHUB_ORGANIZATION", "",
+        "sub_project", "",
+        "zafira_project", "",
+        "suite", "",
+        "ci_parent_url", "",
+        "ci_parent_build", "",
+        "slack_channels", "",
+        "ci_run_id", "",
+        "BuildPriority", "3",
+        "queue_registration", "true",
+        "thread_count", "",
+        "data_provider_thread_count", "",
+        "email_list", "",
+        "failure_email_list", "",
+        "retry_count", "",
+        "rerun_failures", "false",
+        "overrideFields", "",
+        "zafiraFields", ""
+    )
+
     public PipelineFactory(folder, name, description) {
         super(folder, name, description)
     }

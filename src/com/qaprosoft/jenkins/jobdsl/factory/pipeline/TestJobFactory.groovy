@@ -21,7 +21,6 @@ public class TestJobFactory extends PipelineFactory {
 
     def threadCount
     def dataProviderThreadCount
-    Map parametersMap = new LinkedHashMap()
 
     public TestJobFactory(folder, pipelineScript, host, repo, organization, branch,
                           sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount) {
@@ -72,6 +71,9 @@ public class TestJobFactory extends PipelineFactory {
             //** Properties & Parameters Area **//*
             parameters {
                 concurrentBuild(getSuiteParameter(true, "jenkinsConcurrentBuild", currentSuite).toBoolean())
+
+                // generateParams
+
                 extensibleChoiceParameterDefinition {
                     name('env')
                     choiceListProvider {
