@@ -245,6 +245,7 @@ public class TestJobFactory extends PipelineFactory {
                 def (type, name, desc) = param.key.split(delimiter)
                 setParameterToMap(name, jobParameter.set(type.toLowerCase(), desc, name))
             }
+        }
     }
 
     protected def getRetryCountArray(currentSuite) {
