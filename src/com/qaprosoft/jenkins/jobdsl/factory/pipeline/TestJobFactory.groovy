@@ -193,11 +193,8 @@ public class TestJobFactory extends PipelineFactory {
                 setParameterToMap('zafiraFields', jobParameter.set('hiddenparam', '', getSuiteParameter("", "zafiraFields", currentSuite)))
                 setParameterToMap('', jobParameter.set('', '', ''))
 
-                //set parameters from suite
-                Map paramsMap = currentSuite.getAllParameters()
-                for (param in paramsMap) {
-                    setParameterToMap(param.key, param.value)
-                }
+                //set parameters to map from suite
+                parseSuiteParametersToMap()
 
                 logger.info("ParametersMap: ${paramsMap}")
                 for (param in parametersMap.keySet()) {
@@ -244,6 +241,21 @@ public class TestJobFactory extends PipelineFactory {
 
     def setParameterToMap(parameterName, value) {
         parametersMap.put(parameterName, value)
+    }
+
+    def parseSuiteParametersToMap() {
+        Map paramsMap = currentSuite.getAllParameters()
+        logger.info("ParametersMap: ${paramsMap}")
+        for (param in paramsMap) {
+            // read each param and parse for generating custom project fields
+            //	<parameter name="stringParam::name::desc" value="value" />
+            //	<parameter name="stringParam::name" value="value" />
+            logger.debug("Parameter: ${param}")
+            def delimiter = "::"
+            if (param.key.contains(delimiter)) {
+                def (type, name, desc) = param.key.split(delimiter)
+                setParameterToMap(name, jobParameter.set(type.toLowerCase(), desc, name))
+            }
     }
 
     protected def getRetryCountArray(currentSuite) {
