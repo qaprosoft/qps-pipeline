@@ -10,36 +10,35 @@ public class PipelineFactory extends JobFactory {
     def pipelineScript = ""
     def suiteOwner = ""
 
-    Map parametersMap = new LinkedHashMap(
-        "custom_capabilities", "NULL",
-        "auto_screenshot", "false",
-        "enableVideo", "true",
-        "capabilities", "platformName=*",
-        "job_type", "api",
-        "capabilities.provider", "",
-        "node_label", "",
-        "branch", "",
-        "repo", "",
-        "GITHUB_HOST", "",
-        "GITHUB_ORGANIZATION", "",
-        "sub_project", "",
-        "zafira_project", "",
-        "suite", "",
-        "ci_parent_url", "",
-        "ci_parent_build", "",
-        "slack_channels", "",
-        "ci_run_id", "",
-        "BuildPriority", "3",
-        "queue_registration", "true",
-        "thread_count", "",
-        "data_provider_thread_count", "",
-        "email_list", "",
-        "failure_email_list", "",
-        "retry_count", "",
-        "rerun_failures", "false",
-        "overrideFields", "",
-        "zafiraFields", ""
-    )
+    Map parametersMap = new LinkedHashMap()
+    parametersMap.put("custom_capabilities", "NULL")
+    parametersMap.put("auto_screenshot", "false")
+    parametersMap.put("enableVideo", "true")
+    parametersMap.put("capabilities", "platformName=*")
+    parametersMap.put("job_type", "api")
+    parametersMap.put("capabilities.provider", "")
+    parametersMap.put("node_label", "")
+    parametersMap.put("branch", "")
+    parametersMap.put("repo", "")
+    parametersMap.put("GITHUB_HOST", "")
+    parametersMap.put("GITHUB_ORGANIZATION", "")
+    parametersMap.put("sub_project", "")
+    parametersMap.put("zafira_project", "")
+    parametersMap.put("suite", "")
+    parametersMap.put("ci_parent_url", "")
+    parametersMap.put("ci_parent_build", "")
+    parametersMap.put("slack_channels", "")
+    parametersMap.put("ci_run_id", "")
+    parametersMap.put("BuildPriority", "3")
+    parametersMap.put("queue_registration", "true")
+    parametersMap.put("thread_count", "")
+    parametersMap.put("data_provider_thread_count", "")
+    parametersMap.put("email_list", "")
+    parametersMap.put("failure_email_list", "")
+    parametersMap.put("retry_count", "")
+    parametersMap.put("rerun_failures", "false")
+    parametersMap.put("overrideFields", "")
+    parametersMap.put("zafiraFields", "")
 
     public PipelineFactory(folder, name, description) {
         super(folder, name, description)
