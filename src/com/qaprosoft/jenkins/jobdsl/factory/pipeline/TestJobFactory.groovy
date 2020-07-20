@@ -118,7 +118,7 @@ public class TestJobFactory extends PipelineFactory {
                         break
                     case "web":
                         // WEB tests specific
-                        setParameterToMap('capabilities', jobParameter.set('stringparam','Provide semicolon separated W3C driver capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite)))
+                        setParameterToMap('capabilities', jobParameter.set('stringparam', 'Provide semicolon separated W3C driver capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite)))
                         configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
                         setParameterToMap('auto_screenshot', jobParameter.set('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
                         setParameterToMap('enableVideo', jobParameter.set('booleanparam', 'Enable video recording', enableVideo))
@@ -191,51 +191,40 @@ public class TestJobFactory extends PipelineFactory {
                 setParameterToMap('rerun_failures', jobParameter.set('booleanparam', 'During "Rebuild" pick it to execute only failed cases', false))
                 setParameterToMap('overrideFields', jobParameter.set('hiddenparam', '', getSuiteParameter("", "overrideFields", currentSuite)))
                 setParameterToMap('zafiraFields', jobParameter.set('hiddenparam', '', getSuiteParameter("", "zafiraFields", currentSuite)))
-                setParameterToMap('', jobParameter.set('', '', ''))
 
                 //set parameters to map from suite
                 parseSuiteParametersToMap()
 
-                logger.info("ParametersMap: ${paramsMap}")
-                for (param in parametersMap.keySet()) {
-                    // read each param and parse for generating custom project fields
-                    //	<parameter name="stringParam::name::desc" value="value" />
-                    //	<parameter name="stringParam::name" value="value" />
-                    logger.debug("Parameter: ${param}")
-                    def value = parametersMap.get(param)
-                    def delimiter = "::"
-                    if (param.contains(delimiter)) {
-                        def type, name, desc
-                        if (param.split(delimiter).length == 2) {
-                            (type, name) = param.split(delimiter)
-                            desc = ""
-                        } else if (param.split(delimiter).length == 3) {
-                            (type, name, desc) = param.split(delimiter)
-                        }
-                        switch (type.toLowerCase()) {
-                            case "hiddenparam":
-                                configure addHiddenParameter(name, desc, value)
-                                break
-                            case "stringparam":
-                                stringParam(name, value, desc)
-                                break
-                            case "choiceparam":
-                                if (value instanceof String) {
-                                    choiceParam(name, Arrays.asList(value.split(',')), desc)
-                                } else {
-                                    choiceParam(name, value, desc)
-                                }
-                                break
-                            case "booleanparam":
-                                booleanParam(name, value.toBoolean(), desc)
-                                break
-                            default:
-                                break
+                logger.info("ParametersMap: ${parametersMap}")
+                for (name in parametersMap.keySet()) {
+                    def paramContent = parametersMap.get(name)
+                    def type = paramContent.paramType
+                    def desc = paramContent.paramDescription
+                    def value = paramContent.paramValue
+
+                    switch (type.toLowerCase()) {
+                        case "hiddenparam":
+                            configure addHiddenParameter(name, desc, value)
+                            break
+                        case "stringparam":
+                            stringParam(name, value, desc)
+                            break
+                        case "choiceparam":
+                            if (value instanceof String) {
+                                choiceParam(name, Arrays.asList(value.split(',')), desc)
+                            } else {
+                                choiceParam(name, value, desc)
+                            }
+                            break
+                        case "booleanparam":
+                            booleanParam(name, value.toBoolean(), desc)
+                            break
+                        default:
+                            break
                         }
                     }
                 }
             }
-        }
         return pipelineJob
     }
 
