@@ -22,6 +22,8 @@ public class TestJobFactory extends PipelineFactory {
     def threadCount
     def dataProviderThreadCount
 
+    def jobParameter = new JobParameter()
+
     public TestJobFactory(folder, pipelineScript, host, repo, organization, branch,
                           sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount) {
         this.folder = folder
@@ -38,10 +40,6 @@ public class TestJobFactory extends PipelineFactory {
         this.orgRepoScheduling = orgRepoScheduling
         this.threadCount = threadCount
         this.dataProviderThreadCount = dataProviderThreadCount
-    }
-
-    def setParameterToMap(parameterName, value) {
-        parametersMap.put(parameterName, value)
     }
 
     def create() {
@@ -241,6 +239,10 @@ public class TestJobFactory extends PipelineFactory {
             }
         }
         return pipelineJob
+    }
+
+    def setParameterToMap(parameterName, value) {
+        parametersMap.put(parameterName, value)
     }
 
     protected def getRetryCountArray(currentSuite) {
