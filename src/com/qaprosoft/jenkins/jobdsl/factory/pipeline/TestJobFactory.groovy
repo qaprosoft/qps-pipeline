@@ -45,6 +45,7 @@ public class TestJobFactory extends PipelineFactory {
     def create() {
         logger.info("TestJobFactory->create")
 
+        setDefaultParams()
         XmlSuite currentSuite = parseSuite(suitePath)
 
         this.name = !isParamEmpty(currentSuite.getParameter("jenkinsJobName")) ? currentSuite.getParameter("jenkinsJobName") : currentSuite.getName()
