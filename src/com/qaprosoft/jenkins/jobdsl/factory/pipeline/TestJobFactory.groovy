@@ -22,8 +22,6 @@ public class TestJobFactory extends PipelineFactory {
     def threadCount
     def dataProviderThreadCount
 
-    def jobParameter = new JobParameter()
-
     public TestJobFactory(folder, pipelineScript, host, repo, organization, branch,
                           sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount) {
         this.folder = folder
@@ -115,83 +113,83 @@ public class TestJobFactory extends PipelineFactory {
                 switch (jobType) {
                     case "api":
                         // API tests specific
-                        setParameterToMap('capabilities', jobParameter.set('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=API", "capabilities", currentSuite)))
+                        setParameterToMap('capabilities', JobParameter().setParamContent('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=API", "capabilities", currentSuite)))
                         break
                     case "web":
                         // WEB tests specific
-                        setParameterToMap('capabilities', jobParameter.set('stringparam', 'Provide semicolon separated W3C driver capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite)))
+                        setParameterToMap('capabilities', JobParameter().setParamContent('stringparam', 'Provide semicolon separated W3C driver capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite)))
                         configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
-                        setParameterToMap('auto_screenshot', jobParameter.set('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
-                        setParameterToMap('enableVideo', jobParameter.set('booleanparam', 'Enable video recording', enableVideo))
+                        setParameterToMap('auto_screenshot', JobParameter().setParamContent('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
+                        setParameterToMap('enableVideo', JobParameter().setParamContent('booleanparam', 'Enable video recording', enableVideo))
                         break
                     case "android":
-                        setParameterToMap('auto_screenshot', jobParameter.set('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
-                        setParameterToMap('enableVideo', jobParameter.set('booleanparam', 'Enable video recording', enableVideo))
-                        setParameterToMap('capabilities', jobParameter.set('stringparam', 'Reserved for any semicolon separated W3C driver capabilities.', getSuiteParameter("platformName=ANDROID;deviceName=" + defaultMobilePool, "capabilities", currentSuite)))
+                        setParameterToMap('auto_screenshot', JobParameter().setParamContent('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
+                        setParameterToMap('enableVideo', JobParameter().setParamContent('booleanparam', 'Enable video recording', enableVideo))
+                        setParameterToMap('capabilities', JobParameter().setParamContent('stringparam', 'Reserved for any semicolon separated W3C driver capabilities.', getSuiteParameter("platformName=ANDROID;deviceName=" + defaultMobilePool, "capabilities", currentSuite)))
                         break
                     case "android-tv":
-                        setParameterToMap('auto_screenshot', jobParameter.set('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
-                        setParameterToMap('enableVideo', jobParameter.set('booleanparam', 'Enable video recording', enableVideo))
-                        setParameterToMap('capabilities', jobParameter.set('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=ANDROID;deviceName=" + defaultMobilePool, "capabilities", currentSuite)))
+                        setParameterToMap('auto_screenshot', JobParameter().setParamContent('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
+                        setParameterToMap('enableVideo', JobParameter().setParamContent('booleanparam', 'Enable video recording', enableVideo))
+                        setParameterToMap('capabilities', JobParameter().setParamContent('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=ANDROID;deviceName=" + defaultMobilePool, "capabilities", currentSuite)))
                         break
                     case "android-web":
-                        setParameterToMap('auto_screenshot', jobParameter.set('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
-                        setParameterToMap('enableVideo', jobParameter.set('booleanparam', 'Enable video recording', enableVideo))
-                        setParameterToMap('capabilities', jobParameter.set('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=ANDROID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite)))
+                        setParameterToMap('auto_screenshot', JobParameter().setParamContent('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
+                        setParameterToMap('enableVideo', JobParameter().setParamContent('booleanparam', 'Enable video recording', enableVideo))
+                        setParameterToMap('capabilities', JobParameter().setParamContent('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=ANDROID;browserName=chrome;deviceName=" + defaultMobilePool, "capabilities", currentSuite)))
                         break
                     case "ios":
-                        setParameterToMap('auto_screenshot', jobParameter.set('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
-                        setParameterToMap('enableVideo', jobParameter.set('booleanparam', 'Enable video recording', enableVideo))
-                        setParameterToMap('capabilities', jobParameter.set('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=iOS;deviceName=" + defaultMobilePool, "capabilities", currentSuite)))
+                        setParameterToMap('auto_screenshot', JobParameter().setParamContent('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
+                        setParameterToMap('enableVideo', JobParameter().setParamContent('booleanparam', 'Enable video recording', enableVideo))
+                        setParameterToMap('capabilities', JobParameter().setParamContent('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=iOS;deviceName=" + defaultMobilePool, "capabilities", currentSuite)))
                         break
                     case "ios-web":
-                        setParameterToMap('auto_screenshot', jobParameter.set('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
-                        setParameterToMap('enableVideo', jobParameter.set('booleanparam', 'Enable video recording', enableVideo))
-                        setParameterToMap('capabilities', jobParameter.set('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=iOS;browserName=safari;deviceName=" + defaultMobilePool, "capabilities", currentSuite)))
+                        setParameterToMap('auto_screenshot', JobParameter().setParamContent('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
+                        setParameterToMap('enableVideo', JobParameter().setParamContent('booleanparam', 'Enable video recording', enableVideo))
+                        setParameterToMap('capabilities', JobParameter().setParamContent('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=iOS;browserName=safari;deviceName=" + defaultMobilePool, "capabilities", currentSuite)))
                         break
                 // web ios: capabilities: browserName=safari, deviceName=ANY
                 // web android: capabilities: browserName=chrome, deviceName=ANY
                     default:
-                        setParameterToMap('capabilities', jobParameter.set('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=*", "capabilities", currentSuite)))
-                        setParameterToMap('auto_screenshot', jobParameter.set('booleanparam', 'Generate screenshots automatically during the test', false))
+                        setParameterToMap('capabilities', JobParameter().setParamContent('stringparam', 'Reserved for any semicolon separated W3C driver capabilities', getSuiteParameter("platformName=*", "capabilities", currentSuite)))
+                        setParameterToMap('auto_screenshot', JobParameter().setParamContent('booleanparam', 'Generate screenshots automatically during the test', false))
                         break
                 }
 
-                setParameterToMap('job_type', jobParameter.set('hiddenparam', "", jobType))
+                setParameterToMap('job_type', JobParameter().setParamContent('hiddenparam', "", jobType))
 
                 def hubProvider = getSuiteParameter("", "provider", currentSuite)
                 if (!isParamEmpty(hubProvider)) {
-                    setParameterToMap('capabilities.provider', jobParameter.set('hiddenparam', 'hub provider name', hubProvider))
+                    setParameterToMap('capabilities.provider', JobParameter().setParamContent('hiddenparam', 'hub provider name', hubProvider))
                 }
 
                 def nodeLabel = getSuiteParameter("", "jenkinsNodeLabel", currentSuite)
                 if (!isParamEmpty(nodeLabel)) {
-                    setParameterToMap('node_label', jobParameter.set('hiddenparam', 'customized node label', nodeLabel))
+                    setParameterToMap('node_label', JobParameter().setParamContent('hiddenparam', 'customized node label', nodeLabel))
                 }
-                setParameterToMap('branch', jobParameter.set('stringparam', 'SCM repository branch to run against', this.branch))
-                setParameterToMap('repo', jobParameter.set('hiddenparam', '', repo))
-                setParameterToMap('GITHUB_HOST', jobParameter.set('hiddenparam', '', host))
-                setParameterToMap('GITHUB_ORGANIZATION', jobParameter.set('hiddenparam', '', organization))
-                setParameterToMap('sub_project', jobParameter.set('hiddenparam', '', sub_project))
-                setParameterToMap('zafira_project', jobParameter.set('hiddenparam', '', zafira_project))
-                setParameterToMap('suite', jobParameter.set('hiddenparam', '', suiteName))
-                setParameterToMap('ci_parent_url', jobParameter.set('hiddenparam', '', ''))
-                setParameterToMap('ci_parent_build', jobParameter.set('hiddenparam', '', ''))
-                setParameterToMap('slack_channels', jobParameter.set('hiddenparam', '', getSuiteParameter("", "jenkinsSlackChannels", currentSuite)))
+                setParameterToMap('branch', JobParameter().setParamContent('stringparam', 'SCM repository branch to run against', this.branch))
+                setParameterToMap('repo', JobParameter().setParamContent('hiddenparam', '', repo))
+                setParameterToMap('GITHUB_HOST', JobParameter().setParamContent('hiddenparam', '', host))
+                setParameterToMap('GITHUB_ORGANIZATION', JobParameter().setParamContent('hiddenparam', '', organization))
+                setParameterToMap('sub_project', JobParameter().setParamContent('hiddenparam', '', sub_project))
+                setParameterToMap('zafira_project', JobParameter().setParamContent('hiddenparam', '', zafira_project))
+                setParameterToMap('suite', JobParameter().setParamContent('hiddenparam', '', suiteName))
+                setParameterToMap('ci_parent_url', JobParameter().setParamContent('hiddenparam', '', ''))
+                setParameterToMap('ci_parent_build', JobParameter().setParamContent('hiddenparam', '', ''))
+                setParameterToMap('slack_channels', JobParameter().setParamContent('hiddenparam', '', getSuiteParameter("", "jenkinsSlackChannels", currentSuite)))
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
-                setParameterToMap('queue_registration', jobParameter.set('hiddenparam', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite)))
+                setParameterToMap('queue_registration', JobParameter().setParamContent('hiddenparam', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite)))
                 // TODO: #711 completely remove custom jenkinsDefaultThreadCount parameter logic
-                setParameterToMap('thread_count', jobParameter.set('stringparam', 'number of threads, number', getSuiteParameter(this.threadCount, "jenkinsDefaultThreadCount", currentSuite)))
+                setParameterToMap('thread_count', JobParameter().setParamContent('stringparam', 'number of threads, number', getSuiteParameter(this.threadCount, "jenkinsDefaultThreadCount", currentSuite)))
                 if (!"1".equals(this.dataProviderThreadCount)) {
-                    setParameterToMap('data_provider_thread_count', jobParameter.set('stringparam', 'number of threads for data provider, number', this.dataProviderThreadCount))
+                    setParameterToMap('data_provider_thread_count', JobParameter().setParamContent('stringparam', 'number of threads for data provider, number', this.dataProviderThreadCount))
                 }
-                setParameterToMap('email_list', jobParameter.set('stringparam', 'List of Users to be emailed after the test', getSuiteParameter("", "jenkinsEmail", currentSuite)))
-                setParameterToMap('failure_email_list', jobParameter.set('hiddenparam', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite)))
-                setParameterToMap('retry_count', jobParameter.set('choiceparam', 'Number of Times to Retry a Failed Test', getRetryCountArray(currentSuite)))
-                setParameterToMap('rerun_failures', jobParameter.set('booleanparam', 'During "Rebuild" pick it to execute only failed cases', false))
-                setParameterToMap('overrideFields', jobParameter.set('hiddenparam', '', getSuiteParameter("", "overrideFields", currentSuite)))
-                setParameterToMap('zafiraFields', jobParameter.set('hiddenparam', '', getSuiteParameter("", "zafiraFields", currentSuite)))
+                setParameterToMap('email_list', JobParameter().setParamContent('stringparam', 'List of Users to be emailed after the test', getSuiteParameter("", "jenkinsEmail", currentSuite)))
+                setParameterToMap('failure_email_list', JobParameter().setParamContent('hiddenparam', '', getSuiteParameter("", "jenkinsFailedEmail", currentSuite)))
+                setParameterToMap('retry_count', JobParameter().setParamContent('choiceparam', 'Number of Times to Retry a Failed Test', getRetryCountArray(currentSuite)))
+                setParameterToMap('rerun_failures', JobParameter().setParamContent('booleanparam', 'During "Rebuild" pick it to execute only failed cases', false))
+                setParameterToMap('overrideFields', JobParameter().setParamContent('hiddenparam', '', getSuiteParameter("", "overrideFields", currentSuite)))
+                setParameterToMap('zafiraFields', JobParameter().setParamContent('hiddenparam', '', getSuiteParameter("", "zafiraFields", currentSuite)))
 
                 //set parameters to map from suite
                 parseSuiteParametersToMap()
@@ -244,7 +242,7 @@ public class TestJobFactory extends PipelineFactory {
             def delimiter = "::"
             if (param.key.contains(delimiter)) {
                 def (type, name, desc) = param.key.split(delimiter)
-                setParameterToMap(name, jobParameter.set(type.toLowerCase(), desc, name))
+                setParameterToMap(name, JobParameter().setParamContent(type.toLowerCase(), desc, name))
             }
         }
     }
