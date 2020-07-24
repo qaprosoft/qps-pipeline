@@ -80,10 +80,4 @@ class SBTCustomRunner extends AbstractRunner {
         }
     }
 
-    protected void clean() {
-        context.stage('Wipe out Workspace') {
-            context.deleteDir()
-        }
-    }
-
 }

@@ -189,10 +189,6 @@ class Repository extends BaseObject {
         }
     }
 
-    private clean() {
-        context.stage('Wipe out Workspace') { context.deleteDir() }
-    }
-
     private String getOnPullRequestScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass}\nnew ${runnerClass}(this).onPullRequest()"

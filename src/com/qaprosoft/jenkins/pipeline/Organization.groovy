@@ -249,12 +249,6 @@ class Organization extends BaseObject {
         return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).runJob()"
     }
 
-    protected clean() {
-        context.stage('Wipe out Workspace') {
-            context.deleteDir()
-        }
-    }
-
     protected String getTestRailScript() {
         return "@Library(\'${PIPELINE_LIBRARY}\')\nimport ${RUNNER_CLASS};\nnew ${RUNNER_CLASS}(this).sendTestRailResults()"
     }
