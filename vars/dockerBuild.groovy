@@ -23,10 +23,10 @@ def push(image, registryCreds) {
 	stage("Docker Push Image") {
 		try {
 			docker.withRegistry('', registryCreds) { image.push() } 
+			clean(image)
 		} catch(Exception e) {
 			logger.error("Something went wrong during Docker Push Image stage \n" + Utils.printStackTrace(e))
 		}
-		clean(image)
 	}
 }
 
