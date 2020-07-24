@@ -10,4 +10,16 @@ class JobParameter {
         this.paramDescription = paramDescription
         this.paramValue = paramValue
     }
+
+    public getParamType() {
+        return this.paramType
+    }
+
+    public getParamDescription() {
+        return this.paramValue
+    }
+
+    public getParamValue() {
+        return this.paramValue
+    }
 }

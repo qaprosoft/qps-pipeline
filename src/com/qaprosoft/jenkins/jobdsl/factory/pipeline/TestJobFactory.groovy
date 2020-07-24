@@ -197,9 +197,9 @@ public class TestJobFactory extends PipelineFactory {
                 logger.info("ParametersMap: ${parametersMap}")
                 for (name in parametersMap.keySet()) {
                     def paramContent = parametersMap.get(name)
-                    def type = paramContent.paramType
-                    def desc = paramContent.paramDescription
-                    def value = paramContent.paramValue
+                    def type = paramContent.getParamType()
+                    def desc = paramContent.getParamDescription()
+                    def value = paramContent.getParamValue()
 
                     switch (type.toLowerCase()) {
                         case "hiddenparam":
