@@ -1,4 +1,3 @@
-import com.qaprosoft.jenkins.Utils
 import com.qaprosoft.jenkins.Logger
 import groovy.transform.Field
 
@@ -14,7 +13,7 @@ def build(version, registry, dockerFile) {
 		try {
 			docker.build(registry + ":${version}", "--build-arg version=${version} -f $dockerFile .")
 		} catch(Exception e) {
-			logger.error("Something went wrong during Docker Build Image Stage \n" + Utils.printStackTrace(e))
+			logger.error("Something went wrong during Docker Build Image Stage \n" + e.getMessage())
 		}
 	}
 }
@@ -25,7 +24,7 @@ def push(image, registryCreds) {
 			docker.withRegistry('', registryCreds) { image.push() } 
 			clean(image)
 		} catch(Exception e) {
-			logger.error("Something went wrong during Docker Push Image stage \n" + Utils.printStackTrace(e))
+			logger.error("Something went wrong during Docker Push Image stage \n" + e.getMessage())
 		}
 	}
 }
