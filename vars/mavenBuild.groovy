@@ -1,13 +1,15 @@
-import groovy.transform.Field
 import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.Logger
+import groovy.transform.Field
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
+@Field final Logger logger = new Logger(this)
 @Field final String MAVEN_TOOL = 'M3'
 
-//TODO: reuse valid logger instead of println later
+
 def call(goals = '-U clean compile test', mavenSettingsConfig = '', mavenLocalRepo = '') {
-    println("mavenBuild->call")
+    logger.info("mavenBuild->call")
     withMaven(
             //EXPLICIT: Only the Maven publishers explicitly configured in "withMaven(options:...)" are used.
             publisherStrategy: 'EXPLICIT',
@@ -23,7 +25,7 @@ def call(goals = '-U clean compile test', mavenSettingsConfig = '', mavenLocalRe
 }
 
 private def buildGoals(goals) {
-    if (env.getEnvironment().get("QPS_PIPELINE_LOG_LEVEL").equals(Logger.LogLevel.DEBUG.name())) {
+    if (logger.pipelineLogLevel.equals(Logger.LogLevel.DEBUG.name())) {
         goals = goals + " -e -X"
     }
     // parse goals replacing sensitive info by *******
