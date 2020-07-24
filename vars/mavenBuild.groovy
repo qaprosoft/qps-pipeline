@@ -1,4 +1,3 @@
-import com.qaprosoft.jenkins.pipeline.Configuration
 import com.qaprosoft.jenkins.Logger
 import groovy.transform.Field
 
@@ -25,7 +24,7 @@ def call(goals = '-U clean compile test', mavenSettingsConfig = '', mavenLocalRe
 }
 
 private def buildGoals(goals) {
-    if (logger.pipelineLogLevel.equals(Logger.LogLevel.DEBUG.name())) {
+    if (logger.pipelineLogLevel.equals(Logger.LogLevel.DEBUG)) {
         goals = goals + " -e -X"
     }
     // parse goals replacing sensitive info by *******
