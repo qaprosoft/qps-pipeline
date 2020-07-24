@@ -1,15 +1,37 @@
-def call(version, registry, image, registryCreds) {
-	println "dockerBuild -> call"
-	push(build(version, registry), registryCreds)
+import com.qaprosoft.jenkins.Utils
+import com.qaprosoft.jenkins.Logger
+import groovy.transform.Field
+
+@Field final Logger logger = new Logger(this)
+
+def call(version, registry, registryCreds, dockerFile='Dockerfile') {
+	logger.info("dockerBuild -> call")
+	push(build(version, registry, dockerFile), registryCreds)
 }
 
-
-def build(version, registry) {
-	docker.build(registry + ":${version}", "--build-arg version=${version} .")
+def build(version, registry, dockerFile) {
+	stage("Docker build Image") {
+		try {
+			docker.build(registry + ":${version}", "--build-arg version=${version} -f $dockerFile .")
+		} catch(Exception e) {
+			logger.error("Something went wrong during Docker Build Image Stage \n" + Utils.printStackTrace(e))
+		}
+	}
 }
 
 def push(image, registryCreds) {
-	docker.withRegistry('', registryCreds) {
-		image.push()
+	stage("Docker Push Image") {
+		try {
+			docker.withRegistry('', registryCreds) { image.push() } 
+		} catch(Exception e) {
+			logger.error("Something went wrong during Docker Push Image stage \n" + Utils.printStackTrace(e))
+		}
+		clean(image)
+	}
+}
+
+def clean(image) {
+	stage ("Docker Clean Up") {
+		sh "docker rmi ${image.imageName()}"
 	}
 }
