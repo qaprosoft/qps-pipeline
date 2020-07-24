@@ -85,7 +85,7 @@ public class TestJobFactory extends PipelineFactory {
                     editable(true)
                     description('Environment to test against')
                 }
-
+                //TODO: move param to map
                 booleanParam('fork', false, "Reuse forked repository for ${repo}.")
                 //booleanParam('debug', false, 'Check to start tests in remote debug mode.')
 
@@ -196,7 +196,7 @@ public class TestJobFactory extends PipelineFactory {
                 for (name in parametersMap.keySet()) {
                     def paramContent = parametersMap.get(name)
                     if (paramContent != null) {
-                        logger.info('111111 ' + paramContent)
+                        logger.info('111111 ' + name)
                         def type = paramContent.getType()
                         def desc = paramContent.getDesc()
                         def value = paramContent.getValue()
