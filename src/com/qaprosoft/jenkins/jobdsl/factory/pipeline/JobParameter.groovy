@@ -5,7 +5,7 @@ class JobParameter {
     def paramDescription = ""
     def paramValue = null
 
-    def setParamContent(paramType, paramDescription, paramValue) {
+    public JobParameter(paramType, paramDescription, paramValue) {
         this.paramType = paramType
         this.paramDescription = paramDescription
         this.paramValue = paramValue
