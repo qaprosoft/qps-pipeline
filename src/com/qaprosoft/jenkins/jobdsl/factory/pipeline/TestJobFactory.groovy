@@ -198,8 +198,7 @@ public class TestJobFactory extends PipelineFactory {
                 logger.info("ParametersMap: ${parametersMap}")
                 for (name in parametersMap.keySet()) {
                     def paramContent = parametersMap.get(name)
-                    if (paramContent != null) {
-                        logger.info('111111 ' + paramContent)
+                    if (!isParamEmpty(paramContent)) {
                         def type = paramContent.getType()
                         def desc = paramContent.getDesc()
                         def value = paramContent.getValue()
