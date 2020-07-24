@@ -192,7 +192,7 @@ public class TestJobFactory extends PipelineFactory {
                 setParameterToMap('zafiraFields', new JobParameter('hiddenparam', '', getSuiteParameter("", "zafiraFields", currentSuite)))
 
                 //set parameters to map from suite
-                parseSuiteParametersToMap()
+                parseSuiteParametersToMap(currentSuite)
 
                 logger.info("ParametersMap: ${parametersMap}")
                 for (name in parametersMap.keySet()) {
@@ -231,7 +231,7 @@ public class TestJobFactory extends PipelineFactory {
         parametersMap.put(parameterName, value)
     }
 
-    def parseSuiteParametersToMap() {
+    def parseSuiteParametersToMap(currentSuite) {
         Map paramsMap = currentSuite.getAllParameters()
         logger.info("ParametersMap: ${paramsMap}")
         for (param in paramsMap) {
