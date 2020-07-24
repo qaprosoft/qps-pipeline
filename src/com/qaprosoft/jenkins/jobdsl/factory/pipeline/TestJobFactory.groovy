@@ -200,8 +200,8 @@ public class TestJobFactory extends PipelineFactory {
                     def paramContent = parametersMap.get(name)
                     if (paramContent != null) {
                         def type = paramContent.getType()
-                        def desc = paramContent.getParamDescription()
-                        def value = paramContent.getParamValue()
+                        def desc = paramContent.getDesc()
+                        def value = paramContent.getValue()
 
                         switch (type.toLowerCase()) {
                             case "hiddenparam":
