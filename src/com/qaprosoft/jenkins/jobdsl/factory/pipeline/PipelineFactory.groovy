@@ -43,11 +43,9 @@ public class PipelineFactory extends JobFactory {
         addParam('rerun_failures', new JobParam('booleanparam', 'During "Rebuild" pick it to execute only failed cases', null))
         addParam('overrideFields', new JobParam('hiddenparam', '', ""))
         addParam('zafiraFields', new JobParam('hiddenparam', '', ""))
-        //TODO: find a way to handle extensibleChoice parameters via map logic
-        //parametersMap.put("custom_capabilities", null)
-        //parametersMap.put("ci_run_id", "")
-        //parametersMap.put("BuildPriority", "3")
-
+        addParam('custom_capabilities', new JobParam('extensiblechoiceparam', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack", null, "gc_CUSTOM_CAPABILITIES"))
+        addParam('ci_run_id', new JobParam('extensiblechoiceparam', '', ""))
+        addParam('BuildPriority', new JobParam('extensiblechoiceparam', "Priority of execution. Lower number means higher priority", "3", "gc_BUILD_PRIORITY"))
     }
 
     public PipelineFactory(folder, name, description) {

@@ -119,7 +119,6 @@ public class TestJobFactory extends PipelineFactory {
                     case "web":
                         // WEB tests specific
                         addParam('capabilities', new JobParam('stringparam', 'Provide semicolon separated W3C driver capabilities', getSuiteParameter("browserName=chrome", "capabilities", currentSuite)))
-                        configure addExtensibleChoice('custom_capabilities', 'gc_CUSTOM_CAPABILITIES', "Set to NULL to run against Selenium Grid on Jenkin's Slave else, select an option for Browserstack.", 'NULL')
                         addParam('auto_screenshot', new JobParam('booleanparam', 'Generate screenshots automatically during the test', autoScreenshot))
                         addParam('enableVideo', new JobParam('booleanparam', 'Enable video recording', enableVideo))
                         break
@@ -175,8 +174,8 @@ public class TestJobFactory extends PipelineFactory {
                 addParam('zafira_project', new JobParam('hiddenparam', '', zafira_project))
                 addParam('suite', new JobParam('hiddenparam', '', suiteName))
                 addParam('slack_channels', new JobParam('hiddenparam', '', getSuiteParameter("", "jenkinsSlackChannels", currentSuite)))
-                configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
-                configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
+                addParam('ci_run_id', new JobParam('extensiblechoiceparam', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]'))
+                addParam('BuildPriority', new JobParam('extensiblechoiceparam', "Priority of execution. Lower number means higher priority", "3", "gc_BUILD_PRIORITY"))
                 addParam('queue_registration', new JobParam('hiddenparam', '', getSuiteParameter("true", "jenkinsQueueRegistration", currentSuite)))
                 // TODO: #711 completely remove custom jenkinsDefaultThreadCount parameter logic
                 addParam('thread_count', new JobParam('stringparam', 'number of threads, number', getSuiteParameter(this.threadCount, "jenkinsDefaultThreadCount", currentSuite)))
@@ -218,6 +217,13 @@ public class TestJobFactory extends PipelineFactory {
                                     break
                                 case "booleanparam":
                                     booleanParam(name, value.toBoolean(), desc)
+                                    break
+                                case "extensiblechoiceparam":
+                                    if (isParamEmpty(paramContent.getGlobalName())) {
+                                        configure addExtensibleChoice(name, desc, value)
+                                    } else {
+                                        configure addExtensibleChoice(name, paramContent.getGlobalName(), desc, value)
+                                    }
                                     break
                                 default:
                                     break
