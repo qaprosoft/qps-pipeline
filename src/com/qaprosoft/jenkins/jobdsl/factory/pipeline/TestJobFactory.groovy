@@ -198,30 +198,31 @@ public class TestJobFactory extends PipelineFactory {
                 logger.info("ParametersMap: ${parametersMap}")
                 for (name in parametersMap.keySet()) {
                     def paramContent = parametersMap.get(name)
-                    logger.info('1111111 ' + paramContent.getClass())
-                    def type = paramContent.getType()
-                    def desc = paramContent.getParamDescription()
-                    def value = paramContent.getParamValue()
+                    if (paramContent != null) {
+                        def type = paramContent.getType()
+                        def desc = paramContent.getParamDescription()
+                        def value = paramContent.getParamValue()
 
-                    switch (type.toLowerCase()) {
-                        case "hiddenparam":
-                            configure addHiddenParameter(name, desc, value)
-                            break
-                        case "stringparam":
-                            stringParam(name, value, desc)
-                            break
-                        case "choiceparam":
-                            if (value instanceof String) {
-                                choiceParam(name, Arrays.asList(value.split(',')), desc)
-                            } else {
-                                choiceParam(name, value, desc)
+                        switch (type.toLowerCase()) {
+                            case "hiddenparam":
+                                configure addHiddenParameter(name, desc, value)
+                                break
+                            case "stringparam":
+                                stringParam(name, value, desc)
+                                break
+                            case "choiceparam":
+                                if (value instanceof String) {
+                                    choiceParam(name, Arrays.asList(value.split(',')), desc)
+                                } else {
+                                    choiceParam(name, value, desc)
+                                }
+                                break
+                            case "booleanparam":
+                                booleanParam(name, value.toBoolean(), desc)
+                                break
+                            default:
+                                break
                             }
-                            break
-                        case "booleanparam":
-                            booleanParam(name, value.toBoolean(), desc)
-                            break
-                        default:
-                            break
                         }
                     }
                 }
