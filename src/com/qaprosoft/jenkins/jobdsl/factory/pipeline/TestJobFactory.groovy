@@ -174,8 +174,6 @@ public class TestJobFactory extends PipelineFactory {
                 addParam('sub_project', new JobParam('hiddenparam', '', sub_project))
                 addParam('zafira_project', new JobParam('hiddenparam', '', zafira_project))
                 addParam('suite', new JobParam('hiddenparam', '', suiteName))
-                addParam('ci_parent_url', new JobParam('hiddenparam', '', ''))
-                addParam('ci_parent_build', new JobParam('hiddenparam', '', ''))
                 addParam('slack_channels', new JobParam('hiddenparam', '', getSuiteParameter("", "jenkinsSlackChannels", currentSuite)))
                 configure addExtensibleChoice('ci_run_id', '', 'import static java.util.UUID.randomUUID\nreturn [randomUUID()]')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "3")
@@ -198,41 +196,38 @@ public class TestJobFactory extends PipelineFactory {
                 logger.info("ParametersMap: ${parametersMap}")
                 for (name in parametersMap.keySet()) {
                     def paramContent = parametersMap.get(name)
-                    if (!isParamEmpty(paramContent)) {
+                    if (paramContent != null) {
                         logger.info('111111 ' + paramContent)
                         def type = paramContent.getType()
                         def desc = paramContent.getDesc()
                         def value = paramContent.getValue()
-
-                        switch (type.toLowerCase()) {
-                            case "hiddenparam":
-                                configure addHiddenParameter(name, desc, value)
-                                break
-                            case "stringparam":
-                                stringParam(name, value, desc)
-                                break
-                            case "choiceparam":
-                                if (value instanceof String) {
-                                    choiceParam(name, Arrays.asList(value.split(',')), desc)
-                                } else {
-                                    choiceParam(name, value, desc)
+                        if (value != null) {
+                            switch (type.toLowerCase()) {
+                                case "hiddenparam":
+                                    configure addHiddenParameter(name, desc, value)
+                                    break
+                                case "stringparam":
+                                    stringParam(name, value, desc)
+                                    break
+                                case "choiceparam":
+                                    if (value instanceof String) {
+                                        choiceParam(name, Arrays.asList(value.split(',')), desc)
+                                    } else {
+                                        choiceParam(name, value, desc)
+                                    }
+                                    break
+                                case "booleanparam":
+                                    booleanParam(name, value.toBoolean(), desc)
+                                    break
+                                default:
+                                    break
                                 }
-                                break
-                            case "booleanparam":
-                                booleanParam(name, value.toBoolean(), desc)
-                                break
-                            default:
-                                break
                             }
                         }
                     }
                 }
             }
         return pipelineJob
-    }
-
-    def addParam(parameterName, value) {
-        parametersMap.put(parameterName, value)
     }
 
     def parseSuiteParametersToMap(currentSuite) {
