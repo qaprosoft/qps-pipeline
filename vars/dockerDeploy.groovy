@@ -4,28 +4,20 @@ import groovy.transform.Field
 @Field final Logger logger = new Logger(this)
 
 def call(version, registry, registryCreds, dockerFile='Dockerfile') {
-	logger.info("dockerBuild -> call")
+	logger.info("dockerDeploy -> call")
 	push(build(version, registry, dockerFile), registryCreds)
 }
 
 def build(version, registry, dockerFile) {
 	stage("Docker build Image") {
-		try {
-			docker.build(registry + ":${version}", "--build-arg version=${version} -f $dockerFile .")
-		} catch(Exception e) {
-			logger.error("Something went wrong during Docker Build Image Stage \n" + e.getMessage())
-		}
+		docker.build(registry + ":${version}", "--build-arg version=${version} -f $dockerFile .")
 	}
 }
 
 def push(image, registryCreds) {
 	stage("Docker Push Image") {
-		try {
-			docker.withRegistry('', registryCreds) { image.push() } 
-			clean(image)
-		} catch(Exception e) {
-			logger.error("Something went wrong during Docker Push Image stage \n" + e.getMessage())
-		}
+		docker.withRegistry('', registryCreds) { image.push() } 
+		clean(image)
 	}
 }
 
