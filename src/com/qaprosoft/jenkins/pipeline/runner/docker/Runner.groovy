@@ -22,10 +22,10 @@ class Runner extends AbstractRunner {
 	@Override
 	public void onPush() {
 		context.node('docker') {
-			logger.info('DockerRunner->onPush')
 			context.timestamps {
+				logger.info('DockerRunner->onPush')
 				getScm().clonePush()
-				context.dockerBuild(releaseName, registry, registryCreds, "Dockerfile-jdk11")
+				context.dockerDeploy(releaseName, registry, registryCreds, "Dockerfile-jdk11")
 				clean()
 			}
 		}
@@ -33,7 +33,19 @@ class Runner extends AbstractRunner {
 
 	@Override
 	public void onPullRequest() {
-
+		context.node('docker') {
+			context.timestamps {
+				logger.info('DockerRunner->onPullRequest')
+				try {
+					dockerDeploy.build(releaseName, registry)
+				} catch (Exception e) {
+					logger.error("Something went wrong while building the docker image. \n" + e.getMessage())
+					context.currentBuild.status = BuildResult.FAILURE
+				} finally {
+					clean()
+				}
+			}
+		}
 	}
 
 	@Override
