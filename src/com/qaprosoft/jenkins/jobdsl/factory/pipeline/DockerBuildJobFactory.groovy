@@ -31,9 +31,9 @@ class DockerBuildJobFactory extends PipelineFactory {
 		pipelineJob.with {
 
 			parameters {
-				configure stringParam('RELEASE_VERSION', '', 'SemVer-compliant upcoming release or RC version (e.g. 1.13.1 or 1.13.1.RC1)')
-				configure stringParam('BRANCH', 'develop', 'Branch containing sources for component build')
-				configure stringParam('DOCKERFILE', 'Dockerfile', 'Name of the dockerfile')
+				configure stringParam('release_version', '', 'SemVer-compliant upcoming release or RC version (e.g. 1.13.1 or 1.13.1.RC1)')
+				configure stringParam('branch', 'develop', 'Branch containing sources for component build')
+				configure stringParam('dockerfile', 'Dockerfile', 'Name of the dockerfile')
 				//configure stringParam('PATH', '.', 'Relative path to your dockerfile')
                 configure addHiddenParameter('repo', '', repo)
                 configure addHiddenParameter('GITHUB_HOST', '', host)
