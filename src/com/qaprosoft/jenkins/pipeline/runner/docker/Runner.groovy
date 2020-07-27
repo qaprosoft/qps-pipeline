@@ -38,8 +38,8 @@ class Runner extends AbstractRunner {
 		context.node('docker') {
 			context.timestamps {
 				logger.info('DockerRunner->onPullRequest')
-				getScm.clonePR()
-				
+				getScm().clonePR()
+
 				try {
 					def image = dockerDeploy.build(releaseName, registry)
 					context.dockerDeploy.clean(image)
@@ -61,7 +61,7 @@ class Runner extends AbstractRunner {
 				releaseName = Configuration.get('RELEASE_VERSION')
 				dockerFile = Configuration.get("DOCKEFILE")
 				def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get('repo')}")
-				getScm.clone(gitUrl, Configuration.get("BRANCH"), Configuration.get('repo'))
+				getScm().clone(gitUrl, Configuration.get("BRANCH"), Configuration.get('repo'))
 				context.dockerDeploy(releaseName, registry, registryCreds, dockerFile)
 				clean()
 			}
