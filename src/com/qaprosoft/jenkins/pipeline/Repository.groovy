@@ -190,7 +190,7 @@ class Repository extends BaseObject {
 
             if (runnerClass.contains('docker.Runner')) {
                 registerObject("build_job", new DockerBuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
-                updateJenkinsCredentials(githubOrganization + '-docker', 'docker hub creds', Configuration.Parameter.DOCKER_HUB_USERNAME, Configuration.Parameter.DOCKER_HUB_PASSWORD)
+                updateJenkinsCredentials(githubOrganization + '-docker', 'docker hub creds', Configuration.Parameter.DOCKER_HUB_USERNAME.getValue(), Configuration.Parameter.DOCKER_HUB_PASSWORD.getValue())
             }
 
             factoryRunner.run(dslObjects)
