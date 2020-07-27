@@ -2,6 +2,7 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import com.qaprosoft.jenkins.jobdsl.factory.job.JobFactory
 import groovy.transform.InheritConstructors
+import java.util.SortedMap
 import static com.qaprosoft.jenkins.Utils.*
 import org.apache.tools.ant.types.resources.selectors.None
 
