@@ -17,7 +17,7 @@ class Runner extends AbstractRunner {
 	public Runner(context) {
 		super(context)
 		registry = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}/${Configuration.get("repo")}"
-		registryCreds = "${Configuration.get(Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION))}-docker"
+		registryCreds = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}-docker"
 		releaseName = "${}"
 		//context.currentBuild.setDisplayName(releaseName)
 	}
