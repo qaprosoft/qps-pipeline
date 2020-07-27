@@ -114,6 +114,9 @@ public class Configuration {
         QTEST_SERVICE_URL("QTEST_SERVICE_URL", ""), // "https://<CHANGE_ME>/api/v3/"
         QTEST_ACCESS_TOKEN("QTEST_ACCESS_TOKEN", "", true)
 
+        DOCKER_HUB_USERNAME("DOCKER_HUB_USERNAME", mustOverride, true)
+        DOCKER_HUB_PASSWORD("DOCKER_HUB_PASSWORD", mustOverride, true)
+
         private final String key
         private final String value
         private final Boolean isSecured
