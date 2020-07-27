@@ -59,7 +59,7 @@ class Runner extends AbstractRunner {
 			context.timestamps {
 				logger.info('DockerRunner->build')
 				releaseName = Configuration.get('RELEASE_VERSION')
-				dockerFile = Configuration.get("DOCKEFILE")
+				dockerFile = Configuration.get("DOCKERFILE")
 				def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get('repo')}")
 				getScm().clone(gitUrl, Configuration.get("BRANCH"), Configuration.get('repo'))
 				context.dockerDeploy(releaseName, registry, registryCreds, dockerFile)
