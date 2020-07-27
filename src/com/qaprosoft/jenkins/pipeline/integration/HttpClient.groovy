@@ -1,8 +1,8 @@
 package com.qaprosoft.jenkins.pipeline.integration
 
 import com.qaprosoft.jenkins.Logger
+import com.qaprosoft.jenkins.Utils
 
-import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 abstract class HttpClient {
@@ -14,7 +14,6 @@ abstract class HttpClient {
         this.context = context
         this.logger = new Logger(context)
     }
-
 
     /** Sends httpRequest using passed parameters */
     protected def sendRequestFormatted(requestParams) {
@@ -30,7 +29,7 @@ abstract class HttpClient {
         try {
             response = context.httpRequest requestParams
         } catch (Exception e) {
-            logger.error(printStackTrace(e))
+            logger.error(Utils.printStackTrace(e))
         }
         if (!response || response.status >= 400) {
             // [VD] as we don't remember the reason of making build as FAILURE we commented these lines

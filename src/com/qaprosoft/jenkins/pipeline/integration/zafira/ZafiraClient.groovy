@@ -202,7 +202,7 @@ class ZafiraClient extends HttpClient {
                           contentType       : 'APPLICATION_JSON',
                           httpMode          : 'POST',
                           requestBody       : requestBody,
-                          validResponseCodes: "200",
+                          validResponseCodes: "200:404",
                           url               : this.serviceURL + "/api/launchers/create"]
         return sendRequestFormatted(parameters)
     }
@@ -234,10 +234,13 @@ class ZafiraClient extends HttpClient {
     /** Verify if ZafiraConnected and refresh authToken if needed. Return false if connection can't be established or disabled **/
     protected boolean isZafiraConnected() {
         if (!isTokenExpired()) {
+            logger.debug("zafira connected")
             return true
         }
 
         if (isParamEmpty(this.refreshToken) || isParamEmpty(this.serviceURL) || Configuration.mustOverride.equals(this.serviceURL)) {
+            logger.debug("zafira is not connected!")
+            logger.debug("refreshToken: ${this.refreshToken}; serviceURL: ${this.serviceURL};")
             return false
         }
 
@@ -252,7 +255,8 @@ class ZafiraClient extends HttpClient {
                           httpMode          : 'POST',
                           validResponseCodes: "200:404",
                           requestBody       : requestBody,
-                          url               : getIamUrl() + "/v1/auth/refresh"]
+                          url               : 
+                          () + "/v1/auth/refresh"]
 
         logger.debug("parameters: " + parameters)
         Map properties = (Map) sendRequestFormatted(parameters)
@@ -272,3 +276,4 @@ class ZafiraClient extends HttpClient {
         serviceURL.split("reporting-service")[0] + "api/iam"
     }
 }
+

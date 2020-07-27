@@ -48,7 +48,6 @@ public class TestNG extends Runner {
 
     //CRON related vars
     protected def listPipelines = []
-    protected JobType jobType = JobType.JOB
     protected Map pipelineLocaleMap = [:]
     protected orderedJobExecNum = 0
     protected boolean multilingualMode = false
@@ -60,14 +59,7 @@ public class TestNG extends Runner {
 	protected static final String RESOURCES_PATH = "/resources/"
 	protected static final String CARINA_SUITES_PATH = RESOURCES_PATH +  "testng_suites/"
 
-    public enum JobType {
-        JOB("JOB"),
-        CRON("CRON")
-        String type
-        JobType(String type) {
-            this.type = type
-        }
-    }
+
 
     public TestNG(context) {
         super(context)
@@ -75,60 +67,44 @@ public class TestNG extends Runner {
         setDisplayNameTemplate('#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
     }
 
-    public TestNG(context, jobType) {
-        this (context)
-        this.jobType = jobType
-        setDisplayNameTemplate('#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
-    }
-
-    //Methods
-	@Override
-    public void build() {
-        logger.info("TestNG->build")
-
-        // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
-        setReportingCreds()
-        setSeleniumUrl()
-
-        if (!isParamEmpty(Configuration.get("scmURL"))){
-            scmClient.setUrl(Configuration.get("scmURL"))
-        }
-        if (jobType.equals(JobType.JOB)) {
-            runJob()
-        }
-        if (jobType.equals(JobType.CRON)) {
-            runCron()
-        }
-    }
-
-
     //Events
-	@Override
+    @Override
     public void onPush() {
-		context.node("master") {
-      context.timestamps {
-			logger.info("TestNG->onPush")
-			setReportingCreds()
+        boolean isValid = false
+        
+        context.node("master") {
+            context.timestamps {
+                logger.info("TestNG->onPush")
+                setReportingCreds()
 
-			try {
-				getScm().clone(true)
-				if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
-					scan()
-                    //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
-					getJenkinsJobsScanResult(currentBuild.rawBuild)
-				}
+                try {
+                    getScm().clone(true)
+                    if (isUpdated(currentBuild,"**.xml,**/zafira.properties") || !onlyUpdated) {
+                        scan()
+                        //TODO: move getJenkinsJobsScanResult to the end of the regular scan and removed from catch block!
+                        getJenkinsJobsScanResult(currentBuild.rawBuild)
+                    }
 
-				sonar.scan()
-				jenkinsFileScan()
-
-			} catch (Exception e) {
-				logger.error("Scan failed.\n" + e.getMessage())
-				getJenkinsJobsScanResult(null)
-				this.currentBuild.result = BuildResult.FAILURE
-			}
-			clean()
+                    jenkinsFileScan()
+                    isValid = true
+                } catch (Exception e) {
+                    logger.error("Scan failed.\n" + e.getMessage())
+                    getJenkinsJobsScanResult(null)
+                    this.currentBuild.result = BuildResult.FAILURE
+                }
             }
-		}
+        }
+        
+        context.node("maven") {
+            context.timestamps {
+                if (isValid) {
+                    getScm().clonePush()
+                    compile("-U clean compile test -DskipTests")
+                }
+                
+                clean()
+            }
+        }
     }
 
 	public void sendQTestResults() {
@@ -416,17 +392,17 @@ public class TestNG extends Runner {
 
     protected String getPipelineScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runJob()"
         } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).build()"
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runJob()"
         }
     }
 
     protected String getCronPipelineScript() {
         if ("QPS-Pipeline".equals(pipelineLibrary)) {
-            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runCron()"
         } else {
-            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this, 'CRON').build()"
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).runCron()"
         }
     }
 
@@ -454,6 +430,7 @@ public class TestNG extends Runner {
             def jenkinsJob = generateJenkinsJob(jobFullName)
             jenkinsJobs.add(jenkinsJob)
         }
+        logger.debug("jenkinsJobs for launchers: " + jenkinsJobs)
         return jenkinsJobs
     }
 
@@ -464,7 +441,13 @@ public class TestNG extends Runner {
         def jobUrl = getJobUrl(jobFullName)
         Map parameters = getParametersMap(job)
 
-        jenkinsJob.type = parameters.job_type
+        if (!isParamEmpty(parameters.job_type)) {
+            jenkinsJob.type = parameters.job_type
+        } else {
+            //TODO: contact with zebrunner insight team to confirm it is valid/expceted jobType for crons
+            jenkinsJob.type = 'CRON'
+        }
+
         parameters.remove("job_type")
         jenkinsJob.url = jobUrl
         jenkinsJob.parameters  = new JsonBuilder(parameters).toPrettyString()
@@ -514,7 +497,16 @@ public class TestNG extends Runner {
         return parameters
     }
 
-    protected void runJob() {
+    public void runJob() {
+        // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
+        setReportingCreds()
+        setSeleniumUrl()
+        
+        //TODO: test if we should support scmURL
+        if (!isParamEmpty(Configuration.get("scmURL"))){
+            scmClient.setUrl(Configuration.get("scmURL"))
+        }
+        
         logger.info("TestNG->runJob")
         uuid = getUUID()
         logger.info("UUID: " + uuid)
@@ -538,8 +530,17 @@ public class TestNG extends Runner {
                         testRun = zafiraUpdater.getTestRunByCiRunId(uuid)
                         if(!isParamEmpty(testRun)){
                             zafiraUpdater.sendZafiraEmail(uuid, overrideRecipients(Configuration.get("email_list")))
-                            zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+                            
+                            def channel = Configuration.get("slack_channels")
+                            def failChannel = Configuration.get("failure_slack_channels")
+                            if (!StatusMapper.ZafiraStatus.PASSED.name().equals(testRun.status)
+                                && !isParamEmpty(failChannel)) {
+                                //redirect message to failChannel for non PASSED test run
+                                channel = failChannel
+                            }
+                            zafiraUpdater.sendSlackNotification(uuid, channel)
                         }
+                        
                         //TODO: think about seperate stage for uploading jacoco reports
                         publishJacocoReport()
                     }
@@ -552,7 +553,14 @@ public class TestNG extends Runner {
                         if ((!isParamEmpty(abortedTestRun)
                                 && !StatusMapper.ZafiraStatus.ABORTED.name().equals(abortedTestRun.status)
                                 && !BuildResult.ABORTED.name().equals(currentBuild.result)) || Configuration.get("notify_slack_on_abort")?.toBoolean()) {
-                            zafiraUpdater.sendSlackNotification(uuid, Configuration.get("slack_channels"))
+
+                            // send failure slack notification to "failure_slack_channels" if applicable otherwise send to default one
+                            def channel = Configuration.get("failure_slack_channels")
+                            if (isParamEmpty(channel)) {
+                                // reuse default channel for negative notification only if failure_slack_channels absent  
+                                channel = Configuration.get("slack_channels")
+                            }
+                            zafiraUpdater.sendSlackNotification(uuid, channel)
                         }
                     }
                     throw e
@@ -670,7 +678,7 @@ public class TestNG extends Runner {
                 break;
             default:
                 logger.info("Suite Type: Default")
-                Configuration.set("node", "master")
+                Configuration.set("node", "default")
         }
 
         def nodeLabel = Configuration.get("node_label")
@@ -758,23 +766,23 @@ public class TestNG extends Runner {
 
 	}
 
-	protected void setReportingCreds() {
-		def zafiraFields = Configuration.get("zafiraFields")
-		logger.debug("zafiraFields: " + zafiraFields)
-		if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-			//already should be parsed and inited as part of Configuration
-			//TODO: improve code quality having single return and zafiraUpdater init
-			zafiraUpdater = new ZafiraUpdater(context)
-			return
-		}
+    protected void setReportingCreds() {
+        def zafiraFields = Configuration.get("zafiraFields")
+        if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+            // init Zafira serviceUrl and accessToken parameter based on zafiraFields parameter
+            logger.debug("init ZafiraUpdater from zafiraFields: " + zafiraFields)
+            Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, Configuration.get("zafira_service_url"))
+            Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, Configuration.get("zafira_access_token"))
+        } else {
+            // init Zafira serviceUrl and accessToken parameter based on values from credentials
+            logger.debug("init ZafiraUpdater from credentials")
+            Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
+            Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
+        }
 
-		// update Zafira serviceUrl and accessToken parameter based on values from credentials
-		Configuration.set(Configuration.Parameter.REPORTING_SERVICE_URL, getToken(Configuration.CREDS_REPORTING_SERVICE_URL))
-		Configuration.set(Configuration.Parameter.REPORTING_ACCESS_TOKEN, getToken(Configuration.CREDS_REPORTING_ACCESS_TOKEN))
-		
-		// obligatory init zafiraUpdater after getting valid url and token
-		zafiraUpdater = new ZafiraUpdater(context)
-	}
+        // obligatory init zafiraUpdater after getting valid url and token
+        zafiraUpdater = new ZafiraUpdater(context)
+    }
 
 	protected void setTestRailCreds() {
 		// update testRail integration items from credentials
@@ -798,16 +806,19 @@ public class TestNG extends Runner {
 	}
 
     protected String getMavenGoals() {
-		// When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
-		def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
-		if (!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)) &&
-			!isParamEmpty(Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))) {
-			// Ignore maven build result if Zafira integration is enabled
-			zafiraGoals = "-Dmaven.test.failure.ignore=true \
+        // When zafira is disabled use Maven TestNG build status as job status. RetryCount can't be supported well!
+        def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
+        logger.debug("REPORTING_SERVICE_URL: " + Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL))
+        logger.debug("REPORTING_ACCESS_TOKEN: " + Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))
+
+        if (!Configuration.mustOverride.equals(Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)) 
+            && !Configuration.mustOverride.equals(Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))) {
+            // Ignore maven build result if Zafira integration is enabled
+            zafiraGoals = "-Dmaven.test.failure.ignore=true \
 							-Dzafira_enabled=true \
 							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)} \
 							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)}"
-		}
+        }
 
         def buildUserEmail = Configuration.get("BUILD_USER_EMAIL") ? Configuration.get("BUILD_USER_EMAIL") : ""
         def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
@@ -1075,9 +1086,14 @@ public class TestNG extends Runner {
         }
     }
 
-    protected void runCron() {
+    public void runCron() {
         logger.info("TestNG->runCron")
         context.node("master") {
+            //TODO: test if we should support scmURL
+            if (!isParamEmpty(Configuration.get("scmURL"))){
+                scmClient.setUrl(Configuration.get("scmURL"))
+            }
+
             getScm().clone()
             listPipelines = []
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
