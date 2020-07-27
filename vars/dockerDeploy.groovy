@@ -8,7 +8,7 @@ def call(version, registry, registryCreds, dockerFile='Dockerfile') {
 	push(build(version, registry, dockerFile), registryCreds)
 }
 
-def build(version, registry, dockerFile) {
+def build(version, registry, dockerFile='Dockerfile') {
 	stage("Docker build Image") {
 		docker.build(registry + ":${version}", "--build-arg version=${version} -f $dockerFile .")
 	}

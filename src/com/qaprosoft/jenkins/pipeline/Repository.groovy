@@ -55,7 +55,9 @@ class Repository extends BaseObject {
         if (!isParamEmpty(this.rootFolder)) {
             onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
         }
-        context.build job: onPushJobLocation,
+
+        if (!runnerClass.contains('docker.Runner')) {
+            context.build job: onPushJobLocation,
                 propagate: true,
                 parameters: [
                         context.string(name: 'repo', value: Configuration.get(REPO)),
@@ -65,6 +67,7 @@ class Repository extends BaseObject {
                         context.string(name: 'removedJobAction', value: 'DELETE'),
                         context.string(name: 'removedViewAction', value: 'DELETE'),
                 ]
+        }
     }
 
     public void create() {
@@ -182,6 +185,10 @@ class Repository extends BaseObject {
 
             if (isMavenRunner) {
                 registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
+            }
+
+            if (runnerClass.contains('docker.Runner')) {
+                registerObject("build_job", new DockerBuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
             }
 
             factoryRunner.run(dslObjects)

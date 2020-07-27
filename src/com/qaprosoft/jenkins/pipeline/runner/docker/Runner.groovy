@@ -10,12 +10,14 @@ class Runner extends AbstractRunner {
 	private def registry
 	private def registryCreds
 	private def releaseName
+	private def dockerFile
+	private def dockerFilePath
 	
 	public Runner(context) {
 		super(context)
 		registry = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}/${Configuration.get("repo")}"
 		registryCreds = ""
-		releaseName = "1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-SNAPSHOT"
+		releaseName = Configuration.get('RELEASE_VERSION')
 		context.currentBuild.setDisplayName(releaseName)
 	}
 
@@ -36,11 +38,13 @@ class Runner extends AbstractRunner {
 		context.node('docker') {
 			context.timestamps {
 				logger.info('DockerRunner->onPullRequest')
+				getScm.clonePR()
 				try {
-					dockerDeploy.build(releaseName, registry)
+					def image = dockerDeploy.build(releaseName, registry)
+					dockerDeploy.clean(image)
 				} catch (Exception e) {
 					logger.error("Something went wrong while building the docker image. \n" + e.getMessage())
-					context.currentBuild.status = BuildResult.FAILURE
+					context.currentBuild.result = BuildResult.FAILURE
 				} finally {
 					clean()
 				}
@@ -50,6 +54,16 @@ class Runner extends AbstractRunner {
 
 	@Override
 	public void build() {
-
+		context.node('docker') {
+			context.timestamps {
+				logger.info('DockerRunner->build')
+				releaseName = Configuration.get('RELEASE_VERSION')
+				dockerFile = Configuration.get("DOCKEFILE")
+				def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get('repo')}")
+				getScm.clone(gitUrl, Configuration.get("BRANCH"), Configuration.get('repo'))
+				context.dockerDeploy(releaseName, registry, registryCreds, dockerFile)
+				clean()
+			}
+		}
 	}
 }
