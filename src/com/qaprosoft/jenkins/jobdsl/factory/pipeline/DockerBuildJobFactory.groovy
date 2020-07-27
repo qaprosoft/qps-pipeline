@@ -15,7 +15,7 @@ class DockerBuildJobFactory extends PipelineFactory {
 	public DockerBuildJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch, scmUrl) {
 		this.folder = folder
 		this.pipelineScript = pipelineScript
-		this.jobName = jobName
+		this.name = jobName
 		this.host = host
 		this.organization = organization
 		this.repo = repo
