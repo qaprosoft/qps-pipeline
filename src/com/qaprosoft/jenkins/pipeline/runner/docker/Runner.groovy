@@ -2,8 +2,9 @@ package com.qaprosoft.jenkins.pipeline.runner.docker
 
 import com.qaprosoft.jenkins.pipeline.runner.AbstractRunner
 import com.qaprosoft.jenkins.pipeline.Configuration
-
 import com.qaprosoft.jenkins.Utils
+
+import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Runner extends AbstractRunner {
 
@@ -41,7 +42,7 @@ class Runner extends AbstractRunner {
 				getScm().clonePR()
 
 				try {
-					def image = dockerDeploy.build(releaseName, registry)
+					def image = context.dockerDeploy.build(releaseName, registry)
 					context.dockerDeploy.clean(image)
 				} catch (Exception e) {
 					logger.error("Something went wrong while building the docker image. \n" + e.getMessage())

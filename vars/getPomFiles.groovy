@@ -1,4 +1,5 @@
 import com.qaprosoft.jenkins.Logger
+import groovy.transform.Field
 
 @Field final Logger logger = new Logger(this)
 
