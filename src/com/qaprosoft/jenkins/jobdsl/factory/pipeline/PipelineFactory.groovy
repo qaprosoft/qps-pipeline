@@ -10,7 +10,7 @@ public class PipelineFactory extends JobFactory {
     def pipelineScript = ""
     def suiteOwner = ""
 
-    Map parametersMap = new LinkedHashMap(100, 100, false)
+    Map parametersMap = new LinkedHashMap(100, 100, true)
 
     def addParam(parameterName, value) {
         parametersMap.put(parameterName, value)
