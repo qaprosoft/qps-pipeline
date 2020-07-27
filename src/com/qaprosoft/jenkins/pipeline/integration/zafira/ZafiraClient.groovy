@@ -255,8 +255,7 @@ class ZafiraClient extends HttpClient {
                           httpMode          : 'POST',
                           validResponseCodes: "200:404",
                           requestBody       : requestBody,
-                          url               : 
-                          () + "/v1/auth/refresh"]
+                          url               : getIamUrl() + "/v1/auth/refresh"]
 
         logger.debug("parameters: " + parameters)
         Map properties = (Map) sendRequestFormatted(parameters)
