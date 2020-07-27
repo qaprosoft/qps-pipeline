@@ -18,7 +18,7 @@ class Runner extends AbstractRunner {
 		registry = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}/${Configuration.get("repo")}"
 		registryCreds = "sandino1995-docker"
 		releaseName = "${}"
-		context.currentBuild.setDisplayName(releaseName)
+		//context.currentBuild.setDisplayName(releaseName)
 	}
 
 	@Override
