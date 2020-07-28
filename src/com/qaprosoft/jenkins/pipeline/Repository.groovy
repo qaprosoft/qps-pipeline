@@ -57,7 +57,7 @@ class Repository extends BaseObject {
             onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
         }
 
-        if (!runnerClass.contains('docker.Runner')) {
+        //if (!runnerClass.contains('docker.Runner')) {
             context.build job: onPushJobLocation,
                 propagate: true,
                 parameters: [
@@ -68,7 +68,7 @@ class Repository extends BaseObject {
                         context.string(name: 'removedJobAction', value: 'DELETE'),
                         context.string(name: 'removedViewAction', value: 'DELETE'),
                 ]
-        }
+        //}
     }
 
     public void create() {
