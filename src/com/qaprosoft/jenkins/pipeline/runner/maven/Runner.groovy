@@ -53,15 +53,20 @@ public class Runner extends AbstractRunner {
         context.stage("Maven Compile") {
             for (pomFile in context.getPomFiles()) {
                 logger.debug("pomFile: " + pomFile)
-                //do compilation icluding sonar/jacoco goals if needed
-                def sonarGoals = sc.getGoals(isPullRequest)
-                if (!isParamEmpty(sonarGoals)) {
-                    //added maven specific goal
-                    sonarGoals += " sonar:sonar"
-                }
+                def sonarGoals = getSonarGoals(isPullRequest)
                 context.mavenBuild("-f ${pomFile} ${goals} ${sonarGoals}")
             }
         }
+    }
+    
+    protected def getSonarGoals(isPullRequest=false) {
+        def sonarGoals = sc.getGoals(isPullRequest)
+        if (!isParamEmpty(sonarGoals)) {
+            //added maven specific goal
+            sonarGoals += " sonar:sonar"
+        }
+        
+        return sonarGoals
     }
 
 }
