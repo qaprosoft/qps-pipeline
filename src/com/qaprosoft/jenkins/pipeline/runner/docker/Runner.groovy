@@ -61,6 +61,7 @@ class Runner extends AbstractRunner {
 				logger.info('DockerRunner->build')
 				releaseName = Configuration.get('release_version')
 				dockerFile = Configuration.get("dockerfile")
+				context.currentBuild.setDisplayName(releaseName)
 				getScm().clone()
 				context.dockerDeploy(releaseName, registry, registryCreds, dockerFile)
 				clean()
