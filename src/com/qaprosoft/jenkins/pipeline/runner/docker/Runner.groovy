@@ -27,9 +27,14 @@ class Runner extends AbstractRunner {
 		context.node('docker') {
 			context.timestamps {
 				logger.info('DockerRunner->onPush')
-				getScm().clonePush()
-				context.dockerDeploy(releaseName, registry, registryCreds)
-				clean()
+				try {
+					getScm().clonePush()
+					context.dockerDeploy(releaseName, registry, registryCreds)
+				} catch (Exception e) {
+					logger.error("Something went wrong while pushing the docker image. \n" + Utils.printStackTrace(e))
+				} finally {
+					clean()
+				}
 			}
 		}
 	}
@@ -39,15 +44,14 @@ class Runner extends AbstractRunner {
 		context.node('docker') {
 			context.timestamps {
 				logger.info('DockerRunner->onPullRequest')
-				getScm().clonePR()
-
 				try {
+					getScm().clonePR()
 					def image = context.dockerDeploy.build(releaseName, registry)
-					context.dockerDeploy.clean(image)
 				} catch (Exception e) {
-					logger.error("Something went wrong while building the docker image. \n" + e.getMessage())
+					logger.error("Something went wrong while building the docker image. \n" + Utils.printStackTrace(e))
 					context.currentBuild.result = BuildResult.FAILURE
 				} finally {
+					context.dockerDeploy.clean(image)
 					clean()
 				}
 			}
@@ -59,13 +63,20 @@ class Runner extends AbstractRunner {
 		context.node('docker') {
 			context.timestamps {
 				logger.info('DockerRunner->build')
-				releaseName = Configuration.get('release_version')
-				dockerFile = Configuration.get("dockerfile")
-				context.currentBuild.setDisplayName(releaseName)
-				getScm().clone()
-				context.dockerDeploy(releaseName, registry, registryCreds, dockerFile)
-				clean()
+				try {
+					releaseName = Configuration.get('release_version')
+					dockerFile = Configuration.get("dockerfile")
+					context.currentBuild.setDisplayName(releaseName)
+					getScm().clone()
+					context.dockerDeploy(releaseName, registry, registryCreds, dockerFile)
+				} catch(Exception e) {
+					logger.error("Something went wrond while pushin the image. \n" + Utils.printStackTrace(e))
+				} finally {
+					clean()
+				}
 			}
 		}
 	}
+
+
 }

@@ -57,18 +57,16 @@ class Repository extends BaseObject {
             onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
         }
 
-        //if (!runnerClass.contains('docker.Runner')) {
-            context.build job: onPushJobLocation,
-                propagate: true,
-                parameters: [
-                        context.string(name: 'repo', value: Configuration.get(REPO)),
-                        context.string(name: 'branch', value: Configuration.get(BRANCH)),
-                        context.booleanParam(name: 'onlyUpdated', value: false),
-                        context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
-                        context.string(name: 'removedJobAction', value: 'DELETE'),
-                        context.string(name: 'removedViewAction', value: 'DELETE'),
-                ]
-        //}
+        context.build job: onPushJobLocation,
+            propagate: true,
+            parameters: [
+                    context.string(name: 'repo', value: Configuration.get(REPO)),
+                    context.string(name: 'branch', value: Configuration.get(BRANCH)),
+                    context.booleanParam(name: 'onlyUpdated', value: false),
+                    context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
+                    context.string(name: 'removedJobAction', value: 'DELETE'),
+                    context.string(name: 'removedViewAction', value: 'DELETE'),
+            ]
     }
 
     public void create() {
