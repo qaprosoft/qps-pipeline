@@ -23,6 +23,6 @@ def push(image, registryCreds) {
 
 def clean(image) {
 	stage ("Docker Clean Up") {
-		sh "docker rmi ${image.imageName()}"
+		sh "docker rmi -f ${image.imageName()}"
 	}
 }

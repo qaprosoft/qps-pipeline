@@ -47,11 +47,11 @@ class Runner extends AbstractRunner {
 				try {
 					getScm().clonePR()
 					def image = context.dockerDeploy.build(releaseName, registry)
+					context.dockerDeploy.clean(image)
 				} catch (Exception e) {
 					logger.error("Something went wrong while building the docker image. \n" + Utils.printStackTrace(e))
 					context.currentBuild.result = BuildResult.FAILURE
 				} finally {
-					context.dockerDeploy.clean(image)
 					clean()
 				}
 			}
