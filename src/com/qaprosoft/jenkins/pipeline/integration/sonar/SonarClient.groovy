@@ -16,6 +16,7 @@ class SonarClient extends HttpClient {
 
     public String getGoals(isPullRequest=false) {
         def goals = ""
+        def scmProvider = Configuration.get(Configuration.Parameter.GITHUB_HOST)
 
         if (isParamEmpty(serviceUrl)) {
             logger.warn("The url for the sonarqube server is not configured, sonarqube scan will be skipped!")
@@ -31,10 +32,17 @@ class SonarClient extends HttpClient {
 
         if (isPullRequest) {
             // goals needed to decorete pr with sonar analysis
+            if (scmProvider.contains("github")) {
+                goals += "-Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
+            } else if (scmProvider.contains("bitbucket")) {
+                goals += "-Dsonar.pullrequest.bitbucket.repositorySlug=${Configuration.get("ghprbGhRepository")}"
+            } else if (scmProvider.contains("gitlab")) {
+                goals += "sonar.pullrequest.gitlab.repositorySlug=${Configuration.get("ghprbGhRepository")}"
+            }
+            
             goals += " -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
                     -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
-                    -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")} \
-                    -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
+                    -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")}"
         } else {
             goals += " -Dsonar.projectVersion=${Configuration.get("BUILD_NUMBER")} -Dsonar.branch.name=${Configuration.get("branch")}"
         }
