@@ -49,12 +49,18 @@ public class Runner extends AbstractRunner {
     }
     
     protected void compile(goals, isPullRequest=false) {
+        def sonarGoals = getSonarGoals(isPullRequest)
+        context.sh "${goals} ${sonarGoals}"
+    }
+    
+    protected def getSonarGoals(isPullRequest=false) {
         def sonarGoals = sc.getGoals(isPullRequest)
         if (!isParamEmpty(sonarGoals)) {
             //added gradle specific goal
             sonarGoals += " sonarqube"
         }
-        context.sh "${goals} ${sonarGoals}"
+        
+        return sonarGoals
     }
 
 }
