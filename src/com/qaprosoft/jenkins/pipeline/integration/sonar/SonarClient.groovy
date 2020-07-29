@@ -33,13 +33,16 @@ class SonarClient extends HttpClient {
         if (isPullRequest) {
             // goals needed to decorete pr with sonar analysis
             if (scmProvider.contains("github")) {
-                goals += "-Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")}"
+                goals += "-Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")} \
+                          -Dsonar.pullrequest.provider=Github"
             } else if (scmProvider.contains("bitbucket")) {
-                goals += "-Dsonar.pullrequest.bitbucket.repositorySlug=${Configuration.get("ghprbGhRepository")}"
+                goals += "-Dsonar.pullrequest.bitbucket.repositorySlug=${Configuration.get("ghprbGhRepository")} \
+                          -Dsonar.pullrequest.provider=BitBucketServer"
             } else if (scmProvider.contains("gitlab")) {
-                goals += "sonar.pullrequest.gitlab.repositorySlug=${Configuration.get("ghprbGhRepository")}"
+                goals += "-Dsonar.pullrequest.gitlab.repositorySlug=${Configuration.get("ghprbGhRepository")} \
+                          -Dsonar.pullrequest.provider=GitlabServer"
             }
-            
+
             goals += " -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
                     -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
                     -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")}"
