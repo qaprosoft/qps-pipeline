@@ -22,7 +22,6 @@ public class Runner extends AbstractRunner {
             logger.info("Runner->onPush")
             getScm().clonePush()
             compile("./gradlew clean")
-            
             jenkinsFileScan()
         }
     }
@@ -30,7 +29,6 @@ public class Runner extends AbstractRunner {
     public void onPullRequest() {
         context.node("gradle") {
             logger.info("Runner->onPullRequest")
-            
             getScm().clonePR()
             compile("./gradlew clean", true)
         }
@@ -50,6 +48,9 @@ public class Runner extends AbstractRunner {
     
     protected void compile(goals, isPullRequest=false) {
         def sonarGoals = getSonarGoals(isPullRequest)
+        if (context.fileExists('gradlew')) {
+            goals.replace("./gradlew", "gradle")
+        }
         context.sh "${goals} ${sonarGoals}"
     }
     
