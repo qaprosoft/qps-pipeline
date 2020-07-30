@@ -47,15 +47,19 @@ public class Runner extends AbstractRunner {
     }
     
     protected void compile(goals, isPullRequest=false) {
-        def sonarGoals = getSonarGoals(isPullRequest)
+        context.stage("Gradle Compile") {
+            def sonarGoals = getSonarGoals(isPullRequest)
         
-        if (!context.fileExists('gradlew')) {
-            goals = goals.replace("./gradlew", "gradle")
-        }
-
-        context.withGradle {
-            gradle: 'G6',
-            context.sh "${goals} ${sonarGoals}"
+            if (!context.fileExists('gradlew')) {
+                def gradleHome = context.tool name: 'G6', type: 'hudson.plugins.gradle.GradleInstallation'
+                goals = goals.replace("./gradlew", "gradle")
+                context.sh "${gradleHome}/bin/$goals $sonarGoals"
+            } else {
+                context.withGradle() {
+                    context.sh "chmod a+x gradlew"
+                    context.sh "${goals} ${sonarGoals}"
+                }
+            }
         }
     }
     
