@@ -54,7 +54,7 @@ public class Runner extends AbstractRunner {
         }
 
         context.withGradle {
-            sh "${goals} ${sonarGoals}"
+            context.sh "${goals} ${sonarGoals}"
         }
     }
     
