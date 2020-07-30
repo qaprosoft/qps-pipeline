@@ -54,6 +54,7 @@ public class Runner extends AbstractRunner {
         }
 
         context.withGradle {
+            gradle: 'G6',
             context.sh "${goals} ${sonarGoals}"
         }
     }
