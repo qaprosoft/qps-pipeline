@@ -86,7 +86,7 @@ class Repository extends BaseObject {
     private void generateCiItems() {
         context.stage("Create Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            def repoFolder = Configuration.get(REPO)
+            def repoFolder = Configuration.get(REPO).replaceAll("/","_")
 
             // Folder from which RegisterRepository job was started
             // Important! using getOrgFolderNam from Utils is prohibited here!
