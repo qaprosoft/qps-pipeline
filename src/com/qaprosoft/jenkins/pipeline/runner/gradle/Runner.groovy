@@ -53,8 +53,7 @@ public class Runner extends AbstractRunner {
             goals = goals.replace("./gradlew", "gradle")
         }
 
-        context.withGradle {
-            gradle: 'G6',
+        context.withGradle() {
             context.sh "${goals} ${sonarGoals}"
         }
     }
