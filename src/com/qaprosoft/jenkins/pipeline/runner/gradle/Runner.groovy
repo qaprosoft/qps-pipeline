@@ -49,7 +49,7 @@ public class Runner extends AbstractRunner {
     protected void compile(goals, isPullRequest=false) {
         def sonarGoals = getSonarGoals(isPullRequest)
         if (!context.fileExists('gradlew')) {
-            goals.replace("./gradlew", "gradle")
+            goals = goals.replace("./gradlew", "gradle")
         }
         context.sh "${goals} ${sonarGoals}"
     }
