@@ -64,7 +64,7 @@ public class TestNG extends Runner {
     public TestNG(context) {
         super(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
-        setDisplayNameTemplate('#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${folderName}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
     }
 
     //Events
