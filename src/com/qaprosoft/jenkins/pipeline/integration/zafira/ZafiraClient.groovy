@@ -255,7 +255,7 @@ class ZafiraClient extends HttpClient {
                           httpMode          : 'POST',
                           validResponseCodes: "200:404",
                           requestBody       : requestBody,
-                          url               : getIamUrl() + "/v1/auth/refresh"]
+                          url               : this.serviceURL + "/api/iam/v1/auth/refresh"]
 
         logger.debug("parameters: " + parameters)
         Map properties = (Map) sendRequestFormatted(parameters)
@@ -271,8 +271,5 @@ class ZafiraClient extends HttpClient {
         return true
     }
 
-    private String getIamUrl() {
-        serviceURL.split("reporting-service")[0] + "api/iam"
-    }
 }
 
