@@ -64,6 +64,8 @@ public class TestNG extends Runner {
     public TestNG(context) {
         super(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
+        def folderName = parseFolderName(getWorkspace()) + "/" + entry.get("jobName")
+
         setDisplayNameTemplate('#${BUILD_NUMBER}|${folderName}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
     }
 
