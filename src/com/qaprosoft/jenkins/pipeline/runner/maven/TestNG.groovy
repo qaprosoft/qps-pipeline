@@ -520,7 +520,7 @@ public class TestNG extends Runner {
         }
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
-                folderName = parseFolderName(getWorkspace()) + "/" + entry.get("jobName")
+                folderName = parseFolderName(getWorkspace())
                 try {
                     context.timestamps {
                         prepareBuild(currentBuild)
