@@ -810,13 +810,20 @@ public class TestNG extends Runner {
         def zafiraGoals = "-Dzafira_enabled=false -Dmaven.test.failure.ignore=false"
         logger.debug("REPORTING_SERVICE_URL: " + Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL))
         logger.debug("REPORTING_ACCESS_TOKEN: " + Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))
+        
+        
+        def tempZafiraUrl = Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)
+        if ("https://auronia.zebrunner.com/reporting-service".equals(tempZafiraUrl)) {
+            tempZafiraUrl = "https://auronia.zebrunner.com/api/reporting"
+        }
+        
 
         if (!Configuration.mustOverride.equals(Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)) 
             && !Configuration.mustOverride.equals(Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN))) {
             // Ignore maven build result if Zafira integration is enabled
             zafiraGoals = "-Dmaven.test.failure.ignore=true \
 							-Dzafira_enabled=true \
-							-Dzafira_service_url=${Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)} \
+							-Dzafira_service_url=${tempZafiraUrl} \
 							-Dzafira_access_token=${Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)}"
         }
 
