@@ -515,11 +515,11 @@ public class TestNG extends Runner {
         def testRun
         def isRerun = isRerun()
         String nodeName = "master"
-        folderName = parseFolderName(getWorkspace())
-        logger.info("2222222 ${folderName}")
         context.node(nodeName) {
             zafiraUpdater.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
+            folderName = parseFolderName(getWorkspace())
+            logger.info("2222222 ${folderName}")
         }
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
