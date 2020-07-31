@@ -502,7 +502,6 @@ public class TestNG extends Runner {
         // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
         setReportingCreds()
         setSeleniumUrl()
-        folderName = parseFolderName(getWorkspace()) + "/" + entry.get("jobName")
         
         //TODO: test if we should support scmURL
         if (!isParamEmpty(Configuration.get("scmURL"))){
@@ -521,6 +520,7 @@ public class TestNG extends Runner {
         }
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
+                folderName = parseFolderName(getWorkspace()) + "/" + entry.get("jobName")
                 try {
                     context.timestamps {
                         prepareBuild(currentBuild)
