@@ -39,6 +39,7 @@ public class TestNG extends Runner {
     protected def runnerClass = "com.qaprosoft.jenkins.pipeline.runner.maven.TestNG"
     protected def onlyUpdated = false
     protected def uuid
+    protected def folderName
     protected ZafiraUpdater zafiraUpdater
     protected TestRailUpdater testRailUpdater
     protected QTestUpdater qTestUpdater
@@ -64,8 +65,6 @@ public class TestNG extends Runner {
     public TestNG(context) {
         super(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
-        def folderName = parseFolderName(getWorkspace()) + "/" + entry.get("jobName")
-
         setDisplayNameTemplate('#${BUILD_NUMBER}|${folderName}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
     }
 
@@ -503,6 +502,7 @@ public class TestNG extends Runner {
         // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
         setReportingCreds()
         setSeleniumUrl()
+        folderName = parseFolderName(getWorkspace()) + "/" + entry.get("jobName")
         
         //TODO: test if we should support scmURL
         if (!isParamEmpty(Configuration.get("scmURL"))){
