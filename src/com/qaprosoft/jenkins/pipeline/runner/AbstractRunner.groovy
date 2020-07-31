@@ -13,7 +13,7 @@ public abstract class AbstractRunner extends BaseObject {
     
     // organization folder name of the current job/runner
     protected String organization = ""
-    protected String displayNameTemplate = '#${BUILD_NUMBER}|${branch}'
+    protected String displayNameTemplate = '#${BUILD_NUMBER}|${branch}|${folderName}'
     protected final String DISPLAY_NAME_SEPARATOR = "|"
 
     public AbstractRunner(context) {
@@ -22,7 +22,7 @@ public abstract class AbstractRunner extends BaseObject {
         sc = new SonarClient(context)
         
         initOrganization()
-        setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}|${folderName}')
     }
 
     protected String getDisplayName() {
