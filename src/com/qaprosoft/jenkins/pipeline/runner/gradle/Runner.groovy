@@ -22,7 +22,6 @@ public class Runner extends AbstractRunner {
             logger.info("Runner->onPush")
             getScm().clonePush()
             compile("./gradlew clean")
-            
             jenkinsFileScan()
         }
     }
@@ -30,7 +29,6 @@ public class Runner extends AbstractRunner {
     public void onPullRequest() {
         context.node("gradle") {
             logger.info("Runner->onPullRequest")
-            
             getScm().clonePR()
             compile("./gradlew clean", true)
         }
@@ -49,8 +47,20 @@ public class Runner extends AbstractRunner {
     }
     
     protected void compile(goals, isPullRequest=false) {
-        def sonarGoals = getSonarGoals(isPullRequest)
-        context.sh "${goals} ${sonarGoals}"
+        context.stage("Gradle Compile") {
+            def sonarGoals = getSonarGoals(isPullRequest)
+        
+            if (!context.fileExists('gradlew')) {
+                def gradleHome = context.tool name: 'G6', type: 'hudson.plugins.gradle.GradleInstallation'
+                goals = goals.replace("./gradlew", "gradle")
+                context.sh "${gradleHome}/bin/$goals $sonarGoals"
+            } else {
+                context.withGradle() {
+                    context.sh "chmod a+x gradlew"
+                    context.sh "${goals} ${sonarGoals}"
+                }
+            }
+        }
     }
     
     protected def getSonarGoals(isPullRequest=false) {
