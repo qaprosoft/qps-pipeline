@@ -10,7 +10,8 @@ def call(goals) {
 		def script = ""
 
 		if(!fileExists('gradlew')) {
-			script = tool name: "${GRADLE_TOOL}", type: 'hudson.plugins.gradle.GradleInstallation' + '/bin/' + ${goals.replace('./gradlew', 'gradle')}
+			script = tool name: "${GRADLE_TOOL}", type: 'hudson.plugins.gradle.GradleInstallation'
+			script += + '/bin/' + ${goals.replace('./gradlew', 'gradle')}
 		} else {
 			script = "chmod a+x gradlew && ./gradlew ${goals} "
 		}
