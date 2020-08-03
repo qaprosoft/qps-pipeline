@@ -16,8 +16,6 @@ def call(goals) {
 			script = "chmod a+x gradlew && ./gradlew ${goals} "
 		}
 
-		logger.info(script)
-
 		//sh 'cp ./config/gradle.properties ./gradle.properties'
 		
 		if (isUnix()) {
