@@ -39,7 +39,6 @@ public class TestNG extends Runner {
     protected def runnerClass = "com.qaprosoft.jenkins.pipeline.runner.maven.TestNG"
     protected def onlyUpdated = false
     protected def uuid
-    protected def folderName
     protected ZafiraUpdater zafiraUpdater
     protected TestRailUpdater testRailUpdater
     protected QTestUpdater qTestUpdater
@@ -65,6 +64,7 @@ public class TestNG extends Runner {
     public TestNG(context) {
         super(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
+        def folderName = parseFolderName(getWorkspace())
         setDisplayNameTemplate('#${BUILD_NUMBER}|${folderName}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
     }
 
@@ -517,9 +517,6 @@ public class TestNG extends Runner {
         context.node(nodeName) {
             zafiraUpdater.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
-            folderName = parseFolderName(getWorkspace())
-            logger.info("11111111 ${folderName}")
-            setDisplayNameTemplate('#${BUILD_NUMBER}|${folderName}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
         }
         context.node(nodeName) {
             context.wrap([$class: 'BuildUser']) {
