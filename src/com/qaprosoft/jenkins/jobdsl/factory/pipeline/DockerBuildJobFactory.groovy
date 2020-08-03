@@ -3,6 +3,8 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import groovy.transform.InheritConstructors
 
+import static com.qaprosoft.jenkins.Utils.*
+
 @InheritConstructors
 class DockerBuildJobFactory extends PipelineFactory {
 
@@ -33,7 +35,9 @@ class DockerBuildJobFactory extends PipelineFactory {
 		pipelineJob.with {
 
 			parameters {
-				configure stringParam('goals', 'clean build', 'Gradle tasks to build the project')
+				if (!isParamEmpty(buildTool)) {
+					configure stringParam('goals', 'clean build', "${this.buildTool} goals to build the project")
+				}
 				configure stringParam('release_version', '', 'SemVer-compliant upcoming release or RC version (e.g. 1.13.1 or 1.13.1.RC1)')
 				configure stringParam('branch', 'develop', 'Branch containing sources for component build')
 				configure stringParam('dockerfile', 'Dockerfile', 'Relative path to your dockerfile')
