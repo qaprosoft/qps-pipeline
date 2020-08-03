@@ -174,23 +174,31 @@ class Repository extends BaseObject {
                 context.library this.pipelineLibrary
             }
 
-            def isTestNgRunner = Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in TestNG
-            def isMavenRunner = Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in Runner
+            def isTestNgRunner = extendsClass([TestNG])
+            def isBuildToolDependent = extendsClass([com.qaprosoft.jenkins.pipeline.runner.maven.Runner, com.qaprosoft.jenkins.pipeline.runner.gradle.Runner])
 
             registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields))
 
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
-            if (isMavenRunner) {
+            if (isBuildToolDependent) {
                 registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
             }
 
             if (runnerClass.contains('docker.Runner')) {
-                registerObject("build_job", new DockerBuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
                 if (isParamEmpty(getCredentials(githubOrganization + '-docker'))) {
                      updateJenkinsCredentials(githubOrganization + '-docker', 'docker hub creds', Configuration.Parameter.DOCKER_HUB_USERNAME.getValue(), Configuration.Parameter.DOCKER_HUB_PASSWORD.getValue())
                 }
+
+                def buildTool = ""
+
+                if (context.fileExists("pom.xml")) {
+                    buildTool = "Maven"
+                } else if (context.fileExists("gradle.properties")) {
+                    buildTool = "Gradle"
+                }
+                registerObject("build_job", new DockerBuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, buildTool))
             }
 
             factoryRunner.run(dslObjects)
@@ -228,6 +236,10 @@ class Repository extends BaseObject {
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
         }
+    }
+
+    protected boolean extendsClass(classes) {
+        return classes.any { Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in it } 
     }
 
     public def registerCredentials() {
