@@ -11,10 +11,12 @@ def call(goals) {
 
 		if(!fileExists('gradlew')) {
 			script = tool name: "${GRADLE_TOOL}", type: 'hudson.plugins.gradle.GradleInstallation'
-			script += + '/bin/' + ${goals.replace('./gradlew', 'gradle')}
+			script += '/bin/' + ${goals.replace('./gradlew', 'gradle')}
 		} else {
 			script = "chmod a+x gradlew && ./gradlew ${goals} "
 		}
+
+		logger.info(script)
 
 		//sh 'cp ./config/gradle.properties ./gradle.properties'
 		
