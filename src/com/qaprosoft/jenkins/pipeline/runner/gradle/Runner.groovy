@@ -40,8 +40,7 @@ public class Runner extends AbstractRunner {
             logger.info("Runner->build")
             scmClient.clone()
             context.stage("Gradle Build") {
-                //TODO: finish implementation later as we have for maven
-                context.sh "./gradlew clean"
+                context.gradleBuild("./gradlew " + Configuration.get("goals"))
             }
         }
     }

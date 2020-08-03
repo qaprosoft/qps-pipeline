@@ -66,8 +66,28 @@ class Runner extends AbstractRunner {
 				try {
 					releaseName = Configuration.get('release_version')
 					dockerFile = Configuration.get("dockerfile")
-					context.currentBuild.setDisplayName(releaseName)
+					goals = Configuration.get('goals')
+					buildTool = Configuration.get("build_tool")
 					getScm().clone()
+
+					context.stage("$buildTool build") {
+						switch () {
+							case 'Maven':
+								context.mavenBuild(goals)
+								break
+							case 'Gradle':
+								context.gradleBuild(goals)
+								break
+						}
+					}
+
+				} catch (Exception e) {
+					logger.error("Something went wrond while building the project. \n" + Utils.printStackTrace(e))
+					context.currentBuild.result = BuildResult.FAILURE
+				}
+
+				try {
+					context.currentBuild.setDisplayName(releaseName)
 					context.dockerDeploy(releaseName, registry, registryCreds, dockerFile)
 				} catch(Exception e) {
 					logger.error("Something went wrond while pushin the image. \n" + Utils.printStackTrace(e))
@@ -77,6 +97,5 @@ class Runner extends AbstractRunner {
 			}
 		}
 	}
-
 
 }
