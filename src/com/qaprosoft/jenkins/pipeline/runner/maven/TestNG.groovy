@@ -502,10 +502,6 @@ public class TestNG extends Runner {
         // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
         setReportingCreds()
         setSeleniumUrl()
-
-        folderName = parseFolderName(getWorkspace())
-        logger.info("1111111 ${folderName}")
-        currentBuild.displayName = getDisplayName()
         
         //TODO: test if we should support scmURL
         if (!isParamEmpty(Configuration.get("scmURL"))){
@@ -519,6 +515,10 @@ public class TestNG extends Runner {
         def isRerun = isRerun()
         String nodeName = "master"
         context.node(nodeName) {
+            folderName = parseFolderName(getWorkspace())
+            logger.info("1111111 ${folderName}")
+            currentBuild.displayName = getDisplayName()
+
             zafiraUpdater.queueZafiraTestRun(uuid)
             nodeName = chooseNode()
         }
