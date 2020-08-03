@@ -9,7 +9,7 @@ class DockerBuildJobFactory extends BuildJobFactory {
 	def buildTool
 
 	public DockerBuildJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch, scmUrl, buildTool) {
-		super(foler, pipelineScript, jobName, host, organization, repo, branch, scmUrl)
+		super(folder, pipelineScript, jobName, host, organization, repo, branch, scmUrl)
 		this.buildTool = buildTool
 	}
 
