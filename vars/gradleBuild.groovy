@@ -21,7 +21,7 @@ def call(goals) {
 		//sh 'cp ./config/gradle.properties ./gradle.properties'
 		
 		if (isUnix()) {
-			withGradle() {sh $script}
+			withGradle() {sh script}
 		} else {
 			bat 'gradlew.bat build'
 		}
