@@ -71,7 +71,7 @@ class Runner extends AbstractRunner {
 					getScm().clone()
 
 					context.stage("$buildTool build") {
-						switch () {
+						switch (buildTool) {
 							case 'Maven':
 								context.mavenBuild(goals)
 								break
