@@ -4,7 +4,7 @@ import groovy.transform.Field
 @Field final Logger logger = new Logger(this)
 @Field final String GRADLE_TOOL = "G6"
 
-def call(goals, version) {
+def call(goals) {
 	stage('Gradle Build') {
 		logger.info("gradleBuild->call")
 		def script = ""
