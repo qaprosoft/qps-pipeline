@@ -238,13 +238,14 @@ class Repository extends BaseObject {
     protected String getBuildTool() {
         def buildtool = "undefined"
 
-        if (!(context.fileExists("pom.xml") && (context.fileExists("gradle.build") || context.fileExists("gradle.build.ktl")))) {
-            if (context.fileExists("pom.xml")) {
-                buildTool = "maven"
-            } else if (context.fileExists("gradle.build") || context.fileExists("gradle.build.ktl")) {
-                buildTool = "gradle"
-            }
+        def mavenRepo = context.fileExists 'pom.xml'
+        def gradleRepo = context.fileExists 'gradle.build'
+
+        if (!(mavenRepo && gradleRepo)) {
+            if (mavenRepo) buildTool = "maven"
+            else if (gradleRepo) buildTool = "gradle"
         }
+
         return buildTool
     }
 
