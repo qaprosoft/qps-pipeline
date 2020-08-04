@@ -25,6 +25,8 @@ public class Configuration {
     protected static Map params = [:]
     //list of required goals vars which must present in command line obligatory
     protected static Map vars = [:]
+    // supported build tools
+    protected static Map buildTools = [maven: "-U clean install", gradle: "clean build", undefined: ""]
 
 
     // example of the logging for static @NonCPS calls

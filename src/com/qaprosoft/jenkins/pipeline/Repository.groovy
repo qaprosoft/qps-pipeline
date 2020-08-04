@@ -183,7 +183,7 @@ class Repository extends BaseObject {
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
             if (isBuildToolDependent) {
-                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
+                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, getBuildTool()))
             }
 
             if (runnerClass.contains('docker.Runner')) {
@@ -191,14 +191,7 @@ class Repository extends BaseObject {
                      updateJenkinsCredentials(githubOrganization + '-docker', 'docker hub creds', Configuration.Parameter.DOCKER_HUB_USERNAME.getValue(), Configuration.Parameter.DOCKER_HUB_PASSWORD.getValue())
                 }
 
-                def buildTool = ""
-
-                if (context.fileExists("pom.xml")) {
-                    buildTool = "Maven"
-                } else if (context.fileExists("gradle.properties")) {
-                    buildTool = "Gradle"
-                }
-                registerObject("build_job", new DockerBuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, buildTool))
+                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, getBuildTool(), true))
             }
 
             factoryRunner.run(dslObjects)
@@ -240,6 +233,18 @@ class Repository extends BaseObject {
 
     protected boolean extendsClass(classes) {
         return classes.any { Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in it } 
+    }
+
+    protected String getBuildTool() {
+        def buildtool = "undefined"
+
+        if (!(context.fileExists("pom.xml") && (context.fileExists("gradle.build") || context.fileExists("gradle.build.ktl"))) {
+            if (context.fileExists("pom.xml")) {
+                buildTool = "maven"
+            } else if (context.fileExists("gradle.build") || context.fileExists("gradle.build.ktl")) {
+                buildTool = "gradle"
+            }
+        }
     }
 
     public def registerCredentials() {
