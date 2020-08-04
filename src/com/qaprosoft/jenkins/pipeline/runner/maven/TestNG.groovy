@@ -185,14 +185,6 @@ public class TestNG extends Runner {
         return zafiraProject
     }
 
-    protected getGitBranch(currentSuite) {
-        if (!isParamEmpty(getSuiteParameter("", "jenkinsDefaultGitBranch", currentSuite))) {
-            return getSuiteParameter("", "jenkinsDefaultGitBranch", currentSuite)
-        } else {
-            return Configuration.get("branch")
-        }
-    }
-
     def generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch){
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
@@ -283,7 +275,7 @@ public class TestNG extends Runner {
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
-            branch = getGitBranch(currentSuite)
+            branch = getSuiteParameter(Configuration.get("branch"), "jenkinsDefaultGitBranch", currentSuite)
             registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling, suiteThreadCount, suiteDataProviderThreadCount))
 
 			//cron job
