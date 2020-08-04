@@ -130,7 +130,8 @@ public class TestNG extends Runner {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repo = Configuration.get("repo")
             def repoFolder = parseFolderName(getWorkspace())
-            def branch = Configuration.get("branch")
+            def branch = getGitBranch()
+            logger.info("1111" + Configuration.get("jenkinsDefaultGitBranch"))
 
             setDisplayNameTemplate("#${buildNumber}|${repo}|${branch}")
             currentBuild.displayName = getDisplayName()
@@ -189,7 +190,6 @@ public class TestNG extends Runner {
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
         def repo = Configuration.get("repo")
-        branch = getGitBranch()
 		
         // VIEWS
         registerObject("cron", new ListViewFactory(repoFolder, 'CRON', '.*cron.*'))
@@ -1089,7 +1089,6 @@ public class TestNG extends Runner {
 
     protected getGitBranch() {
         if (!isParamEmpty(Configuration.get("jenkinsDefaultGitBranch"))) {
-            logger.info("1111" + Configuration.get("jenkinsDefaultGitBranch"))
             return Configuration.get("jenkinsDefaultGitBranch")
         } else {
             return Configuration.get("branch")
