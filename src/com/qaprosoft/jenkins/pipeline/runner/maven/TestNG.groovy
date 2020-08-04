@@ -130,8 +130,7 @@ public class TestNG extends Runner {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repo = Configuration.get("repo")
             def repoFolder = parseFolderName(getWorkspace())
-            def branch = getGitBranch()
-            logger.info("1111" + Configuration.get("jenkinsDefaultGitBranch"))
+            def branch = Configuration.get("branch")
 
             setDisplayNameTemplate("#${buildNumber}|${repo}|${branch}")
             currentBuild.displayName = getDisplayName()
@@ -213,6 +212,9 @@ public class TestNG extends Runner {
 			}
 
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
+            //branch = getGitBranch()
+            logger.info("1111" + getSuiteParameter("", "jenkinsDefaultGitBranch", currentSuite))
+
 			def suiteName = ""
 			if (currentSuitePath.toLowerCase().contains(CARINA_SUITES_PATH) && currentSuitePath.endsWith(".xml")) {
 				// carina core TestNG suite
