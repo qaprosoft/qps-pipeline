@@ -238,7 +238,7 @@ class Repository extends BaseObject {
     }
 
     protected String determineBuildTool() {
-        def buildtool = "undefined"
+        def buildTool = "undefined"
 
         def mavenRepo = context.fileExists 'pom.xml'
         def gradleRepo = context.fileExists 'gradle.build'
