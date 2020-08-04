@@ -1086,6 +1086,14 @@ public class TestNG extends Runner {
         }
     }
 
+    protected getGitBranch() {
+        if (!isParamEmpty(Configuration.get("jenkinsDefaultGitBranch"))) {
+            return Configuration.get("jenkinsDefaultGitBranch")
+        } else {
+            return Configuration.get("branch")
+        }
+    }
+
     public void runCron() {
         logger.info("TestNG->runCron")
         context.node("master") {
@@ -1098,7 +1106,7 @@ public class TestNG extends Runner {
             listPipelines = []
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repo = Configuration.get("repo")
-            def branch = Configuration.get("branch")
+            def branch = getGitBranch()
 
             setDisplayNameTemplate("#${buildNumber}|${repo}|${branch}")
             currentBuild.displayName = getDisplayName()
@@ -1208,7 +1216,7 @@ public class TestNG extends Runner {
 						putMap(pipelineMap, pipelineLocaleMap)
 						pipelineMap.put("name", regressionPipeline)
 						pipelineMap.put("params_name", supportedParams)
-						pipelineMap.put("branch", Configuration.get("branch"))
+						pipelineMap.put("branch", getGitBranch())
 						pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
 						pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
 						putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
