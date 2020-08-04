@@ -185,6 +185,14 @@ public class TestNG extends Runner {
         return zafiraProject
     }
 
+    protected getGitBranch(currentSuite) {
+        if (!isParamEmpty(getSuiteParameter("", "jenkinsDefaultGitBranch", currentSuite))) {
+            return getSuiteParameter("", "jenkinsDefaultGitBranch", currentSuite)
+        } else {
+            return Configuration.get("branch")
+        }
+    }
+
     def generateDslObjects(repoFolder, zafiraProject, subProject, subProjectFilter, branch){
         def host = Configuration.get(Configuration.Parameter.GITHUB_HOST)
         def organization = Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)
@@ -212,8 +220,8 @@ public class TestNG extends Runner {
 			}
 
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
-            //branch = getGitBranch()
-            logger.info("1111" + getSuiteParameter("", "jenkinsDefaultGitBranch", currentSuite))
+            branch = getGitBranch(currentSuite)
+            logger.info("1111" + branch)
 
 			def suiteName = ""
 			if (currentSuitePath.toLowerCase().contains(CARINA_SUITES_PATH) && currentSuitePath.endsWith(".xml")) {
@@ -1089,14 +1097,6 @@ public class TestNG extends Runner {
         }
     }
 
-    protected getGitBranch() {
-        if (!isParamEmpty(Configuration.get("jenkinsDefaultGitBranch"))) {
-            return Configuration.get("jenkinsDefaultGitBranch")
-        } else {
-            return Configuration.get("branch")
-        }
-    }
-
     public void runCron() {
         logger.info("TestNG->runCron")
         context.node("master") {
@@ -1109,7 +1109,7 @@ public class TestNG extends Runner {
             listPipelines = []
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repo = Configuration.get("repo")
-            def branch = getGitBranch()
+            def branch = Configuration.get("branch")
 
             setDisplayNameTemplate("#${buildNumber}|${repo}|${branch}")
             currentBuild.displayName = getDisplayName()
@@ -1219,7 +1219,7 @@ public class TestNG extends Runner {
 						putMap(pipelineMap, pipelineLocaleMap)
 						pipelineMap.put("name", regressionPipeline)
 						pipelineMap.put("params_name", supportedParams)
-						pipelineMap.put("branch", getGitBranch())
+						pipelineMap.put("branch", Configuration.get("branch"))
 						pipelineMap.put("ci_parent_url", setDefaultIfEmpty("ci_parent_url", Configuration.Parameter.JOB_URL))
 						pipelineMap.put("ci_parent_build", setDefaultIfEmpty("ci_parent_build", Configuration.Parameter.BUILD_NUMBER))
 						putNotNull(pipelineMap, "thread_count", Configuration.get("thread_count"))
