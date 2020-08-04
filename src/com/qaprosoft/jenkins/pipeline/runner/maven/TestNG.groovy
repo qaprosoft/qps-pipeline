@@ -220,8 +220,6 @@ public class TestNG extends Runner {
 			}
 
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
-            branch = getGitBranch(currentSuite)
-            logger.info("1111" + branch)
 
 			def suiteName = ""
 			if (currentSuitePath.toLowerCase().contains(CARINA_SUITES_PATH) && currentSuitePath.endsWith(".xml")) {
@@ -286,6 +284,7 @@ public class TestNG extends Runner {
             //TODO: review each argument to TestJobFactory and think about removal
             //TODO: verify suiteName duplication here and generate email failure to the owner and admin_emails
             def jobDesc = "project: ${repo}; zafira_project: ${currentZafiraProject}; owner: ${suiteOwner}"
+            branch = getGitBranch(currentSuite)
             registerObject(suitePath, new TestJobFactory(repoFolder, getPipelineScript(), host, repo, organization, branch, subProject, currentZafiraProject, currentSuitePath, suiteName, jobDesc, orgRepoScheduling, suiteThreadCount, suiteDataProviderThreadCount))
 
 			//cron job
