@@ -183,7 +183,7 @@ class Repository extends BaseObject {
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
             if (isBuildToolDependent) {
-                def buildTool = getBuildTool()
+                def buildTool = determineBuildTool()
                 def isDockerRunner = false
 
                 if (runnerClass.contains('docker.Runner')) {
@@ -237,7 +237,7 @@ class Repository extends BaseObject {
         return classes.any { Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in it } 
     }
 
-    protected String getBuildTool() {
+    protected String determineBuildTool() {
         def buildtool = "undefined"
 
         def mavenRepo = context.fileExists 'pom.xml'
