@@ -515,8 +515,7 @@ public class TestNG extends Runner {
         def isRerun = isRerun()
         String nodeName = "master"
         context.node(nodeName) {
-            folderName = Configuration.get("folderName")
-            //setDisplayNameTemplate('#${BUILD_NUMBER}|${folderName}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
+            folderName = parseFolderName(getWorkspace())
             logger.info("1111111 ${folderName}")
             currentBuild.displayName = getDisplayName()
 
