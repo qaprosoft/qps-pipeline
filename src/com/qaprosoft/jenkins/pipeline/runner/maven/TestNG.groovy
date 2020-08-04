@@ -220,7 +220,6 @@ public class TestNG extends Runner {
 			}
 
             XmlSuite currentSuite = parsePipeline(currentSuitePath)
-
 			def suiteName = ""
 			if (currentSuitePath.toLowerCase().contains(CARINA_SUITES_PATH) && currentSuitePath.endsWith(".xml")) {
 				// carina core TestNG suite
