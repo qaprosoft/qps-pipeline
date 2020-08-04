@@ -245,6 +245,7 @@ class Repository extends BaseObject {
                 buildTool = "gradle"
             }
         }
+        return buildTool
     }
 
     public def registerCredentials() {
