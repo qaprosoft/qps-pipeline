@@ -291,6 +291,8 @@ class Organization extends BaseObject {
     }
 
     protected def registerHubCredentials(orgFolderName, provider, url) {
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${folderName}|${provider}')
+        currentBuild.displayName = getDisplayName()
         if (isParamEmpty(url)) {
             throw new RuntimeException("Required 'url' field is missing!")
         }
