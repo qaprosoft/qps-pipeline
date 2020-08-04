@@ -241,12 +241,14 @@ class Repository extends BaseObject {
         def buildTool = "undefined"
 
         def mavenRepo = context.fileExists 'pom.xml'
-        def gradleRepo = context.fileExists 'gradle.build'
+        def gradleRepo = context.fileExists 'build.gradle'
 
         if (!(mavenRepo && gradleRepo)) {
             if (mavenRepo) buildTool = "maven"
             else if (gradleRepo) buildTool = "gradle"
         }
+
+        logger.debug("buildTool: " + buildTool)
 
         return buildTool
     }
