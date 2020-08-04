@@ -1088,6 +1088,7 @@ public class TestNG extends Runner {
 
     protected getGitBranch() {
         if (!isParamEmpty(Configuration.get("jenkinsDefaultGitBranch"))) {
+            logger.info("1111" + Configuration.get("jenkinsDefaultGitBranch"))
             return Configuration.get("jenkinsDefaultGitBranch")
         } else {
             return Configuration.get("branch")
