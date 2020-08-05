@@ -6,7 +6,6 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.BuildJobFactory
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.DockerBuildJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
