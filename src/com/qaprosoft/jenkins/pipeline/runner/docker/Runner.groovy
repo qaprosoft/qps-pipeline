@@ -66,7 +66,7 @@ class Runner extends AbstractRunner {
 				try {
 					releaseName = Configuration.get('release_version')
 					dockerFile = Configuration.get("dockerfile")
-					goals = Configuration.get('goals')
+					def goals = Configuration.get('goals')
 					buildTool = Configuration.get("build_tool")
 					getScm().clone()
 
