@@ -39,8 +39,6 @@ class Repository extends BaseObject {
 
     public void register() {
         logger.info("Repository->register")
-        setDisplayNameTemplate('#${BUILD_NUMBER}|${folderName}')
-        currentBuild.displayName = getDisplayName()
         Configuration.set("GITHUB_ORGANIZATION", Configuration.get(SCM_ORG))
         Configuration.set("GITHUB_HOST", Configuration.get(SCM_HOST))
         context.node('master') {
