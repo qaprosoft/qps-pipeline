@@ -76,7 +76,7 @@ class Runner extends AbstractRunner {
 								context.mavenBuild(goals)
 								break
 							case 'Gradle':
-								context.gradleBuild(goals)
+								context.gradleBuild('./gradlew ' + goals)
 								break
 						}
 					}
