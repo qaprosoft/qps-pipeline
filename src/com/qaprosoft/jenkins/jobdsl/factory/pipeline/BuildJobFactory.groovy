@@ -39,6 +39,7 @@ class BuildJobFactory extends PipelineFactory {
                 if (isDockerRepo) {
                     configure stringParam('release_version', '', 'SemVer-compliant upcoming release or RC version (e.g. 1.13.1 or 1.13.1.RC1)')
                     configure stringParam('dockerfile', 'Dockerfile', 'Relative path to your dockerfile')
+                    configure addHiddenParameter('build_tool', "${this.buildTool}", '')
                 }
 
                 switch (buildTool.toLowerCase()) {
@@ -48,8 +49,6 @@ class BuildJobFactory extends PipelineFactory {
                     case "gradle":
                         configure stringParam('gradle_tasks', 'clean build', 'Gradle tasks to build the project')
                         break
-                    default:
-                        configure stringParam('goals', '', '')
                 }
 
                 configure stringParam('branch', branch, "SCM repository branch containing sources for component build")

@@ -13,10 +13,10 @@ def call(goals) {
 			script = tool name: "${GRADLE_TOOL}", type: 'hudson.plugins.gradle.GradleInstallation'
 			script += '/bin/' + goals.replace('./gradlew', 'gradle')
 		} else {
+			// test if this command is needed for gradlew builds
+			//sh 'cp ./config/gradle.properties ./gradle.properties' and this param -P version=${version}
 			script = "chmod a+x gradlew && ${goals}"
 		}
-
-		//sh 'cp ./config/gradle.properties ./gradle.properties'
 		
 		if (isUnix()) {
 			withGradle() {sh script}
