@@ -71,11 +71,11 @@ class Runner extends AbstractRunner {
 					getScm().clone()
 
 					context.stage("$buildTool build") {
-						switch (buildTool) {
-							case 'Maven':
+						switch (buildTool.toLowerCase()) {
+							case 'maven':
 								context.mavenBuild(goals)
 								break
-							case 'Gradle':
+							case 'gradle':
 								context.gradleBuild('./gradlew ' + goals)
 								break
 						}
