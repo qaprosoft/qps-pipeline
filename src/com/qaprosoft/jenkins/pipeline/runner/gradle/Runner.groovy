@@ -40,26 +40,15 @@ public class Runner extends AbstractRunner {
             logger.info("Runner->build")
             scmClient.clone()
             context.stage("Gradle Build") {
-                //TODO: finish implementation later as we have for maven
-                context.sh "./gradlew clean"
+                context.gradleBuild("./gradlew " + Configuration.get("goals"))
             }
         }
     }
     
     protected void compile(goals, isPullRequest=false) {
         context.stage("Gradle Compile") {
-            def sonarGoals = getSonarGoals(isPullRequest)
-        
-            if (!context.fileExists('gradlew')) {
-                def gradleHome = context.tool name: 'G6', type: 'hudson.plugins.gradle.GradleInstallation'
-                goals = goals.replace("./gradlew", "gradle")
-                context.sh "${gradleHome}/bin/$goals $sonarGoals"
-            } else {
-                context.withGradle() {
-                    context.sh "chmod a+x gradlew"
-                    context.sh "${goals} ${sonarGoals}"
-                }
-            }
+            goals += getSonarGoals(isPullRequest)
+            context.gradleBuild(goals)
         }
     }
     

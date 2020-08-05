@@ -76,4 +76,10 @@ public abstract class BaseObject {
         }
         dslObjects.put(name, object)
     }
+
+    protected void clean() {
+        context.stage('Wipe out Workspace') {
+            context.deleteDir()
+        }
+    }
 }

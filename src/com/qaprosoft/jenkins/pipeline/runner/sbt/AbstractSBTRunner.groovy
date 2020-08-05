@@ -17,10 +17,4 @@ abstract class AbstractSBTRunner extends AbstractRunner {
     String randomCompareArchiveName = "loadTestingReports" + curDate + ".zip"
     String randomArchiveName = "loadTestingReports" + curDate + ".zip"
 
-    void clean() {
-        context.stage('Wipe out Workspace') {
-            context.deleteDir()
-        }
-    }
-
 }

@@ -153,12 +153,6 @@ public class TestNG extends Runner {
         }
     }
 
-    protected clean() {
-        context.stage('Wipe out Workspace') {
-            context.deleteDir()
-        }
-    }
-
     protected String getWorkspace() {
         return context.pwd()
     }
