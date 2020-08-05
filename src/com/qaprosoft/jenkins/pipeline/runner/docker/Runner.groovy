@@ -64,9 +64,12 @@ class Runner extends AbstractRunner {
 			context.timestamps {
 				logger.info('DockerRunner->build')
 				try {
+					def buildTool = Configuration.get("build_tool")
 					releaseName = Configuration.get('release_version')
 					dockerFile = Configuration.get("dockerfile")
-					def buildTool = Configuration.get("build_tool")
+
+					setDisplayTemplate("#${releaseName}|${Configuration.get('branch')}")
+					currentBuild.setDisplayName = getDisplayName()
 					getScm().clone()
 
 					context.stage("$buildTool build") {
@@ -90,6 +93,7 @@ class Runner extends AbstractRunner {
 					context.dockerDeploy(releaseName, registry, registryCreds, dockerFile)
 				} catch(Exception e) {
 					logger.error("Something went wrond while pushin the image. \n" + Utils.printStackTrace(e))
+					context.currentBuild.result = BuildResult.FAILURE
 				} finally {
 					clean()
 				}
