@@ -47,6 +47,8 @@ class Organization extends BaseObject {
 
     public def register() {
         logger.info("Organization->register")
+        setDisplayNameTemplate('#${BUILD_NUMBER}|${folderName}')
+        currentBuild.displayName = getDisplayName()
         context.node('master') {
             context.timestamps {
                 generateCreds()
