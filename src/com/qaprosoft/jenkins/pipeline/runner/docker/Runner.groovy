@@ -66,17 +66,16 @@ class Runner extends AbstractRunner {
 				try {
 					releaseName = Configuration.get('release_version')
 					dockerFile = Configuration.get("dockerfile")
-					def goals = Configuration.get('goals')
 					def buildTool = Configuration.get("build_tool")
 					getScm().clone()
 
 					context.stage("$buildTool build") {
 						switch (buildTool.toLowerCase()) {
 							case 'maven':
-								context.mavenBuild(goals)
+								context.mavenBuild(Configuration.get('maven_goals'))
 								break
 							case 'gradle':
-								context.gradleBuild('./gradlew ' + goals)
+								context.gradleBuild('./gradlew ' + Configuration.get('gradle_tasks'))
 								break
 						}
 					}
