@@ -69,7 +69,7 @@ class Runner extends AbstractRunner {
 					dockerFile = Configuration.get("dockerfile")
 
 					setDisplayNameTemplate("#${releaseName}|${Configuration.get('branch')}")
-					currentBuild.setDisplayName = getDisplayName()
+					currentBuild.displayName = getDisplayName()
 					getScm().clone()
 
 					context.stage("$buildTool build") {
