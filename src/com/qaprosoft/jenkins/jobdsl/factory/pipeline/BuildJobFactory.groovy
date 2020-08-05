@@ -39,7 +39,7 @@ class BuildJobFactory extends PipelineFactory {
                 if (isDockerRepo) {
                     configure stringParam('release_version', '', 'SemVer-compliant upcoming release or RC version (e.g. 1.13.1 or 1.13.1.RC1)')
                     configure stringParam('dockerfile', 'Dockerfile', 'Relative path to your dockerfile')
-                    configure addHiddenParameter('build_tool', "${this.buildTool}", '')
+                    configure addHiddenParameter('build_tool', '', "${this.buildTool}")
                 }
 
                 switch (buildTool.toLowerCase()) {
