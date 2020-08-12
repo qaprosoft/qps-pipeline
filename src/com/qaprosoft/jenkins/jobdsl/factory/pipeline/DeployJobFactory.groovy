@@ -11,7 +11,7 @@ class DeployJobFactory extends PipelineFactory {
 	def branch
 	def scmUrl
 
-    public BuildJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch, scmUrl) {
+    public DeployJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch, scmUrl) {
         this.name = jobName
         this.folder = folder
         this.pipelineScript = pipelineScript
