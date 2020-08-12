@@ -187,11 +187,11 @@ class Repository extends BaseObject {
                 def buildTool = determineBuildTool()
                 def isDockerRunner = false
 
-                if (extendsClass([com.qaprosoft.jenkins.pipeline.runner.docker.Runner]))) {
+                if (extendsClass([com.qaprosoft.jenkins.pipeline.runner.docker.Runner])) {
                     if (isParamEmpty(getCredentials(githubOrganization + '-docker'))) {
                         updateJenkinsCredentials(githubOrganization + '-docker', 'docker hub creds', Configuration.Parameter.DOCKER_HUB_USERNAME.getValue(), Configuration.Parameter.DOCKER_HUB_PASSWORD.getValue())
                     }
-                    
+
                     isDockerRunner = true
                     registerObject("deploy_job", new DeployJobFactory(repoFolder, getDeployScript(), "deploy", '', githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
                     registerObject("publish_job", new PublishJobFactory(repoFolder, getPublishScript(), "publish", '', githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
