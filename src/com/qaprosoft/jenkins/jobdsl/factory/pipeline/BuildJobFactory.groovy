@@ -10,6 +10,8 @@ class BuildJobFactory extends PipelineFactory {
     def organization
     def branch
     def scmUrl
+    def isDockerRepo
+    def buildTool
 
     public BuildJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch, scmUrl, buildTool, isDockerRepo=false) {
         this.name = jobName
@@ -20,6 +22,8 @@ class BuildJobFactory extends PipelineFactory {
         this.organization = organization
         this.branch = branch
         this.scmUrl = scmUrl
+        this.buildTool = buildTool
+        this.isDockerRepo = isDockerRepo
     }
 
     def create() {
