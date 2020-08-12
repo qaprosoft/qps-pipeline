@@ -28,9 +28,10 @@ class DeployJobFactory extends PipelineFactory {
     	def pipelineJob = super.create()
 
     	pipelineJob.with {
-
-			configure addExtensibleChoice('target_enviroment', 'gc_DEPLOY_ENV', '', 'stage')
-			configure stringParam('version', "", "")
+            parameters {
+                configure addExtensibleChoice('target_enviroment', 'gc_DEPLOY_ENV', '', 'stage')
+                configure stringParam('version', "", "")    
+            }
     	}
 
         return pipelineJob
