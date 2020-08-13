@@ -29,14 +29,14 @@ class PublishJobFactory extends PipelineFactory {
 
     	pipelineJob.with {
             parameters {
-                configure stringParam('VERSION', "", "")
+                configure stringParam('VERSION', '', '')
                 configure addExtensibleChoice('RELEASE_TYPE', 'gc_RELEASE_TYPE', 'Component release type', 'SNAPSHOT')
                 configure stringParam('BRANCH', 'devleop', 'Branch containing sources for component build')
-                configure stringParam('MAVEN_REPO_URL', "", "")
-                configure stringParam('MAVEN_USERNAME', "", "")
-                configure stringParam('MAVEN_PASSWORD', "", "")
-                configure stringParam('SIGNING_PASSWORD', "", "")
-                configure stringParam('SIGNING_KEY_BASE64', "", "")
+                configure stringParam('MAVEN_REPO_URL', '', 'Maven repo url')
+                configure stringParam('MAVEN_USERNAME', '', 'Maven username')
+                configure stringParam('MAVEN_PASSWORD', '', 'Maven password')
+                configure stringParam('SIGNING_PASSWORD', '', 'PGP key signing password')
+                configure stringParam('SIGNING_KEY_BASE64', '', 'Base64 encoded PGP secret key')
             }
     	}
 

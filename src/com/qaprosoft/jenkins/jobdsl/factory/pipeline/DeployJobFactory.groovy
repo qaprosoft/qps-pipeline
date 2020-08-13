@@ -30,7 +30,7 @@ class DeployJobFactory extends PipelineFactory {
     	pipelineJob.with {
             parameters {
                 configure addExtensibleChoice('target_enviroment', 'gc_DEPLOY_ENV', '', 'stage')
-                configure stringParam('version', "", "")    
+                configure stringParam('version', '', '')    
             }
     	}
 

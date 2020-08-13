@@ -12,13 +12,16 @@ class Runner extends AbstractRunner {
 	private def registryCreds
 	private def releaseName
 	private def dockerFile
-	private def dockerFilePath
+	private def buildTool
 	
 	public Runner(context) {
 		super(context)
 		registry = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}/${Configuration.get("repo")}"
 		registryCreds = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}-docker"
 		releaseName = "1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-SNAPSHOT"
+		buildTool = Configuration.get("build_tool")
+		releaseName = Configuration.get('RELEASE_VERSION')
+		dockerFile = Configuration.get("DOCKERFILE")
 		context.currentBuild.setDisplayName(releaseName)
 	}
 
@@ -64,10 +67,6 @@ class Runner extends AbstractRunner {
 			context.timestamps {
 				logger.info('DockerRunner->build')
 				try {
-					def buildTool = Configuration.get("build_tool")
-					releaseName = Configuration.get('release_version')
-					dockerFile = Configuration.get("dockerfile")
-
 					setDisplayNameTemplate("#${releaseName}|${Configuration.get('branch')}")
 					currentBuild.displayName = getDisplayName()
 					getScm().clone()
