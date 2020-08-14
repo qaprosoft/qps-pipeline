@@ -33,7 +33,7 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
                 configure stringParam('scmUser', '', 'SCM user')
                 configure stringParam('scmToken', '', 'CSM token with read permissions')
                 configure addExtensibleChoice('pipelineLibrary', "gc_PIPELINE_LIBRARY", "Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases", "QPS-Pipeline")
-                configure addExtensibleChoice('runnerClass', "gc_RUNNER_CLASS", "Pipeline runner class", "com.qaprosoft.jenkins.pipeline.runner.maven.TestNG")
+                configure addExtensibleChoice('runnerClass', "gc_RUNNER_CLASS", "Pipeline runner class", "com.qaprosoft.jenkins.pipeline.runner.zebrunner.ZBRunner")
                 configure addHiddenParameter('zafiraFields', '', '')
                 configure addHiddenParameter('userId', '', '2')
             }
