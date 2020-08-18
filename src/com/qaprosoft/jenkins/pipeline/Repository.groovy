@@ -55,16 +55,17 @@ class Repository extends BaseObject {
         if (!isParamEmpty(this.rootFolder)) {
             onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
         }
+
         context.build job: onPushJobLocation,
-                propagate: true,
-                parameters: [
-                        context.string(name: 'repo', value: Configuration.get(REPO)),
-                        context.string(name: 'branch', value: Configuration.get(BRANCH)),
-                        context.booleanParam(name: 'onlyUpdated', value: false),
-                        context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
-                        context.string(name: 'removedJobAction', value: 'DELETE'),
-                        context.string(name: 'removedViewAction', value: 'DELETE'),
-                ]
+            propagate: true,
+            parameters: [
+                    context.string(name: 'repo', value: Configuration.get(REPO)),
+                    context.string(name: 'branch', value: Configuration.get(BRANCH)),
+                    context.booleanParam(name: 'onlyUpdated', value: false),
+                    context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
+                    context.string(name: 'removedJobAction', value: 'DELETE'),
+                    context.string(name: 'removedViewAction', value: 'DELETE'),
+            ]
     }
 
     public void create() {
@@ -172,25 +173,31 @@ class Repository extends BaseObject {
                 context.library this.pipelineLibrary
             }
 
-            def isTestNgRunner = Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in TestNG
-            def isMavenRunner = Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in Runner
+            def isTestNgRunner = extendsClass([TestNG])
+            def isBuildToolDependent = extendsClass([com.qaprosoft.jenkins.pipeline.runner.maven.Runner, com.qaprosoft.jenkins.pipeline.runner.gradle.Runner, com.qaprosoft.jenkins.pipeline.runner.docker.Runner])
 
             registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields))
 
             def mergeJobDescription = "SCM branch merger job"
             registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
-            if (isMavenRunner) {
-                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
+            if (isBuildToolDependent) {
+                def buildTool = determineBuildTool()
+                def isDockerRunner = false
+
+                if (runnerClass.contains('docker.Runner')) {
+                    if (isParamEmpty(getCredentials(githubOrganization + '-docker'))) {
+                        updateJenkinsCredentials(githubOrganization + '-docker', 'docker hub creds', Configuration.Parameter.DOCKER_HUB_USERNAME.getValue(), Configuration.Parameter.DOCKER_HUB_PASSWORD.getValue())
+                    } 
+                    isDockerRunner = true
+                }
+
+                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, buildTool, isDockerRunner))
             }
 
             factoryRunner.run(dslObjects)
 
         }
-    }
-
-    private clean() {
-        context.stage('Wipe out Workspace') { context.deleteDir() }
     }
 
     private String getOnPullRequestScript() {
@@ -223,6 +230,26 @@ class Repository extends BaseObject {
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
         }
+    }
+
+    protected boolean extendsClass(classes) {
+        return classes.any { Class.forName(this.runnerClass, false, Thread.currentThread().getContextClassLoader()) in it } 
+    }
+
+    protected String determineBuildTool() {
+        def buildTool = "undefined"
+
+        def mavenRepo = context.fileExists 'pom.xml'
+        def gradleRepo = context.fileExists 'build.gradle'
+
+        if (!(mavenRepo && gradleRepo)) {
+            if (mavenRepo) buildTool = "maven"
+            else if (gradleRepo) buildTool = "gradle"
+        }
+
+        logger.debug("buildTool: " + buildTool)
+
+        return buildTool
     }
 
     public def registerCredentials() {
