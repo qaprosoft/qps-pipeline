@@ -22,7 +22,6 @@ public class Runner extends AbstractRunner {
             logger.info("Runner->onPush")
             getScm().clonePush()
             compile("./gradlew clean")
-            
             jenkinsFileScan()
         }
     }
@@ -30,7 +29,6 @@ public class Runner extends AbstractRunner {
     public void onPullRequest() {
         context.node("gradle") {
             logger.info("Runner->onPullRequest")
-            
             getScm().clonePR()
             compile("./gradlew clean", true)
         }
@@ -42,19 +40,26 @@ public class Runner extends AbstractRunner {
             logger.info("Runner->build")
             scmClient.clone()
             context.stage("Gradle Build") {
-                //TODO: finish implementation later as we have for maven
-                context.sh "./gradlew clean"
+                context.gradleBuild("./gradlew " + Configuration.get("goals"))
             }
         }
     }
     
     protected void compile(goals, isPullRequest=false) {
+        context.stage("Gradle Compile") {
+            goals += getSonarGoals(isPullRequest)
+            context.gradleBuild(goals)
+        }
+    }
+    
+    protected def getSonarGoals(isPullRequest=false) {
         def sonarGoals = sc.getGoals(isPullRequest)
         if (!isParamEmpty(sonarGoals)) {
             //added gradle specific goal
             sonarGoals += " sonarqube"
         }
-        context.sh "${goals} ${sonarGoals}"
+        
+        return sonarGoals
     }
 
 }

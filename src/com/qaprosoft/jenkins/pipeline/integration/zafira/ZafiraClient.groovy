@@ -45,7 +45,7 @@ class ZafiraClient extends HttpClient {
                           httpMode          : 'POST',
                           requestBody       : requestBody,
                           validResponseCodes: "200:401",
-                          url               : this.serviceURL + "/api/tests/runs/queue"]
+                          url               : this.serviceURL + "/api/reporting/api/tests/runs/queue"]
         return sendRequestFormatted(parameters)
     }
 
@@ -70,7 +70,7 @@ class ZafiraClient extends HttpClient {
                           httpMode          : 'POST',
                           requestBody       : requestBody,
                           validResponseCodes: "200:401",
-                          url               : this.serviceURL + "/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
+                          url               : this.serviceURL + "/api/reporting/api/tests/runs/rerun/jobs?doRebuild=${Configuration.get("doRebuild")}&rerunFailures=${Configuration.get("rerunFailures")}",
                           timeout           : 300000]
         return sendRequestFormatted(parameters)
     }
@@ -91,7 +91,7 @@ class ZafiraClient extends HttpClient {
                           httpMode          : 'POST',
                           requestBody       : requestBody,
                           validResponseCodes: "200:500",
-                          url               : this.serviceURL + "/api/tests/runs/abort?ciRunId=${uuid}"]
+                          url               : this.serviceURL + "/api/reporting/api/tests/runs/abort?ciRunId=${uuid}"]
         return sendRequestFormatted(parameters)
     }
 
@@ -111,7 +111,7 @@ class ZafiraClient extends HttpClient {
                           httpMode          : 'POST',
                           requestBody       : requestBody,
                           validResponseCodes: "200:401",
-                          url               : this.serviceURL + "/api/tests/runs/${uuid}/email?filter=${filter}"]
+                          url               : this.serviceURL + "/api/reporting/api/tests/runs/${uuid}/email?filter=${filter}"]
         return sendRequest(parameters)
     }
 
@@ -123,7 +123,7 @@ class ZafiraClient extends HttpClient {
                           contentType       : 'APPLICATION_JSON',
                           httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url               : this.serviceURL + "/api/slack/testrun/${uuid}/finish?channels=${channels}"]
+                          url               : this.serviceURL + "/api/reporting/api/slack/testrun/${uuid}/finish?channels=${channels}"]
         return sendRequest(parameters)
     }
 
@@ -135,7 +135,7 @@ class ZafiraClient extends HttpClient {
                           contentType       : 'APPLICATION_JSON',
                           httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url               : this.serviceURL + "/api/tags/${uuid}/integration?integrationTag=${tagName}"]
+                          url               : this.serviceURL + "/api/reporting/api/tags/${uuid}/integration?integrationTag=${tagName}"]
         return sendRequestFormatted(parameters)
     }
 
@@ -155,7 +155,7 @@ class ZafiraClient extends HttpClient {
                           httpMode          : 'POST',
                           requestBody       : requestBody,
                           validResponseCodes: "200:401",
-                          url               : this.serviceURL + "/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
+                          url               : this.serviceURL + "/api/reporting/api/tests/runs/${uuid}/emailFailure?suiteOwner=${suiteOwner}&suiteRunner=${suiteRunner}"]
         return sendRequest(parameters)
     }
 
@@ -167,7 +167,7 @@ class ZafiraClient extends HttpClient {
                           contentType       : 'APPLICATION_JSON',
                           httpMode          : 'GET',
                           validResponseCodes: "200:500",
-                          url               : this.serviceURL + "/api/tests/runs/${uuid}/export"]
+                          url               : this.serviceURL + "/api/reporting/api/tests/runs/${uuid}/export"]
 
         return sendRequest(parameters)
     }
@@ -180,7 +180,7 @@ class ZafiraClient extends HttpClient {
                           contentType       : 'APPLICATION_JSON',
                           httpMode          : 'GET',
                           validResponseCodes: "200:404",
-                          url               : this.serviceURL + "/api/tests/runs?ciRunId=${uuid}"]
+                          url               : this.serviceURL + "/api/reporting/api/tests/runs?ciRunId=${uuid}"]
 
         return sendRequestFormatted(parameters)
     }
@@ -198,12 +198,13 @@ class ZafiraClient extends HttpClient {
         String requestBody = jsonBuilder.toString()
         jsonBuilder = null
 
+        logger.debug("token value: ${authToken}")
         def parameters = [customHeaders     : [[name: 'Authorization', value: "${authToken}"]],
                           contentType       : 'APPLICATION_JSON',
                           httpMode          : 'POST',
                           requestBody       : requestBody,
                           validResponseCodes: "200:404",
-                          url               : this.serviceURL + "/api/launchers/create"]
+                          url               : this.serviceURL + "/api/reporting/api/launchers/create"]
         return sendRequestFormatted(parameters)
     }
 
@@ -223,7 +224,7 @@ class ZafiraClient extends HttpClient {
                           httpMode          : 'POST',
                           requestBody       : requestBody,
                           validResponseCodes: "200:401",
-                          url               : this.serviceURL + "/api/jobs/url"]
+                          url               : this.serviceURL + "/api/reporting/api/jobs/url"]
         return sendRequestFormatted(parameters)
     }
 
@@ -255,7 +256,7 @@ class ZafiraClient extends HttpClient {
                           httpMode          : 'POST',
                           validResponseCodes: "200:404",
                           requestBody       : requestBody,
-                          url               : getIamUrl() + "/v1/auth/refresh"]
+                          url               : this.serviceURL + "/api/iam/v1/auth/refresh"]
 
         logger.debug("parameters: " + parameters)
         Map properties = (Map) sendRequestFormatted(parameters)
@@ -271,8 +272,5 @@ class ZafiraClient extends HttpClient {
         return true
     }
 
-    private String getIamUrl() {
-        serviceURL.split("reporting-service")[0] + "api/iam"
-    }
 }
 
