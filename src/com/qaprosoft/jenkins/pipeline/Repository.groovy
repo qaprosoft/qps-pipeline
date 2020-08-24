@@ -251,18 +251,4 @@ class Repository extends BaseObject {
 
         return buildTool
     }
-
-    public def registerCredentials() {
-        context.stage("Register Credentials") {
-            def user = Configuration.get(SCM_USER)
-            def token = Configuration.get(SCM_TOKEN)
-            def jenkinsUser = !isParamEmpty(Configuration.get("jenkinsUser")) ? Configuration.get("jenkinsUser") : getBuildUser(context.currentBuild)
-            if (updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " SCM token", user, token)) {
-                logger.info(jenkinsUser + " credentials were successfully registered.")
-            } else {
-                throw new RuntimeException("Required fields are missing.")
-            }
-        }
-    }
-
 }
