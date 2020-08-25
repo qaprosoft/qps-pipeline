@@ -8,9 +8,9 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Runner extends AbstractRunner {
 
-	private def registry
+	protected def registry
 	private def registryCreds
-	private def releaseName
+	protected def releaseName
 	private def dockerFile
 	private def dockerFilePath
 	
