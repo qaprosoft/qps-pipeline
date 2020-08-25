@@ -9,10 +9,10 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 class Runner extends AbstractRunner {
 
 	protected def registry
-	private def registryCreds
+	protected def registryCreds
 	protected def releaseName
-	private def dockerFile
-	private def dockerFilePath
+	protected def dockerFile
+	protected def dockerFilePath
 	
 	public Runner(context) {
 		super(context)
