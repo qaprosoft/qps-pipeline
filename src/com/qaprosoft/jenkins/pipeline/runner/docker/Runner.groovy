@@ -8,11 +8,11 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Runner extends AbstractRunner {
 
-	private def registry
-	private def registryCreds
-	private def releaseName
-	private def dockerFile
-	private def buildTool
+	protected def registry
+	protected def registryCreds
+	protected def releaseName
+	protected def dockerFile
+  protected def buildTool
 	
 	public Runner(context) {
 		super(context)
@@ -71,7 +71,7 @@ class Runner extends AbstractRunner {
 					currentBuild.displayName = getDisplayName()
 					getScm().clone()
 
-					context.stage("$buildTool build") {
+          context.stage("${this.buildTool} build") {
 						switch (buildTool.toLowerCase()) {
 							case 'maven':
 								context.mavenBuild(Configuration.get('maven_goals'))
