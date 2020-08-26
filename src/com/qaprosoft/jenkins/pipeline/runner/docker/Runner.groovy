@@ -39,6 +39,7 @@ class Runner extends AbstractRunner {
 					context.dockerDeploy(releaseName, registry, registryCreds)
 				} catch (Exception e) {
 					logger.error("Something went wrong while pushing the docker image. \n" + Utils.printStackTrace(e))
+					context.currentBuild.result = BuildResult.FAILURE
 				} finally {
 					clean()
 				}
