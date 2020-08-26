@@ -26,6 +26,9 @@ class Runner extends AbstractRunner {
 		buildTool = Configuration.get("build_tool")
 		releaseName = Configuration.get('RELEASE_VERSION')
 		dockerFile = Configuration.get("DOCKERFILE")
+		logger.info("buildTool: $buildTool")
+		logger.info("dockerFile: $dockerFile")
+		logger.info("releaseName: $releaseName")
 		context.currentBuild.setDisplayName(releaseName)
 	}
 
