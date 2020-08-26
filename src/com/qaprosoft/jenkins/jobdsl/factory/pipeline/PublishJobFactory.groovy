@@ -29,7 +29,7 @@ class PublishJobFactory extends PipelineFactory {
             parameters {
                 configure stringParam('VERSION', '', 'SemVer-compliant upcoming release or RC version (e.g. 1.13.1 or 1.13.1.RC1)')
                 configure addExtensibleChoice('RELEASE_TYPE', 'gc_RELEASE_TYPE', 'Component release type', 'SNAPSHOT')
-                configure stringParam('BRANCH', 'devleop', 'Branch containing sources for component build')
+                configure stringParam('branch', 'devleop', 'Branch containing sources for component build')
                 configure stringParam('MAVEN_REPO_URL', '', 'Maven repo url')
                 configure stringParam('MAVEN_USERNAME', '', 'Maven username')
                 configure stringParam('MAVEN_PASSWORD', '', 'Maven password')
