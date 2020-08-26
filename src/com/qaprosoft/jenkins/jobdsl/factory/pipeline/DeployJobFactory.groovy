@@ -8,16 +8,14 @@ class DeployJobFactory extends PipelineFactory {
 	def host
 	def repo
 	def organization
-	def branch
 
-	public DeployJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch) {
+	public DeployJobFactory(folder, pipelineScript, jobName, host, organization, repo) {
 		this.name = jobName
 		this.folder = folder
 		this.pipelineScript = pipelineScript
 		this.host = host
 		this.repo = repo
 		this.organization = organization
-		this.branch = branch
 	}
 
 	def create() {
