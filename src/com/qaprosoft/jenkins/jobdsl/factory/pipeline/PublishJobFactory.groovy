@@ -9,7 +9,6 @@ class PublishJobFactory extends PipelineFactory {
 	def repo
 	def organization
 	def branch
-	def scmUrl
 
     public PublishJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch) {
         this.name = jobName
