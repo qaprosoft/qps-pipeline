@@ -22,7 +22,7 @@ class Runner extends AbstractRunner {
 		runnerClass = "com.qaprosoft.jenkins.pipeline.runner.docker.Runner"
 		registry = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}/${Configuration.get("repo")}"
 		registryCreds = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}-docker"
-		releaseName = "1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-SNAPSHOT"
+		releaseName = "1.${Configuration.get("BUILD_NUMBER")}-SNAPSHOT"
 		buildTool = Configuration.get("build_tool")
 		releaseName = Configuration.get('RELEASE_VERSION')
 		dockerFile = Configuration.get("DOCKERFILE")
