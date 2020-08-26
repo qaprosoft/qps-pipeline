@@ -7,15 +7,19 @@ import com.qaprosoft.jenkins.Utils
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Runner extends AbstractRunner {
-
-	private def registry
-	private def registryCreds
-	private def releaseName
-	private def dockerFile
-	private def buildTool
+	
+	protected def pipelineLibrary
+	protected def runnerClass
+	protected def registry
+	protected def registryCreds
+	protected def releaseName
+	protected def dockerFile
+  	protected def buildTool
 	
 	public Runner(context) {
 		super(context)
+		pipelineLibrary = "QPS-Pipeline"
+		runnerClass = "com.qaprosoft.jenkins.pipeline.runner.docker.Runner"
 		registry = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}/${Configuration.get("repo")}"
 		registryCreds = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}-docker"
 		releaseName = "1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-SNAPSHOT"
@@ -71,7 +75,7 @@ class Runner extends AbstractRunner {
 					currentBuild.displayName = getDisplayName()
 					getScm().clone()
 
-					context.stage("$buildTool build") {
+          context.stage("${this.buildTool} build") {
 						switch (buildTool.toLowerCase()) {
 							case 'maven':
 								context.mavenBuild(Configuration.get('maven_goals'))

@@ -44,7 +44,7 @@ public class Runner extends AbstractRunner {
             logger.info("Runner->build")
             scmClient.clone()
             context.stage("Maven Build") {
-                context.mavenBuild(Configuration.get("goals"))
+                context.mavenBuild(Configuration.get("maven_goals"))
             }
         }
     }
