@@ -11,7 +11,7 @@ class PublishJobFactory extends PipelineFactory {
 	def branch
 	def scmUrl
 
-    public PublishJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch, scmUrl) {
+    public PublishJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch) {
         this.name = jobName
         this.folder = folder
         this.pipelineScript = pipelineScript
@@ -19,7 +19,6 @@ class PublishJobFactory extends PipelineFactory {
         this.repo = repo
         this.organization = organization
         this.branch = branch
-        this.scmUrl = scmUrl
     }
 
     def create() {
@@ -29,7 +28,7 @@ class PublishJobFactory extends PipelineFactory {
 
     	pipelineJob.with {
             parameters {
-                configure stringParam('VERSION', '', '')
+                configure stringParam('VERSION', '', 'SemVer-compliant upcoming release or RC version (e.g. 1.13.1 or 1.13.1.RC1)')
                 configure addExtensibleChoice('RELEASE_TYPE', 'gc_RELEASE_TYPE', 'Component release type', 'SNAPSHOT')
                 configure stringParam('BRANCH', 'devleop', 'Branch containing sources for component build')
                 configure stringParam('MAVEN_REPO_URL', '', 'Maven repo url')
@@ -37,6 +36,9 @@ class PublishJobFactory extends PipelineFactory {
                 configure stringParam('MAVEN_PASSWORD', '', 'Maven password')
                 configure stringParam('SIGNING_PASSWORD', '', 'PGP key signing password')
                 configure stringParam('SIGNING_KEY_BASE64', '', 'Base64 encoded PGP secret key')
+                configure addHiddenParameter('repo', '', repo)
+                configure addHiddenParameter('GITHUB_HOST', '', host)
+                configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
             }
     	}
 

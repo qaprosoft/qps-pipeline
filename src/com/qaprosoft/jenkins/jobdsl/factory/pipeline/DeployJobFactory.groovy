@@ -11,30 +11,32 @@ class DeployJobFactory extends PipelineFactory {
 	def branch
 	def scmUrl
 
-    public DeployJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch, scmUrl) {
-        this.name = jobName
-        this.folder = folder
-        this.pipelineScript = pipelineScript
-        this.host = host
-        this.repo = repo
-        this.organization = organization
-        this.branch = branch
-        this.scmUrl = scmUrl
-    }
+	public DeployJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch) {
+		this.name = jobName
+		this.folder = folder
+		this.pipelineScript = pipelineScript
+		this.host = host
+		this.repo = repo
+		this.organization = organization
+		this.branch = branch
+	}
 
-    def create() {
-    	logger.info("DeployJobFactory->Create")
+	def create() {
+		logger.info("DeployJobFactory->Create")
 
-    	def pipelineJob = super.create()
+		def pipelineJob = super.create()
 
-    	pipelineJob.with {
-            parameters {
-                configure addExtensibleChoice('target_enviroment', 'gc_DEPLOY_ENV', '', 'stage')
-                configure stringParam('version', '', '')    
-            }
-    	}
+		pipelineJob.with {
+			parameters {
+				configure addExtensibleChoice('TARGET_ENVIRONMENT', 'gc_DEPLOY_ENV', '', 'stage')
+				configure stringParam('RELEASE_VERSION', '', '')
+				configure addHiddenParameter('repo', '', repo)
+				configure addHiddenParameter('GITHUB_HOST', '', host)
+				configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
+			}
+		}
 
-        return pipelineJob
-    }
+		return pipelineJob
+	}
 
 }

@@ -193,11 +193,11 @@ class Repository extends BaseObject {
                     }
 
                     isDockerRunner = true
-                    registerObject("deploy_job", new DeployJobFactory(repoFolder, getDeployScript(), "deploy", '', githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
-                    registerObject("publish_job", new PublishJobFactory(repoFolder, getPublishScript(), "publish", '', githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
+                    registerObject("deploy_job", new DeployJobFactory(repoFolder, getDeployScript(), "deploy", '', githubHost, githubOrganization, Configuration.get(REPO)))
+                    registerObject("publish_job", new PublishJobFactory(repoFolder, getPublishScript(), "publish", '', githubHost, githubOrganization, Configuration.get(REPO)))
                 }
 
-                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, buildTool, isDockerRunner))
+                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), buildTool, isDockerRunner))
             }
 
             factoryRunner.run(dslObjects)
