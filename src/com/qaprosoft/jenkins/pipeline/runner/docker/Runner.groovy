@@ -53,6 +53,7 @@ class Runner extends AbstractRunner {
 			context.timestamps {
 				logger.info('DockerRunner->onPullRequest')
 				try {
+					context.currentBuild.setDisplayName(releaseName)
 					getScm().clonePR()
 					def image = context.dockerDeploy.build(releaseName, registry)
 					context.dockerDeploy.clean(image)
