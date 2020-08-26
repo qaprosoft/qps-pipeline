@@ -24,11 +24,7 @@ class Runner extends AbstractRunner {
 		registryCreds = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}-docker"
 		releaseName = "1.${Configuration.get("BUILD_NUMBER")}-SNAPSHOT"
 		buildTool = Configuration.get("build_tool")
-		releaseName = Configuration.get('RELEASE_VERSION')
 		dockerFile = Configuration.get("DOCKERFILE")
-		logger.info("buildTool: $buildTool")
-		logger.info("dockerFile: $dockerFile")
-		logger.info("releaseName: $releaseName")
 		context.currentBuild.setDisplayName(releaseName)
 	}
 
