@@ -303,7 +303,7 @@ class Organization extends BaseObject {
             }
         }
         else {
-            logger.info("Skip registration of ${orgFolderName}-${provider}_hub")
+            logger.info("Skip registration of ${hubURLCredName}")
         }
     }
 
