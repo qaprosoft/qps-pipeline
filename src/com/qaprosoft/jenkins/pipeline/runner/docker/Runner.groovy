@@ -37,8 +37,8 @@ class Runner extends AbstractRunner {
 					getScm().clonePush()
 					context.dockerDeploy(releaseName, registry, registryCreds)
 				} catch (Exception e) {
-					logger.error("Something went wrong while pushing the docker image. \n" + Utils.printStackTrace(e))
 					context.currentBuild.result = BuildResult.FAILURE
+					context.error("Something went wrong while pushing the docker image. \n" + Utils.printStackTrace(e))
 				} finally {
 					clean()
 				}
