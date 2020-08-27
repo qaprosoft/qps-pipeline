@@ -302,6 +302,9 @@ class Organization extends BaseObject {
                 logger.info("${hubURLCredName} was successfully registered.")
             }
         }
+        else {
+            logger.info("Skip registration of ${orgFolderName}-${provider}_hub")
+        }
     }
 
     public def registerReportingCredentials() {
