@@ -289,15 +289,15 @@ class Organization extends BaseObject {
     protected def registerHubCredentials(orgFolderName, provider, url) {
         setDisplayNameTemplate('#${BUILD_NUMBER}|${folderName}|${provider}')
         currentBuild.displayName = getDisplayName()
-        if (isParamEmpty(getCredentials("${orgFolderName}-${provider}_hub"))) {
-            if (isParamEmpty(url)) {
-                throw new RuntimeException("Required 'url' field is missing!")
-            }
-            def hubURLCredName = "${provider}_hub"
-            if (!isParamEmpty(orgFolderName)) {
-                hubURLCredName = "${orgFolderName}" + "-" + hubURLCredName
-            }
+        if (isParamEmpty(url)) {
+            throw new RuntimeException("Required 'url' field is missing!")
+        }
+        def hubURLCredName = "${provider}_hub"
+        if (!isParamEmpty(orgFolderName)) {
+            hubURLCredName = "${orgFolderName}" + "-" + hubURLCredName
+        }
 
+        if (isParamEmpty(getCredentials(hubURLCredName))) {
             if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", Configuration.Parameter.SELENIUM_URL.getKey(), url)) {
                 logger.info("${hubURLCredName} was successfully registered.")
             }
