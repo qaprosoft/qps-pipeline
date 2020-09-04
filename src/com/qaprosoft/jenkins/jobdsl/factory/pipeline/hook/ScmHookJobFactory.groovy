@@ -21,7 +21,7 @@ public class ScmHookJobFactory extends PipelineFactory {
 				  silentResponse: false,
 
 				  regexpFilterText: '$ref',
-				  regexpFilterExpression: 'refs/heads/master'
+				  regexpFilterExpression: 'refs/heads/master',
 					
 				)
 			}
