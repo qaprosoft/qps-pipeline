@@ -15,6 +15,8 @@ public class ScmHookJobFactory extends PipelineFactory {
 				  	[key: 'ref', value: '$.ref']
 				  ],
 
+				  causeString: 'Triggered on $ref',
+
 				  printContributedVariables: true,
 				  printPostContent: true,
 
