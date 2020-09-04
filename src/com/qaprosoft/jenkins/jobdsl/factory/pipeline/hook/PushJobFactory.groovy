@@ -15,7 +15,10 @@ public class PushJobFactory extends ScmHookJobFactory {
     def isTestNgRunner
 
     public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, isTestNgRunner, zafiraFields) {
-        super(folder, pipelineScript, jobName, jobDesc)
+        this.folder = folder
+        this.pipelineScript = pipelineScript
+        this.name = jobName
+        this.description = jobDesc
         this.host = host
         this.organization = organization
         this.repo = repo
