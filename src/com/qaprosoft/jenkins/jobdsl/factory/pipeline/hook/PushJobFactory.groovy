@@ -1,10 +1,9 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook
 
-import groovy.transform.InheritConstructors
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
+import groovy.transform.InheritConstructorsy
 
 @InheritConstructors
-public class PushJobFactory extends PipelineFactory {
+public class PushJobFactory extends ScmHookJobFactory {
 
     def host
     def organization
@@ -16,10 +15,7 @@ public class PushJobFactory extends PipelineFactory {
     def isTestNgRunner
 
     public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, isTestNgRunner, zafiraFields) {
-        this.folder = folder
-        this.pipelineScript = pipelineScript
-        this.name = jobName
-        this.description = jobDesc
+        super(folder, pipelineScript, jobName, jobDesc)
         this.host = host
         this.organization = organization
         this.repo = repo
@@ -34,15 +30,15 @@ public class PushJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
 
         pipelineJob.with {
-            properties {
-                //TODO: add SCM artifacts
-                githubProjectUrl(scmRepoUrl)
-                pipelineTriggers {
-                    triggers {
-                        githubPush()
-                    }
-                }
-            }
+            // properties {
+            //     //TODO: add SCM artifacts
+            //     githubProjectUrl(scmRepoUrl)
+            //     pipelineTriggers {
+            //         triggers {
+            //             githubPush()
+            //         }
+            //     }
+            // }
 
             //TODO: think about other parameters to support DevOps CI operations
             parameters {

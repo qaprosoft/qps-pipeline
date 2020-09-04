@@ -1,0 +1,43 @@
+package com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook
+
+import groovy.transform.InheritConstructors
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
+
+@InheritConstructors
+public class ScmHookJobFactory extends PipelineFactory {
+
+	public ScmHookJobFactory(folder, pipelineScript, jobName, jobDesc) {
+		super(folder, pipelineScript, jobName, jobDesc)
+	}
+
+	def create() {
+		def pipelineJob = super.create()
+		pipelineJob.with {
+			properties([
+			  pipelineTriggers([
+			   [$class: 'GenericTrigger',
+				genericVariables: [
+				 [key: 'ref', value: '$.ref'],
+				],
+
+				causeString: 'Triggered on $ref',
+
+				printContributedVariables: true,
+				printPostContent: true,
+
+				silentResponse: false,
+
+				regexpFilterText: '$ref',
+				regexpFilterExpression: 'refs/heads/master'
+			   ]
+			  ])
+			])
+		}
+
+		return pipelineJob
+	}
+
+	protected def getGitHubAuthId(project) {
+		return "https://api.github.com : ${project}-token"
+	}
+}
