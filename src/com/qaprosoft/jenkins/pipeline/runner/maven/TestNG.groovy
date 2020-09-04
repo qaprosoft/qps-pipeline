@@ -618,7 +618,7 @@ public class TestNG extends Runner {
         }
     }
 
-    private String getCurrentFolderFullName(String jobName) {
+    protected String getCurrentFolderFullName(String jobName) {
         String baseJobName = jobName
         def fullJobName = Configuration.get(Configuration.Parameter.JOB_NAME)
         def fullJobNameArray = fullJobName.split("/")
