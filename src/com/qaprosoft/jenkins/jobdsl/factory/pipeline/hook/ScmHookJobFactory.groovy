@@ -9,25 +9,41 @@ public class ScmHookJobFactory extends PipelineFactory {
 	def create() {
 		def pipelineJob = super.create()
 		pipelineJob.with {
-			properties([
-			  pipelineTriggers([
-			   [$class: 'GenericTrigger',
-				genericVariables: [
-				 [key: 'ref', value: '$.ref'],
-				],
+			triggers {
+				GenericTrigger(
+				  genericVariables: [
+				  	[key: 'ref', value: '$.ref']
+				  ],
 
-				causeString: 'Triggered on $ref',
+				  printContributedVariables: true,
+				  printPostContent: true,
 
-				printContributedVariables: true,
-				printPostContent: true,
+				  silentResponse: false,
 
-				silentResponse: false,
+				  regexpFilterText: '$ref',
+				  regexpFilterExpression: 'refs/heads/master'
+					
+				)
+			}
+			// properties([
+			//   pipelineTriggers([
+			//    [$class: 'GenericTrigger',
+			// 	genericVariables: [
+			// 	 [key: 'ref', value: '$.ref'],
+			// 	],
 
-				regexpFilterText: '$ref',
-				regexpFilterExpression: 'refs/heads/master'
-			   ]
-			  ])
-			])
+			// 	causeString: 'Triggered on $ref',
+
+			// 	printContributedVariables: true,
+			// 	printPostContent: true,
+
+			// 	silentResponse: false,
+
+			// 	regexpFilterText: '$ref',
+			// 	regexpFilterExpression: 'refs/heads/master'
+			//    ]
+			//   ])
+			// ])
 		}
 
 		return pipelineJob
