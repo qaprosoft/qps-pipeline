@@ -54,6 +54,13 @@ class ScmHookJobFactory extends PipelineFactory {
 			   regexpFilterExpression("ref")
 			  }
 			}
+
+			definition {
+                cps {
+                    script(pipelineScript)
+                    sandbox()
+                }
+            }
 		}
 
 		return pipelineJob
