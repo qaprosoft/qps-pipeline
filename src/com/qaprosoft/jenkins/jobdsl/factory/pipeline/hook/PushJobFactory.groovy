@@ -89,7 +89,7 @@ public class PushJobFactory extends PipelineFactory {
                printPostContent(true)
                silentResponse(false)
                regexpFilterText("\$.ref")
-               regexpFilterExpression("ref")
+               regexpFilterExpression("ref/heads/master")
               }
             }
 
