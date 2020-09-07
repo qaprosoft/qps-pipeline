@@ -61,7 +61,7 @@ public class PushJobFactory extends PipelineFactory {
                 configure addHiddenParameter('userId', 'Identifier of the user who triggered the process', userId)
                 configure addHiddenParameter('zafiraFields', '', zafiraFields)
             }
-            
+
             properties {
                 triggers {
                   genericTrigger {
@@ -90,7 +90,7 @@ public class PushJobFactory extends PipelineFactory {
                    printContributedVariables(true)
                    printPostContent(true)
                    silentResponse(false)
-                   regexpFilterText("$ref")
+                   regexpFilterText("\$ref")
                    regexpFilterExpression("^refs/heads/master")
                   }
                 }
