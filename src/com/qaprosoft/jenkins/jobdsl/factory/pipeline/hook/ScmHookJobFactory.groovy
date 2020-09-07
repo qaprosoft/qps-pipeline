@@ -4,11 +4,20 @@ import groovy.transform.InheritConstructors
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 
 @InheritConstructors
-public class ScmHookJobFactory extends PipelineFactory {
+class ScmHookJobFactory extends PipelineFactory {
+
+	ScmHookJobFactory(folder, pipelineScript, jobName, jobDesc) {
+		this.folder = folder
+		this.pipelineScript = pipelineScript
+		this.name = jobName
+		this.description = description
+	}
 
 	def create() {
 		def pipelineJob = super.create()
 		pipelineJob.with {
+
+			concurrentBuild(true)
 
 			parameters {
 				configure addHiddenParameter('ref', '', '')
@@ -37,7 +46,7 @@ public class ScmHookJobFactory extends PipelineFactory {
 			   //   regexpFilter("")
 			   //  }
 			   // }
-			   //token('abc123')
+			   token('abc123')
 			   printContributedVariables(true)
 			   printPostContent(true)
 			   silentResponse(false)
