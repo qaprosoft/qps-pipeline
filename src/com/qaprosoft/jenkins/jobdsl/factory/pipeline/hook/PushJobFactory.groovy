@@ -89,8 +89,8 @@ public class PushJobFactory extends PipelineFactory {
                printContributedVariables(true)
                printPostContent(true)
                silentResponse(false)
-               regexpFilterText("$ref")
-               regexpFilterExpression("^refs/heads/master")
+               regexpFilterText("")
+               regexpFilterExpression("")
               }
             }
 
