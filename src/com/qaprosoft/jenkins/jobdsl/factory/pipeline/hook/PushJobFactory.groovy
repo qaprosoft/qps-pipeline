@@ -84,7 +84,7 @@ public class PushJobFactory extends PipelineFactory {
                //   regexpFilter("")
                //  }
                // }
-               //token('abc123')
+               token('abc123')
                printContributedVariables(true)
                printPostContent(true)
                silentResponse(false)
