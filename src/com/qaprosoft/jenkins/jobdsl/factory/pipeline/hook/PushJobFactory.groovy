@@ -78,18 +78,18 @@ public class PushJobFactory extends PipelineFactory {
                //   regexpFilter("")
                //  }
                // }
-               // genericHeaderVariables {
-               //  genericHeaderVariable {
-               //   key("requestHeaderName")
-               //   regexpFilter("")
-               //  }
-               // }
+               genericHeaderVariables {
+                genericHeaderVariable {
+                 key("X-GitHub-Event")
+                 regexpFilter("^(push)*?")
+                }
+               }
                token('abc123')
                printContributedVariables(true)
                printPostContent(true)
                silentResponse(false)
-               regexpFilterText("\$.ref")
-               regexpFilterExpression("ref/heads/master")
+               regexpFilterText("$ref")
+               regexpFilterExpression("^refs/heads/master")
               }
             }
 
