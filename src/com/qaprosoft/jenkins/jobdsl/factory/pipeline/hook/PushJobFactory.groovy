@@ -54,12 +54,12 @@ public class PushJobFactory extends PipelineFactory {
                 if (isTestNgRunner) {
                     booleanParam('onlyUpdated', true, 'If chosen, scan will be performed only in case of any change in *.xml suites.')
                 }
+                stringParam('ref', '', '')
                 choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedJobAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedViewAction', ['IGNORE', 'DELETE'], '')
                 configure addHiddenParameter('userId', 'Identifier of the user who triggered the process', userId)
                 configure addHiddenParameter('zafiraFields', '', zafiraFields)
-                configure addHiddenParameter('ref', '', '')
             }
 
             triggers {
@@ -89,8 +89,8 @@ public class PushJobFactory extends PipelineFactory {
                printContributedVariables(true)
                printPostContent(true)
                silentResponse(false)
-               regexpFilterText("")
-               regexpFilterExpression("")
+               regexpFilterText("$ref")
+               regexpFilterExpression("^refs/heads/master")
               }
             }
 
