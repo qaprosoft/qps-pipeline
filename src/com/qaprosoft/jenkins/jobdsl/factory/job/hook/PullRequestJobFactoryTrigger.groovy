@@ -27,11 +27,11 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
             concurrentBuild(true)
             parameters {
                 //[VD] do not remove empty declaration otherwise params can't be specified dynamically
-                configure addHiddenParameter('pr_number', '', '')
-                configure addHiddenParameter('pr_repository', '', '')
-                configure addHiddenParameter('pr_source_branch', '', '')
-                configure addHiddenParameter('pr_target_branch', '', '')
-                configure addHiddenParameter('pr_action', '', '')
+                stringParam('pr_number', '', '')
+                stringParam('pr_repository', '', '')
+                stringParam('pr_source_branch', '', '')
+                stringParam('pr_target_branch', '', '')
+                stringParam('pr_action', '', '')
             }
 
             scm {
