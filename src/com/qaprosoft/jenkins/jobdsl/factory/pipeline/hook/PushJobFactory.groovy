@@ -62,13 +62,23 @@ public class PushJobFactory extends PipelineFactory {
                 configure addHiddenParameter('zafiraFields', '', zafiraFields)
             }
 
+            def headerEventParam = "X-GitHub-Event"
+            def refJsonPath = "\$.ref"
+
+            if (host.contains("gitlab")) {
+                headerName = "X-Gitlab-Event"
+            } else if (host.contains("bitbucket")) {
+                headerName = "X-Event-Key"
+                refJsonPath = "\$.push.changes[0].new.name"
+            }
+
             properties {
                 triggers {
                   genericTrigger {
                    genericVariables {
                     genericVariable {
                      key("ref")
-                     value("\$.ref")
+                     value(${refJsonPath})
                      expressionType("JSONPath") //Optional, defaults to JSONPath
                      regexpFilter("") //Optional, defaults to empty string
                      defaultValue("") //Optional, defaults to empty string
@@ -82,7 +92,7 @@ public class PushJobFactory extends PipelineFactory {
                    // }
                    genericHeaderVariables {
                     genericHeaderVariable {
-                     key("X-GitHub-Event")
+                     key(${headerEventParam})
                      regexpFilter("^(push)*?")
                     }
                    }
