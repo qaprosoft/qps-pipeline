@@ -93,7 +93,7 @@ public class PushJobFactory extends PipelineFactory {
                    genericHeaderVariables {
                     genericHeaderVariable {
                      key(headerEventName)
-                     regexpFilter("^(push)*?")
+                     regexpFilter("^(push|repo:push)*?")
                     }
                    }
                    token('abc123')
@@ -101,7 +101,7 @@ public class PushJobFactory extends PipelineFactory {
                    printPostContent(true)
                    silentResponse(false)
                    regexpFilterText("\$ref")
-                   regexpFilterExpression("^refs/heads/master")
+                   regexpFilterExpression("^(refs/heads/master|master)*?")
                   }
                 }
             }
