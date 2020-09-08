@@ -26,7 +26,7 @@ public class PullRequestJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             concurrentBuild(true)
-            
+
             parameters {
                 stringParam('repo', repo, 'Your GitHub repository for scanning')
                 configure addHiddenParameter('GITHUB_HOST', '', host)
@@ -38,17 +38,17 @@ public class PullRequestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('pr_action', '', '')
             }
 
-            // scm {
-            //     git {
-            //         remote {
-            //             //TODO: potential issue for unsecure github setup! 
-            //             github(this.organization + '/' + this.repo, 'https', host)
-            //             credentials("${organization}-${repo}")
-            //             refspec('+refs/pull/*:refs/remotes/origin/pr/*')
-            //         }
-            //         branch('${sha1}')
-            //     }
-            // }
+            scm {
+                git {
+                    remote {
+                        //TODO: potential issue for unsecure github setup! 
+                        github(this.organization + '/' + this.repo, 'https', host)
+                        credentials("${organization}-${repo}")
+                        refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+                    }
+                    branch('')
+                }
+            }
 
             triggers {
               genericTrigger {
@@ -87,7 +87,7 @@ public class PullRequestJobFactory extends PipelineFactory {
                genericHeaderVariables {
                 genericHeaderVariable {
                  key("X-GitHub-Event")
-                 regexpFilter("pull_request")
+                 regexpFilter("^(pull_request)*?")
                 }
                }
                token('abc123')
