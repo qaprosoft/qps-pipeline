@@ -33,6 +33,7 @@ public class PullRequestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('pr_repository', '', '')
                 configure addHiddenParameter('pr_source_branch', '', '')
                 configure addHiddenParameter('pr_target_branch', '', '')
+                configure addHiddenParameter('pr_action', '', '')
             }
 
             triggers {
@@ -45,17 +46,22 @@ public class PullRequestJobFactory extends PipelineFactory {
 
                 genericVariable {
                   key("pr_repository")
-                  value("\$.repo.name")
+                  value("\$.pull_request.base.repo.name")
                 }
 
                 genericVariable {
                   key("pr_source_branch")
-                  value("\$.head.ref")
+                  value("\$.pull_request.head.ref")
                 }
 
                 genericVariable {
                   key("pr_target_branch")
-                  value("\$.base.ref")
+                  value("\$.pull_request.base.ref")
+                }
+
+                genericVariable {
+                  key("pr_action")
+                  value("\$.action")
                 }
                }
                // genericRequestVariables {
@@ -74,8 +80,8 @@ public class PullRequestJobFactory extends PipelineFactory {
                printContributedVariables(true)
                printPostContent(true)
                silentResponse(false)
-               regexpFilterText("")
-               regexpFilterExpression("")
+               regexpFilterText("\$pr_action")
+               regexpFilterExpression("^opened")
               }
             }
         }
