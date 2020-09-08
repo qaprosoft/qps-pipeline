@@ -36,6 +36,18 @@ public class PullRequestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('pr_action', '', '')
             }
 
+            scm {
+                git {
+                    remote {
+                        //TODO: potential issue for unsecure github setup! 
+                        github(this.organization + '/' + this.repo, 'https', host)
+                        credentials("${organization}-${repo}")
+                        refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+                    }
+                    branch('${sha1}')
+                }
+            }
+
             triggers {
               genericTrigger {
                genericVariables {
@@ -81,7 +93,7 @@ public class PullRequestJobFactory extends PipelineFactory {
                printPostContent(true)
                silentResponse(false)
                regexpFilterText("\$pr_action")
-               regexpFilterExpression("^opened")
+               regexpFilterExpression("^(opened|reopened)")
               }
             }
         }
