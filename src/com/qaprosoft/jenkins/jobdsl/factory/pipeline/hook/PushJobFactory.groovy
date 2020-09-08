@@ -100,8 +100,8 @@ public class PushJobFactory extends PipelineFactory {
                    printContributedVariables(true)
                    printPostContent(true)
                    silentResponse(false)
-                   regexpFilterText("\$ref")
-                   regexpFilterExpression("^(refs/heads/master|master)*?\$")
+                   regexpFilterText("\$ref \$${headerEventName}")
+                   regexpFilterExpression("^(refs/heads/master|master|push|repo:push)*?\$")
                   }
                 }
             }
