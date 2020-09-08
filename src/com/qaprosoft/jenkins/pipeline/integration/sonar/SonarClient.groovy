@@ -33,19 +33,19 @@ class SonarClient extends HttpClient {
         if (isPullRequest) {
             // goals needed to decorete pr with sonar analysis
             if (scmProvider.contains("github")) {
-                goals += " -Dsonar.pullrequest.github.repository=${Configuration.get("ghprbGhRepository")} \
+                goals += " -Dsonar.pullrequest.github.repository=${Configuration.get("pr_repository")} \
                           -Dsonar.pullrequest.provider=Github"
             } else if (scmProvider.contains("bitbucket")) {
-                goals += " -Dsonar.pullrequest.bitbucket.repositorySlug=${Configuration.get("ghprbGhRepository")} \
+                goals += " -Dsonar.pullrequest.bitbucket.repositorySlug=${Configuration.get("pr_repository")} \
                           -Dsonar.pullrequest.provider=BitbucketServer"
             } else if (scmProvider.contains("gitlab")) {
-                goals += " -Dsonar.pullrequest.gitlab.repositorySlug=${Configuration.get("ghprbGhRepository")} \
+                goals += " -Dsonar.pullrequest.gitlab.repositorySlug=${Configuration.get("pr_repository")} \
                           -Dsonar.pullrequest.provider=GitlabServer"
             }
 
-            goals += " -Dsonar.pullrequest.key=${Configuration.get("ghprbPullId")} \
-                    -Dsonar.pullrequest.branch=${Configuration.get("ghprbSourceBranch")} \
-                    -Dsonar.pullrequest.base=${Configuration.get("ghprbTargetBranch")}"
+            goals += " -Dsonar.pullrequest.key=${Configuration.get("pr_number")} \
+                    -Dsonar.pullrequest.branch=${Configuration.get("pr_source_branch")} \
+                    -Dsonar.pullrequest.base=${Configuration.get("pr_target_branch")}"
         } else {
             goals += " -Dsonar.projectVersion=${Configuration.get("BUILD_NUMBER")} -Dsonar.branch.name=${Configuration.get("branch")}"
         }
@@ -57,9 +57,9 @@ class SonarClient extends HttpClient {
 
     private boolean isAvailable() {
         def parameters = [contentType        : 'APPLICATION_JSON',
-            httpMode           : 'GET',
-            validResponseCodes : '200',
-            url                : serviceUrl + '/api/system/status']
+                          httpMode           : 'GET',
+                          validResponseCodes : '200',
+                          url                : serviceUrl + '/api/system/status']
         return "UP".equals(sendRequestFormatted(parameters)?.get("status"))
     }
 

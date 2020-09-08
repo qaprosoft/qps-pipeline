@@ -26,20 +26,36 @@ public class PullRequestJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
         pipelineJob.with {
             parameters {
+                stringParam('repo', repo, 'Your GitHub repository for scanning')
                 configure addHiddenParameter('GITHUB_HOST', '', host)
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
-                stringParam('repo', repo, 'Your GitHub repository for scanning')
+                configure addHiddenParameter('pr_number', '', '')
+                configure addHiddenParameter('pr_repository', '', '')
+                configure addHiddenParameter('pr_source_branch', '', '')
+                configure addHiddenParameter('pr_target_branch', '', '')
             }
 
             triggers {
               genericTrigger {
                genericVariables {
                 genericVariable {
-                 key("ref")
-                 value("\$.ref")
-                 expressionType("JSONPath") //Optional, defaults to JSONPath
-                 regexpFilter("") //Optional, defaults to empty string
-                 defaultValue("") //Optional, defaults to empty string
+                 key("pr_number")
+                 value("\$.number")
+                }
+
+                genericVariable {
+                  key("pr_repository")
+                  value("\$.repo.name")
+                }
+
+                genericVariable {
+                  key("pr_source_branch")
+                  value("\$.head.ref")
+                }
+
+                genericVariable {
+                  key("pr_target_branch")
+                  value("\$.base.ref")
                 }
                }
                // genericRequestVariables {
@@ -48,18 +64,18 @@ public class PullRequestJobFactory extends PipelineFactory {
                //   regexpFilter("")
                //  }
                // }
-               // genericHeaderVariables {
-               //  genericHeaderVariable {
-               //   key("requestHeaderName")
-               //   regexpFilter("")
-               //  }
-               // }
+               genericHeaderVariables {
+                genericHeaderVariable {
+                 key("X-GitHub-Event")
+                 regexpFilter("pull_request")
+                }
+               }
                token('abc123')
                printContributedVariables(true)
                printPostContent(true)
                silentResponse(false)
-               regexpFilterText("\$.ref")
-               regexpFilterExpression("ref")
+               regexpFilterText("")
+               regexpFilterExpression("")
               }
             }
         }
