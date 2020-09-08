@@ -78,7 +78,7 @@ public class PushJobFactory extends PipelineFactory {
                    genericVariables {
                     genericVariable {
                      key("ref")
-                     value(${refJsonPath})
+                     value(refJsonPath)
                      expressionType("JSONPath") //Optional, defaults to JSONPath
                      regexpFilter("") //Optional, defaults to empty string
                      defaultValue("") //Optional, defaults to empty string
@@ -92,7 +92,7 @@ public class PushJobFactory extends PipelineFactory {
                    // }
                    genericHeaderVariables {
                     genericHeaderVariable {
-                     key(${headerEventParam})
+                     key(headerEventParam)
                      regexpFilter("^(push)*?")
                     }
                    }
