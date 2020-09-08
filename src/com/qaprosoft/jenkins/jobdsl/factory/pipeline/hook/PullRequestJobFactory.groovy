@@ -25,6 +25,8 @@ public class PullRequestJobFactory extends PipelineFactory {
     def create() {
         def pipelineJob = super.create()
         pipelineJob.with {
+            concurrentBuild(true)
+            
             parameters {
                 stringParam('repo', repo, 'Your GitHub repository for scanning')
                 configure addHiddenParameter('GITHUB_HOST', '', host)
