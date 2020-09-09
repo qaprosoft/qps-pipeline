@@ -54,7 +54,6 @@ public class PushJobFactory extends PipelineFactory {
                 if (isTestNgRunner) {
                     booleanParam('onlyUpdated', true, 'If chosen, scan will be performed only in case of any change in *.xml suites.')
                 }
-                stringParam('ref', 'refs/heads/master', '')
                 choiceParam('removedConfigFilesAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedJobAction', ['IGNORE', 'DELETE'], '')
                 choiceParam('removedViewAction', ['IGNORE', 'DELETE'], '')
@@ -62,13 +61,13 @@ public class PushJobFactory extends PipelineFactory {
                 configure addHiddenParameter('zafiraFields', '', zafiraFields)
             }
 
-            def headerEventName = "X-GitHub-Event"
+            def headerEventName = "x-github-event"
             def refJsonPath = "\$.ref"
 
             if (host.contains("gitlab")) {
-                headerEventName = "X-Gitlab-Event"
+                headerEventName = "x-gitlab-event"
             } else if (host.contains("bitbucket")) {
-                headerEventName = "X-Event-Key"
+                headerEventName = "x-event-key"
                 refJsonPath = "\$.push.changes[0].new.name"
             }
 
@@ -79,29 +78,21 @@ public class PushJobFactory extends PipelineFactory {
                     genericVariable {
                      key("ref")
                      value(refJsonPath)
-                     expressionType("JSONPath") //Optional, defaults to JSONPath
-                     regexpFilter("") //Optional, defaults to empty string
-                     defaultValue("") //Optional, defaults to empty string
                     }
                    }
-                   // genericRequestVariables {
-                   //  genericRequestVariable {
-                   //   key("requestParameterName")
-                   //   regexpFilter("")
-                   //  }
-                   // }
+     
                    genericHeaderVariables {
                     genericHeaderVariable {
                      key(headerEventName)
-                     regexpFilter("^(push|repo:push)*?")
+                     regexpFilter("")
                     }
                    }
                    token('abc123')
                    printContributedVariables(true)
-                   printPostContent(true)
+                   printPostContent(false)
                    silentResponse(false)
                    regexpFilterText("\$ref \$${headerEventName}")
-                   regexpFilterExpression("^(refs/heads/master|master|push|repo:push)*?\$")
+                   regexpFilterExpression("^(refs/heads/master|master\\srepo:push|Push\\sHook|push)\$")
                   }
                 }
             }
