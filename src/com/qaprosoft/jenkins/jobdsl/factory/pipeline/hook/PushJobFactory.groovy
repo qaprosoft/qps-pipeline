@@ -91,7 +91,7 @@ public class PushJobFactory extends PipelineFactory {
                    printContributedVariables(true)
                    printPostContent(false)
                    silentResponse(false)
-                   regexpFilterText("\$ref \$${headerEventName}")
+                   regexpFilterText("\$ref \$${headerEventName.replaceAll('-','_')}")
                    regexpFilterExpression("^(refs/heads/master|master\\srepo:push|Push\\sHook|push)\$")
                   }
                 }
