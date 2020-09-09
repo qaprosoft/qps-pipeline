@@ -88,16 +88,14 @@ public class PushJobFactory extends PipelineFactory {
                     }
                    }
                    token('abc123')
-                   printContributedVariables(true)
+                   printContributedVariables(false)
                    printPostContent(false)
                    silentResponse(false)
                    regexpFilterText("\$ref \$${headerEventName.replaceAll('-','_')}")
-                   regexpFilterExpression("^(refs/heads/master|master\\srepo:push|Push\\sHook|push)\$")
+                   regexpFilterExpression("^(refs/heads/master\\s(push|Push\\sHook)|master\\srepo:push)\$")
                   }
                 }
             }
-
-            
 
             /** Git Stuff **/
 

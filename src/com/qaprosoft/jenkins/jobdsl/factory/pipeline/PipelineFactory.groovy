@@ -34,7 +34,7 @@ public class PipelineFactory extends JobFactory {
             description "${description}"
             logRotator { numToKeep logRotator }
 
-            authenticationToken('ciStart')
+            //authenticationToken('ciStart')
 
             properties {
                 disableResume()
