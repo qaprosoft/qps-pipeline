@@ -71,11 +71,6 @@ public class PushJobFactory extends PipelineFactory {
                 refJsonPath = "\$.push.changes[0].new.name"
             }
 
-            wrappers {
-                credentialsBinding {
-                    string("webHookToken", "${this.organization}-${this.host}-token")
-                }
-            }
 
             triggers {
               genericTrigger {
