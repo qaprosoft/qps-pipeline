@@ -86,7 +86,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 
                      genericHeaderVariables {
                       genericHeaderVariable {
-                       key($headerEventName)
+                       key(headerEventName)
                        regexpFilter("")
                       }
                      }
