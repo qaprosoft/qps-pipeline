@@ -47,7 +47,7 @@ public class PullRequestJobFactory extends PipelineFactory {
             if (host.contains('gitlab')) {
                 headerEventName = "x-gitlab-event"
                 prNumberJsonPath = "\$.object_attributes.id"
-                prRepositoryJsonPath = "\$.repository.name"
+                prRepositoryJsonPath = "\$.project.id"
                 prSourceBranchJsonPath = "\$.object_attributes.source_branch"
                 prTargetBranchJsonPath = "\$.object_attributes.target_branch"
                 prActionJsonPath = "\$.object_attributes.state"
