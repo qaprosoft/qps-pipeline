@@ -49,56 +49,59 @@ public class PullRequestJobFactory extends PipelineFactory {
             //     }
             // }
 
-        
-            pipelineTriggers {
-                genericTrigger {
-                 genericVariables {
-                  genericVariable {
-                   key("pr_number")
-                   value("\$.number")
-                  }
+            properties {
+              pipelineTriggers {
+                  triggers {
+                    genericTrigger {
+                     genericVariables {
+                      genericVariable {
+                       key("pr_number")
+                       value("\$.number")
+                      }
 
-                  genericVariable {
-                    key("pr_repository")
-                    value("\$.pull_request.base.repo.name")
-                  }
+                      genericVariable {
+                        key("pr_repository")
+                        value("\$.pull_request.base.repo.name")
+                      }
 
-                  genericVariable {
-                    key("pr_source_branch")
-                    value("\$.pull_request.head.ref")
-                  }
+                      genericVariable {
+                        key("pr_source_branch")
+                        value("\$.pull_request.head.ref")
+                      }
 
-                  genericVariable {
-                    key("pr_target_branch")
-                    value("\$.pull_request.base.ref")
-                  }
+                      genericVariable {
+                        key("pr_target_branch")
+                        value("\$.pull_request.base.ref")
+                      }
 
-                  genericVariable {
-                    key("pr_action")
-                    value("\$.action")
+                      genericVariable {
+                        key("pr_action")
+                        value("\$.action")
+                      }
+                     }
+                     // genericRequestVariables {
+                     //  genericRequestVariable {
+                     //   key("requestParameterName")
+                     //   regexpFilter("")
+                     //  }
+                     // }
+                     genericHeaderVariables {
+                      genericHeaderVariable {
+                       key("X-GitHub-Event")
+                       regexpFilter("^(pull_request)*?")
+                      }
+                     }
+                     token('abc123')
+                     printContributedVariables(true)
+                     printPostContent(true)
+                     silentResponse(false)
+                     regexpFilterText("\$pr_action")
+                     regexpFilterExpression("^(opened|reopened)")
+                    }
                   }
-                 }
-                 // genericRequestVariables {
-                 //  genericRequestVariable {
-                 //   key("requestParameterName")
-                 //   regexpFilter("")
-                 //  }
-                 // }
-                 genericHeaderVariables {
-                  genericHeaderVariable {
-                   key("X-GitHub-Event")
-                   regexpFilter("^(pull_request)*?")
-                  }
-                 }
-                 token('abc123')
-                 printContributedVariables(true)
-                 printPostContent(true)
-                 silentResponse(false)
-                 regexpFilterText("\$pr_action")
-                 regexpFilterExpression("^(opened|reopened)")
                 }
-           }
-          }
+              }
+            }
 
         return pipelineJob
     }
