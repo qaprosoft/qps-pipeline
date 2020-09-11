@@ -88,7 +88,7 @@ public class PushJobFactory extends PipelineFactory {
 			                 regexpFilter("")
 			                }
 			               }
-			               token('${webHookToken}')
+			               token('abc123')
 			               printContributedVariables(false)
 			               printPostContent(false)
 			               silentResponse(false)

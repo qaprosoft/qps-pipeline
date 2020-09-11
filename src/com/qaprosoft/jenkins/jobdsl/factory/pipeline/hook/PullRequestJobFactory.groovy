@@ -37,17 +37,21 @@ public class PullRequestJobFactory extends PipelineFactory {
                 stringParam('pr_action', '', '')
             }
 
-            // scm {
-            //     git {
-            //         remote {
-            //             //TODO: potential issue for unsecure github setup! 
-            //             github(this.organization + '/' + this.repo, 'https', host)
-            //             credentials("${organization}-${repo}")
-            //             refspec('+refs/pull/*:refs/remotes/origin/pr/*')
-            //         }
-            //         branch('${sha1}')
-            //     }
-            // }
+            def headerEventName = "x-github-event"
+            def prNumberJsonPath = "\$.number"
+            def prRepositoryJsonPath = "\$.pull_request.base.repo.name"
+            def prSourceBranchJsonPath = "\$.pull_request.head.ref"
+            def prTargetBranchJsonPath = "\$.pull_request.base.ref"
+            def prActionJsonPath = "\$.action"
+
+            if (host.contains('gitlab')) {
+                headerEventName = "x-gitlab-event"
+                prNumberJsonPath = "\$.object_attributes.id"
+                prRepositoryJsonPath = "\$.repository.name"
+                prSourceBranchJsonPath = "\$.object_attributes.source_branch"
+                prTargetBranchJsonPath = "\$.object_attributes.target_branch"
+                prActionJsonPath = "\$.object_attributes.state"
+            }
 
             properties {
               pipelineTriggers {
@@ -56,47 +60,43 @@ public class PullRequestJobFactory extends PipelineFactory {
                      genericVariables {
                       genericVariable {
                        key("pr_number")
-                       value("\$.number")
+                       value(prNumberJsonPath)
                       }
 
                       genericVariable {
                         key("pr_repository")
-                        value("\$.pull_request.base.repo.name")
+                        value(prRepositoryJsonPath)
                       }
 
                       genericVariable {
                         key("pr_source_branch")
-                        value("\$.pull_request.head.ref")
+                        value(prSourceBranchJsonPath)
                       }
 
                       genericVariable {
                         key("pr_target_branch")
-                        value("\$.pull_request.base.ref")
+                        value(prTargetBranchJsonPath)
                       }
 
                       genericVariable {
                         key("pr_action")
-                        value("\$.action")
+                        value(prActionJsonPath)
                       }
                      }
-                     // genericRequestVariables {
-                     //  genericRequestVariable {
-                     //   key("requestParameterName")
-                     //   regexpFilter("")
-                     //  }
-                     // }
+
                      genericHeaderVariables {
                       genericHeaderVariable {
-                       key("X-GitHub-Event")
-                       regexpFilter("^(pull_request)*?")
+                       key($headerEventName)
+                       regexpFilter("")
                       }
                      }
+
                      token('abc123')
                      printContributedVariables(true)
                      printPostContent(true)
                      silentResponse(false)
-                     regexpFilterText("\$pr_action")
-                     regexpFilterExpression("^(opened|reopened)")
+                     regexpFilterText("\$pr_action \$${headerEventName.replaceAll('-', '_')}")
+                     regexpFilterExpression("^(opened|reopened) (opened|reopened)\\s(Merge\\sRequest\\sHook|pull_request)*?\$")
                     }
                   }
                 }
