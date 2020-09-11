@@ -43,6 +43,8 @@ public class PullRequestJobFactory extends PipelineFactory {
             def prSourceBranchJsonPath = "\$.pull_request.head.ref"
             def prTargetBranchJsonPath = "\$.pull_request.base.ref"
             def prActionJsonPath = "\$.action"
+            def filterText = "\$pr_action \$${headerEventName.replaceAll('-', '_')}"
+            def filterExpression = "^(opened|reopened)\\s(Merge\\sRequest\\sHook|pull_request)*?\$"
 
             if (host.contains('gitlab')) {
                 headerEventName = "x-gitlab-event"
@@ -51,6 +53,14 @@ public class PullRequestJobFactory extends PipelineFactory {
                 prSourceBranchJsonPath = "\$.object_attributes.source_branch"
                 prTargetBranchJsonPath = "\$.object_attributes.target_branch"
                 prActionJsonPath = "\$.object_attributes.state"
+            } else if(host.contains('bitbucket')) {
+                filterText = "\$${headerEventName.replaceAll('-', '_')}"
+                filterExpression = "^(pullrequest:(created|updated))*?\$"
+                headerEventName = "x-event-type"
+                prNumberJsonPath = "\$.pullrequest.id"
+                prRepositoryJsonPath = "\$.pullrequest.destination.repository.name"
+                prSourceBranchJsonPath = "\$.pullrequest.source.branch.name"
+                prTargetBranchJsonPath = "\$.pullrequest.destination.branch.name"
             }
 
             properties {
@@ -95,8 +105,8 @@ public class PullRequestJobFactory extends PipelineFactory {
                      printContributedVariables(true)
                      printPostContent(true)
                      silentResponse(false)
-                     regexpFilterText("\$pr_action \$${headerEventName.replaceAll('-', '_')}")
-                     regexpFilterExpression("^(opened|reopened)\\s(Merge\\sRequest\\sHook|pull_request)*?\$")
+                     regexpFilterText(filterText)
+                     regexpFilterExpression(filterExpression)
                     }
                   }
                 }
