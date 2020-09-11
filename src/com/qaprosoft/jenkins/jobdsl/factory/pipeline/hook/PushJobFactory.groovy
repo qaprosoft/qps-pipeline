@@ -73,27 +73,29 @@ public class PushJobFactory extends PipelineFactory {
 
 
             pipelineTriggers {
-              genericTrigger {
-               genericVariables {
-                genericVariable {
-                 key("ref")
-                 value(refJsonPath)
-                }
-               }
+            	triggers {
+	              genericTrigger {
+		               genericVariables {
+		                genericVariable {
+		                 key("ref")
+		                 value(refJsonPath)
+		                }
+		               }
 
-               genericHeaderVariables {
-                genericHeaderVariable {
-                 key(headerEventName)
-                 regexpFilter("")
-                }
-               }
-               token('${webHookToken}')
-               printContributedVariables(false)
-               printPostContent(false)
-               silentResponse(false)
-               regexpFilterText("\$ref \$${headerEventName.replaceAll('-','_')}")
-               regexpFilterExpression("^(refs/heads/master\\s(push|Push\\sHook)|master\\srepo:push)\$")
-              }
+		               genericHeaderVariables {
+		                genericHeaderVariable {
+		                 key(headerEventName)
+		                 regexpFilter("")
+		                }
+		               }
+		               token('${webHookToken}')
+		               printContributedVariables(false)
+		               printPostContent(false)
+		               silentResponse(false)
+		               regexpFilterText("\$ref \$${headerEventName.replaceAll('-','_')}")
+		               regexpFilterExpression("^(refs/heads/master\\s(push|Push\\sHook)|master\\srepo:push)\$")
+              		}
+              	}
             }
 
             /** Git Stuff **/
