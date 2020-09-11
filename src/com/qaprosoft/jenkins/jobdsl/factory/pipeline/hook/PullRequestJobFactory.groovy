@@ -37,57 +37,69 @@ public class PullRequestJobFactory extends PipelineFactory {
                 stringParam('pr_action', '', '')
             }
 
+            scm {
+                git {
+                    remote {
+                        //TODO: potential issue for unsecure github setup! 
+                        github(this.organization + '/' + this.repo, 'https', host)
+                        credentials("${organization}-${repo}")
+                        refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+                    }
+                    branch('${sha1}')
+                }
+            }
+
         
-            triggers {
-                          genericTrigger {
-                           genericVariables {
-                            genericVariable {
-                             key("pr_number")
-                             value("\$.number")
-                            }
+            pipelineTriggers {
+                genericTrigger {
+                 genericVariables {
+                  genericVariable {
+                   key("pr_number")
+                   value("\$.number")
+                  }
 
-                            genericVariable {
-                              key("pr_repository")
-                              value("\$.pull_request.base.repo.name")
-                            }
+                  genericVariable {
+                    key("pr_repository")
+                    value("\$.pull_request.base.repo.name")
+                  }
 
-                            genericVariable {
-                              key("pr_source_branch")
-                              value("\$.pull_request.head.ref")
-                            }
+                  genericVariable {
+                    key("pr_source_branch")
+                    value("\$.pull_request.head.ref")
+                  }
 
-                            genericVariable {
-                              key("pr_target_branch")
-                              value("\$.pull_request.base.ref")
-                            }
+                  genericVariable {
+                    key("pr_target_branch")
+                    value("\$.pull_request.base.ref")
+                  }
 
-                            genericVariable {
-                              key("pr_action")
-                              value("\$.action")
-                            }
-                           }
-                           // genericRequestVariables {
-                           //  genericRequestVariable {
-                           //   key("requestParameterName")
-                           //   regexpFilter("")
-                           //  }
-                           // }
-                           genericHeaderVariables {
-                            genericHeaderVariable {
-                             key("X-GitHub-Event")
-                             regexpFilter("^(pull_request)*?")
-                            }
-                           }
-                           token('abc123')
-                           printContributedVariables(true)
-                           printPostContent(true)
-                           silentResponse(false)
-                           regexpFilterText("\$pr_action")
-                           regexpFilterExpression("^(opened|reopened)")
-                          }
-                     }
+                  genericVariable {
+                    key("pr_action")
+                    value("\$.action")
+                  }
+                 }
+                 // genericRequestVariables {
+                 //  genericRequestVariable {
+                 //   key("requestParameterName")
+                 //   regexpFilter("")
+                 //  }
+                 // }
+                 genericHeaderVariables {
+                  genericHeaderVariable {
+                   key("X-GitHub-Event")
+                   regexpFilter("^(pull_request)*?")
+                  }
+                 }
+                 token('abc123')
+                 printContributedVariables(true)
+                 printPostContent(true)
+                 silentResponse(false)
+                 regexpFilterText("\$pr_action")
+                 regexpFilterExpression("^(opened|reopened)")
+                }
+           }
           }
-          
+
         return pipelineJob
     }
 

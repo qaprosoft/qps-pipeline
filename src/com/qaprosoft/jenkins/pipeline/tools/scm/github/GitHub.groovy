@@ -97,7 +97,7 @@ class GitHub implements ISCM {
 
     public def clonePR() {
         context.stage('Checkout GitHub Repository') {
-            def branch = Configuration.get("pr_source_branch")
+            def branch = Configuration.get("sha1")
             def gitUrl = Configuration.resolveVars(gitHtmlUrl)
             logger.info("GitHub->clonePR\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
