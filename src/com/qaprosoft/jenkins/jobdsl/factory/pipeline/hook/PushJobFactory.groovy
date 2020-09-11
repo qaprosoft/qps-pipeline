@@ -72,7 +72,7 @@ public class PushJobFactory extends PipelineFactory {
             }
 
 
-            triggers {
+            pipelineTriggers {
               genericTrigger {
                genericVariables {
                 genericVariable {
