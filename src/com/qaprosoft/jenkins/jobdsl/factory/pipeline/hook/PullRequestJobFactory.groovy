@@ -46,7 +46,7 @@ public class PullRequestJobFactory extends PipelineFactory {
 
             if (host.contains('gitlab')) {
                 headerEventName = "x-gitlab-event"
-                prNumberJsonPath = "\$.object_attributes.id"
+                prNumberJsonPath = "\$.object_attributes.iid"
                 prRepositoryJsonPath = "\$.project.id"
                 prSourceBranchJsonPath = "\$.object_attributes.source_branch"
                 prTargetBranchJsonPath = "\$.object_attributes.target_branch"
@@ -96,7 +96,7 @@ public class PullRequestJobFactory extends PipelineFactory {
                      printPostContent(true)
                      silentResponse(false)
                      regexpFilterText("\$pr_action \$${headerEventName.replaceAll('-', '_')}")
-                     regexpFilterExpression("^(opened|reopened) (opened|reopened)\\s(Merge\\sRequest\\sHook|pull_request)*?\$")
+                     regexpFilterExpression("^(opened|reopened)\\s(Merge\\sRequest\\sHook|pull_request)*?\$")
                     }
                   }
                 }
