@@ -46,53 +46,86 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                 }
             }
 
+            wrappers {
+              credentialsBinding {
+                string('token', "sandinosanchez-gitlab")
+              }
+            }
 
-            triggers {
-              genericTrigger {
-               genericVariables {
-                genericVariable {
-                 key("pr_number")
-                 value("\$.number")
-                }
+            def headerEventName = "x-github-event"
+            def prNumberJsonPath = "\$.number"
+            def prRepositoryJsonPath = "\$.pull_request.base.repo.name"
+            def prSourceBranchJsonPath = "\$.pull_request.head.ref"
+            def prTargetBranchJsonPath = "\$.pull_request.base.ref"
+            def prActionJsonPath = "\$.action"
+            def filterText = "\$pr_action \$${headerEventName.replaceAll('-', '_')}"
+            def filterExpression = "^(opened|reopened)\\s(Merge\\sRequest\\sHook|pull_request)*?\$"
 
-                genericVariable {
-                  key("pr_repository")
-                  value("\$.pull_request.base.repo.name")
-                }
+            if (host.contains('gitlab')) {
+                headerEventName = "x-gitlab-event"
+                prNumberJsonPath = "\$.object_attributes.iid"
+                prRepositoryJsonPath = "\$.project.id"
+                prSourceBranchJsonPath = "\$.object_attributes.source_branch"
+                prTargetBranchJsonPath = "\$.object_attributes.target_branch"
+                prActionJsonPath = "\$.object_attributes.state"
+            } else if(host.contains('bitbucket')) {
+                headerEventName = "x-event-key"
+                filterText = "\$${headerEventName.replaceAll('-', '_')}"
+                filterExpression = "^(pullrequest:(created|updated))*?\$"
+                prNumberJsonPath = "\$.pullrequest.id"
+                prRepositoryJsonPath = "\$.pullrequest.destination.repository.name"
+                prSourceBranchJsonPath = "\$.pullrequest.source.branch.name"
+                prTargetBranchJsonPath = "\$.pullrequest.destination.branch.name"
+                prAction = ""
+            }
 
-                genericVariable {
-                  key("pr_source_branch")
-                  value("\$.pull_request.head.ref")
-                }
+            properties {
+              pipelineTriggers {
+                  triggers {
+                    genericTrigger {
+                     genericVariables {
+                      genericVariable {
+                       key("pr_number")
+                       value(prNumberJsonPath)
+                      }
 
-                genericVariable {
-                  key("pr_target_branch")
-                  value("\$.pull_request.base.ref")
-                }
+                      genericVariable {
+                        key("pr_repository")
+                        value(prRepositoryJsonPath)
+                      }
 
-                genericVariable {
-                  key("pr_action")
-                  value("\$.action")
+                      genericVariable {
+                        key("pr_source_branch")
+                        value(prSourceBranchJsonPath)
+                      }
+
+                      genericVariable {
+                        key("pr_target_branch")
+                        value(prTargetBranchJsonPath)
+                      }
+
+                      genericVariable {
+                        key("pr_action")
+                        value(prActionJsonPath)
+                      }
+                     }
+
+                     genericHeaderVariables {
+                      genericHeaderVariable {
+                       key(headerEventName)
+                       regexpFilter("")
+                      }
+                     }
+
+                     token($token)
+                     printContributedVariables(true)
+                     printPostContent(true)
+                     silentResponse(false)
+                     regexpFilterText(filterText)
+                     regexpFilterExpression(filterExpression)
+                    }
+                  }
                 }
-               }
-               // genericRequestVariables {
-               //  genericRequestVariable {
-               //   key("requestParameterName")
-               //   regexpFilter("")
-               //  }
-               // }
-               genericHeaderVariables {
-                genericHeaderVariable {
-                 key("X-GitHub-Event")
-                 regexpFilter("^(pull_request)*?")
-                }
-               }
-               token('abc123')
-               printContributedVariables(true)
-               printPostContent(true)
-               silentResponse(false)
-               regexpFilterText("\$pr_action")
-               regexpFilterExpression("^(opened|reopened)")
               }
             }
 
