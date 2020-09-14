@@ -74,7 +74,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
 			}
 
 			triggers {
-				genericTrigger {
+				GenericTrigger {
 					genericVariables {
 						genericVariable { key("pr_number") value(prNumberJsonPath) }
 						genericVariable { key("pr_repository") value(prRepositoryJsonPath) }
