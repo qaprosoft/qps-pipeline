@@ -42,7 +42,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                         credentials("${organization}-${repo}")
                         refspec('+refs/pull/*:refs/remotes/origin/pr/*')
                     }
-                    branch('${sha1}')
+                    branch('${pr_source_branch}')
                 }
             }
 
@@ -73,82 +73,54 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                 prAction = ""
             }
 
-            withCredentials([string(credentialsId: "sandinosanchez-gitlab", variable: "genericToken")]) {
-              properties([
-                pipelineTriggers([
-                  [$class: 'GenericTrigger',
-                    genericVariables: [
-                      [key: 'pr_number', value: prNumberJsonPath],
-                      [key: 'pr_repository', value: prRepositoryJsonPath]
-                      [key: 'pr_source_branch', value: prSourceBranchJsonPath],
-                      [key: 'pr_target_branch', value: prTargetBranchJsonPath],
-                      [key: 'pr_action', value: prActionJsonPath]
-                    ],
+            properties {
+              pipelineTriggers {
+                  triggers {
+                    genericTrigger {
+                     genericVariables {
+                      genericVariable {
+                       key("pr_number")
+                       value(prNumberJsonPath)
+                      }
 
-                    genericHeaderVariables: [
-                      [key: headerEventName]
-                    ],
+                      genericVariable {
+                        key("pr_repository")
+                        value(prRepositoryJsonPath)
+                      }
 
-                    token: genericToken,
-                    printContributedVariables: true,
-                    printPostContent: true,
-                    silentResponse: false,
-                    regexpFilterText: filterText,
-                    regexpFilterExpression: filterExpression
+                      genericVariable {
+                        key("pr_source_branch")
+                        value(prSourceBranchJsonPath)
+                      }
 
-                  ]
-                ])
-              ])
-            }
+                      genericVariable {
+                        key("pr_target_branch")
+                        value(prTargetBranchJsonPath)
+                      }
 
-            // properties {
-            //   pipelineTriggers {
-            //       triggers {
-            //         genericTrigger {
-            //          genericVariables {
-            //           genericVariable {
-            //            key("pr_number")
-            //            value(prNumberJsonPath)
-            //           }
+                      genericVariable {
+                        key("pr_action")
+                        value(prActionJsonPath)
+                      }
+                     }
 
-            //           genericVariable {
-            //             key("pr_repository")
-            //             value(prRepositoryJsonPath)
-            //           }
+                     genericHeaderVariables {
+                      genericHeaderVariable {
+                       key(headerEventName)
+                       regexpFilter("")
+                      }
+                     }
 
-            //           genericVariable {
-            //             key("pr_source_branch")
-            //             value(prSourceBranchJsonPath)
-            //           }
-
-            //           genericVariable {
-            //             key("pr_target_branch")
-            //             value(prTargetBranchJsonPath)
-            //           }
-
-            //           genericVariable {
-            //             key("pr_action")
-            //             value(prActionJsonPath)
-            //           }
-            //          }
-
-            //          genericHeaderVariables {
-            //           genericHeaderVariable {
-            //            key(headerEventName)
-            //            regexpFilter("")
-            //           }
-            //          }
-
-            //          token(env.genericHookToken)
-            //          printContributedVariables(true)
-            //          printPostContent(true)
-            //          silentResponse(false)
-            //          regexpFilterText(filterText)
-            //          regexpFilterExpression(filterExpression)
-            //         }
-            //       }
-            //     }
-            //   }
+                     token("")
+                     printContributedVariables(true)
+                     printPostContent(true)
+                     silentResponse(false)
+                     regexpFilterText(filterText)
+                     regexpFilterExpression(filterExpression)
+                    }
+                  }
+                }
+              }
           
             steps {
                 downstreamParameterized {
