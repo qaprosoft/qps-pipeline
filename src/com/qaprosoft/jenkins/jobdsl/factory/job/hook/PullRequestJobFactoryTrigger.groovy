@@ -100,7 +100,8 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
 
 					genericHeaderVariables {
 						genericHeaderVariable { 
-							key(headerEventName) 
+							key(headerEventName)
+							regexpFilter("")
 						}
 					}
 
