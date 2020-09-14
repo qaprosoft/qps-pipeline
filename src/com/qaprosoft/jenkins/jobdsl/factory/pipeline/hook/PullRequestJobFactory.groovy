@@ -32,7 +32,8 @@ public class PullRequestJobFactory extends PipelineFactory {
                 configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
             }
 
-        return pipelineJob
+            return pipelineJob
+        }
     }
 
     protected def getGitHubAuthId(project) {
