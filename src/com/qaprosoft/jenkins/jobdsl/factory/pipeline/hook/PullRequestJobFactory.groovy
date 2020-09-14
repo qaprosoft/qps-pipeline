@@ -54,13 +54,14 @@ public class PullRequestJobFactory extends PipelineFactory {
                 prTargetBranchJsonPath = "\$.object_attributes.target_branch"
                 prActionJsonPath = "\$.object_attributes.state"
             } else if(host.contains('bitbucket')) {
+                headerEventName = "x-event-key"
                 filterText = "\$${headerEventName.replaceAll('-', '_')}"
                 filterExpression = "^(pullrequest:(created|updated))*?\$"
-                headerEventName = "x-event-type"
                 prNumberJsonPath = "\$.pullrequest.id"
                 prRepositoryJsonPath = "\$.pullrequest.destination.repository.name"
                 prSourceBranchJsonPath = "\$.pullrequest.source.branch.name"
                 prTargetBranchJsonPath = "\$.pullrequest.destination.branch.name"
+                prAction = ""
             }
 
             properties {
