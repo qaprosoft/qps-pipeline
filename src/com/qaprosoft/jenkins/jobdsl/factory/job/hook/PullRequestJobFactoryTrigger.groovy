@@ -127,8 +127,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
                   }
                 }
               }
-            }
-
+          
             steps {
                 downstreamParameterized {
                     trigger('onPullRequest-' + this.repo) {
