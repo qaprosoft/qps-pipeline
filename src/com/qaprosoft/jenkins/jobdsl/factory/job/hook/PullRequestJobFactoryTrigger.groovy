@@ -76,15 +76,32 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
 			triggers {
 				GenericTrigger {
 					genericVariables {
-						genericVariable { key("pr_number") value(prNumberJsonPath) }
-						genericVariable { key("pr_repository") value(prRepositoryJsonPath) }
-						genericVariable { key("pr_source_branch") value(prSourceBranchJsonPath) }
-						genericVariable { key("pr_target_branch") value(prTargetBranchJsonPath) }
-						genericVariable { key("pr_action") value(prActionJsonPath) }
+						genericVariable { 
+							key("pr_number") 
+							value(prNumberJsonPath) 
+						}
+						genericVariable { 
+							key("pr_repository") 
+							value(prRepositoryJsonPath) 
+						}
+						genericVariable { 
+							key("pr_source_branch") 
+							value(prSourceBranchJsonPath) 
+						}
+						genericVariable { 
+							key("pr_target_branch") 
+							value(prTargetBranchJsonPath) 
+						}
+						genericVariable { 
+							key("pr_action") 
+							value(prActionJsonPath) 
+						}
 			 		}
 
 					genericHeaderVariables {
-						genericHeaderVariable { key(headerEventName) }
+						genericHeaderVariable { 
+							key(headerEventName) 
+						}
 					}
 
 					token("")
