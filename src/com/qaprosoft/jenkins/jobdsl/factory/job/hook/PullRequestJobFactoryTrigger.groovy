@@ -34,17 +34,17 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
 				stringParam('pr_action', '', '')
 			}
 
-			// scm {
-			// 	git {
-			// 		remote {
-			// 			//TODO: potential issue for unsecure github setup! 
-			// 			github(this.organization + '/' + this.repo, 'https', host)
-			// 			credentials("${organization}-${repo}")
-			// 			refspec('+refs/pull/${pr_number}/*:refs/remotes/origin/pr/${pr_number}/*')
-			// 		}
-			// 		branch('${pr_source_commit_sha}')
-			// 	}
-			// }
+			scm {
+				git {
+					remote {
+						//TODO: potential issue for unsecure github setup! 
+						github(this.organization + '/' + this.repo, 'https', host)
+						credentials("${organization}-${repo}")
+						refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+					}
+					branch('${pr_source_branch}')
+				}
+			}
 
 			def headerEventName = "x-github-event"
 			def prNumberJsonPath = "\$.number"
