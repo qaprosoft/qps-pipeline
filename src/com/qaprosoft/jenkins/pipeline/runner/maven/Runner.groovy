@@ -32,7 +32,7 @@ public class Runner extends AbstractRunner {
     public void onPullRequest() {
         context.node("maven") {
             logger.info("Runner->onPullRequest")
-            getScm().clonePR()
+            //getScm().clonePR()
             compile("-U clean compile test -DskipTests", true)
         }
     }
