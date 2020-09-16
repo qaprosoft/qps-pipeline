@@ -6,6 +6,8 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.BuildJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PublishJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.DeployJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
@@ -151,7 +153,7 @@ class Repository extends BaseObject {
             def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
             logger.error("zafiraFields: " + zafiraFields)
 
-            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*|build"))
+            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*|build|deploy|publish"))
 
             def pullRequestFreestyleJobDescription = "To finish GitHub Pull Request Checker setup, please, follow the steps below:\n" +
                     "- Manage Jenkins -> Configure System -> Populate 'GitHub Pull Request Builder': usr should have admin privileges, Auto-manage webhooks should be enabled\n" +
@@ -185,14 +187,17 @@ class Repository extends BaseObject {
                 def buildTool = determineBuildTool()
                 def isDockerRunner = false
 
-                if (runnerClass.contains('docker.Runner')) {
+                if (extendsClass([com.qaprosoft.jenkins.pipeline.runner.docker.Runner])) {
                     if (isParamEmpty(getCredentials(githubOrganization + '-docker'))) {
                         updateJenkinsCredentials(githubOrganization + '-docker', 'docker hub creds', Configuration.Parameter.DOCKER_HUB_USERNAME.getValue(), Configuration.Parameter.DOCKER_HUB_PASSWORD.getValue())
-                    } 
+                    }
+
                     isDockerRunner = true
+                    registerObject("deploy_job", new DeployJobFactory(repoFolder, getDeployScript(), "deploy", githubHost, githubOrganization, Configuration.get(REPO)))
+                    registerObject("publish_job", new PublishJobFactory(repoFolder, getPublishScript(), "publish", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH)))
                 }
 
-                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, buildTool, isDockerRunner))
+                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), buildTool, isDockerRunner))
             }
 
             factoryRunner.run(dslObjects)
@@ -229,6 +234,22 @@ class Repository extends BaseObject {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        }
+    }
+
+    protected String getPublishScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).publish()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).publish()"
+        }
+    }
+
+    protected String getDeployScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).deploy()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).deploy()"
         }
     }
 

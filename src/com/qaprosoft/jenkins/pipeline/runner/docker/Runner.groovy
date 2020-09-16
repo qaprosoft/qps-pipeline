@@ -7,18 +7,24 @@ import com.qaprosoft.jenkins.Utils
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Runner extends AbstractRunner {
-
+	
+	protected def pipelineLibrary
+	protected def runnerClass
 	protected def registry
 	protected def registryCreds
 	protected def releaseName
 	protected def dockerFile
-	protected def dockerFilePath
+  	protected def buildTool
 	
 	public Runner(context) {
 		super(context)
+		pipelineLibrary = "QPS-Pipeline"
+		runnerClass = "com.qaprosoft.jenkins.pipeline.runner.docker.Runner"
 		registry = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}/${Configuration.get("repo")}"
 		registryCreds = "${Configuration.get(Configuration.Parameter.GITHUB_ORGANIZATION)}-docker"
-		releaseName = "1.${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}-SNAPSHOT"
+		releaseName = "1.${Configuration.get("BUILD_NUMBER")}-SNAPSHOT"
+		buildTool = Configuration.get("build_tool")
+		dockerFile = Configuration.get("DOCKERFILE")
 		context.currentBuild.setDisplayName(releaseName)
 	}
 
@@ -32,6 +38,7 @@ class Runner extends AbstractRunner {
 					context.dockerDeploy(releaseName, registry, registryCreds)
 				} catch (Exception e) {
 					logger.error("Something went wrong while pushing the docker image. \n" + Utils.printStackTrace(e))
+					context.currentBuild.result = BuildResult.FAILURE
 				} finally {
 					clean()
 				}
@@ -45,6 +52,7 @@ class Runner extends AbstractRunner {
 			context.timestamps {
 				logger.info('DockerRunner->onPullRequest')
 				try {
+					context.currentBuild.setDisplayName(releaseName)
 					getScm().clonePR()
 					def image = context.dockerDeploy.build(releaseName, registry)
 					context.dockerDeploy.clean(image)
@@ -64,15 +72,11 @@ class Runner extends AbstractRunner {
 			context.timestamps {
 				logger.info('DockerRunner->build')
 				try {
-					def buildTool = Configuration.get("build_tool")
-					releaseName = Configuration.get('release_version')
-					dockerFile = Configuration.get("dockerfile")
-
 					setDisplayNameTemplate("#${releaseName}|${Configuration.get('branch')}")
 					currentBuild.displayName = getDisplayName()
 					getScm().clone()
 
-					context.stage("$buildTool build") {
+          context.stage("${this.buildTool} build") {
 						switch (buildTool.toLowerCase()) {
 							case 'maven':
 								context.mavenBuild(Configuration.get('maven_goals'))
