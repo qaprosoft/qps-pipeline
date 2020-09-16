@@ -71,7 +71,7 @@ public class PullRequestJobFactoryTrigger extends JobFactory {
 				prRepositoryJsonPath = "\$.pullrequest.destination.repository.name"
 				prSourceBranchJsonPath = "\$.pullrequest.source.branch.name"
 				prTargetBranchJsonPath = "\$.pullrequest.destination.branch.name"
-				prAction = ""
+				prActionJsonPath = ""
 			}
 
 			triggers {
