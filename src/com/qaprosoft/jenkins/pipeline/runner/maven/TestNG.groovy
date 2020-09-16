@@ -720,7 +720,7 @@ public class TestNG extends Runner {
         // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
         Configuration.remove("device")
         //TODO: move it to the global jenkins variable
-        Configuration.set("capabilities.newCommandTimeout", "180")
+//        Configuration.set("capabilities.newCommandTimeout", "180")
         Configuration.set("java.awt.headless", "true")
     }
 
@@ -729,9 +729,9 @@ public class TestNG extends Runner {
         Configuration.set("mobile_app_clear_cache", "true")
         Configuration.set("capabilities.autoGrantPermissions", "true")
         Configuration.set("capabilities.noSign", "true")
-        Configuration.set("capabilities.appWaitDuration", "270000")
-        Configuration.set("capabilities.androidInstallTimeout", "270000")
-        Configuration.set("capabilities.adbExecTimeout", "270000")
+//        Configuration.set("capabilities.appWaitDuration", "270000")
+//        Configuration.set("capabilities.androidInstallTimeout", "270000")
+//        Configuration.set("capabilities.adbExecTimeout", "270000")
     }
 
     protected void prepareForiOS() {
