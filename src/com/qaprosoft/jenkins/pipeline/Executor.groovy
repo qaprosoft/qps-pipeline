@@ -119,14 +119,14 @@ public class Executor {
         }
     }
 
-    static def createPRChecker(credentialsId) {
-        GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
-        List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
-//        Removes all autocreated by plugin checkers
-//        githubAuths.clear()
-        githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${credentialsId} connection", null, null))
-        descriptor.save()
-    }
+//     static def createPRChecker(credentialsId) {
+//         GhprbTrigger.DescriptorImpl descriptor = Jenkins.instance.getDescriptorByType(org.jenkinsci.plugins.ghprb.GhprbTrigger.DescriptorImpl.class)
+//         List<GhprbGitHubAuth> githubAuths = descriptor.getGithubAuth()
+// //        Removes all autocreated by plugin checkers
+// //        githubAuths.clear()
+//         githubAuths.add(new GhprbGitHubAuth('https://api.github.com', null, credentialsId, "${credentialsId} connection", null, null))
+//         descriptor.save()
+//     }
 
     static boolean isMobile() {
         if (isParamEmpty(Configuration.get("job_type"))) {
@@ -319,36 +319,36 @@ public class Executor {
         return isUpdated
     }
 
-    static def isLabelApplied(build, label) {
-        boolean isApplied = false
+    // static def isLabelApplied(build, label) {
+    //     boolean isApplied = false
 
-        //get github pull request cause from current build if any
-        GhprbCause c = Ghprb.getCause(build)
-        if (c == null) {
-            // due to the refactoring from 4.9 pr checker is executed by upstream trigger!
-            // i.e. we have to detect upstream build to analyze real cause and other PR related data
-            Cause.UpstreamCause cause = build.getCause(Cause.UpstreamCause.class);
-            build = cause.getUpstreamRun();
-        }
+    //     //get github pull request cause from current build if any
+    //     GhprbCause c = Ghprb.getCause(build)
+    //     if (c == null) {
+    //         // due to the refactoring from 4.9 pr checker is executed by upstream trigger!
+    //         // i.e. we have to detect upstream build to analyze real cause and other PR related data
+    //         Cause.UpstreamCause cause = build.getCause(Cause.UpstreamCause.class);
+    //         build = cause.getUpstreamRun();
+    //     }
 
-        c = Ghprb.getCause(build)
-        GhprbTrigger trigger = Ghprb.extractTrigger(build)
+    //     c = Ghprb.getCause(build)
+    //     GhprbTrigger trigger = Ghprb.extractTrigger(build)
 
-        GhprbPullRequest ghprbPullRequest = trigger.getRepository().getPullRequest(c.getPullID())
-        for (ghLabel in ghprbPullRequest.getPullRequest().getLabels()) {
-            if (ghLabel.getName() == label) {
-                isApplied = true
-                break
-            }
-        }
-        return isApplied
-    }
+    //     GhprbPullRequest ghprbPullRequest = trigger.getRepository().getPullRequest(c.getPullID())
+    //     for (ghLabel in ghprbPullRequest.getPullRequest().getLabels()) {
+    //         if (ghLabel.getName() == label) {
+    //             isApplied = true
+    //             break
+    //         }
+    //     }
+    //     return isApplied
+    // }
 
-    static def getPullRequest(build) {
-        GhprbCause c = Ghprb.getCause(build)
-        GhprbTrigger trigger = Ghprb.extractTrigger(build)
-        return trigger.getRepository().getPullRequest(c.getPullID()).getPullRequest()
-    }
+    // static def getPullRequest(build) {
+    //     GhprbCause c = Ghprb.getCause(build)
+    //     GhprbTrigger trigger = Ghprb.extractTrigger(build)
+    //     return trigger.getRepository().getPullRequest(c.getPullID()).getPullRequest()
+    // }
 
     @NonCPS
     static def isSnapshotRequired(currentBuild, trigger) {
