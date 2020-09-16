@@ -720,7 +720,9 @@ public class TestNG extends Runner {
         // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
         Configuration.remove("device")
         //TODO: move it to the global jenkins variable
-        Configuration.set("capabilities.newCommandTimeout", "90")
+        
+        // to fix "Session [9ed2aef1-8bd0-4151-a272-e5e869e0991a] was terminated due to TIMEOUT"
+        Configuration.set("capabilities.newCommandTimeout", "120")
         Configuration.set("java.awt.headless", "true")
     }
 
