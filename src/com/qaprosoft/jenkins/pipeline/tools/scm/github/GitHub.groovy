@@ -97,11 +97,11 @@ class GitHub implements ISCM {
 
     public def clonePR() {
         context.stage('Checkout GitHub Repository') {
-            def branch = Configuration.get("pr_branch")
+            def branch = Configuration.get("pr_source_branch")
             def prNumber = Configuration.get('pr_number')
             def gitUrl = Configuration.resolveVars(gitHtmlUrl)
             logger.info("GitHub->clonePR\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
-            context.checkout getCheckoutParams(gitUrl, "origin/merge-requests/${prNumber}/heads", ".", true, false, '+refs/merge-requests/*:refs/remotes/origin/merge-requests/*', credentialsId)
+            context.checkout getCheckoutParams(gitUrl, "${branch}", ".", true, false, '+refs/merge-requests/*:refs/remotes/origin/merge-requests/*', credentialsId)
         }
     }
 
