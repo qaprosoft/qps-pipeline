@@ -34,7 +34,8 @@ class SonarClient extends HttpClient {
             // goals needed to decorete pr with sonar analysis
             if (scmProvider.contains("github")) {
                 goals += " -Dsonar.pullrequest.github.repository=${Configuration.get("pr_repository")} \
-                          -Dsonar.pullrequest.provider=Github"
+                           -Dsonar.scm.revision=${Configuration.get("pr_sha")} \
+                           -Dsonar.pullrequest.provider=Github"
             } else if (scmProvider.contains("bitbucket")) {
                 goals += " -Dsonar.pullrequest.bitbucket.repositorySlug=${Configuration.get("pr_repository")} \
                           -Dsonar.pullrequest.provider=BitbucketServer"
