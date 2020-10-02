@@ -81,8 +81,8 @@ public abstract class AbstractRunner extends BaseObject {
         int nameCount = Paths.get(jobName).getNameCount()
 
         def orgFolderName = ""
-        if (nameCount == 1 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
-            // testrail-updater - i.e. stage
+        if (nameCount == 1 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater") || jobName.contains("launcher") || jobName.contains("RegisterRepository"))) {
+            // testrail-updater - i.e. empty org name
             orgFolderName = ""
         } else if (nameCount == 2 && (jobName.contains("qtest-updater") || jobName.contains("testrail-updater"))) {
             // stage/testrail-updater - i.e. stage
