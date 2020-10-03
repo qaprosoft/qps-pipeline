@@ -34,15 +34,6 @@ public class PushJobFactory extends PipelineFactory {
         def pipelineJob = super.create()
 
         pipelineJob.with {
-            // properties {
-            //     //TODO: add SCM artifacts
-            //     githubProjectUrl(scmRepoUrl)
-            //     pipelineTriggers {
-            //         triggers {
-            //             githubPush()
-            //         }
-            //     }
-            // }
 
             //TODO: think about other parameters to support DevOps CI operations
             parameters {

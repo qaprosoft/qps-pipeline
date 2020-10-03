@@ -9,27 +9,34 @@ import static com.qaprosoft.jenkins.Utils.*
 class GitHub implements ISCM {
 
     protected def context
-    //TODO: rename into scmUrl as it covers both https and ssh cases
-    protected def gitHtmlUrl
+    protected def scmHtmlUrl
     protected def credentialsId
     protected Logger logger
     protected def scmHost
+    protected def prRefSpec
 
     public GitHub(context) {
         this.context = context
         logger = new Logger(context)
         scmHost = Configuration.get(Configuration.Parameter.GITHUB_HOST)
-        if (scmHost.contains("upnetix")) {
-            gitHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-        } else if (scmHost.contains("bitbucket")) {
-            gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-        } else if (scmHost.contains("gitlab")) {
-            gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-        } else if (scmHost.contains("io")) {
-            gitHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
-        } else {
-            gitHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+
+        switch (scmHost) {
+            case ~/.*upnetix.*/:
+                scmHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+                break;
+            case ~/.*gitlab.*/:
+                scmHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+                prRefSpec = "+refs/merge-requests/*:refs/remotes/origin/merge-requests/*"
+                break;
+            case ~/.*io.*/:
+                scmHtmlUrl = "https://\${GITHUB_HOST}/scm/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+                break;
+            default: //github by default
+                scmHtmlUrl = "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+                prRefSpec = "+refs/pull/*:refs/remotes/origin/pr/*"
+                break;
         }
+
         //TODO: remove credentialsId setup here or replace by scmOrg after final migration
         //this.credentialsId = "${Configuration.get("GITHUB_ORGANIZATION")}-${Configuration.get("repo")}"
         if (Configuration.get("repo") != null) {
@@ -38,9 +45,8 @@ class GitHub implements ISCM {
             this.credentialsId = null
         }
 
-
         if (Configuration.get("scmURL") != null) {
-            gitHtmlUrl = Configuration.get("scmURL")
+            scmHtmlUrl = Configuration.get("scmURL")
             credentialsId = ''
         }
     }
@@ -56,7 +62,7 @@ class GitHub implements ISCM {
             def branch = Configuration.get("branch")
             def repo = Configuration.get("repo")
             def userId = Configuration.get("BUILD_USER_ID")
-            def gitUrl = Configuration.resolveVars(gitHtmlUrl)
+            def gitUrl = Configuration.resolveVars(scmHtmlUrl)
             def credentialsId = Configuration.get("GITHUB_ORGANIZATION") + "-" + repo
             logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
             logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
@@ -99,16 +105,16 @@ class GitHub implements ISCM {
         context.stage('Checkout GitHub Repository') {
             def branch = Configuration.get("pr_source_branch")
             def prNumber = Configuration.get('pr_number')
-            def gitUrl = Configuration.resolveVars(gitHtmlUrl)
+            def gitUrl = Configuration.resolveVars(scmHtmlUrl)
             logger.info("GitHub->clonePR\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
-            context.checkout getCheckoutParams(gitUrl, "origin/pr/${prNumber}/merge", ".", true, false, '+refs/pull/*:refs/remotes/origin/pr/*', credentialsId)
+            context.checkout getCheckoutParams(gitUrl, "origin/pr/${prNumber}/merge", ".", true, false, prRefSpec, credentialsId)
         }
     }
 
     public def clonePush() {
         context.stage('Checkout GitHub Repository') {
             def branch = Configuration.get("branch")
-            def gitUrl = Configuration.resolveVars(gitHtmlUrl)
+            def gitUrl = Configuration.resolveVars(scmHtmlUrl)
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, "+refs/heads/${branch}:refs/remotes/origin/${branch}", credentialsId)
         }
@@ -149,6 +155,6 @@ class GitHub implements ISCM {
     }
 
     public def setUrl(url) {
-        gitHtmlUrl = url
+        scmHtmlUrl = url
     }
 }

@@ -6,6 +6,15 @@ import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
 @InheritConstructors
 public class PullRequestJobFactory extends PipelineFactory {
 
+    def HEADER_EVENT_NAME
+    def PR_NUMBER_JSON_PATH
+    def PR_REPOSITORY_JSON_PATH
+    def PR_SOURCE_BRANCH_JSON_PATH
+    def PR_TARGET_BRANCH_JSON_PATH
+    def PR_SHA_JSON_PATH
+    def FILTER_EXPRESSION
+    def FILTER_TEXT
+
     def host
     def organization
     def repo
@@ -115,6 +124,10 @@ public class PullRequestJobFactory extends PipelineFactory {
 
             return pipelineJob
         }
+    }
+
+    protected def setPrVariables(ls) {
+        
     }
 
     protected def getGitHubAuthId(project) {
