@@ -1,34 +1,13 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook
 
 import groovy.transform.InheritConstructors
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.ScmJobFactory
 
 @InheritConstructors
-public class PullRequestJobFactory extends PipelineFactory {
+class PullRequestJobFactory extends ScmJobFactory {
 
-    def HEADER_EVENT_NAME
-    def PR_NUMBER_JSON_PATH
-    def PR_REPOSITORY_JSON_PATH
-    def PR_SOURCE_BRANCH_JSON_PATH
-    def PR_TARGET_BRANCH_JSON_PATH
-    def PR_SHA_JSON_PATH
-    def FILTER_EXPRESSION
-    def FILTER_TEXT
-
-    def host
-    def organization
-    def repo
-    def scmRepoUrl
-
-    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, scmRepoUrl) {
-        this.folder = folder
-        this.pipelineScript = pipelineScript
-        this.name = jobName
-        this.description = jobDesc
-        this.host = host
-        this.organization = organization
-        this.repo = repo
-        this.scmRepoUrl = scmRepoUrl
+    PullRequestJobFactory(folder, jobName, desc, pipelineScript, scmHost, scmOrg, scmRepo, scmBranch, scmUrl) {
+        super(folder, jobName, desc, pipelineScript, scmHost, scmOrg, scmRepo, scmBranch, scmUrl)
     }
 
     def create() {
@@ -36,9 +15,6 @@ public class PullRequestJobFactory extends PipelineFactory {
         pipelineJob.with {
 
             parameters {
-                stringParam('repo', repo, 'Your GitHub repository for scanning')
-                configure addHiddenParameter('GITHUB_HOST', '', host)
-                configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
                 stringParam('pr_number', '', '')
                 stringParam('pr_repository', '', '')
                 stringParam('pr_source_branch', '', '')

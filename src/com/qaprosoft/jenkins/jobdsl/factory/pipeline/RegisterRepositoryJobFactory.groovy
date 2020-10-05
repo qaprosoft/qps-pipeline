@@ -5,11 +5,10 @@ import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class RegisterRepositoryJobFactory extends PipelineFactory {
-    public RegisterRepositoryJobFactory(folder, name, jobDesc) {
-        this.folder = folder
-        this.name = name
-        this.description = jobDesc
+class RegisterRepositoryJobFactory extends PipelineFactory {
+
+    RegisterRepositoryJobFactory(folder, name, jobDesc) {
+        super(foler, name, description)
     }
 
     def create() {
@@ -28,12 +27,14 @@ public class RegisterRepositoryJobFactory extends PipelineFactory {
             parameters {
                 configure stringParam('scmHost', 'github.com', 'Source Control Management host')
                 configure stringParam('scmOrg', org, 'Source Control Management organization')
-                configure stringParam('repo', repo, 'Repository for scanning')
-                configure stringParam('branch', 'master', 'SCM repository branch to run against')
+                configure stringParam('scmRepo', repo, 'Repository for scanning')
+                configure stringParam('scmBranch', 'master', 'SCM repository branch to run against')
                 configure stringParam('scmUser', '', 'SCM user')
                 configure stringParam('scmToken', '', 'CSM token with read permissions')
+                
                 configure addExtensibleChoice('pipelineLibrary', "gc_PIPELINE_LIBRARY", "Groovy JobDSL/Pipeline library, for example: https://github.com/qaprosoft/qps-pipeline/releases", "QPS-Pipeline")
                 configure addExtensibleChoice('runnerClass', "gc_RUNNER_CLASS", "Pipeline runner class", "com.qaprosoft.jenkins.pipeline.runner.maven.TestNG")
+                
                 configure addHiddenParameter('zafiraFields', '', '')
                 configure addHiddenParameter('userId', '', '2')
             }

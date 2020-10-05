@@ -8,25 +8,14 @@ import groovy.transform.InheritConstructors
 import static com.qaprosoft.jenkins.Utils.*
 
 @InheritConstructors
-public class CronJobFactory extends PipelineFactory {
+public class CronJobFactory extends ScmJobFactory {
 
-    def host
-    def repo
-    def organization
-    def branch
     def suitePath
     def scheduling
     def orgRepoScheduling
 
-    public CronJobFactory(folder, pipelineScript, cronJobName, host, repo, organization, branch, suitePath, jobDesc, orgRepoScheduling) {
-        this.folder = folder
-        this.pipelineScript = pipelineScript
-        this.description = jobDesc
-        this.name = cronJobName
-        this.host = host
-        this.repo = repo
-        this.organization = organization
-        this.branch = branch
+    public CronJobFactory(folder, cronJobName, jobDesc, pipelineScript, scmHost, scmOrg, scmRepo, scmBranch, scmUrl, suitePath, orgRepoScheduling) {
+        super(folder, cronJobName, jobDesc, pipelineScript, scmHost, scmOrg, scmRepo, scmBranch, scmUrl)
         this.suitePath = suitePath
         this.orgRepoScheduling = orgRepoScheduling
     }
@@ -57,15 +46,13 @@ public class CronJobFactory extends PipelineFactory {
                     editable(true)
                     description('Environment to test against')
                 }
-                configure addHiddenParameter('repo', '', repo)
-                configure addHiddenParameter('GITHUB_HOST', '', host)
-                configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
-                configure addHiddenParameter('ci_parent_url', '', '')
-                configure addHiddenParameter('ci_parent_build', '', '')
 
                 configure stringParam('branch', this.branch, "SCM repository branch to run against")
-                stringParam('email_list', '', 'List of Users to be emailed after the test. If empty then populate from jenkinsEmail suite property')
+                configure stringParam('email_list', '', 'List of Users to be emailed after the test. If empty then populate from jenkinsEmail suite property')
                 configure addExtensibleChoice('BuildPriority', "gc_BUILD_PRIORITY", "Priority of execution. Lower number means higher priority", "5")
+
+                configure addHiddenParameter('ci_parent_url', '', '')
+                configure addHiddenParameter('ci_parent_build', '', '')
                 configure addHiddenParameter('zafiraFields', '', '')
             }
 

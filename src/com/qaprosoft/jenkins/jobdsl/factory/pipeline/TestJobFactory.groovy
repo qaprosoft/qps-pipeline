@@ -7,12 +7,8 @@ import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
-public class TestJobFactory extends PipelineFactory {
+public class TestJobFactory extends ScmJobFactory {
 
-    def host
-    def repo
-    def organization
-    def branch
     def sub_project
     def zafira_project
     def suitePath
@@ -22,15 +18,9 @@ public class TestJobFactory extends PipelineFactory {
     def threadCount
     def dataProviderThreadCount
 
-    public TestJobFactory(folder, pipelineScript, host, repo, organization, branch,
-                          sub_project, zafira_project, suitePath, suiteName, jobDesc, orgRepoScheduling, threadCount, dataProviderThreadCount) {
-        this.folder = folder
-        this.description = jobDesc
-        this.pipelineScript = pipelineScript
-        this.host = host
-        this.repo = repo
-        this.organization = organization
-        this.branch = branch
+    public TestJobFactory(folder, name, decription, pipelineScript, scmHost, scmOrg, scmRepo, scmBranch, scmUrl=''
+                          sub_project, zafira_project, suitePath, suiteName, orgRepoScheduling, threadCount, dataProviderThreadCount) {
+        super(folder, name, description, pipelineScript, scmHost, scmOrg, scmRepo, scmBranch, scmUrl)
         this.sub_project = sub_project
         this.zafira_project = zafira_project
         this.suitePath = suitePath

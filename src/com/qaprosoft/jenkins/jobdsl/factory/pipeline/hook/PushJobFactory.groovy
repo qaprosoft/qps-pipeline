@@ -1,30 +1,17 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook
 
 import groovy.transform.InheritConstructors
-import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PipelineFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.ScmJobFactory
 
 @InheritConstructors
-public class PushJobFactory extends PipelineFactory {
-
-    def host
-    def organization
-    def repo
-    def branch
-    def scmRepoUrl
+public class PushJobFactory extends ScmJobFactory {
+    
     def userId
     def zafiraFields
     def isTestNgRunner
 
-    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, isTestNgRunner, zafiraFields) {
-        this.folder = folder
-        this.pipelineScript = pipelineScript
-        this.name = jobName
-        this.description = jobDesc
-        this.host = host
-        this.organization = organization
-        this.repo = repo
-        this.branch = branch
-        this.scmRepoUrl = scmRepoUrl
+    public PushJobFactory(folder, jobName, desc, pipelineScript, scmHost, scmOrg, scmRepo, scmBranch, scmUrl, userId, isTestNgRunner, zafiraFields) {
+        super(folder, jobName, desc, pipelineScript, scmHost, scmOrg, scmRepo, scmBranch, scmUrl)
         this.userId = userId
         this.isTestNgRunner = isTestNgRunner
         this.zafiraFields = zafiraFields
@@ -37,9 +24,7 @@ public class PushJobFactory extends PipelineFactory {
 
             //TODO: think about other parameters to support DevOps CI operations
             parameters {
-                configure addHiddenParameter('GITHUB_HOST', '', host)
-                configure addHiddenParameter('GITHUB_ORGANIZATION', '', organization)
-                stringParam('repo', repo, 'GitHub repository for scanning')
+                stringParam('repo', this.scmRepo, 'GitHub repository for scanning')
                 //TODO: analyze howto support several gc_GIT_BRACH basing on project
                 stringParam('branch', this.branch, "SCM repository branch to run against")
                 if (isTestNgRunner) {
