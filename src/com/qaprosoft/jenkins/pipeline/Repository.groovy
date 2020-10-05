@@ -97,7 +97,7 @@ class Repository extends BaseObject {
                 this.rootFolder = "/"
             }
 
-            def zafiraFields = Configuration.get("zafiraFields")
+            def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
             logger.debug("zafiraFields: " + zafiraFields)
             if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
                 def reportingServiceUrl = Configuration.get(Configuration.Parameter.CREDS_ZAFIRA_SERVICE_URL)
@@ -111,17 +111,6 @@ class Repository extends BaseObject {
 
             logger.debug("organization: " + Configuration.get(SCM_ORG))
             logger.debug("rootFolder: " + this.rootFolder)
-
-            // TODO: test with SZ his custom CI setup
-            // there is no need to register organization_folder at all as this fucntionality is provided in dedicated RegisterOrganization job logic            
-/*
-            if (!"/".equals(this.rootFolder)) {
-                //register for JobDSL only non root organization folder
-                if (isParamEmpty(getJenkinsFolderByName(this.rootFolder))){
-                    registerObject("organization_folder", new FolderFactory(this.rootFolder, ""))
-                }
-            }
-*/
 
             if (!"/".equals(this.rootFolder)) {
                 //For both cases when rootFolder exists job was started with existing organization value,
@@ -138,19 +127,14 @@ class Repository extends BaseObject {
             def githubHost = Configuration.get(SCM_HOST)
             def githubOrganization = Configuration.get(SCM_ORG)
 
-//			createPRChecker(credentialsId)
-
             registerObject("project_folder", new FolderFactory(repoFolder, ""))
-//			 TODO: move folder and main trigger job creation onto the createRepository method
+            // TODO: move folder and main trigger job creation onto the createRepository method
 
             // Support DEV related CI workflow
-//			TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
+            // TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get(REPO)}")
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
-            def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
-            logger.error("zafiraFields: " + zafiraFields)
-
             registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*|build"))
 
             def pullRequestFreestyleJobDescription = "To finish GitHub Pull Request Checker setup, please, follow the steps below:\n" +
