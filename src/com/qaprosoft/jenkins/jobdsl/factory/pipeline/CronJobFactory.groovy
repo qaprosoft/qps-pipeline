@@ -4,6 +4,7 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
+import com.qparosoft.jenkins.jobdsl.factory.pipeline.scm.ScmJobFactory
 
 import static com.qaprosoft.jenkins.Utils.*
 

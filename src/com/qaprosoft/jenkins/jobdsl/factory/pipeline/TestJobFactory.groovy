@@ -2,9 +2,11 @@ package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 @Grab('org.testng:testng:6.8.8')
 
-import static com.qaprosoft.jenkins.Utils.*
 import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
+import com.qparosoft.jenkins.jobdsl.factory.pipeline.scm.ScmJobFactory
+
+import static com.qaprosoft.jenkins.Utils.*
 
 @InheritConstructors
 public class TestJobFactory extends ScmJobFactory {

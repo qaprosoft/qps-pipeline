@@ -1,6 +1,7 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
 import groovy.transform.InheritConstructors
+import com.qparosoft.jenkins.jobdsl.factory.pipeline.scm.ScmJobFactory
 
 @InheritConstructors
 class BuildJobFactory extends ScmJobFactory {
