@@ -9,7 +9,9 @@ import static com.qaprosoft.jenkins.Utils.*
 class RegisterRepositoryJobFactory extends PipelineFactory {
 
     RegisterRepositoryJobFactory(folder, name, jobDesc) {
-        super(folder, name, jobDesc)
+        this.folder = folder
+        this.name = name
+        this.description = jobDesc
     }
 
     def create() {

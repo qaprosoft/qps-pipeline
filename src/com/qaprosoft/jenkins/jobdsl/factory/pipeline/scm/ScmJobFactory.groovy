@@ -17,7 +17,9 @@ class ScmJobFactory extends PipelineFactory {
     }
 
     ScmJobFactory(foler, name, description, pipelineScript, scmHost, scmOrg, scmRepo, scmBranch, scmUrl='') {
-        super(foler, name, description)
+        this.folder = folder
+        this.name = name
+        this.description = description
         this.scmHost = scmHost
         this.scmOrg = scmOrg
         this.scmRepo = scmRepo
