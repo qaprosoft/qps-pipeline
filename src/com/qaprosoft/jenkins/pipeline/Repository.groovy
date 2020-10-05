@@ -95,18 +95,18 @@ class Repository extends BaseObject {
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
-            }
-
-            //TODO: refactor removing zafira naming
-            def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
-            logger.debug("zafiraFields: " + zafiraFields)
-            if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                def reportingServiceUrl = Configuration.get("zafira_service_url")
-                def reportingRefreshToken = Configuration.get("zafira_access_token")
-                logger.debug("reportingServiceUrl: " + reportingServiceUrl)
-                logger.debug("reportingRefreshToken: " + reportingRefreshToken)
-                if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
-                    Organization.registerReportingCredentials(this.rootFolder, reportingServiceUrl, reportingRefreshToken)
+                
+                //TODO: refactor removing zafira naming
+                def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
+                logger.debug("zafiraFields: " + zafiraFields)
+                if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+                    def reportingServiceUrl = Configuration.get("zafira_service_url")
+                    def reportingRefreshToken = Configuration.get("zafira_access_token")
+                    logger.debug("reportingServiceUrl: " + reportingServiceUrl)
+                    logger.debug("reportingRefreshToken: " + reportingRefreshToken)
+                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
+                        Organization.registerReportingCredentials("", reportingServiceUrl, reportingRefreshToken)
+                    }
                 }
             }
 
