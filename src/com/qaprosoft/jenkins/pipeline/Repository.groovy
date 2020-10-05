@@ -51,7 +51,7 @@ class Repository extends BaseObject {
         }
 
         // execute new _trigger-<repo> to regenerate other views/jobs/etc
-        def onPushJobLocation = Configuration.get(REPO) + "/onPush-" + Configuration.get(REPO)
+        def onPushJobLocation = Configuration.get(SCM_REPO) + "/onPush-" + Configuration.get(SCM_REPO)
 
         if (!isParamEmpty(this.rootFolder)) {
             onPushJobLocation = this.rootFolder + "/" + onPushJobLocation
@@ -60,8 +60,8 @@ class Repository extends BaseObject {
         context.build job: onPushJobLocation,
             propagate: true,
             parameters: [
-                    context.string(name: 'repo', value: Configuration.get(REPO)),
-                    context.string(name: 'branch', value: Configuration.get(BRANCH)),
+                    context.string(name: 'repo', value: Configuration.get(SCM_REPO)),
+                    context.string(name: 'branch', value: Configuration.get(SCM_BRANCH)),
                     context.booleanParam(name: 'onlyUpdated', value: false),
                     context.string(name: 'removedConfigFilesAction', value: 'DELETE'),
                     context.string(name: 'removedJobAction', value: 'DELETE'),
@@ -77,7 +77,7 @@ class Repository extends BaseObject {
 
     protected void prepare() {
         def githubOrganization = Configuration.get(SCM_ORG)
-        def credentialsId = "${githubOrganization}-${Configuration.get(REPO)}"
+        def credentialsId = "${githubOrganization}-${Configuration.get(SCM_REPO)}"
 
         updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get(SCM_USER), Configuration.get(SCM_TOKEN))
 
@@ -88,7 +88,7 @@ class Repository extends BaseObject {
     private void generateCiItems() {
         context.stage("Create Repository") {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
-            def repoFolder = Configuration.get(REPO)
+            def repoFolder = Configuration.get(SCM_REPO)
 
             // Folder from which RegisterRepository job was started
             // Important! using getOrgFolderNam from Utils is prohibited here!
@@ -134,7 +134,7 @@ class Repository extends BaseObject {
             logger.debug("repoFolder: " + repoFolder)
 
             //Job build display name
-            context.currentBuild.displayName = "#${buildNumber}|${Configuration.get(REPO)}|${Configuration.get(BRANCH)}"
+            context.currentBuild.displayName = "#${buildNumber}|${Configuration.get(SCM_REPO)}|${Configuration.get(SCM_BRANCH)}"
 
             def githubHost = Configuration.get(SCM_HOST)
             def githubOrganization = Configuration.get(SCM_ORG)
@@ -146,7 +146,7 @@ class Repository extends BaseObject {
 
             // Support DEV related CI workflow
 //			TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
-            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get(REPO)}")
+            def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get(SCM_REPO)}")
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
             def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
@@ -162,7 +162,7 @@ class Repository extends BaseObject {
             def pullRequestPipelineJobDescription = "Verify compilation and/or do Sonar PullRequest analysis"
 
 
-            registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, "onPullRequest-" + Configuration.get(REPO), pullRequestPipelineJobDescription, getOnPullRequestScript(), githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
+            registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, "onPullRequest-" + Configuration.get(SCM_REPO), pullRequestPipelineJobDescription, getOnPullRequestScript(), githubHost, githubOrganization, Configuration.get(SCM_REPO), Configuration.get(SCM_BRANCH), gitUrl))
 
             def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
@@ -176,10 +176,10 @@ class Repository extends BaseObject {
             def isTestNgRunner = extendsClass([TestNG])
             def isBuildToolDependent = extendsClass([com.qaprosoft.jenkins.pipeline.runner.maven.Runner, com.qaprosoft.jenkins.pipeline.runner.gradle.Runner, com.qaprosoft.jenkins.pipeline.runner.docker.Runner])
 
-            registerObject("push_job", new PushJobFactory(repoFolder, "onPush-" + Configuration.get(REPO), pushJobDescription, getOnPushScript(), githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields))
+            registerObject("push_job", new PushJobFactory(repoFolder, "onPush-" + Configuration.get(SCM_REPO), pushJobDescription, getOnPushScript(), githubHost, githubOrganization, Configuration.get(SCM_REPO), Configuration.get(SCM_BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields))
 
             def mergeJobDescription = "SCM branch merger job"
-            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
+            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(SCM_REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(SCM_REPO), gitUrl))
 
             if (isBuildToolDependent) {
                 def buildTool = determineBuildTool()
@@ -192,7 +192,7 @@ class Repository extends BaseObject {
                     isDockerRunner = true
                 }
 
-                registerObject("build_job", new BuildJobFactory(repoFolder, "build", "", getPipelineScript(), githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, buildTool, isDockerRunner))
+                registerObject("build_job", new BuildJobFactory(repoFolder, "build", "", getPipelineScript(), githubHost, githubOrganization, Configuration.get(SCM_REPO), Configuration.get(SCM_BRANCH), gitUrl, buildTool, isDockerRunner))
             }
 
             factoryRunner.run(dslObjects)
