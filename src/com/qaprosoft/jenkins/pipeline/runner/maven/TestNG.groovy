@@ -64,6 +64,8 @@ public class TestNG extends Runner {
     public TestNG(context) {
         super(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
+        def locale = Configuration.get("locale")
+        def language = Configuration.get("language")
         setDisplayNameTemplate('#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
     }
 
@@ -821,7 +823,6 @@ public class TestNG extends Runner {
         def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
         ${zafiraGoals} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
-        -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
         -Dmax_screen_history=1 \
         -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/CarinaReport\" \

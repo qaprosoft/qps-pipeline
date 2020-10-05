@@ -9,11 +9,10 @@ class BuildJobFactory extends PipelineFactory {
     def repo
     def organization
     def branch
-    def scmUrl
-    def buildTool
     def isDockerRepo
+    def buildTool
 
-    public BuildJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch, scmUrl, buildTool, isDockerRepo=false) {
+    public BuildJobFactory(folder, pipelineScript, jobName, host, organization, repo, branch, buildTool, isDockerRepo=false) {
         this.name = jobName
         this.folder = folder
         this.pipelineScript = pipelineScript
@@ -21,7 +20,6 @@ class BuildJobFactory extends PipelineFactory {
         this.repo = repo
         this.organization = organization
         this.branch = branch
-        this.scmUrl = scmUrl
         this.buildTool = buildTool
         this.isDockerRepo = isDockerRepo
     }
@@ -37,8 +35,9 @@ class BuildJobFactory extends PipelineFactory {
 
                 // dockerBuild params
                 if (isDockerRepo) {
-                    configure stringParam('release_version', '', 'SemVer-compliant upcoming release or RC version (e.g. 1.13.1 or 1.13.1.RC1)')
-                    configure stringParam('dockerfile', 'Dockerfile', 'Relative path to your dockerfile')
+                    configure stringParam('RELEASE_VERSION', '', 'SemVer-compliant upcoming release or RC version (e.g. 1.13.1 or 1.13.1.RC1)')
+                    configure addExtensibleChoice('RELEASE_TYPE', 'gc_RELEASE_TYPE', 'Component release type', 'SNAPSHOT')
+                    configure stringParam('DOCKERFILE', 'Dockerfile', 'Relative path to your dockerfile')
                     configure addHiddenParameter('build_tool', '', "${this.buildTool}")
                 }
 
