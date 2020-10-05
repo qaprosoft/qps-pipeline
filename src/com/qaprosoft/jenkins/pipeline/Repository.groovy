@@ -89,27 +89,34 @@ class Repository extends BaseObject {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repoFolder = Configuration.get(REPO)
 
+            
+            //TODO: refactor removing zafira naming
+            def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
+            def reportingServiceUrl = ""
+            def reportingRefreshToken = "'"
+            logger.debug("zafiraFields: " + zafiraFields)
+            if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+                reportingServiceUrl = Configuration.get("zafira_service_url")
+                reportingRefreshToken = Configuration.get("zafira_access_token")
+                logger.debug("reportingServiceUrl: " + reportingServiceUrl)
+                logger.debug("reportingRefreshToken: " + reportingRefreshToken)
+            }
+
             // Folder from which RegisterRepository job was started
             // Important! using getOrgFolderNam from Utils is prohibited here!
             this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
-                
-                //TODO: refactor removing zafira naming
-                def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
-                logger.debug("zafiraFields: " + zafiraFields)
-                if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def reportingServiceUrl = Configuration.get("zafira_service_url")
-                    def reportingRefreshToken = Configuration.get("zafira_access_token")
-                    logger.debug("reportingServiceUrl: " + reportingServiceUrl)
-                    logger.debug("reportingRefreshToken: " + reportingRefreshToken)
-                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
-                        Organization.registerReportingCredentials("", reportingServiceUrl, reportingRefreshToken)
-                    }
+                if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
+                    Organization.registerReportingCredentials("", reportingServiceUrl, reportingRefreshToken)
+                }
+            } else {
+                if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
+                    Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, reportingRefreshToken)
                 }
             }
-
+            
             logger.debug("organization: " + Configuration.get(SCM_ORG))
             logger.debug("rootFolder: " + this.rootFolder)
 
