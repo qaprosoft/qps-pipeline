@@ -8,7 +8,7 @@ import groovy.transform.InheritConstructors
 class RegisterRepositoryJobFactory extends PipelineFactory {
 
     RegisterRepositoryJobFactory(folder, name, jobDesc) {
-        super(foler, name, description)
+        super(folder, name, jobDesc)
     }
 
     def create() {
