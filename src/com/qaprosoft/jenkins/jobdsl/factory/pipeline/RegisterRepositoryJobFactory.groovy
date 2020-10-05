@@ -1,8 +1,9 @@
 package com.qaprosoft.jenkins.jobdsl.factory.pipeline
 
-import static com.qaprosoft.jenkins.Utils.*
 import org.testng.xml.XmlSuite
 import groovy.transform.InheritConstructors
+
+import static com.qaprosoft.jenkins.Utils.*
 
 @InheritConstructors
 class RegisterRepositoryJobFactory extends PipelineFactory {
