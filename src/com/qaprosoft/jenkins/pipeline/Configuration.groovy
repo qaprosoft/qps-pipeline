@@ -10,6 +10,7 @@ public class Configuration {
 
     public final static def CREDS_REPORTING_SERVICE_URL = "reporting_service_url"
     public final static def CREDS_REPORTING_ACCESS_TOKEN = "reporting_access_token"
+    
     public final static def CREDS_TESTRAIL_SERVICE_URL = "testrail_service_url"
     public final static def CREDS_TESTRAIL = "testrail_creds"
     public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
