@@ -95,17 +95,17 @@ class Repository extends BaseObject {
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
-            } else {
-                def zafiraFields = Configuration.get("zafiraFields")
-                logger.debug("zafiraFields: " + zafiraFields)
-                if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.CREDS_ZAFIRA_SERVICE_URL)
-                    def reportingRefreshToken = Configuration.get(Configuration.Parameter.CREDS_ZAFIRA_ACCESS_TOKEN)
-                    logger.debug("reportingServiceUrl: " + reportingServiceUrl)
-                    logger.debug("reportingRefreshToken: " + reportingRefreshToken)
-                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
-                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, reportingRefreshToken)
-                    }
+            }
+
+            def zafiraFields = Configuration.get("zafiraFields")
+            logger.debug("zafiraFields: " + zafiraFields)
+            if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+                def reportingServiceUrl = Configuration.get(Configuration.Parameter.CREDS_ZAFIRA_SERVICE_URL)
+                def reportingRefreshToken = Configuration.get(Configuration.Parameter.CREDS_ZAFIRA_ACCESS_TOKEN)
+                logger.debug("reportingServiceUrl: " + reportingServiceUrl)
+                logger.debug("reportingRefreshToken: " + reportingRefreshToken)
+                if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
+                    Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, reportingRefreshToken)
                 }
             }
 
