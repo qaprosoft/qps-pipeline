@@ -3,7 +3,6 @@ package com.qaprosoft.jenkins.pipeline
 import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
-import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.BuildJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
@@ -164,7 +163,6 @@ class Repository extends BaseObject {
 
 
             registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, "onPullRequest-" + Configuration.get(REPO), pullRequestPipelineJobDescription, getOnPullRequestScript(), githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl))
-            //registerObject("pull_request_job_trigger", new PullRequestJobFactoryTrigger(repoFolder, "onPullRequest-" + Configuration.get(REPO) + "-trigger", pullRequestFreestyleJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
 
             def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
