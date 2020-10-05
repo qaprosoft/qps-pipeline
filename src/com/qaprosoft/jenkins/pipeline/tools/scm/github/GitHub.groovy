@@ -59,13 +59,13 @@ class GitHub implements ISCM {
         context.stage('Checkout GitHub Repository') {
             logger.info("GitHub->clone")
             def fork = !isParamEmpty(Configuration.get("fork")) ? Configuration.get("fork").toBoolean() : false
-            def branch = Configuration.get("branch")
-            def repo = Configuration.get("repo")
+            def branch = Configuration.get("SCM_BRANCH")
+            def repo = Configuration.get("SCM_REPO")
             def userId = Configuration.get("BUILD_USER_ID")
             def gitUrl = Configuration.resolveVars(scmHtmlUrl)
-            def credentialsId = Configuration.get("GITHUB_ORGANIZATION") + "-" + repo
-            logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
-            logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
+            def credentialsId = Configuration.get("SCM_ORG") + "-" + repo
+            logger.info("GITHUB_HOST: " + Configuration.get("SCM_HOST"))
+            logger.info("GITHUB_ORGANIZATION: " + Configuration.get("SCM_ORG"))
             logger.info("GIT_URL: " + gitUrl)
             logger.info("CREDENTIALS_ID: " + credentialsId)
             if (fork) {
@@ -113,7 +113,7 @@ class GitHub implements ISCM {
 
     public def clonePush() {
         context.stage('Checkout GitHub Repository') {
-            def branch = Configuration.get("branch")
+            def branch = Configuration.get("SCM_BRANCH")
             def gitUrl = Configuration.resolveVars(scmHtmlUrl)
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
             context.checkout getCheckoutParams(gitUrl, branch, null, false, true, "+refs/heads/${branch}:refs/remotes/origin/${branch}", credentialsId)
@@ -139,8 +139,8 @@ class GitHub implements ISCM {
 
     public def mergePR() {
         //merge pull request
-        def org = Configuration.get("GITHUB_ORGANIZATION")
-        def repo = Configuration.get("repo")
+        def org = Configuration.get("SCM_ORG")
+        def repo = Configuration.get("SCM_REPO")
         def ghprbPullId = Configuration.get("ghprbPullId")
 
         def ghprbCredentialsId = Configuration.get("ghprbCredentialsId")
