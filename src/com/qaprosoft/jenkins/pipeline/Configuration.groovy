@@ -60,11 +60,11 @@ public class Configuration {
         ADMIN_EMAILS("ADMIN_EMAILS", mustOverride),
 
         GITHUB_HOST("GITHUB_HOST", "github.com"),
-        GITHUB_API_URL("GITHUB_API_URL", "https://api.\${GITHUB_HOST}/"),
+        GITHUB_API_URL("GITHUB_API_URL", "https://api.\${SCM_HOST}/"),
         GITHUB_ORGANIZATION("GITHUB_ORGANIZATION", "qaprosoft"),
-        GITHUB_HTML_URL("GITHUB_HTML_URL", "https://\${GITHUB_HOST}/\${GITHUB_ORGANIZATION}"),
+        GITHUB_HTML_URL("GITHUB_HTML_URL", "https://\${SCM_HOST}/\${SCM_ORG}"),
         GITHUB_OAUTH_TOKEN("GITHUB_OAUTH_TOKEN", mustOverride, true),
-        GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}"),
+        GITHUB_SSH_URL("GITHUB_SSH_URL", "git@\${SCM_HOST}:\${SCM_ORG}"),
 
         INFRA_HOST("INFRA_HOST", "demo.qaprosoft.com"),
 
