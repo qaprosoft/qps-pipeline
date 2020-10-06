@@ -69,7 +69,7 @@ public class Configuration {
 
         INFRA_HOST("INFRA_HOST", "demo.qaprosoft.com"),
 
-        SELENIUM_URL("SELENIUM_URL", mustOverride, true),
+        SELENIUM_URL("SELENIUM_URL", "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub", true),
         HUB_MODE("hub_mode", "selenium"),
 
         REPORTING_ACCESS_TOKEN("REPORTING_ACCESS_TOKEN", mustOverride, true),
