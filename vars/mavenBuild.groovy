@@ -9,6 +9,7 @@ import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 def call(goals = '-U clean compile test', mavenSettingsConfig = '', mavenLocalRepo = '') {
     logger.info("mavenBuild->call")
+    logger.debug("mavenSettingsConfig: " + mavenSettingsConfig)
     withMaven(
             //EXPLICIT: Only the Maven publishers explicitly configured in "withMaven(options:...)" are used.
             publisherStrategy: 'EXPLICIT',

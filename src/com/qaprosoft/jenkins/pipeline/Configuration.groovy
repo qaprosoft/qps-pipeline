@@ -10,6 +10,7 @@ public class Configuration {
 
     public final static def CREDS_REPORTING_SERVICE_URL = "reporting_service_url"
     public final static def CREDS_REPORTING_ACCESS_TOKEN = "reporting_access_token"
+    
     public final static def CREDS_TESTRAIL_SERVICE_URL = "testrail_service_url"
     public final static def CREDS_TESTRAIL = "testrail_creds"
     public final static def CREDS_QTEST_SERVICE_URL = "qtest_service_url"
@@ -68,8 +69,8 @@ public class Configuration {
 
         INFRA_HOST("INFRA_HOST", "demo.qaprosoft.com"),
 
-        SELENIUM_URL("SELENIUM_URL", mustOverride, true),
-        HUB_MODE("hub_mode", "selenium"),
+        SELENIUM_URL("SELENIUM_URL", "http://demo:demo@\${INFRA_HOST}/selenoid/wd/hub", true),
+        PROVIDER("capabilities.provider", "selenium"),
 
         REPORTING_ACCESS_TOKEN("REPORTING_ACCESS_TOKEN", mustOverride, true),
         REPORTING_SERVICE_URL("REPORTING_SERVICE_URL", mustOverride),
@@ -86,7 +87,6 @@ public class Configuration {
         SCREEN_RECORD_DURATION("screen_record_duration", "1800"),
 
         S3_SAVE_SCREENSHOTS("s3_save_screenshots", "true"),
-        OPTIMIZE_VIDEO_RECORDING("optimize_video_recording", "false"),
 
         VNC_DESKTOP("vnc_desktop", "%s://%s:%s/vnc/%s"),
         VNC_MOBILE("vnc_mobile", "%s://%s:%s/websockify"),

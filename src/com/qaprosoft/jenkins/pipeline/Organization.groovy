@@ -297,8 +297,13 @@ class Organization extends BaseObject {
             hubURLCredName = "${orgFolderName}" + "-" + hubURLCredName
         }
 
-        if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", Configuration.Parameter.SELENIUM_URL.getKey(), url)) {
-            logger.info("${hubURLCredName} was successfully registered.")
+        if (isParamEmpty(getCredentials(hubURLCredName))) {
+            if (updateJenkinsCredentials(hubURLCredName, "${provider} URL", Configuration.Parameter.SELENIUM_URL.getKey(), url)) {
+                logger.info("${hubURLCredName} was successfully registered.")
+            }
+        }
+        else {
+            logger.info("Skip registration of ${hubURLCredName}")
         }
     }
 

@@ -6,6 +6,8 @@ import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.BuildJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.PublishJobFactory
+import com.qaprosoft.jenkins.jobdsl.factory.pipeline.DeployJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PullRequestJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.scm.MergeJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
@@ -89,39 +91,36 @@ class Repository extends BaseObject {
             def buildNumber = Configuration.get(Configuration.Parameter.BUILD_NUMBER)
             def repoFolder = Configuration.get(REPO)
 
+            
+            //TODO: refactor removing zafira naming
+            def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
+            def reportingServiceUrl = ""
+            def reportingRefreshToken = "'"
+            logger.debug("zafiraFields: " + zafiraFields)
+            if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
+                reportingServiceUrl = Configuration.get("zafira_service_url")
+                reportingRefreshToken = Configuration.get("zafira_access_token")
+                logger.debug("reportingServiceUrl: " + reportingServiceUrl)
+                logger.debug("reportingRefreshToken: " + reportingRefreshToken)
+            }
+
             // Folder from which RegisterRepository job was started
             // Important! using getOrgFolderNam from Utils is prohibited here!
             this.rootFolder = Paths.get(Configuration.get(Configuration.Parameter.JOB_NAME)).getName(0).toString()
             if ("RegisterRepository".equals(this.rootFolder)) {
                 // use case when RegisterRepository is on root!
                 this.rootFolder = "/"
+                if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
+                    Organization.registerReportingCredentials("", reportingServiceUrl, reportingRefreshToken)
+                }
             } else {
-                def zafiraFields = Configuration.get("zafiraFields")
-                logger.debug("zafiraFields: " + zafiraFields)
-                if (!isParamEmpty(zafiraFields) && zafiraFields.contains("zafira_service_url") && zafiraFields.contains("zafira_access_token")) {
-                    def reportingServiceUrl = Configuration.get(Configuration.Parameter.REPORTING_SERVICE_URL)
-                    def reportingRefreshToken = Configuration.get(Configuration.Parameter.REPORTING_ACCESS_TOKEN)
-                    logger.debug("reportingServiceUrl: " + reportingServiceUrl)
-                    logger.debug("reportingRefreshToken: " + reportingRefreshToken)
-                    if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
-                        Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, reportingRefreshToken)
-                    }
+                if (!isParamEmpty(reportingServiceUrl) && !isParamEmpty(reportingRefreshToken)) {
+                    Organization.registerReportingCredentials(repoFolder, reportingServiceUrl, reportingRefreshToken)
                 }
             }
-
+            
             logger.debug("organization: " + Configuration.get(SCM_ORG))
             logger.debug("rootFolder: " + this.rootFolder)
-
-            // TODO: test with SZ his custom CI setup
-            // there is no need to register organization_folder at all as this fucntionality is provided in dedicated RegisterOrganization job logic            
-/*
-            if (!"/".equals(this.rootFolder)) {
-                //register for JobDSL only non root organization folder
-                if (isParamEmpty(getJenkinsFolderByName(this.rootFolder))){
-                    registerObject("organization_folder", new FolderFactory(this.rootFolder, ""))
-                }
-            }
-*/
 
             if (!"/".equals(this.rootFolder)) {
                 //For both cases when rootFolder exists job was started with existing organization value,
@@ -138,20 +137,15 @@ class Repository extends BaseObject {
             def githubHost = Configuration.get(SCM_HOST)
             def githubOrganization = Configuration.get(SCM_ORG)
 
-//			createPRChecker(credentialsId)
-
             registerObject("project_folder", new FolderFactory(repoFolder, ""))
-//			 TODO: move folder and main trigger job creation onto the createRepository method
+            // TODO: move folder and main trigger job creation onto the createRepository method
 
             // Support DEV related CI workflow
-//			TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
+            // TODO: analyze do we need system jobs for QA repo... maybe prametrize CreateRepository call
             def gitUrl = Configuration.resolveVars("${Configuration.get(Configuration.Parameter.GITHUB_HTML_URL)}/${Configuration.get(REPO)}")
 
             def userId = isParamEmpty(Configuration.get("userId")) ? '' : Configuration.get("userId")
-            def zafiraFields = isParamEmpty(Configuration.get("zafiraFields")) ? '' : Configuration.get("zafiraFields")
-            logger.error("zafiraFields: " + zafiraFields)
-
-            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*|build"))
+            registerObject("hooks_view", new ListViewFactory(repoFolder, 'SYSTEM', null, ".*onPush.*|.*onPullRequest.*|.*CutBranch-.*|build|deploy|publish"))
 
             def pullRequestFreestyleJobDescription = "To finish GitHub Pull Request Checker setup, please, follow the steps below:\n" +
                     "- Manage Jenkins -> Configure System -> Populate 'GitHub Pull Request Builder': usr should have admin privileges, Auto-manage webhooks should be enabled\n" +
@@ -185,14 +179,17 @@ class Repository extends BaseObject {
                 def buildTool = determineBuildTool()
                 def isDockerRunner = false
 
-                if (runnerClass.contains('docker.Runner')) {
+                if (extendsClass([com.qaprosoft.jenkins.pipeline.runner.docker.Runner])) {
                     if (isParamEmpty(getCredentials(githubOrganization + '-docker'))) {
                         updateJenkinsCredentials(githubOrganization + '-docker', 'docker hub creds', Configuration.Parameter.DOCKER_HUB_USERNAME.getValue(), Configuration.Parameter.DOCKER_HUB_PASSWORD.getValue())
-                    } 
+                    }
+
                     isDockerRunner = true
+                    registerObject("deploy_job", new DeployJobFactory(repoFolder, getDeployScript(), "deploy", githubHost, githubOrganization, Configuration.get(REPO)))
+                    registerObject("publish_job", new PublishJobFactory(repoFolder, getPublishScript(), "publish", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH)))
                 }
 
-                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, buildTool, isDockerRunner))
+                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), buildTool, isDockerRunner))
             }
 
             factoryRunner.run(dslObjects)
@@ -229,6 +226,22 @@ class Repository extends BaseObject {
             return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
         } else {
             return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).mergeBranch()"
+        }
+    }
+
+    protected String getPublishScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).publish()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).publish()"
+        }
+    }
+
+    protected String getDeployScript() {
+        if ("QPS-Pipeline".equals(pipelineLibrary)) {
+            return "@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).deploy()"
+        } else {
+            return "@Library(\'QPS-Pipeline\')\n@Library(\'${pipelineLibrary}\')\nimport ${runnerClass};\nnew ${runnerClass}(this).deploy()"
         }
     }
 

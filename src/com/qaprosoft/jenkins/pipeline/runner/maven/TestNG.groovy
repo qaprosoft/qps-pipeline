@@ -64,6 +64,8 @@ public class TestNG extends Runner {
     public TestNG(context) {
         super(context)
         onlyUpdated = Configuration.get("onlyUpdated")?.toBoolean()
+        def locale = Configuration.get("locale")
+        def language = Configuration.get("language")
         setDisplayNameTemplate('#${BUILD_NUMBER}|${suite}|${branch}|${env}|${browser}|${browserVersion}|${locale}|${language}')
     }
 
@@ -618,7 +620,7 @@ public class TestNG extends Runner {
         }
     }
 
-    private String getCurrentFolderFullName(String jobName) {
+    protected String getCurrentFolderFullName(String jobName) {
         String baseJobName = jobName
         def fullJobName = Configuration.get(Configuration.Parameter.JOB_NAME)
         def fullJobNameArray = fullJobName.split("/")
@@ -720,7 +722,9 @@ public class TestNG extends Runner {
         // Caused: java.io.IOException: remote file operation failed: /opt/jenkins/workspace/Automation/<JOB_NAME> at hudson.remoting.Channel@2834589:JNLP4-connect connection from
         Configuration.remove("device")
         //TODO: move it to the global jenkins variable
-        Configuration.set("capabilities.newCommandTimeout", "180")
+        
+        // to fix "Session [9ed2aef1-8bd0-4151-a272-e5e869e0991a] was terminated due to TIMEOUT"
+        Configuration.set("capabilities.newCommandTimeout", "120")
         Configuration.set("java.awt.headless", "true")
     }
 
@@ -729,9 +733,9 @@ public class TestNG extends Runner {
         Configuration.set("mobile_app_clear_cache", "true")
         Configuration.set("capabilities.autoGrantPermissions", "true")
         Configuration.set("capabilities.noSign", "true")
-        Configuration.set("capabilities.appWaitDuration", "270000")
-        Configuration.set("capabilities.androidInstallTimeout", "270000")
-        Configuration.set("capabilities.adbExecTimeout", "270000")
+//        Configuration.set("capabilities.appWaitDuration", "270000")
+//        Configuration.set("capabilities.androidInstallTimeout", "270000")
+//        Configuration.set("capabilities.adbExecTimeout", "270000")
     }
 
     protected void prepareForiOS() {
@@ -819,7 +823,6 @@ public class TestNG extends Runner {
         def defaultBaseMavenGoals = "-Dselenium_host=${Configuration.get(Configuration.Parameter.SELENIUM_URL)} \
         ${zafiraGoals} \
         -Ds3_save_screenshots=${Configuration.get(Configuration.Parameter.S3_SAVE_SCREENSHOTS)} \
-        -Doptimize_video_recording=${Configuration.get(Configuration.Parameter.OPTIMIZE_VIDEO_RECORDING)} \
         -Dcore_log_level=${Configuration.get(Configuration.Parameter.CORE_LOG_LEVEL)} \
         -Dmax_screen_history=1 \
         -Dreport_url=\"${Configuration.get(Configuration.Parameter.JOB_URL)}${Configuration.get(Configuration.Parameter.BUILD_NUMBER)}/CarinaReport\" \
