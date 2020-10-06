@@ -395,8 +395,8 @@ class Organization extends BaseObject {
 
     public def registerCredentials() {
         context.stage("Register Credentials") {
-            def user = Configuration.get(SCM_USER)
-            def token = Configuration.get(SCM_TOKEN)
+            def user = Configuration.get("scmUser")
+            def token = Configuration.get("scmToken")
             def jenkinsUser = !isParamEmpty(Configuration.get("jenkinsUser")) ? Configuration.get("jenkinsUser") : getBuildUser(context.currentBuild)
             if (updateJenkinsCredentials("token_" + jenkinsUser, jenkinsUser + " SCM token", user, token)) {
                 logger.info(jenkinsUser + " credentials were successfully registered.")
