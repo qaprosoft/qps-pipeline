@@ -2,9 +2,10 @@ package com.qaprosoft.jenkins.pipeline.runner
 
 import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.pipeline.integration.sonar.SonarClient
+import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.tools.scm.*    
 import java.nio.file.Paths
 
-import com.qaprosoft.jenkins.pipeline.Configuration
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
