@@ -25,7 +25,7 @@ abstract class Scm implements ISCM {
 
 	Scm(context) { 
 		this.context = context
-		this.loger = new Logger(context)
+		this.logger = new Logger(context)
 	}
 
 	Scm(context, host, org, repo, branch) {
