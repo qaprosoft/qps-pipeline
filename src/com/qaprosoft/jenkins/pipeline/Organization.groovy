@@ -32,7 +32,7 @@ class Organization extends BaseObject {
         this.reportingServiceUrl = Configuration.get("reportingServiceUrl")
         this.reportingAccessToken = Configuration.get("reportingAccessToken")
         this.customPipeline = Configuration.get("customPipeline")
-        this.zebrunnerUpdater = new zebrunnerUpdater(context)
+        this.zebrunnerUpdater = new ZebrunnerUpdater(context)
     }
 
     public def register() {
