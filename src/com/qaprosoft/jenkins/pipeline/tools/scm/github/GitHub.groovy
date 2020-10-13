@@ -10,7 +10,7 @@ class GitHub extends Scm {
         this.branchSpec = "origin/pr/%s/merge"
     }
 
-    Github(context) {
+    GitHub(context) {
         super(context)
     }
 
