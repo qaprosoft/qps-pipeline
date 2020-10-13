@@ -11,7 +11,7 @@ class SshGitHub extends GitHub {
 
     public SshGitHub(context) {
         super(context)
-        gitHtmlUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
+        scmUrl = "git@\${GITHUB_HOST}:\${GITHUB_ORGANIZATION}/${Configuration.get("repo")}"
     }
 
     public def push(source, target, isForce) {
@@ -33,7 +33,7 @@ class SshGitHub extends GitHub {
     }
 
     public def setUrl(url) {
-        gitHtmlUrl = url
+        scmUrl = url
     }
 
     @Override
@@ -43,7 +43,7 @@ class SshGitHub extends GitHub {
 
             def branch = Configuration.get("branch")
             def repo = Configuration.get("repo")
-            def gitUrl = Configuration.resolveVars(gitHtmlUrl)
+            def gitUrl = Configuration.resolveVars(scmUrl)
             logger.info("GITHUB_HOST: " + Configuration.get("GITHUB_HOST"))
             logger.info("GITHUB_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
             logger.info("GIT_URL: " + gitUrl)
