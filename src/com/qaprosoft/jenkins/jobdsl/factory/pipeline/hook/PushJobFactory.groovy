@@ -14,8 +14,9 @@ public class PushJobFactory extends PipelineFactory {
     def userId
     def zafiraFields
     def isTestNgRunner
+    def webHookArgs
 
-    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, isTestNgRunner, zafiraFields) {
+    public PushJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, branch, scmRepoUrl, userId, isTestNgRunner, zafiraFields, webHookArgs) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
@@ -28,21 +29,13 @@ public class PushJobFactory extends PipelineFactory {
         this.userId = userId
         this.isTestNgRunner = isTestNgRunner
         this.zafiraFields = zafiraFields
+        this.webHookArgs = webHookArgs
     }
 
     def create() {
         def pipelineJob = super.create()
 
         pipelineJob.with {
-            // properties {
-            //     //TODO: add SCM artifacts
-            //     githubProjectUrl(scmRepoUrl)
-            //     pipelineTriggers {
-            //         triggers {
-            //             githubPush()
-            //         }
-            //     }
-            // }
 
             //TODO: think about other parameters to support DevOps CI operations
             parameters {
@@ -61,16 +54,6 @@ public class PushJobFactory extends PipelineFactory {
                 configure addHiddenParameter('zafiraFields', '', zafiraFields)
             }
 
-            def headerEventName = "x-github-event"
-            def refJsonPath = "\$.ref"
-
-            if (host.contains("gitlab")) {
-                headerEventName = "x-gitlab-event"
-            } else if (host.contains("bitbucket")) {
-                headerEventName = "x-event-key"
-                refJsonPath = "\$.push.changes[0].new.name"
-            }
-
             properties {
             	pipelineTriggers {
 	            	triggers {
@@ -78,29 +61,27 @@ public class PushJobFactory extends PipelineFactory {
 			               genericVariables {
 			                genericVariable {
 			                 key("ref")
-			                 value(refJsonPath)
+			                 value(webHookArgs.refJsonPath)
 			                }
 			               }
 
 			               genericHeaderVariables {
 			                genericHeaderVariable {
-			                 key(headerEventName)
+			                 key(webHookArgs.eventName)
 			                 regexpFilter("")
 			                }
 			               }
+                           
 			               token('abc123')
 			               printContributedVariables(false)
 			               printPostContent(false)
 			               silentResponse(false)
-			               regexpFilterText("\$ref \$${headerEventName.replaceAll('-','_')}")
-			               regexpFilterExpression("^(refs/heads/master\\s(push|Push\\sHook)|master\\srepo:push)\$")
+			               regexpFilterText(webHookArgs.pushFilterText)
+			               regexpFilterExpression(webHookArgs.pushFilterRegex)
 	              		}
 	              	}
 	            }
             }
-
-            /** Git Stuff **/
-
         }
         return pipelineJob
     }

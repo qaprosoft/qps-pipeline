@@ -30,10 +30,6 @@ public abstract class AbstractRunner extends BaseObject {
     abstract public void onPush()
 
     abstract public void onPullRequest()
-
-    /*
-     * Execute custom pipeline/jobdsl steps from Jenkinsfile
-     */
     
     @NonCPS
     public def setSshClient() {
@@ -41,6 +37,7 @@ public abstract class AbstractRunner extends BaseObject {
         super.setSshClient()
     }
 
+    // Execute custom pipeline/jobdsl steps from Jenkinsfile     
     protected void jenkinsFileScan() {
         def isCustomPipelineEnabled = getToken(Configuration.CREDS_CUSTOM_PIPELINE)
 

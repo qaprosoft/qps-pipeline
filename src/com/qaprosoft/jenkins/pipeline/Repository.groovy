@@ -17,8 +17,7 @@ import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
 class Repository extends BaseObject {
-
-    protected ISCM scmClient
+    
     protected def pipelineLibrary
     protected def runnerClass
     protected def rootFolder
@@ -31,8 +30,6 @@ class Repository extends BaseObject {
 
     public Repository(context) {
         super(context)
-
-        scmClient = new GitHub(context)
         this.pipelineLibrary = Configuration.get("pipelineLibrary")
         this.runnerClass = Configuration.get("runnerClass")
     }

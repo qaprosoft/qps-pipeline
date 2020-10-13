@@ -18,25 +18,24 @@ abstract class Scm implements ISCM {
 	protected def host
 	protected def org
 	protected def repo
+    protected def branch
+    protected def scmUrl
 	protected def apiUrl
 	protected def sshUrl
-	protected def oauthToken
 
 	Scm(context) { 
 		this.context = context
 		this.loger = new Logger(context)
 	}
 
-	Scm(context, host, org, repo, oauthToken="") {
+	Scm(context, host, org, repo, branch) {
 		this.context = context
 		this.host = host
 		this.org = org
 		this.repo = repo
-		this.oauthToken = oauthToken
+        this.branch = branch
+        this.scmUrl = setScmUrl()
 	}
-
-	protected abstract String getHtmlUrl()
-	protected abstract String getBranchSpec(branch)
 
 	public def clone() {
         clone(true)
@@ -46,17 +45,17 @@ abstract class Scm implements ISCM {
         context.stage('Checkout Scm Repository') {
             logger.info("Scm->clone")
             def fork = !isParamEmpty(Configuration.get("fork")) ? Configuration.get("fork").toBoolean() : false
-            def branch = Configuration.get("branch")
-            def repo = Configuration.get("repo")
             def userId = Configuration.get("BUILD_USER_ID")
             def gitUrl = Configuration.resolveVars(scmUrl)
-            def credentialsId = Configuration.get("GITHUB_ORGANIZATION") + "-" + repo
-            logger.info("SCM_HOST: " + Configuration.get("GITHUB_HOST"))
-            logger.info("SCM_ORGANIZATION: " + Configuration.get("GITHUB_ORGANIZATION"))
-            logger.info("SCM_URL: " + gitUrl)
-            logger.info("CREDENTIALS_ID: " + credentialsId)
+            def credentialsId =  "$org-$repo"
+
+            logger.info("SCM_HOST: $host")
+            logger.info("SCM_ORGANIZATION: $org")
+            logger.info("SCM_URL: $scmUrl")
+            logger.info("CREDENTIALS_ID: $credentialsId")
+
             if (fork) {
-                def tokenName = 'token_' + "${userId}"
+                def tokenName = "token_$userId"
                 def userCredentials = getCredentials(tokenName)
                 if (userCredentials) {
                     def userName = ""
@@ -71,8 +70,8 @@ abstract class Scm implements ISCM {
                 } else {
                     throw new RuntimeException("Unable to run from fork repo as ${tokenName} token is not registered on CI!")
                 }
-
             }
+
             Map scmVars = context.checkout getCheckoutParams(gitUrl, branch, null, isShallow, true, "+refs/heads/${branch}:refs/remotes/origin/${branch}", credentialsId)
             Configuration.set("scm_url", scmVars.GIT_URL)
             Configuration.set("scm_branch", branch)
@@ -94,7 +93,7 @@ abstract class Scm implements ISCM {
             def prNumber = Configuration.get('pr_number')
             def gitUrl = Configuration.resolveVars(scmUrl)
             logger.info("GitHub->clonePR\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
-            context.checkout getCheckoutParams(gitUrl, branchSpec, ".", true, false, prRefSpec, credentialsId)
+            context.checkout getCheckoutParams(gitUrl, getBranchSpec(prNumber), ".", true, false, prRefSpec, credentialsId)
         }
     }
 
@@ -141,5 +140,11 @@ abstract class Scm implements ISCM {
         }
     }
 
+    static def getHookArgsAsMap(hookArgs) {
+        return hookArgs.values().collectEntries { [(it.getKey(): it.getValue())] }
+    }
 
+    protected def setScmUrl() {
+        this.scmUrl =  String.format("https://%s/%s/%s", host, org, repo)
+    }
 }

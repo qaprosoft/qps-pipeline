@@ -10,8 +10,9 @@ public class PullRequestJobFactory extends PipelineFactory {
     def organization
     def repo
     def scmRepoUrl
+    def webHookArgs
 
-    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, scmRepoUrl) {
+    public PullRequestJobFactory(folder, pipelineScript, jobName, jobDesc, host, organization, repo, scmRepoUrl, webHookArgs) {
         this.folder = folder
         this.pipelineScript = pipelineScript
         this.name = jobName
@@ -20,6 +21,7 @@ public class PullRequestJobFactory extends PipelineFactory {
         this.organization = organization
         this.repo = repo
         this.scmRepoUrl = scmRepoUrl
+        this.webHookArgs = webHookArgs
     }
 
     def create() {
@@ -38,36 +40,6 @@ public class PullRequestJobFactory extends PipelineFactory {
                 stringParam('pr_sha')
             }
 
-            def headerEventName = "x-github-event"
-            def prNumberJsonPath = "\$.number"
-            def prRepositoryJsonPath = "\$.pull_request.base.repo.name"
-            def prSourceBranchJsonPath = "\$.pull_request.head.ref"
-            def prTargetBranchJsonPath = "\$.pull_request.base.ref"
-            def prShaJsonPath = "\$.pull_request.head.sha"
-            def prActionJsonPath = "\$.action"
-            def filterText = "\$pr_action \$${headerEventName.replaceAll('-', '_')}"
-            def filterExpression = "^(opened|reopened)\\s(Merge\\sRequest\\sHook|pull_request)*?\$"
-
-            if (host.contains('gitlab')) {
-                headerEventName = "x-gitlab-event"
-                filterText = "\$pr_action \$${headerEventName.replaceAll('-', '_')}"
-                prNumberJsonPath = "\$.object_attributes.iid"
-                prRepositoryJsonPath = "\$.project.id"
-                prSourceBranchJsonPath = "\$.object_attributes.source_branch"
-                prTargetBranchJsonPath = "\$.object_attributes.target_branch"
-                prActionJsonPath = "\$.object_attributes.state"
-                prShaJsonPath = "\$.object_attributes.last_commit.id"
-            } else if(host.contains('bitbucket')) {
-                headerEventName = "x-event-key"
-                filterText = "\$${headerEventName.replaceAll('-', '_')}"
-                filterExpression = "^(pullrequest:(created|updated))*?\$"
-                prNumberJsonPath = "\$.pullrequest.id"
-                prRepositoryJsonPath = "\$.pullrequest.destination.repository.name"
-                prSourceBranchJsonPath = "\$.pullrequest.source.branch.name"
-                prTargetBranchJsonPath = "\$.pullrequest.destination.branch.name"
-                prActionJsonPath = ""
-            }
-
             properties {
                 pipelineTriggers {
                     triggers {
@@ -75,29 +47,33 @@ public class PullRequestJobFactory extends PipelineFactory {
                             genericVariables {
                                 genericVariable {
                                     key("pr_number")
-                                    value(prNumberJsonPath)
+                                    value(webHookArgs.prNumber)
                                 }
                                 genericVariable {
                                     key("pr_repository")
-                                    value(prRepositoryJsonPath)
+                                    value(webHookArgs.prRepo)
                                 }
                                 genericVariable {
                                     key("pr_source_branch")
-                                    value(prSourceBranchJsonPath)
+                                    value(webHookArgs.prSourceBranch)
                                 }
                                 genericVariable {
                                     key("pr_target_branch")
-                                    value(prTargetBranchJsonPath)
+                                    value(webHookArgs.prTargetBranch)
                                 }
                                 genericVariable {
                                     key("pr_action")
-                                    value(prActionJsonPath)
+                                    value(webHookArgs.prAction)
+                                }
+                                genericVariable {
+                                    key("pr_sha")
+                                    value(webHookArgs.prSha)
                                 }
                             }
 
                             genericHeaderVariables {
                                 genericHeaderVariable {
-                                    key(headerEventName)
+                                    key(webHookArgs.eventName)
                                     regexpFilter("")
                                 }
                             }
@@ -106,8 +82,8 @@ public class PullRequestJobFactory extends PipelineFactory {
                             printContributedVariables(true)
                             printPostContent(true)
                             silentResponse(false)
-                            regexpFilterText(filterText)
-                            regexpFilterExpression(filterExpression)
+                            regexpFilterText(webHookArgs.prFilterText)
+                            regexpFilterExpression(prFilterRegex)
                         }
                     }
                 }
