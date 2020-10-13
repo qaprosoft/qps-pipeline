@@ -10,6 +10,10 @@ class Gitlab extends Scm {
         this.branchSpec = branch
     }
 
+    Gitlab(context) {
+        super(context)
+    }
+
     enum HookArgs {
         // global
         HEADER_EVENT_NAME("eventName", "x-gitlab-event"),

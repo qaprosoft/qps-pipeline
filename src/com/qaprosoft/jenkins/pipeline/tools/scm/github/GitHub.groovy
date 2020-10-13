@@ -10,6 +10,10 @@ class GitHub extends Scm {
         this.branchSpec = "origin/pr/%s/merge"
     }
 
+    Github(context) {
+        super(context)
+    }
+
     enum HookArgs {
         // global
         HEADER_EVENT_NAME("eventName", "x-github-event"),

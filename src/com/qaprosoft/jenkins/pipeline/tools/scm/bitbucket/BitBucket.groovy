@@ -10,6 +10,10 @@ class BitBucket extends Scm {
         this.branchSpec = branch
     }
 
+    BitBucket(context) {
+        super(context)
+    }
+
     enum HookArgs {
         // global
         HEADER_EVENT_NAME("eventName", "x-event-key"),
