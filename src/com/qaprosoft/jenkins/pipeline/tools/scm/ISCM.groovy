@@ -1,18 +1,17 @@
 package com.qaprosoft.jenkins.pipeline.tools.scm
 
-public interface ISCM {
+interface ISCM {
 
-	public def clone()
+	def clone()
 
-	public def clonePR()
+	def clonePR()
 
-	public def clone(isShallow)
+	def clone(isShallow)
 
-	public def clone(gitUrl, branch, subFolder)
+	def clone(gitUrl, branch, subFolder)
 
-	public def mergePR()
+	def mergePR()
 
-	public def clonePush()
+	def clonePush()
 
-	public def setUrl(url)
 }
