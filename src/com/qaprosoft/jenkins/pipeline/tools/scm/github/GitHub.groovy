@@ -25,8 +25,8 @@ class GitHub extends Scm {
         PR_FILTER_TEXT("prFilterText", "\$pr_action x_github_event"),
 
         // push
-        REF_JSON_PATH("refJsonPath", "\$.ref")
-        PUSH_FILTER_TEXT("pushFilterText", "\$ref x_github_event")
+        REF_JSON_PATH("refJsonPath", "\$.ref"),
+        PUSH_FILTER_TEXT("pushFilterText", "\$ref x_github_event"),
         PUSH_FILTER_REGEX("pushFilterRegex", "^(refs/heads/master\\spush)*?\$")
 
 

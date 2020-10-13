@@ -16,9 +16,23 @@ public abstract class AbstractRunner extends BaseObject {
 
     public AbstractRunner(context) {
         super(context)
-        
-        sc = new SonarClient(context)
-        
+
+        def host = Configration.get("scmHost")
+        def org = Configration.get("scmOrg")
+        def repo = Configration.get("repo")
+        def branch = Configration.get("branch")
+
+        switch (host) {
+            case 'github':
+                this.setScm(new GitHub(context, host, org, repo, branch))
+                break
+            case 'gitlab':
+                this.setScm(new Gitlab(context, host, org, repo, branch))
+                break
+            case 'bitbucket':
+                this.setScm(new BitBucket(context, host, org, repo, branch))
+        }
+
         initOrganization()
         setDisplayNameTemplate('#${BUILD_NUMBER}|${branch}')
     }

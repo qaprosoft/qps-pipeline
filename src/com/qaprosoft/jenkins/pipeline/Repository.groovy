@@ -1,8 +1,6 @@
 package com.qaprosoft.jenkins.pipeline
 
 import com.qaprosoft.jenkins.BaseObject
-import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
-import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
 import com.qaprosoft.jenkins.jobdsl.factory.job.hook.PullRequestJobFactoryTrigger
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.hook.PushJobFactory
 import com.qaprosoft.jenkins.jobdsl.factory.pipeline.BuildJobFactory
@@ -12,7 +10,9 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.pipeline.runner.maven.TestNG
 import com.qaprosoft.jenkins.pipeline.runner.maven.Runner
+import com.qaprosoft.jenkins.pipeline.tools.scm.*
 import java.nio.file.Paths
+
 import static com.qaprosoft.jenkins.Utils.*
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 
@@ -21,6 +21,7 @@ class Repository extends BaseObject {
     protected def pipelineLibrary
     protected def runnerClass
     protected def rootFolder
+    protected def scmWebHookArgs
     private static final String SCM_ORG = "scmOrg"
     private static final String SCM_HOST = "scmHost"
     private static final String REPO = "repo"
@@ -72,10 +73,10 @@ class Repository extends BaseObject {
     }
 
     protected void prepare() {
-        def githubOrganization = Configuration.get(SCM_ORG)
-        def credentialsId = "${githubOrganization}-${Configuration.get(REPO)}"
+        def scmOrg = Configuration.get(SCM_ORG)
+        def credentialsId = "${scmOrg}-${Configuration.get(REPO)}"
 
-        updateJenkinsCredentials(credentialsId, "${githubOrganization} SCM token", Configuration.get(SCM_USER), Configuration.get(SCM_TOKEN))
+        updateJenkinsCredentials(credentialsId, "${scmOrg} SCM token", Configuration.get(SCM_USER), Configuration.get(SCM_TOKEN))
 
         getScm().clone(true)
     }
@@ -132,8 +133,8 @@ class Repository extends BaseObject {
             //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${Configuration.get(REPO)}|${Configuration.get(BRANCH)}"
 
-            def githubHost = Configuration.get(SCM_HOST)
-            def githubOrganization = Configuration.get(SCM_ORG)
+            def scmHost = Configuration.get(SCM_HOST)
+            def scmOrg = Configuration.get(SCM_ORG)
 
 //			createPRChecker(credentialsId)
 
@@ -157,9 +158,21 @@ class Repository extends BaseObject {
                     "- Select application/x-www-form-urlencoded in \"Content Type\" field\n- Tick \"Let me select individual events\" with \"Issue comments\" and \"Pull requests enabled\" option\n- Click \"Add webhook\" button"
             def pullRequestPipelineJobDescription = "Verify compilation and/or do Sonar PullRequest analysis"
 
+            switch (scmHost) {
+                case 'github':
+                    scmWebHookArgs = Github.getWebHookArgs(GitHub.WebHookArgs)
+                    break
+                case 'gitlab':
+                    scmWebHookArgs = Gitlab.getWebHookArgs(Gitlab.WebHookArgs)
+                    break
+                case 'bitbucket':
+                    scmWebHookArgs = BitBucket.getWebHookArgs(BitBucket.WebHookArgs)
+            }
 
-            registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + Configuration.get(REPO), pullRequestPipelineJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
-            //registerObject("pull_request_job_trigger", new PullRequestJobFactoryTrigger(repoFolder, "onPullRequest-" + Configuration.get(REPO) + "-trigger", pullRequestFreestyleJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
+
+            // WebHooks related jobs
+            registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + Configuration.get(REPO), pullRequestPipelineJobDescription, scmHost, scmOrg, Configuration.get(REPO), gitUrl, scmWebHookArgs))
+            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, scmHost, scmOrg, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields. scmWebHookArgs))
 
             def pushJobDescription = "To finish GitHub WebHook setup, please, follow the steps below:\n- Go to your GitHub repository\n- Click \"Settings\" tab\n- Click \"Webhooks\" menu option\n" +
                     "- Click \"Add webhook\" button\n- Type http://your-jenkins-domain.com/github-webhook/ into \"Payload URL\" field\n" +
@@ -173,23 +186,21 @@ class Repository extends BaseObject {
             def isTestNgRunner = extendsClass([TestNG])
             def isBuildToolDependent = extendsClass([com.qaprosoft.jenkins.pipeline.runner.maven.Runner, com.qaprosoft.jenkins.pipeline.runner.gradle.Runner, com.qaprosoft.jenkins.pipeline.runner.docker.Runner])
 
-            registerObject("push_job", new PushJobFactory(repoFolder, getOnPushScript(), "onPush-" + Configuration.get(REPO), pushJobDescription, githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, userId, isTestNgRunner, zafiraFields))
-
             def mergeJobDescription = "SCM branch merger job"
-            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, githubHost, githubOrganization, Configuration.get(REPO), gitUrl))
+            registerObject("merge_job", new MergeJobFactory(repoFolder, getMergeScript(), "CutBranch-" + Configuration.get(REPO), mergeJobDescription, scmHost, scmOrg, Configuration.get(REPO), gitUrl))
 
             if (isBuildToolDependent) {
                 def buildTool = determineBuildTool()
                 def isDockerRunner = false
 
                 if (runnerClass.contains('docker.Runner')) {
-                    if (isParamEmpty(getCredentials(githubOrganization + '-docker'))) {
-                        updateJenkinsCredentials(githubOrganization + '-docker', 'docker hub creds', Configuration.Parameter.DOCKER_HUB_USERNAME.getValue(), Configuration.Parameter.DOCKER_HUB_PASSWORD.getValue())
+                    if (isParamEmpty(getCredentials(scmOrg + '-docker'))) {
+                        updateJenkinsCredentials(scmOrg + '-docker', 'docker hub creds', Configuration.Parameter.DOCKER_HUB_USERNAME.getValue(), Configuration.Parameter.DOCKER_HUB_PASSWORD.getValue())
                     } 
                     isDockerRunner = true
                 }
 
-                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", githubHost, githubOrganization, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, buildTool, isDockerRunner))
+                registerObject("build_job", new BuildJobFactory(repoFolder, getPipelineScript(), "Build", scmHost, scmOrg, Configuration.get(REPO), Configuration.get(BRANCH), gitUrl, buildTool, isDockerRunner))
             }
 
             factoryRunner.run(dslObjects)

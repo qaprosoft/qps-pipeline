@@ -67,6 +67,10 @@ public abstract class BaseObject {
             return this.scmClient
         }
     }
+
+    public def setScm(scm) {
+        this.scmClient = scmClient
+    }
     
     protected void registerObject(name, object) {
         if (dslObjects.containsKey(name)) {

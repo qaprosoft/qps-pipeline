@@ -39,7 +39,7 @@ class Gitlab extends Scm {
 
         public String getKey() { return key }
 
-        public String getValue() {return value }
+        public String getValue() { return value }
     }
 
     @Override
