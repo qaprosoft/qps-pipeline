@@ -141,7 +141,7 @@ abstract class Scm implements ISCM {
     }
 
     static def getHookArgsAsMap(hookArgs) {
-        return hookArgs.values().collectEntries { [(it.getKey(): it.getValue())] }
+        return hookArgs.values().collectEntries { [(it.getKey()): it.getValue()] }
     }
 
     protected def setScmUrl() {
