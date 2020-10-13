@@ -37,6 +37,8 @@ abstract class Scm implements ISCM {
         this.scmUrl = setScmUrl()
 	}
 
+    protected abstract String getBranchSpec(spec)
+
 	public def clone() {
         clone(true)
     }
