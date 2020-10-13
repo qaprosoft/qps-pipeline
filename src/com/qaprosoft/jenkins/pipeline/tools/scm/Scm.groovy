@@ -35,6 +35,7 @@ abstract class Scm implements ISCM {
 		this.repo = repo
         this.branch = branch
         this.scmUrl = setScmUrl()
+        this.logger = new Logger(context)
 	}
 
     protected abstract String getBranchSpec(spec)
