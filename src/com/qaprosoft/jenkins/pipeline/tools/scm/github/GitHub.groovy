@@ -3,10 +3,12 @@ package com.qaprosoft.jenkins.pipeline.tools.scm.github
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.Configuration
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.Clonable
+
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import static com.qaprosoft.jenkins.Utils.*
 
-class GitHub implements ISCM {
+class GitHub implements ISCM, Clonable {
 
     protected def context
     //TODO: rename into scmUrl as it covers both https and ssh cases
@@ -37,6 +39,8 @@ class GitHub implements ISCM {
         } else {
             this.credentialsId = null
         }
+
+        trying()
 
 
         if (Configuration.get("scmURL") != null) {
