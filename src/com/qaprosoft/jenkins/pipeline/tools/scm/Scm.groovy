@@ -156,5 +156,6 @@ abstract class Scm implements ISCM {
 
     protected def setScmUrl() {
         this.scmUrl =  String.format("https://%s/%s/%s", host, org, repo)
+        logger.info("scmUrl: " + scmUrl)
     }
 }

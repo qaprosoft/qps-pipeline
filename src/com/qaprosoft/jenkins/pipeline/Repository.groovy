@@ -159,18 +159,19 @@ class Repository extends BaseObject {
                     "- Select application/x-www-form-urlencoded in \"Content Type\" field\n- Tick \"Let me select individual events\" with \"Issue comments\" and \"Pull requests enabled\" option\n- Click \"Add webhook\" button"
             def pullRequestPipelineJobDescription = "Verify compilation and/or do Sonar PullRequest analysis"
 
+            logger.info("scmHost:" + scmHost )
+
             switch (scmHost) {
                 case ~/^.*github.*$/:
                     scmWebHookArgs = Github.getWebHookArgs(GitHub.WebHookArgs)
                     break
-                case ~/^.*Gitlab.*$/:
+                case ~/^.*gitlab.*$/:
                     scmWebHookArgs = Gitlab.getWebHookArgs(Gitlab.WebHookArgs)
                     break
                 case ~/^.*bitbucket.*$/:
                     scmWebHookArgs = BitBucket.getWebHookArgs(BitBucket.WebHookArgs)
                     break
             }
-
 
             // WebHooks related jobs
             registerObject("pull_request_job", new PullRequestJobFactory(repoFolder, getOnPullRequestScript(), "onPullRequest-" + Configuration.get(REPO), pullRequestPipelineJobDescription, scmHost, scmOrg, Configuration.get(REPO), gitUrl, scmWebHookArgs))
