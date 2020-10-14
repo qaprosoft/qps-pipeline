@@ -44,6 +44,11 @@ class Repository extends BaseObject {
         this.repo = Configuration.get(REPO)
         this.branch = Configuration.get(BRANCH)
 
+        logger.info("scmHost: " + scmHost)
+        logger.info("scmOrg: " + scmOrg)
+        logger.info("repo: " + repo)
+        logger.info("branch: " + branch)
+
         switch (scmHost) {
             case ~/^.*github.*$/:
                 this.setScm(new GitHub(context, scmHost, scmOrg, repo, branch))
