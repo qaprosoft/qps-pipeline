@@ -25,14 +25,14 @@ public abstract class AbstractRunner extends BaseObject {
         def repo = Configration.get("repo")
         def branch = Configration.get("branch")
 
-        switch (host) {
-            case 'github':
+        switch (host.toLowerCase()) {
+            case ~/^.*github.*$/:
                 this.setScm(new GitHub(context, host, org, repo, branch))
                 break
-            case 'gitlab':
+            case ~/^.*gitlab.*$/:
                 this.setScm(new Gitlab(context, host, org, repo, branch))
                 break
-            case 'bitbucket':
+            case ~/^.*bitbucket.*$/:
                 this.setScm(new BitBucket(context, host, org, repo, branch))
         }
 
