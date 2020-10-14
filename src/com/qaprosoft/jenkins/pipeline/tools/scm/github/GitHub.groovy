@@ -3,12 +3,12 @@ package com.qaprosoft.jenkins.pipeline.tools.scm.github
 import com.qaprosoft.jenkins.Logger
 import com.qaprosoft.jenkins.pipeline.tools.scm.ISCM
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.pipeline.tools.scm.github.Clonable
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.Clonablea
 
 import static com.qaprosoft.jenkins.pipeline.Executor.*
 import static com.qaprosoft.jenkins.Utils.*
 
-class GitHub implements ISCM, Clonable {
+class GitHub implements ISCM, Clonablea {
 
     protected def context
     //TODO: rename into scmUrl as it covers both https and ssh cases
