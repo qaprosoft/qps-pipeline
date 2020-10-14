@@ -19,6 +19,7 @@ abstract class Scm implements ISCM {
 	protected def org
 	protected def repo
     protected def branch
+    protected def credentialsId
     protected def scmUrl
 	protected def apiUrl
 	protected def sshUrl
@@ -34,8 +35,14 @@ abstract class Scm implements ISCM {
 		this.org = org
 		this.repo = repo
         this.branch = branch
+        this.credentialsId = "$org-$repo"
         this.scmUrl = setScmUrl()
         this.logger = new Logger(context)
+
+        if (Configuration.get("scmURL") != null) {
+            gitHtmlUrl = Configuration.get("scmURL")
+            credentialsId = ''
+        }
 	}
 
     protected abstract String getBranchSpec(spec)
@@ -50,12 +57,12 @@ abstract class Scm implements ISCM {
             def fork = !isParamEmpty(Configuration.get("fork")) ? Configuration.get("fork").toBoolean() : false
             def userId = Configuration.get("BUILD_USER_ID")
             def gitUrl = Configuration.resolveVars(scmUrl)
-            def credentialsId =  "$org-$repo"
+            def credentialsId =  "${this.org}-${this.repo}"
 
-            logger.info("SCM_HOST: $host")
-            logger.info("SCM_ORGANIZATION: $org")
-            logger.info("SCM_URL: $scmUrl")
-            logger.info("CREDENTIALS_ID: $credentialsId")
+            logger.info("SCM_HOST: ${this.host}")
+            logger.info("SCM_ORGANIZATION: ${this.org}")
+            logger.info("SCM_URL: ${this.scmUrl}")
+            logger.info("CREDENTIALS_ID: ${credentialsId}")
 
             if (fork) {
                 def tokenName = "token_$userId"
