@@ -44,15 +44,15 @@ class Repository extends BaseObject {
         this.repo = Configuration.get(REPO)
         this.branch = Configuration.get(BRANCH)
 
-        switch (host) {
+        switch (scmHost) {
             case ~/^.*github.*$/:
-                this.setScm(new GitHub(context, host, org, repo, branch))
+                this.setScm(new GitHub(context, scmHost, scmOrg, repo, branch))
                 break
             case ~/^.*gitlab.*$/:
-                this.setScm(new Gitlab(context, host, org, repo, branch))
+                this.setScm(new Gitlab(context, scmHost, scmOrg, repo, branch))
                 break
             case ~/^.*bitbucket.*$/:
-                this.setScm(new BitBucket(context, host, org, repo, branch))
+                this.setScm(new BitBucket(context, scmHost, scmOrg, repo, branch))
         }
     }
 
