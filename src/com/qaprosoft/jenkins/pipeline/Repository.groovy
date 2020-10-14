@@ -9,7 +9,9 @@ import com.qaprosoft.jenkins.jobdsl.factory.view.ListViewFactory
 import com.qaprosoft.jenkins.jobdsl.factory.folder.FolderFactory
 import com.qaprosoft.jenkins.pipeline.runner.maven.TestNG
 import com.qaprosoft.jenkins.pipeline.runner.maven.Runner
-import com.qaprosoft.jenkins.pipeline.tools.scm.*
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.tools.scm.gitlab.Gitlab
+import com.qaprosoft.jenkins.pipeline.tools.scm.bitbucket.BitBucket
 import java.nio.file.Paths
 
 import static com.qaprosoft.jenkins.Utils.*
