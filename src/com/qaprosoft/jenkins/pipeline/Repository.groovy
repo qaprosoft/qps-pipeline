@@ -23,6 +23,11 @@ class Repository extends BaseObject {
     protected def runnerClass
     protected def rootFolder
     protected def scmWebHookArgs
+    protected def scmHost
+    protected def scmOrg
+    protected def repo
+    protected def branch
+
     private static final String SCM_ORG = "scmOrg"
     private static final String SCM_HOST = "scmHost"
     private static final String REPO = "repo"
@@ -34,8 +39,12 @@ class Repository extends BaseObject {
         super(context)
         this.pipelineLibrary = Configuration.get("pipelineLibrary")
         this.runnerClass = Configuration.get("runnerClass")
+        this.scmHost = Configuration.get(SCM_HOST)
+        this.scmOrg = Configuration.get(SCM_ORG)
+        this.repo = Configuration.get(REPO)
+        this.branch = Configuration.get(BRANCH)
 
-        switch (Configuration.get(SCM_HOST).toLowerCase()) {
+        switch (host) {
             case ~/^.*github.*$/:
                 this.setScm(new GitHub(context, host, org, repo, branch))
                 break
@@ -145,9 +154,6 @@ class Repository extends BaseObject {
 
             //Job build display name
             context.currentBuild.displayName = "#${buildNumber}|${Configuration.get(REPO)}|${Configuration.get(BRANCH)}"
-
-            def scmHost = Configuration.get(SCM_HOST)
-            def scmOrg = Configuration.get(SCM_ORG)
 
 //			createPRChecker(credentialsId)
 
