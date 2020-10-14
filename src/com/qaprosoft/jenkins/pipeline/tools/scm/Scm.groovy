@@ -153,6 +153,7 @@ abstract class Scm implements ISCM {
         return hookArgs.values().collectEntries { [(it.getKey()): it.getValue()] }
     }
 
+    @NonCPS
     protected def setScmUrl() {
         this.scmUrl =  String.format("https://%s/%s/%s", host, org, repo)
         logger.info("scmUrl: " + scmUrl)
