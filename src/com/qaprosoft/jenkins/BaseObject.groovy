@@ -68,6 +68,7 @@ public abstract class BaseObject {
         }
     }
 
+    @NonCPS
     public def setScm(scm) {
         this.scmClient = scmClient
     }
