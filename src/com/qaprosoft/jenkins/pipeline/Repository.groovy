@@ -160,13 +160,13 @@ class Repository extends BaseObject {
             def pullRequestPipelineJobDescription = "Verify compilation and/or do Sonar PullRequest analysis"
 
             switch (scmHost) {
-                case 'github':
+                case ~/.*github.*/:
                     scmWebHookArgs = Github.getWebHookArgs(GitHub.WebHookArgs)
                     break
-                case 'gitlab':
+                case ~/.*gitlab.*/:
                     scmWebHookArgs = Gitlab.getWebHookArgs(Gitlab.WebHookArgs)
                     break
-                case 'bitbucket':
+                case ~/.*bitbucket.*/:
                     scmWebHookArgs = BitBucket.getWebHookArgs(BitBucket.WebHookArgs)
             }
 
