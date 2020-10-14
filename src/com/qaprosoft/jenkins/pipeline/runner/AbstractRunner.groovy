@@ -3,7 +3,9 @@ package com.qaprosoft.jenkins.pipeline.runner
 import com.qaprosoft.jenkins.BaseObject
 import com.qaprosoft.jenkins.pipeline.integration.sonar.SonarClient
 import com.qaprosoft.jenkins.pipeline.Configuration
-import com.qaprosoft.jenkins.tools.scm.*    
+import com.qaprosoft.jenkins.pipeline.tools.scm.github.GitHub
+import com.qaprosoft.jenkins.pipeline.tools.scm.gitlab.Gitlab
+import com.qaprosoft.jenkins.pipeline.tools.scm.bitbucket.BitBucket
 import java.nio.file.Paths
 
 import static com.qaprosoft.jenkins.Utils.*
