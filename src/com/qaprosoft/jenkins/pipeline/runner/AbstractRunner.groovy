@@ -19,6 +19,7 @@ public abstract class AbstractRunner extends BaseObject {
 
     public AbstractRunner(context) {
         super(context)
+        sc = new SonarClient(context)
 
         def host = Configration.get("scmHost")
         def org = Configration.get("scmOrg")
