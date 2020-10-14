@@ -34,6 +34,17 @@ class Repository extends BaseObject {
         super(context)
         this.pipelineLibrary = Configuration.get("pipelineLibrary")
         this.runnerClass = Configuration.get("runnerClass")
+
+        switch (Configuration.get(SCM_HOST).toLowerCase()) {
+            case ~/^.*github.*$/:
+                this.setScm(new GitHub(context, host, org, repo, branch))
+                break
+            case ~/^.*gitlab.*$/:
+                this.setScm(new Gitlab(context, host, org, repo, branch))
+                break
+            case ~/^.*bitbucket.*$/:
+                this.setScm(new BitBucket(context, host, org, repo, branch))
+        }
     }
 
     public void register() {
@@ -74,6 +85,7 @@ class Repository extends BaseObject {
     }
 
     protected void prepare() {
+
         def scmOrg = Configuration.get(SCM_ORG)
         def credentialsId = "${scmOrg}-${Configuration.get(REPO)}"
 

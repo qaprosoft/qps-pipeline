@@ -89,7 +89,6 @@ abstract class Scm implements ISCM {
         }
     }
 
-
     public def clone(gitUrl, branch, subFolder) {
         context.stage('Checkout GitHub Repository') {
             logger.info("GitHub->clone\nGIT_URL: ${gitUrl}\nbranch: ${branch}")
