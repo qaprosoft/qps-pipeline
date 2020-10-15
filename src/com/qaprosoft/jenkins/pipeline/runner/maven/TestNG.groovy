@@ -497,7 +497,6 @@ public class TestNG extends Runner {
     public void runJob() {
         // set all required integration at the beginning of build operation to use actual value and be able to override anytime later
         setReportingCreds()
-        setSeleniumUrl()
         
         //TODO: test if we should support scmURL
         if (!isParamEmpty(Configuration.get("scmURL"))){
@@ -519,6 +518,9 @@ public class TestNG extends Runner {
                 try {
                     context.timestamps {
                         prepareBuild(currentBuild)
+                        // read selenium url based on provider settings closer to the run to be able to reuse overrided capabilities.provider arg
+                        setSeleniumUrl()
+                        
                         getScm().clone()
 
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
