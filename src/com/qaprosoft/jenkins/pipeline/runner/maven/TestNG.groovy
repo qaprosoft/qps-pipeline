@@ -518,9 +518,6 @@ public class TestNG extends Runner {
                 try {
                     context.timestamps {
                         prepareBuild(currentBuild)
-                        // read selenium url based on provider settings closer to the run to be able to reuse overrided capabilities.provider arg
-                        setSeleniumUrl()
-                        
                         getScm().clone()
 
                         context.timeout(time: Integer.valueOf(Configuration.get(Configuration.Parameter.JOB_MAX_RUN_TIME)), unit: 'MINUTES') {
@@ -746,6 +743,9 @@ public class TestNG extends Runner {
 
     protected void buildJob() {
         context.stage('Run Test Suite') {
+            // read selenium url based on provider settings closer to the run to be able to reuse overrided capabilities.provider arg
+            setSeleniumUrl()
+            
             def goals = getMavenGoals()
             def pomFile = getMavenPomFile()
             context.mavenBuild("-U ${goals} -f ${pomFile}")
