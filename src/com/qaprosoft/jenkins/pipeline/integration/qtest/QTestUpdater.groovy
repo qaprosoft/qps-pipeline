@@ -273,7 +273,7 @@ class QTestUpdater {
         def parsedIntegrationInfo = integration
         Map testCasesMap = new HashMap<>()
         integration.testInfo.each { testInfo ->
-            String[] tagInfoArray = testInfo.tagValue.split("-")
+            String[] tagInfoArray = testInfo.labelValue.split("-")
             def projectId = tagInfoArray[0]
             if (isParamEmpty(projectId)) {
                 throw new RuntimeException("Unable to detect QTest project_id!\n" + formatJson(parsedIntegrationData))
