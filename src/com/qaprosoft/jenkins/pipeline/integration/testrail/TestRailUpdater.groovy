@@ -216,7 +216,7 @@ class TestRailUpdater {
         def parsedIntegrationInfo = integration
         Map testCasesMap = new HashMap<>()
         for (testInfo in integration.testInfo) {
-            String[] tagInfoArray = testInfo.tagValue.split("-")
+            String[] tagInfoArray = testInfo.labelValue.split("-")
             if (tagInfoArray.size() < 3) {
                 logger.error("Invalid integration tag, test with id ${testInfo.id} won't be pushed in testrail.")
                 continue
