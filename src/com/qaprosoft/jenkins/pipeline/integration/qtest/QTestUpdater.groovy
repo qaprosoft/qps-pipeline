@@ -1,23 +1,24 @@
 package com.qaprosoft.jenkins.pipeline.integration.qtest
 
 import com.qaprosoft.jenkins.Logger
-import com.qaprosoft.jenkins.pipeline.integration.zafira.IntegrationTag
-import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraClient
 import com.qaprosoft.jenkins.pipeline.Configuration
-import static com.qaprosoft.jenkins.Utils.*
-import static com.qaprosoft.jenkins.pipeline.Executor.*
+import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraClient
+
+import static com.qaprosoft.jenkins.Utils.isParamEmpty
+import static com.qaprosoft.jenkins.pipeline.Executor.formatJson
+import static com.qaprosoft.jenkins.pipeline.Executor.getBrowser
 
 class QTestUpdater {
 
     // Make sure that in Automation Settings input statuses configured as PASSED, FAILED, SKIPPED!
     private def context
-    private ZafiraClient zc
+    private ZafiraClient zafiraClient
     private QTestClient qTestClient
     private Logger logger
 
     public QTestUpdater(context) {
         this.context = context
-        zc = new ZafiraClient(context)
+        zafiraClient = new ZafiraClient(context)
         qTestClient = new QTestClient(context)
         logger = new Logger(context)
     }
@@ -28,16 +29,16 @@ class QTestUpdater {
             return
         }
 
-        def zafiraIntegrationData = exportIntegrationDataFromZafira(uuid)
-        def parsedIntegrationData = parseIntegrationParams(zafiraIntegrationData)
+        def tcmData = exportTcmData(uuid, "qtest")
+        def parsedTcmData = parseTcmData(tcmData)
 
-        /* Values from zafira integration data */
-        def projectId = parsedIntegrationData.projectId
-        def cycleName = parsedIntegrationData.customParams.cycle_name
-        def startedAt = parsedIntegrationData.startedAt
-        def finishedAt = parsedIntegrationData.finishedAt
-        def env = parsedIntegrationData.env
-        def testCasesMap = parsedIntegrationData.testCasesMap
+        /* Values exported from reporting */
+        def projectId = parsedTcmData.projectId
+        def cycleName = parsedTcmData.customParams.get("com.zebrunner.app/tcm.qtest.cycle-name")
+        def startedAt = parsedTcmData.startedAt
+        def finishedAt = parsedTcmData.finishedAt
+        def env = parsedTcmData.env
+        def testCasesMap = parsedTcmData.testCasesMap
 
         // Get id of test cycle, passed from zafira
         def rootTestCycleId = getCycleIdByName(projectId, cycleName)
@@ -163,20 +164,19 @@ class QTestUpdater {
     }
 
     /**
-     * Exports data necessary for intregration from Zafira by
-     * @param uuid.
-     * Data is based on QTEST_TESTCASE_UUID tag values
-     * and 'qtest_cycle_name', 'qtest_suite_name' custom arguments
-     * from testRun config XML.
+     * Exports data for integration with Qtest from reporting service by
+     * @param testrun ci_run_id and tcm tool name.
+     * qtest_cycle_name custom argument
+     * is passed from config XML.
      * @return
      */
-    private Object exportIntegrationDataFromZafira(uuid) {
-        def integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
-        if (isParamEmpty(integration)) {
-            throw new RuntimeException("Integration object is empty, nothing to update in QTest.")
+    private Object exportTcmData(uuid, tool) {
+        def tcmData = zafiraClient.exportTcmData(uuid, tool)
+        if (isParamEmpty(tcmData)) {
+            throw new RuntimeException("No data is exported, nothing to update in QTest.")
         }
-        logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
-        return integration
+        logger.debug("TCM_DATA:\n" + formatJson(tcmData))
+        return tcmData
     }
 
     protected def getCycleIdByName(projectId, cycleName) {
@@ -266,32 +266,32 @@ class QTestUpdater {
     /**
      * Parses QTEST_TESTCASE_UUID tags ant creates map of testCases with case_id, status and testURL.
      * Also sets projectId in parsedIntegrationInfo object
-     * @param integration
+     * @param tcmData
      * @return
      */
-    private def parseIntegrationParams(integration) {
-        def parsedIntegrationInfo = integration
+    private def parseTcmData(tcmData) {
+        def parsedTcmData = tcmData
         Map testCasesMap = new HashMap<>()
-        integration.testInfo.each { testInfo ->
+        tcmData.testInfo.each { testInfo ->
             String[] tagInfoArray = testInfo.labelValue.split("-")
             def projectId = tagInfoArray[0]
             if (isParamEmpty(projectId)) {
                 throw new RuntimeException("Unable to detect QTest project_id!\n" + formatJson(parsedIntegrationData))
             }
             // projectId is set only once, otherwise this action is skipped
-            if (isParamEmpty(parsedIntegrationInfo.projectId)) {
-                parsedIntegrationInfo.projectId = projectId
+            if (isParamEmpty(parsedTcmData.projectId)) {
+                parsedTcmData.projectId = projectId
             }
             def testCaseId = tagInfoArray[1]
             // check to avoid action duplication if testCase has already been added in map
             if (isParamEmpty(testCasesMap.get(testCaseId))) {
-                HashMap testCase = createTestCaseObject(testCaseId, testInfo, integration)
+                HashMap testCase = createTestCaseObject(testCaseId, testInfo, tcmData)
                 testCasesMap.put(testCaseId, testCase)
             }
         }
-        parsedIntegrationInfo.testCasesMap = testCasesMap
-        parsedIntegrationInfo.testInfo = null
-        return parsedIntegrationInfo
+        parsedTcmData.testCasesMap = testCasesMap
+        parsedTcmData.testInfo = null
+        return parsedTcmData
     }
 
     /**
@@ -305,7 +305,7 @@ class QTestUpdater {
         Map testCase = new HashMap()
         testCase.case_id = testCaseId.trim()
         testCase.status = testInfo.status
-        testCase.testURL = "${integration.zafiraServiceUrl}/test-runs/${integration.testRunId}/tests/${testInfo.id}"
+        testCase.testURL = "${integration.reportingServiceUrl}/test-runs/${integration.testRunId}/tests/${testInfo.id}"
         return testCase
     }
 }

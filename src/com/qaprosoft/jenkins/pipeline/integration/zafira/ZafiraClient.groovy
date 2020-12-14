@@ -127,7 +127,7 @@ class ZafiraClient extends HttpClient {
         return sendRequest(parameters)
     }
 
-    public def exportTagData(uuid, tagName) {
+    public def exportTcmData(uuid, tool) {
         if (!isZafiraConnected()) {
             return
         }
@@ -135,7 +135,7 @@ class ZafiraClient extends HttpClient {
                           contentType       : 'APPLICATION_JSON',
                           httpMode          : 'GET',
                           validResponseCodes: "200",
-                          url               : this.serviceURL + "/api/reporting/api/tags/${uuid}/integration?integrationTag=${tagName}"]
+                          url               : this.serviceURL + "/api/reporting/api/tcm/export/${uuid}?tool=${tool}"]
         return sendRequestFormatted(parameters)
     }
 

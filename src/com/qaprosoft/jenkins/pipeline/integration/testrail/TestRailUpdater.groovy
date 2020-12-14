@@ -1,25 +1,24 @@
 package com.qaprosoft.jenkins.pipeline.integration.testrail
 
-
 import com.qaprosoft.jenkins.Logger
-import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.Configuration
-
-import static com.qaprosoft.jenkins.Utils.*
-import static com.qaprosoft.jenkins.pipeline.Executor.*
+import com.qaprosoft.jenkins.pipeline.integration.zafira.StatusMapper
 import com.qaprosoft.jenkins.pipeline.integration.zafira.ZafiraClient
-import com.qaprosoft.jenkins.pipeline.integration.zafira.IntegrationTag
+
+import static com.qaprosoft.jenkins.Utils.isParamEmpty
+import static com.qaprosoft.jenkins.pipeline.Executor.formatJson
+import static com.qaprosoft.jenkins.pipeline.Executor.getDefectsString
 
 class TestRailUpdater {
 
     private def context
-    private ZafiraClient zc
+    private ZafiraClient zafiraClient
     private TestRailClient trc
     private Logger logger
 
     public TestRailUpdater(context) {
         this.context = context
-        zc = new ZafiraClient(context)
+        zafiraClient = new ZafiraClient(context)
         trc = new TestRailClient(context)
         logger = new Logger(context)
     }
@@ -30,41 +29,32 @@ class TestRailUpdater {
             return
         }
 
-        // export all tag related metadata from Reporting service
-        def integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
-        logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
+        def tcmData = exportTcmData(uuid, "testrail")
+        def parsedTcmData = parseTcmData(tcmData)
 
-        if (isParamEmpty(integration)) {
-            logger.debug("Nothing to update in TestRail.")
-            return
-        }
-
-        // convert uuid to project_id, suite_id and testcases related maps
-        integration = parseTagData(integration)
-
-        if (isParamEmpty(integration.projectId)) {
-            logger.error("Unable to detect TestRail project_id!\n" + formatJson(integration))
+        if (isParamEmpty(parsedTcmData.projectId)) {
+            logger.error("Unable to detect TestRail project_id!\n" + formatJson(parsedTcmData))
             return
         }
         def includeAll = Configuration.get("include_all")?.toBoolean()
-        def projectId = integration.projectId
-        def suiteId = integration.suiteId
-        Map customParams = integration.customParams
-        Map caseResultMap = integration.testCasesMap
+        def projectId = parsedTcmData.projectId
+        def suiteId = parsedTcmData.suiteId
+        Map customParams = parsedTcmData.customParams
+        Map caseResultMap = parsedTcmData.testCasesMap
         Map testResultMap = new HashMap<>()
 
-        def milestoneName = !isParamEmpty(Configuration.get("milestone")) ? Configuration.get("milestone") : customParams.milestone
+        def milestoneName = !isParamEmpty(Configuration.get("milestone")) ? Configuration.get("milestone") : customParams.get("com.zebrunner.app/tcm.testrail.milestone")
         def milestoneId = getMilestoneId(projectId, milestoneName)
 
-        def assigneeName = !isParamEmpty(Configuration.get("assignee")) ? Configuration.get("assignee") : customParams.assignee
+        def assigneeName = !isParamEmpty(Configuration.get("assignee")) ? Configuration.get("assignee") : customParams.get("com.zebrunner.app/tcm.testrail.assignee")
         def assignedToId = getAssignedToId(assigneeName)
 
         def testRunExists = Configuration.get("run_exists")?.toBoolean()
 
-        def testRunName = integration.testRunName
+        def testRunName = parsedTcmData.testRunName
         testRunName = !isParamEmpty(Configuration.get("run_name")) ? Configuration.get("run_name") : testRunName
 
-        def createdAfter = integration.createdAfter
+        def createdAfter = parsedTcmData.createdAfter
 
         // get all cases from TestRail by project and suite and compare with exported from Reporting service
         // only cases available in both maps should be registered later
@@ -85,6 +75,16 @@ class TestRailUpdater {
 
         testResultMap = filterTests(testRailRunId, assignedToId, testResultMap, filteredCaseResultMap)
         addResults(testRailRunId, testResultMap)
+    }
+
+    private Object exportTcmData(uuid, tool) {
+//        export all tag related metadata from Reporting service
+        def tcmData = zafiraClient.exportTcmData(uuid, tool)
+        if (isParamEmpty(tcmData)) {
+            throw new RuntimeException("No data is exported, nothing to update in TestRail.")
+        }
+        logger.debug("TCM_DATA:\n" + formatJson(tcmData))
+        return tcmData
     }
 
     protected def getTestRailRunId(testRunName, createdBy, milestoneId, projectId, suiteId, createdAfter, searchInterval) {
@@ -154,10 +154,10 @@ class TestRailUpdater {
 
     protected def filterCaseResultMap(caseResultMap, testRailCaseIds) {
         Map actualCases = new HashMap<>()
-        
+
         logger.debug("testRailCaseIds: " + testRailCaseIds)
         logger.debug("caseResultMap: " + caseResultMap)
-        
+
         logger.info("filterCaseResultMap started")
         def filteredCaseResultMap = caseResultMap
         caseResultMap.each { testCase ->
@@ -176,21 +176,21 @@ class TestRailUpdater {
     protected def filterTests(testRunId, assignedToId, testResultMap, caseResultMap) {
         Map filteredTestResultMap = testResultMap
         def tests = trc.getTests(testRunId)
-        
+
         logger.debug("TESTS_MAP:\n" + formatJson(tests))
         tests.each { test ->
             Map resultToAdd = new HashMap()
             resultToAdd.test_id = test.id
             String testCaseId = test.case_id.toString()
             def testCase = caseResultMap.get(testCaseId)
-            if (!isParamEmpty(testCase)){
+            if (!isParamEmpty(testCase)) {
                 resultToAdd.status_id = testCase.status_id
                 if (isParamEmpty(testCase.comment)) {
                     resultToAdd.comment = testCase.testURL
                 } else {
                     resultToAdd.comment = testCase.testURL + "\n\n" + testCase.comment
                 }
-                
+
                 resultToAdd.defects = testCase.defects
                 resultToAdd.assignedto_id = assignedToId
                 if (resultToAdd.status_id != 3) {
@@ -212,37 +212,37 @@ class TestRailUpdater {
 //        logger.debug("ADD_RESULTS_TESTS_RESPONSE: " + formatJson(response))
     }
 
-    protected def parseTagData(integration) {
-        def parsedIntegrationInfo = integration
+    protected def parseTcmData(tcmData) {
+        def parsedTcmData = tcmData
         Map testCasesMap = new HashMap<>()
-        for (testInfo in integration.testInfo) {
-            String[] tagInfoArray = testInfo.labelValue.split("-")
-            if (tagInfoArray.size() < 3) {
-                logger.error("Invalid integration tag, test with id ${testInfo.id} won't be pushed in testrail.")
+        for (testInfo in tcmData.testInfo) {
+            String[] labelValueArray = testInfo.labelValue.split("-")
+            if (labelValueArray.size() < 3) {
+                logger.error("Invalid label value, test with id ${testInfo.id} won't be pushed in testrail.")
                 continue
             }
-            def projectId = tagInfoArray[0]
-            def testSuiteId = tagInfoArray[1]
-            def testCaseId = tagInfoArray[2]
+            def projectId = labelValueArray[0]
+            def testSuiteId = labelValueArray[1]
+            def testCaseId = labelValueArray[2]
             Map testCase = new HashMap()
             if (isParamEmpty(testCasesMap.get(testCaseId))) {
-                if (isParamEmpty(parsedIntegrationInfo.projectId)) {
-                    parsedIntegrationInfo.projectId = projectId
-                    parsedIntegrationInfo.suiteId = testSuiteId
+                if (isParamEmpty(parsedTcmData.projectId)) {
+                    parsedTcmData.projectId = projectId
+                    parsedTcmData.suiteId = testSuiteId
                 }
                 testCase.case_id = testCaseId
                 testCase.status_id = StatusMapper.getTestRailStatus(testInfo.status)
                 if (testCase.status_id != 1) {
                     testCase.comment = testInfo.message
                 }
-                testCase.testURL = "${integration.zafiraServiceUrl}/test-runs/${integration.testRunId}/tests/${testInfo.id}"
+                testCase.testURL = "${tcmData.reportingServiceUrl}/test-runs/${tcmData.testRunId}/tests/${testInfo.id}"
             } else {
                 testCase = testCasesMap.get(testCaseId)
             }
             testCase.defects = getDefectsString(testCase.defects, testInfo.defectId)
             testCasesMap.put(testCaseId, testCase)
         }
-        parsedIntegrationInfo.testCasesMap = testCasesMap
-        return parsedIntegrationInfo
+        parsedTcmData.testCasesMap = testCasesMap
+        return parsedTcmData
     }
 }
