@@ -53,10 +53,10 @@ class TestRailUpdater {
         Map caseResultMap = integration.testCasesMap
         Map testResultMap = new HashMap<>()
 
-        def milestoneName = !isParamEmpty(Configuration.get("milestone")) ? Configuration.get("milestone") : customParams.milestone
+        def milestoneName = !isParamEmpty(Configuration.get("milestone")) ? Configuration.get("milestone") : customParams.get("com.zebrunner.app/tcm.testrail.milestone")
         def milestoneId = getMilestoneId(projectId, milestoneName)
 
-        def assigneeName = !isParamEmpty(Configuration.get("assignee")) ? Configuration.get("assignee") : customParams.assignee
+        def assigneeName = !isParamEmpty(Configuration.get("assignee")) ? Configuration.get("assignee") : customParams.get("com.zebrunner.app/tcm.testrail.assignee")
         def assignedToId = getAssignedToId(assigneeName)
 
         def testRunExists = Configuration.get("run_exists")?.toBoolean()
