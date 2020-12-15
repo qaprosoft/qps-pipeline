@@ -31,7 +31,7 @@ class TestRailUpdater {
         }
 
         // export all tag related metadata from Reporting service
-        def integration = zc.exportTagData(uuid, IntegrationTag.TESTRAIL_TESTCASE_UUID)
+        def integration = zc.exportTcmData(uuid, "testrail")
         logger.debug("INTEGRATION_INFO:\n" + formatJson(integration))
 
         if (isParamEmpty(integration)) {

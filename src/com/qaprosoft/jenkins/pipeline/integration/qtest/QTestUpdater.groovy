@@ -33,7 +33,7 @@ class QTestUpdater {
 
         /* Values from zafira integration data */
         def projectId = parsedIntegrationData.projectId
-        def cycleName = parsedIntegrationData.customParams.cycle_name
+        def cycleName = parsedIntegrationData.customParams.get("com.zebrunner.app/tcm.qtest.cycle-name")
         def startedAt = parsedIntegrationData.startedAt
         def finishedAt = parsedIntegrationData.finishedAt
         def env = parsedIntegrationData.env
@@ -171,7 +171,7 @@ class QTestUpdater {
      * @return
      */
     private Object exportIntegrationDataFromZafira(uuid) {
-        def integration = zc.exportTagData(uuid, IntegrationTag.QTEST_TESTCASE_UUID)
+        def integration = zc.exportTcmData(uuid, "qtest")
         if (isParamEmpty(integration)) {
             throw new RuntimeException("Integration object is empty, nothing to update in QTest.")
         }
